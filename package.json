@@ -4,7 +4,7 @@
   "description": "A Norton Commander clone based on Electron and  Web Components",
   "main": "electron/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "electron ."
   },
   "repository": {
     "type": "git",
