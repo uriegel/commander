@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/uriegel/window-commander/issues"
   },
-  "homepage": "https://github.com/uriegel/window-commander#readme"
+  "homepage": "https://github.com/uriegel/window-commander#readme",
+  "devDependencies": {
+    "electron": "^15.2.0"
+  }
 }
