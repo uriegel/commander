@@ -1,0 +1,26 @@
+{
+  "name": "window-commander",
+  "version": "1.0.0",
+  "description": "A Norton Commander clone based on Electron and  Web Components",
+  "main": "electron/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uriegel/window-commander.git"
+  },
+  "keywords": [
+    "electron",
+    "javascript",
+    "nodejs",
+    "web",
+    "components"
+  ],
+  "author": "Uwe Riegel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/uriegel/window-commander/issues"
+  },
+  "homepage": "https://github.com/uriegel/window-commander#readme"
+}
