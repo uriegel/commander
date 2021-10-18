@@ -25,5 +25,8 @@
   "homepage": "https://github.com/uriegel/window-commander#readme",
   "devDependencies": {
     "electron": "^15.2.0"
+  },
+  "dependencies": {
+    "filesystem-utilities": "^2.0.1"
   }
 }
