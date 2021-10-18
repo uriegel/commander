@@ -1,5 +1,8 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 
+// if (process.env.NODE_ENV == 'DEV')
+//     require('vue-devtools').install()
+
 const createWindow = () => {    
     const bounds = { 
         width: 600,
