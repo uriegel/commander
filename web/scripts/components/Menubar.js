@@ -283,6 +283,7 @@ class Submenu extends HTMLElement {
                 #submenu {
                     display: none;
                     position: absolute;
+                    z-index: 10000;
                 }
                 .selected #submenu {
                     display: block;

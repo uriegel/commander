@@ -1,15 +1,16 @@
 body {
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-family: 'arial';
     margin: 0px;
     padding: 0px;
     overflow: hidden;
-    font-size: 85%;
+    font-size: 75%;
     height: 100vh;
     display: flex;
     flex-direction: column;
 }
 .root {
     display: flex;
+    flex-grow: 1;
     flex-direction: column;
 }
 #viewerSplitter, #splitter {
