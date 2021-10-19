@@ -3,13 +3,14 @@ const electron = window.require('electron')
 class ElectronTitlebar extends HTMLElement {
     constructor() {
         super()
-        
+
         var style = document.createElement("style")
         document.head.appendChild(style)
         style.sheet.insertRule(`:root {
             --electron-titlebar-color: black;
             --electron-titlebar-background-color: #eee;
             --electron-titlebar-button-hover-color: lightgray;
+            --electron-titlebar-focused-color: blue;
             --electron-titlebar-height: 30px;
         }`)
         
@@ -18,11 +19,15 @@ class ElectronTitlebar extends HTMLElement {
         const template = document.createElement('template')
         template.innerHTML = ` 
             <style>
-                .titlebar {
+                #titlebar {
                     display: flex;
                     color: var(--electron-titlebar-color);
                     background-color: var(--electron-titlebar-background-color);
                     height: var(--electron-titlebar-height);
+                    border-top: 1px solid transparent;
+                }
+                #titlebar.focused {
+                    border-top: 1px solid var(--electron-titlebar-focused-color);
                 }
                 #icon {
                     height: var(--electron-titlebar-height);
@@ -65,7 +70,7 @@ class ElectronTitlebar extends HTMLElement {
                     margin-top: 0px;
                 }                             
             </style>
-            <div class="titlebar">
+            <div id="titlebar">
                 <img id="icon">
                 <slot></slot>
                 <div class="dragregion">
@@ -81,10 +86,15 @@ class ElectronTitlebar extends HTMLElement {
         const icon = this.shadowRoot.getElementById("icon")
         icon.src = this.getAttribute("icon")
         const title = this.shadowRoot.getElementById("title")
+        this.titlebar = this.shadowRoot.getElementById("titlebar")
         title.innerText = this.getAttribute("title")
         this.minimize = this.shadowRoot.getElementById("minimize")
         this.maximize = this.shadowRoot.getElementById("maximize")
         this.close = this.shadowRoot.getElementById("close")
+
+        this.titlebar.classList.add("focused")
+        electron.ipcRenderer.on("focus", () => this.titlebar.classList.add("focused"))
+        electron.ipcRenderer.on("blur", () => this.titlebar.classList.remove("focused"))
     }
 
     connectedCallback() {
