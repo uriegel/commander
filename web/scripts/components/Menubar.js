@@ -29,6 +29,7 @@ class Menubar extends HTMLElement {
                     list-style: none;
                     padding: 0;
                     margin: 0;
+                    height: 100%;
                 }
                 .invisible {
                     display: none;
