@@ -1,14 +1,18 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
+const settings = require('electron-settings')
 
 // if (process.env.NODE_ENV == 'DEV')
 //     require('vue-devtools').install()
 
 const createWindow = () => {    
     const bounds = { 
-        width: 600,
-        height: 800,
+        x: settings.getSync("x"),
+        y: settings.getSync("y"),
+        width: settings.getSync("width") || 600,
+        height: settings.getSync("height") || 600,
         show: false,
         frame: false,
+        icon: 'web/assets/kirk.png',
         webPreferences: {
             nodeIntegration: true,
             allowRunningInsecureContent: true,
@@ -17,6 +21,8 @@ const createWindow = () => {
     } 
     
     win = new BrowserWindow(bounds)   
+    if (settings.getSync("isMaximized"))
+        win.maximize()
 
     ipcMain.on("openDevTools",  () => win.webContents.openDevTools())
     ipcMain.on("fullscreen",  () => win.setFullScreen(!win.isFullScreen()))
@@ -37,17 +43,27 @@ const createWindow = () => {
 
     win.loadFile('web/index.html')
 
-    // win.on('maximize', () => {
-    //     const bounds = win.getBounds()
-    //     settings.set("window-bounds", bounds as any)
-    //     settings.set("isMaximized", true)
-    // })
+    win.on('maximize', () => {
+        const bounds = win.getBounds()
+        settings.set("x", bounds.x)
+        settings.set("y", bounds.y)
+        settings.set("width", bounds.width)
+        settings.set("height", bounds.height)
+        settings.set("isMaximized", true)
+    })
 
-    // win.on('unmaximize', () => {
-    //     settings.set("isMaximized", false)
-    // })    
+    win.on('unmaximize', () => settings.set("isMaximized", false))    
 
-    // win.on("closed", () => win = null)    
+    win.on("close", () => {
+        if (!win.isMaximized()) {
+            const bounds = win.getBounds()
+            settings.setSync("x", bounds.x)
+            settings.setSync("y", bounds.y)
+            settings.setSync("width", bounds.width)
+            settings.setSync("height", bounds.height)
+        }
+    })   
+    win.on("closed", () => win = null)   
 }
 
 app.removeAllListeners('ready')

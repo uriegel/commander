@@ -27,6 +27,7 @@
     "electron": "^15.2.0"
   },
   "dependencies": {
+    "electron-settings": "^4.0.2",
     "filesystem-utilities": "^2.0.1"
   }
 }
