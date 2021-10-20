@@ -75,3 +75,6 @@ app.on("activate", () => {
 })
 
 var win
+
+// TODO dark theme
+// TODO registry-changes-detector
