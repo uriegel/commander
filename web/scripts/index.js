@@ -8,6 +8,7 @@ import { request } from "./requests.js"
 import { onShowViewer, refreshViewer} from './viewer.js'
 import { RESULT_OK } from './components/DialogBox.js'
 import './menu.js'
+const addon = require('filesystem-utilities')
 
 const folderLeft = document.getElementById("folderLeft")
 const folderRight = document.getElementById("folderRight")
@@ -23,6 +24,21 @@ const BOTH = 3
 //     folderRight.onResize()
 // }, refresh, onException)
 
+;(async () => {
+    const iconPath = "C:\\Windows\\regedit.exe"
+    const icon = await addon.getIcon(iconPath)
+    console.log(icon)
+    const drives = await addon.getDrives()
+    console.log(drives)
+
+    try {
+        await addon.createFolder("C:\\Users\\uwe\\Desktop\\Ordner")
+    } catch (err) {
+        console.log(err)
+    }
+})()
+
+
 function getItemsTypes(selectedItems) {
     const types = selectedItems
         .map(n => n.isDirectory)
@@ -34,7 +50,7 @@ function getItemsTypes(selectedItems) {
 }
 
 ;(() => {
-    const initialTheme = localStorage.getItem("theme") || "themeAdwaita"
+    const initialTheme = localStorage.getItem("theme") || "themeLight"
     onTheme(initialTheme)
     // setInitialTheme(initialTheme) 
 })()

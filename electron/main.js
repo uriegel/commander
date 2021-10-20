@@ -1,16 +1,4 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
-const addon = require('filesystem-utilities')
-
-;(async () => {
-    const iconPath = "C:\\Windows\\regedit.exe"
-    const icon = await addon.getIcon(iconPath)
-
-    try {
-        await addon.createFolder("C:\\Users\\uwe\\Desktop\\Ordner")
-    } catch (err) {
-        console.log(err)
-    }
-})()
 
 // if (process.env.NODE_ENV == 'DEV')
 //     require('vue-devtools').install()

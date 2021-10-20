@@ -1,3 +1,8 @@
+:root .themeLight {
+    --vtc-top: 20px;
+    --exif-color: darkblue;
+    --selected-exif-color: yellow;
+}
 body {
     font-family: 'arial';
     margin: 0px;
