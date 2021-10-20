@@ -19,9 +19,9 @@ window.onMove = () => {
 
 window.onDarkTheme = isChecked => {
     if (isChecked)
-        document.body.classList.add("darkTheme")
+        document.body.classList.add("themeDark")
     else
-        document.body.classList.remove("darkTheme")
+        document.body.classList.remove("themeDark")
 }
 
 window.onClose = () => close()
@@ -31,5 +31,7 @@ window.onHidden = isChecked => {
 }
 
 window.setHidden = mi => {} //setHiddenCallback(isChecked => mi.isChecked = isChecked)
+
+window.onFullscreen = () => electron.ipcRenderer.send("fullscreen")
 
 window.onDevTools = () => electron.ipcRenderer.send("openDevTools")
