@@ -10,7 +10,9 @@ class Folder extends HTMLElement {
         this.innerHTML = `
             <div class=folder>
                 <input class=pathInput></input>
-                <virtual-table additionalStyle='${additionalStyle}'></virtual-table>
+                <div class=folderroot>
+                    <virtual-table additionalStyle='${additionalStyle}'></virtual-table>
+                </div>
             </div`
         
         this.table = this.getElementsByTagName("VIRTUAL-TABLE")[0]

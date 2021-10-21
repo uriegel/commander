@@ -3,7 +3,7 @@ import { formatDateTime, formatSize, getExtension } from "./renderTools.js"
 import { ROOT } from "./root.js"
 const addon = require('filesystem-utilities')
 
-const pathDelimiter = "/"
+const pathDelimiter = "\\"
 
 export const getDirectory = (folderId, path) => {
     const getType = () => DIRECTORY
