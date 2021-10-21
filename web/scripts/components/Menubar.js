@@ -327,7 +327,10 @@ class Submenu extends HTMLElement {
                 index: this.index
             }
         })))
-        this.menubaritem.addEventListener("click", () => this.item.executeCommand())
+        this.menubaritem.addEventListener("click", evt => {
+            if (!evt.target.classList.contains("submenu-item"))
+                this.item.executeCommand()
+        })
     }
 
     onKeyDown(evt) {
