@@ -1,0 +1,27 @@
+:root .themeDark {
+    background-color: rgb(32, 32, 32);
+    --electron-titlebar-color: lightgray;
+    --electron-titlebar-background-color: black;
+    --electron-titlebar-button-hover-color: rgb(66, 66, 66);
+    --electron-titlebar-focused-color: rgb(174, 173, 230);
+
+    --vtc-color: white;
+    --vtc-background-color: rgb(32, 32, 32);
+
+    --exif-color: darkblue;
+    --selected-exif-color: yellow;
+
+    --vtc-scrollbar-button-display: none;
+    --vtc-scrollbar-width: 12px;
+    --vtc-scrollbar-background-color: transparent;
+    --vtc-scrollbar-border-width: 0px;
+    --vtc-scrollbar-grip-width: 4px;
+    --vtc-scrollbar-grip-active-color: var(--vtc-selected-background-color);
+    --vtc-scrollbar-grip-radius: 999px;
+    --vtc-scrollbar-grip-right: 1px;
+    --vtc-scrollbar-right-margin: 6px;    
+
+    --gridsplitter-grip-color : var(--electron-titlebar-background-color);
+    --gridsplitter-grip-hover-color : #bbb8b5;
+    --gridsplitter-grip-active-color : #8f8d8b;    
+}
