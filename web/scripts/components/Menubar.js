@@ -318,6 +318,18 @@ class Submenu extends HTMLElement {
         return ['is-accelerated', 'is-keyboard-activated', 'selected-index']
     }
 
+    connectedCallback() {
+        this.menubaritem.addEventListener("mouseover", () => this.dispatchEvent(new CustomEvent('menubar-item-mouseover', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                mainmenu: true,
+                index: this.index
+            }
+        })))
+        this.menubaritem.addEventListener("click", () => this.item.executeCommand())
+    }
+
     onKeyDown(evt) {
         const items = Array.from(this.shadowRoot.querySelectorAll('menubar-submenu-list'))
             .filter(n => window.getComputedStyle(n).display != "none")
@@ -522,6 +534,9 @@ class MenuItem extends HTMLElement {
                 }
                 #menuItem {
                     padding: 2px 5px;
+                    align-items: center;
+                    height: 100%;
+                    display: flex;                    
                 }
                 #menuItem.submenu-item {
                     padding: 5px 20px 5px 0px;
