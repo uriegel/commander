@@ -4,11 +4,9 @@ import './components/gridsplitter.js'
 import './components/pdfviewer.js'
 import './components/DialogBox.js'
 import './folder.js'
-import { request } from "./requests.js"
 import { onShowViewer, refreshViewer} from './viewer.js'
 import { RESULT_OK } from './components/DialogBox.js'
 import './menu.js'
-const addon = require('filesystem-utilities')
 const themeChanges = require('windows-theme-changes')
 
 const folderLeft = document.getElementById("folderLeft")
@@ -18,21 +16,6 @@ const dialog = document.querySelector('dialog-box')
 const DIRECTORY = 1
 const FILE = 2
 const BOTH = 3
-
-;(async () => {
-    const iconPath = "C:\\Windows\\regedit.exe"
-    const icon = await addon.getIcon(iconPath)
-    console.log(icon)
-    const drives = await addon.getDrives()
-    console.log(drives)
-
-    try {
-        await addon.createFolder("C:\\Users\\uwe\\Desktop\\Ordner")
-    } catch (err) {
-        console.log(err)
-    }
-})()
-
 
 function getItemsTypes(selectedItems) {
     const types = selectedItems
@@ -57,6 +40,8 @@ const onPathChanged = evt => {
     refreshViewer(evt.detail.path)
     setTitle(evt.detail.path, evt.detail.dirs, evt.detail.files)
 }
+
+function setTitle(path, dirs, files) { console.log(path, dirs, files)}
 
 function refresh(folderId) {
     const folder = folderId == "folderLeft" ? folderLeft : folderRight
@@ -108,14 +93,14 @@ async function onCopy(itemsToCopy, path) {
         btnCancel: true
     })    
     activeFolder.setFocus()
-    if (res.result == RESULT_OK)
-        await request("copy", {
-            id: getInactiveFolder().id,
-            sourcePath: activeFolder.getCurrentPath(),
-            destinationPath: path,
-            directories: itemsToCopy.filter(n => n.isDirectory).map(n => n.name),
-            files: itemsToCopy.filter(n => !n.isDirectory).map(n => n.name)
-        })
+//    if (res.result == RESULT_OK)
+        // await request("copy", {
+        //     id: getInactiveFolder().id,
+        //     sourcePath: activeFolder.getCurrentPath(),
+        //     destinationPath: path,
+        //     directories: itemsToCopy.filter(n => n.isDirectory).map(n => n.name),
+        //     files: itemsToCopy.filter(n => !n.isDirectory).map(n => n.name)
+        // })
 }
 
 async function onMove(itemsToMove, path) {

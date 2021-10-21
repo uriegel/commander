@@ -1,5 +1,5 @@
 import { formatSize } from "./renderTools.js"
-import { request } from "../requests.js"
+const addon = require('filesystem-utilities')
 
 export const ROOT = "root"
 
@@ -19,16 +19,13 @@ export const getRoot = folderId => {
                 td.appendChild(span)
             }
         }, {
-            name: "Mountpoint",
-            render: (td, item) => td.innerHTML = item.mountPoint
-        }, {
             name: "Bezeichnung",
-            render: (td, item) => td.innerHTML = item.display
+            render: (td, item) => td.innerHTML = item.description
         }, {
             name: "Größe",
             isRightAligned: true,
             render: (td, item) => {
-                td.innerHTML = formatSize(item.capacity)
+                td.innerHTML = formatSize(item.size)
                 td.classList.add("rightAligned")
             }
         }]
@@ -39,32 +36,27 @@ export const getRoot = folderId => {
     }
 
     const renderRow = (item, tr) => {
-        if (!item.mountPoint)
+        if (!item.isMounted)
             tr.style.opacity = 0.5
     }
 
     const getCurrentPath = () => ROOT
 
-    const getPath = item => [item.mountPoint, null]
+    const getPath = item => [item.name, null]
 
     const getItems = async () => {
-        const response = await request("getroot");
-        // const mounted = response.filter(n => n.mountPoint)
-        // const unmounted = response.filter(n => !n.mountPoint)
-        // return mounted
-        //     .concat(unmounted)
-        //     .map(n => {
-        //         n.isNotSelectable = true
-        //         return n
-        //     })
-        return []
+        return (await addon.getDrives())
+            .map(n => {
+                n.isNotSelectable = true
+                return n
+            })
     }
 
     const getExtendedInfos = () => []
 
     const saveWidths = widths => localStorage.setItem(`${folderId}-root-widths`, JSON.stringify(widths))
 
-    const getItem = item => item.mountPoint
+    const getItem = item => item.name
 
     return {
         getType,

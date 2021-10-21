@@ -1,7 +1,7 @@
 export const DIRECTORY = "directory"
 import { formatDateTime, formatSize, getExtension } from "./renderTools.js"
 import { ROOT } from "./root.js"
-import { request } from "../requests.js"
+const addon = require('filesystem-utilities')
 
 const pathDelimiter = "/"
 
@@ -94,14 +94,15 @@ export const getDirectory = (folderId, path) => {
         : [null, null]
 
     const getItems = async (path, hiddenIncluded) => {
-        var response = await request("getitems", { path, hiddenIncluded })
+        var response = await addon.getFiles(path)
+        console.log(response)
         let result = [{
                 name: "..",
             isNotSelectable: true,
                 isDirectory: true
             }]
-            .concat(response.dirs)
-            .concat(response.files)
+            .concat(response.filter(n => n.isDirectory))
+            .concat(response.filter(n => !n.isDirectory))
         if (result && result.length)
             currentPath = path
         return result
