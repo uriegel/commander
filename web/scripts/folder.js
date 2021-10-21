@@ -24,13 +24,6 @@ class Folder extends HTMLElement {
 
     get id() { return this.folderId}
     
-    changeTheme(theme) {
-        ["themeAdwaita", "themeAdwaitaDark"].forEach(n => {
-            this.pathInput.classList.remove(n)
-        })
-        this.pathInput.classList.add(theme)    
-        this.table.reRender()
-    }
 
     onResize() {
         this.table.reRender()

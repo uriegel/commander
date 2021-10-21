@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "electron-settings": "^4.0.2",
-    "filesystem-utilities": "^2.0.1"
+    "filesystem-utilities": "^2.0.1",
+    "windows-theme-changes": "^2.0.2"
   }
 }

@@ -9,6 +9,7 @@ import { onShowViewer, refreshViewer} from './viewer.js'
 import { RESULT_OK } from './components/DialogBox.js'
 import './menu.js'
 const addon = require('filesystem-utilities')
+const themeChanges = require('windows-theme-changes')
 
 const folderLeft = document.getElementById("folderLeft")
 const folderRight = document.getElementById("folderRight")
@@ -17,12 +18,6 @@ const dialog = document.querySelector('dialog-box')
 const DIRECTORY = 1
 const FILE = 2
 const BOTH = 3
-
-// initializeCallbacks(onTheme, onShowHidden, show => {
-//     onShowViewer(show, currentPath)
-//     folderLeft.onResize()
-//     folderRight.onResize()
-// }, refresh, onException)
 
 ;(async () => {
     const iconPath = "C:\\Windows\\regedit.exe"
@@ -49,11 +44,10 @@ function getItemsTypes(selectedItems) {
     : BOTH
 }
 
-;(() => {
-    const initialTheme = localStorage.getItem("theme") || "themeLight"
-    onTheme(initialTheme)
-    // setInitialTheme(initialTheme) 
-})()
+themeChanges.register(lightTheme => {
+    onDarkTheme(!lightTheme)
+})
+onDarkTheme(!themeChanges.isLightMode())
 
 folderLeft.addEventListener("onFocus", () => activeFolder = folderLeft)
 folderRight.addEventListener("onFocus", () => activeFolder = folderRight)
@@ -232,12 +226,11 @@ async function onCreateFolder(selectedItem) {
         })
 }
 
-function onTheme(theme) {
-    ["themeAdwaita", "themeAdwaitaDark"].forEach(n => document.body.classList.remove(n))
-    document.body.classList.add(theme)    
-    folderLeft.changeTheme(theme)
-    folderRight.changeTheme(theme)
-    localStorage.setItem("theme", theme)
+function onDarkTheme(darkTheme) {
+    if (darkTheme)
+        document.body.classList.add("themeDark")
+    else
+        document.body.classList.remove("themeDark")
 }
 
 function onShowHidden(hidden) {

@@ -75,5 +75,3 @@ app.on("activate", () => {
 })
 
 var win
-
-// TODO registry-changes-detector
