@@ -35,6 +35,7 @@
     "electron-settings": "^4.0.2",
     "filesystem-utilities": "^2.0.1",
     "grid-splitter": "^0.0.3",
+    "virtual-table-component": "^0.0.1",
     "windows-theme-changes": "^2.0.2"
   }
 }
