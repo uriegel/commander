@@ -36,6 +36,7 @@
     "filesystem-utilities": "^2.0.1",
     "grid-splitter": "^0.0.3",
     "virtual-table-component": "^0.0.1",
+    "web-dialog-box": "^0.0.3",
     "windows-theme-changes": "^2.0.2"
   }
 }

@@ -1,11 +1,10 @@
+import 'grid-splitter'
+import 'web-dialog-box'
 import './components/ElectronTitlebar.js'
 import './components/Menubar.js'
-import 'grid-splitter'
 import './components/pdfviewer.js'
-import './components/DialogBox.js'
 import './folder.js'
 import { onShowViewer, refreshViewer} from './viewer.js'
-import { RESULT_OK } from './components/DialogBox.js'
 import './menu.js'
 const themeChanges = window.require('windows-theme-changes')
 
@@ -16,6 +15,11 @@ const dialog = document.querySelector('dialog-box')
 const DIRECTORY = 1
 const FILE = 2
 const BOTH = 3
+
+const RESULT_OK = 1
+// const RESULT_YES = 2
+// const RESULT_NO = 3
+// const RESULT_CANCEL = 4
 
 initializeCallbacks(onShowHidden, show => {
     onShowViewer(show, currentPath)
