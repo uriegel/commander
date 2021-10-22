@@ -1,7 +1,7 @@
 export const DIRECTORY = "directory"
 import { formatDateTime, formatSize, getExtension } from "./renderTools.js"
 import { ROOT } from "./root.js"
-const addon = require('filesystem-utilities')
+const addon = window.require('filesystem-utilities')
 
 const pathDelimiter = "\\"
 

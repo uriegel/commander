@@ -7,7 +7,7 @@ import './folder.js'
 import { onShowViewer, refreshViewer} from './viewer.js'
 import { RESULT_OK } from './components/DialogBox.js'
 import './menu.js'
-const themeChanges = require('windows-theme-changes')
+const themeChanges = window.require('windows-theme-changes')
 
 const folderLeft = document.getElementById("folderLeft")
 const folderRight = document.getElementById("folderRight")
