@@ -1,6 +1,6 @@
 import './components/ElectronTitlebar.js'
 import './components/Menubar.js'
-import './components/gridsplitter.js'
+import 'grid-splitter'
 import './components/pdfviewer.js'
 import './components/DialogBox.js'
 import './folder.js'
