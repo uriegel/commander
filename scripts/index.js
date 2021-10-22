@@ -17,6 +17,12 @@ const DIRECTORY = 1
 const FILE = 2
 const BOTH = 3
 
+initializeCallbacks(onShowHidden, show => {
+    onShowViewer(show, currentPath)
+    folderLeft.onResize()
+    folderRight.onResize()
+}, refresh)
+
 function getItemsTypes(selectedItems) {
     const types = selectedItems
         .map(n => n.isDirectory)
