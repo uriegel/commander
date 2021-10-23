@@ -45,11 +45,12 @@ export const getRoot = folderId => {
     const getPath = item => [item.name, null]
 
     const getItems = async () => {
-        return (await addon.getDrives())
+        const items = (await addon.getDrives())
             .map(n => {
                 n.isNotSelectable = true
                 return n
             })
+        return  { items, path: ROOT }
     }
 
     const getExtendedInfos = () => []

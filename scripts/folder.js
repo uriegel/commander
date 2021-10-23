@@ -171,7 +171,9 @@ class Folder extends HTMLElement {
     async changePath(path, fromBacklog) {
         const result = getProcessor(this.folderId, path, this.processor)
         const req = ++this.latestRequest
-        let items = (await result.processor.getItems(path, this.showHiddenItems))
+        const itemsResult = (await result.processor.getItems(path, this.showHiddenItems))
+        path = itemsResult.path
+        let items = itemsResult.items
         if (!items || req < this.latestRequest) 
             return
 

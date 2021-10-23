@@ -2,6 +2,7 @@ export const DIRECTORY = "directory"
 import { formatDateTime, formatSize, getExtension } from "./renderTools.js"
 import { ROOT } from "./root.js"
 const addon = window.require('filesystem-utilities')
+const fspath = window.require('path')
 
 const pathDelimiter = "\\"
 
@@ -86,7 +87,7 @@ export const getDirectory = (folderId, path) => {
     const getPath = item => item.isDirectory 
         ? item.name != ".."
             ? [
-                currentPath != "/" ? currentPath + pathDelimiter + item.name : currentPath + item.name, 
+                currentPath != "\\" ? currentPath + pathDelimiter + item.name : currentPath + item.name, 
                 null]
             : parentIsRoot()  
                 ? [ROOT, null]
@@ -94,18 +95,19 @@ export const getDirectory = (folderId, path) => {
         : [null, null]
 
     const getItems = async (path, hiddenIncluded) => {
+        path = fspath.normalize(path).replace(":.", ":\\")
         var response = await addon.getFiles(path)
         console.log(response)
-        let result = [{
+        let items = [{
                 name: "..",
             isNotSelectable: true,
                 isDirectory: true
             }]
             .concat(response.filter(n => n.isDirectory))
             .concat(response.filter(n => !n.isDirectory))
-        if (result && result.length)
+        if (items && items.length)
             currentPath = path
-        return result
+        return { items, path }
     }    
 
     const getSortFunction = (column, isSubItem) => {
