@@ -16,11 +16,6 @@ const DIRECTORY = 1
 const FILE = 2
 const BOTH = 3
 
-const RESULT_OK = 1
-// const RESULT_YES = 2
-// const RESULT_NO = 3
-// const RESULT_CANCEL = 4
-
 initializeCallbacks(onShowHidden, show => {
     onShowViewer(show, currentPath)
     folderLeft.onResize()
