@@ -246,15 +246,11 @@ document.addEventListener("keydown", async evt => {
 var activeFolder = folderLeft
 var currentPath = ""
 
-// TODO icons
-// TODO goto parent is ...:\: not c: but c:\
-// TODO Parent is ...:\ --> root
 // TODO Version
 // TODO exif
-// TODO icon-server
 // TODO img, video and pdf viewer
 // TODO sorting
-// TODO Hidden files
+// TODO copy, ...
 
 
 

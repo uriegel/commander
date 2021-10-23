@@ -1,10 +1,21 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain, protocol } = require('electron')
 const settings = require('electron-settings')
+const extFs = require('filesystem-utilities')
 
 // if (process.env.NODE_ENV == 'DEV')
 //     require('vue-devtools').install()
 
 const createWindow = () => {    
+    
+    protocol.registerBufferProtocol('icon', async (request, callback) => {
+        const url = request.url
+        var ext = url.substr(7)
+        var icon = await extFs.getIcon(ext)
+        callback({mimeType: 'img/png', data: icon})
+    }, (error) => {
+        if (error) console.error('Failed to register protocol', error)
+    })
+    
     const bounds = { 
         x: settings.getSync("x"),
         y: settings.getSync("y"),

@@ -34,7 +34,10 @@ export const getDirectory = (folderId, path) => {
                     const img = document.createElement("img")
                     const ext = getExtension(item.name)
                     if (ext) {
-                        img.src = `commander/geticon?ext=${ext}`
+                        // if (ext == "exe") {
+                        //    img.src = `icon://${}`
+                        // } else 
+                            img.src = `icon://${ext}`
                         img.classList.add("image")
                         td.appendChild(img)
                     } else {
@@ -82,7 +85,7 @@ export const getDirectory = (folderId, path) => {
     
     const getCurrentPath = () => currentPath
 
-    const parentIsRoot = () => currentPath == pathDelimiter
+    const parentIsRoot = () => currentPath.length == 3 && currentPath[1] == ':'
     
     const getPath = item => item.isDirectory 
         ? item.name != ".."
@@ -96,8 +99,8 @@ export const getDirectory = (folderId, path) => {
 
     const getItems = async (path, hiddenIncluded) => {
         path = fspath.normalize(path).replace(":.", ":\\")
-        var response = await addon.getFiles(path)
-        console.log(response)
+        var response = (await addon.getFiles(path))
+            .filter(n => hiddenIncluded ? true : !n.isHidden)
         let items = [{
                 name: "..",
             isNotSelectable: true,

@@ -18,14 +18,14 @@ window.onMove = () => {
 
 window.onClose = () => close()
 
-window.onHidden = mi => {
+window.onHidden = isChecked => {
     if (window.onShowHiddenCallback)
-        window.onShowHiddenCallback(mi.isChecked)
+        window.onShowHiddenCallback(isChecked)
 }
 
-window.onViewer = mi => {
+window.onViewer = isChecked => {
     if (window.onShowViewerCallback)
-        window.onShowViewerCallback(mi.isChecked)
+        window.onShowViewerCallback(isChecked)
 }
 
 window.onFullscreen = () => electron.ipcRenderer.send("fullscreen")
