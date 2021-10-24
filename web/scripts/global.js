@@ -12,3 +12,5 @@ var onShowViewerCallback
 var onRequestCallback
 var onRefreshCallback
 var onAdaptPathCallback
+
+const isLinux = process.platform == "linux"

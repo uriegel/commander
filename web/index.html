@@ -9,8 +9,8 @@
 
     <body class="themeLight">
         <div class="root">
-            <electron-titlebar icon="assets/kirk.png" title="Commander">
-                <menubar-mainmenu automode=false>
+            <electron-titlebar id="titlebar" icon="assets/kirk.png" title="Commander">
+                <menubar-mainmenu id="menu" automode=false>
                     <menubar-submenu header="_Datei">
                         <menubar-menuitem text="_Umbenennen" action="onRename" shortcut="F2"></menubar-menuitem>
                         <menubar-menuitem text="Er_weitertes Umbenennen" action="onExtendedRename" shortcut="Strg+F2"></menubar-menuitem>

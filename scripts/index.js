@@ -6,7 +6,6 @@ import './components/pdfviewer.js'
 import './folder.js'
 import { onShowViewer, refreshViewer} from './viewer.js'
 import './menu.js'
-const themeChanges = window.require('windows-theme-changes')
 
 const folderLeft = document.getElementById("folderLeft")
 const folderRight = document.getElementById("folderRight")
@@ -32,10 +31,19 @@ function getItemsTypes(selectedItems) {
     : BOTH
 }
 
-themeChanges.register(lightTheme => {
-    onDarkTheme(!lightTheme)
-})
-onDarkTheme(!themeChanges.isLightMode())
+// if (isLinux) {
+//     const titlebar = document.getElementById("titlebar")
+//     const menu = document.getElementById("menu")
+//     menu.remove()
+//     titlebar.parentElement.insertBefore(menu, titlebar)
+//     titlebar.remove()
+// }
+
+// const themeChanges = window.require('windows-theme-changes')
+// themeChanges.register(lightTheme => {
+//     onDarkTheme(!lightTheme)
+// })
+// onDarkTheme(!themeChanges.isLightMode())
 
 folderLeft.addEventListener("onFocus", () => activeFolder = folderLeft)
 folderRight.addEventListener("onFocus", () => activeFolder = folderRight)
@@ -242,9 +250,9 @@ function adaptPath() {
 var activeFolder = folderLeft
 var currentPath = ""
 
+// TODO Linux Electron-titlebar hide mode: only menu, perhaps automode
 // TODO Linux and windows: dark-theme-detect addon: gsettings get org.gnome.desktop.interface gtk-theme ||| settings monitor org.gnome.desktop.interface gtk-theme
 // TODO Linux detect os, different font size
-// TODO Linux gtk window with auto mode menu
 // TODO Linux root like linux-commander
 // TODO Linux directory like linux-commander
 // TODO Status bar with progress

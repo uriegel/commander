@@ -1,9 +1,12 @@
 const { app, BrowserWindow, ipcMain, protocol } = require('electron')
+const process = require("process")
 const settings = require('electron-settings')
 const extFs = require('filesystem-utilities')
 
 // if (process.env.NODE_ENV == 'DEV')
 //     require('vue-devtools').install()
+
+const isLinux = process.platform == "linux"
 
 const createWindow = () => {    
     
@@ -22,7 +25,7 @@ const createWindow = () => {
         width: settings.getSync("width") || 600,
         height: settings.getSync("height") || 600,
         show: false,
-        frame: false,
+        frame: isLinux,
         icon: 'web/assets/kirk.png',
         webPreferences: {
             nodeIntegration: true,
@@ -31,7 +34,8 @@ const createWindow = () => {
         }      
     } 
     
-    win = new BrowserWindow(bounds)   
+    win = new BrowserWindow(bounds)
+    win.removeMenu()
     if (settings.getSync("isMaximized"))
         win.maximize()
 
