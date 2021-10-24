@@ -247,7 +247,6 @@ function adaptPath() {
 var activeFolder = folderLeft
 var currentPath = ""
 
-// TODO Linux Electron-titlebar hide mode: only menu, perhaps automode
 // TODO Linux and windows: dark-theme-detect addon: gsettings get org.gnome.desktop.interface gtk-theme ||| settings monitor org.gnome.desktop.interface gtk-theme
 // TODO Linux detect os, different font size
 // TODO Linux root like linux-commander
