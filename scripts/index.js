@@ -20,7 +20,7 @@ initializeCallbacks(onShowHidden, show => {
     onShowViewer(show, currentPath)
     folderLeft.onResize()
     folderRight.onResize()
-}, refresh)
+}, refresh, adaptPath)
 
 function getItemsTypes(selectedItems) {
     const types = selectedItems
@@ -49,7 +49,10 @@ const onPathChanged = evt => {
 function setTitle(path, dirs, files) { console.log(path, dirs, files)}
 
 function refresh(folderId) {
-    const folder = folderId == "folderLeft" ? folderLeft : folderRight
+    const folder = 
+        folderId 
+        ? folderId == "folderLeft" ? folderLeft : folderRight
+        : activeFolder
     folder.reloadItems()
 }
 
@@ -232,26 +235,20 @@ folderLeft.setFocus()
 
 const getInactiveFolder = () => activeFolder == folderLeft ? folderRight : folderLeft
 
-document.addEventListener("keydown", async evt => {
-    switch (evt.which) {
-        case 120: { // F9
-            getInactiveFolder().changePath(activeFolder.getCurrentPath())
-            evt.preventDefault()
-            evt.stopPropagation()
-            break
-        }
-    }
-})
+function adaptPath() {
+    getInactiveFolder().changePath(activeFolder.getCurrentPath())
+}
 
 var activeFolder = folderLeft
 var currentPath = ""
 
-// TODO refresh, adapt folder path
-// TODO sorting
-// TODO sorting date version: disable until extendedInfos
 // TODO VirtualTable: rightAligned 5px padding right (attribute)
 // TODO VirtualTable: scrollbargrip minimal size bigger, scrolling right side is difficult
+// TODO sorting date version: disable until extendedInfos 
+// TODO sorting date version: disable until extendedInfos in Linux
+// TODO sorting version
 // TODO img, video and pdf viewer
+// TODO Menubar support num+ num-
 // TODO copy, ...
 
 

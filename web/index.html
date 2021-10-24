@@ -28,7 +28,7 @@
                     </menubar-submenu>
                     <menubar-submenu header="_Navigation">
                         <menubar-menuitem text="_Favoriten" shortcut="F1"></menubar-menuitem>
-                        <menubar-menuitem text="_Gleichen Ordner öffnen" shortcut="F9"></menubar-menuitem>
+                        <menubar-menuitem text="_Gleichen Ordner öffnen" shortcut="F9" action="onAdaptPath"></menubar-menuitem>
                     </menubar-submenu>
                     <menubar-submenu header="_Selektion">
                         <menubar-menuitem text="_Alles" shortcut="Num+"></menubar-menuitem>
@@ -36,7 +36,7 @@
                     </menubar-submenu>
                     <menubar-submenu header="_Ansicht">
                         <menubar-menuitem text="_Versteckte Dateien" checkbox action="onHidden" shortcut="Strg+H"></menubar-menuitem>
-                        <menubar-menuitem text="_Aktualisieren" shortcut="Strg+R"></menubar-menuitem>
+                        <menubar-menuitem text="_Aktualisieren" shortcut="Strg+R" action="onRefresh"></menubar-menuitem>
                         <menubar-separator></menubar-separator>
                         <menubar-menuitem text="_Vorschau" shortcut="F3" checkbox action="onViewer"></menubar-menuitem>
                         <menubar-separator></menubar-separator>

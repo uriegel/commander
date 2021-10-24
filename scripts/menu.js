@@ -23,6 +23,16 @@ window.onHidden = isChecked => {
         window.onShowHiddenCallback(isChecked)
 }
 
+window.onAdaptPath = () => {
+    if (onAdaptPathCallback)
+        onAdaptPathCallback()
+}
+
+window.onRefresh = () => {
+    if (window.onRefreshCallback)
+        window.onRefreshCallback()
+}
+
 window.onViewer = isChecked => {
     if (window.onShowViewerCallback)
         window.onShowViewerCallback(isChecked)
