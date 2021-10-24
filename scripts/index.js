@@ -242,6 +242,13 @@ function adaptPath() {
 var activeFolder = folderLeft
 var currentPath = ""
 
+// TODO Linux and windows: dark-theme-detect addon: gsettings get org.gnome.desktop.interface gtk-theme ||| settings monitor org.gnome.desktop.interface gtk-theme
+// TODO Linux detect os, different font size
+// TODO Linux gtk window with auto mode menu
+// TODO Linux root like linux-commander
+// TODO Linux directory like linux-commander
+// TODO Status bar with progress
+
 // TODO VirtualTable: rightAligned 5px padding right (attribute)
 // TODO VirtualTable: scrollbargrip minimal size bigger, scrolling right side is difficult
 // TODO sorting date version: disable until extendedInfos 
