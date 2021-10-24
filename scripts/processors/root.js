@@ -1,4 +1,4 @@
-import { formatSize } from "./renderTools.js"
+import { formatSize } from "./rendertools.js"
 const addon = window.require('filesystem-utilities')
 
 export const ROOT = "root"

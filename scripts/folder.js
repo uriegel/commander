@@ -16,6 +16,10 @@ class Folder extends HTMLElement {
             </div`
         
         this.table = this.getElementsByTagName("VIRTUAL-TABLE")[0]
+            const sbr = this.getAttribute("scrollbar-right")
+        if (sbr)
+            this.table.setAttribute("scrollbar-right", sbr)
+        
         this.backtrack = []
         this.backPosition = -1
         this.pathInput = this.getElementsByTagName("INPUT")[0]

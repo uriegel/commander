@@ -1,5 +1,5 @@
 {
-  "name": "window-commander",
+  "name": "commander",
   "version": "1.0.0",
   "description": "A Norton Commander clone based on Electron and  Web Components",
   "main": "electron/main.js",
@@ -35,10 +35,12 @@
     "electron-settings": "^4.0.2",
     "filesystem-utilities": "^2.0.3",
     "grid-splitter": "^0.0.6",
-    "virtual-table-component": "^0.0.2",
+    "virtual-table-component": "^0.1.1",
     "web-dialog-box": "^0.0.5",
     "web-electron-titlebar": "^0.0.3",
-    "web-menu-bar": "^0.0.3",
-    "windows-theme-changes": "^2.0.2"
+    "web-menu-bar": "^0.0.3"
+  },
+  "optionalDependencies": {
+    "windows-theme-changes": "^2.0.3"
   }
 }

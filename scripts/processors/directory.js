@@ -1,5 +1,5 @@
 export const DIRECTORY = "directory"
-import { formatDateTime, formatSize, getExtension } from "./renderTools.js"
+import { formatDateTime, formatSize, getExtension } from "./rendertools.js"
 import { ROOT } from "./root.js"
 const addon = window.require('filesystem-utilities')
 const fspath = window.require('path')
