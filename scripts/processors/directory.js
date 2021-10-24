@@ -66,6 +66,13 @@ export const getDirectory = (folderId, path) => {
                 td.innerHTML = formatSize(item.size)
                 td.classList.add("rightAligned")
             }
+        }, {
+            name: "Version",
+            isSortable: true,
+            render: (td, item) => {
+                if (item.version)
+                td.innerHTML = `${item.version.major}.${item.version.minor}.${item.version.patch}.${item.version.build}`
+            }
         }]
         if (widths)
             columns = columns.map((n, i)=> ({ ...n, width: widths[i]}))
@@ -132,21 +139,18 @@ export const getDirectory = (folderId, path) => {
 
     const getItem = item => currentPath == pathDelimiter ? pathDelimiter + item.name : currentPath + pathDelimiter + item.name
 
-    const getExtendedInfos = async (path, items) => {
-        var exifItems = items
-            .map((n, i) => {
-                var name = n.name.toLocaleLowerCase();
-                if (name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png"))
-                    return { index: i, name: n.name }
-                else
-                    return n
-            })
-            .filter(n => n.index != undefined)
-        
-        if (exifItems.length > 0) 
-            return await request("getexifs", { path, exifItems })
-        else
-            return []
+    const addExtendedInfos = async (path, items, refresh) => {
+        for (let i = 0; i < items.length; i++ ) {
+            const n = items[i]
+            var name = n.name.toLocaleLowerCase();
+            if (name.endsWith(".exe") || name.endsWith(".dll")) 
+                n.version = await addon.getFileVersion(fspath.join(path, n.name))
+            else if (name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png"))
+                n.exifTime = await addon.getExifDate(fspath.join(path, n.name))
+            if (i != 0 && i % 50 == 0) 
+                refresh()
+        }
+        refresh()
     }
 
     const getIconPath = name => currentPath + pathDelimiter + name
@@ -162,6 +166,6 @@ export const getDirectory = (folderId, path) => {
         saveWidths,
         getItem,
         getIconPath,
-        getExtendedInfos
+        addExtendedInfos
     }
 }

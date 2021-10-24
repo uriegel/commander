@@ -246,10 +246,12 @@ document.addEventListener("keydown", async evt => {
 var activeFolder = folderLeft
 var currentPath = ""
 
-// TODO Version
-// TODO exif
-// TODO img, video and pdf viewer
+// TODO refresh, adapt folder path
 // TODO sorting
+// TODO sorting date version: disable until extendedInfos
+// TODO VirtualTable: rightAligned 5px padding right (attribute)
+// TODO VirtualTable: scrollbargrip minimal size bigger, scrolling right side is difficult
+// TODO img, video and pdf viewer
 // TODO copy, ...
 
 

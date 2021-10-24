@@ -200,11 +200,7 @@ class Folder extends HTMLElement {
         ))
         
         this.onPathChanged(path, fromBacklog)
-        const response = await this.processor.getExtendedInfos(path, this.table.items)
-        if (response.length > 0 && req == this.latestRequest) {
-            response.forEach(n => items[n.index].exifTime = n.exifTime)
-            this.table.refresh()
-        }
+        this.processor.addExtendedInfos(path, this.table.items, () => this.table.refresh())
     }
 
     onPathChanged(newPath, fromBacklog) {
