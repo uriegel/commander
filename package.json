@@ -37,7 +37,7 @@
     "grid-splitter": "^0.0.6",
     "virtual-table-component": "^0.1.1",
     "web-dialog-box": "^0.0.5",
-    "web-electron-titlebar": "^0.0.3",
+    "web-electron-titlebar": "^0.1.0",
     "web-menu-bar": "^0.0.3"
   },
   "optionalDependencies": {

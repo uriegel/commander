@@ -31,13 +31,10 @@ function getItemsTypes(selectedItems) {
     : BOTH
 }
 
-// if (isLinux) {
-//     const titlebar = document.getElementById("titlebar")
-//     const menu = document.getElementById("menu")
-//     menu.remove()
-//     titlebar.parentElement.insertBefore(menu, titlebar)
-//     titlebar.remove()
-// }
+if (isLinux) {
+    const titlebar = document.getElementById("titlebar")
+    titlebar.setAttribute("no-titlebar", "")
+}
 
 // const themeChanges = window.require('windows-theme-changes')
 // themeChanges.register(lightTheme => {
