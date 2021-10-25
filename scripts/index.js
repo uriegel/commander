@@ -36,11 +36,9 @@ if (isLinux) {
     titlebar.setAttribute("no-titlebar", "")
 }
 
-// const themeChanges = window.require('windows-theme-changes')
-// themeChanges.register(lightTheme => {
-//     onDarkTheme(!lightTheme)
-// })
-// onDarkTheme(!themeChanges.isLightMode())
+const themeChanges = window.require("theme-change-detect")
+themeChanges.register(theme => onDarkTheme(theme.isDark))
+onDarkTheme(themeChanges.getTheme().isDark)
 
 folderLeft.addEventListener("onFocus", () => activeFolder = folderLeft)
 folderRight.addEventListener("onFocus", () => activeFolder = folderRight)
