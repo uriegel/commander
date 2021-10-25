@@ -256,6 +256,7 @@ var currentPath = ""
 
 // TODO Linux root like linux-commander
 // TODO Linux directory like linux-commander
+// TODO extendedInfos in linux version
 // TODO Status bar with progress
 
 // TODO sorting date version: disable until extendedInfos 
