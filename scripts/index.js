@@ -254,13 +254,10 @@ function adaptPath() {
 var activeFolder = folderLeft
 var currentPath = ""
 
-// TODO Linux sort directories + (sortFiles when not sorting)
-// TODO extendedInfos in linux version
-// TODO Status bar with progress
-
 // TODO sorting date version: disable until extendedInfos 
 // TODO sorting date version: disable until extendedInfos in Linux
 // TODO sorting version
+// TODO Status bar with progress
 // TODO img, video and pdf viewer
 // TODO Menubar support num+ num-
 // TODO copy, ...

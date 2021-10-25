@@ -66,14 +66,16 @@ export const getDirectory = (folderId, path) => {
                 td.innerHTML = formatSize(item.size)
                 td.classList.add("rightAligned")
             }
-        }, {
+        }, isLinux
+            ? null
+            : {
             name: "Version",
             isSortable: true,
             render: (td, item) => {
                 if (item.version)
                 td.innerHTML = `${item.version.major}.${item.version.minor}.${item.version.patch}.${item.version.build}`
             }
-        }]
+        }].filter(n => !!n)
         if (widths)
             columns = columns.map((n, i)=> ({ ...n, width: widths[i]}))
         return columns
@@ -145,7 +147,7 @@ export const getDirectory = (folderId, path) => {
         for (let i = 0; i < items.length; i++ ) {
             const n = items[i]
             var name = n.name.toLocaleLowerCase();
-            if (name.endsWith(".exe") || name.endsWith(".dll")) 
+            if (!isLinux && name.endsWith(".exe") || name.endsWith(".dll")) 
                 n.version = await addon.getFileVersion(fspath.join(path, n.name))
             else if (name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png"))
                 n.exifTime = await addon.getExifDate(fspath.join(path, n.name))
