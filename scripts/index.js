@@ -254,7 +254,7 @@ function adaptPath() {
 var activeFolder = folderLeft
 var currentPath = ""
 
-// TODO Linux directory like linux-commander
+// TODO Linux sort directories + (sortFiles when not sorting)
 // TODO extendedInfos in linux version
 // TODO Status bar with progress
 

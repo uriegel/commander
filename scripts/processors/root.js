@@ -45,7 +45,7 @@ export const getRoot = folderId => {
 
     const getCurrentPath = () => ROOT
 
-    const getPath = item => [item.name, null]
+    const getPath = item => [isLinux ? item.mountPoint : item.name, null]
 
     const getItems = async () => {
         const items = (await addon.getDrives())

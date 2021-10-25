@@ -4,7 +4,7 @@ import { ROOT } from "./root.js"
 const addon = window.require('filesystem-utilities')
 const fspath = window.require('path')
 
-const pathDelimiter = "\\"
+const pathDelimiter = isLinux ? "/" : "\\"
 
 export const getDirectory = (folderId, path) => {
     const getType = () => DIRECTORY
@@ -92,7 +92,9 @@ export const getDirectory = (folderId, path) => {
     
     const getCurrentPath = () => currentPath
 
-    const parentIsRoot = () => currentPath.length == 3 && currentPath[1] == ':'
+    const parentIsRoot = () => isLinux
+        ? currentPath == '/'
+        : currentPath.length == 3 && currentPath[1] == ':'
     
     const getPath = item => item.isDirectory 
         ? item.name != ".."
