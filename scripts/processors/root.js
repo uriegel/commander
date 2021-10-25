@@ -31,7 +31,7 @@ export const getRoot = folderId => {
                 td.innerHTML = formatSize(item.size)
                 td.classList.add("rightAligned")
             }
-        }]
+        }].filter(n => !!n)
 
         if (widths)
             columns = columns.map((n, i) => ({ ...n, width: widths[i] }))
