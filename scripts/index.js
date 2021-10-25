@@ -7,6 +7,11 @@ import './folder.js'
 import { onShowViewer, refreshViewer} from './viewer.js'
 import './menu.js'
 
+const adwaita = "adwaita"
+const adwaitaDark = "adwaita-dark"
+const windows = "windows"
+const windowsDark = "windows-dark"
+
 const folderLeft = document.getElementById("folderLeft")
 const folderRight = document.getElementById("folderRight")
 const dialog = document.querySelector('dialog-box')
@@ -223,10 +228,14 @@ async function onCreateFolder(selectedItem) {
 }
 
 function onDarkTheme(darkTheme) {
-    if (darkTheme)
-        document.body.classList.add("themeDark")
-    else
-        document.body.classList.remove("themeDark")
+    if (darkTheme) {
+        document.body.classList.add(isLinux ? adwaitaDark : windowsDark)
+        document.body.classList.remove(isLinux ? adwaita : windows)
+    }
+    else {
+        document.body.classList.add(isLinux ? adwaita : windows)
+        document.body.classList.remove(isLinux ? adwaitaDark : windowsDark)
+    }
 }
 
 function onShowHidden(hidden) {
@@ -245,15 +254,10 @@ function adaptPath() {
 var activeFolder = folderLeft
 var currentPath = ""
 
-// TODO Electron-titlebar: title is tooltip => window-title
-// TODO Linux and windows: dark-theme-detect addon: gsettings get org.gnome.desktop.interface gtk-theme ||| settings monitor org.gnome.desktop.interface gtk-theme
-// TODO Linux detect os, different font size
 // TODO Linux root like linux-commander
 // TODO Linux directory like linux-commander
 // TODO Status bar with progress
 
-// TODO VirtualTable: rightAligned 5px padding right (attribute)
-// TODO VirtualTable: scrollbargrip minimal size bigger, scrolling right side is difficult
 // TODO sorting date version: disable until extendedInfos 
 // TODO sorting date version: disable until extendedInfos in Linux
 // TODO sorting version

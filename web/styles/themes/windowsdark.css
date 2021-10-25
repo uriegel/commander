@@ -1,4 +1,4 @@
-:root .themeDark {
+:root .windows-dark {
     background-color: var(--menubar-background-color);
     --electron-titlebar-color: lightgray;
     --electron-titlebar-background-color: black;
@@ -33,4 +33,8 @@
     --gridsplitter-grip-color : var(--electron-titlebar-background-color);
     --gridsplitter-grip-hover-color : rgb(35, 35, 35);
     --gridsplitter-grip-active-color : rgb(65, 65, 65);    
+}
+
+body.windows-dark {
+    font-size: 75%;
 }

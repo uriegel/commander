@@ -4,12 +4,15 @@
         <title>Commander</title>
         <meta charset="utf-8"/>
         <link rel="stylesheet" href="styles/style.css">
-        <link rel="stylesheet" href="styles/themes/darktheme.css">
+        <link rel="stylesheet" href="styles/themes/adwaita.css">
+        <link rel="stylesheet" href="styles/themes/adwaitaDark.css">
+        <link rel="stylesheet" href="styles/themes/windows.css">
+        <link rel="stylesheet" href="styles/themes/windowsdark.css">
     </head>
 
     <body class="themeLight">
         <div class="root">
-            <electron-titlebar id="titlebar" icon="assets/kirk.png" title="Commander">
+            <electron-titlebar id="titlebar" icon="assets/kirk.png" window-title="Commander">
                 <menubar-mainmenu id="menu" automode=false>
                     <menubar-submenu header="_Datei">
                         <menubar-menuitem text="_Umbenennen" action="onRename" shortcut="F2"></menubar-menuitem>
