@@ -18,7 +18,10 @@ export const getRoot = folderId => {
                 span.innerHTML = item.name
                 td.appendChild(span)
             }
-        }, {
+        }, isLinux ? {
+            name: "Mountpoint",
+            render: (td, item) => td.innerHTML = item.mountPoint
+        }: null, {
             name: "Bezeichnung",
             render: (td, item) => td.innerHTML = item.description
         }, {
