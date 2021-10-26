@@ -254,6 +254,7 @@ function adaptPath() {
 var activeFolder = folderLeft
 var currentPath = ""
 
+// TODO sorting name / ext
 // TODO sorting version
 // TODO Status bar with progress
 // TODO img, video and pdf viewer
