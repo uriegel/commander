@@ -254,8 +254,6 @@ function adaptPath() {
 var activeFolder = folderLeft
 var currentPath = ""
 
-// TODO sorting date version: disable until extendedInfos 
-// TODO sorting date version: disable until extendedInfos in Linux
 // TODO sorting version
 // TODO Status bar with progress
 // TODO img, video and pdf viewer

@@ -157,6 +157,12 @@ export const getDirectory = (folderId, path) => {
         refresh()
     }
 
+    const disableSorting = (table, disable) => {
+        table.disableSorting(1, disable)
+        if (!isLinux)
+            table.disableSorting(3, disable)
+    }
+
     const getIconPath = name => currentPath + pathDelimiter + name
 
     return {
@@ -170,6 +176,7 @@ export const getDirectory = (folderId, path) => {
         saveWidths,
         getItem,
         getIconPath,
-        addExtendedInfos
+        addExtendedInfos,
+        disableSorting
     }
 }

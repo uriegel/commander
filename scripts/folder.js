@@ -189,6 +189,8 @@ class Folder extends HTMLElement {
             this.sortFunction = null
         }
 
+        this.processor.disableSorting(this.table, true)
+
         const dirs = items.filter(n => n.isDirectory)
         const files = items.filter(n => !n.isDirectory)
         this.dirsCount = dirs.length
@@ -204,7 +206,8 @@ class Folder extends HTMLElement {
         ))
         
         this.onPathChanged(path, fromBacklog)
-        this.processor.addExtendedInfos(path, this.table.items, () => this.table.refresh())
+        await this.processor.addExtendedInfos(path, this.table.items, () => this.table.refresh())
+        this.processor.disableSorting(this.table, false)
     }
 
     onPathChanged(newPath, fromBacklog) {

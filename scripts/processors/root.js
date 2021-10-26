@@ -62,6 +62,8 @@ export const getRoot = folderId => {
 
     const getItem = item => item.name
 
+    const disableSorting = () => {}
+
     return {
         getType,
         getColumns,
@@ -71,6 +73,7 @@ export const getRoot = folderId => {
         getCurrentPath,
         getPath,
         getItem,
-        getExtendedInfos
+        getExtendedInfos,
+        disableSorting
     }
 }
