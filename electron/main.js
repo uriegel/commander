@@ -10,14 +10,32 @@ const isLinux = process.platform == "linux"
 
 const createWindow = () => {    
     
-    protocol.registerBufferProtocol('icon', async (request, callback) => {
-        const url = request.url
-        var ext = url.substr(7)
-        var icon = await extFs.getIcon(ext)
-        callback({mimeType: 'img/png', data: icon})
-    }, (error) => {
-        if (error) console.error('Failed to register protocol', error)
-    })
+    if (isLinux) {
+        protocol.registerFileProtocol('icon', async (request, callback) => {
+            const url = request.url
+            var ext = url.substr(7)
+            const getDefaultIcon = () => callback({ mimeType: 'img/png', path: ioPath.join(__dirname, "../../assets/images/fault.png") })
+            try {
+                const result = await extFs.getIcon(ext)
+                if (result != "None")
+                    callback(result)
+                else
+                    getDefaultIcon()
+            } catch (err) {
+                console.error("Could not get icon", err)
+                getDefaultIcon()
+            }
+        })
+    } else {
+        protocol.registerBufferProtocol('icon', async (request, callback) => {
+            const url = request.url
+            var ext = url.substr(7)
+            var icon = await extFs.getIcon(ext)
+            callback({ mimeType: 'img/png', data: icon })
+        }, (error) => {
+            if (error) console.error('Failed to register protocol', error)
+        })
+    }
     
     const bounds = { 
         x: settings.getSync("x"),

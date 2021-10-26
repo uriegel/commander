@@ -254,6 +254,10 @@ function adaptPath() {
 var activeFolder = folderLeft
 var currentPath = ""
 
+
+// TODO /home/uwe/Bilder/Fotos/2002/1  strange exif errors
+// TODO serving icons is very much faster in linux-commander, http:// and gtk => cache
+
 // TODO sorting name / ext
 // TODO sorting version
 // TODO Status bar with progress
