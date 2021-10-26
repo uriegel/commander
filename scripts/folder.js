@@ -57,7 +57,11 @@ class Folder extends HTMLElement {
             this.table.restrictClose()
             const dirs = this.table.items.filter(n => n.isDirectory)
             const files = this.table.items.filter(n => !n.isDirectory)
+            const pos = this.table.getPosition()
+            const item = this.table.items[pos]
             this.table.items = dirs.concat(files.sort(this.sortFunction))
+            const newPos = this.table.items.findIndex(n => n.name == item.name)
+            this.table.setPosition(newPos)
             this.table.refresh()
         })
 
