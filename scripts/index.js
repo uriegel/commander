@@ -254,9 +254,6 @@ function adaptPath() {
 var activeFolder = folderLeft
 var currentPath = ""
 
-
-// TODO /home/uwe/Bilder/Fotos/2002/1  strange exif errors
-
 // TODO sorting version
 // TODO img, video and pdf viewer
 // TODO Status bar with progress
