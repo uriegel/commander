@@ -38,8 +38,6 @@ export const getDirectory = (folderId, path) => {
                         //    img.src = `icon://${}`
                         // } else 
                         img.src = `icon://${ext}`
-                        //img.src = `http://localhost:9865/commander/geticon?ext=${ext}`
-                        
                         img.classList.add("image")
                         td.appendChild(img)
                     } else {

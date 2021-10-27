@@ -39,6 +39,5 @@ export const formatDateTime = unixDate => {
     if (!unixDate)
         return ''
 
-    let date = new Date(unixDate)
-    return dateFormat.format(date) + " " + timeFormat.format(date)  
+    return dateFormat.format(unixDate) + " " + timeFormat.format(unixDate)  
 }

@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "electron-settings": "^4.0.2",
-    "filesystem-utilities": "^3.0.0",
+    "filesystem-utilities": "^3.0.2",
     "grid-splitter": "^0.0.6",
     "theme-change-detect": "0.0.1",
     "virtual-table-component": "^0.3.1",
