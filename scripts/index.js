@@ -255,6 +255,7 @@ var activeFolder = folderLeft
 var currentPath = ""
 
 
+// TODO Setting column widths strange behaviour
 // TODO /home/uwe/Bilder/Fotos/2002/1  strange exif errors
 
 // TODO sorting version
