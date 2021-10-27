@@ -257,10 +257,9 @@ var currentPath = ""
 
 // TODO /home/uwe/Bilder/Fotos/2002/1  strange exif errors
 
-// TODO sorting name / ext
 // TODO sorting version
-// TODO Status bar with progress
 // TODO img, video and pdf viewer
+// TODO Status bar with progress
 // TODO Menubar support num+ num-
 // TODO copy, ...
 
