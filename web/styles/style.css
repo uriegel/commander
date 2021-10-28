@@ -75,3 +75,9 @@ body {
 .hidden {
     display: none;
 }
+
+.statusbar {
+    padding: 3px;
+    color: var(--electron-titlebar-color);
+    background-color: var(--electron-titlebar-background-color);
+}
