@@ -76,8 +76,17 @@ body {
     display: none;
 }
 
+.filler {
+    flex-grow: 1;
+}
+
+#files {
+    margin: 0 10px;
+}
+
 .statusbar {
     padding: 3px;
     color: var(--electron-titlebar-color);
     background-color: var(--electron-titlebar-background-color);
+    display: flex;
 }

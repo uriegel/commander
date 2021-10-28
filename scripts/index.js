@@ -15,6 +15,9 @@ const windowsDark = "windows-dark"
 const folderLeft = document.getElementById("folderLeft")
 const folderRight = document.getElementById("folderRight")
 const dialog = document.querySelector('dialog-box')
+const statusText = document.getElementById("statusText")
+const dirsText = document.getElementById("dirs")
+const filesText = document.getElementById("files")
 
 const DIRECTORY = 1
 const FILE = 2
@@ -51,10 +54,14 @@ folderRight.addEventListener("onFocus", () => activeFolder = folderRight)
 const onPathChanged = evt => {
     currentPath = evt.detail.path
     refreshViewer(evt.detail.path)
-    setTitle(evt.detail.path, evt.detail.dirs, evt.detail.files)
+    setStatus(evt.detail.path, evt.detail.dirs, evt.detail.files)
 }
 
-function setTitle(path, dirs, files) { console.log(path, dirs, files)}
+function setStatus(path, dirs, files) {
+    statusText.innerText = `${path}`
+    dirsText.innerText = `${dirs ? dirs - 1 : "" } Verz.` 
+    filesText.innerText = `${dirs ? files : "" } Dateien` 
+}
 
 function refresh(folderId) {
     const folder = 
@@ -254,8 +261,7 @@ function adaptPath() {
 var activeFolder = folderLeft
 var currentPath = ""
 
-// TODO Status bar: current file
-// TODO Status bar progress pie
+// TODO Status bar progress pie => animation from statusbar up
 // TODO sorting version
 // TODO Menubar support num+ num-
 // TODO copy, ...
