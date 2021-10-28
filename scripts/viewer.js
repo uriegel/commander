@@ -36,14 +36,14 @@ const refresh = path => {
             viewerPdf.classList.add("hidden")
             viewerVideo.classList.add("hidden")
             viewerImg.classList.remove("hidden")
-            viewerImg.src = `commander/getfile?file=${path}` 
+            viewerImg.src = `view://${path}` 
             viewerVideo.src = undefined
             break
         case "pdf":
             viewerImg.classList.add("hidden")
             viewerVideo.classList.add("hidden")
             viewerPdf.classList.remove("hidden")
-            viewerPdf.load(`commander/getfile?file=${path}`) 
+            viewerPdf.load(`view://${path}`) 
             viewerVideo.src = undefined
             break
         case "mp3":
@@ -53,7 +53,7 @@ const refresh = path => {
             viewerPdf.classList.add("hidden")
             viewerImg.classList.add("hidden")
             viewerVideo.classList.remove("hidden")
-            viewerVideo.src = `commander/getfile?file=${path}` 
+            viewerVideo.src = `view://${path}` 
             break
         default:
             viewerVideo.classList.add("hidden")
