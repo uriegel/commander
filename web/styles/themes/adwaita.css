@@ -47,6 +47,9 @@
     --dbc-button-outlinestyle: dotted;
     --dbc-button-outlineoffset: -2px;
     --dbc-input-selection-color: #3584e4;    
+
+    --pie-progress-color: var(--vtc-selected-background-color);
+    --pie-background-color: var(--vtc-background-color);
 }
 
 body.adwaita {

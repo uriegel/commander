@@ -1,19 +1,12 @@
 const template = document.createElement('template')
 template.innerHTML = `  
     <style>
-    * { box-sizing:border-box; }
-
-    body { 
-        background-color: #000;
-    }
-    
     .wrapper { 
-        width:$size;
-        height:$size;
-        margin:40px auto;
+        height: 100%;
+        aspect-ratio: 1;
+        margin-right: 15px;
         position:relative;
-        background:white;
-        background-color: $mask-color;
+        background-color: var(--pie-background-color);
         border-radius: 100%;
     }
     
@@ -22,18 +15,15 @@ template.innerHTML = `
         height: 100%;
         transform-origin: 100% 50%;
         position: absolute;
-        background: $background-color;
+        background: var(--pie-progress-color);
     }
     
-    .spinner {
+    #spinner {
         border-radius: 100% 0 0 100% / 50% 0 0 50%;
-        z-index: 200;
         border-right:none;
-        transition: all 1s step(1,end) ease-in-out;
-        //transition: 1s ease-in-out;
     }
     
-    .spinner:after {
+    #spinner:after {
         position:absolute;
         width:10px;
         height:10px;
@@ -47,7 +37,7 @@ template.innerHTML = `
         display: none;
     }
     
-    .filler {
+    #filler {
         border-radius: 0 100% 100% 0 / 0 50% 50% 0; 
         left: 50%;
         opacity: 0;
@@ -56,7 +46,7 @@ template.innerHTML = `
         opacity: 1;
     }
     
-    .mask {
+    #mask {
         width: 50%;
         height: 100%;
         border-radius: 100% 0 0 100% / 50% 0 0 50%;
@@ -67,50 +57,52 @@ template.innerHTML = `
     }    
     </style>
     <div class="wrapper">
-        <div class="pie spinner"></div>
-        <div class="pie filler"></div>
-        <div class="mask"></div>
-  </div>
+        <div id="spinner" class="pie"></div>
+        <div id="filler" class="pie"></div>
+        <div id="mask"></div>
+    </div>
 `
-class PdfViewer extends HTMLElement {
+class PieProgress extends HTMLElement {
     constructor() {
         super()
+
+        var style = document.createElement("style")
+        document.head.appendChild(style)
+        style.sheet.insertRule(`:root {
+            --pie-progress-color: var(--vtc-selected-background-color);
+            --pie-background-color: var(--vtc-background-color);
+        }`)
+
+        this.attachShadow({ mode: 'open' })
+        this.shadowRoot.appendChild(template.content.cloneNode(true))
+        this.progress = this.shadowRoot.getElementById('progress')
+        this.spinner = this.shadowRoot.getElementById('spinner')
+        this.filler = this.shadowRoot.getElementById('filler')
+        this.mask = this.shadowRoot.getElementById('mask')
+        this.filler.style.opacity = '0'
+        this.mask.style.opacity = '1'
+        let prog = 0
+
+        setTimeout(() => {
+            setInterval(() => {
+
+                if (prog < 0 || prog > 100)
+                    prog = 100
+                const deg = prog * 3.6
+                if (prog > 50) {
+                    this.filler.style.opacity = '1'
+                    this.mask.style.opacity = '0'
+                } else {
+                    this.filler.style.opacity = '0'
+                    this.mask.style.opacity = '1'
+                }
+                this.spinner.style.transform = 'rotate(' + deg + 'deg)'
+                
+                prog++                                
+
+            }, 500)
+        }, 4000)   
     }
 }
 
-(function(){
-    var _fn = {},
-        fn  = {};
-    
-    _fn.prog = document.getElementById('progress');  
-    _fn.spin = document.querySelectorAll('.spinner')[0];
-    _fn.fill = document.querySelectorAll('.filler')[0];
-    _fn.mask = document.querySelectorAll('.mask')[0];
-    
-    fn.change = function(){
-      
-      if(_fn.prog.value < 0 || _fn.prog.value > 100){
-        _fn.prog.value = 0;
-      }
-      
-      var deg = _fn.prog.value * 3.6;
-      
-      if(_fn.prog.value > 50) {
-        _fn.fill.style.opacity = '1';
-        _fn.mask.style.opacity = '0';
-      } else {
-        _fn.fill.style.opacity = '0';
-        _fn.mask.style.opacity = '1';
-      }
-      
-      _fn.spin.style.transform = 'rotate('+deg+'deg)';
-    }
-  
-    _fn.prog.onchange = function(){
-      fn.change();
-    }
-    
-    fn.change();
-   })()
-
-        
+customElements.define('pie-progress', PieProgress)       

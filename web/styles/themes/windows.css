@@ -15,6 +15,9 @@
     --gridsplitter-grip-color : var(--electron-titlebar-background-color);
     --gridsplitter-grip-hover-color : #bbb8b5;
     --gridsplitter-grip-active-color : #8f8d8b;    
+
+    --pie-progress-color: var(--vtc-selected-background-color);
+    --pie-background-color: var(--vtc-background-color);
 }
 
 body.windows {
