@@ -43,7 +43,7 @@ const refresh = path => {
             viewerImg.classList.add("hidden")
             viewerVideo.classList.add("hidden")
             viewerPdf.classList.remove("hidden")
-            viewerPdf.load(`view://${path}`) 
+            viewerPdf.src = `view://${path}` 
             viewerVideo.src = undefined
             break
         case "mp3":
