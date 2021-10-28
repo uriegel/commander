@@ -255,7 +255,6 @@ var activeFolder = folderLeft
 var currentPath = ""
 
 // TODO sorting version
-// TODO img, video and pdf viewer
 // TODO Status bar with progress
 // TODO Menubar support num+ num-
 // TODO copy, ...

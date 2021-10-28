@@ -21,7 +21,7 @@ const createWindow = () => {
     
     protocol.registerFileProtocol('view', async (request, callback) => {
         const url = request.url
-        var path = url.substr(7)
+        var path = decodeURI(url.substr(7))
         callback(path)
     })
 
