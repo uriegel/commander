@@ -19,6 +19,7 @@ const dialog = document.querySelector('dialog-box')
 const statusText = document.getElementById("statusText")
 const dirsText = document.getElementById("dirs")
 const filesText = document.getElementById("files")
+const progress = document.getElementById("progress")
 
 const DIRECTORY = 1
 const FILE = 2
@@ -262,7 +263,17 @@ function adaptPath() {
 var activeFolder = folderLeft
 var currentPath = ""
 
-// TODO Status bar progress pie => control from test button in status
+
+
+const testprogress = document.getElementById("testprogress")
+testprogress.onclick = () => {
+    let i = 0
+    setInterval(() => {
+        progress.setAttribute("progress", i)
+        i++
+    }, 200)
+}
+
 // TODO Status bar progress pie => animation from statusbar up
 // TODO Menubar support num+ num-
 // TODO copy, ...

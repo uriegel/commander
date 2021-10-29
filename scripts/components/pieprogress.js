@@ -81,27 +81,35 @@ class PieProgress extends HTMLElement {
         this.mask = this.shadowRoot.getElementById('mask')
         this.filler.style.opacity = '0'
         this.mask.style.opacity = '1'
-        let prog = 0
 
-        setTimeout(() => {
-            setInterval(() => {
+        // this.setProgress(newValue)
+    }
 
-                if (prog < 0 || prog > 100)
-                    prog = 100
-                const deg = prog * 3.6
-                if (prog > 50) {
-                    this.filler.style.opacity = '1'
-                    this.mask.style.opacity = '0'
-                } else {
-                    this.filler.style.opacity = '0'
-                    this.mask.style.opacity = '1'
-                }
-                this.spinner.style.transform = 'rotate(' + deg + 'deg)'
-                
-                prog++                                
+    static get observedAttributes() {
+        return ['progress']
+    }
 
-            }, 500)
-        }, 4000)   
+    attributeChangedCallback(attributeName, oldValue, newValue) {
+        switch (attributeName) {
+            case "progress":
+                if (oldValue != newValue)
+                    this.setProgress(newValue)
+                break
+        }
+    }
+
+    setProgress(progress) {
+        if (progress < 0 || progress > 100)
+            progress = 100
+        const deg = progress * 3.6
+        if (progress > 50) {
+            this.filler.style.opacity = '1'
+            this.mask.style.opacity = '0'
+        } else {
+            this.filler.style.opacity = '0'
+            this.mask.style.opacity = '1'
+        }
+        this.spinner.style.transform = `rotate(${deg}deg)`
     }
 }
 
