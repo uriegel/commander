@@ -262,8 +262,8 @@ function adaptPath() {
 var activeFolder = folderLeft
 var currentPath = ""
 
+// TODO Status bar progress pie => control from test button in status
 // TODO Status bar progress pie => animation from statusbar up
-// TODO sorting version
 // TODO Menubar support num+ num-
 // TODO copy, ...
 

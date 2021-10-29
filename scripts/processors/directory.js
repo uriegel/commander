@@ -134,6 +134,8 @@ export const getDirectory = (folderId, path) => {
                 return ([a, b]) => (a.exifTime ? a.exifTime : a.time) - (b.exifTime ? b.exifTime : b.time)
             case 2: 
                 return ([a, b]) => a.size - b.size
+            case 3:
+                return ([a, b]) => compareVersion(a.version, b.version)
             default:
                 return null
         }
@@ -164,6 +166,25 @@ export const getDirectory = (folderId, path) => {
     }
 
     const getIconPath = name => currentPath + pathDelimiter + name
+
+    function compareVersion(versionLeft, versionRight)
+    {
+        if (!versionLeft)
+            return -1
+        else if (!versionRight)
+            return 1
+        else
+        {
+            if (versionLeft.major != versionRight.major)
+                return versionLeft.major - versionRight.major
+            else if (versionLeft.minor != versionRight.minor)
+                return versionLeft.minor - versionRight.minor
+            else if (versionLeft.patch != versionRight.patch)
+                return versionLeft.patch - versionRight.patch
+            else if (versionLeft.build != versionRight.build)
+                return versionLeft.build - versionRight.build
+        }
+    }
 
     return {
         getType,
