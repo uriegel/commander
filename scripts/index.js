@@ -279,7 +279,6 @@ testprogress.onclick = () => {
 }
 
 // TODO Status bar progress pie => animation from statusbar up
-// TODO Menubar support num+ num-
 // TODO copy, ...
 
 
