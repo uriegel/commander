@@ -285,6 +285,11 @@ testprogress.onclick = () => {
     }, 200)
 }
 
+// TODO Auto mode in menu, chaeckboy in View, Dialog with explanation
+// TODO Resize in GridSplitter
+// TODO CreateDirectory
+// TODO Delete
+// TODO Rename 
 // TODO copy, ...
 
 

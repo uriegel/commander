@@ -11,7 +11,7 @@ window.onExtendedRename = () => {
 }
 
 window.onCopy = () => {
-    console.log("Copy Files")
+    alert("Copy Files")
 }
 
 window.onMove = () => {

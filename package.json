@@ -33,10 +33,10 @@
   },
   "dependencies": {
     "electron-settings": "^4.0.2",
-    "filesystem-utilities": "^3.0.3",
+    "filesystem-utilities": "3.0.6",
     "grid-splitter": "^0.0.6",
     "theme-change-detect": "0.0.1",
-    "virtual-table-component": "^0.3.1",
+    "virtual-table-component": "^0.3.2",
     "web-dialog-box": "^0.0.5",
     "web-electron-titlebar": "^0.2.0",
     "web-menu-bar": "^0.1.0"
