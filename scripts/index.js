@@ -271,14 +271,20 @@ initializeMenu(commander)
 
 const testprogress = document.getElementById("testprogress")
 testprogress.onclick = () => {
+    progress.classList.add("active")
     let i = 0
-    setInterval(() => {
+    progress.setAttribute("progress", 0)
+    let ai = setInterval(() => {
         progress.setAttribute("progress", i)
         i++
+        if (i == 100)
+            setTimeout(() => {
+                progress.classList.remove("active")
+                clearInterval(ai)
+            }, 5000)
     }, 200)
 }
 
-// TODO Status bar progress pie => animation from statusbar up
 // TODO copy, ...
 
 

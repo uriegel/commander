@@ -1,10 +1,8 @@
 const template = document.createElement('template')
 template.innerHTML = `  
     <style>
-    .wrapper { 
+    #wrapper { 
         height: 100%;
-        aspect-ratio: 1;
-        margin-right: 15px;
         position:relative;
         background-color: var(--pie-background-color);
         border-radius: 100%;
@@ -56,7 +54,7 @@ template.innerHTML = `
         z-index: 300;
     }    
     </style>
-    <div class="wrapper">
+    <div id="wrapper">
         <div id="spinner" class="pie"></div>
         <div id="filler" class="pie"></div>
         <div id="mask"></div>
@@ -75,14 +73,14 @@ class PieProgress extends HTMLElement {
 
         this.attachShadow({ mode: 'open' })
         this.shadowRoot.appendChild(template.content.cloneNode(true))
+        this.wrapper = this.shadowRoot.getElementById('wrapper')
         this.progress = this.shadowRoot.getElementById('progress')
         this.spinner = this.shadowRoot.getElementById('spinner')
         this.filler = this.shadowRoot.getElementById('filler')
         this.mask = this.shadowRoot.getElementById('mask')
         this.filler.style.opacity = '0'
         this.mask.style.opacity = '1'
-
-        // this.setProgress(newValue)
+        setTimeout(() => this.wrapper.style.width = `${this.wrapper.clientHeight}px`) 
     }
 
     static get observedAttributes() {

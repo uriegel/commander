@@ -90,3 +90,12 @@ body {
     background-color: var(--electron-titlebar-background-color);
     display: flex;
 }
+
+#progress {
+    margin-right: -19px;
+    transition: margin 0.3s;
+}
+
+#progress.active {
+    margin-right: 5px;
+}
