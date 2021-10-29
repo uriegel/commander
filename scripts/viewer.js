@@ -3,7 +3,7 @@ const viewerImg = document.getElementById('viewerImg')
 const viewerPdf = document.getElementById('viewerPdf')
 const viewerVideo = document.getElementById('viewerVideo')
 
-export function onShowViewer(show, path) {
+export function showViewer(show, path) {
     if (show == undefined)
         show = !viewerActive
     viewerActive = show

@@ -1,15 +1,17 @@
 const electron = window.require('electron')
 
+export function initializeMenu(commanderToSet) { commander = commanderToSet }
+
 window.onRename = () => {
-    alert("Rename")
+    console.log("Rename")
 }
 
 window.onExtendedRename = () => {
-    alert("Extended Rename")
+    console.log("Extended Rename")
 }
 
 window.onCopy = () => {
-    alert("Copy Files")
+    console.log("Copy Files")
 }
 
 window.onMove = () => {
@@ -17,28 +19,13 @@ window.onMove = () => {
 }
 
 window.onClose = () => close()
-
-window.onHidden = isChecked => {
-    if (window.onShowHiddenCallback)
-        window.onShowHiddenCallback(isChecked)
-}
-
-window.onAdaptPath = () => {
-    if (onAdaptPathCallback)
-        onAdaptPathCallback()
-}
-
-window.onRefresh = () => {
-    if (window.onRefreshCallback)
-        window.onRefreshCallback()
-}
-
-window.onViewer = isChecked => {
-    if (window.onShowViewerCallback)
-        window.onShowViewerCallback(isChecked)
-}
-
+window.onSelectAll = () => commander.selectAll()
+window.onSelectNone = () => commander.selectNone()
+window.onHidden = isChecked => commander.showHidden(isChecked)
+window.onAdaptPath = () => commander.adaptPath()
+window.onRefresh = () => commander.refresh()
+window.onViewer = isChecked => commander.showViewer(isChecked)
 window.onFullscreen = () => electron.ipcRenderer.send("fullscreen")
-
 window.onDevTools = () => electron.ipcRenderer.send("openDevTools")
 
+var commander

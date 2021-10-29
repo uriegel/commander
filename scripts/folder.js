@@ -44,6 +44,16 @@ class Folder extends HTMLElement {
         this.changePath(this.processor.getCurrentPath())
     }
 
+    selectAll() {
+        this.table.items.forEach(n => n.isSelected = !n.isNotSelectable)
+        this.table.refresh()
+    }
+
+    selectNone() {
+        this.table.items.forEach(n => n.isSelected = false)
+        this.table.refresh()
+    }
+
     setFocus() { this.table.setFocus() }
 
     connectedCallback() {
@@ -113,21 +123,6 @@ class Folder extends HTMLElement {
                     const pos = this.table.getPosition()
                     this.table.items[pos].isSelected = !this.table.items[pos].isNotSelectable && !this.table.items[pos].isSelected 
                     this.table.setPosition(pos + 1)
-                    break
-                }
-                case 82: { // "R"
-                    if (evt.ctrlKey) 
-                        this.reloadItems()
-                    break
-                }
-                case 107: { // Numlock +
-                    this.table.items.forEach(n => n.isSelected = !n.isNotSelectable)
-                    this.table.refresh()
-                    break
-                }
-                case 109: { // Numlock -
-                    this.table.items.forEach(n => n.isSelected = false)
-                    this.table.refresh()
                     break
                 }
                 case 113: { // F2

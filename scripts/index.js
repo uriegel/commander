@@ -5,8 +5,8 @@ import 'web-electron-titlebar'
 import './components/pdfviewer.js'
 import './components/pieprogress'
 import './folder.js'
-import { onShowViewer, refreshViewer} from './viewer.js'
-import './menu.js'
+import { showViewer, refreshViewer} from './viewer.js'
+import { initializeMenu } from './menu.js'
 
 const adwaita = "adwaita"
 const adwaitaDark = "adwaita-dark"
@@ -24,12 +24,6 @@ const progress = document.getElementById("progress")
 const DIRECTORY = 1
 const FILE = 2
 const BOTH = 3
-
-initializeCallbacks(onShowHidden, show => {
-    onShowViewer(show, currentPath)
-    folderLeft.onResize()
-    folderRight.onResize()
-}, refresh, adaptPath)
 
 function getItemsTypes(selectedItems) {
     const types = selectedItems
@@ -73,16 +67,12 @@ function refresh(folderId) {
     folder.reloadItems()
 }
 
-function onException(text) {
-    setTimeout(async () => {
-        await dialog.show({
-            text,
-            btnOk: true
-        })
-        activeFolder.setFocus()        
-    },
-    // TODO stack MessageBoxes
-    500)
+function selectAll() {
+    activeFolder.selectAll()
+}
+
+function selectNone() {
+    activeFolder.selectNone()
 }
 
 folderLeft.addEventListener("pathChanged", onPathChanged)
@@ -247,7 +237,7 @@ function onDarkTheme(darkTheme) {
     }
 }
 
-function onShowHidden(hidden) {
+function showHidden(hidden) {
     folderLeft.showHidden(hidden)
     folderRight.showHidden(hidden)
 }
@@ -263,6 +253,20 @@ function adaptPath() {
 var activeFolder = folderLeft
 var currentPath = ""
 
+var commander = {
+    showHidden,
+    showViewer: show => {
+        showViewer(show, currentPath)
+        folderLeft.onResize()
+        folderRight.onResize()
+    },
+    refresh,
+    adaptPath,
+    selectAll,
+    selectNone
+}
+
+initializeMenu(commander)
 
 
 const testprogress = document.getElementById("testprogress")
