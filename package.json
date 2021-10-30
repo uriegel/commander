@@ -39,6 +39,6 @@
     "virtual-table-component": "^0.3.2",
     "web-dialog-box": "^0.0.5",
     "web-electron-titlebar": "^0.2.0",
-    "web-menu-bar": "^0.1.0"
+    "web-menu-bar": "^0.3.0"
   }
 }

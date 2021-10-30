@@ -1,6 +1,7 @@
 import 'grid-splitter'
 import 'web-dialog-box'
-import'web-menu-bar'
+import { RESULT_CANCEL } from 'web-dialog-box'
+import 'web-menu-bar'
 import 'web-electron-titlebar'
 import './components/pdfviewer.js'
 import './components/pieprogress'
@@ -20,6 +21,7 @@ const statusText = document.getElementById("statusText")
 const dirsText = document.getElementById("dirs")
 const filesText = document.getElementById("files")
 const progress = document.getElementById("progress")
+const menu = document.getElementById("menu")
 
 const DIRECTORY = 1
 const FILE = 2
@@ -43,6 +45,43 @@ if (isLinux) {
 const themeChanges = window.require("theme-change-detect")
 themeChanges.register(theme => onDarkTheme(theme.isDark))
 onDarkTheme(themeChanges.getTheme().isDark)
+
+const itemHideMenu = document.getElementById("hidemenu")
+
+if (!isLinux)
+    itemHideMenu.isHidden = true
+
+{
+    const automode = localStorage.getItem("menuAutoMode", false)
+    menu.setAttribute("automode", automode)
+    itemHideMenu.isChecked = automode == "true"
+}
+
+
+const hideMenu = async hide => {
+    if (hide) {
+        const res = await dialog.show({
+            text: "Soll das Menü verborgen werden? Aktivieren mit Alt-Taste",
+            btnOk: true,
+            btnCancel: true,
+            defBtnOk: true
+        })    
+        activeFolder.setFocus()
+        if (res.result == RESULT_CANCEL) {
+            itemHideMenu.isChecked = false
+            return
+        }
+    }
+
+    localStorage.setItem("menuAutoMode", hide)
+    menu.setAttribute("automode", hide)
+}
+
+menu.addEventListener('resize', () => {
+    folderLeft.onResize()
+    folderRight.onResize()        
+})
+menu.addEventListener('menuclosed', () => activeFolder.setFocus())
 
 folderLeft.addEventListener("onFocus", () => activeFolder = folderLeft)
 folderRight.addEventListener("onFocus", () => activeFolder = folderRight)
@@ -262,6 +301,7 @@ var commander = {
     },
     refresh,
     adaptPath,
+    hideMenu,
     selectAll,
     selectNone
 }
@@ -285,7 +325,6 @@ testprogress.onclick = () => {
     }, 200)
 }
 
-// TODO Auto mode in menu, chaeckboy in View, Dialog with explanation
 // TODO Resize in GridSplitter
 // TODO CreateDirectory
 // TODO Delete

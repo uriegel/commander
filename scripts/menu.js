@@ -25,6 +25,7 @@ window.onHidden = isChecked => commander.showHidden(isChecked)
 window.onAdaptPath = () => commander.adaptPath()
 window.onRefresh = () => commander.refresh()
 window.onViewer = isChecked => commander.showViewer(isChecked)
+window.onHideMenu = isChecked => commander.hideMenu(isChecked)
 window.onFullscreen = () => electron.ipcRenderer.send("fullscreen")
 window.onDevTools = () => electron.ipcRenderer.send("openDevTools")
 
