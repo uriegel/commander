@@ -34,7 +34,7 @@
   "dependencies": {
     "electron-settings": "^4.0.2",
     "filesystem-utilities": "3.0.6",
-    "grid-splitter": "^0.0.6",
+    "grid-splitter": "^0.1.0",
     "theme-change-detect": "0.0.1",
     "virtual-table-component": "^0.3.2",
     "web-dialog-box": "^0.0.5",

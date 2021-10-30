@@ -165,6 +165,9 @@ class Folder extends HTMLElement {
             }
         }
         this.pathInput.onfocus = () => setTimeout(() => this.pathInput.select())
+
+        const viewerSplitter = document.getElementById("viewerSplitter")
+        viewerSplitter.addEventListener("position-changed", () => this.onResize())
     }
 
     getSelectedItem() {

@@ -325,8 +325,6 @@ testprogress.onclick = () => {
     }, 200)
 }
 
-// TODO Windows: F5 => focus not red but gray, path input disabled
-// TODO Resize in GridSplitter
 // TODO CreateDirectory
 // TODO Delete
 // TODO Rename 
