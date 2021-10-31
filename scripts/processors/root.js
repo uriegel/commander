@@ -62,6 +62,8 @@ export const getRoot = folderId => {
 
     const getItem = item => item.name
 
+    const createFolder = async newFolder => { }
+
     const disableSorting = () => {}
 
     return {
@@ -74,6 +76,7 @@ export const getRoot = folderId => {
         getPath,
         getItem,
         addExtendedInfos,
-        disableSorting
+        disableSorting,
+        createFolder
     }
 }

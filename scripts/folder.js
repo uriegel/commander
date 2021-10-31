@@ -28,9 +28,10 @@ class Folder extends HTMLElement {
         this.changePath(lastPath)
     }
 
-    get id() { return this.folderId}
+    get id() { return this.folderId }
     
-
+    get selectedItems() { return this.getSelectedItems() }
+    
     onResize() {
         this.table.reRender()
     }
@@ -246,6 +247,11 @@ class Folder extends HTMLElement {
         return selectedItems.length > 0
             ? selectedItems
             : [this.table.items[this.table.getPosition()]]
+    }
+
+    async createFolder(newFolder) {
+        await this.processor.createFolder(newFolder)
+        
     }
 
     sendStatusInfo(index) {

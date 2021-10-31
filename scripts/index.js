@@ -1,6 +1,6 @@
 import 'grid-splitter'
 import 'web-dialog-box'
-import { RESULT_CANCEL } from 'web-dialog-box'
+import { RESULT_OK, RESULT_CANCEL } from 'web-dialog-box'
 import 'web-menu-bar'
 import 'web-electron-titlebar'
 import './components/pdfviewer.js'
@@ -126,8 +126,6 @@ folderLeft.addEventListener("copy", evt => onCopy(evt.detail, folderRight.getCur
 folderRight.addEventListener("copy", evt => onCopy(evt.detail, folderLeft.getCurrentPath()))
 folderLeft.addEventListener("move", evt => onMove(evt.detail, folderRight.getCurrentPath()))
 folderRight.addEventListener("move", evt => onMove(evt.detail, folderLeft.getCurrentPath()))
-folderLeft.addEventListener("createFolder", evt => onCreateFolder(evt.detail))
-folderRight.addEventListener("createFolder", evt => onCreateFolder(evt.detail))
 
 async function onCopy(itemsToCopy, path) {
     const itemsType = getItemsTypes(itemsToCopy)
@@ -246,23 +244,20 @@ async function onDelete(itemsToDelete) {
         })
 }
 
-async function onCreateFolder(selectedItem) {
+async function createFolder() {
 
+    const selectedItems = activeFolder.selectedItems
     const res = await dialog.show({
         text: "Neuen Ordner anlegen",
         input: true,
-        inputText: selectedItem.length == 1 ? selectedItem[0].name : "",
+        inputText: selectedItems.length == 1 ? selectedItems[0].name : "",
         btnOk: true,
         btnCancel: true,
         defBtnOk: true
     })    
     activeFolder.setFocus()
     if (res.result == RESULT_OK)
-        await request("createFolder", {
-            id: activeFolder.id,
-            path: activeFolder.getCurrentPath(),
-            newName: res.input
-        })
+        await activeFolder.createFolder(res.input)
 }
 
 function onDarkTheme(darkTheme) {
@@ -301,6 +296,7 @@ var commander = {
     },
     refresh,
     adaptPath,
+    createFolder,
     hideMenu,
     selectAll,
     selectNone

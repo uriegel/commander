@@ -167,6 +167,10 @@ export const getDirectory = (folderId, path) => {
 
     const getIconPath = name => currentPath + pathDelimiter + name
 
+    const createFolder = async newFolder => {
+        console.log("CreaterFolder", currentPath, newFolder)
+    }
+
     function compareVersion(versionLeft, versionRight)
     {
         if (!versionLeft)
@@ -198,6 +202,7 @@ export const getDirectory = (folderId, path) => {
         getItem,
         getIconPath,
         addExtendedInfos,
-        disableSorting
+        disableSorting,
+        createFolder
     }
 }

@@ -9,7 +9,7 @@ const extFs = require('filesystem-utilities')
 const isLinux = process.platform == "linux"
 
 const createWindow = () => {    
-    
+
     protocol.registerBufferProtocol('icon', async (request, callback) => {
         const url = request.url
         var ext = url.substr(7)
@@ -62,7 +62,7 @@ const createWindow = () => {
     win.on("focus", () => win.webContents.send("focus"))
     win.on("blur", () => win.webContents.send("blur"))
 
-    win.loadFile('web/index.html')
+    
 
     win.on('maximize', () => {
         const bounds = win.getBounds()
@@ -84,7 +84,9 @@ const createWindow = () => {
             settings.setSync("height", bounds.height)
         }
     })   
-    win.on("closed", () => win = null)   
+    win.on("closed", () => win = null)
+    
+    win.loadFile('web/index.html')
 }
 
 app.removeAllListeners('ready')

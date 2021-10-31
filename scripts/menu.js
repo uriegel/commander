@@ -18,6 +18,7 @@ window.onMove = () => {
     console.log("Move Files")
 }
 
+window.onCreateFolder = () => commander.createFolder()
 window.onClose = () => close()
 window.onSelectAll = () => commander.selectAll()
 window.onSelectNone = () => commander.selectNone()
