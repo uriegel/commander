@@ -149,7 +149,7 @@ export const getDirectory = (folderId, path) => {
         for (let i = 0; i < items.length; i++ ) {
             const n = items[i]
             var name = n.name.toLocaleLowerCase();
-            if (!isLinux && name.endsWith(".exe") || name.endsWith(".dll")) 
+            if (!isLinux && (name.endsWith(".exe") || name.endsWith(".dll")))
                 n.version = await addon.getFileVersion(fspath.join(path, n.name))
             else if (name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png"))
                 n.exifTime = await addon.getExifDate(fspath.join(path, n.name))
@@ -168,7 +168,7 @@ export const getDirectory = (folderId, path) => {
     const getIconPath = name => currentPath + pathDelimiter + name
 
     const createFolder = async newFolder => {
-        console.log("CreaterFolder", currentPath, newFolder)
+        await addon.createFolder(fspath.join(currentPath, newFolder))
     }
 
     function compareVersion(versionLeft, versionRight)

@@ -8,6 +8,7 @@ import './components/pieprogress'
 import './folder.js'
 import { showViewer, refreshViewer} from './viewer.js'
 import { initializeMenu } from './menu.js'
+const FileResult = window.require('filesystem-utilities').FileResult
 
 const adwaita = "adwaita"
 const adwaitaDark = "adwaita-dark"
@@ -246,18 +247,35 @@ async function onDelete(itemsToDelete) {
 
 async function createFolder() {
 
-    const selectedItems = activeFolder.selectedItems
-    const res = await dialog.show({
-        text: "Neuen Ordner anlegen",
-        input: true,
-        inputText: selectedItems.length == 1 ? selectedItems[0].name : "",
-        btnOk: true,
-        btnCancel: true,
-        defBtnOk: true
-    })    
-    activeFolder.setFocus()
-    if (res.result == RESULT_OK)
-        await activeFolder.createFolder(res.input)
+    try {
+        const selectedItems = activeFolder.selectedItems
+        const res = await dialog.show({
+            text: "Neuen Ordner anlegen",
+            input: true,
+            inputText: selectedItems.length == 1 ? selectedItems[0].name : "",
+            btnOk: true,
+            btnCancel: true,
+            defBtnOk: true
+        })
+        activeFolder.setFocus()
+        if (res.result == RESULT_OK)
+            await activeFolder.createFolder(res.input)
+    } catch (e) {
+        const text = e.res == FileResult.FileExists
+            ? "Die angegebene Datei existiert bereits"
+            : e.res == FileResult.AccessDenied
+                ? "Zugriff verweigert"
+                : "Die Aktion konnte nicht ausgeführt werden"
+        setTimeout(async () => {
+            await dialog.show({
+                text,
+                btnOk: true
+            })
+            activeFolder.setFocus()        
+        },
+        // TODO stack MessageBoxes
+        500)
+    }
 }
 
 function onDarkTheme(darkTheme) {
