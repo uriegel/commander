@@ -7,7 +7,6 @@ const extFs = require('filesystem-utilities')
 //     require('vue-devtools').install()
 
 const isLinux = process.platform == "linux"
-
 const createWindow = () => {    
 
     protocol.registerBufferProtocol('icon', async (request, callback) => {
@@ -19,6 +18,15 @@ const createWindow = () => {
         if (error) console.error('Failed to register protocol', error)
     })
     
+    protocol.registerStringProtocol('http', async (request, callback) => {
+        const url = request.url
+        var ext = url.substr(7)
+        var icon = await extFs.getIcon(".js")
+        callback(JSON.stringify(23))
+    }, (error) => {
+        if (error) console.error('Failed to register protocol', error)
+    })
+
     protocol.registerFileProtocol('view', async (request, callback) => {
         const url = request.url
         var path = decodeURI(url.substr(7))

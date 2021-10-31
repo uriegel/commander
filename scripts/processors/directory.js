@@ -168,7 +168,8 @@ export const getDirectory = (folderId, path) => {
     const getIconPath = name => currentPath + pathDelimiter + name
 
     const createFolder = async newFolder => {
-        await addon.createFolder(fspath.join(currentPath, newFolder))
+     //   await addon.createFolder(fspath.join(currentPath, newFolder))
+        await fetch(`http://${fspath.join(currentPath, newFolder)}`)
     }
 
     function compareVersion(versionLeft, versionRight)
