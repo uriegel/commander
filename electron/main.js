@@ -22,6 +22,7 @@ const createWindow = () => {
         const url = request.url
         var ext = url.substr(7)
         var icon = await extFs.getIcon(".js")
+        await extFs.createFolder("c:\\windows\\system32\\affe")
         callback(JSON.stringify(23))
     }, (error) => {
         if (error) console.error('Failed to register protocol', error)

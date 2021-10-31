@@ -204,8 +204,10 @@ class Folder extends HTMLElement {
         ))
         
         this.onPathChanged(path, fromBacklog)
-        await this.processor.addExtendedInfos(path, this.table.items, () => this.table.refresh())
-        this.processor.disableSorting(this.table, false)
+        setTimeout(async () => {
+            await this.processor.addExtendedInfos(path, this.table.items, () => this.table.refresh())
+            this.processor.disableSorting(this.table, false)
+        })
     }
 
     onPathChanged(newPath, fromBacklog) {
