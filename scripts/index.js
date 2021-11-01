@@ -339,7 +339,6 @@ testprogress.onclick = () => {
     }, 200)
 }
 
-// TODO CreateDirectory
 // TODO Delete
 // TODO Rename 
 // TODO copy, ...
