@@ -261,9 +261,9 @@ async function createFolder() {
         if (res.result == RESULT_OK)
             await activeFolder.createFolder(res.input)
     } catch (e) {
-        const text = e.res == FileResult.FileExists
+        const text = e.result == FileResult.FileExists
             ? "Die angegebene Datei existiert bereits"
-            : e.res == FileResult.AccessDenied
+            : e.result == FileResult.AccessDenied
                 ? "Zugriff verweigert"
                 : "Die Aktion konnte nicht ausgeführt werden"
         setTimeout(async () => {
