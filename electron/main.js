@@ -1,29 +1,23 @@
 const { app, BrowserWindow, ipcMain, protocol } = require('electron')
 const process = require("process")
 const settings = require('electron-settings')
-const extFs = require('filesystem-utilities')
+const { getIcon } = require('filesystem-utilities')
+const { registerRunCmd } = require('./commands')
 
 // if (process.env.NODE_ENV == 'DEV')
 //     require('vue-devtools').install()
 
 const isLinux = process.platform == "linux"
-const createWindow = () => {    
+const createWindow = async () => {    
+
+    const initGtk = async () => await getIcon(".js")
+    await initGtk()
 
     protocol.registerBufferProtocol('icon', async (request, callback) => {
         const url = request.url
         var ext = url.substr(7)
-        var icon = await extFs.getIcon(ext)
+        var icon = await getIcon(ext)
         callback({ mimeType: 'img/png', data: icon })
-    }, (error) => {
-        if (error) console.error('Failed to register protocol', error)
-    })
-    
-    protocol.registerStringProtocol('http', async (request, callback) => {
-        const url = request.url
-        var ext = url.substr(7)
-        var icon = await extFs.getIcon(".js")
-        await extFs.createFolder("c:\\windows\\system32\\affe")
-        callback(JSON.stringify(23))
     }, (error) => {
         if (error) console.error('Failed to register protocol', error)
     })
@@ -33,6 +27,8 @@ const createWindow = () => {
         var path = decodeURI(url.substr(7))
         callback(path)
     })
+
+    registerRunCmd()        
 
     const bounds = {
         x: settings.getSync("x"),
@@ -71,8 +67,6 @@ const createWindow = () => {
     win.on("focus", () => win.webContents.send("focus"))
     win.on("blur", () => win.webContents.send("blur"))
 
-    
-
     win.on('maximize', () => {
         const bounds = win.getBounds()
         settings.set("x", bounds.x)
@@ -100,10 +94,5 @@ const createWindow = () => {
 
 app.removeAllListeners('ready')
 app.on('ready', createWindow)
-
-app.on("activate", () => {
-    if (win === null) 
-        createWindow()
-})
 
 var win
