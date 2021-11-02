@@ -8,12 +8,8 @@ import './components/pieprogress'
 import './folder.js'
 import { showViewer, refreshViewer} from './viewer.js'
 import { initializeMenu } from './menu.js'
+import { adaptWindow, onDarkTheme } from './platforms/switcher.js'
 const FileResult = window.require('filesystem-utilities').FileResult
-
-const adwaita = "adwaita"
-const adwaitaDark = "adwaita-dark"
-const windows = "windows"
-const windowsDark = "windows-dark"
 
 const folderLeft = document.getElementById("folderLeft")
 const folderRight = document.getElementById("folderRight")
@@ -38,45 +34,11 @@ function getItemsTypes(selectedItems) {
     : BOTH
 }
 
-if (isLinux) {
-    const titlebar = document.getElementById("titlebar")
-    titlebar.setAttribute("no-titlebar", "")
-}
+adaptWindow(dialog, () => activeFolder.setFocus(), menu, document.getElementById("hidemenu"))
 
 const themeChanges = window.require("theme-change-detect")
 themeChanges.register(theme => onDarkTheme(theme.isDark))
 onDarkTheme(themeChanges.getTheme().isDark)
-
-const itemHideMenu = document.getElementById("hidemenu")
-
-if (!isLinux)
-    itemHideMenu.isHidden = true
-
-{
-    const automode = localStorage.getItem("menuAutoMode", false)
-    menu.setAttribute("automode", automode)
-    itemHideMenu.isChecked = automode == "true"
-}
-
-
-const hideMenu = async hide => {
-    if (hide) {
-        const res = await dialog.show({
-            text: "Soll das Menü verborgen werden? Aktivieren mit Alt-Taste",
-            btnOk: true,
-            btnCancel: true,
-            defBtnOk: true
-        })    
-        activeFolder.setFocus()
-        if (res.result == RESULT_CANCEL) {
-            itemHideMenu.isChecked = false
-            return
-        }
-    }
-
-    localStorage.setItem("menuAutoMode", hide)
-    menu.setAttribute("automode", hide)
-}
 
 menu.addEventListener('resize', () => {
     folderLeft.onResize()
@@ -278,17 +240,6 @@ async function createFolder() {
     }
 }
 
-function onDarkTheme(darkTheme) {
-    if (darkTheme) {
-        document.body.classList.add(isLinux ? adwaitaDark : windowsDark)
-        document.body.classList.remove(isLinux ? adwaita : windows)
-    }
-    else {
-        document.body.classList.add(isLinux ? adwaita : windows)
-        document.body.classList.remove(isLinux ? adwaitaDark : windowsDark)
-    }
-}
-
 function showHidden(hidden) {
     folderLeft.showHidden(hidden)
     folderRight.showHidden(hidden)
@@ -315,7 +266,6 @@ var commander = {
     refresh,
     adaptPath,
     createFolder,
-    hideMenu,
     selectAll,
     selectNone
 }

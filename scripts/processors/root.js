@@ -1,4 +1,5 @@
 import { formatSize } from "./rendertools.js"
+import { adaptRootColumns, getRootPath } from '../platforms/switcher.js'
 const addon = window.require('filesystem-utilities')
 
 export const ROOT = "root"
@@ -9,7 +10,7 @@ export const getRoot = folderId => {
     const getColumns = () => {
         const widthstr = localStorage.getItem(`${folderId}-root-widths`)
         const widths = widthstr ? JSON.parse(widthstr) : []
-        let columns = [{
+        let columns = adaptRootColumns([{
             name: "Name",
             render: (td, item) => {
                 var t = document.querySelector('#driveIcon')
@@ -18,10 +19,7 @@ export const getRoot = folderId => {
                 span.innerHTML = item.name
                 td.appendChild(span)
             }
-        }, isLinux ? {
-            name: "Mountpoint",
-            render: (td, item) => td.innerHTML = item.mountPoint
-        }: null, {
+        }, {
             name: "Bezeichnung",
             render: (td, item) => td.innerHTML = item.description
         }, {
@@ -31,8 +29,7 @@ export const getRoot = folderId => {
                 td.innerHTML = formatSize(item.size)
                 td.classList.add("rightAligned")
             }
-        }].filter(n => !!n)
-
+        }])
         if (widths)
             columns = columns.map((n, i) => ({ ...n, width: widths[i] }))
         return columns
@@ -44,8 +41,6 @@ export const getRoot = folderId => {
     }
 
     const getCurrentPath = () => ROOT
-
-    const getPath = item => [isLinux ? item.mountPoint : item.name, null]
 
     const getItems = async () => {
         const items = (await addon.getDrives())
@@ -73,7 +68,7 @@ export const getRoot = folderId => {
         renderRow,
         saveWidths, 
         getCurrentPath,
-        getPath,
+        getPath: getRootPath,
         getItem,
         addExtendedInfos,
         disableSorting,

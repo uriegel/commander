@@ -1,10 +1,15 @@
 export const DIRECTORY = "directory"
 import { formatDateTime, formatSize, getExtension } from "./rendertools.js"
 import { ROOT } from "./root.js"
+import {
+    pathDelimiter,
+    adaptDirectoryColumns,
+    parentIsRoot,
+    adaptDisableSorting,
+    addExtendedInfo
+} from "../platforms/switcher.js"
 const addon = window.require('filesystem-utilities')
 const fspath = window.require('path')
-
-const pathDelimiter = isLinux ? "/" : "\\"
 
 export const getDirectory = (folderId, path) => {
     const getType = () => DIRECTORY
@@ -14,7 +19,7 @@ export const getDirectory = (folderId, path) => {
     const getColumns = () => {
         const widthstr = localStorage.getItem(`${folderId}-directory-widths`)
         const widths = widthstr ? JSON.parse(widthstr) : []
-        let columns = [{
+        let columns = adaptDirectoryColumns([{
             name: "Name",
             isSortable: true,
             subItem: {
@@ -66,16 +71,7 @@ export const getDirectory = (folderId, path) => {
                 td.innerHTML = formatSize(item.size)
                 td.classList.add("rightAligned")
             }
-        }, isLinux
-            ? null
-            : {
-            name: "Version",
-            isSortable: true,
-            render: (td, item) => {
-                if (item.version)
-                td.innerHTML = `${item.version.major}.${item.version.minor}.${item.version.patch}.${item.version.build}`
-            }
-        }].filter(n => !!n)
+        }])
         if (widths)
             columns = columns.map((n, i)=> ({ ...n, width: widths[i]}))
         return columns
@@ -94,16 +90,12 @@ export const getDirectory = (folderId, path) => {
     
     const getCurrentPath = () => currentPath
 
-    const parentIsRoot = () => isLinux
-        ? currentPath == '/'
-        : currentPath.length == 3 && currentPath[1] == ':'
-    
     const getPath = item => item.isDirectory 
         ? item.name != ".."
             ? [
                 currentPath != "\\" ? currentPath + pathDelimiter + item.name : currentPath + item.name, 
                 null]
-            : parentIsRoot()  
+            : parentIsRoot(currentPath)  
                 ? [ROOT, null]
                 : getParentDir(currentPath)
         : [null, null]
@@ -148,21 +140,17 @@ export const getDirectory = (folderId, path) => {
     const addExtendedInfos = async (path, items, refresh) => {
         for (let i = 0; i < items.length; i++ ) {
             const n = items[i]
-            var name = n.name.toLocaleLowerCase();
-            if (!isLinux && (name.endsWith(".exe") || name.endsWith(".dll")))
-                n.version = await addon.getFileVersion(fspath.join(path, n.name))
-            else if (name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png"))
-                n.exifTime = await addon.getExifDate(fspath.join(path, n.name))
-            if (i != 0 && i % 50 == 0) 
+            addExtendedInfo(n, path)
+            if (i != 0 && i % 50 == 0)
                 refresh()
         }
+        // TODO: refresh not functioning
         refresh()
     }
 
     const disableSorting = (table, disable) => {
         table.disableSorting(1, disable)
-        if (!isLinux)
-            table.disableSorting(3, disable)
+        adaptDisableSorting(table, disable)
     }
 
     const getIconPath = name => currentPath + pathDelimiter + name
