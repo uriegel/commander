@@ -28,15 +28,15 @@
   "dependencies": {
     "electron-settings": "^4.0.2",
     "filesystem-utilities": "3.1.1",
-    "grid-splitter": "^0.1.0",
-    "theme-change-detect": "0.0.1",
-    "virtual-table-component": "^0.3.2",
-    "web-dialog-box": "^0.0.5",
-    "web-electron-titlebar": "^0.2.0",
-    "web-menu-bar": "^0.3.0"
+    "theme-change-detect": "0.0.1"
   },
   "devDependencies": {
     "electron": "^15.2.0",
+    "grid-splitter": "^0.1.0",
+    "virtual-table-component": "^0.3.2",
+    "web-dialog-box": "^0.0.5",
+    "web-electron-titlebar": "^0.2.0",
+    "web-menu-bar": "^0.3.0",
     "webpack": "^5.59.1",
     "webpack-cli": "^4.9.1",
     "webpack-merge": "^5.8.0"
