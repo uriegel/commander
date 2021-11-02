@@ -140,11 +140,10 @@ export const getDirectory = (folderId, path) => {
     const addExtendedInfos = async (path, items, refresh) => {
         for (let i = 0; i < items.length; i++ ) {
             const n = items[i]
-            addExtendedInfo(n, path)
+            await addExtendedInfo(n, path)
             if (i != 0 && i % 50 == 0)
                 refresh()
         }
-        // TODO: refresh not functioning
         refresh()
     }
 
