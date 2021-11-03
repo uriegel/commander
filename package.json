@@ -6,7 +6,22 @@
   "scripts": {
     "builddev": "webpack --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js",
-    "start": "npm run builddev && electron ."
+    "start": "npm run builddev && electron .",
+    "postinstall": "electron-builder install-app-deps",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "de.uriegel.commander",
+    "copyright": "Copyright 2021 Uwe Riegel",
+    "productName": "Commander",
+    "electronVersion": "15.2.0",
+    "nodeGypRebuild": false,
+    "linux": {
+      "target": [
+        "AppImage",
+        "rpm"
+      ]
+    }
   },
   "repository": {
     "type": "git",
@@ -32,6 +47,7 @@
   },
   "devDependencies": {
     "electron": "^15.2.0",
+    "electron-builder": "^22.13.1",
     "grid-splitter": "^0.1.0",
     "virtual-table-component": "^0.3.2",
     "web-dialog-box": "^0.0.5",
