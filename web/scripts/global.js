@@ -16,6 +16,6 @@ const runCmd = async input => {
         body: JSON.stringify(input)
     })
     const res = await response.json()
-    if (res.result)
-        throw (res)
+    if (res.exception)
+        throw (res.exception)
 }

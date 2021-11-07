@@ -1,6 +1,6 @@
 import 'grid-splitter'
 import 'web-dialog-box'
-import { RESULT_OK, RESULT_CANCEL } from 'web-dialog-box'
+import { RESULT_OK } from 'web-dialog-box'
 import 'web-menu-bar'
 import 'web-electron-titlebar'
 import './components/pdfviewer.js'
@@ -182,33 +182,45 @@ async function onRename(itemToRename) {
 }
 
 async function onDelete(itemsToDelete) {
-    const itemsType = getItemsTypes(itemsToDelete)
-    const text = itemsType == FILE 
-        ? itemsToDelete.length == 1 
-            ? "Möchtest Du die Datei löschen?"
-            : "Möchtest Du die Dateien löschen?"
-        : itemsType == DIRECTORY
-        ?  itemsToDelete.length == 1 
-            ? "Möchtest Du den Ordner löschen?"
-            : "Möchtest Du die Ordner löschen?"
-        : "Möchtest Du die Einträge löschen?"
+    try {
+        const itemsType = getItemsTypes(itemsToDelete)
+        const text = itemsType == FILE 
+            ? itemsToDelete.length == 1 
+                ? "Möchtest Du die Datei löschen?"
+                : "Möchtest Du die Dateien löschen?"
+            : itemsType == DIRECTORY
+            ?  itemsToDelete.length == 1 
+                ? "Möchtest Du den Ordner löschen?"
+                : "Möchtest Du die Ordner löschen?"
+            : "Möchtest Du die Einträge löschen?"
 
-    const res = await dialog.show({
-        text,
-        btnOk: true,
-        btnCancel: true
-    })    
-    activeFolder.setFocus()
-    if (res.result == RESULT_OK)
-        await request("delete", {
-            id: activeFolder.id,
-            sourcePath: activeFolder.getCurrentPath(),
-            Items: itemsToDelete.map(n => n.name)
-        })
+        const res = await dialog.show({
+            text,
+            btnOk: true,
+            btnCancel: true
+        })    
+        activeFolder.setFocus()
+        if (res.result == RESULT_OK)
+            await activeFolder.deleteItems(itemsToDelete.map(n => n.name))
+    } catch (e) {
+        const text = e.fileResult == FileResult.AccessDenied
+                ? "Zugriff verweigert"
+                : e.fileResult == FileResult.TrashNotPossible
+                ? "Löschen in den Papierkorb nicht möglich"
+                : "Die Aktion konnte nicht ausgeführt werden"
+        setTimeout(async () => {
+            await dialog.show({
+                text,
+                btnOk: true
+            })
+            activeFolder.setFocus()        
+        },
+        // TODO stack MessageBoxes
+        500)
+    }
 }
 
 async function createFolder() {
-
     try {
         const selectedItems = activeFolder.selectedItems
         const res = await dialog.show({
@@ -223,9 +235,9 @@ async function createFolder() {
         if (res.result == RESULT_OK)
             await activeFolder.createFolder(res.input)
     } catch (e) {
-        const text = e.result == FileResult.FileExists
+        const text = e.fileResult == FileResult.FileExists
             ? "Die angegebene Datei existiert bereits"
-            : e.result == FileResult.AccessDenied
+            : e.fileResult == FileResult.AccessDenied
                 ? "Zugriff verweigert"
                 : "Die Aktion konnte nicht ausgeführt werden"
         setTimeout(async () => {

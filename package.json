@@ -7,7 +7,6 @@
     "builddev": "webpack --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js",
     "start": "npm run builddev && electron .",
-    "postinstall": "electron-builder install-app-deps",
     "dist": "electron-builder"
   },
   "build": {
@@ -34,7 +33,7 @@
     "web",
     "components"
   ],
-  "author": "Uwe Riegel",
+  "author": "Uwe Riegel <uriegel@hotmail.de>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/uriegel/window-commander/issues"
@@ -42,7 +41,7 @@
   "homepage": "https://github.com/uriegel/window-commander#readme",
   "dependencies": {
     "electron-settings": "^4.0.2",
-    "filesystem-utilities": "3.1.1",
+    "filesystem-utilities": "^4.0.4",
     "theme-change-detect": "0.0.1"
   },
   "devDependencies": {

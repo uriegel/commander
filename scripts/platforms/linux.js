@@ -1,6 +1,6 @@
 import { RESULT_CANCEL } from "web-dialog-box"
 const fspath = window.require('path')
-const getExifDate = window.require('filesystem-utilities').getExifDate
+const { getExifDate, trash } = window.require('filesystem-utilities')
 
 export function adaptWindow(dialogToSet, activeFolderSetFocusToSet, menuToSet, itemHideMenuToSet) {
     menu = menuToSet
@@ -65,6 +65,12 @@ export async function addExtendedInfo(item, path) {
     if (name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png"))
         item.exifTime = await getExifDate(fspath.join(path, item.name))
 }
+
+export async function deleteItems(items) {
+    for (let i = 0; i < items.length; i++ ) {
+        await trash(items[i])
+    }
+}    
 
 var itemHideMenu
 var menu

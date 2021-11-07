@@ -2,7 +2,7 @@ const path = require('path')
 
 module.exports = {
     entry: [
-		'./scripts/index.js',
+		'./scripts/commander.js',
 	],
     output: {
       	filename: 'index.js',

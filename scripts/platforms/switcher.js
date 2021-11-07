@@ -9,7 +9,8 @@ import {
     pathDelimiter as pathDelimiterLinux,
     parentIsRoot as parentIsRootLinux,
     adaptDisableSorting as adaptDisableSortingLinux,
-    addExtendedInfo as addExtendedInfoLinux
+    addExtendedInfo as addExtendedInfoLinux,
+    deleteItems as deleteItemsLinux
 } from "./linux"
 import {
     adaptWindow as adaptWindowWindows,
@@ -33,6 +34,7 @@ export var pathDelimiter = isLinux ? pathDelimiterLinux : pathDelimiterWindows
 export var parentIsRoot = isLinux ? parentIsRootLinux : parentIsRootWindows
 export var adaptDisableSorting = isLinux ? adaptDisableSortingLinux : adaptDisableSortingWindows
 export var addExtendedInfo = isLinux ? addExtendedInfoLinux : addExtendedInfoWindows
+export var deleteItems = isLinux ? deleteItemsLinux : undefined
 
 
 

@@ -251,6 +251,11 @@ class Folder extends HTMLElement {
         this.reloadItems()
     }
 
+    async deleteItems(items) {
+        await this.processor.deleteItems(items)
+        this.reloadItems()
+    }
+
     sendStatusInfo(index) {
         if (this.table.items && this.table.items.length > 0)
             this.dispatchEvent(new CustomEvent('pathChanged', { detail: {
