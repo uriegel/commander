@@ -301,7 +301,6 @@ testprogress.onclick = () => {
     }, 200)
 }
 
-// TODO Delete
 // TODO Rename 
 // TODO copy, ...
 

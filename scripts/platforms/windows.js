@@ -1,6 +1,7 @@
 const fspath = window.require('path')
 const getExifDate = window.require('filesystem-utilities').getExifDate
 const getFileVersion = window.require('filesystem-utilities').getFileVersion
+const trash = window.require('filesystem-utilities').trash
 
 export const adaptWindow = (menu, itemHideMenu) => itemHideMenu.isHidden = true
 
@@ -39,3 +40,7 @@ export async function addExtendedInfo(item, path) {
     else if (name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png"))
         item.exifTime = await getExifDate(fspath.join(path, item.name))
 }
+
+export async function deleteItems(items) {
+    await trash(items)
+}   

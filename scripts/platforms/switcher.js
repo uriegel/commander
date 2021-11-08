@@ -21,7 +21,8 @@ import {
     pathDelimiter as pathDelimiterWindows,
     parentIsRoot as parentIsRootWindows,
     adaptDisableSorting as adaptDisableSortingWindows,
-    addExtendedInfo as addExtendedInfoWindows
+    addExtendedInfo as addExtendedInfoWindows,
+    deleteItems as deleteItemsWindows
 } from "./windows"
 
 export { hideMenu } from "./linux"
@@ -34,7 +35,7 @@ export var pathDelimiter = isLinux ? pathDelimiterLinux : pathDelimiterWindows
 export var parentIsRoot = isLinux ? parentIsRootLinux : parentIsRootWindows
 export var adaptDisableSorting = isLinux ? adaptDisableSortingLinux : adaptDisableSortingWindows
 export var addExtendedInfo = isLinux ? addExtendedInfoLinux : addExtendedInfoWindows
-export var deleteItems = isLinux ? deleteItemsLinux : undefined
+export var deleteItems = isLinux ? deleteItemsLinux : deleteItemsWindows
 
 
 
