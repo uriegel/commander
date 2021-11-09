@@ -7,7 +7,8 @@ import {
     parentIsRoot,
     adaptDisableSorting,
     addExtendedInfo,
-    deleteItems as platformDeleteItems
+    deleteItems as platformDeleteItems,
+    copyItems as platformCopyItems
 } from "../platforms/switcher.js"
 const addon = window.require('filesystem-utilities')
 const fspath = window.require('path')
@@ -162,6 +163,8 @@ export const getDirectory = (folderId, path) => {
     
     const deleteItems = items => platformDeleteItems(items.map(n => fspath.join(currentPath, n)))
 
+    const copyItems = platformCopyItems
+
     function compareVersion(versionLeft, versionRight) {
         if (!versionLeft)
             return -1
@@ -194,6 +197,7 @@ export const getDirectory = (folderId, path) => {
         addExtendedInfos,
         disableSorting,
         createFolder,
-        deleteItems
+        deleteItems,
+        copyItems
     }
 }

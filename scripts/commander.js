@@ -85,12 +85,9 @@ folderLeft.addEventListener("rename", evt => onRename(evt.detail))
 folderRight.addEventListener("rename", evt => onRename(evt.detail))
 folderLeft.addEventListener("delete", evt => onDelete(evt.detail))
 folderRight.addEventListener("delete", evt => onDelete(evt.detail))
-folderLeft.addEventListener("copy", evt => onCopy(evt.detail, folderRight.getCurrentPath()))
-folderRight.addEventListener("copy", evt => onCopy(evt.detail, folderLeft.getCurrentPath()))
-folderLeft.addEventListener("move", evt => onMove(evt.detail, folderRight.getCurrentPath()))
-folderRight.addEventListener("move", evt => onMove(evt.detail, folderLeft.getCurrentPath()))
 
-async function onCopy(itemsToCopy, path) {
+async function copy() {
+    const itemsToCopy = activeFolder.selectedItems
     const itemsType = getItemsTypes(itemsToCopy)
     const text = itemsType == FILE 
         ? itemsToCopy.length == 1 
@@ -108,14 +105,9 @@ async function onCopy(itemsToCopy, path) {
         btnCancel: true
     })    
     activeFolder.setFocus()
-//    if (res.result == RESULT_OK)
-        // await request("copy", {
-        //     id: getInactiveFolder().id,
-        //     sourcePath: activeFolder.getCurrentPath(),
-        //     destinationPath: path,
-        //     directories: itemsToCopy.filter(n => n.isDirectory).map(n => n.name),
-        //     files: itemsToCopy.filter(n => !n.isDirectory).map(n => n.name)
-        // })
+    if (res.result == RESULT_OK 
+        && await getInactiveFolder().copyItems(activeFolder.getCurrentPath(), itemsToCopy.map(n => n.name)))
+            getInactiveFolder().reloadItems()
 }
 
 async function onMove(itemsToMove, path) {
@@ -278,6 +270,7 @@ var commander = {
     refresh,
     adaptPath,
     createFolder,
+    copy,
     selectAll,
     selectNone
 }

@@ -256,6 +256,11 @@ class Folder extends HTMLElement {
         this.reloadItems()
     }
 
+    async copyItems(sourcePath, items) {
+        await this.processor.copyItems(sourcePath, this.processor.getCurrentPath(), items)
+        this.reloadItems()
+    }
+
     sendStatusInfo(index) {
         if (this.table.items && this.table.items.length > 0)
             this.dispatchEvent(new CustomEvent('pathChanged', { detail: {

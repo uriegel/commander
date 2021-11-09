@@ -10,7 +10,8 @@ import {
     parentIsRoot as parentIsRootLinux,
     adaptDisableSorting as adaptDisableSortingLinux,
     addExtendedInfo as addExtendedInfoLinux,
-    deleteItems as deleteItemsLinux
+    deleteItems as deleteItemsLinux,
+    copyItems as undefined
 } from "./linux"
 import {
     adaptWindow as adaptWindowWindows,
@@ -22,7 +23,8 @@ import {
     parentIsRoot as parentIsRootWindows,
     adaptDisableSorting as adaptDisableSortingWindows,
     addExtendedInfo as addExtendedInfoWindows,
-    deleteItems as deleteItemsWindows
+    deleteItems as deleteItemsWindows,
+    copyItems as copyItemsWindows
 } from "./windows"
 
 export { hideMenu } from "./linux"
@@ -36,6 +38,7 @@ export var parentIsRoot = isLinux ? parentIsRootLinux : parentIsRootWindows
 export var adaptDisableSorting = isLinux ? adaptDisableSortingLinux : adaptDisableSortingWindows
 export var addExtendedInfo = isLinux ? addExtendedInfoLinux : addExtendedInfoWindows
 export var deleteItems = isLinux ? deleteItemsLinux : deleteItemsWindows
+export var copyItems = isLinux ? copyItemsLinux : copyItemsWindows
 
 
 

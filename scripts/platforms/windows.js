@@ -44,3 +44,13 @@ export async function addExtendedInfo(item, path) {
 export async function deleteItems(items) {
     await trash(items)
 }   
+
+export async function copyItems(sourcePath, targetPath, items) {
+    console.log("Kopeire", sourcePath, targetPath, items)
+}
+    // }=> platformCopyItems(sourcePath,items.map(n => fspath.join(currentPath, n)))
+//     id: getInactiveFolder().id,
+//     sourcePath: activeFolder.getCurrentPath(),
+//     destinationPath: path,
+//     directories: itemsToCopy.filter(n => n.isDirectory).map(n => n.name),
+//     files: itemsToCopy.filter(n => !n.isDirectory).map(n => n.name)
