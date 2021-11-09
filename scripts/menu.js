@@ -12,11 +12,7 @@ window.onExtendedRename = () => {
 }
 
 window.onCopy = () => commander.copy()
-
-window.onMove = () => {
-    console.log("Move Files")
-}
-
+window.onMove = () => commander.move()
 window.onCreateFolder = () => commander.createFolder()
 window.onClose = () => close()
 window.onSelectAll = () => commander.selectAll()

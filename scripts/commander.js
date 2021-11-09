@@ -105,12 +105,12 @@ async function copy() {
         btnCancel: true
     })    
     activeFolder.setFocus()
-    if (res.result == RESULT_OK 
-        && await getInactiveFolder().copyItems(activeFolder.getCurrentPath(), itemsToCopy.map(n => n.name)))
-            getInactiveFolder().reloadItems()
+    if (res.result == RESULT_OK) 
+        await getInactiveFolder().copyItems(activeFolder.getCurrentPath(), itemsToCopy.map(n => n.name))
 }
 
-async function onMove(itemsToMove, path) {
+async function move() {
+    const itemsToMove = activeFolder.selectedItems
     const itemsType = getItemsTypes(itemsToMove)
     const text = itemsType == FILE 
         ? itemsToMove.length == 1 
@@ -129,13 +129,8 @@ async function onMove(itemsToMove, path) {
     })    
     activeFolder.setFocus()
     if (res.result == RESULT_OK) {
-        await request("move", {
-            ids: [ activeFolder.id, getInactiveFolder().id ],
-            sourcePath: activeFolder.getCurrentPath(),
-            destinationPath: path,
-            directories: itemsToMove.filter(n => n.isDirectory).map(n => n.name),
-            files: itemsToMove.filter(n => !n.isDirectory).map(n => n.name)
-        })
+        await getInactiveFolder().copyItems(activeFolder.getCurrentPath(), itemsToMove.map(n => n.name), true)
+        activeFolder.reloadItems()
     }
 }
 
@@ -271,6 +266,7 @@ var commander = {
     adaptPath,
     createFolder,
     copy,
+    move,
     selectAll,
     selectNone
 }

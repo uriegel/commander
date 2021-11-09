@@ -72,6 +72,16 @@ export async function deleteItems(items) {
     }
 }    
 
+export async function copyItems(sourcePath, targetPath, items) {
+    await copy(sourcePath, targetPath, items)
+}
+    // }=> platformCopyItems(sourcePath,items.map(n => fspath.join(currentPath, n)))
+//     id: getInactiveFolder().id,
+//     sourcePath: activeFolder.getCurrentPath(),
+//     destinationPath: path,
+//     directories: itemsToCopy.filter(n => n.isDirectory).map(n => n.name),
+//     files: itemsToCopy.filter(n => !n.isDirectory).map(n => n.name)
+
 var itemHideMenu
 var menu
 var dialog

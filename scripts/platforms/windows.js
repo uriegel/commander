@@ -2,6 +2,7 @@ const fspath = window.require('path')
 const getExifDate = window.require('filesystem-utilities').getExifDate
 const getFileVersion = window.require('filesystem-utilities').getFileVersion
 const trash = window.require('filesystem-utilities').trash
+const copy = window.require('filesystem-utilities').copy
 
 export const adaptWindow = (menu, itemHideMenu) => itemHideMenu.isHidden = true
 
@@ -42,15 +43,18 @@ export async function addExtendedInfo(item, path) {
 }
 
 export async function deleteItems(items) {
-    await trash(items)
+    return runCmd({
+        method: "trash", 
+        items,
+    })
 }   
 
-export async function copyItems(sourcePath, targetPath, items) {
-    console.log("Kopeire", sourcePath, targetPath, items)
+export async function copyItems(sourcePath, targetPath, items, move) {
+    return runCmd({
+        method: "copy", 
+        sourcePath,
+        targetPath, 
+        items,
+        move: move || false,
+    })
 }
-    // }=> platformCopyItems(sourcePath,items.map(n => fspath.join(currentPath, n)))
-//     id: getInactiveFolder().id,
-//     sourcePath: activeFolder.getCurrentPath(),
-//     destinationPath: path,
-//     directories: itemsToCopy.filter(n => n.isDirectory).map(n => n.name),
-//     files: itemsToCopy.filter(n => !n.isDirectory).map(n => n.name)

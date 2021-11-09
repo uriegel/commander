@@ -256,8 +256,8 @@ class Folder extends HTMLElement {
         this.reloadItems()
     }
 
-    async copyItems(sourcePath, items) {
-        await this.processor.copyItems(sourcePath, this.processor.getCurrentPath(), items)
+    async copyItems(sourcePath, items, move) {
+        await this.processor.copyItems(sourcePath, this.processor.getCurrentPath(), items, move)
         this.reloadItems()
     }
 

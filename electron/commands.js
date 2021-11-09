@@ -1,5 +1,5 @@
 const { protocol } = require("electron")
-const { createFolder, FileResult } = require("filesystem-utilities")
+const { createFolder, copy, trash } = require("filesystem-utilities")
 
 const registerRunCmd = () => {
     protocol.registerStringProtocol('http', async (request, callback) => {
@@ -8,6 +8,22 @@ const registerRunCmd = () => {
             case "createFolder":
                 try {
                     await createFolder(input.path)
+                    callback(JSON.stringify({}))
+                } catch (exception) {
+                    callback(JSON.stringify({ exception }))
+                }
+                break
+            case "copy":
+                try {
+                    await copy(input.sourcePath, input.targetPath, input.items, input.move)
+                    callback(JSON.stringify({}))
+                } catch (exception) {
+                    callback(JSON.stringify({ exception }))
+                }
+                break
+            case "trash":
+                try {
+                    await trash(input.items)
                     callback(JSON.stringify({}))
                 } catch (exception) {
                     callback(JSON.stringify({ exception }))
