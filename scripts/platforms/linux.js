@@ -1,8 +1,11 @@
 import { RESULT_CANCEL } from "web-dialog-box"
+import { createCopyProcessor } from "./copyProcessor.js"
 const fspath = window.require('path')
 const { getExifDate, trash } = window.require('filesystem-utilities')
 
-export { initializeCopying } from "./copyProcessor.js"
+export function initializeCopying(onFinishCallback, onExeptionCallback, onProgressCallback) {
+    copyProcessor = createCopyProcessor(onFinishCallback, onExeptionCallback, onProgressCallback)
+}
 
 export function adaptWindow(dialogToSet, activeFolderSetFocusToSet, menuToSet, itemHideMenuToSet) {
     menu = menuToSet
@@ -75,16 +78,10 @@ export async function deleteItems(items) {
 }    
 
 export async function copyItems(sourcePath, targetPath, items, move, foldersToRefresh) {
-    
-    
-    
-    
-    
-    
-    //await copy(sourcePath, targetPath, items)
+    items.forEach(n => copyProcessor.addJob(fspath.join(sourcePath, n), fspath.join(targetPath, n), move, foldersToRefresh))
 }
     // }=> platformCopyItems(sourcePath,items.map(n => fspath.join(currentPath, n)))
-//     id: getInactiveFolder().id,
+//     id: getInactiveFolder().id,^
 //     sourcePath: activeFolder.getCurrentPath(),
 //     destinationPath: path,
 //     directories: itemsToCopy.filter(n => n.isDirectory).map(n => n.name),
@@ -94,3 +91,4 @@ var itemHideMenu
 var menu
 var dialog
 var activeFolderSetFocus
+var copyProcessor
