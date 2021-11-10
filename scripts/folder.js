@@ -244,11 +244,8 @@ class Folder extends HTMLElement {
         this.reloadItems()
     }
 
-    async copyItems(sourcePath, items, move, foldersToRefresh) {
-        const ret = await this.processor.copyItems(sourcePath, this.processor.getCurrentPath(), items, move, foldersToRefresh)
-        if (ret)
-            this.reloadItems()
-        return ret
+    copyItems(sourcePath, items, move, foldersToRefresh) {
+        this.processor.copyItems(sourcePath, this.processor.getCurrentPath(), items, move, foldersToRefresh)
     }
 
     sendStatusInfo(index) {

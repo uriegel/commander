@@ -15,6 +15,7 @@ import {
     copyItems as copyItemsLinux
 } from "./linux"
 import {
+    initializeCopying as initializeCopyingWindows,
     adaptWindow as adaptWindowWindows,
     onDarkTheme as onDarkThemeWindows,
     adaptRootColumns as adaptRootColumnsWindows,
@@ -29,7 +30,7 @@ import {
 } from "./windows"
 
 export { hideMenu } from "./linux"
-export var initializeCopying = isLinux ? initializeCopyingLinux : () => {}
+export var initializeCopying = isLinux ? initializeCopyingLinux : initializeCopyingWindows
 export var adaptWindow = isLinux ? adaptWindowLinux : adaptWindowWindows
 export var onDarkTheme = isLinux ? onDarkThemeLinux : onDarkThemeWindows
 export var adaptRootColumns = isLinux ? adaptRootColumnsLinux : adaptRootColumnsWindows

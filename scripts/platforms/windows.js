@@ -4,6 +4,9 @@ const getFileVersion = window.require('filesystem-utilities').getFileVersion
 const trash = window.require('filesystem-utilities').trash
 const copy = window.require('filesystem-utilities').copy
 
+export const initializeCopying = onFinishCallback => onFinish = onFinishCallback
+
+
 export const adaptWindow = (menu, itemHideMenu) => itemHideMenu.isHidden = true
 
 export function onDarkTheme(dark) {
@@ -49,13 +52,15 @@ export async function deleteItems(items) {
     })
 }   
 
-export async function copyItems(sourcePath, targetPath, items, move) {
+export async function copyItems(sourcePath, targetPath, items, move, foldersToRefresh) {
     await runCmd({
         method: "copy", 
         sourcePath,
         targetPath, 
         items,
-        move: move || false,
+        move: move || false
     })
-    return true
+    onFinish(foldersToRefresh)
 }
+
+var onFinish

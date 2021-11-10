@@ -8,8 +8,7 @@ import './components/pieprogress'
 import './folder.js'
 import { showViewer, refreshViewer} from './viewer.js'
 import { initializeMenu } from './menu.js'
-import { adaptWindow, onDarkTheme } from './platforms/switcher.js'
-import { initializeCopying } from './platforms/copyProcessor.js'
+import { initializeCopying, adaptWindow, onDarkTheme } from './platforms/switcher.js'
 const FileResult = window.require('filesystem-utilities').FileResult
 
 const folderLeft = document.getElementById("folderLeft")
@@ -50,7 +49,7 @@ menu.addEventListener('menuclosed', () => activeFolder.setFocus())
 folderLeft.addEventListener("onFocus", () => activeFolder = folderLeft)
 folderRight.addEventListener("onFocus", () => activeFolder = folderRight)
 
-const copyProcessor = initializeCopying(onCopyProgress, onCopyFinish, onCopyException)
+initializeCopying(onCopyFinish, onCopyException, onCopyProgress)
 
 const onPathChanged = evt => {
     currentPath = evt.detail.path
@@ -90,9 +89,6 @@ folderLeft.addEventListener("delete", evt => onDelete(evt.detail))
 folderRight.addEventListener("delete", evt => onDelete(evt.detail))
 
 async function copy(move) {
-    if (copyProcessor.inProgress())
-        return
-
     const itemsToCopy = activeFolder.selectedItems
     const itemsType = getItemsTypes(itemsToCopy)
     const moveOrCopy = move ? "verschieben" : "kopieren"
@@ -112,12 +108,9 @@ async function copy(move) {
         btnCancel: true
     })    
     activeFolder.setFocus()
-    if (res.result == RESULT_OK) {
-        if (await getInactiveFolder().copyItems(activeFolder.getCurrentPath(), itemsToCopy.map(n => n.name), 
+    if (res.result == RESULT_OK) 
+        getInactiveFolder().copyItems(activeFolder.getCurrentPath(), itemsToCopy.map(n => n.name), 
             move, move ? [activeFolder.id, getInactiveFolder().id] : [getInactiveFolder().id]) 
-            && move)
-            activeFolder.reloadItems()
-    }
 }
 
 async function onRename(itemToRename) {
@@ -242,8 +235,8 @@ function onCopyProgress(current, total) {
     console.log("copy progress", current, total)
 }
 
-function onCopyFinish() {
-    console.log("copy finish")
+function onCopyFinish(folderIdsToRefresh) {
+    folderIdsToRefresh.forEach(n => refresh(n))
 }
 
 function onCopyException() {

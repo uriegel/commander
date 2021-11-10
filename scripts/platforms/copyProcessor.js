@@ -1,4 +1,4 @@
-export function initializeCopying(onProgressCallback, onFinishCallback, onExeptionCallback) {
+export function initializeCopying(onFinishCallback, onExeptionCallback, onProgressCallback) {
 
     function inProgress() { return false }
 
