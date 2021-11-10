@@ -264,7 +264,6 @@ var commander = {
     adaptPath,
     createFolder,
     copy,
-    move,
     selectAll,
     selectNone
 }

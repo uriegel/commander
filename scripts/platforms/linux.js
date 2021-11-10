@@ -2,7 +2,7 @@ import { RESULT_CANCEL } from "web-dialog-box"
 const fspath = window.require('path')
 const { getExifDate, trash } = window.require('filesystem-utilities')
 
-export import { initializeCopying } from "./copyProcessor.js"
+export { initializeCopying } from "./copyProcessor.js"
 
 export function adaptWindow(dialogToSet, activeFolderSetFocusToSet, menuToSet, itemHideMenuToSet) {
     menu = menuToSet
