@@ -1,6 +1,7 @@
 const isLinux = process.platform == "linux"
 
 import {
+    initializeCopying as initializeCopyingLinux,
     adaptWindow as adaptWindowLinux,
     onDarkTheme as onDarkThemeLinux,
     adaptRootColumns as adaptRootColumnsLinux,
@@ -11,7 +12,7 @@ import {
     adaptDisableSorting as adaptDisableSortingLinux,
     addExtendedInfo as addExtendedInfoLinux,
     deleteItems as deleteItemsLinux,
-    copyItems as undefined
+    copyItems as copyItemsLinux
 } from "./linux"
 import {
     adaptWindow as adaptWindowWindows,
@@ -28,6 +29,7 @@ import {
 } from "./windows"
 
 export { hideMenu } from "./linux"
+export var initializeCopying = isLinux ? initializeCopyingLinux : () => {}
 export var adaptWindow = isLinux ? adaptWindowLinux : adaptWindowWindows
 export var onDarkTheme = isLinux ? onDarkThemeLinux : onDarkThemeWindows
 export var adaptRootColumns = isLinux ? adaptRootColumnsLinux : adaptRootColumnsWindows

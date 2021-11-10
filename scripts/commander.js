@@ -9,6 +9,7 @@ import './folder.js'
 import { showViewer, refreshViewer} from './viewer.js'
 import { initializeMenu } from './menu.js'
 import { adaptWindow, onDarkTheme } from './platforms/switcher.js'
+import { initializeCopying } from './platforms/copyProcessor.js'
 const FileResult = window.require('filesystem-utilities').FileResult
 
 const folderLeft = document.getElementById("folderLeft")
@@ -49,6 +50,8 @@ menu.addEventListener('menuclosed', () => activeFolder.setFocus())
 folderLeft.addEventListener("onFocus", () => activeFolder = folderLeft)
 folderRight.addEventListener("onFocus", () => activeFolder = folderRight)
 
+const copyProcessor = initializeCopying(onCopyProgress, onCopyFinish, onCopyException)
+
 const onPathChanged = evt => {
     currentPath = evt.detail.path
     refreshViewer(evt.detail.path)
@@ -86,41 +89,22 @@ folderRight.addEventListener("rename", evt => onRename(evt.detail))
 folderLeft.addEventListener("delete", evt => onDelete(evt.detail))
 folderRight.addEventListener("delete", evt => onDelete(evt.detail))
 
-async function copy() {
+async function copy(move) {
+    if (copyProcessor.inProgress())
+        return
+
     const itemsToCopy = activeFolder.selectedItems
     const itemsType = getItemsTypes(itemsToCopy)
+    const moveOrCopy = move ? "verschieben" : "kopieren"
     const text = itemsType == FILE 
         ? itemsToCopy.length == 1 
-            ? "Möchtest Du die Datei kopieren?"
-            : "Möchtest Du die Dateien kopieren?"
+            ? `Möchtest Du die Datei ${moveOrCopy}?`
+            : `Möchtest Du die Dateien ${moveOrCopy}?`
         : itemsType == DIRECTORY
         ?  itemsToCopy.length == 1 
-            ? "Möchtest Du den Ordner kopieren?"
-            : "Möchtest Du die Ordner kopieren?"
-        : "Möchtest Du die Einträge kopieren?"
-
-    const res = await dialog.show({
-        text,
-        btnOk: true,
-        btnCancel: true
-    })    
-    activeFolder.setFocus()
-    if (res.result == RESULT_OK) 
-        await getInactiveFolder().copyItems(activeFolder.getCurrentPath(), itemsToCopy.map(n => n.name))
-}
-
-async function move() {
-    const itemsToMove = activeFolder.selectedItems
-    const itemsType = getItemsTypes(itemsToMove)
-    const text = itemsType == FILE 
-        ? itemsToMove.length == 1 
-            ? "Möchtest Du die Datei verschieben?"
-            : "Möchtest Du die Dateien verschieben?"
-        : itemsType == DIRECTORY
-        ?  itemsToMove.length == 1 
-            ? "Möchtest Du den Ordner verschieben?"
-            : "Möchtest Du die Ordner verschieben?"
-        : "Möchtest Du die Einträge verschieben?"
+            ? `Möchtest Du den Ordner ${moveOrCopy}?`
+            : `Möchtest Du die Ordner ${moveOrCopy}?`
+        : "Möchtest Du die Einträge ${moveOrCopy}?"
 
     const res = await dialog.show({
         text,
@@ -129,8 +113,10 @@ async function move() {
     })    
     activeFolder.setFocus()
     if (res.result == RESULT_OK) {
-        await getInactiveFolder().copyItems(activeFolder.getCurrentPath(), itemsToMove.map(n => n.name), true)
-        activeFolder.reloadItems()
+    // copyProcessor.add
+        await getInactiveFolder().copyItems(activeFolder.getCurrentPath(), itemsToCopy.map(n => n.name), move)
+        if (move)
+            activeFolder.reloadItems()
     }
 }
 
@@ -250,6 +236,18 @@ const getInactiveFolder = () => activeFolder == folderLeft ? folderRight : folde
 
 function adaptPath() {
     getInactiveFolder().changePath(activeFolder.getCurrentPath())
+}
+
+function onCopyProgress(current, total) {
+    console.log("copy progress", current, total)
+}
+
+function onCopyFinish() {
+    console.log("copy finish")
+}
+
+function onCopyException() {
+    console.log("copy exception")
 }
 
 var activeFolder = folderLeft

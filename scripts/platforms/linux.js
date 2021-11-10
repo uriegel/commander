@@ -2,6 +2,8 @@ import { RESULT_CANCEL } from "web-dialog-box"
 const fspath = window.require('path')
 const { getExifDate, trash } = window.require('filesystem-utilities')
 
+export import { initializeCopying } from "./copyProcessor.js"
+
 export function adaptWindow(dialogToSet, activeFolderSetFocusToSet, menuToSet, itemHideMenuToSet) {
     menu = menuToSet
     itemHideMenu = itemHideMenuToSet
@@ -72,8 +74,14 @@ export async function deleteItems(items) {
     }
 }    
 
-export async function copyItems(sourcePath, targetPath, items) {
-    await copy(sourcePath, targetPath, items)
+export async function copyItems(sourcePath, targetPath, items, move) {
+    
+    
+    
+    
+    
+    
+    //await copy(sourcePath, targetPath, items)
 }
     // }=> platformCopyItems(sourcePath,items.map(n => fspath.join(currentPath, n)))
 //     id: getInactiveFolder().id,
