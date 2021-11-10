@@ -74,7 +74,7 @@ export async function deleteItems(items) {
     }
 }    
 
-export async function copyItems(sourcePath, targetPath, items, move) {
+export async function copyItems(sourcePath, targetPath, items, move, foldersToRefresh) {
     
     
     

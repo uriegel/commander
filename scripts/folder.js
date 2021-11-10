@@ -132,18 +132,6 @@ class Folder extends HTMLElement {
                         this.dispatchEvent(new CustomEvent('rename', { detail: selectedItems }))
                 }
                 break
-                case 116: { // F5
-                    const selectedItems = this.getSelectedItems()
-                    if (selectedItems.length > 0)
-                        this.dispatchEvent(new CustomEvent('copy', { detail: selectedItems }))
-                }
-                break
-                case 117: { // F6
-                    const selectedItems = this.getSelectedItems()
-                    if (selectedItems.length > 0)
-                        this.dispatchEvent(new CustomEvent('move', { detail: selectedItems }))
-                }
-                break
             }
         })
 
@@ -256,9 +244,11 @@ class Folder extends HTMLElement {
         this.reloadItems()
     }
 
-    async copyItems(sourcePath, items, move) {
-        await this.processor.copyItems(sourcePath, this.processor.getCurrentPath(), items, move)
-        this.reloadItems()
+    async copyItems(sourcePath, items, move, foldersToRefresh) {
+        const ret = await this.processor.copyItems(sourcePath, this.processor.getCurrentPath(), items, move, foldersToRefresh)
+        if (ret)
+            this.reloadItems()
+        return ret
     }
 
     sendStatusInfo(index) {

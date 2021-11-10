@@ -113,9 +113,9 @@ async function copy(move) {
     })    
     activeFolder.setFocus()
     if (res.result == RESULT_OK) {
-    // copyProcessor.add
-        await getInactiveFolder().copyItems(activeFolder.getCurrentPath(), itemsToCopy.map(n => n.name), move)
-        if (move)
+        if (await getInactiveFolder().copyItems(activeFolder.getCurrentPath(), itemsToCopy.map(n => n.name), 
+            move, move ? [activeFolder.id, getInactiveFolder().id] : [getInactiveFolder().id]) 
+            && move)
             activeFolder.reloadItems()
     }
 }

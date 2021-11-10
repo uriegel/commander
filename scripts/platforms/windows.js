@@ -50,11 +50,12 @@ export async function deleteItems(items) {
 }   
 
 export async function copyItems(sourcePath, targetPath, items, move) {
-    return runCmd({
+    await runCmd({
         method: "copy", 
         sourcePath,
         targetPath, 
         items,
         move: move || false,
     })
+    return true
 }
