@@ -232,10 +232,12 @@ function adaptPath() {
 }
 
 function onCopyProgress(current, total) {
-    console.log("copy progress", current, total)
+    progress.classList.add("active")
+    progress.setAttribute("progress", current / total * 100.0)
 }
 
 function onCopyFinish(folderIdsToRefresh) {
+    progress.classList.remove("active")
     folderIdsToRefresh.forEach(n => refresh(n))
 }
 
@@ -263,25 +265,8 @@ var commander = {
 
 initializeMenu(commander)
 
-
-const testprogress = document.getElementById("testprogress")
-testprogress.onclick = () => {
-    progress.classList.add("active")
-    let i = 0
-    progress.setAttribute("progress", 0)
-    let ai = setInterval(() => {
-        progress.setAttribute("progress", i)
-        i++
-        if (i == 100)
-            setTimeout(() => {
-                progress.classList.remove("active")
-                clearInterval(ai)
-            }, 5000)
-    }, 200)
-}
-
 // TODO Rename 
-// TODO copy, ...
+
 
 
 

@@ -112,3 +112,4 @@ class PieProgress extends HTMLElement {
 }
 
 customElements.define('pie-progress', PieProgress)       
+// TODO publish web component
