@@ -265,6 +265,7 @@ var commander = {
 
 initializeMenu(commander)
 
+// TODO publish web component
 // TODO Rename 
 
 

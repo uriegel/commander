@@ -261,6 +261,7 @@ class Folder extends HTMLElement {
 
 customElements.define('folder-table', Folder)
 
+// TODO ProgressControl: On Error: Red X: Show Errors in List in popover
 // TODO CopyFile: Show conflicts
 // TODO CopyFile Source == Destination
 // TODO CopyFile Recursion
@@ -271,7 +272,6 @@ customElements.define('folder-table', Folder)
 // TODO Copy with Copy Paste (from external or from internal)
 // TODO When a path is not available anymore: fallback to root
 // TODO ProgressControl: multiple progresses: show in ProgressBars in popovermenu, show latest in ProgressPie
-// TODO ProgressControl: On Error: Red X: Show Errors in List in popover
 
 // TODO Status line (# files, # selected files), root
 // TODO Status Linux: styling
