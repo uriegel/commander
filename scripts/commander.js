@@ -3,8 +3,8 @@ import 'web-dialog-box'
 import { RESULT_OK } from 'web-dialog-box'
 import 'web-menu-bar'
 import 'web-electron-titlebar'
+import 'web-pie-progress'
 import './components/pdfviewer.js'
-import './components/pieprogress'
 import './folder.js'
 import { showViewer, refreshViewer} from './viewer.js'
 import { initializeMenu } from './menu.js'
@@ -181,7 +181,6 @@ async function onDelete(itemsToDelete) {
             })
             activeFolder.setFocus()        
         },
-        // TODO stack MessageBoxes
         500)
     }
 }
@@ -213,7 +212,6 @@ async function createFolder() {
             })
             activeFolder.setFocus()        
         },
-        // TODO stack MessageBoxes
         500)
     }
 }
@@ -264,9 +262,6 @@ var commander = {
 }
 
 initializeMenu(commander)
-
-// TODO publish web component
-// TODO Rename 
 
 
 

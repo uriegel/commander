@@ -42,7 +42,8 @@
   "dependencies": {
     "electron-settings": "^4.0.2",
     "filesystem-utilities": "^4.3.0",
-    "theme-change-detect": "0.0.1"
+    "theme-change-detect": "0.0.1",
+    "web-pie-progress": "^0.0.1"
   },
   "devDependencies": {
     "electron": "^15.2.0",

@@ -261,6 +261,7 @@ class Folder extends HTMLElement {
 
 customElements.define('folder-table', Folder)
 
+// TODO Rename 
 // TODO ProgressControl: On Error: Red X: Show Errors in List in popover
 // TODO CopyFile: Show conflicts
 // TODO CopyFile Source == Destination
@@ -279,3 +280,4 @@ customElements.define('folder-table', Folder)
 // TODO xdg-open
 
 // TODO ConflictList before copy
+// TODO stack MessageBoxes
