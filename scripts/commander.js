@@ -83,8 +83,6 @@ folderLeft.addEventListener("pathChanged", onPathChanged)
 folderRight.addEventListener("pathChanged", onPathChanged)
 folderLeft.addEventListener("tab", () => folderRight.setFocus())
 folderRight.addEventListener("tab", () => folderLeft.setFocus())
-folderLeft.addEventListener("rename", evt => onRename(evt.detail))
-folderRight.addEventListener("rename", evt => onRename(evt.detail))
 folderLeft.addEventListener("delete", evt => onDelete(evt.detail))
 folderRight.addEventListener("delete", evt => onDelete(evt.detail))
 
@@ -113,38 +111,50 @@ async function copy(move) {
             move, move ? [activeFolder.id, getInactiveFolder().id] : [getInactiveFolder().id]) 
 }
 
-async function onRename(itemToRename) {
-    const itemsType = getItemsTypes(itemToRename)
-    const text = itemsType == FILE 
-        ? "Datei umbenennen"
-        : "Ordner umbenennen"
-    
-    const getInputRange = () => {
-        const pos = itemToRename[0].name.lastIndexOf(".")
-        if (pos == -1)
-            return [0, itemToRename[0].name.length]
-        else
-            return [0, pos]
-    }
+async function rename() {
+    try {
+        const selectedItems = activeFolder.getSelectedItems()
+        if (selectedItems.length != 1)    
+            return
+        const itemsType = getItemsTypes(selectedItems)
+        const itemToRename = selectedItems[0].name
+        const text = itemsType == FILE 
+            ? "Datei umbenennen"
+            : "Ordner umbenennen"
+        
+        const getInputRange = () => {
+            const pos = itemToRename.lastIndexOf(".")
+            if (pos == -1)
+                return [0, itemToRename.length]
+            else
+                return [0, pos]
+        }
 
-    const res = await dialog.show({
-        text,
-        input: true,
-        inputText: itemToRename[0].name,
-        inputSelectRange: getInputRange(),
-        btnOk: true,
-        btnCancel: true,
-        defBtnOk: true
-    })    
-    activeFolder.setFocus()
-    if (res.result == RESULT_OK)
-        await request("rename", {
-            id: activeFolder.id,
-            path: activeFolder.getCurrentPath(),
-            item: itemToRename[0].name,
-            newName: res.input,
-            isDirectory: itemsType == DIRECTORY
-        })
+        const res = await dialog.show({
+            text,
+            input: true,
+            inputText: itemToRename,
+            inputSelectRange: getInputRange(),
+            btnOk: true,
+            btnCancel: true,
+            defBtnOk: true
+        })    
+        activeFolder.setFocus()
+        if (res.result == RESULT_OK)
+            await activeFolder.renameItem(itemToRename, res.input)
+    } catch (e) {
+        const text = e.fileResult == FileResult.AccessDenied
+                ? "Zugriff verweigert"
+                : "Die Aktion konnte nicht ausgeführt werden"
+        setTimeout(async () => {
+            await dialog.show({
+                text,
+                btnOk: true
+            })
+            activeFolder.setFocus()        
+        },
+        500)
+    }
 }
 
 async function onDelete(itemsToDelete) {
@@ -257,6 +267,7 @@ var commander = {
     adaptPath,
     createFolder,
     copy,
+    rename,
     selectAll,
     selectNone
 }

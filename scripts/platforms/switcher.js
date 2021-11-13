@@ -12,7 +12,8 @@ import {
     adaptDisableSorting as adaptDisableSortingLinux,
     addExtendedInfo as addExtendedInfoLinux,
     deleteItems as deleteItemsLinux,
-    copyItems as copyItemsLinux
+    copyItems as copyItemsLinux,
+    renameItem as renameItemLinux
 } from "./linux"
 import {
     initializeCopying as initializeCopyingWindows,
@@ -26,7 +27,8 @@ import {
     adaptDisableSorting as adaptDisableSortingWindows,
     addExtendedInfo as addExtendedInfoWindows,
     deleteItems as deleteItemsWindows,
-    copyItems as copyItemsWindows
+    copyItems as copyItemsWindows,
+    renameItem as renameItemWindows
 } from "./windows"
 
 export { hideMenu } from "./linux"
@@ -42,6 +44,8 @@ export var adaptDisableSorting = isLinux ? adaptDisableSortingLinux : adaptDisab
 export var addExtendedInfo = isLinux ? addExtendedInfoLinux : addExtendedInfoWindows
 export var deleteItems = isLinux ? deleteItemsLinux : deleteItemsWindows
 export var copyItems = isLinux ? copyItemsLinux : copyItemsWindows
+export var renameItem = isLinux ? renameItemLinux : renameItemWindows
+
 
 
 

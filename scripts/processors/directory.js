@@ -8,7 +8,8 @@ import {
     adaptDisableSorting,
     addExtendedInfo,
     deleteItems as platformDeleteItems,
-    copyItems as platformCopyItems
+    copyItems as platformCopyItems,
+    renameItem as platformRenameItem
 } from "../platforms/switcher.js"
 const addon = window.require('filesystem-utilities')
 const fspath = window.require('path')
@@ -165,6 +166,8 @@ export const getDirectory = (folderId, path) => {
 
     const copyItems = platformCopyItems
 
+    const renameItem = async (item, newName) => await platformRenameItem(fspath.join(currentPath, item), fspath.join(currentPath, newName))
+
     function compareVersion(versionLeft, versionRight) {
         if (!versionLeft)
             return -1
@@ -198,6 +201,7 @@ export const getDirectory = (folderId, path) => {
         disableSorting,
         createFolder,
         deleteItems,
-        copyItems
+        copyItems, 
+        renameItem
     }
 }

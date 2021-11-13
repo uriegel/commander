@@ -1,7 +1,7 @@
 import { RESULT_CANCEL } from "web-dialog-box"
 import { createCopyProcessor } from "./copyProcessor.js"
 const fspath = window.require('path')
-const { getExifDate, trash } = window.require('filesystem-utilities')
+const { getExifDate, trash, copy } = window.require('filesystem-utilities')
 
 export function initializeCopying(onFinishCallback, onExeptionCallback, onProgressCallback) {
     copyProcessor = createCopyProcessor(onFinishCallback, onExeptionCallback, onProgressCallback)
@@ -80,12 +80,10 @@ export async function deleteItems(items) {
 export async function copyItems(sourcePath, targetPath, items, move, foldersToRefresh) {
     items.forEach(n => copyProcessor.addJob(fspath.join(sourcePath, n), fspath.join(targetPath, n), move, foldersToRefresh))
 }
-    // }=> platformCopyItems(sourcePath,items.map(n => fspath.join(currentPath, n)))
-//     id: getInactiveFolder().id,^
-//     sourcePath: activeFolder.getCurrentPath(),
-//     destinationPath: path,
-//     directories: itemsToCopy.filter(n => n.isDirectory).map(n => n.name),
-//     files: itemsToCopy.filter(n => !n.isDirectory).map(n => n.name)
+
+export async function renameItem(item, newName) {
+    await copy(item, newName, () => {}, true)
+}
 
 var itemHideMenu
 var menu

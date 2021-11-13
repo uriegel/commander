@@ -126,11 +126,6 @@ class Folder extends HTMLElement {
                     this.table.setPosition(pos + 1)
                     break
                 }
-                case 113: { // F2
-                    const selectedItems = this.getSelectedItems()
-                    if (selectedItems.length == 1)
-                        this.dispatchEvent(new CustomEvent('rename', { detail: selectedItems }))
-                }
                 break
             }
         })
@@ -248,6 +243,11 @@ class Folder extends HTMLElement {
         this.processor.copyItems(sourcePath, this.processor.getCurrentPath(), items, move, foldersToRefresh)
     }
 
+    async renameItem(item, newName) {
+        await this.processor.renameItem(item, newName)
+        this.reloadItems()
+    }
+
     sendStatusInfo(index) {
         if (this.table.items && this.table.items.length > 0)
             this.dispatchEvent(new CustomEvent('pathChanged', { detail: {
@@ -261,7 +261,7 @@ class Folder extends HTMLElement {
 
 customElements.define('folder-table', Folder)
 
-// TODO Rename 
+// TODO Rename (Windows)
 // TODO ProgressControl: On Error: Red X: Show Errors in List in popover
 // TODO CopyFile: Show conflicts
 // TODO CopyFile Source == Destination

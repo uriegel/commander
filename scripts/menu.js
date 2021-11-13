@@ -3,9 +3,7 @@ import { hideMenu } from "./platforms/switcher.js"
 
 export function initializeMenu(commanderToSet) { commander = commanderToSet }
 
-window.onRename = () => {
-    console.log("Rename")
-}
+window.onRename = () => commander.rename()
 
 window.onExtendedRename = () => {
     console.log("Extended Rename")
