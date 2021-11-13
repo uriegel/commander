@@ -3,7 +3,7 @@ A Norton Commander clone based on Electron and  Web Components
 ## Prerequisites Fedora
 ``` 
 sudo dnf install gcc-c++ gtk3-devel
-``` 
+``` hhh
 
 ## Prerequisites Ubuntu
 ``` 
