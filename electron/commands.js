@@ -31,8 +31,7 @@ const registerRunCmd = () => {
                 break
             case "rename":
                 try {
-                    await copy(input.sourcePath, input.targetPath, input.items, input.move)
-                    await rename(input.item, input.newName)
+                    await copy(input.item, input.newName, true)
                     callback(JSON.stringify({}))
                 } catch (exception) {
                     callback(JSON.stringify({ exception }))
