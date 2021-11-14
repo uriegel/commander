@@ -64,8 +64,11 @@ export async function copyItems(sourcePath, targetPath, items, move, foldersToRe
 }
 
 export async function renameItem(item, newName) {
-    // TODO send to electron
-    await copy(item, newName, () => {}, true)
+    await runCmd({
+        method: "rename", 
+        item,
+        newName
+    })
 }
 
 var onFinish

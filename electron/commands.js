@@ -29,6 +29,15 @@ const registerRunCmd = () => {
                     callback(JSON.stringify({ exception }))
                 }
                 break
+            case "rename":
+                try {
+                    await copy(input.sourcePath, input.targetPath, input.items, input.move)
+                    await rename(input.item, input.newName)
+                    callback(JSON.stringify({}))
+                } catch (exception) {
+                    callback(JSON.stringify({ exception }))
+                }
+                break
             default:
                 callback(JSON.stringify({ exception: "Method not implemented" }))
                 break
