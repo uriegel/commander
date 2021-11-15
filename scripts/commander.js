@@ -19,6 +19,7 @@ const dirsText = document.getElementById("dirs")
 const filesText = document.getElementById("files")
 const progress = document.getElementById("progress")
 const menu = document.getElementById("menu")
+const progressError = document.getElementById("progressError")
 
 const DIRECTORY = 1
 const FILE = 2
@@ -252,6 +253,8 @@ function onCopyFinish(folderIdsToRefresh) {
 function onCopyException() {
     console.log("copy exception")
 }
+
+progressError.onclick = () => progressError.classList.add("hidden")
 
 var activeFolder = folderLeft
 var currentPath = ""
