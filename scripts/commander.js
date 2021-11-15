@@ -250,14 +250,16 @@ function onCopyFinish(folderIdsToRefresh) {
     folderIdsToRefresh.forEach(n => refresh(n))
 }
 
-function onCopyException() {
-    console.log("copy exception")
+function onCopyException(err) {
+    copyExceptions.concat(err)
+    progressError.classList.remove("hidden")
 }
 
 progressError.onclick = () => progressError.classList.add("hidden")
 
 var activeFolder = folderLeft
 var currentPath = ""
+var copyExceptions = []
 
 var commander = {
     showHidden,

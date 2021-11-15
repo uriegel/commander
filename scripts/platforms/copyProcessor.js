@@ -15,7 +15,11 @@ export function createCopyProcessor(onFinish, onExeption, onProgress) {
                 const job = queue.shift()
                 if (!job) 
                     break
-                await copy(job.source, job.target, c => onProgress(alreadyCopied + c, totalSize), job.move || false)
+                try {
+                    await copy(job.source, job.target, c => onProgress(alreadyCopied + c, totalSize), job.move || false)
+                } catch (err) {
+                    onExeption(err)
+                }
                 alreadyCopied += job.size
             }
             totalSize = 0

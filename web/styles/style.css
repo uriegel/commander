@@ -112,7 +112,7 @@ body {
     cursor: pointer;
     font-weight: bold;
     border-radius: 26px;
-    padding: 15px;
+    padding: 25px 15px 15px 15px;
 }
 #progressError:after {
     content: '';
@@ -127,3 +127,17 @@ body {
     right: 25%;
     margin-left: -14px;
 }
+#progressErrorClose {
+    position: absolute;
+    top: 5px;
+    right: 15px;
+    height: 15px;
+    width: 15px;
+    background-color: transparent;
+    border-radius: 8px;
+    transition: background-color 0.5s;
+}
+#progressErrorClose:hover {
+    background-color: rgb(255, 131, 131);
+}
+
