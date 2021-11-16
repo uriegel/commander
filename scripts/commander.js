@@ -20,6 +20,7 @@ const filesText = document.getElementById("files")
 const progress = document.getElementById("progress")
 const menu = document.getElementById("menu")
 const progressError = document.getElementById("progressError")
+const progressErrorClose = document.getElementById("progressErrorClose")
 
 const DIRECTORY = 1
 const FILE = 2
@@ -255,7 +256,20 @@ function onCopyException(err) {
     progressError.classList.remove("hidden")
 }
 
-progressError.onclick = () => progressError.classList.add("hidden")
+progressError.onclick = () => {
+    progressError.classList.add("hidden")
+    setTimeout(() => {
+        alert("Alete")
+        activeFolder.setFocus()
+    })
+}
+
+progressErrorClose.onclick = evt => {
+    progressError.classList.add("hidden")
+    activeFolder.setFocus()
+    evt.preventDefault()
+    evt.stopPropagation()
+}
 
 var activeFolder = folderLeft
 var currentPath = ""

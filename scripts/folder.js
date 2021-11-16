@@ -261,7 +261,7 @@ class Folder extends HTMLElement {
 
 customElements.define('folder-table', Folder)
 
-// TODO ProgressControl: On Error: Red X: Show Errors in List in popover
+// TODO On Error: Show Dialog with List of Errors
 // TODO CopyFile: Show conflicts
 // TODO CopyFile Source == Destination
 // TODO CopyFile Recursion
