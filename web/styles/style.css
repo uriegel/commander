@@ -140,4 +140,8 @@ body {
 #progressErrorClose:hover {
     background-color: rgb(255, 131, 131);
 }
-
+#error-list {
+    height: 50vh;
+    width: 70vw;
+    position: relative;
+}

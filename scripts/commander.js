@@ -21,6 +21,7 @@ const progress = document.getElementById("progress")
 const menu = document.getElementById("menu")
 const progressError = document.getElementById("progressError")
 const progressErrorClose = document.getElementById("progressErrorClose")
+const errorList = document.getElementById("error-list")
 
 const DIRECTORY = 1
 const FILE = 2
@@ -258,8 +259,13 @@ function onCopyException(err) {
 
 progressError.onclick = () => {
     progressError.classList.add("hidden")
-    setTimeout(() => {
-        alert("Alete")
+    setTimeout(async () => {
+        errorList.classList.remove("hidden")
+        await dialog.show({
+            text: "Fehler aufgetreten",
+            btnOk: true
+        })
+        errorList.classList.add("hidden")
         activeFolder.setFocus()
     })
 }
