@@ -4,11 +4,11 @@ import { RESULT_OK } from 'web-dialog-box'
 import 'web-menu-bar'
 import 'web-electron-titlebar'
 import 'web-pie-progress'
+import { initializeCopying, adaptWindow, onDarkTheme } from './platforms/switcher.js'
 import './components/pdfviewer.js'
 import './folder.js'
 import { showViewer, refreshViewer} from './viewer.js'
 import { initializeMenu } from './menu.js'
-import { initializeCopying, adaptWindow, onDarkTheme } from './platforms/switcher.js'
 const FileResult = window.require('filesystem-utilities').FileResult
 
 const folderLeft = document.getElementById("folderLeft")
@@ -17,11 +17,7 @@ const dialog = document.querySelector('dialog-box')
 const statusText = document.getElementById("statusText")
 const dirsText = document.getElementById("dirs")
 const filesText = document.getElementById("files")
-const progress = document.getElementById("progress")
 const menu = document.getElementById("menu")
-const progressError = document.getElementById("progressError")
-const progressErrorClose = document.getElementById("progressErrorClose")
-const errorTable = document.getElementById("error-table")
 
 const DIRECTORY = 1
 const FILE = 2
@@ -52,8 +48,7 @@ menu.addEventListener('menuclosed', () => activeFolder.setFocus())
 folderLeft.addEventListener("onFocus", () => activeFolder = folderLeft)
 folderRight.addEventListener("onFocus", () => activeFolder = folderRight)
 
-initializeCopying(onCopyFinish, onCopyException, onCopyProgress)
-
+initializeCopying(onCopyFinish)
 const onPathChanged = evt => {
     currentPath = evt.detail.path
     refreshViewer(evt.detail.path)
@@ -242,57 +237,12 @@ function adaptPath() {
     getInactiveFolder().changePath(activeFolder.getCurrentPath())
 }
 
-function onCopyProgress(current, total) {
-    progress.classList.add("active")
-    progress.setAttribute("progress", current / total * 100.0)
-}
-
 function onCopyFinish(folderIdsToRefresh) {
-    progress.classList.remove("active")
     folderIdsToRefresh.forEach(n => refresh(n))
-}
-
-function onCopyException(err) {
-    copyExceptions.concat(err)
-    progressError.classList.remove("hidden")
-}
-
-progressError.onclick = () => {
-    progressError.classList.add("hidden")
-    setTimeout(async () => {
-
-        const items = Array.from(Array(4000).keys())
-            .map(index => ({
-            name: "Eintrag " + index,
-        }))
-        
-        setTimeout(() => {
-            errorTable.setColumns([{
-                name: "Fehler aufgetreten",
-                render: (td, item) => td.innerHTML = item.name
-            }])
-            errorTable.setItems(items)
-        })
-
-        await dialog.show({
-            text: "Fehler aufgetreten",
-            btnOk: true,
-            extended: "error-list"
-        })
-        activeFolder.setFocus()
-    })
-}
-
-progressErrorClose.onclick = evt => {
-    progressError.classList.add("hidden")
-    activeFolder.setFocus()
-    evt.preventDefault()
-    evt.stopPropagation()
 }
 
 var activeFolder = folderLeft
 var currentPath = ""
-var copyExceptions = []
 
 var commander = {
     showHidden,
