@@ -48,7 +48,8 @@ menu.addEventListener('menuclosed', () => activeFolder.setFocus())
 folderLeft.addEventListener("onFocus", () => activeFolder = folderLeft)
 folderRight.addEventListener("onFocus", () => activeFolder = folderRight)
 
-initializeCopying(onCopyFinish)
+initializeCopying(onCopyFinish, onShowCopyErrors)
+
 const onPathChanged = evt => {
     currentPath = evt.detail.path
     refreshViewer(evt.detail.path)
@@ -239,6 +240,11 @@ function adaptPath() {
 
 function onCopyFinish(folderIdsToRefresh) {
     folderIdsToRefresh.forEach(n => refresh(n))
+}
+
+async function onShowCopyErrors(errorContent) {
+    await dialog.show(errorContent)
+    activeFolder.setFocus()
 }
 
 var activeFolder = folderLeft

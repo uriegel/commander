@@ -3,8 +3,8 @@ import { createCopyProcessor } from "./copyProcessor.js"
 const fspath = window.require('path')
 const { getExifDate, trash, copy } = window.require('filesystem-utilities')
 
-export function initializeCopying(onFinishCallback) {
-    copyProcessor = createCopyProcessor(onFinishCallback)
+export function initializeCopying(onFinishCallback, onShowCopyErrors) {
+    copyProcessor = createCopyProcessor(onFinishCallback, onShowCopyErrors)
 }
 
 export function adaptWindow(dialogToSet, activeFolderSetFocusToSet, menuToSet, itemHideMenuToSet) {

@@ -1,7 +1,7 @@
 const fs = window.require('fs')
 const { copy } = window.require('filesystem-utilities')
 
-export function createCopyProcessor(onCopyFinish) {
+export function createCopyProcessor(onCopyFinish, onShowErrors) {
     const progress = document.getElementById("progress")
     const progressError = document.getElementById("progressError")
     const progressErrorClose = document.getElementById("progressErrorClose")
@@ -24,12 +24,11 @@ export function createCopyProcessor(onCopyFinish) {
                 errorTable.setItems(items)
             })
     
-            await dialog.show({
+            onShowErrors({
                 text: "Fehler aufgetreten",
                 btnOk: true,
                 extended: "error-list"
             })
-            activeFolder.setFocus()
         })
     }
     
