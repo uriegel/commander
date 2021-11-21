@@ -260,9 +260,7 @@ class Folder extends HTMLElement {
 }
 
 customElements.define('folder-table', Folder)
-
-// TODO On Error: Show Dialog with List of Errors
-// TODO Dialog: hide additional content
+// TODO On Error: Show Dialog with List of Errors in a list but not virtual table
 // TODO CopyFile: Show conflicts
 // TODO CopyFile Source == Destination
 // TODO CopyFile Recursion

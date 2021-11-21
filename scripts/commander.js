@@ -21,6 +21,7 @@ const progress = document.getElementById("progress")
 const menu = document.getElementById("menu")
 const progressError = document.getElementById("progressError")
 const progressErrorClose = document.getElementById("progressErrorClose")
+const errorTable = document.getElementById("error-table")
 
 const DIRECTORY = 1
 const FILE = 2
@@ -259,6 +260,20 @@ function onCopyException(err) {
 progressError.onclick = () => {
     progressError.classList.add("hidden")
     setTimeout(async () => {
+
+        const items = Array.from(Array(4000).keys())
+            .map(index => ({
+            name: "Eintrag " + index,
+        }))
+        
+        setTimeout(() => {
+            errorTable.setColumns([{
+                name: "Fehler aufgetreten",
+                render: (td, item) => td.innerHTML = item.name
+            }])
+            errorTable.setItems(items)
+        })
+
         await dialog.show({
             text: "Fehler aufgetreten",
             btnOk: true,
