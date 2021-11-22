@@ -143,5 +143,5 @@ body {
 #error-list {
     height: 50vh;
     width: 70vw;
-    position: relative;
+    overflow: auto;
 }

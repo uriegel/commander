@@ -5,30 +5,27 @@ export function createCopyProcessor(onCopyFinish, onShowErrors) {
     const progress = document.getElementById("progress")
     const progressError = document.getElementById("progressError")
     const progressErrorClose = document.getElementById("progressErrorClose")
-    const errorTable = document.getElementById("error-table")
+    const errorList = document.getElementById("error-list")
 
     progressError.onclick = () => {
         progressError.classList.add("hidden")
         setTimeout(async () => {
-    
-            const items = Array.from(Array(4000).keys())
-                .map(index => ({
-                name: "Eintrag " + index,
-            }))
-            
-            setTimeout(() => {
-                errorTable.setColumns([{
-                    name: "Fehler aufgetreten",
-                    render: (td, item) => td.innerHTML = item.name
-                }])
-                errorTable.setItems(items)
+
+            const items = copyExceptions.map(n => {
+                const item = document.createElement("div")
+                item.innerText = n.description
+                return item
             })
+
+            errorList.innerText = ""
+            items.forEach(n => errorList.appendChild(n))
     
-            onShowErrors({
+            await onShowErrors({
                 text: "Fehler aufgetreten",
                 btnOk: true,
                 extended: "error-list"
             })
+            copyExceptions = []
         })
     }
     
@@ -87,7 +84,9 @@ export function createCopyProcessor(onCopyFinish, onShowErrors) {
     }
     
     function onException(err) {
-        copyExceptions.concat(err)
+        copyExceptions = copyExceptions.concat(err)
+
+        // TODO if error dialog is open append
         progressError.classList.remove("hidden")
     }
 
