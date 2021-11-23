@@ -267,6 +267,7 @@ customElements.define('folder-table', Folder)
 // TODO Undelete files
 // TODO Empty trash
 // TODO Copy with Copy Paste (from external or from internal)
+// TODO Copy with Drag'n'Drop (from external or from internal)
 // TODO When a path is not available anymore: fallback to root
 // TODO ProgressControl: multiple progresses: show in ProgressBars in popovermenu, show latest in ProgressPie
 
