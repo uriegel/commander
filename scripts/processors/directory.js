@@ -13,6 +13,8 @@ import {
 } from "../platforms/switcher.js"
 const addon = window.require('filesystem-utilities')
 const fspath = window.require('path')
+const fs = window.require('fs')
+const fsp = fs.promises
 
 export const getDirectory = (folderId, path) => {
     const getType = () => DIRECTORY
@@ -164,6 +166,25 @@ export const getDirectory = (folderId, path) => {
     
     const deleteItems = items => platformDeleteItems(items.map(n => fspath.join(currentPath, n)))
 
+    async function extractFilesInFolders(sourcePath, items) {
+        const paths = await Promise.all(items.map(async n => {
+            const file = fspath.join(sourcePath, n)
+            const info = await fsp.stat(file)
+            const isDir = info.isDirectory()
+            return { file, isDir }
+        }))
+        console.log("extractFilesInFolders", paths)
+
+    }
+
+    function getCopyConflicts(sourcePath, targetPath, items) {
+        var targetItems = items
+            .map((n, index) => ({ path: fspath.join(targetPath, n), index}))
+            .filter((n, i) => fs.existsSync(n.path))
+
+        console.log("targetItems", targetItems)
+    }
+
     const copyItems = platformCopyItems
 
     const renameItem = async (item, newName) => await platformRenameItem(fspath.join(currentPath, item), fspath.join(currentPath, newName))
@@ -201,6 +222,8 @@ export const getDirectory = (folderId, path) => {
         disableSorting,
         createFolder,
         deleteItems,
+        extractFilesInFolders,
+        getCopyConflicts,
         copyItems, 
         renameItem
     }

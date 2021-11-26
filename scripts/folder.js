@@ -240,7 +240,10 @@ class Folder extends HTMLElement {
     }
 
     copyItems(sourcePath, items, move, foldersToRefresh) {
-        this.processor.copyItems(sourcePath, this.processor.getCurrentPath(), items, move, foldersToRefresh)
+        const targetPath = this.processor.getCurrentPath()
+        this.processor.extractFilesInFolders(sourcePath, items)
+        this.processor.getCopyConflicts(sourcePath, targetPath, items)
+        this.processor.copyItems(sourcePath, targetPath, items, move, foldersToRefresh)
     }
 
     async renameItem(item, newName) {
