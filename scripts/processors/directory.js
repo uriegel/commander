@@ -167,14 +167,14 @@ export const getDirectory = (folderId, path) => {
     const deleteItems = items => platformDeleteItems(items.map(n => fspath.join(currentPath, n)))
 
     async function extractFilesInFolders(sourcePath, items) {
-        const paths = await Promise.all(items.map(async n => {
+        const extractFiles = async path => await extractFilesInFolders(path, await fsp.readdir(path))
+
+        const paths = (await Promise.all(items.map(async n => {
             const file = fspath.join(sourcePath, n)
             const info = await fsp.stat(file)
-            const isDir = info.isDirectory()
-            return { file, isDir }
-        }))
-        console.log("extractFilesInFolders", paths)
-
+            return info.isDirectory() ? extractFiles(file) : file
+        }))).flatMap(n => n)
+        return paths
     }
 
     function getCopyConflicts(sourcePath, targetPath, items) {
