@@ -11,7 +11,7 @@ import {
     copyItems as platformCopyItems,
     renameItem as platformRenameItem
 } from "../platforms/switcher.js"
-const addon = window.require('filesystem-utilities')
+const { getFiles } = window.require('filesystem-utilities')
 const fspath = window.require('path')
 const fs = window.require('fs')
 const fsp = fs.promises
@@ -107,7 +107,7 @@ export const getDirectory = (folderId, path) => {
 
     const getItems = async (path, hiddenIncluded) => {
         path = fspath.normalize(path).replace(":.", ":\\")
-        var response = (await addon.getFiles(path))
+        var response = (await getFiles(path))
             .filter(n => hiddenIncluded ? true : !n.isHidden)
         let items = [{
                 name: "..",
@@ -186,8 +186,11 @@ export const getDirectory = (folderId, path) => {
     async function getCopyConflicts(info) {
 
         const getInfos = async file => {
+            const info = await fsp.stat(file)
             return {
-                file
+                file,
+                size: info.size,
+                time: info.mtime,
             }
         }
 
