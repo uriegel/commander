@@ -183,12 +183,21 @@ export const getDirectory = (folderId, path) => {
         return paths
     }
 
-    function getCopyConflicts(sourcePath, targetPath, items) {
-        var targetItems = items
-            .map((n, index) => ({ path: fspath.join(targetPath, n), index}))
-            .filter((n, i) => fs.existsSync(n.path))
+    async function getCopyConflicts(info) {
 
-        console.log("targetItems", targetItems)
+        const getInfos = async file => {
+            return {
+                file
+            }
+        }
+
+        const conflicts = await Promise.all(
+            info
+            .filter(n => n.target)
+            .map(async n => ({ source: await getInfos(n.file), target: await getInfos(n.target) }))
+        )
+
+        console.log("Conflicts", conflicts)
     }
 
     const copyItems = platformCopyItems
