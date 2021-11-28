@@ -241,7 +241,7 @@ class Folder extends HTMLElement {
 
     async copyItems(sourcePath, items, move, foldersToRefresh) {
         const targetPath = this.processor.getCurrentPath()
-        const paths = await this.processor.extractFilesInFolders(sourcePath, items)
+        const paths = await this.processor.extractFilesInFolders(sourcePath, targetPath, items)
         console.log("extractFilesInFolders", paths)
         this.processor.getCopyConflicts(sourcePath, targetPath, items)
         this.processor.copyItems(sourcePath, targetPath, items, move, foldersToRefresh)
