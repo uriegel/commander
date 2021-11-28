@@ -194,13 +194,11 @@ export const getDirectory = (folderId, path) => {
             }
         }
 
-        const conflicts = await Promise.all(
+        return await Promise.all(
             info
             .filter(n => n.target)
             .map(async n => ({ source: await getInfos(n.file), target: await getInfos(n.target) }))
         )
-
-        console.log("Conflicts", conflicts)
     }
 
     const copyItems = platformCopyItems
