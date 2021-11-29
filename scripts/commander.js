@@ -9,6 +9,10 @@ import './components/pdfviewer.js'
 import './folder.js'
 import { showViewer, refreshViewer} from './viewer.js'
 import { initializeMenu } from './menu.js'
+export const DIRECTORY = 1
+export const FILE = 2
+export const BOTH = 3
+
 const FileResult = window.require('filesystem-utilities').FileResult
 
 const folderLeft = document.getElementById("folderLeft")
@@ -18,10 +22,6 @@ const statusText = document.getElementById("statusText")
 const dirsText = document.getElementById("dirs")
 const filesText = document.getElementById("files")
 const menu = document.getElementById("menu")
-
-const DIRECTORY = 1
-const FILE = 2
-const BOTH = 3
 
 function getItemsTypes(selectedItems) {
     const types = selectedItems
@@ -86,28 +86,19 @@ folderLeft.addEventListener("delete", evt => onDelete(evt.detail))
 folderRight.addEventListener("delete", evt => onDelete(evt.detail))
 
 async function copy(move) {
+    // TODO at first get conflicts
+    // TODO if no conflicts show copy dialog, copy extracted
+    // TODO if conflicts show copy conflicts dialog with "kopieren" or "verschieben", copy extracted with ir without conflicts
     const itemsToCopy = activeFolder.selectedItems
-    const itemsType = getItemsTypes(itemsToCopy)
-    const moveOrCopy = move ? "verschieben" : "kopieren"
-    const text = itemsType == FILE 
-        ? itemsToCopy.length == 1 
-            ? `Möchtest Du die Datei ${moveOrCopy}?`
-            : `Möchtest Du die Dateien ${moveOrCopy}?`
-        : itemsType == DIRECTORY
-        ?  itemsToCopy.length == 1 
-            ? `Möchtest Du den Ordner ${moveOrCopy}?`
-            : `Möchtest Du die Ordner ${moveOrCopy}?`
-        : "Möchtest Du die Einträge ${moveOrCopy}?"
-
-    const res = await dialog.show({
-        text,
-        btnOk: true,
-        btnCancel: true
-    })    
-    activeFolder.setFocus()
-    if (res.result == RESULT_OK) 
-        getInactiveFolder().copyItems(activeFolder.getCurrentPath(), itemsToCopy.map(n => n.name), 
-            move, move ? [activeFolder.id, getInactiveFolder().id] : [getInactiveFolder().id]) 
+    const fromLeft = activeFolder == folderLeft
+    const itemsType = getItemsTypes(itemsToCopy)    
+    
+    getInactiveFolder().copyItems(fromLeft, itemsType, activeFolder.getCurrentPath(), itemsToCopy.map(n => n.name), 
+        move, move ? [activeFolder.id, getInactiveFolder().id] : [getInactiveFolder().id], async data => {
+            const res = await dialog.show(data)
+            activeFolder.setFocus()
+            return res.result == RESULT_OK
+        }) 
 }
 
 async function rename() {

@@ -1,5 +1,6 @@
 import 'virtual-table-component'
 import { getProcessor } from './processors/processor.js'
+import { FILE, DIRECTORY } from './commander.js'
 
 class Folder extends HTMLElement {
     constructor() {
@@ -239,12 +240,33 @@ class Folder extends HTMLElement {
         this.reloadItems()
     }
 
-    async copyItems(sourcePath, items, move, foldersToRefresh) {
+    async copyItems(fromLeft, itemsType, sourcePath, items, move, foldersToRefresh, showDialog) {
         const targetPath = this.processor.getCurrentPath()
         const copyInfo = await this.processor.extractFilesInFolders(sourcePath, targetPath, items)
         const conflicts = await this.processor.getCopyConflicts(copyInfo)
-        console.log("Conflicts", conflicts)
-        //this.processor.copyItems(sourcePath, targetPath, items, move, foldersToRefresh)
+
+        const moveOrCopy = move ? "verschieben" : "kopieren"
+        const text = itemsType == FILE 
+            ? items.length == 1 
+                ? `Möchtest Du die Datei ${moveOrCopy}?`
+                : `Möchtest Du die Dateien ${moveOrCopy}?`
+            : itemsType == DIRECTORY
+            ?  items.length == 1 
+                ? `Möchtest Du den Ordner ${moveOrCopy}?`
+                : `Möchtest Du die Ordner ${moveOrCopy}?`
+            : "Möchtest Du die Einträge ${moveOrCopy}?"
+        
+        const dialogData = {
+            text,
+            slide: fromLeft,
+            slideReverse: !fromLeft,
+            btnOk: true,
+            btnCancel: true
+        }
+        if (conflicts.length)
+            console.log("Conflicts", conflicts)
+        if (await showDialog(dialogData))
+            this.processor.copyItems(sourcePath, targetPath, items, move, foldersToRefresh)
     }
 
     async renameItem(item, newName) {
