@@ -77,8 +77,9 @@ export async function deleteItems(items) {
     }
 }    
 
-export async function copyItems(sourcePath, targetPath, items, move, foldersToRefresh) {
-    items.forEach(n => copyProcessor.addJob(fspath.join(sourcePath, n), fspath.join(targetPath, n), move, foldersToRefresh))
+export async function copyItems(copyInfo, move, foldersToRefresh) {
+    // TODO: move: delete empty subfolders
+    copyInfo.forEach(n => copyProcessor.addJob(n.file, n.targetFile, move, foldersToRefresh))
 }
 
 export async function renameItem(item, newName) {

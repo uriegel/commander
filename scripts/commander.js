@@ -86,9 +86,7 @@ folderLeft.addEventListener("delete", evt => onDelete(evt.detail))
 folderRight.addEventListener("delete", evt => onDelete(evt.detail))
 
 async function copy(move) {
-    // TODO at first get conflicts
-    // TODO if no conflicts show copy dialog, copy extracted
-    // TODO if conflicts show copy conflicts dialog with "kopieren" or "verschieben", copy extracted with ir without conflicts
+    // TODO if conflicts show copy conflicts dialog with "kopieren" or "verschieben", copy extracted with or without conflicts
     const itemsToCopy = activeFolder.selectedItems
     const fromLeft = activeFolder == folderLeft
     const itemsType = getItemsTypes(itemsToCopy)    

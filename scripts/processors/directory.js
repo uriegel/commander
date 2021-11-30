@@ -169,16 +169,16 @@ export const getDirectory = (folderId, path) => {
     async function extractFilesInFolders(sourcePath, targetPath, items) {
         const extractFiles = async (path, target) => await extractFilesInFolders(path, target, await fsp.readdir(path))
 
-        const getTargetInfo = async targetFile => 
-            fs.existsSync(targetFile)
-            ? targetFile
-            : null
-
         const paths = (await Promise.all(items.map(async n => {
             const file = fspath.join(sourcePath, n)
             const targetFile = fspath.join(targetPath, n)
             const info = await fsp.stat(file)
-            return info.isDirectory() ? extractFiles(file, targetFile) : { file, target: await getTargetInfo(targetFile) } 
+            return info.isDirectory() 
+                ? extractFiles(file, targetFile) 
+                : { file, 
+                    targetFile, 
+                    targetExists: fs.existsSync(targetFile) 
+                } 
         }))).flatMap(n => n)
         return paths
     }

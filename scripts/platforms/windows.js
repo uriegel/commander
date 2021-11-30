@@ -53,6 +53,7 @@ export async function deleteItems(items) {
 }   
 
 export async function copyItems(sourcePath, targetPath, items, move, foldersToRefresh) {
+    // TODO sourcePath, targetPath, items => copyInfo
     await runCmd({
         method: "copy", 
         sourcePath,

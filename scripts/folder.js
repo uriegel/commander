@@ -266,7 +266,8 @@ class Folder extends HTMLElement {
         if (conflicts.length)
             console.log("Conflicts", conflicts)
         if (await showDialog(dialogData))
-            this.processor.copyItems(sourcePath, targetPath, items, move, foldersToRefresh)
+            // TODO slide in dialog
+            this.processor.copyItems(copyInfo, move, foldersToRefresh)
     }
 
     async renameItem(item, newName) {
@@ -286,6 +287,9 @@ class Folder extends HTMLElement {
 }
 
 customElements.define('folder-table', Folder)
+// TODO Copy dialog does not slide in
+// TODO move: delete empty source folders
+// TODO adapt windows copy/move
 // TODO CopyFile: Show conflicts
 // TODO CopyFile Recursion
 // TODO Processor: CanAction 
