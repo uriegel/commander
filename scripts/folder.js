@@ -240,7 +240,7 @@ class Folder extends HTMLElement {
         this.reloadItems()
     }
 
-    async copyItems(fromLeft, itemsType, sourcePath, items, move, foldersToRefresh, showDialog) {
+    async prepareCopyItems(fromLeft, itemsType, sourcePath, items, move) {
         const targetPath = this.processor.getCurrentPath()
         const copyInfo = await this.processor.extractFilesInFolders(sourcePath, targetPath, items)
         const conflicts = await this.processor.getCopyConflicts(copyInfo)
@@ -254,20 +254,24 @@ class Folder extends HTMLElement {
             ?  items.length == 1 
                 ? `Möchtest Du den Ordner ${moveOrCopy}?`
                 : `Möchtest Du die Ordner ${moveOrCopy}?`
-            : "Möchtest Du die Einträge ${moveOrCopy}?"
+            : `Möchtest Du die Einträge ${moveOrCopy}?`
         
-        const dialogData = {
+        if (conflicts.length)
+            console.log("Conflicts", conflicts)
+
+        return {
             text,
             slide: fromLeft,
             slideReverse: !fromLeft,
             btnOk: true,
             btnCancel: true
         }
-        if (conflicts.length)
-            console.log("Conflicts", conflicts)
-        if (await showDialog(dialogData))
-            // TODO slide in dialog
-            this.processor.copyItems(copyInfo, move, foldersToRefresh)
+    }
+
+    async copyItems(fromLeft, itemsType, sourcePath, items, move, foldersToRefresh, showDialog) {
+        // if (await showDialog(dialogData))
+        //     // TODO slide in dialog
+        //     this.processor.copyItems(copyInfo, move, foldersToRefresh)
     }
 
     async renameItem(item, newName) {
