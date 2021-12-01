@@ -243,7 +243,7 @@ class Folder extends HTMLElement {
     async prepareCopyItems(fromLeft, itemsType, sourcePath, items, move) {
         const targetPath = this.processor.getCurrentPath()
         const copyInfo = await this.processor.extractFilesInFolders(sourcePath, targetPath, items)
-        const conflicts = await this.processor.getCopyConflicts(copyInfo)
+        copyInfo.conflicts = await this.processor.getCopyConflicts(copyInfo)
 
         const moveOrCopy = move ? "verschieben" : "kopieren"
         const text = itemsType == FILE 
@@ -256,22 +256,22 @@ class Folder extends HTMLElement {
                 : `Möchtest Du die Ordner ${moveOrCopy}?`
             : `Möchtest Du die Einträge ${moveOrCopy}?`
         
-        if (conflicts.length)
-            console.log("Conflicts", conflicts)
+        // if (conflicts.length)
+        //     console.log("Conflicts", conflicts)
 
-        return {
+        copyInfo.dialogData = {
             text,
             slide: fromLeft,
             slideReverse: !fromLeft,
             btnOk: true,
             btnCancel: true
         }
+
+        return copyInfo 
     }
 
-    async copyItems(fromLeft, itemsType, sourcePath, items, move, foldersToRefresh, showDialog) {
-        // if (await showDialog(dialogData))
-        //     // TODO slide in dialog
-        //     this.processor.copyItems(copyInfo, move, foldersToRefresh)
+    async copyItems(copyInfo, move, foldersToRefresh) {
+        this.processor.copyItems(copyInfo, move, foldersToRefresh)
     }
 
     async renameItem(item, newName) {
@@ -291,10 +291,9 @@ class Folder extends HTMLElement {
 }
 
 customElements.define('folder-table', Folder)
-// TODO Copy dialog does not slide in
 // TODO move: delete empty source folders
-// TODO adapt windows copy/move
 // TODO CopyFile: Show conflicts
+// TODO adapt windows copy/move
 // TODO CopyFile Recursion
 // TODO Processor: CanAction 
 // TODO Show trashinfo (show trash)

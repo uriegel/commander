@@ -91,8 +91,14 @@ async function copy(move) {
     const fromLeft = activeFolder == folderLeft
     const itemsType = getItemsTypes(itemsToCopy)    
     
-    const dialogData = await getInactiveFolder().prepareCopyItems(fromLeft, itemsType, activeFolder.getCurrentPath(), itemsToCopy.map(n => n.name), move)
-    dialog.show(dialogData)
+    const inactiveFolder = getInactiveFolder()
+    const copyInfo = await inactiveFolder.prepareCopyItems(
+        fromLeft, itemsType, activeFolder.getCurrentPath(), itemsToCopy.map(n => n.name), move
+    )
+    const res = await dialog.show(copyInfo.dialogData)
+    activeFolder.setFocus()
+    if (res.result == RESULT_OK)
+        await inactiveFolder.copyItems(copyInfo, move, move ? [activeFolder.id, inactiveFolder.id] : [inactiveFolder.id])
 }
 
 async function rename() {
