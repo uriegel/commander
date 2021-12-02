@@ -256,9 +256,6 @@ class Folder extends HTMLElement {
                 : `Möchtest Du die Ordner ${moveOrCopy}?`
             : `Möchtest Du die Einträge ${moveOrCopy}?`
         
-        // if (conflicts.length)
-        //     console.log("Conflicts", conflicts)
-
         copyInfo.dialogData = {
             text,
             slide: fromLeft,
@@ -266,6 +263,8 @@ class Folder extends HTMLElement {
             btnOk: true,
             btnCancel: true
         }
+        if (copyInfo.conflicts.length)
+            copyInfo.dialogData.extended = "copy-conflicts"
 
         return copyInfo 
     }

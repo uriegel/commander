@@ -142,6 +142,10 @@ body {
 }
 #error-list {
     height: 50vh;
-    width: 70vw;
     overflow: auto;
+}
+
+#copy-conflicts {
+    height: 50vh;
+    position: relative;
 }

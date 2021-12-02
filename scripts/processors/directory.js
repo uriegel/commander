@@ -196,8 +196,8 @@ export const getDirectory = (folderId, path) => {
 
         return await Promise.all(
             info
-            .filter(n => n.target)
-            .map(async n => ({ source: await getInfos(n.file), target: await getInfos(n.target) }))
+            .filter(n => n.targetExists)
+            .map(async n => ({ source: await getInfos(n.file), target: await getInfos(n.targetFile) }))
         )
     }
 
