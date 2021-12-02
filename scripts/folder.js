@@ -246,25 +246,39 @@ class Folder extends HTMLElement {
         copyInfo.conflicts = await this.processor.getCopyConflicts(copyInfo)
 
         const moveOrCopy = move ? "verschieben" : "kopieren"
-        const text = itemsType == FILE 
-            ? items.length == 1 
-                ? `Möchtest Du die Datei ${moveOrCopy}?`
-                : `Möchtest Du die Dateien ${moveOrCopy}?`
-            : itemsType == DIRECTORY
-            ?  items.length == 1 
-                ? `Möchtest Du den Ordner ${moveOrCopy}?`
-                : `Möchtest Du die Ordner ${moveOrCopy}?`
-            : `Möchtest Du die Einträge ${moveOrCopy}?`
+        const text = copyInfo.conflicts.length == 0
+            ? itemsType == FILE 
+                ? items.length == 1 
+                    ? `Möchtest Du die Datei ${moveOrCopy}?`
+                    : `Möchtest Du die Dateien ${moveOrCopy}?`
+                : itemsType == DIRECTORY
+                ?  items.length == 1 
+                    ? `Möchtest Du den Ordner ${moveOrCopy}?`
+                    : `Möchtest Du die Ordner ${moveOrCopy}?`
+                : `Möchtest Du die Einträge ${moveOrCopy}?`
+            : itemsType == FILE 
+                ? items.length == 1 
+                    ? `Datei ${moveOrCopy}, Einträge überschreiben?`
+                    : `Dateien ${moveOrCopy}, Einträge überschreiben?`
+                : itemsType == DIRECTORY
+                ?  items.length == 1 
+                    ? `Ordner ${moveOrCopy}, Einträge überschreiben?`
+                    : `Ordner ${moveOrCopy}, Einträge überschreiben?`
+                : `Möchtest Du die Einträge ${moveOrCopy}, Einträge überschreiben?`
         
         copyInfo.dialogData = {
             text,
             slide: fromLeft,
             slideReverse: !fromLeft,
-            btnOk: true,
             btnCancel: true
         }
-        if (copyInfo.conflicts.length)
+        if (copyInfo.conflicts.length == 0) 
+            copyInfo.dialogData.btnOk = true
+        else {
             copyInfo.dialogData.extended = "copy-conflicts"
+            copyInfo.dialogData.btnYes = true
+            copyInfo.dialogData.btnNo = true
+        }
 
         return copyInfo 
     }
