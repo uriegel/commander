@@ -6,7 +6,8 @@ import 'web-electron-titlebar'
 import 'web-pie-progress'
 import { initializeCopying, adaptWindow, onDarkTheme } from './platforms/switcher.js'
 import './components/pdfviewer.js'
-import './folder.js'
+import './components/folder.js'
+import './components/copyconflicts'
 import { showViewer, refreshViewer} from './viewer.js'
 import { initializeMenu } from './menu.js'
 export const DIRECTORY = 1
@@ -86,7 +87,6 @@ folderLeft.addEventListener("delete", evt => onDelete(evt.detail))
 folderRight.addEventListener("delete", evt => onDelete(evt.detail))
 
 async function copy(move) {
-    // TODO if conflicts show copy conflicts dialog with "kopieren" or "verschieben", copy extracted with or without conflicts
     const itemsToCopy = activeFolder.selectedItems
     const fromLeft = activeFolder == folderLeft
     const itemsType = getItemsTypes(itemsToCopy)    

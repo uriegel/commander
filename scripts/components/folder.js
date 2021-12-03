@@ -1,5 +1,5 @@
 import 'virtual-table-component'
-import { getProcessor } from './processors/processor.js'
+import { getProcessor } from '../processors/processor.js'
 
 class Folder extends HTMLElement {
     constructor() {
