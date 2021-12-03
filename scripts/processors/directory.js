@@ -243,40 +243,37 @@ export const getDirectory = (folderId, path) => {
                     isSortable: true
                 },            
                 render: (td, item) => {
-                    const selector = item.name == ".." 
-                        ? '#parentIcon' 
-                        : item.isDirectory
-                            ? '#folderIcon'
-                            : '#fileIcon'
-                    if (selector != '#fileIcon') {
-                        var t = document.querySelector(selector)
-                        td.appendChild(document.importNode(t.content, true))
+
+
+                    // TODO create custom web component conflict table
+
+
+
+
+
+                    const img = document.createElement("img")
+                    const ext = getExtension(item.source.file)
+                    if (ext) {
+                        // if (ext == "exe") {
+                        //    img.src = `icon://${}`
+                        // } else 
+                        img.src = `icon://${ext}`
+                        img.classList.add("image")
+                        td.appendChild(img)
                     } else {
-                        const img = document.createElement("img")
-                        const ext = getExtension(item.name)
-                        if (ext) {
-                            // if (ext == "exe") {
-                            //    img.src = `icon://${}`
-                            // } else 
-                            img.src = `icon://${ext}`
-                            img.classList.add("image")
-                            td.appendChild(img)
-                        } else {
-                            var t = document.querySelector(selector)
-                            td.appendChild(document.importNode(t.content, true))
-                        }
+                        var t = document.querySelector('#fileIcon')
+                        td.appendChild(document.importNode(t.content, true))
                     }
-    
                     const span = document.createElement('span')
-                    span.innerHTML = item.name
+                    span.innerHTML = item.source.file
                     td.appendChild(span)
                 }            
             }, {
                 name: "Datum",
                 isSortable: true,
                 render: (td, item) => {
-                    td.innerHTML = formatDateTime(item.exifTime || item.time)
-                    if (item.exifTime)
+                    td.innerHTML = formatDateTime(item.source.exifTime || item.source.time)
+                    if (item.source.exifTime)
                         td.classList.add("exif")
                 }
             }, {
@@ -284,11 +281,15 @@ export const getDirectory = (folderId, path) => {
                 isSortable: true,
                 isRightAligned: true,
                 render: (td, item) => {
-                    td.innerHTML = formatSize(item.size)
+                    td.innerHTML = formatSize(item.source.size)
                     td.classList.add("rightAligned")
                 }
             }])
             table.setColumns(columns)
+            console.log("copyInfo.conflicts", copyInfo.conflicts)
+
+            // TODO when visible
+            setTimeout(() => table.setItems(copyInfo.conflicts), 400)
             copyInfo.dialogData.extended = "copy-conflicts"
             copyInfo.dialogData.btnYes = true
             copyInfo.dialogData.btnNo = true
