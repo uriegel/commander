@@ -234,6 +234,61 @@ export const getDirectory = (folderId, path) => {
         if (copyInfo.conflicts.length == 0) 
             copyInfo.dialogData.btnOk = true
         else {
+            const table = document.getElementById('copy-conflict-table')
+            let columns = adaptDirectoryColumns([{
+                name: "Name",
+                isSortable: true,
+                subItem: {
+                    name: "Ext.",
+                    isSortable: true
+                },            
+                render: (td, item) => {
+                    const selector = item.name == ".." 
+                        ? '#parentIcon' 
+                        : item.isDirectory
+                            ? '#folderIcon'
+                            : '#fileIcon'
+                    if (selector != '#fileIcon') {
+                        var t = document.querySelector(selector)
+                        td.appendChild(document.importNode(t.content, true))
+                    } else {
+                        const img = document.createElement("img")
+                        const ext = getExtension(item.name)
+                        if (ext) {
+                            // if (ext == "exe") {
+                            //    img.src = `icon://${}`
+                            // } else 
+                            img.src = `icon://${ext}`
+                            img.classList.add("image")
+                            td.appendChild(img)
+                        } else {
+                            var t = document.querySelector(selector)
+                            td.appendChild(document.importNode(t.content, true))
+                        }
+                    }
+    
+                    const span = document.createElement('span')
+                    span.innerHTML = item.name
+                    td.appendChild(span)
+                }            
+            }, {
+                name: "Datum",
+                isSortable: true,
+                render: (td, item) => {
+                    td.innerHTML = formatDateTime(item.exifTime || item.time)
+                    if (item.exifTime)
+                        td.classList.add("exif")
+                }
+            }, {
+                name: "Größe",
+                isSortable: true,
+                isRightAligned: true,
+                render: (td, item) => {
+                    td.innerHTML = formatSize(item.size)
+                    td.classList.add("rightAligned")
+                }
+            }])
+            table.setColumns(columns)
             copyInfo.dialogData.extended = "copy-conflicts"
             copyInfo.dialogData.btnYes = true
             copyInfo.dialogData.btnNo = true

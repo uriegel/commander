@@ -16,7 +16,7 @@ class Folder extends HTMLElement {
             </div`
         
         this.table = this.getElementsByTagName("VIRTUAL-TABLE")[0]
-            const sbr = this.getAttribute("scrollbar-right")
+        const sbr = this.getAttribute("scrollbar-right")
         if (sbr)
             this.table.setAttribute("scrollbar-right", sbr)
         
