@@ -1,4 +1,4 @@
-import { DIRECTORY, getDirectory } from "./directory.js"
+import { DIRECTORY_TYPE, getDirectory } from "./directory.js"
 import { getRoot, ROOT } from "./root.js"
 
 export const getProcessor = (folderId, path, recentProcessor) => {
@@ -19,7 +19,7 @@ export const getProcessor = (folderId, path, recentProcessor) => {
             }
     }
     else {
-        if (recentProcessor && recentProcessor.getType() == DIRECTORY) 
+        if (recentProcessor && recentProcessor.getType() == DIRECTORY_TYPE) 
             return {
                 processor: recentProcessor, 
                 changed: false

@@ -1,6 +1,5 @@
 import 'virtual-table-component'
 import { getProcessor } from './processors/processor.js'
-import { FILE, DIRECTORY } from './commander.js'
 
 class Folder extends HTMLElement {
     constructor() {
@@ -244,43 +243,7 @@ class Folder extends HTMLElement {
         const targetPath = this.processor.getCurrentPath()
         const copyInfo = await this.processor.extractFilesInFolders(sourcePath, targetPath, items)
         copyInfo.conflicts = await this.processor.getCopyConflicts(copyInfo)
-
-        const moveOrCopy = move ? "verschieben" : "kopieren"
-        const text = copyInfo.conflicts.length == 0
-            ? itemsType == FILE 
-                ? items.length == 1 
-                    ? `Möchtest Du die Datei ${moveOrCopy}?`
-                    : `Möchtest Du die Dateien ${moveOrCopy}?`
-                : itemsType == DIRECTORY
-                ?  items.length == 1 
-                    ? `Möchtest Du den Ordner ${moveOrCopy}?`
-                    : `Möchtest Du die Ordner ${moveOrCopy}?`
-                : `Möchtest Du die Einträge ${moveOrCopy}?`
-            : itemsType == FILE 
-                ? items.length == 1 
-                    ? `Datei ${moveOrCopy}, Einträge überschreiben?`
-                    : `Dateien ${moveOrCopy}, Einträge überschreiben?`
-                : itemsType == DIRECTORY
-                ?  items.length == 1 
-                    ? `Ordner ${moveOrCopy}, Einträge überschreiben?`
-                    : `Ordner ${moveOrCopy}, Einträge überschreiben?`
-                : `Möchtest Du die Einträge ${moveOrCopy}, Einträge überschreiben?`
-        
-        copyInfo.dialogData = {
-            text,
-            slide: fromLeft,
-            slideReverse: !fromLeft,
-            btnCancel: true
-        }
-        if (copyInfo.conflicts.length == 0) 
-            copyInfo.dialogData.btnOk = true
-        else {
-            copyInfo.dialogData.extended = "copy-conflicts"
-            copyInfo.dialogData.btnYes = true
-            copyInfo.dialogData.btnNo = true
-        }
-
-        return copyInfo 
+        return this.processor.prepareCopyItems(move, itemsType, items.length == 1, fromLeft, copyInfo)
     }
 
     async copyItems(copyInfo, move, foldersToRefresh) {

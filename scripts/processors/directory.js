@@ -1,6 +1,8 @@
-export const DIRECTORY = "directory"
+export const DIRECTORY_TYPE = "directory"
 import { formatDateTime, formatSize, getExtension } from "./rendertools.js"
 import { ROOT } from "./root.js"
+import { FILE, DIRECTORY } from '../commander.js'
+
 import {
     pathDelimiter,
     adaptDirectoryColumns,
@@ -17,7 +19,7 @@ const fs = window.require('fs')
 const fsp = fs.promises
 
 export const getDirectory = (folderId, path) => {
-    const getType = () => DIRECTORY
+    const getType = () => DIRECTORY_TYPE
     
     let currentPath = ""
 
@@ -201,6 +203,45 @@ export const getDirectory = (folderId, path) => {
         )
     }
 
+    const prepareCopyItems = async (move, itemsType, several, fromLeft, copyInfo) => {
+        const moveOrCopy = move ? "verschieben" : "kopieren"
+        const text = copyInfo.conflicts.length == 0
+            ? itemsType == FILE 
+                ? several
+                    ? `Möchtest Du die Datei ${moveOrCopy}?`
+                    : `Möchtest Du die Dateien ${moveOrCopy}?`
+                : itemsType == DIRECTORY
+                ?  several
+                    ? `Möchtest Du den Ordner ${moveOrCopy}?`
+                    : `Möchtest Du die Ordner ${moveOrCopy}?`
+                : `Möchtest Du die Einträge ${moveOrCopy}?`
+            : itemsType == FILE 
+                ? several
+                    ? `Datei ${moveOrCopy}, Einträge überschreiben?`
+                    : `Dateien ${moveOrCopy}, Einträge überschreiben?`
+                : itemsType == DIRECTORY
+                ?  several
+                    ? `Ordner ${moveOrCopy}, Einträge überschreiben?`
+                    : `Ordner ${moveOrCopy}, Einträge überschreiben?`
+                : `Möchtest Du die Einträge ${moveOrCopy}, Einträge überschreiben?`
+        
+        copyInfo.dialogData = {
+            text,
+            slide: fromLeft,
+            slideReverse: !fromLeft,
+            btnCancel: true
+        }
+        if (copyInfo.conflicts.length == 0) 
+            copyInfo.dialogData.btnOk = true
+        else {
+            copyInfo.dialogData.extended = "copy-conflicts"
+            copyInfo.dialogData.btnYes = true
+            copyInfo.dialogData.btnNo = true
+        }
+
+        return copyInfo 
+    }
+
     const copyItems = platformCopyItems
 
     const renameItem = async (item, newName) => await platformRenameItem(fspath.join(currentPath, item), fspath.join(currentPath, newName))
@@ -240,6 +281,7 @@ export const getDirectory = (folderId, path) => {
         deleteItems,
         extractFilesInFolders,
         getCopyConflicts,
+        prepareCopyItems,
         copyItems, 
         renameItem
     }
