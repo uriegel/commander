@@ -27,23 +27,19 @@ class CopyConflicts extends HTMLElement {
                 isSortable: true
             },            
             render: (td, item) => {
-                const img = document.createElement("img")
                 const ext = getExtension(item.source.file)
+                // if (ext == "exe") {
+                //    img.src = `icon://${}`
+                // } else 
                 const name = item.source.file.substr(item.source.file.lastIndexOf(pathDelimiter) + 1)
-                if (ext) {
-                    // if (ext == "exe") {
-                    //    img.src = `icon://${}`
-                    // } else 
-                    img.src = `icon://${ext}`
-                    img.classList.add("image")
-                    td.appendChild(img)
-                } else {
-                    var t = document.querySelector('#fileIcon')
-                    td.appendChild(document.importNode(t.content, true))
-                }
-                const span = document.createElement('span')
-                span.innerHTML = name
-                td.appendChild(span)
+
+                const template = document.getElementById('conflictName')
+                const element = template.content.cloneNode(true)
+                const img = element.querySelector("img")
+                img.src = `icon://${ext}`
+                const text = element.querySelector("span")
+                text.innerHTML = name
+                td.appendChild(element)
             }            
         }, {
             name: "Datum",
