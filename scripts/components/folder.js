@@ -268,7 +268,6 @@ class Folder extends HTMLElement {
 
 customElements.define('folder-table', Folder)
 // TODO move: delete empty source folders
-// TODO CopyFile: Show conflicts
 // TODO adapt windows copy/move
 // TODO CopyFile Recursion
 // TODO Processor: CanAction 

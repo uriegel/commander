@@ -1,4 +1,6 @@
 import 'virtual-table-component'
+import { formatDateTime, formatSize, getExtension } from "../processors/rendertools.js"
+import { pathDelimiter } from "../platforms/switcher.js"
 
 class CopyConflicts extends HTMLElement {
     constructor() {
@@ -27,6 +29,7 @@ class CopyConflicts extends HTMLElement {
             render: (td, item) => {
                 const img = document.createElement("img")
                 const ext = getExtension(item.source.file)
+                const name = item.source.file.substr(item.source.file.lastIndexOf(pathDelimiter) + 1)
                 if (ext) {
                     // if (ext == "exe") {
                     //    img.src = `icon://${}`
@@ -39,7 +42,7 @@ class CopyConflicts extends HTMLElement {
                     td.appendChild(document.importNode(t.content, true))
                 }
                 const span = document.createElement('span')
-                span.innerHTML = item.source.file
+                span.innerHTML = name
                 td.appendChild(span)
             }            
         }, {
@@ -61,7 +64,16 @@ class CopyConflicts extends HTMLElement {
         }]
         this.table.setColumns(columns)
     }
+    
+    setItems(items) {
+        var observer = new IntersectionObserver((e, o)  => {
+            o.unobserve(this.table)
+            this.table.setItems(items)
+        }, { root: document.documentElement })
+        observer.observe(this.table)
+    }
 }
 
 customElements.define('copy-conflicts', CopyConflicts)
+
 

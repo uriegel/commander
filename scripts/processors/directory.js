@@ -234,10 +234,8 @@ export const getDirectory = (folderId, path) => {
         if (copyInfo.conflicts.length == 0) 
             copyInfo.dialogData.btnOk = true
         else {
-            console.log("copyInfo.conflicts", copyInfo.conflicts)
-
-            // TODO when visible
-            setTimeout(() => table.setItems(copyInfo.conflicts), 400)
+            const copyConflicts = document.getElementById('copy-conflicts')
+            copyConflicts.setItems(copyInfo.conflicts)
             copyInfo.dialogData.extended = "copy-conflicts"
             copyInfo.dialogData.btnYes = true
             copyInfo.dialogData.btnNo = true
