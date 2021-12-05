@@ -5,7 +5,14 @@ import { pathDelimiter } from "../platforms/switcher.js"
 class CopyConflicts extends HTMLElement {
     constructor() {
         super()
-        const additionalStyle = ".exif {color: var(--exif-color);} }"
+        const additionalStyle = `
+        .exif {
+            color: var(--exif-color);
+        }
+        .conflictItem {
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }`
         this.innerHTML = `
             <div class=copy-conflicts-root>
                 <virtual-table additionalStyle='${additionalStyle}'></virtual-table>
@@ -45,17 +52,26 @@ class CopyConflicts extends HTMLElement {
             name: "Datum",
             isSortable: true,
             render: (td, item) => {
-                td.innerHTML = formatDateTime(item.source.exifTime || item.source.time)
-                if (item.source.exifTime)
-                    td.classList.add("exif")
+                const template = document.getElementById('conflictItem')
+                const element = template.content.cloneNode(true)
+                const source = element.querySelector("div:first-child")
+                source.innerHTML = formatDateTime(item.source.time)
+                const target = element.querySelector("div:last-child")
+                target.innerHTML = formatDateTime(item.target.time)
+                td.appendChild(element)
             }
         }, {
             name: "Größe",
             isSortable: true,
             isRightAligned: true,
             render: (td, item) => {
-                td.innerHTML = formatSize(item.source.size)
-                td.classList.add("rightAligned")
+                const template = document.getElementById('conflictItem')
+                const element = template.content.cloneNode(true)
+                const source = element.querySelector("div:first-child")
+                source.innerHTML = formatSize(item.source.size)
+                const target = element.querySelector("div:last-child")
+                target.innerHTML = formatSize(item.target.size)
+                td.appendChild(element)
             }
         }]
         this.table.setColumns(columns)
@@ -72,4 +88,7 @@ class CopyConflicts extends HTMLElement {
 
 customElements.define('copy-conflicts', CopyConflicts)
 
-
+// TODO Set Maxwidth, maxHeight 80% - margins
+// TODO Focus listbox, default button
+// TODO Green items, red items
+// TODO class if date or size is different 
