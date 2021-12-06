@@ -14,7 +14,7 @@ class CopyConflicts extends HTMLElement {
             overflow: hidden;
         }`
         this.innerHTML = `
-            <div class=copy-conflicts-root>
+            <div class='copy-conflicts-root' tabIndex=1>
                 <virtual-table additionalStyle='${additionalStyle}'></virtual-table>
             </div`
         
@@ -76,6 +76,19 @@ class CopyConflicts extends HTMLElement {
         }]
         this.table.setColumns(columns)
     }
+
+    createdCallback() {
+        this.tabIndex = 0
+    }
+
+    focus() { 
+        this.table.setFocus() 
+        this.tabIndex = -1
+    }
+
+    blur() { 
+        this.tabIndex = 0
+    }
     
     setItems(items) {
         var observer = new IntersectionObserver((e, o)  => {
@@ -88,6 +101,6 @@ class CopyConflicts extends HTMLElement {
 
 customElements.define('copy-conflicts', CopyConflicts)
 
-// TODO Focus listbox, default button
+// TODO listbox tab to cancel: wrong transformation (but right result)
 // TODO Green items, red items
 // TODO class if date or size is different 

@@ -96,6 +96,9 @@ async function copy(move) {
         fromLeft, itemsType, activeFolder.getCurrentPath(), itemsToCopy.map(n => n.name), move
     )
     const res = await dialog.show(copyInfo.dialogData)
+
+console.log("copy res", res)
+
     activeFolder.setFocus()
     if (res.result == RESULT_OK)
         await inactiveFolder.copyItems(copyInfo, move, move ? [activeFolder.id, inactiveFolder.id] : [inactiveFolder.id])

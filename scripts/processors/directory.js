@@ -240,6 +240,9 @@ export const getDirectory = (folderId, path) => {
             copyInfo.dialogData.btnYes = true
             copyInfo.dialogData.btnNo = true
             copyInfo.dialogData.fullscreen = true
+            copyInfo.dialogData.extendedFocusables = [copyConflicts]
+            // todo CONTROL
+            copyInfo.dialogData.defBtnYes = true
         }
 
         return copyInfo 
