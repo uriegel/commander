@@ -101,6 +101,5 @@ class CopyConflicts extends HTMLElement {
 
 customElements.define('copy-conflicts', CopyConflicts)
 
-// TODO listbox tab to cancel: wrong transformation (but right result)
 // TODO Green items, red items
 // TODO class if date or size is different 
