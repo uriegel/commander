@@ -88,7 +88,6 @@ class CopyConflicts extends HTMLElement {
 
 customElements.define('copy-conflicts', CopyConflicts)
 
-// TODO Set Maxwidth, maxHeight 80% - margins
 // TODO Focus listbox, default button
 // TODO Green items, red items
 // TODO class if date or size is different 

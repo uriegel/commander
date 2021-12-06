@@ -239,6 +239,7 @@ export const getDirectory = (folderId, path) => {
             copyInfo.dialogData.extended = "copy-conflicts"
             copyInfo.dialogData.btnYes = true
             copyInfo.dialogData.btnNo = true
+            copyInfo.dialogData.fullscreen = true
         }
 
         return copyInfo 
