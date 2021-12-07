@@ -241,8 +241,11 @@ export const getDirectory = (folderId, path) => {
             copyInfo.dialogData.btnNo = true
             copyInfo.dialogData.fullscreen = true
             copyInfo.dialogData.extendedFocusables = [copyConflicts]
-            // todo CONTROL
-            copyInfo.dialogData.defBtnYes = true
+            const notOverwrite = copyInfo.conflicts.filter(n => n.source.time.getTime() < n.target.time.getTime()).length > 0
+            if (notOverwrite)
+                copyInfo.dialogData.defBtnNo = true
+            else
+                copyInfo.dialogData.defBtnYes = true
         }
 
         return copyInfo 

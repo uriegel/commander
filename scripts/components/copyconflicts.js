@@ -12,6 +12,17 @@ class CopyConflicts extends HTMLElement {
         .conflictItem {
             text-overflow: ellipsis;
             overflow: hidden;
+        }
+        .equal {
+            color: gray
+        }
+        .overwrite {
+            color: black;
+            background-color: lightgreen;
+        }
+        .not-overwrite {
+            color: white;
+            background-color: red;
         }`
         this.innerHTML = `
             <div class='copy-conflicts-root' tabIndex=1>
@@ -58,6 +69,12 @@ class CopyConflicts extends HTMLElement {
                 source.innerHTML = formatDateTime(item.source.time)
                 const target = element.querySelector("div:last-child")
                 target.innerHTML = formatDateTime(item.target.time)
+                if (item.target.time.getTime() == item.source.time.getTime())
+                    td.classList.add("equal")
+                else if (item.source.time.getTime() > item.target.time.getTime())
+                    source.classList.add("overwrite")
+                else 
+                    target.classList.add("not-overwrite")
                 td.appendChild(element)
             }
         }, {
@@ -71,6 +88,8 @@ class CopyConflicts extends HTMLElement {
                 source.innerHTML = formatSize(item.source.size)
                 const target = element.querySelector("div:last-child")
                 target.innerHTML = formatSize(item.target.size)
+                if (item.target.size == item.source.size)
+                    td.classList.add("equal")
                 td.appendChild(element)
             }
         }]
@@ -101,5 +120,3 @@ class CopyConflicts extends HTMLElement {
 
 customElements.define('copy-conflicts', CopyConflicts)
 
-// TODO Green items, red items
-// TODO class if date or size is different 
