@@ -43,7 +43,7 @@ export function createCopyProcessor(onCopyFinish, onShowErrors) {
                 if (!job) 
                     break
                 try {
-                    await copy(job.source, job.target, c => onProgress(alreadyCopied + c, totalSize), job.move || false)
+                    await copy(job.source, job.target, c => onProgress(alreadyCopied + c, totalSize), job.move || false, job.overwrite || false)
                 } catch (err) {
                     onException(err)
                 }
@@ -57,14 +57,14 @@ export function createCopyProcessor(onCopyFinish, onShowErrors) {
         }
     )
 
-    const addJob = (source, target, move, foldersToRefresh) => {
+    const addJob = (source, target, move, overwrite, foldersToRefresh) => {
 
         const size = fs.statSync(source).size
         totalSize += size
         folderIdsToRefresh = [...new Set(folderIdsToRefresh.concat(foldersToRefresh))]
 
         queue.push({
-            source, target, move, size
+            source, target, move, overwrite, size
         })
        
         if (!isProcessing) {

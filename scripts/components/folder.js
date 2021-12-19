@@ -241,13 +241,14 @@ class Folder extends HTMLElement {
 
     async prepareCopyItems(fromLeft, itemsType, sourcePath, items, move) {
         const targetPath = this.processor.getCurrentPath()
-        const copyInfo = await this.processor.extractFilesInFolders(sourcePath, targetPath, items)
-        copyInfo.conflicts = await this.processor.getCopyConflicts(copyInfo)
+        const copyInfo = {}
+        copyInfo.items = await this.processor.extractFilesInFolders(sourcePath, targetPath, items)
+        copyInfo.conflicts = await this.processor.getCopyConflicts(copyInfo.items)
         return this.processor.prepareCopyItems(move, itemsType, items.length == 1, fromLeft, copyInfo)
     }
 
-    async copyItems(copyInfo, move, foldersToRefresh) {
-        this.processor.copyItems(copyInfo, move, foldersToRefresh)
+    async copyItems(copyInfo, move, overwrite, foldersToRefresh) {
+        this.processor.copyItems(copyInfo, move, overwrite, foldersToRefresh)
     }
 
     async renameItem(item, newName) {

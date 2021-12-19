@@ -146,7 +146,7 @@ body {
 }
 
 #copy-conflicts {
-    height: 50vh;
+    height: 100%;
     position: relative;
 }
 

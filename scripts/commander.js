@@ -1,6 +1,6 @@
 import 'grid-splitter'
 import 'web-dialog-box'
-import { RESULT_OK } from 'web-dialog-box'
+import { RESULT_CANCEL, RESULT_OK, RESULT_YES, RESULT_NO } from 'web-dialog-box'
 import 'web-menu-bar'
 import 'web-electron-titlebar'
 import 'web-pie-progress'
@@ -96,12 +96,14 @@ async function copy(move) {
         fromLeft, itemsType, activeFolder.getCurrentPath(), itemsToCopy.map(n => n.name), move
     )
     const res = await dialog.show(copyInfo.dialogData)
-
-console.log("copy res", res)
-
     activeFolder.setFocus()
-    if (res.result == RESULT_OK)
-        await inactiveFolder.copyItems(copyInfo, move, move ? [activeFolder.id, inactiveFolder.id] : [inactiveFolder.id])
+    if (res.result != RESULT_CANCEL) {
+        console.log("copyInfo", copyInfo, move ? [activeFolder.id, inactiveFolder.id] : [inactiveFolder.id], [inactiveFolder.id])
+        if (res.result == RESULT_NO) 
+            copyInfo.items = copyInfo.items.filter(n => !copyInfo.conflicts.find(m => m.source.file == n.file))
+        console.log("copyInfo3", copyInfo, move ? [activeFolder.id, inactiveFolder.id] : [inactiveFolder.id], [inactiveFolder.id])
+        await inactiveFolder.copyItems(copyInfo, move, res.result == RESULT_YES, move ? [activeFolder.id, inactiveFolder.id] : [inactiveFolder.id])
+    }
 }
 
 async function rename() {

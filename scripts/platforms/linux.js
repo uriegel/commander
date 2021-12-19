@@ -77,9 +77,9 @@ export async function deleteItems(items) {
     }
 }    
 
-export async function copyItems(copyInfo, move, foldersToRefresh) {
+export async function copyItems(copyInfo, move, overwrite, foldersToRefresh) {
     // TODO: move: delete empty subfolders
-    copyInfo.forEach(n => copyProcessor.addJob(n.file, n.targetFile, move, foldersToRefresh))
+    copyInfo.items.forEach(n => copyProcessor.addJob(n.file, n.targetFile, move, overwrite, foldersToRefresh))
 }
 
 export async function renameItem(item, newName) {
