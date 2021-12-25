@@ -15,7 +15,9 @@ const registerRunCmd = () => {
                 break
             case "copy":
                 try {
-                    await copy(input.sourcePath, input.targetPath, input.items, input.move)
+                    const sources = input.copyInfo.items.map(n => n.file)
+                    const targets = input.copyInfo.items.map(n => n.targetFile)
+                    await copy(sources, targets, input.move)
                     callback(JSON.stringify({}))
                 } catch (exception) {
                     callback(JSON.stringify({ exception }))

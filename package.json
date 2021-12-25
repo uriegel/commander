@@ -41,7 +41,7 @@
   "homepage": "https://github.com/uriegel/window-commander#readme",
   "dependencies": {
     "electron-settings": "^4.0.2",
-    "filesystem-utilities": "^4.4.0",
+    "filesystem-utilities": "5.0.0",
     "theme-change-detect": "0.0.1",
     "web-pie-progress": "^0.0.1"
   },

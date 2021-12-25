@@ -52,14 +52,12 @@ export async function deleteItems(items) {
     })
 }   
 
-export async function copyItems(sourcePath, targetPath, items, move, foldersToRefresh) {
-    // TODO sourcePath, targetPath, items => copyInfo
+export async function copyItems(copyInfo, move, overwrite, foldersToRefresh) {
     await runCmd({
         method: "copy", 
-        sourcePath,
-        targetPath, 
-        items,
-        move: move || false
+        copyInfo,
+        move: move || false,
+        overwrite
     })
     onFinish(foldersToRefresh)
 }

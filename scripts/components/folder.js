@@ -268,9 +268,7 @@ class Folder extends HTMLElement {
 }
 
 customElements.define('folder-table', Folder)
-// TODO copy/move files with exceptions
 // TODO move: delete empty source folders
-// TODO adapt windows copy/move
 // TODO CopyFile Recursion
 // TODO Processor: CanAction 
 // TODO Show trashinfo (show trash)
