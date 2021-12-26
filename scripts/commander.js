@@ -102,7 +102,7 @@ async function copy(move) {
             copyInfo.items = copyInfo.items.filter(n => !copyInfo.conflicts.find(m => m.source.file == n.file))
         await inactiveFolder.copyItems(copyInfo, move, res.result == RESULT_YES, move ? [activeFolder.id, inactiveFolder.id] : [inactiveFolder.id])
         if (move)
-            await activeFolder.deleteEmptyFolders(activeFolder.getCurrentPath(), itemsToCopy.filter(n => n.isDirectory).map(n => n.name))
+            await activeFolder.deleteEmptyFolders(itemsToCopy.filter(n => n.isDirectory).map(n => n.name))
     }
 }
 

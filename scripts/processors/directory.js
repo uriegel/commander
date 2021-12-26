@@ -16,7 +16,7 @@ import {
 const { getFiles } = window.require('filesystem-utilities')
 const fspath = window.require('path')
 const fs = window.require('fs')
-const fsp = fs.promises
+const { readdir, rmdir, stat } = window.require('fs/promises')
 
 export const getDirectory = (folderId, path) => {
     const getType = () => DIRECTORY_TYPE
@@ -163,18 +163,18 @@ export const getDirectory = (folderId, path) => {
 
     const createFolder = newFolder => runCmd({
         method: "createFolder", 
-        path: fspath.join(currentPath, newFolder
-    )})
+        path: fspath.join(currentPath, newFolder)
+    })
     
     const deleteItems = items => platformDeleteItems(items.map(n => fspath.join(currentPath, n)))
 
     async function extractFilesInFolders(sourcePath, targetPath, items) {
-        const extractFiles = async (path, target) => await extractFilesInFolders(path, target, await fsp.readdir(path))
+        const extractFiles = async (path, target) => await extractFilesInFolders(path, target, await readdir(path))
 
         const paths = (await Promise.all(items.map(async n => {
             const file = fspath.join(sourcePath, n)
             const targetFile = fspath.join(targetPath, n)
-            const info = await fsp.stat(file)
+            const info = await stat(file)
             return info.isDirectory() 
                 ? extractFiles(file, targetFile) 
                 : { file, 
@@ -188,7 +188,7 @@ export const getDirectory = (folderId, path) => {
     async function getCopyConflicts(info) {
 
         const getInfos = async file => {
-            const info = await fsp.stat(file)
+            const info = await stat(file)
             return {
                 file,
                 size: info.size,
@@ -253,10 +253,38 @@ export const getDirectory = (folderId, path) => {
 
     const copyItems = platformCopyItems
 
-    async function deleteEmptyFolders(sourcePath, folders) {
-        //const result = await (await extractFilesInFolders(sourcePath, folders)).map(n => n.file)
-        // TODO check if folders are empty: folder and subfolders, which are empty or contains only empty folders
-        // TODO delete folders
+    async function deleteEmptyFolders(path, folders) {
+        const folderPathes = folders.map(n => fspath.join(path, n))
+        
+        async function removeDirectory(folderPath) {
+
+            // TODO: virtual table: sometimes (first time) list is not filled
+            // TODO: getItems has side effects!!!!!!!!
+            // TODO new function getSubDirs
+
+            var items = (await getItems(folderPath, true))
+                .items.filter((n, i) => n.isDirectory && i)
+                .map(n => fspath.join(folderPath, n.name))
+            if (items.length == 0) {
+                try {
+                    await rmdir(folderPath)
+                } catch (err)  {
+                    console.log("error while deleting empty folder", err)
+                }
+            } else {
+                try {
+                    await Promise.all(items.map(removeDirectory))
+                } catch (err)  {
+                    console.log("error while deleting empty folders", err)
+                }
+            }
+        }
+
+        try {
+            await Promise.all(folderPathes.map(removeDirectory))
+        } catch (err)  {
+            console.log("error while deleting empty folders", err)
+        }
     }
 
     const renameItem = async (item, newName) => await platformRenameItem(fspath.join(currentPath, item), fspath.join(currentPath, newName))
