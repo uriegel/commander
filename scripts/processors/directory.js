@@ -10,13 +10,14 @@ import {
     addExtendedInfo,
     deleteItems as platformDeleteItems,
     copyItems as platformCopyItems,
-    renameItem as platformRenameItem
+    renameItem as platformRenameItem,
+    deleteEmptyFolders as platformDeleteEmptyFolders
 } from "../platforms/switcher.js"
 
 const { getFiles } = window.require('filesystem-utilities')
 const fspath = window.require('path')
 const fs = window.require('fs')
-const { readdir, rmdir, stat } = window.require('fs/promises')
+const { readdir, stat } = window.require('fs/promises')
 
 export const getDirectory = (folderId, path) => {
     const getType = () => DIRECTORY_TYPE
@@ -253,43 +254,7 @@ export const getDirectory = (folderId, path) => {
 
     const copyItems = platformCopyItems
 
-    async function deleteEmptyFolders(path, folders) {
-
-    // TODO: deleteEmptyFolders for nodejs and web
-    // TODO: Windows: deleteEmptyFolders call from nodejs 
-    // TODO: Linux: make deleteallfolders job after copy(move)-Job, refreshFolders then
-
-        const folderPathes = folders.map(n => fspath.join(path, n))
-
-        async function getSubDirs(path) {
-            path = fspath.normalize(path).replace(":.", ":\\")
-            return (await getFiles(path))
-                .filter(n => n.isDirectory)
-                .map(n => fspath.join(path, n.name))
-        }
-        
-        async function removeDirectory(folderPath) {
-            var items = await getSubDirs(folderPath)
-            if (items.length > 0) {
-                try {
-                    await Promise.all(items.map(removeDirectory))
-                } catch (err)  {
-                    console.log("error while deleting empty folders", err)
-                }
-            }
-            try {
-                await rmdir(folderPath)
-            } catch (err)  {
-                console.log("error while deleting empty folder", err)
-            }
-        }
-
-        try {
-            await Promise.all(folderPathes.map(removeDirectory))
-        } catch (err)  {
-            console.log("error while deleting empty folders", err)
-        }
-    }
+    const deleteEmptyFolders = platformDeleteEmptyFolders
 
     const renameItem = async (item, newName) => await platformRenameItem(fspath.join(currentPath, item), fspath.join(currentPath, newName))
 
@@ -330,7 +295,7 @@ export const getDirectory = (folderId, path) => {
         getCopyConflicts,
         prepareCopyItems,
         copyItems, 
-        deleteEmptyFolders,
-        renameItem
+        renameItem,
+        deleteEmptyFolders
     }
 }

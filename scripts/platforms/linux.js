@@ -81,6 +81,10 @@ export async function copyItems(copyInfo, move, overwrite, foldersToRefresh) {
     copyInfo.items.forEach(n => copyProcessor.addJob(n.file, n.targetFile, move, overwrite, foldersToRefresh))
 }
 
+export function deleteEmptyFolders(path, folders, foldersToRefresh) {
+    copyProcessor.addDeleteEmptyFolders(path, folders, foldersToRefresh)
+}
+
 export async function renameItem(item, newName) {
     await copy(item, newName, () => {}, true)
 }

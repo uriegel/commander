@@ -13,7 +13,8 @@ import {
     addExtendedInfo as addExtendedInfoLinux,
     deleteItems as deleteItemsLinux,
     copyItems as copyItemsLinux,
-    renameItem as renameItemLinux
+    renameItem as renameItemLinux,
+    deleteEmptyFolders as deleteEmptyFoldersLinux
 } from "./linux"
 import {
     initializeCopying as initializeCopyingWindows,
@@ -28,7 +29,8 @@ import {
     addExtendedInfo as addExtendedInfoWindows,
     deleteItems as deleteItemsWindows,
     copyItems as copyItemsWindows,
-    renameItem as renameItemWindows
+    renameItem as renameItemWindows,
+    deleteEmptyFolders as deleteEmptyFoldersWindows
 } from "./windows"
 
 export { hideMenu } from "./linux"
@@ -45,7 +47,7 @@ export var addExtendedInfo = isLinux ? addExtendedInfoLinux : addExtendedInfoWin
 export var deleteItems = isLinux ? deleteItemsLinux : deleteItemsWindows
 export var copyItems = isLinux ? copyItemsLinux : copyItemsWindows
 export var renameItem = isLinux ? renameItemLinux : renameItemWindows
-
+export var deleteEmptyFolders = isLinux ? deleteEmptyFoldersLinux : deleteEmptyFoldersWindows
 
 
 

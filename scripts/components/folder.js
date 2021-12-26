@@ -251,8 +251,8 @@ class Folder extends HTMLElement {
         await this.processor.copyItems(copyInfo, move, overwrite, foldersToRefresh)
     }
 
-    async deleteEmptyFolders(folders) {
-        await this.processor.deleteEmptyFolders(this.getCurrentPath(), folders)
+    async deleteEmptyFolders(folders, foldersToRefresh) {
+        await this.processor.deleteEmptyFolders(this.getCurrentPath(), folders, foldersToRefresh)
     }
 
     async renameItem(item, newName) {
@@ -272,7 +272,7 @@ class Folder extends HTMLElement {
 }
 
 customElements.define('folder-table', Folder)
-// TODO move: delete empty source folders
+// TODO: Windows: deleteEmptyFolders call from nodejs 
 // TODO CopyFile Recursion
 // TODO Processor: CanAction 
 // TODO Show trashinfo (show trash)

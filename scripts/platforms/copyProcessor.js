@@ -1,3 +1,5 @@
+import { deleteEmptyFolders } from "../utils.js"
+
 const fs = window.require('fs')
 const { copy } = window.require('filesystem-utilities')
 
@@ -43,7 +45,10 @@ export function createCopyProcessor(onCopyFinish, onShowErrors) {
                 if (!job) 
                     break
                 try {
-                    await copy(job.source, job.target, c => onProgress(alreadyCopied + c, totalSize), job.move || false, job.overwrite || false)
+                    if (!job.deleteEmptyFolders)
+                        await copy(job.source, job.target, c => onProgress(alreadyCopied + c, totalSize), job.move || false, job.overwrite || false)
+                    else
+                        await deleteEmptyFolders(job.deleteEmptyFolders.path, job.deleteEmptyFolders.folders)
                 } catch (err) {
                     onException(err)
                 }
@@ -56,6 +61,16 @@ export function createCopyProcessor(onCopyFinish, onShowErrors) {
             isProcessing = false
         }
     )
+
+    const addDeleteEmptyFolders = (path, folders, foldersToRefresh) => {
+        folderIdsToRefresh = [...new Set(folderIdsToRefresh.concat(foldersToRefresh))]
+        queue.push({ deleteEmptyFolders: { path, folders } })
+
+        if (!isProcessing) {
+            isProcessing = true
+            process()
+        }
+    }
 
     const addJob = (source, target, move, overwrite, foldersToRefresh) => {
 
@@ -98,7 +113,8 @@ export function createCopyProcessor(onCopyFinish, onShowErrors) {
     }
 
     return {
-        addJob
+        addJob,
+        addDeleteEmptyFolders
     }
 }
 
