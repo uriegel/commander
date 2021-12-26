@@ -2,7 +2,6 @@ export const DIRECTORY_TYPE = "directory"
 import { formatDateTime, formatSize, getExtension } from "./rendertools.js"
 import { ROOT } from "./root.js"
 import { FILE, DIRECTORY } from '../commander.js'
-
 import {
     pathDelimiter,
     adaptDirectoryColumns,
@@ -13,6 +12,7 @@ import {
     copyItems as platformCopyItems,
     renameItem as platformRenameItem
 } from "../platforms/switcher.js"
+
 const { getFiles } = window.require('filesystem-utilities')
 const fspath = window.require('path')
 const fs = window.require('fs')
@@ -254,28 +254,33 @@ export const getDirectory = (folderId, path) => {
     const copyItems = platformCopyItems
 
     async function deleteEmptyFolders(path, folders) {
+
+    // TODO: deleteEmptyFolders for nodejs and web
+    // TODO: Windows: deleteEmptyFolders call from nodejs 
+    // TODO: Linux: make deleteallfolders job after copy(move)-Job, refreshFolders then
+
         const folderPathes = folders.map(n => fspath.join(path, n))
+
+        async function getSubDirs(path) {
+            path = fspath.normalize(path).replace(":.", ":\\")
+            return (await getFiles(path))
+                .filter(n => n.isDirectory)
+                .map(n => fspath.join(path, n.name))
+        }
         
         async function removeDirectory(folderPath) {
-
-            // TODO: getItems has side effects!!!!!!!!
-            // TODO new function getSubDirs
-
-            var items = (await getItems(folderPath, true))
-                .items.filter((n, i) => n.isDirectory && i)
-                .map(n => fspath.join(folderPath, n.name))
-            if (items.length == 0) {
-                try {
-                    await rmdir(folderPath)
-                } catch (err)  {
-                    console.log("error while deleting empty folder", err)
-                }
-            } else {
+            var items = await getSubDirs(folderPath)
+            if (items.length > 0) {
                 try {
                     await Promise.all(items.map(removeDirectory))
                 } catch (err)  {
                     console.log("error while deleting empty folders", err)
                 }
+            }
+            try {
+                await rmdir(folderPath)
+            } catch (err)  {
+                console.log("error while deleting empty folder", err)
             }
         }
 
