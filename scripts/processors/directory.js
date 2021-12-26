@@ -258,7 +258,6 @@ export const getDirectory = (folderId, path) => {
         
         async function removeDirectory(folderPath) {
 
-            // TODO: virtual table: sometimes (first time) list is not filled
             // TODO: getItems has side effects!!!!!!!!
             // TODO new function getSubDirs
 

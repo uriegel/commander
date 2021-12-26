@@ -112,7 +112,7 @@ class CopyConflicts extends HTMLElement {
     setItems(items) {
         var observer = new IntersectionObserver((e, o)  => {
             o.unobserve(this.table)
-            this.table.setItems(items)
+            setTimeout(() => this.table.setItems(items))
         }, { root: document.documentElement })
         observer.observe(this.table)
     }
