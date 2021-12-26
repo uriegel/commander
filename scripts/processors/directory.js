@@ -179,7 +179,7 @@ export const getDirectory = (folderId, path) => {
                 ? extractFiles(file, targetFile) 
                 : { file, 
                     targetFile, 
-                    targetExists: fs.existsSync(targetFile) 
+                    targetExists: fs.existsSync(targetFile)
                 } 
         }))).flatMap(n => n)
         return paths
@@ -253,6 +253,12 @@ export const getDirectory = (folderId, path) => {
 
     const copyItems = platformCopyItems
 
+    async function deleteEmptyFolders(sourcePath, folders) {
+        //const result = await (await extractFilesInFolders(sourcePath, folders)).map(n => n.file)
+        // TODO check if folders are empty: folder and subfolders, which are empty or contains only empty folders
+        // TODO delete folders
+    }
+
     const renameItem = async (item, newName) => await platformRenameItem(fspath.join(currentPath, item), fspath.join(currentPath, newName))
 
     function compareVersion(versionLeft, versionRight) {
@@ -292,6 +298,7 @@ export const getDirectory = (folderId, path) => {
         getCopyConflicts,
         prepareCopyItems,
         copyItems, 
+        deleteEmptyFolders,
         renameItem
     }
 }

@@ -98,11 +98,11 @@ async function copy(move) {
     const res = await dialog.show(copyInfo.dialogData)
     activeFolder.setFocus()
     if (res.result != RESULT_CANCEL) {
-        console.log("copyInfo", copyInfo, move ? [activeFolder.id, inactiveFolder.id] : [inactiveFolder.id], [inactiveFolder.id])
         if (res.result == RESULT_NO) 
             copyInfo.items = copyInfo.items.filter(n => !copyInfo.conflicts.find(m => m.source.file == n.file))
-        console.log("copyInfo3", copyInfo, move ? [activeFolder.id, inactiveFolder.id] : [inactiveFolder.id], [inactiveFolder.id])
         await inactiveFolder.copyItems(copyInfo, move, res.result == RESULT_YES, move ? [activeFolder.id, inactiveFolder.id] : [inactiveFolder.id])
+        if (move)
+            await activeFolder.deleteEmptyFolders(activeFolder.getCurrentPath(), itemsToCopy.filter(n => n.isDirectory).map(n => n.name))
     }
 }
 
