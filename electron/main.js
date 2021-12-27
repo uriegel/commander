@@ -15,7 +15,7 @@ const createWindow = async () => {
 
     protocol.registerBufferProtocol('icon', async (request, callback) => {
         const url = request.url
-        var ext = url.substr(7)
+        var ext = url.substring(7)
         var icon = await getIcon(ext)
         callback({ mimeType: 'img/png', data: icon })
     }, (error) => {
@@ -24,7 +24,7 @@ const createWindow = async () => {
 
     protocol.registerFileProtocol('view', async (request, callback) => {
         const url = request.url
-        var path = decodeURI(url.substr(7))
+        var path = decodeURI(url.substring(7))
         callback(path)
     })
 

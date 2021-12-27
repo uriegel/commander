@@ -1,6 +1,6 @@
 import 'virtual-table-component'
 import { formatDateTime, formatSize, getExtension } from "../processors/rendertools.js"
-import { pathDelimiter } from "../platforms/switcher.js"
+import { adaptConflictColumns } from "../platforms/switcher.js"
 
 class CopyConflicts extends HTMLElement {
     constructor() {
@@ -93,7 +93,7 @@ class CopyConflicts extends HTMLElement {
                 td.appendChild(element)
             }
         }]
-        this.table.setColumns(columns)
+        this.table.setColumns(adaptConflictColumns(columns))
     }
 
     createdCallback() {

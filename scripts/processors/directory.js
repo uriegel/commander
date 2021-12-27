@@ -190,6 +190,7 @@ export const getDirectory = (folderId, path) => {
 
         const getInfos = async (file, subPath) => {
             const info = await stat(file)
+            // TODO call platform function to enhance object
             return {
                 file,
                 name: subPath ? file.substr(subPath.length + 1) : undefined,

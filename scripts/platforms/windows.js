@@ -16,18 +16,45 @@ export function onDarkTheme(dark) {
 
 export const adaptRootColumns = columns => columns
 
-export function adaptDirectoryColumns(columns) {
-    return [
-        ...columns.slice(0, 3), {
-            name: "Version",
-            isSortable: true,
-            render: (td, item) => {
-                if (item.version)
-                    td.innerHTML = `${item.version.major}.${item.version.minor}.${item.version.patch}.${item.version.build}`
-            }
+export const adaptDirectoryColumns = columns => [
+    ...columns.slice(0, columns.length), {
+        name: "Version",
+        isSortable: true,
+        render: (td, item) => {
+            if (item.version)
+                td.innerHTML = `${item.version.major}.${item.version.minor}.${item.version.patch}.${item.version.build}`
         }
-    ]
-}
+    }
+]
+
+export const adaptConflictColumns = columns => [
+    ...columns.slice(0, columns.length), {
+        name: "Version",
+        isSortable: true,
+        render: (td, item) => {
+            const template = document.getElementById('conflictItem')
+            const element = template.content.cloneNode(true)
+            const source = element.querySelector("div:first-child")
+            if (item.source.version)
+                source.innerHTML = `${item.source.version.major}.${item.source.version.minor}.${item.source.version.patch}.${item.source.version.build}`
+            const target = element.querySelector("div:last-child")
+            if (item.target.version)
+                target.innerHTML = `${item.target.version.major}.${item.target.version.minor}.${item.target.version.patch}.${item.target.version.build}`
+            // TODO compare
+            // if (item.target.time.getTime() == item.source.time.getTime())
+            //     td.classList.add("equal")
+            // else if (item.source.time.getTime() > item.target.time.getTime())
+            //     source.classList.add("overwrite")
+            // else 
+            //     target.classList.add("not-overwrite")
+            td.appendChild(element)
+
+            
+            if (item.version)
+                td.innerHTML = `${item.version.major}.${item.version.minor}.${item.version.patch}.${item.version.build}`
+        }
+    }
+]
 
 export const getRootPath = item => [ item.name, null ]
 

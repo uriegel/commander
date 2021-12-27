@@ -57,6 +57,8 @@ export function adaptRootColumns(columns) {
 
 export const adaptDirectoryColumns = columns => columns
 
+export const adaptConflictColumns = columns => columns
+
 export const getRootPath = item => [item.mountPoint, null]
 
 export const pathDelimiter = "/"
