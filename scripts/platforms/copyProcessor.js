@@ -1,4 +1,4 @@
-import { deleteEmptyFolders } from "../utils.js"
+import { deleteEmptyFolders } from "../../shared/utils.js"
 
 const fs = window.require('fs')
 const { copy } = window.require('filesystem-utilities')
