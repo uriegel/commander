@@ -32,10 +32,6 @@ class Folder extends HTMLElement {
     
     get selectedItems() { return this.getSelectedItems() }
     
-    onResize() {
-        this.table.reRender()
-    }
-
     showHidden(hidden) {
         this.showHiddenItems = hidden
         this.reloadItems()
@@ -146,7 +142,6 @@ class Folder extends HTMLElement {
         this.pathInput.onfocus = () => setTimeout(() => this.pathInput.select())
 
         const viewerSplitter = document.getElementById("viewerSplitter")
-        viewerSplitter.addEventListener("position-changed", () => this.onResize())
     }
 
     getSelectedItem() {
@@ -272,9 +267,7 @@ class Folder extends HTMLElement {
 }
 
 customElements.define('folder-table', Folder)
-// TODO: CopyConflicts table is to small to scroll
 // TODO: Windows version in conflicts
-// TODO: gridsplitter and virtualtableview: resizeObserver and intersectionObserver
 // TODO CopyFile Recursion
 // TODO Processor: CanAction 
 // TODO Show trashinfo (show trash)

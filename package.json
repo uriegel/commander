@@ -50,7 +50,7 @@
     "electron": "^15.2.0",
     "electron-builder": "^22.13.1",
     "grid-splitter": "^0.1.0",
-    "virtual-table-component": "^0.3.2",
+    "virtual-table-component": "^1.0.0",
     "web-dialog-box": "^1.0.3",
     "web-electron-titlebar": "^0.2.0",
     "web-menu-bar": "^0.3.0",

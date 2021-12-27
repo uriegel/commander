@@ -40,10 +40,6 @@ const themeChanges = window.require("theme-change-detect")
 themeChanges.register(theme => onDarkTheme(theme.isDark))
 onDarkTheme(themeChanges.getTheme().isDark)
 
-menu.addEventListener('resize', () => {
-    folderLeft.onResize()
-    folderRight.onResize()        
-})
 menu.addEventListener('menuclosed', () => activeFolder.setFocus())
 
 folderLeft.addEventListener("onFocus", () => activeFolder = folderLeft)
@@ -248,11 +244,7 @@ var currentPath = ""
 
 var commander = {
     showHidden,
-    showViewer: show => {
-        showViewer(show, currentPath)
-        folderLeft.onResize()
-        folderRight.onResize()
-    },
+    showViewer: show => showViewer(show, currentPath),
     refresh,
     adaptPath,
     createFolder,
