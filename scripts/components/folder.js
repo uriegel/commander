@@ -267,8 +267,7 @@ class Folder extends HTMLElement {
 }
 
 customElements.define('folder-table', Folder)
-// TODO: Windows version in conflicts
-// TODO CopyFile Recursion
+// TODO Windows version in conflicts
 // TODO Processor: CanAction 
 // TODO Show trashinfo (show trash)
 // TODO Undelete files
@@ -283,5 +282,4 @@ customElements.define('folder-table', Folder)
 
 // TODO xdg-open
 
-// TODO ConflictList before copy
 // TODO stack MessageBoxes
