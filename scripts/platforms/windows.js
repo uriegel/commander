@@ -70,4 +70,13 @@ export async function renameItem(item, newName) {
     })
 }
 
+export async function deleteEmptyFolders(path, folders, foldersToRefresh) {
+    await runCmd({
+        method: "deleteEmptyFolders", 
+        path,
+        folders
+    })
+    onFinish(foldersToRefresh)
+}
+
 var onFinish

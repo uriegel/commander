@@ -1,8 +1,8 @@
-const fspath = window.require('path')
-const { rmdir } = window.require('fs/promises')
-const { getFiles } = window.require('filesystem-utilities')
+const fspath = require('path')
+const { rmdir } = require('fs/promises')
+const { getFiles } = require('filesystem-utilities')
 
-export async function deleteEmptyFolders(path, folders) {
+async function deleteEmptyFolders(path, folders) {
     const folderPathes = folders.map(n => fspath.join(path, n))
 
     async function getSubDirs(path) {
@@ -34,3 +34,5 @@ export async function deleteEmptyFolders(path, folders) {
         console.log("error while deleting empty folders", err)
     }
 }
+
+exports.deleteEmptyFolders = deleteEmptyFolders

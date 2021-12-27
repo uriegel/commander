@@ -42,6 +42,7 @@
   "dependencies": {
     "electron-settings": "^4.0.2",
     "filesystem-utilities": "5.0.0",
+    "shared-module": "file:shared-module",
     "theme-change-detect": "0.0.1",
     "web-pie-progress": "^0.0.1"
   },

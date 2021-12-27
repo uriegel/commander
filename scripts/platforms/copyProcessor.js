@@ -1,7 +1,6 @@
-import { deleteEmptyFolders } from "../../shared/utils.js"
-
 const fs = window.require('fs')
 const { copy } = window.require('filesystem-utilities')
+const { deleteEmptyFolders } = window.require ("shared-module")
 
 export function createCopyProcessor(onCopyFinish, onShowErrors) {
     const progress = document.getElementById("progress")

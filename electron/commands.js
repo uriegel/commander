@@ -1,5 +1,6 @@
 const { protocol } = require("electron")
 const { createFolder, copy, trash } = require("filesystem-utilities")
+const { deleteEmptyFolders } = require("shared-module")
 
 const registerRunCmd = () => {
     protocol.registerStringProtocol('http', async (request, callback) => {
@@ -38,6 +39,14 @@ const registerRunCmd = () => {
                 } catch (exception) {
                     callback(JSON.stringify({ exception }))
                 }
+                break
+            case "deleteEmptyFolders":
+                try {
+                    await deleteEmptyFolders(input.path, input.folders)
+                } catch (exception) {
+                    console.log(exception)
+                }
+                callback(JSON.stringify({}))
                 break
             default:
                 callback(JSON.stringify({ exception: "Method not implemented" }))

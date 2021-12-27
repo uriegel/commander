@@ -272,7 +272,9 @@ class Folder extends HTMLElement {
 }
 
 customElements.define('folder-table', Folder)
-// TODO: Windows: deleteEmptyFolders call from nodejs 
+// TODO: in CopyConflicts: add subpath
+// TODO: Windows version in conflicts
+// TODO: gridsplitter and virtualtableview: resizeObserver and intersectionObserver
 // TODO CopyFile Recursion
 // TODO Processor: CanAction 
 // TODO Show trashinfo (show trash)
