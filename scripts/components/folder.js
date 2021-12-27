@@ -243,7 +243,7 @@ class Folder extends HTMLElement {
         const targetPath = this.processor.getCurrentPath()
         const copyInfo = {}
         copyInfo.items = await this.processor.extractFilesInFolders(sourcePath, targetPath, items)
-        copyInfo.conflicts = await this.processor.getCopyConflicts(copyInfo.items)
+        copyInfo.conflicts = await this.processor.getCopyConflicts(copyInfo.items, sourcePath)
         return this.processor.prepareCopyItems(move, itemsType, items.length == 1, fromLeft, copyInfo)
     }
 
@@ -272,7 +272,7 @@ class Folder extends HTMLElement {
 }
 
 customElements.define('folder-table', Folder)
-// TODO: in CopyConflicts: add subpath
+// TODO: CopyConflicts table is to small to scroll
 // TODO: Windows version in conflicts
 // TODO: gridsplitter and virtualtableview: resizeObserver and intersectionObserver
 // TODO CopyFile Recursion

@@ -49,7 +49,7 @@ class CopyConflicts extends HTMLElement {
                 // if (ext == "exe") {
                 //    img.src = `icon://${}`
                 // } else 
-                const name = item.source.file.substr(item.source.file.lastIndexOf(pathDelimiter) + 1)
+                const name = item.source.name
 
                 const template = document.getElementById('conflictName')
                 const element = template.content.cloneNode(true)
