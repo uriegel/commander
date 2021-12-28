@@ -38,3 +38,16 @@ export const formatDateTime = unixDate => {
 
     return dateFormat.format(unixDate) + " " + timeFormat.format(unixDate)  
 }
+
+export const compareVersion = (versionLeft, versionRight) =>
+    !versionLeft
+    ? -1
+    : !versionRight
+    ? 1
+    : versionLeft.major != versionRight.major 
+    ? versionLeft.major - versionRight.major
+    : versionLeft.minor != versionRight.minor
+    ? versionLeft.minor - versionRight.minor
+    : versionLeft.patch != versionRight.patch
+    ? versionLeft.patch - versionRight.patch
+    : versionLeft.build - versionRight.build

@@ -267,7 +267,7 @@ class Folder extends HTMLElement {
 }
 
 customElements.define('folder-table', Folder)
-// TODO Windows version in conflicts
+// TODO Linux: copy to self
 // TODO Processor: CanAction 
 // TODO Show trashinfo (show trash)
 // TODO Undelete files
@@ -276,6 +276,7 @@ customElements.define('folder-table', Folder)
 // TODO Copy with Drag'n'Drop (from external or from internal)
 // TODO When a path is not available anymore: fallback to root
 // TODO ProgressControl: multiple progresses: show in ProgressBars in popovermenu, show latest in ProgressPie
+// TODO Windows after copy: electron does not have focus
 
 // TODO Status line (# files, # selected files), root
 // TODO Status Linux: styling

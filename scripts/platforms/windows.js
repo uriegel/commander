@@ -1,12 +1,8 @@
 const fspath = window.require('path')
-const getExifDate = window.require('filesystem-utilities').getExifDate
-const getFileVersion = window.require('filesystem-utilities').getFileVersion
-const trash = window.require('filesystem-utilities').trash
-const copy = window.require('filesystem-utilities').copy
+const { getExifDate, getFileVersion } = window.require('filesystem-utilities')
+import { compareVersion } from "../processors/rendertools.js"
 
 export const initializeCopying = onFinishCallback => onFinish = onFinishCallback
-
-
 export const adaptWindow = (menu, itemHideMenu) => itemHideMenu.isHidden = true
 
 export function onDarkTheme(dark) {
@@ -20,10 +16,7 @@ export const adaptDirectoryColumns = columns => [
     ...columns.slice(0, columns.length), {
         name: "Version",
         isSortable: true,
-        render: (td, item) => {
-            if (item.version)
-                td.innerHTML = `${item.version.major}.${item.version.minor}.${item.version.patch}.${item.version.build}`
-        }
+        render: (td, item) => td.innerHTML = fillVersion(item.version)
     }
 ]
 
@@ -35,23 +28,18 @@ export const adaptConflictColumns = columns => [
             const template = document.getElementById('conflictItem')
             const element = template.content.cloneNode(true)
             const source = element.querySelector("div:first-child")
-            if (item.source.version)
-                source.innerHTML = `${item.source.version.major}.${item.source.version.minor}.${item.source.version.patch}.${item.source.version.build}`
+            source.innerHTML = fillVersion(item.source.version)
             const target = element.querySelector("div:last-child")
-            if (item.target.version)
-                target.innerHTML = `${item.target.version.major}.${item.target.version.minor}.${item.target.version.patch}.${item.target.version.build}`
-            // TODO compare
-            // if (item.target.time.getTime() == item.source.time.getTime())
-            //     td.classList.add("equal")
-            // else if (item.source.time.getTime() > item.target.time.getTime())
-            //     source.classList.add("overwrite")
-            // else 
-            //     target.classList.add("not-overwrite")
-            td.appendChild(element)
+            target.innerHTML = fillVersion(item.target.version)
 
-            
-            if (item.version)
-                td.innerHTML = `${item.version.major}.${item.version.minor}.${item.version.patch}.${item.version.build}`
+            var diff = compareVersion(item.source.version, item.target.version)
+            if (diff == 0)
+                td.classList.add("equal")
+            else if (diff > 0)
+                source.classList.add("overwrite")
+            else 
+                target.classList.add("not-overwrite")
+            td.appendChild(element)
         }
     }
 ]
@@ -105,5 +93,12 @@ export async function deleteEmptyFolders(path, folders, foldersToRefresh) {
     })
     onFinish(foldersToRefresh)
 }
+
+export const enhanceCopyConflictData = async item => ({
+    ...item,
+    version: await getFileVersion(item.file)
+})
+
+const fillVersion = version => version ? `${version.major}.${version.minor}.${version.patch}.${version.build}` : ""
 
 var onFinish

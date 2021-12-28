@@ -91,6 +91,8 @@ export async function renameItem(item, newName) {
     await copy(item, newName, () => {}, true)
 }
 
+export const enhanceCopyConflictData = async item => item
+
 var itemHideMenu
 var menu
 var dialog

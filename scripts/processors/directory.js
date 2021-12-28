@@ -1,5 +1,5 @@
 export const DIRECTORY_TYPE = "directory"
-import { formatDateTime, formatSize, getExtension } from "./rendertools.js"
+import { formatDateTime, formatSize, getExtension, compareVersion } from "./rendertools.js"
 import { ROOT } from "./root.js"
 import { FILE, DIRECTORY } from '../commander.js'
 import {
@@ -11,7 +11,8 @@ import {
     deleteItems as platformDeleteItems,
     copyItems as platformCopyItems,
     renameItem as platformRenameItem,
-    deleteEmptyFolders as platformDeleteEmptyFolders
+    deleteEmptyFolders as platformDeleteEmptyFolders,
+    enhanceCopyConflictData 
 } from "../platforms/switcher.js"
 
 const { getFiles } = window.require('filesystem-utilities')
@@ -190,13 +191,12 @@ export const getDirectory = (folderId, path) => {
 
         const getInfos = async (file, subPath) => {
             const info = await stat(file)
-            // TODO call platform function to enhance object
-            return {
-                file,
+            return await enhanceCopyConflictData({  
+                file,       
                 name: subPath ? file.substr(subPath.length + 1) : undefined,
                 size: info.size,
                 time: info.mtime,
-            }
+            })
         }
 
         return await Promise.all(
@@ -259,24 +259,6 @@ export const getDirectory = (folderId, path) => {
     const deleteEmptyFolders = platformDeleteEmptyFolders
 
     const renameItem = async (item, newName) => await platformRenameItem(fspath.join(currentPath, item), fspath.join(currentPath, newName))
-
-    function compareVersion(versionLeft, versionRight) {
-        if (!versionLeft)
-            return -1
-        else if (!versionRight)
-            return 1
-        else
-        {
-            if (versionLeft.major != versionRight.major)
-                return versionLeft.major - versionRight.major
-            else if (versionLeft.minor != versionRight.minor)
-                return versionLeft.minor - versionRight.minor
-            else if (versionLeft.patch != versionRight.patch)
-                return versionLeft.patch - versionRight.patch
-            else if (versionLeft.build != versionRight.build)
-                return versionLeft.build - versionRight.build
-        }
-    }
 
     return {
         getType,

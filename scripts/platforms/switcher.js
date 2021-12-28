@@ -15,7 +15,8 @@ import {
     deleteItems as deleteItemsLinux,
     copyItems as copyItemsLinux,
     renameItem as renameItemLinux,
-    deleteEmptyFolders as deleteEmptyFoldersLinux
+    deleteEmptyFolders as deleteEmptyFoldersLinux,
+    enhanceCopyConflictData as enhanceCopyConflictDataLinux
 } from "./linux"
 import {
     initializeCopying as initializeCopyingWindows,
@@ -32,7 +33,8 @@ import {
     deleteItems as deleteItemsWindows,
     copyItems as copyItemsWindows,
     renameItem as renameItemWindows,
-    deleteEmptyFolders as deleteEmptyFoldersWindows
+    deleteEmptyFolders as deleteEmptyFoldersWindows,
+    enhanceCopyConflictData as enhanceCopyConflictDataWindows
 } from "./windows"
 
 export { hideMenu } from "./linux"
@@ -51,7 +53,7 @@ export var deleteItems = isLinux ? deleteItemsLinux : deleteItemsWindows
 export var copyItems = isLinux ? copyItemsLinux : copyItemsWindows
 export var renameItem = isLinux ? renameItemLinux : renameItemWindows
 export var deleteEmptyFolders = isLinux ? deleteEmptyFoldersLinux : deleteEmptyFoldersWindows
-
+export var enhanceCopyConflictData = isLinux ? enhanceCopyConflictDataLinux : enhanceCopyConflictDataWindows
 
 
     
