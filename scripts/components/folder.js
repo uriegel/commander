@@ -217,7 +217,7 @@ class Folder extends HTMLElement {
     getSelectedItems() {
         const selectedItems = this.table.items
             .filter(n => n.isSelected) 
-        if (selectedItems.length == 0 && this.table.getPosition() == 0)
+        if (selectedItems.length == 0 && this.table.getPosition() == 0 && this.table.items[0].name == "..")
             return []
         return selectedItems.length > 0
             ? selectedItems
@@ -267,7 +267,13 @@ class Folder extends HTMLElement {
 }
 
 customElements.define('folder-table', Folder)
-// TODO Linux: copy to self
+
+// TODO Linux:
+// grid-splitter => copy to test/grid-splitter
+// Restrictions scroll: after a while commander crashes
+
+// TODO Copy conflicts: order by red, then green, then equal
+
 // TODO Processor: CanAction 
 // TODO Show trashinfo (show trash)
 // TODO Undelete files
@@ -276,11 +282,13 @@ customElements.define('folder-table', Folder)
 // TODO Copy with Drag'n'Drop (from external or from internal)
 // TODO When a path is not available anymore: fallback to root
 // TODO ProgressControl: multiple progresses: show in ProgressBars in popovermenu, show latest in ProgressPie
-// TODO Windows after copy: electron does not have focus
+// TODO Windows after copy: electron does not have focus. Old Commander is OK!!!!!!!
 
 // TODO Status line (# files, # selected files), root
 // TODO Status Linux: styling
 
 // TODO xdg-open
+// TODO retrieve copy conflicts only, if source folders and target folders are the same
+// TODO Linux: copy to self
 
 // TODO stack MessageBoxes
