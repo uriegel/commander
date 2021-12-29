@@ -47,17 +47,18 @@ export const getDirectory = (folderId, path) => {
                 } else {
                     const img = document.createElement("img")
                     const ext = getExtension(item.name)
-                    if (ext) {
+                    // TODO: Windows
+                    //if (ext) {
                         // if (ext == "exe") {
                         //    img.src = `icon://${}`
                         // } else 
                         img.src = `icon://${ext}`
                         img.classList.add("image")
                         td.appendChild(img)
-                    } else {
-                        var t = document.querySelector(selector)
-                        td.appendChild(document.importNode(t.content, true))
-                    }
+                    // } else {
+                    //     var t = document.querySelector(selector)
+                    //     td.appendChild(document.importNode(t.content, true))
+                    // }
                 }
 
                 const span = document.createElement('span')

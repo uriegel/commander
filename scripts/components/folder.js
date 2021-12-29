@@ -268,13 +268,6 @@ class Folder extends HTMLElement {
 
 customElements.define('folder-table', Folder)
 
-// TODO Linux:
-// grid-splitter => copy to test/grid-splitter
-// Restrictions scroll: after a while commander crashes
-//R:browser_main_loop.cc(269)] GLib-GObject: g_object_ref: assertion '!object_already_finalized' failed
-//[11674:1228/101315.008883:ERROR:browser_main_loop.cc(269)] Gtk: gtk_icon_info_get_filename: assertion 'icon_info != NULL' failed
-//home/uwe/Projekte/commander/node_modules/electron/dist/electron exited with signal SIGSEGV
-
 // TODO Copy conflicts: order by red, then green, then equal
 
 // TODO Processor: CanAction 
