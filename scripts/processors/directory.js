@@ -20,7 +20,7 @@ const fspath = window.require('path')
 const fs = window.require('fs')
 const { readdir, stat } = window.require('fs/promises')
 
-export const getDirectory = (folderId, path) => {
+export const getDirectory = (folderId, path, onDragStart, onDrag, onDragEnd) => {
     const getType = () => DIRECTORY_TYPE
     
     let currentPath = ""
@@ -88,6 +88,10 @@ export const getDirectory = (folderId, path) => {
     }
 
     const renderRow = (item, tr) => {
+        tr.setAttribute("draggable", "true")
+        tr.ondragstart = evt => onDragStart(evt)
+        tr.ondrag = evt => onDrag(evt)
+        tr.ondragend = evt => onDragEnd(evt)
         if (item.isHidden)
             tr.style.opacity = 0.5
     }

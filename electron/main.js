@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain, protocol } = require('electron')
 const process = require("process")
+const path = require("path")
 const settings = require('electron-settings')
 const { getIcon } = require('filesystem-utilities')
 const { registerRunCmd } = require('./commands')
@@ -8,6 +9,8 @@ const { registerRunCmd } = require('./commands')
 //     require('vue-devtools').install()
 
 const isLinux = process.platform == "linux"
+const icon = path.join(__dirname, '../web/assets/kirk.png')
+
 const createWindow = async () => {    
 
     const initGtk = async () => await getIcon(".js")
@@ -58,6 +61,11 @@ const createWindow = async () => {
             win.restore()
         else
             win.maximize()  
+    })
+
+    ipcMain.on("dragStart", (evt, files) => { 
+        console.log("dragStart", files)
+        win.webContents.startDrag({ files, icon })
     })
     
     win.once('ready-to-show', () => { 

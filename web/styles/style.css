@@ -78,6 +78,10 @@ body {
     display: none;
 }
 
+.onDragStarted {
+    filter: blur(2px);
+}
+
 .filler {
     flex-grow: 1;
 }

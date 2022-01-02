@@ -1,5 +1,7 @@
 import 'virtual-table-component'
 import { getProcessor } from '../processors/processor.js'
+const ipcRenderer = window.require('electron').ipcRenderer
+const fspath = window.require('path')
 
 class Folder extends HTMLElement {
     constructor() {
@@ -16,6 +18,7 @@ class Folder extends HTMLElement {
             </div`
         
         this.table = this.getElementsByTagName("VIRTUAL-TABLE")[0]
+        this.folderRoot = this.getElementsByClassName("folderroot")[0]
         const sbr = this.getAttribute("scrollbar-right")
         if (sbr)
             this.table.setAttribute("scrollbar-right", sbr)
@@ -149,7 +152,8 @@ class Folder extends HTMLElement {
     }
 
     async changePath(path, fromBacklog) {
-        const result = getProcessor(this.folderId, path, this.processor)
+        const result = getProcessor(this.folderId, path, this.processor, 
+            evt => this.onDragStart(evt), evt => this.onDrag(evt), evt => this.onDragEnd(evt))
         const req = ++this.latestRequest
         const itemsResult = (await result.processor.getItems(path, this.showHiddenItems))
         path = itemsResult.path
@@ -263,6 +267,24 @@ class Folder extends HTMLElement {
                 files: this.filesCount
             }
         }))
+    }
+
+    onDragStart(evt) { 
+        console.log("onDragStart", this, evt) 
+        this.folderRoot.classList.add("onDragStarted")
+        evt.dataTransfer.setData("copyFiles", "JSON.stringify(files)")
+    }
+    onDrag(evt) { 
+        console.log("onDrag", evt) 
+        if (evt.screenX == 0 && evt.screenY == 0) {
+            ipcRenderer.send("dragStart", this.selectedItems.map(n => fspath.join(this.getCurrentPath(), n.name)))
+            this.folderRoot.classList.remove("onDragStarted")
+            evt.preventDefault()
+        }        
+    }
+    onDragEnd(evt) { 
+        console.log("onDragEnd", evt) 
+        this.folderRoot.classList.remove("onDragStarted")
     }
 }
 
