@@ -133,10 +133,10 @@ class Folder extends HTMLElement {
             this.sendStatusInfo(this.table.getPosition())
         })
 
-        // this.folderRoot.addEventListener("dragenter", evt => this.onDragEnter(evt))
-        // this.folderRoot.addEventListener("dragleave", evt => this.onDragLeave(evt))
-        // this.folderRoot.addEventListener("dragover", evt => this.onDragOver(evt))
-        // this.folderRoot.addEventListener("drop", evt => this.onDrop(evt))
+        this.folderRoot.addEventListener("dragenter", evt => this.onDragEnter(evt))
+        this.folderRoot.addEventListener("dragleave", evt => this.onDragLeave(evt))
+        this.folderRoot.addEventListener("dragover", evt => this.onDragOver(evt))
+        this.folderRoot.addEventListener("drop", evt => this.onDrop(evt))
 
         this.table.addEventListener("currentIndexChanged", evt => this.sendStatusInfo(evt.detail))
             
@@ -300,8 +300,6 @@ class Folder extends HTMLElement {
     }
 
     onDragOver(evt) {
-        evt.dataTransfer.dropEffect = "none"
-        evt.preventDefault() // Necessary. Allows us to drop.
         if (this.folderRoot.classList.contains("isDragging")) {
             evt.dataTransfer.dropEffect = 
                 evt.dataTransfer.allowedEffect == "move" 
