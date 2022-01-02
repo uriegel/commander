@@ -125,7 +125,6 @@ class Folder extends HTMLElement {
                     this.table.setPosition(pos + 1)
                     break
                 }
-                break
             }
         })
 
@@ -133,6 +132,11 @@ class Folder extends HTMLElement {
             this.dispatchEvent(new CustomEvent('onFocus', { detail: this.id }))
             this.sendStatusInfo(this.table.getPosition())
         })
+
+        // this.folderRoot.addEventListener("dragenter", evt => this.onDragEnter(evt))
+        // this.folderRoot.addEventListener("dragleave", evt => this.onDragLeave(evt))
+        // this.folderRoot.addEventListener("dragover", evt => this.onDragOver(evt))
+        // this.folderRoot.addEventListener("drop", evt => this.onDrop(evt))
 
         this.table.addEventListener("currentIndexChanged", evt => this.sendStatusInfo(evt.detail))
             
@@ -270,21 +274,61 @@ class Folder extends HTMLElement {
     }
 
     onDragStart(evt) { 
-        console.log("onDragStart", this, evt) 
-        this.folderRoot.classList.add("onDragStarted")
         evt.dataTransfer.setData("copyFiles", "JSON.stringify(files)")
+        this.folderRoot.classList.add("onDragStarted")
     }
     onDrag(evt) { 
-        console.log("onDrag", evt) 
         if (evt.screenX == 0 && evt.screenY == 0) {
             ipcRenderer.send("dragStart", this.selectedItems.map(n => fspath.join(this.getCurrentPath(), n.name)))
             this.folderRoot.classList.remove("onDragStarted")
             evt.preventDefault()
-        }        
+        } 
     }
     onDragEnd(evt) { 
-        console.log("onDragEnd", evt) 
         this.folderRoot.classList.remove("onDragStarted")
+    }
+
+    onDragEnter(evt) {
+        evt.stopPropagation()
+        evt.preventDefault() // Necessary. Allows us to drop.
+        if (!this.folderRoot.classList.contains("onDragStarted"))
+            this.folderRoot.classList.add("isDragging")
+    }
+
+    onDragLeave() {
+        this.folderRoot.classList.remove("isDragging")
+    }
+
+    onDragOver(evt) {
+        evt.dataTransfer.dropEffect = "none"
+        evt.preventDefault() // Necessary. Allows us to drop.
+        if (this.folderRoot.classList.contains("isDragging")) {
+            evt.dataTransfer.dropEffect = 
+                evt.dataTransfer.allowedEffect == "move" 
+                || evt.dataTransfer.effectAllowed == "copyMove"
+                || evt.dataTransfer.effectAllowed == "linkMove"
+                || evt.dataTransfer.effectAllowed == "all"
+                ? "move" 
+                : (evt.dataTransfer.allowedEffect == "copy" 
+                    || evt.dataTransfer.effectAllowed == "copyMove"
+                    || evt.dataTransfer.effectAllowed == "copyLink"
+                    || evt.dataTransfer.effectAllowed == "all"
+                    ? "copy"
+                    : "none")
+            if (evt.ctrlKey && evt.dataTransfer.dropEffect == "move" && (evt.dataTransfer.allowedEffect == "copy" 
+                    || evt.dataTransfer.effectAllowed == "copyMove"
+                    || evt.dataTransfer.effectAllowed == "copyLink"
+                    || evt.dataTransfer.effectAllowed == "all"))
+                evt.dataTransfer.dropEffect = "copy"
+                //this.dropEffect = evt.dataTransfer.dropEffect
+                    
+            evt.preventDefault() // Necessary. Allows us to drop.
+        }
+    }
+
+    onDrop(evt) {
+        console.log("onDragLeave", evt) 
+        this.folderRoot.classList.remove("isDragging")
     }
 }
 

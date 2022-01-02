@@ -1,6 +1,7 @@
 body {
     --error-background-color: red;
     --error-color: white;
+    --drag-highlight: aqua;
     font-family: 'arial';
     margin: 0px;
     padding: 0px;
@@ -26,6 +27,7 @@ body {
 .folderroot {
     flex-grow: 1;
     position: relative;
+    transition: background-color 0.8s;
 }
 
 .folder {
@@ -41,7 +43,6 @@ body {
     width: calc(100% - 6px);
     outline-style: none;
     font-family: sans-serif;
-    background-color: var(--vtc-background-color);
     color: var(--vtc-color);
 }
 
@@ -80,6 +81,10 @@ body {
 
 .onDragStarted {
     filter: blur(2px);
+}
+
+.isDragging {
+    background-color: var(--drag-highlight);
 }
 
 .filler {

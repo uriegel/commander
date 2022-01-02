@@ -1,4 +1,5 @@
 :root .windows {
+    --drag-highlight: aqua;
     --exif-color: darkblue;
     --selected-exif-color: yellow;
 
@@ -17,7 +18,6 @@
     --gridsplitter-grip-active-color : #8f8d8b;    
 
     --pieprogress-color: var(--vtc-selected-background-color);
-    --pieprogress-background-color: var(--vtc-background-color);
 }
 
 body.windows {

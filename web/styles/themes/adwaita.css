@@ -1,10 +1,12 @@
 :root .adwaita {
+
+    --drag-highlight: aqua;
     --electron-titlebar-background-color: #ddd9d6;
     
     --exif-color: darkblue;
     --selected-exif-color: yellow;
 
-    --vtc-background-color: #fcfcfc;
+    --vtc-background-color: transparent;
     --vtc-caption-color: #737373;
     --vtc-caption-background-color: #eff0f1;
     --vtc-caption-background-hover-color: #e2e2e2;
@@ -49,7 +51,7 @@
     --dbc-input-selection-color: #3584e4;    
 
     --pieprogress-color: var(--vtc-selected-background-color);
-    --pieprogress-background-color: var(--vtc-background-color);
+    --pieprogress-background-color: white;
 }
 
 body.adwaita {
