@@ -290,6 +290,8 @@ class Folder extends HTMLElement {
 
 customElements.define('folder-table', Folder)
 
+// TODO Select with click and CTRL
+// TODO Copy/Move with Drag'n'Drop
 // TODO Copy conflicts: order by red, then green, then equal
 
 // TODO Processor: CanAction 
@@ -297,7 +299,6 @@ customElements.define('folder-table', Folder)
 // TODO Undelete files
 // TODO Empty trash
 // TODO Copy with Copy Paste (from external or from internal)
-// TODO Copy with Drag'n'Drop (from external or from internal)
 // TODO When a path is not available anymore: fallback to root
 // TODO ProgressControl: multiple progresses: show in ProgressBars in popovermenu, show latest in ProgressPie
 // TODO Windows after copy: electron does not have focus. Old Commander is OK!!!!!!!
