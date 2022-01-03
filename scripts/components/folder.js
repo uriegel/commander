@@ -310,8 +310,8 @@ class Folder extends HTMLElement {
     }
 
     onDragEnter(evt) {
-        evt.stopPropagation()
-        evt.preventDefault() // Necessary. Allows us to drop.
+        // evt.stopPropagation()
+        // evt.preventDefault() // Necessary. Allows us to drop.
         if (!this.folderRoot.classList.contains("onDragStarted"))
             this.folderRoot.classList.add("isDragging")
     }
@@ -323,18 +323,18 @@ class Folder extends HTMLElement {
     onDragOver(evt) {
         if (this.folderRoot.classList.contains("isDragging")) {
             evt.dataTransfer.dropEffect = 
-                evt.dataTransfer.allowedEffect == "move" 
+                evt.dataTransfer.effectAllowed == "move" 
                 || evt.dataTransfer.effectAllowed == "copyMove"
                 || evt.dataTransfer.effectAllowed == "linkMove"
                 || evt.dataTransfer.effectAllowed == "all"
                 ? "move" 
-                : (evt.dataTransfer.allowedEffect == "copy" 
+                : (evt.dataTransfer.effectAllowed == "copy" 
                     || evt.dataTransfer.effectAllowed == "copyMove"
                     || evt.dataTransfer.effectAllowed == "copyLink"
                     || evt.dataTransfer.effectAllowed == "all"
                     ? "copy"
                     : "none")
-            if (evt.ctrlKey && evt.dataTransfer.dropEffect == "move" && (evt.dataTransfer.allowedEffect == "copy" 
+            if (evt.ctrlKey && evt.dataTransfer.dropEffect == "move" && (evt.dataTransfer.effectAllowed == "copy" 
                     || evt.dataTransfer.effectAllowed == "copyMove"
                     || evt.dataTransfer.effectAllowed == "copyLink"
                     || evt.dataTransfer.effectAllowed == "all"))
