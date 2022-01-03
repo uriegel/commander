@@ -339,14 +339,16 @@ class Folder extends HTMLElement {
                     || evt.dataTransfer.effectAllowed == "copyLink"
                     || evt.dataTransfer.effectAllowed == "all"))
                 evt.dataTransfer.dropEffect = "copy"
-                //this.dropEffect = evt.dataTransfer.dropEffect
-                    
+            this.dropEffect = evt.dataTransfer.dropEffect
             evt.preventDefault() // Necessary. Allows us to drop.
         }
     }
 
     onDrop(evt) {
-        console.log("onDragLeave", evt) 
+        console.log("onDrop", evt) 
+        const feilen = evt.dataTransfer.getData("copyFiles")
+        console.log("feilen", feilen)
+        evt.preventDefault()
         this.folderRoot.classList.remove("isDragging")
     }
 }
