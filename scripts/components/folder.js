@@ -26,7 +26,21 @@ class Folder extends HTMLElement {
         this.backtrack = []
         this.backPosition = -1
         this.pathInput = this.getElementsByTagName("INPUT")[0]
-        this.table.renderRow = (item, tr) => this.processor.renderRow(item, tr)
+        this.table.renderRow = (item, tr) => {
+            tr.ondragstart = evt => this.onDragStart(evt)
+            tr.ondrag = evt => this.onDrag(evt)
+            tr.ondragend = evt => this.onDragEnd(evt)
+            tr.onmousedown = evt => {
+                if (evt.ctrlKey) {
+                    setTimeout(() => {
+                        const pos = this.table.getPosition()
+                        this.table.items[pos].isSelected = !this.table.items[pos].isNotSelectable && !this.table.items[pos].isSelected 
+                        this.table.refresh()
+                    })
+                }
+            }
+            this.processor.renderRow(item, tr)
+        }
         const lastPath = localStorage.getItem(`${this.folderId}-lastPath`)
         this.changePath(lastPath)
     }
@@ -105,6 +119,9 @@ class Folder extends HTMLElement {
                     evt.preventDefault()
                     evt.stopPropagation()
                     break
+                case 27: // Escape
+                    this.selectNone()
+                    break
                 case 35: // end
                     if (evt.shiftKey) {
                         const pos = this.table.getPosition()
@@ -156,8 +173,7 @@ class Folder extends HTMLElement {
     }
 
     async changePath(path, fromBacklog) {
-        const result = getProcessor(this.folderId, path, this.processor, 
-            evt => this.onDragStart(evt), evt => this.onDrag(evt), evt => this.onDragEnd(evt))
+        const result = getProcessor(this.folderId, path, this.processor)
         const req = ++this.latestRequest
         const itemsResult = (await result.processor.getItems(path, this.showHiddenItems))
         path = itemsResult.path
@@ -274,8 +290,13 @@ class Folder extends HTMLElement {
     }
 
     onDragStart(evt) { 
-        evt.dataTransfer.setData("copyFiles", "JSON.stringify(files)")
-        this.folderRoot.classList.add("onDragStarted")
+        if (this.getSelectedItems()
+                .map(n => n.name)
+                .includes(this.table.items[this.table.getPosition()].name)) {
+            evt.dataTransfer.setData("copyFiles", "JSON.stringify(files)")
+            this.folderRoot.classList.add("onDragStarted")
+        } else
+            evt.preventDefault()
     }
     onDrag(evt) { 
         if (evt.screenX == 0 && evt.screenY == 0) {
@@ -332,7 +353,6 @@ class Folder extends HTMLElement {
 
 customElements.define('folder-table', Folder)
 
-// TODO Select with click and CTRL
 // TODO Copy/Move with Drag'n'Drop
 // TODO Copy conflicts: order by red, then green, then equal
 

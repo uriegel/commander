@@ -44,6 +44,7 @@ body {
     outline-style: none;
     font-family: sans-serif;
     color: var(--vtc-color);
+    background-color: var(--light-background-color);
 }
 
 #viewer {

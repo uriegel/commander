@@ -1,4 +1,5 @@
 :root .windows {
+    --light-background-color: white;
     --drag-highlight: aqua;
     --exif-color: darkblue;
     --selected-exif-color: yellow;

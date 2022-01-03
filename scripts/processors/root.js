@@ -38,6 +38,9 @@ export const getRoot = folderId => {
     const renderRow = (item, tr) => {
         if (!item.isMounted)
             tr.style.opacity = 0.5
+        tr.ondragstart = undefined
+        tr.ondrag = undefined
+        tr.ondragend = undefined
     }
 
     const getCurrentPath = () => ROOT

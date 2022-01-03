@@ -1,7 +1,7 @@
 import { DIRECTORY_TYPE, getDirectory } from "./directory.js"
 import { getRoot, ROOT } from "./root.js"
 
-export const getProcessor = (folderId, path, recentProcessor, onDragStart, onDrag, onDragEnd) => {
+export const getProcessor = (folderId, path, recentProcessor) => {
 
     if (!path)
         path = ROOT
@@ -26,7 +26,7 @@ export const getProcessor = (folderId, path, recentProcessor, onDragStart, onDra
             }
         else
             return {
-                processor: getDirectory(folderId, path, onDragStart, onDrag, onDragEnd), 
+                processor: getDirectory(folderId, path), 
                 changed: true
             }
     }

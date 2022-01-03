@@ -1,5 +1,5 @@
 :root .adwaita {
-
+    --light-background-color: white;
     --drag-highlight: aqua;
     --electron-titlebar-background-color: #ddd9d6;
     
@@ -51,7 +51,7 @@
     --dbc-input-selection-color: #3584e4;    
 
     --pieprogress-color: var(--vtc-selected-background-color);
-    --pieprogress-background-color: white;
+    --pieprogress-background-color: var(--light-background-color);
 }
 
 body.adwaita {

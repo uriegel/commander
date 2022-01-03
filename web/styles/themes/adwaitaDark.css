@@ -1,5 +1,6 @@
 :root .adwaita-dark {
-    background-color: var(--menubar-background-color);
+    background-color: var(--light-background-color);
+    --light-background-color: #2f2f2f;
     --drag-highlight: darkgreen;
     --electron-titlebar-color: lightgray;
     --electron-titlebar-background-color: #262626;
@@ -29,7 +30,7 @@
     --selected-exif-color: yellow;
 
     --menubar-color: white;
-    --menubar-background-color: #2f2f2f; 
+    --menubar-background-color: var(--light-background-color); 
     --menubar-hover-color: darkblue;
     --menubar-selected-color: white;
     --menubar-selected-background-color: var(--vtc-selected-background-color);
@@ -63,7 +64,7 @@
     --dbc-input-selection-color: #3584e4;
 
     --pieprogress-color: var(--vtc-selected-background-color);
-    --pieprogress-background-color: #2f2f2f;
+    --pieprogress-background-color: var(--light-background-color);
 }
 
 body.adwaita-dark {

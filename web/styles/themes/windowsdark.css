@@ -1,5 +1,6 @@
 :root .windows-dark {
-    background-color: var(--menubar-background-color);
+    background-color: var(--light-background-color);
+    --light-background-color: #2f2f2f;
     --drag-highlight: darkgreen;
     --electron-titlebar-color: lightgray;
     --electron-titlebar-background-color: black;
@@ -7,7 +8,7 @@
     --electron-titlebar-focused-color: rgb(174, 173, 230);
 
     --menubar-color: white;
-    --menubar-background-color: #2f2f2f; 
+    --menubar-background-color: var(--light-background-color);
     --menubar-hover-color: darkblue;
     --menubar-selected-color: white;
     --menubar-selected-background-color: blue;
@@ -36,7 +37,7 @@
     --gridsplitter-grip-active-color : rgb(65, 65, 65);    
 
     --pieprogress-color: var(--vtc-selected-background-color);
-    --pieprogress-background-color: var(--menubar-background-color);
+    --pieprogress-background-color: var(--light-background-color);
 }
 
 body.windows-dark {
