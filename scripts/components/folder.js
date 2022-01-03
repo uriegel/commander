@@ -293,7 +293,7 @@ class Folder extends HTMLElement {
         if (this.getSelectedItems()
                 .map(n => n.name)
                 .includes(this.table.items[this.table.getPosition()].name)) {
-            evt.dataTransfer.setData("copyFiles", "JSON.stringify(files)")
+            evt.dataTransfer.setData("internalCopy", "true")
             this.folderRoot.classList.add("onDragStarted")
         } else
             evt.preventDefault()
@@ -310,8 +310,6 @@ class Folder extends HTMLElement {
     }
 
     onDragEnter(evt) {
-        // evt.stopPropagation()
-        // evt.preventDefault() // Necessary. Allows us to drop.
         if (!this.folderRoot.classList.contains("onDragStarted"))
             this.folderRoot.classList.add("isDragging")
     }
@@ -345,10 +343,10 @@ class Folder extends HTMLElement {
     }
 
     onDrop(evt) {
-        console.log("onDrop", evt) 
-        const feilen = evt.dataTransfer.getData("copyFiles")
-        console.log("feilen", feilen)
-        evt.preventDefault()
+        if (evt.dataTransfer.getData("internalCopy") == "true") {
+            evt.preventDefault()
+            this.dispatchEvent(new CustomEvent('dragAndDrop', { detail: this.dropEffect == "move" }))
+        }
         this.folderRoot.classList.remove("isDragging")
     }
 }

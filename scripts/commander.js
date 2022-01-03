@@ -81,6 +81,8 @@ folderLeft.addEventListener("tab", () => folderRight.setFocus())
 folderRight.addEventListener("tab", () => folderLeft.setFocus())
 folderLeft.addEventListener("delete", evt => onDelete(evt.detail))
 folderRight.addEventListener("delete", evt => onDelete(evt.detail))
+folderLeft.addEventListener("dragAndDrop", evt => copy(evt.detail))
+folderRight.addEventListener("dragAndDrop", evt => copy(evt.detail))
 
 async function copy(move) {
     const itemsToCopy = activeFolder.selectedItems
