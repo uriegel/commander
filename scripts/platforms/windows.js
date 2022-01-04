@@ -46,7 +46,7 @@ export const adaptConflictColumns = columns => [
     }
 ]
 
-export const getRootPath = item => [ item.name != ANDROID ? item.name : ANDROID_PATH, null ]
+export const getRootPath = async item => [ item.name != ANDROID ? item.name : ANDROID_PATH, null ]
 
 export const pathDelimiter = "\\"
 

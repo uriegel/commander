@@ -101,7 +101,7 @@ export const getDirectory = (folderId, path) => {
     
     const getCurrentPath = () => currentPath
 
-    const getPath = item => item.isDirectory 
+    const getPath = async item => item.isDirectory 
         ? item.name != ".."
             ? [
                 currentPath != "\\" ? currentPath + pathDelimiter + item.name : currentPath + item.name, 

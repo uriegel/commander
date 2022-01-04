@@ -8,17 +8,20 @@ import { initializeCopying, adaptWindow, onDarkTheme } from './platforms/switche
 import './components/pdfviewer.js'
 import './components/folder.js'
 import './components/copyconflicts'
+import './components/androidadder'
 import { showViewer, refreshViewer} from './viewer.js'
 import { initializeMenu } from './menu.js'
 export const DIRECTORY = 1
 export const FILE = 2
 export const BOTH = 3
 
+export const dialog = document.querySelector('dialog-box')
+
 const FileResult = window.require('filesystem-utilities').FileResult
 
 const folderLeft = document.getElementById("folderLeft")
 const folderRight = document.getElementById("folderRight")
-const dialog = document.querySelector('dialog-box')
+
 const statusText = document.getElementById("statusText")
 const dirsText = document.getElementById("dirs")
 const filesText = document.getElementById("files")

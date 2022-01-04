@@ -103,6 +103,27 @@ body {
     display: flex;
 }
 
+.android-adder {
+    display: flex;
+    flex-direction: column;
+}
+
+.android-adder input {
+    margin-bottom: 5px;
+    background-color: var(--dbc-main-background-color);
+    color: var(--dbc-main-color);
+    border-color: gray;
+    border-style: solid;
+    border-width: 1px;    
+}
+
+.android-adder input:focus {
+    outline-color: var(--dbc-input-selection-color);
+    border-color: transparent;
+    outline-width: 1px;
+    outline-style: solid;
+}
+
 #progress {
     margin-right: -19px;
     transition: margin 0.3s;

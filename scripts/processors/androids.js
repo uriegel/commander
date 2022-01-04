@@ -1,3 +1,4 @@
+import { dialog } from "../commander.js"
 import { ROOT_PATH } from "./root.js"
 
 export const ANDROID_TYPE = "android"
@@ -52,10 +53,24 @@ export const getAndroid = folderId => {
 
     const getItem = item => item.name
 
-    const getPath = item => {
+    const getPath = async item => {
         if (item.type == "parent")
             return [ROOT_PATH, null]
         else if (item.type == "add") {
+            const androidAdder = document.getElementById('android-adder')
+            const inputs = [...androidAdder.querySelectorAll("input")]
+            const adderName = document.getElementById("adder-name")
+            adderName.value = ""
+            const adderIp = document.getElementById("adder-ip")
+            adderIp.value = ""
+            const res = await dialog.show({
+                text: "Android-Verbindung anlegen",
+                extended: "android-adder",
+                extendedFocusables: inputs,
+                btnOk: true,
+                btnCancel: true,
+                defBtnOk: true
+            })    
             return [null, null]
         } else
             return [null, null]

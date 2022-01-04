@@ -90,14 +90,15 @@ class Folder extends HTMLElement {
         })
 
         this.table.addEventListener("enter", async evt => {
-            const [path, recentFolder] = this.processor.getPath(this.table.items[evt.detail.currentItem])
+            const [path, recentFolder] = await this.processor.getPath(this.table.items[evt.detail.currentItem])
             if (path) {
                 await this.changePath(path)
                 if (recentFolder) {
                     const index = this.table.items.findIndex(n => n.name == recentFolder)
                     this.table.setPosition(index)
                 }
-            }
+            } else
+                this.setFocus()
         })
 
         this.table.addEventListener("delete", async evt => {

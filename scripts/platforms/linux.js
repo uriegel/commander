@@ -60,7 +60,7 @@ export const adaptDirectoryColumns = columns => columns
 
 export const adaptConflictColumns = columns => columns
 
-export const getRootPath = item => [item.mountPoint || (item.name == ANDROID ? "android" : ""), null]
+export const getRootPath = async item => [item.mountPoint || (item.name == ANDROID ? "android" : ""), null]
 
 export const pathDelimiter = "/"
 
