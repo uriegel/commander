@@ -1,8 +1,11 @@
+import { RESULT_OK } from "web-dialog-box"
 import { dialog } from "../commander.js"
 import { ROOT_PATH } from "./root.js"
 
 export const ANDROID_TYPE = "android"
 export const ANDROID_PATH = "android"
+
+let items = JSON.parse(localStorage.getItem("androids") || "[]")
 
 export const getAndroid = folderId => {
     const getType = () => ANDROID_TYPE
@@ -26,7 +29,7 @@ export const getAndroid = folderId => {
             }
         }, {
             name: "IP-Adresse",
-            render: (td, item) => td.innerHTML = item.description || ""
+            render: (td, item) => td.innerHTML = item.ip || ""
         }]
         if (widths)
             columns = columns.map((n, i) => ({ ...n, width: widths[i] }))
@@ -36,10 +39,9 @@ export const getAndroid = folderId => {
     const getItems = async () => {
         return {
             path: "android/",
-            items: [
-                { name: "..", type: "parent" },
-                { name: "Hinzufügen...", type: "add"}
-            ]
+            items: [{ name: "..", type: "parent" }]
+                    .concat(items)
+                    .concat({ name: "Hinzufügen...", type: "add"})
         }
     }
 
@@ -71,12 +73,22 @@ export const getAndroid = folderId => {
                 btnCancel: true,
                 defBtnOk: true
             })    
+            if (res.result == RESULT_OK) {
+                const name = adderName.value
+                const ip = adderIp.value
+                items = items.concat([{name, ip}])
+                localStorage.setItem("androids", JSON.stringify(items))
+            }
             return [null, null]
         } else
             return [null, null]
     }
 
     const saveWidths = widths => localStorage.setItem(`${folderId}-androids-widths`, JSON.stringify(widths))
+
+    const getCurrentPath = () => ANDROID_PATH
+
+    const deleteItems = items => console.log(items)
 
     const addExtendedInfos = () => []
 
@@ -89,8 +101,11 @@ export const getAndroid = folderId => {
         getItem,
         getPath,
         saveWidths,
+        getCurrentPath,
+        deleteItems,
         addExtendedInfos
     }    
 }
 
-// TODO NewAndroid-Dialog Component: 2 inputs with placeholder
+// TODO refresh after add 
+// TODO array filter with array
