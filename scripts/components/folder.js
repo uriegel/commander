@@ -90,7 +90,7 @@ class Folder extends HTMLElement {
         })
 
         this.table.addEventListener("enter", async evt => {
-            const [path, recentFolder] = await this.processor.getPath(this.table.items[evt.detail.currentItem])
+            const [path, recentFolder] = await this.processor.getPath(this.table.items[evt.detail.currentItem], () => this.reloadItems())
             if (path) {
                 await this.changePath(path)
                 if (recentFolder) {

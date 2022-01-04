@@ -55,7 +55,7 @@ export const getAndroid = folderId => {
 
     const getItem = item => item.name
 
-    const getPath = async item => {
+    const getPath = async (item, refresh) => {
         if (item.type == "parent")
             return [ROOT_PATH, null]
         else if (item.type == "add") {
@@ -78,6 +78,7 @@ export const getAndroid = folderId => {
                 const ip = adderIp.value
                 items = items.concat([{name, ip}])
                 localStorage.setItem("androids", JSON.stringify(items))
+                refresh()
             }
             return [null, null]
         } else
@@ -88,7 +89,10 @@ export const getAndroid = folderId => {
 
     const getCurrentPath = () => ANDROID_PATH
 
-    const deleteItems = items => console.log(items)
+    const deleteItems = itemsToDelete => {
+        items = items.filter(n => !itemsToDelete.includes(n.name))
+        localStorage.setItem("androids", JSON.stringify(items))
+    }
 
     const addExtendedInfos = () => []
 
@@ -106,6 +110,3 @@ export const getAndroid = folderId => {
         addExtendedInfos
     }    
 }
-
-// TODO refresh after add 
-// TODO array filter with array
