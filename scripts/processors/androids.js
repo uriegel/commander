@@ -7,8 +7,6 @@ export const getAndroid = folderId => {
     const getType = () => ANDROID_TYPE
 
     const getColumns = () => {
-        // TODO Test Windows
-
         // TODO + Android hinzufügen...
 
         // TODO when columns are specified

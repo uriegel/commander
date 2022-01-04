@@ -1,6 +1,8 @@
 const fspath = window.require('path')
 const { getExifDate, getFileVersion } = window.require('filesystem-utilities')
+import { ANDROID_PATH } from "../processors/androids.js"
 import { compareVersion } from "../processors/rendertools.js"
+import { ANDROID } from "../processors/root.js"
 
 export const initializeCopying = onFinishCallback => onFinish = onFinishCallback
 export const adaptWindow = (menu, itemHideMenu) => itemHideMenu.isHidden = true
@@ -44,7 +46,7 @@ export const adaptConflictColumns = columns => [
     }
 ]
 
-export const getRootPath = item => [ item.name, null ]
+export const getRootPath = item => [ item.name != ANDROID ? item.name : ANDROID_PATH, null ]
 
 export const pathDelimiter = "\\"
 
