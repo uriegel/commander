@@ -64,7 +64,6 @@ const createWindow = async () => {
     })
 
     ipcMain.on("dragStart", (evt, files) => { 
-        console.log("dragStart", files)
         win.webContents.startDrag({ files, icon })
     })
     
