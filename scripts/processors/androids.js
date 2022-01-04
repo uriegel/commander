@@ -7,17 +7,15 @@ export const getAndroid = folderId => {
     const getType = () => ANDROID_TYPE
 
     const getColumns = () => {
-        // TODO + Android hinzufügen...
-
-        // TODO when columns are specified
-        //const widthstr = localStorage.getItem(`${folderId}-android-widths`)
-        //const widths = widthstr ? JSON.parse(widthstr) : []
-        const widths = []
+        const widthstr = localStorage.getItem(`${folderId}-androids-widths`)
+        const widths = widthstr ? JSON.parse(widthstr) : []
         let columns = [{
             name: "Name",
             render: (td, item) => {
-                const selector = item.name == ".." 
+                const selector = item.type == "parent" 
                 ? '#parentIcon' 
+                : item.type == "add" 
+                ? '#newIcon'
                 : '#androidIcon'
                 var t = document.querySelector(selector)
                 td.appendChild(document.importNode(t.content, true))
@@ -26,7 +24,7 @@ export const getAndroid = folderId => {
                 td.appendChild(span)
             }
         }, {
-            name: "Bezeichnung",
+            name: "IP-Adresse",
             render: (td, item) => td.innerHTML = item.description || ""
         }]
         if (widths)
@@ -37,7 +35,10 @@ export const getAndroid = folderId => {
     const getItems = async () => {
         return {
             path: "android/",
-            items: [{ name: ".." }]
+            items: [
+                { name: "..", type: "parent" },
+                { name: "Hinzufügen...", type: "add"}
+            ]
         }
     }
 
@@ -51,7 +52,18 @@ export const getAndroid = folderId => {
 
     const getItem = item => item.name
 
-    const getPath = item => [ROOT_PATH, null]
+    const getPath = item => {
+        if (item.type == "parent")
+            return [ROOT_PATH, null]
+        else if (item.type == "add") {
+            return [null, null]
+        } else
+            return [null, null]
+    }
+
+    const saveWidths = widths => localStorage.setItem(`${folderId}-androids-widths`, JSON.stringify(widths))
+
+    const addExtendedInfos = () => []
 
     return {
         getType,
@@ -60,6 +72,10 @@ export const getAndroid = folderId => {
         disableSorting,
         renderRow,
         getItem,
-        getPath
+        getPath,
+        saveWidths,
+        addExtendedInfos
     }    
 }
+
+// TODO NewAndroid-Dialog Component: 2 inputs with placeholder
