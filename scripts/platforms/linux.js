@@ -1,4 +1,5 @@
 import { RESULT_CANCEL } from "web-dialog-box"
+import { ANDROID } from "../processors/root.js"
 import { createCopyProcessor } from "./copyProcessor.js"
 const fspath = window.require('path')
 const { getExifDate, trash, copy } = window.require('filesystem-utilities')
@@ -49,7 +50,7 @@ export function adaptRootColumns(columns) {
     return [
         ...columns.slice(0, 2), {
             name: "Mountpoint",
-            render: (td, item) => td.innerHTML = item.mountPoint
+            render: (td, item) => td.innerHTML = item.mountPoint || ""
         },
         columns[2]
     ]
@@ -59,7 +60,7 @@ export const adaptDirectoryColumns = columns => columns
 
 export const adaptConflictColumns = columns => columns
 
-export const getRootPath = item => [item.mountPoint, null]
+export const getRootPath = item => [item.mountPoint || (item.name == ANDROID ? "android" : ""), null]
 
 export const pathDelimiter = "/"
 

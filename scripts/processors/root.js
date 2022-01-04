@@ -3,6 +3,8 @@ import { adaptRootColumns, getRootPath } from '../platforms/switcher.js'
 const addon = window.require('filesystem-utilities')
 
 export const ROOT = "root"
+export const ROOT_PATH = "root"
+export const ANDROID = "Android"
 
 export const getRoot = folderId => {
     const getType = () => ROOT
@@ -13,7 +15,11 @@ export const getRoot = folderId => {
         let columns = adaptRootColumns([{
             name: "Name",
             render: (td, item) => {
-                var t = document.querySelector('#driveIcon')
+                var t = item.name != ANDROID 
+                    ? item.name != "~" 
+                    ? document.querySelector('#driveIcon')
+                    : document.querySelector('#homeIcon')
+                    : document.querySelector('#androidIcon')
                 td.appendChild(document.importNode(t.content, true))
                 const span = document.createElement('span')
                 span.innerHTML = item.name
@@ -46,7 +52,17 @@ export const getRoot = folderId => {
     const getCurrentPath = () => ROOT
 
     const getItems = async () => {
-        const items = (await addon.getDrives())
+        const rootitems = (await addon.getDrives())
+        const mountedItems = rootitems.filter(n => n.isMounted)
+        const unmountedItems = rootitems.filter(n => !n.isMounted)
+        const android = {
+            name: "Android",
+            description: "Zugriff auf Android Handy",
+            isMounted: true
+        }
+        const items = mountedItems
+            .concat(android)
+            .concat(unmountedItems)
             .map(n => {
                 n.isNotSelectable = true
                 return n
