@@ -1,10 +1,13 @@
 import { ANDROID_PATH } from "./androids"
 import { formatDateTime, formatSize, getExtension } from "./rendertools.js"
+const http = window.require('http')
+
 export const ANDROID_TYPE = "android"
 
 export const getAndroid = (folderId, path) => {
     const ip = path.substring(8, path.indexOf('/', 9)) 
     const rootPath = `android/${ip}/`
+    const pathBegin = rootPath.length - 1
     const getType = () => ANDROID_TYPE
 
     let currentPath = ""
@@ -64,8 +67,12 @@ export const getAndroid = (folderId, path) => {
 
     const getItems = async (path, hiddenIncluded) => {
 //        if (items && items.length)
-        currentPath = path
 
+        var response = await getFiles(path.substring(pathBegin))
+        console.log(response)
+
+        currentPath = path
+        
         return {
             path,
             items: [{ name: "..", isDirectory: true }]
@@ -107,6 +114,52 @@ export const getAndroid = (folderId, path) => {
     const disableSorting = (table, disable) => table.disableSorting(1, disable)
 
     const getItem = item => currentPath == `${currentPath}/${item.name}`
+
+    const data = JSON.stringify({
+        path,
+        count: 234
+    })
+
+    const getFiles = path => request("getfiles", { path })
+
+    async function request(path, data) {
+        const keepAliveAgent = new http.Agent({
+            keepAlive: true,
+            keepAliveMsecs: 40000
+        })
+
+        return new Promise((resolve, reject) => {
+            var payload = JSON.stringify(data)
+            const req = http.request({
+                hostname: ip,
+                port: 8080,
+                path,
+                agent: keepAliveAgent,
+                timeout: 40000,
+                method: 'POST',
+                headers: {
+					'Content-Type': 'application/json; charset=UTF-8',
+					'Content-Length': Buffer.byteLength(payload)
+				}            
+            }, response => {
+                response.setEncoding('utf8')
+                response.on('data', chunk => {
+                    const result = JSON.parse(chunk)
+                    resolve(result)
+                })
+                response.on('end', () => {
+                    // console.log('No more data in response.')
+                })
+            })        
+            
+            req.on('error', e => {
+                console.log("error", "problem with request", e)
+                reject(e)
+            })
+            req.write(payload)
+            req.end()        
+        }) 
+    }    
 
     return {
         getType,
