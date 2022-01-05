@@ -148,7 +148,7 @@ export const getAndroid = (folderId, path) => {
     }
 
     const getFileInfos = async (file, subPath) => {
-        // TODO search locally in items
+        // TODO getFileInfos from all files
         const info = await getFiles(file.substring(pathBegin))
         return await {  
             file,       
