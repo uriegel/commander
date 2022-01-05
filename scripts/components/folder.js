@@ -263,8 +263,12 @@ class Folder extends HTMLElement {
         const targetPath = this.processor.getCurrentPath()
         const copyInfo = {}
         copyInfo.items = await this.processor.extractFilesInFolders(sourcePath, targetPath, items, sourceFolder)
-        copyInfo.conflicts = await this.processor.getCopyConflicts(copyInfo.items, sourcePath)
+        copyInfo.conflicts = await this.processor.getCopyConflicts(copyInfo.items, sourcePath, sourceFolder)
         return this.processor.prepareCopyItems(move, itemsType, items.length == 1, fromLeft, copyInfo)
+    }
+
+    async getFileInfos(file, subPath) {
+        return await this.processor.getFileInfos(file, subPath)
     }
 
     async copyItems(copyInfo, move, overwrite, foldersToRefresh) {

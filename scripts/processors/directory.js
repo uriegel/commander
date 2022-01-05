@@ -190,23 +190,20 @@ export const getDirectory = (folderId, path) => {
         return paths
     }
 
-    async function getCopyConflicts(info, sourcePath) {
-
-        const getInfos = async (file, subPath) => {
-            const info = await stat(file)
-            return await enhanceCopyConflictData({  
-                file,       
-                name: subPath ? file.substr(subPath.length + 1) : undefined,
-                size: info.size,
-                time: info.mtime,
-            })
-        }
-
-        return await Promise.all(
+    const getCopyConflicts = async (info, sourcePath, sourceFolder) => await Promise.all(
             info
             .filter(n => n.targetExists)
-            .map(async n => ({ source: await getInfos(n.file, sourcePath), target: await getInfos(n.targetFile) }))
+            .map(async n => ({ source: await sourceFolder.getFileInfos(n.file, sourcePath), target: await getFileInfos(n.targetFile) }))
         )
+
+    const getFileInfos = async (file, subPath) => {
+        const info = await stat(file)
+        return await enhanceCopyConflictData({  
+            file,       
+            name: subPath ? file.substr(subPath.length + 1) : undefined,
+            size: info.size,
+            time: info.mtime,
+        })
     }
 
     const prepareCopyItems = async (move, itemsType, several, fromLeft, copyInfo) => {
@@ -289,6 +286,7 @@ export const getDirectory = (folderId, path) => {
         copyItems, 
         renameItem,
         deleteEmptyFolders,
-        readDir
+        readDir,
+        getFileInfos
     }
 }
