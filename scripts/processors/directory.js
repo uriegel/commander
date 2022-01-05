@@ -173,14 +173,14 @@ export const getDirectory = (folderId, path) => {
     
     const deleteItems = items => platformDeleteItems(items.map(n => fspath.join(currentPath, n)))
 
-    async function extractFilesInFolders(sourcePath, targetPath, items) {
-        const extractFiles = async (path, target) => await extractFilesInFolders(path, target, await readdir(path))
+    async function extractFilesInFolders(sourcePath, targetPath, items, sourceFolder) {
+
+        const extractFiles = async (path, target) => await extractFilesInFolders(path, target, await sourceFolder.readDir(path), sourceFolder)
 
         const paths = (await Promise.all(items.map(async n => {
-            const file = fspath.join(sourcePath, n)
-            const targetFile = fspath.join(targetPath, n)
-            const info = await stat(file)
-            return info.isDirectory() 
+            const file = fspath.join(sourcePath, n.name)
+            const targetFile = fspath.join(targetPath, n.name)
+            return n.isDirectory
                 ? extractFiles(file, targetFile) 
                 : { file, 
                     targetFile, 
@@ -263,6 +263,11 @@ export const getDirectory = (folderId, path) => {
 
     const renameItem = async (item, newName) => await platformRenameItem(fspath.join(currentPath, item), fspath.join(currentPath, newName))
 
+    const readDir = async path => {
+        path = fspath.normalize(path).replace(":.", ":\\")
+        return await getFiles(path)
+    }
+
     return {
         getType,
         getColumns,
@@ -283,6 +288,7 @@ export const getDirectory = (folderId, path) => {
         prepareCopyItems,
         copyItems, 
         renameItem,
-        deleteEmptyFolders
+        deleteEmptyFolders,
+        readDir
     }
 }

@@ -259,10 +259,10 @@ class Folder extends HTMLElement {
         this.reloadItems()
     }
 
-    async prepareCopyItems(fromLeft, itemsType, sourcePath, items, move) {
+    async prepareCopyItems(fromLeft, itemsType, sourcePath, items, move, sourceFolder) {
         const targetPath = this.processor.getCurrentPath()
         const copyInfo = {}
-        copyInfo.items = await this.processor.extractFilesInFolders(sourcePath, targetPath, items)
+        copyInfo.items = await this.processor.extractFilesInFolders(sourcePath, targetPath, items, sourceFolder)
         copyInfo.conflicts = await this.processor.getCopyConflicts(copyInfo.items, sourcePath)
         return this.processor.prepareCopyItems(move, itemsType, items.length == 1, fromLeft, copyInfo)
     }
@@ -278,6 +278,10 @@ class Folder extends HTMLElement {
     async renameItem(item, newName) {
         await this.processor.renameItem(item, newName)
         this.reloadItems()
+    }
+
+    readDir(path) {
+        return this.processor.readDir(path)
     }
 
     sendStatusInfo(index) {

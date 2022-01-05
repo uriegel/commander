@@ -1,12 +1,8 @@
 import { RESULT_CANCEL } from "web-dialog-box"
 import { ANDROID } from "../processors/root.js"
-import { createCopyProcessor } from "./copyProcessor.js"
+import { copyProcessor } from "../processors/copyProcessor.js"
 const fspath = window.require('path')
 const { getExifDate, trash, copy } = window.require('filesystem-utilities')
-
-export function initializeCopying(onFinishCallback, onShowCopyErrors) {
-    copyProcessor = createCopyProcessor(onFinishCallback, onShowCopyErrors)
-}
 
 export function adaptWindow(dialogToSet, activeFolderSetFocusToSet, menuToSet, itemHideMenuToSet) {
     menu = menuToSet
@@ -98,4 +94,3 @@ var itemHideMenu
 var menu
 var dialog
 var activeFolderSetFocus
-var copyProcessor

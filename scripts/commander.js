@@ -4,7 +4,8 @@ import { RESULT_CANCEL, RESULT_OK, RESULT_YES, RESULT_NO } from 'web-dialog-box'
 import 'web-menu-bar'
 import 'web-electron-titlebar'
 import 'web-pie-progress'
-import { initializeCopying, adaptWindow, onDarkTheme } from './platforms/switcher.js'
+import { adaptWindow, onDarkTheme } from './platforms/switcher.js'
+import { initializeCopying } from './processors/copyProcessor.js'
 import './components/pdfviewer.js'
 import './components/folder.js'
 import './components/copyconflicts'
@@ -93,15 +94,14 @@ async function copy(move) {
     const itemsType = getItemsTypes(itemsToCopy)    
     
     const inactiveFolder = getInactiveFolder()
-    const copyInfo = await inactiveFolder.prepareCopyItems(
-        fromLeft, itemsType, activeFolder.getCurrentPath(), itemsToCopy.map(n => n.name), move
-    )
+    const copyInfo = await inactiveFolder.prepareCopyItems(fromLeft, itemsType, activeFolder.getCurrentPath(), 
+    itemsToCopy.map(n => ({name: n.name, isDirectory: n.isDirectory})), move, activeFolder)
     const res = await dialog.show(copyInfo.dialogData)
     activeFolder.setFocus()
     if (res.result != RESULT_CANCEL) {
         if (res.result == RESULT_NO) 
             copyInfo.items = copyInfo.items.filter(n => !copyInfo.conflicts.find(m => m.source.file == n.file))
-        await inactiveFolder.copyItems(copyInfo, move, res.result == RESULT_YES, move ? [activeFolder.id, inactiveFolder.id] : [inactiveFolder.id])
+        await activeFolder.copyItems(copyInfo, move, res.result == RESULT_YES, move ? [activeFolder.id, inactiveFolder.id] : [inactiveFolder.id])
         if (move)
             await activeFolder.deleteEmptyFolders(itemsToCopy.filter(n => n.isDirectory).map(n => n.name), [activeFolder.id, inactiveFolder.id])
     }

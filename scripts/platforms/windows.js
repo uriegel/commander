@@ -3,8 +3,8 @@ const { getExifDate, getFileVersion } = window.require('filesystem-utilities')
 import { ANDROID_PATH } from "../processors/androids.js"
 import { compareVersion } from "../processors/rendertools.js"
 import { ANDROID } from "../processors/root.js"
+import { onFinish } from "../processors/copyProcessor.js"
 
-export const initializeCopying = onFinishCallback => onFinish = onFinishCallback
 export const adaptWindow = (menu, itemHideMenu) => itemHideMenu.isHidden = true
 
 export function onDarkTheme(dark) {
@@ -102,5 +102,3 @@ export const enhanceCopyConflictData = async item => ({
 })
 
 const fillVersion = version => version ? `${version.major}.${version.minor}.${version.patch}.${version.build}` : ""
-
-var onFinish

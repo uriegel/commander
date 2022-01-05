@@ -2,7 +2,15 @@ const fs = window.require('fs')
 const { copy } = window.require('filesystem-utilities')
 const { deleteEmptyFolders } = window.require ("shared-module")
 
-export function createCopyProcessor(onCopyFinish, onShowErrors) {
+export function initializeCopying(onFinishCallback, onShowCopyErrors) {
+    copyProcessor = createCopyProcessor(onFinishCallback, onShowCopyErrors)
+}
+
+export var copyProcessor
+export var onFinish
+
+function createCopyProcessor(onCopyFinish, onShowErrors) {
+    onFinish = onCopyFinish
     const progress = document.getElementById("progress")
     const progressError = document.getElementById("progressError")
     const progressErrorClose = document.getElementById("progressErrorClose")
@@ -44,8 +52,10 @@ export function createCopyProcessor(onCopyFinish, onShowErrors) {
                 if (!job) 
                     break
                 try {
-                    if (!job.deleteEmptyFolders)
+                    if (job.deleteEmptyFolders)
                         await copy(job.source, job.target, c => onProgress(alreadyCopied + c, totalSize), job.move || false, job.overwrite || false)
+                    else if (job.android)
+                        await copyAndroid(job.source, job.target, c => onProgress(alreadyCopied + c, totalSize), job.move || false, job.overwrite || false)
                     else
                         await deleteEmptyFolders(job.deleteEmptyFolders.path, job.deleteEmptyFolders.folders)
                 } catch (err) {
@@ -55,7 +65,7 @@ export function createCopyProcessor(onCopyFinish, onShowErrors) {
             }
             totalSize = 0
             alreadyCopied = 0
-            onFinish(folderIdsToRefresh)
+            onFinished(folderIdsToRefresh)
             folderIdsToRefresh = []
             isProcessing = false
         }
@@ -71,14 +81,14 @@ export function createCopyProcessor(onCopyFinish, onShowErrors) {
         }
     }
 
-    const addJob = (source, target, move, overwrite, foldersToRefresh) => {
+    const addJob = (source, target, move, overwrite, foldersToRefresh, android) => {
 
-        const size = fs.statSync(source).size
+        const size = android ? 1 : fs.statSync(source).size
         totalSize += size
         folderIdsToRefresh = [...new Set(folderIdsToRefresh.concat(foldersToRefresh))]
 
         queue.push({
-            source, target, move, overwrite, size
+            source, target, move, overwrite, size, android
         })
        
         if (!isProcessing) {
@@ -92,7 +102,7 @@ export function createCopyProcessor(onCopyFinish, onShowErrors) {
         progress.setAttribute("progress", current / total * 100.0)
     }
     
-    function onFinish(folderIdsToRefresh) {
+    function onFinished(folderIdsToRefresh) {
         progress.classList.remove("active")
         onCopyFinish(folderIdsToRefresh)
     }
@@ -102,6 +112,14 @@ export function createCopyProcessor(onCopyFinish, onShowErrors) {
 
         // TODO if error dialog is open append
         progressError.classList.remove("hidden")
+    }
+    
+    async function copyAndroid(source, target, onProgress, move, overwrite) {
+        onProgress(0)
+        console.log("Copy", source, target)
+        const delay = async timeout => new Promise(res => setTimeout(() => res(), timeout))
+        await delay(300)
+        onProgress(1)
     }
 
     progressErrorClose.onclick = evt => {

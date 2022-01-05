@@ -1,5 +1,6 @@
 import { ANDROID_PATH } from "./androids"
 import { formatDateTime, formatSize, getExtension } from "./rendertools.js"
+import { copyProcessor } from "../processors/copyProcessor.js"
 const http = window.require('http')
 
 export const ANDROID_TYPE = "android"
@@ -138,7 +139,34 @@ export const getAndroid = (folderId, path) => {
         }
     }
 
+    const readDir = async path => {
+        return await getFiles(path)
+    }
+
+    const copyItems = async (copyInfo, move, overwrite, foldersToRefresh) => {
+        copyInfo.items.forEach(n => copyProcessor.addJob(n.file, n.targetFile, move, overwrite, foldersToRefresh, true))
+    }
+
     const getFiles = path => request("getfiles", { path })
+    
+    async function extractFilesInFolders(sourcePath, targetPath, items) {
+
+        const readdir = async path => (await getFiles(path)).map(n => ({ name: n.name, isDirectory: n.isDirectory}))
+
+        const extractFiles = async (path, target) => await extractFilesInFolders(path, target, await readdir(path))
+
+        const paths = (await Promise.all(items.map(async n => {
+            const file = fspath.join(sourcePath, n.name)
+            const targetFile = fspath.join(targetPath, n.name)
+            return n.isDirectory() 
+                ? extractFiles(file, targetFile) 
+                : { file, 
+                    targetFile, 
+                    targetExists: fs.existsSync(targetFile)
+                } 
+        }))).flatMap(n => n)
+        return paths
+    }
 
     async function request(path, data) {
         const keepAliveAgent = new http.Agent({
@@ -178,6 +206,7 @@ export const getAndroid = (folderId, path) => {
         }) 
     }    
 
+    // TODO Test copying in Windows (initializecopyProcessor)
     return {
         getType,
         getColumns,
@@ -189,6 +218,9 @@ export const getAndroid = (folderId, path) => {
         addExtendedInfos,
         getCurrentPath,
         saveWidths,
-        getSortFunction
+        getSortFunction,
+        extractFilesInFolders,
+        readDir,
+        copyItems
     }
 }
