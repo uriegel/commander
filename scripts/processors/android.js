@@ -85,7 +85,7 @@ export const getAndroid = (folderId, path) => {
     const getPath = async item => item.isDirectory 
         ? item.name != ".."
             ? [
-                `${currentPath}/${item.name}`, 
+                currentPath.length == pathBegin + 1 ?  `${currentPath}${item.name}` : `${currentPath}/${item.name}`, 
                 null]
             : currentPath == rootPath  
                 ? [ANDROID_PATH, null]
