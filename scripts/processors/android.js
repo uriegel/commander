@@ -168,6 +168,16 @@ export const getAndroid = (folderId, path) => {
         return paths
     }
 
+
+    // TODO Download
+//     const http = require('http'); // or 'https' for https:// URLs
+// const fs = require('fs');
+
+// const file = fs.createWriteStream("file.jpg");
+// const request = http.get("http://i3.ytimg.com/vi/J---aiyznGQ/mqdefault.jpg", function(response) {
+//   response.pipe(file);
+// });
+
     async function request(path, data) {
         const keepAliveAgent = new http.Agent({
             keepAlive: true,
