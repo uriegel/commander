@@ -1,4 +1,5 @@
 const fs = window.require('fs')
+const http = window.require('http')
 const { copy } = window.require('filesystem-utilities')
 const { deleteEmptyFolders } = window.require ("shared-module")
 
@@ -116,9 +117,41 @@ function createCopyProcessor(onCopyFinish, onShowErrors) {
     
     async function copyAndroid(source, target, onProgress, move, overwrite) {
         onProgress(0)
-        console.log("Copy", source, target)
-        const delay = async timeout => new Promise(res => setTimeout(() => res(), timeout))
-        await delay(300)
+
+        const keepAliveAgent = new http.Agent({
+            keepAlive: true,
+            keepAliveMsecs: 40000
+        })
+
+        const pos = source.indexOf('/', 9)
+        const ip = source.substring(8, pos)
+        const path = source.substring(pos)
+
+        const download = async data => new Promise((res, rej) => {
+            const file = fs.createWriteStream(target)
+                        
+            var payload = JSON.stringify(data)
+            const req = http.request({
+                hostname: ip,
+                port: 8080,
+                path: "/getfile",
+                agent: keepAliveAgent,
+                timeout: 40000,
+                method: 'POST',
+                headers: {
+					'Content-Type': 'application/json; charset=UTF-8',
+					'Content-Length': Buffer.byteLength(payload)
+				}            
+            }, response => response.pipe(file))
+
+            file.on('finish', res)
+
+            req.on("error", rej)
+            req.write(payload)
+            req.end()        
+        })
+
+        await download({ path })
         onProgress(1)
     }
 
