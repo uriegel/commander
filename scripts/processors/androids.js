@@ -2,13 +2,13 @@ import { RESULT_OK } from "web-dialog-box"
 import { dialog } from "../commander.js"
 import { ROOT_PATH } from "./root.js"
 
-export const ANDROID_TYPE = "android"
+export const ANDROIDS_TYPE = "androids"
 export const ANDROID_PATH = "android"
 
 let items = JSON.parse(localStorage.getItem("androids") || "[]")
 
-export const getAndroid = folderId => {
-    const getType = () => ANDROID_TYPE
+export const getAndroids = folderId => {
+    const getType = () => ANDROIDS_TYPE
 
     const getColumns = () => {
         const widthstr = localStorage.getItem(`${folderId}-androids-widths`)
@@ -38,7 +38,7 @@ export const getAndroid = folderId => {
 
     const getItems = async () => {
         return {
-            path: "android/",
+            path: "android",
             items: [{ name: "..", type: "parent" }]
                     .concat(items)
                     .concat({ name: "Hinzufügen...", type: "add"})
@@ -82,7 +82,7 @@ export const getAndroid = folderId => {
             }
             return [null, null]
         } else
-            return [null, null]
+            return [`android/${item.ip}/`, null]
     }
 
     const saveWidths = widths => localStorage.setItem(`${folderId}-androids-widths`, JSON.stringify(widths))
