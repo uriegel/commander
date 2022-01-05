@@ -115,6 +115,7 @@ export const getDirectory = (folderId, path) => {
         path = fspath.normalize(path).replace(":.", ":\\")
         var response = (await getFiles(path))
             .filter(n => hiddenIncluded ? true : !n.isHidden)
+
         let items = [{
                 name: "..",
             isNotSelectable: true,

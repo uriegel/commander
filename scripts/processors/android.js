@@ -66,17 +66,19 @@ export const getAndroid = (folderId, path) => {
     }
 
     const getItems = async (path, hiddenIncluded) => {
-//        if (items && items.length)
+        var response = (await getFiles(path.substring(pathBegin)))
+            .filter(n => hiddenIncluded ? true : !n.isHidden)
 
-        var response = await getFiles(path.substring(pathBegin))
-        console.log(response)
-
-        currentPath = path
-        
-        return {
-            path,
-            items: [{ name: "..", isDirectory: true }]
-        }
+        let items = [{
+                name: "..",
+            isNotSelectable: true,
+                isDirectory: true
+            }]
+            .concat(response.filter(n => n.isDirectory))
+            .concat(response.filter(n => !n.isDirectory))
+        if (items && items.length)
+            currentPath = path
+        return { items, path }
     }
 
     const getPath = async item => item.isDirectory 
@@ -113,12 +115,28 @@ export const getAndroid = (folderId, path) => {
 
     const disableSorting = (table, disable) => table.disableSorting(1, disable)
 
+    const getCurrentPath = () => currentPath
+
     const getItem = item => currentPath == `${currentPath}/${item.name}`
 
-    const data = JSON.stringify({
-        path,
-        count: 234
-    })
+    const saveWidths = widths => localStorage.setItem(`${folderId}-android-widths`, JSON.stringify(widths))
+
+    const getSortFunction = (column, isSubItem) => {
+        switch (column) {
+            case 0:
+                return isSubItem == false 
+                    ? ([a, b]) => a.name.localeCompare(b.name)
+                    : ([a, b]) => getExtension(a.name).localeCompare(getExtension(b.name))
+            case 1: 
+                return ([a, b]) => (a.exifTime ? a.exifTime : a.time) - (b.exifTime ? b.exifTime : b.time)
+            case 2: 
+                return ([a, b]) => a.size - b.size
+            case 3:
+                return ([a, b]) => compareVersion(a.version, b.version)
+            default:
+                return null
+        }
+    }
 
     const getFiles = path => request("getfiles", { path })
 
@@ -130,6 +148,7 @@ export const getAndroid = (folderId, path) => {
 
         return new Promise((resolve, reject) => {
             var payload = JSON.stringify(data)
+            let responseData = ''
             const req = http.request({
                 hostname: ip,
                 port: 8080,
@@ -143,12 +162,10 @@ export const getAndroid = (folderId, path) => {
 				}            
             }, response => {
                 response.setEncoding('utf8')
-                response.on('data', chunk => {
-                    const result = JSON.parse(chunk)
-                    resolve(result)
-                })
+                response.on('data', chunk => responseData += chunk)
                 response.on('end', () => {
-                    // console.log('No more data in response.')
+                    const result = JSON.parse(responseData)
+                    resolve(result)
                 })
             })        
             
@@ -169,6 +186,9 @@ export const getAndroid = (folderId, path) => {
         getPath,
         disableSorting,
         getItem,
-        addExtendedInfos
+        addExtendedInfos,
+        getCurrentPath,
+        saveWidths,
+        getSortFunction
     }
 }
