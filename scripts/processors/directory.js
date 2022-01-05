@@ -194,6 +194,10 @@ export const getDirectory = (folderId, path) => {
             info
             .filter(n => n.targetExists)
             .map(async n => ({ source: await sourceFolder.getFileInfos(n.file, sourcePath), target: await getFileInfos(n.targetFile) }))
+            // TODO:
+            // map(async n =>await sourceFolder.getFileInfos(n.file, sourcePath) as getFilesInfos
+            // then
+            //var c = sources.map((n, i) => ({source: n, target: targets[i]})))
         )
 
     const getFileInfos = async (file, subPath) => {
