@@ -136,6 +136,7 @@ function createCopyProcessor(onCopyFinish, onShowErrors) {
         const ip = source.substring(8, pos)
         const path = source.substring(pos)
 
+        let date = 0
         const download = async data => new Promise((res, rej) => {
             const file = fs.createWriteStream(target)
                         
@@ -151,9 +152,22 @@ function createCopyProcessor(onCopyFinish, onShowErrors) {
 					'Content-Type': 'application/json; charset=UTF-8',
 					'Content-Length': Buffer.byteLength(payload)
 				}            
-            }, response => response.pipe(file))
+            }, response => {
+                date = response.headers["x-file-date"]
+                return response.pipe(file)
+            })
 
-            file.on('finish', res)
+            file.on('finish', () => {
+                if (date) {
+                    const time = new Date(Number.parseInt(date))
+                    try {
+                        fs.utimesSync(target, time, time)
+                    } catch(e) {
+                        console.error("change time", e)
+                    }
+                }
+                res()
+            })
 
             req.on("error", rej)
             req.write(payload)
