@@ -268,8 +268,8 @@ class Folder extends HTMLElement {
         return this.processor.prepareCopyItems(move, itemsType, items.length == 1, fromLeft, copyInfo)
     }
 
-    async getFileInfos(file, subPath) {
-        return await this.processor.getFileInfos(file, subPath)
+    async getFilesInfos(files, subPath) {
+        return await this.processor.getFilesInfos(files, subPath)
     }
 
     async copyItems(copyInfo, move, overwrite, foldersToRefresh) {

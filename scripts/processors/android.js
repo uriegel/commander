@@ -147,15 +147,16 @@ export const getAndroid = (folderId, path) => {
         copyInfo.items.forEach(n => copyProcessor.addJob(n.file, n.targetFile, move, overwrite, foldersToRefresh, true))
     }
 
-    const getFileInfos = async (file, subPath) => {
-        // TODO getFileInfos from all files
-        const info = await getFiles(file.substring(pathBegin))
-        return await {  
-            file,       
-            name: subPath ? file.substr(subPath.length + 1) : undefined,
-            size: info.size,
-            time: info.time,
-        }
+    const getFilesInfos = async (files, subPath) => {
+        if (!files || files.length == 0)
+            return []
+        const fileInfos = await request("getfilesinfos", { files: files.map(n => n.substring(pathBegin)) })
+        return fileInfos.map(n => ({
+            file: n.file,
+            name: subPath ? n.file.substr(subPath.length + 1) : undefined,
+            size: n.size,
+            time: new Date(n.time)
+        }))
     }
 
     const getFiles = path => request("getfiles", { path })
@@ -233,6 +234,6 @@ export const getAndroid = (folderId, path) => {
         extractFilesInFolders,
         readDir,
         copyItems,
-        getFileInfos
+        getFilesInfos
     }
 }

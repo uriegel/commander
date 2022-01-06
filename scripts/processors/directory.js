@@ -192,7 +192,7 @@ export const getDirectory = (folderId, path) => {
 
     const getCopyConflicts = async (info, sourcePath, sourceFolder) => {
         const conflicts = info.filter(n => n.targetExists)
-        const sources = await getFilesInfos(conflicts.map(n => n.file), sourcePath)
+        const sources = await sourceFolder.getFilesInfos(conflicts.map(n => n.file), sourcePath)
         const targets = await getFilesInfos(conflicts.map(n => n.targetFile))
         return sources.map((n, i) => ({source: n, target: targets[i]}))
     }
