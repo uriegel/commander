@@ -190,24 +190,24 @@ export const getDirectory = (folderId, path) => {
         return paths
     }
 
-    const getCopyConflicts = async (info, sourcePath, sourceFolder) => await Promise.all(
-            info
-            .filter(n => n.targetExists)
-            .map(async n => ({ source: await sourceFolder.getFileInfos(n.file, sourcePath), target: await getFileInfos(n.targetFile) }))
-            // TODO:
-            // map(async n =>await sourceFolder.getFileInfos(n.file, sourcePath) as getFilesInfos
-            // then
-            //var c = sources.map((n, i) => ({source: n, target: targets[i]})))
-        )
+    const getCopyConflicts = async (info, sourcePath, sourceFolder) => {
+        const conflicts = info.filter(n => n.targetExists)
+        const sources = await getFilesInfos(conflicts.map(n => n.file), sourcePath)
+        const targets = await getFilesInfos(conflicts.map(n => n.targetFile))
+        return sources.map((n, i) => ({source: n, target: targets[i]}))
+    }
 
-    const getFileInfos = async (file, subPath) => {
-        const info = await stat(file)
-        return await enhanceCopyConflictData({  
-            file,       
-            name: subPath ? file.substr(subPath.length + 1) : undefined,
-            size: info.size,
-            time: info.mtime,
-        })
+    const getFilesInfos = async (files, subPath) => {
+        const getFileInfos = async file => {
+            const info = await stat(file)
+            return await enhanceCopyConflictData({  
+                file,       
+                name: subPath ? file.substr(subPath.length + 1) : undefined,
+                size: info.size,
+                time: info.mtime,
+            })
+        }
+        return await Promise.all(files.map(getFileInfos))
     }
 
     const prepareCopyItems = async (move, itemsType, several, fromLeft, copyInfo) => {
@@ -291,6 +291,6 @@ export const getDirectory = (folderId, path) => {
         renameItem,
         deleteEmptyFolders,
         readDir,
-        getFileInfos
+        getFilesInfos
     }
 }

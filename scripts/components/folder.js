@@ -174,6 +174,7 @@ class Folder extends HTMLElement {
     }
 
     async changePath(path, fromBacklog) {
+        // TODO when error => don't change, if first time, change to root (Android not connected)
         const result = getProcessor(this.folderId, path, this.processor)
         const req = ++this.latestRequest
         const itemsResult = (await result.processor.getItems(path, this.showHiddenItems))

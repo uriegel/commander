@@ -10,6 +10,10 @@ export function initializeCopying(onFinishCallback, onShowCopyErrors) {
 export var copyProcessor
 export var onFinish
 
+const COPY = 1
+const COPY_ANDROID = 2
+const DELETE_EMPTY_FOLDERS = 3
+
 function createCopyProcessor(onCopyFinish, onShowErrors) {
     onFinish = onCopyFinish
     const progress = document.getElementById("progress")
@@ -53,12 +57,17 @@ function createCopyProcessor(onCopyFinish, onShowErrors) {
                 if (!job) 
                     break
                 try {
-                    if (job.deleteEmptyFolders)
-                        await copy(job.source, job.target, c => onProgress(alreadyCopied + c, totalSize), job.move || false, job.overwrite || false)
-                    else if (job.android)
-                        await copyAndroid(job.source, job.target, c => onProgress(alreadyCopied + c, totalSize), job.move || false, job.overwrite || false)
-                    else
-                        await deleteEmptyFolders(job.deleteEmptyFolders.path, job.deleteEmptyFolders.folders)
+                    switch (job.type) {
+                        case COPY:
+                            await copy(job.source, job.target, c => onProgress(alreadyCopied + c, totalSize), job.move || false, job.overwrite || false)
+                            break
+                        case COPY_ANDROID:
+                            await copyAndroid(job.source, job.target, c => onProgress(alreadyCopied + c, totalSize), job.move || false, job.overwrite || false)
+                            break
+                        case DELETE_EMPTY_FOLDERS:
+                            await deleteEmptyFolders(job.deleteEmptyFolders.path, job.deleteEmptyFolders.folders)
+                            break
+                    }
                 } catch (err) {
                     onException(err)
                 }
@@ -74,7 +83,7 @@ function createCopyProcessor(onCopyFinish, onShowErrors) {
 
     const addDeleteEmptyFolders = (path, folders, foldersToRefresh) => {
         folderIdsToRefresh = [...new Set(folderIdsToRefresh.concat(foldersToRefresh))]
-        queue.push({ deleteEmptyFolders: { path, folders } })
+        queue.push({ deleteEmptyFolders: { path, folders, type: DELETE_EMPTY_FOLDERS } })
 
         if (!isProcessing) {
             isProcessing = true
@@ -89,7 +98,7 @@ function createCopyProcessor(onCopyFinish, onShowErrors) {
         folderIdsToRefresh = [...new Set(folderIdsToRefresh.concat(foldersToRefresh))]
 
         queue.push({
-            source, target, move, overwrite, size, android
+            source, target, move, overwrite, size, type: android ? COPY_ANDROID : COPY
         })
        
         if (!isProcessing) {
