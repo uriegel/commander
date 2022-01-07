@@ -41,8 +41,10 @@ class Folder extends HTMLElement {
             }
             this.processor.renderRow(item, tr)
         }
+
+        this.changePath() 
         const lastPath = localStorage.getItem(`${this.folderId}-lastPath`)
-        this.changePath(lastPath)
+        setTimeout(() => this.changePath(lastPath))
     }
 
     get id() { return this.folderId }
@@ -174,7 +176,6 @@ class Folder extends HTMLElement {
     }
 
     async changePath(path, fromBacklog) {
-        // TODO when error => don't change, if first time, change to root (Android not connected)
         const result = getProcessor(this.folderId, path, this.processor)
         const req = ++this.latestRequest
         const itemsResult = (await result.processor.getItems(path, this.showHiddenItems))
@@ -363,10 +364,11 @@ class Folder extends HTMLElement {
 
 customElements.define('folder-table', Folder)
 
+// TODO 
+// TODO Processor: CanAction can copy can move... fromProcessor toProcessor
 // TODO Copy/Move with Drag'n'Drop
 // TODO Copy conflicts: order by red, then green, then equal
 
-// TODO Processor: CanAction 
 // TODO Show trashinfo (show trash)
 // TODO Undelete files
 // TODO Empty trash

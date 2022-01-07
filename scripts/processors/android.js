@@ -180,6 +180,8 @@ export const getAndroid = (folderId, path) => {
         return paths
     }
 
+    const deleteEmptyFolders = () => {}
+
     async function request(path, data) {
         const keepAliveAgent = new http.Agent({
             keepAlive: true,
@@ -218,7 +220,6 @@ export const getAndroid = (folderId, path) => {
         }) 
     }    
 
-    // TODO Test copying in Windows (initializecopyProcessor)
     return {
         getType,
         getColumns,
@@ -234,6 +235,7 @@ export const getAndroid = (folderId, path) => {
         extractFilesInFolders,
         readDir,
         copyItems,
-        getFilesInfos
+        getFilesInfos,
+        deleteEmptyFolders
     }
 }
