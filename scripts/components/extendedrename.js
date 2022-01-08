@@ -34,22 +34,44 @@ class ExtendedRename extends HTMLElement {
                 </table>
             </div`
 
-        const activate = this.querySelector('#activate')            
-        const prefix = this.querySelector('#prefix')            
-        const digits = this.querySelector('#digits')            
-        const start = this.querySelector('#start')            
-        activate.onclick = () => {
-            if (activate.checked) {
-                prefix.disabled = false
-                digits.disabled = false
-                start.disabled = false
-            } else {
-                prefix.disabled = true
-                digits.disabled = true
-                start.disabled = true
-            }
-        }
+        this.activate = this.querySelector('#activate')            
+        this.prefixInput = this.querySelector('#prefix')            
+        this.digits = this.querySelector('#digits')            
+        this.start = this.querySelector('#start')            
+        this.activate.onclick = () => this.syncActivated()
     }
+
+    get isActivated() { return this.activate.checked }
+    set isActivated(value) { 
+        this.activate.checked = value
+        this.syncActivated()
+    }
+
+    initialize() {
+        this.isActivated = true
+        this.prefixInput.value = localStorage.getItem("extended-rename-prefix")
+        this.digits.value = localStorage.getItem("extended-rename-digits") || 3
+        this.start.value = localStorage.getItem("extended-rename-start") || 0
+    }
+
+    save() {
+        localStorage.setItem("extended-rename-prefix", this.prefixInput.value)
+        localStorage.setItem("extended-rename-digits", this.digits.value)
+        localStorage.setItem("extended-rename-start", this.start.value)
+    }
+
+
+    syncActivated() {
+        if (this.activate.checked) {
+            this.prefixInput.disabled = false
+            this.digits.disabled = false
+            this.start.disabled = false
+        } else {
+            this.prefixInput.disabled = true
+            this.digits.disabled = true
+            this.start.disabled = true
+        }
+    }        
 }
 
 customElements.define('extended-rename', ExtendedRename)

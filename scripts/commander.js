@@ -155,6 +155,8 @@ async function rename() {
 }
 
 async function extendedRename() {
+    const extendedRename = document.getElementById("extended-rename")
+    extendedRename.initialize()
     const res = await dialog.show({
         extended: "extended-rename",
         btnOk: true,
@@ -162,6 +164,9 @@ async function extendedRename() {
         defBtnOk: true
     })    
     activeFolder.setFocus()
+    if (res.result == RESULT_OK) {
+        extendedRename.save()
+    }
 }
 
 async function onDelete(itemsToDelete) {
