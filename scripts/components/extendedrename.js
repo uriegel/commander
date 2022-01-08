@@ -60,6 +60,16 @@ class ExtendedRename extends HTMLElement {
         localStorage.setItem("extended-rename-start", this.start.value)
     }
 
+    getExtendedInfos() {
+        return this.isActivated 
+        ? ({
+            prefix: this.prefixInput.value,
+            digits: this.digits.value,
+            start: this.start.value
+        })
+        : null
+    }
+
 
     syncActivated() {
         if (this.activate.checked) {

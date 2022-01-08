@@ -377,13 +377,18 @@ class Folder extends HTMLElement {
     }
     
     computeExtendedNewNames() {
-        if (this.isExtendedRename)
+        if (this.isExtendedRename) {
             this.table.items
                 .filter(n => !n.isSelected)
                 .forEach(n => n.newName = "")
             this.table.items
                 .filter(n => n.isSelected)
-                .forEach((n, i) => n.newName = ` Bild${i}`)
+                .forEach((n, i) => n.newName = `${this.isExtendedRename.prefix}${i + this.isExtendedRename.start}`)
+        }
+    }
+    
+    doExtendedRename() {
+        console.log("Extended renaming", this.table.items.filter(n => n.isSelected))
     }
 }
 

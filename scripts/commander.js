@@ -110,6 +110,11 @@ async function copy(move) {
 
 async function rename() {
     try {
+        if (activeFolder.isExtendedRename) {
+            activeFolder.doExtendedRename()
+            return
+        }
+
         const selectedItems = activeFolder.getSelectedItems()
         if (selectedItems.length != 1)    
             return
@@ -166,7 +171,7 @@ async function extendedRename() {
     activeFolder.setFocus()
     if (res.result == RESULT_OK) {
         extendedRename.save()
-            activeFolder.extendedRename = extendedRename.isActivated
+        activeFolder.extendedRename = extendedRename.getExtendedInfos()
     }
 }
 
