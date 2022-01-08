@@ -10,6 +10,7 @@ import './components/pdfviewer.js'
 import './components/folder.js'
 import './components/copyconflicts'
 import './components/androidadder'
+import './components/extendedrename'
 import { showViewer, refreshViewer} from './viewer.js'
 import { initializeMenu } from './menu.js'
 export const DIRECTORY = 1
@@ -153,6 +154,16 @@ async function rename() {
     }
 }
 
+async function extendedRename() {
+    const res = await dialog.show({
+        extended: "extended-rename",
+        btnOk: true,
+        btnCancel: true,
+        defBtnOk: true
+    })    
+    activeFolder.setFocus()
+}
+
 async function onDelete(itemsToDelete) {
     try {
         const itemsType = getItemsTypes(itemsToDelete)
@@ -255,6 +266,7 @@ var commander = {
     createFolder,
     copy,
     rename,
+    extendedRename,
     selectAll,
     selectNone
 }

@@ -6,7 +6,7 @@ export function initializeMenu(commanderToSet) { commander = commanderToSet }
 window.onRename = () => commander.rename()
 
 window.onExtendedRename = () => {
-    console.log("Extended Rename")
+    commander.extendedRename()
 }
 
 window.onCopy = () => commander.copy()

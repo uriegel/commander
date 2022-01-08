@@ -43,17 +43,17 @@
     "electron-settings": "^4.0.2",
     "filesystem-utilities": "5.0.1",
     "shared-module": "file:shared-module",
-    "theme-change-detect": "0.0.1",
-    "web-pie-progress": "^0.0.1"
+    "theme-change-detect": "0.0.1"
   },
   "devDependencies": {
     "electron": "^15.2.0",
     "electron-builder": "^22.13.1",
     "grid-splitter": "^0.1.0",
     "virtual-table-component": "^1.0.0",
-    "web-dialog-box": "^1.0.3",
+    "web-dialog-box": "^2.0.2",
     "web-electron-titlebar": "^0.2.0",
     "web-menu-bar": "^0.3.0",
+    "web-pie-progress": "^0.0.1",
     "webpack": "^5.59.1",
     "webpack-cli": "^4.9.1",
     "webpack-merge": "^5.8.0"
