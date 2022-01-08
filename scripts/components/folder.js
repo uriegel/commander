@@ -1,5 +1,6 @@
 import 'virtual-table-component'
 import { getProcessor } from '../processors/processor.js'
+import { getExtension } from "../processors/rendertools.js"
 const ipcRenderer = window.require('electron').ipcRenderer
 const fspath = window.require('path')
 
@@ -377,13 +378,20 @@ class Folder extends HTMLElement {
     }
     
     computeExtendedNewNames() {
+
+        const formatNewName = (n, i) => { 
+            const ext = getExtension(n.name)
+            n.newName =
+                `${this.isExtendedRename.prefix}${String(i + Number.parseInt(this.isExtendedRename.start)).padStart(Number.parseInt(this.isExtendedRename.digits), '0')}${ext}`
+        }
+
         if (this.isExtendedRename) {
             this.table.items
                 .filter(n => !n.isSelected)
                 .forEach(n => n.newName = "")
             this.table.items
                 .filter(n => n.isSelected)
-                .forEach((n, i) => n.newName = `${this.isExtendedRename.prefix}${i + this.isExtendedRename.start}`)
+                .forEach(formatNewName)
         }
     }
     
