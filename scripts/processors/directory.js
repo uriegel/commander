@@ -24,9 +24,11 @@ export const getDirectory = (folderId, path) => {
     const getType = () => DIRECTORY_TYPE
     
     let currentPath = ""
+    let extendedRename = false
 
-    const getColumns = () => {
-        const widthstr = localStorage.getItem(`${folderId}-directory-widths`)
+    const getColumns = extendedRenameToSet => {
+        extendedRename = extendedRenameToSet
+        const widthstr = localStorage.getItem(`${folderId}-${(extendedRename ? "extended-" : "")}directory-widths`)
         const widths = widthstr ? JSON.parse(widthstr) : []
         let columns = adaptDirectoryColumns([{
             name: "Name",
@@ -82,6 +84,10 @@ export const getDirectory = (folderId, path) => {
                 td.classList.add("rightAligned")
             }
         }])
+        if (extendedRename) {
+            columns.splice(1, 0, { name: "Neuer Name", render: (td, item) => { td.innerHTML = "Neu"}})
+            columns.forEach(n => n.isSortable = false)
+        }
         if (widths)
             columns = columns.map((n, i)=> ({ ...n, width: widths[i]}))
         return columns
@@ -145,7 +151,7 @@ export const getDirectory = (folderId, path) => {
         }
     }
 
-    const saveWidths = widths => localStorage.setItem(`${folderId}-directory-widths`, JSON.stringify(widths))
+    const saveWidths = widths => localStorage.setItem(`${folderId}-${(extendedRename ? "extended-" : "")}directory-widths`, JSON.stringify(widths))
 
     const getItem = item => currentPath == pathDelimiter ? pathDelimiter + item.name : currentPath + pathDelimiter + item.name
 

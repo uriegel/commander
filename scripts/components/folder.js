@@ -185,9 +185,10 @@ class Folder extends HTMLElement {
             return
 
         this.table.setItems([])
-        if (result.changed) {
+        if (result.changed || this.columnsChangeRequest) {
+            this.columnsChangeRequest = false
             this.processor = result.processor
-            const columns = this.processor.getColumns()
+            const columns = this.processor.getColumns(this.isExtendedRename)
             this.table.setColumns(columns)
             this.sortFunction = null
         }
@@ -359,6 +360,13 @@ class Folder extends HTMLElement {
             this.dispatchEvent(new CustomEvent('dragAndDrop', { detail: this.dropEffect == "move" }))
         }
         this.folderRoot.classList.remove("isDragging")
+    }
+
+    get extendedRename() { return this.isExtendedRename }
+    set extendedRename(value) {
+        this.isExtendedRename = value
+        this.columnsChangeRequest = true
+        this.reloadItems()
     }
 }
 

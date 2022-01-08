@@ -166,6 +166,7 @@ async function extendedRename() {
     activeFolder.setFocus()
     if (res.result == RESULT_OK) {
         extendedRename.save()
+            activeFolder.extendedRename = extendedRename.isActivated
     }
 }
 
