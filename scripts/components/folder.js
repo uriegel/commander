@@ -35,6 +35,7 @@ class Folder extends HTMLElement {
                     setTimeout(() => {
                         const pos = this.table.getPosition()
                         this.table.items[pos].isSelected = !this.table.items[pos].isNotSelectable && !this.table.items[pos].isSelected 
+                        this.computeExtendedNewNames()
                         this.table.refresh()
                     })
                 }
@@ -62,11 +63,13 @@ class Folder extends HTMLElement {
 
     selectAll() {
         this.table.items.forEach(n => n.isSelected = !n.isNotSelectable)
+        this.computeExtendedNewNames()
         this.table.refresh()
     }
 
     selectNone() {
         this.table.items.forEach(n => n.isSelected = false)
+        this.computeExtendedNewNames()
         this.table.refresh()
     }
 
@@ -88,6 +91,7 @@ class Folder extends HTMLElement {
             this.table.items = dirs.concat(files.sort(this.sortFunction))
             const newPos = this.table.items.findIndex(n => n.name == item.name)
             this.table.setPosition(newPos)
+            this.computeExtendedNewNames()
             this.table.refresh()
         })
 
@@ -129,6 +133,7 @@ class Folder extends HTMLElement {
                     if (evt.shiftKey) {
                         const pos = this.table.getPosition()
                         this.table.items.forEach((item, i) => item.isSelected = !item.isNotSelectable && i >= pos)                     
+                        this.computeExtendedNewNames()
                         this.table.refresh()
                     }
                     break
@@ -136,12 +141,14 @@ class Folder extends HTMLElement {
                     if (evt.shiftKey) {
                         const pos = this.table.getPosition()
                         this.table.items.forEach((item, i) => item.isSelected = !item.isNotSelectable && i <= pos)                     
+                        this.computeExtendedNewNames()
                         this.table.refresh()
                     }
                     break
                 case 45: { // Ins
                     const pos = this.table.getPosition()
                     this.table.items[pos].isSelected = !this.table.items[pos].isNotSelectable && !this.table.items[pos].isSelected 
+                    this.computeExtendedNewNames()
                     this.table.setPosition(pos + 1)
                     break
                 }
@@ -368,11 +375,21 @@ class Folder extends HTMLElement {
         this.columnsChangeRequest = true
         this.reloadItems()
     }
+    
+    computeExtendedNewNames() {
+        if (this.isExtendedRename)
+            this.table.items
+                .filter(n => !n.isSelected)
+                .forEach(n => n.newName = "")
+            this.table.items
+                .filter(n => n.isSelected)
+                .forEach((n, i) => n.newName = ` Bild${i}`)
+    }
 }
+
 
 customElements.define('folder-table', Folder)
 
-// TODO 
 // TODO Processor: CanAction can copy can move... fromProcessor toProcessor
 // TODO Copy/Move with Drag'n'Drop
 // TODO Copy conflicts: order by red, then green, then equal

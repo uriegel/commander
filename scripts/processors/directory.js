@@ -88,7 +88,7 @@ export const getDirectory = (folderId, path) => {
             }
         }])
         if (extendedRename) 
-            columns.splice(1, 0, { name: "Neuer Name", render: (td, item) => { td.innerHTML = "Neu"}})
+            columns.splice(1, 0, { name: "Neuer Name", render: (td, item) => { td.innerHTML = item.newName || ""}})
         if (widths)
             columns = columns.map((n, i)=> ({ ...n, width: widths[i]}))
         return columns
