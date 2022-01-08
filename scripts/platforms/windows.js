@@ -26,6 +26,7 @@ export const adaptConflictColumns = columns => [
     ...columns.slice(0, columns.length), {
         name: "Version",
         isSortable: true,
+        sortIndex: 4,
         render: (td, item) => {
             const template = document.getElementById('conflictItem')
             const element = template.content.cloneNode(true)

@@ -33,6 +33,7 @@ export const getDirectory = (folderId, path) => {
         let columns = adaptDirectoryColumns([{
             name: "Name",
             isSortable: true,
+            sortIndex: 1,
             subItem: {
                 name: "Ext.",
                 isSortable: true
@@ -70,6 +71,7 @@ export const getDirectory = (folderId, path) => {
         }, {
             name: "Datum",
             isSortable: true,
+            sortIndex: 2,
             render: (td, item) => {
                 td.innerHTML = formatDateTime(item.exifTime || item.time)
                 if (item.exifTime)
@@ -78,16 +80,15 @@ export const getDirectory = (folderId, path) => {
         }, {
             name: "Größe",
             isSortable: true,
+            sortIndex: 3,
             isRightAligned: true,
             render: (td, item) => {
                 td.innerHTML = formatSize(item.size)
                 td.classList.add("rightAligned")
             }
         }])
-        if (extendedRename) {
+        if (extendedRename) 
             columns.splice(1, 0, { name: "Neuer Name", render: (td, item) => { td.innerHTML = "Neu"}})
-            columns.forEach(n => n.isSortable = false)
-        }
         if (widths)
             columns = columns.map((n, i)=> ({ ...n, width: widths[i]}))
         return columns
@@ -136,15 +137,15 @@ export const getDirectory = (folderId, path) => {
 
     const getSortFunction = (column, isSubItem) => {
         switch (column) {
-            case 0:
+            case 1:
                 return isSubItem == false 
                     ? ([a, b]) => a.name.localeCompare(b.name)
                     : ([a, b]) => getExtension(a.name).localeCompare(getExtension(b.name))
-            case 1: 
-                return ([a, b]) => (a.exifTime ? a.exifTime : a.time) - (b.exifTime ? b.exifTime : b.time)
             case 2: 
+                return ([a, b]) => (a.exifTime ? a.exifTime : a.time) - (b.exifTime ? b.exifTime : b.time)
+            case 3: 
                 return ([a, b]) => a.size - b.size
-            case 3:
+            case 4:
                 return ([a, b]) => compareVersion(a.version, b.version)
             default:
                 return null
