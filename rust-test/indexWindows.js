@@ -1,5 +1,10 @@
 const { getIcon } = require("../index.node")
 
-console.log("Testing Rust (Javascript side)")
+console.log("Testing Rust (Javascript side)...")
 
-console.log("system icon", getIcon(".pdf", 16))
+
+getIcon(".pdf", 16, (err, obj) => {
+    console.log("ergebnis", err, obj)
+})
+
+console.log("End testing Rust (Javascript side)")
