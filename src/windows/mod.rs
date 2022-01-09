@@ -7,15 +7,16 @@ fn get_icon_async(mut cx: FunctionContext) -> JsResult<JsUndefined> {
     let callback = cx.argument::<JsFunction>(2)?.root(&mut cx);
 
     let args = match get_icon(&ext, size as i32) {
-        Ok(_buffer) => {
-            let obj = cx.empty_object();
-            let width = cx.number(800);
-            let height = cx.number(600);
-            obj.set(&mut cx, "width",  width)?;
-            obj.set(&mut cx, "height",  height)?;
+        Ok(buffer) => {
+            let mut js_buffer = cx.buffer(buffer.len() as u32)?;
+            cx.borrow_mut(&mut js_buffer, |js_buffer| {
+                let buf = js_buffer.as_mut_slice();
+                buf.copy_from_slice(&buffer);
+            });
+        
             vec![
                 cx.null().upcast::<JsValue>(),
-                obj.upcast(),
+                js_buffer.upcast(),
             ]
         }
         Err(_err) => {
@@ -28,7 +29,6 @@ fn get_icon_async(mut cx: FunctionContext) -> JsResult<JsUndefined> {
     let this = cx.undefined();
     let callback = callback.into_inner(&mut cx);
     callback.call(&mut cx, this, args)?;
-    //Ok(())        
     Ok(cx.undefined())
 }
 

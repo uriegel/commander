@@ -7,7 +7,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Debug Main Process",
+            "name": "Electron Main Process",
             "cwd": "${workspaceRoot}",
             "envFile": "${workspaceFolder}/.vscode/launch.env",
             "runtimeExecutable": "npm",
@@ -16,8 +16,8 @@
             ],
             "outputCapture": "std",
             "port": 5858
-        },{
-            "name": "Debug Rust (Javascript)",
+        }, {
+            "name": "Rust (Javascript)",
             "type": "node",
             "request": "launch",
             "cwd": "${workspaceFolder}",
@@ -26,9 +26,10 @@
             "runtimeArgs": [
                 "run-script", "debug-rust"
             ],
+            "outputCapture": "std",
             "port": 9229
         }, {
-            "name": "Debug Rust (Linux)",
+            "name": "Rust (Linux)",
             "type": "lldb",
             "request": "launch",
             "program": "/usr/bin/node",
@@ -40,7 +41,7 @@
             "preLaunchTask": "build",
             "externalConsole": false,
         }, {
-            "name": "Debug Rust (Windows)",
+            "name": "Rust (Windows)",
             "type": "lldb",
             "request": "launch",
             "program": "node",
