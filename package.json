@@ -6,8 +6,12 @@
   "scripts": {
     "builddev": "webpack --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js",
-    "start": "npm run builddev && electron .",
-    "dist": "electron-builder"
+    "start": "npm run build-rust-release && npm run builddev && electron .",
+    "dist": "electron-builder",
+    "debug-rust": "npm run build-rust-debug && node --nolazy --inspect-brk=9229 rust-test/index.js",
+    "build-rust": "cargo-cp-artifact -nc index.node -- cargo build --message-format=json-render-diagnostics",
+    "build-rust-debug": "npm run build-rust --",
+    "build-rust-release": "npm run build-rust -- --release"
   },
   "build": {
     "appId": "de.uriegel.commander",
@@ -46,7 +50,8 @@
     "theme-change-detect": "0.0.1"
   },
   "devDependencies": {
-    "electron": "^15.2.0",
+    "cargo-cp-artifact": "^0.1.6",
+    "electron": "^16.0.5",
     "electron-builder": "^22.13.1",
     "grid-splitter": "^0.1.0",
     "virtual-table-component": "^1.1.1",

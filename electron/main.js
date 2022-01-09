@@ -2,34 +2,27 @@ const { app, BrowserWindow, ipcMain, protocol } = require('electron')
 const process = require("process")
 const path = require("path")
 const settings = require('electron-settings')
-const { getIcon } = require('filesystem-utilities')
 const { registerRunCmd } = require('./commands')
+const isLinux = process.platform == "linux"
+const { registerGetIconProtocol } = require(isLinux ? './platform/linux': 'platform/windows')
 
 // if (process.env.NODE_ENV == 'DEV')
 //     require('vue-devtools').install()
 
-const isLinux = process.platform == "linux"
+
 const icon = path.join(__dirname, '../web/assets/kirk.png')
 
 const createWindow = async () => {    
 
-    const initGtk = async () => await getIcon(".js")
-    await initGtk()
-
-    protocol.registerBufferProtocol('icon', async (request, callback) => {
-        const url = request.url
-        var ext = url.substring(7)
-        var icon = await getIcon(ext)
-        callback({ mimeType: 'img/png', data: icon })
-    }, (error) => {
-        if (error) console.error('Failed to register protocol', error)
-    })
-
-    protocol.registerFileProtocol('view', async (request, callback) => {
-        const url = request.url
-        var path = decodeURI(url.substring(7))
-        callback(path)
-    })
+    // protocol.registerBufferProtocol('icon', async (request, callback) => {
+    //     const url = request.url
+    //     var ext = url.substring(7)
+    //     var icon = await getIcon(ext)
+    //     callback({ mimeType: 'img/png', data: icon })
+    // }, (error) => {
+    //     if (error) console.error('Failed to register protocol', error)
+    // })
+    registerGetIconProtocol()
 
     registerRunCmd()        
 

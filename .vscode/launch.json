@@ -16,6 +16,29 @@
             ],
             "outputCapture": "std",
             "port": 5858
-        }        
+        },{
+            "name": "Debug Rust (Javascript)",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "args": [ "${workspaceFolder}/rust-tester/index.js" ],
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run-script", "debug-rust"
+            ],
+            "port": 9229
+        }, {
+            "name": "Debug Rust (Linux)",
+            "type": "lldb",
+            "request": "launch",
+            "program": "/usr/bin/node",
+            "args": [ "${workspaceFolder}/rust-test/index.js" ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "terminal.integrated.automationShell.linux": "bash",
+            "preLaunchTask": "build",
+            "externalConsole": false,
+        },                  
     ]
 }
