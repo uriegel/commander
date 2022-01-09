@@ -1,4 +1,5 @@
 const fspath = window.require('path')
+export const { getDrives } = window.require('filesystem-utilities')
 const { getExifDate, getFileVersion } = window.require('filesystem-utilities')
 import { ANDROID_PATH } from "../processors/androids.js"
 import { compareVersion } from "../processors/rendertools.js"

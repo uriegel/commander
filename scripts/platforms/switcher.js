@@ -3,6 +3,7 @@ const isLinux = process.platform == "linux"
 import {
     adaptWindow as adaptWindowLinux,
     onDarkTheme as onDarkThemeLinux,
+    getDrives as getDrivesLinux,
     adaptRootColumns as adaptRootColumnsLinux,
     adaptDirectoryColumns as adaptDirectoryColumnsLinux,
     adaptConflictColumns as adaptConflictColumnsLinux,
@@ -20,6 +21,7 @@ import {
 import {
     adaptWindow as adaptWindowWindows,
     onDarkTheme as onDarkThemeWindows,
+    getDrives as getDrivesWindows,
     adaptRootColumns as adaptRootColumnsWindows,
     adaptDirectoryColumns as adaptDirectoryColumnsWindows,
     adaptConflictColumns as adaptConflictColumnsWindows,
@@ -42,6 +44,7 @@ export var adaptRootColumns = isLinux ? adaptRootColumnsLinux : adaptRootColumns
 export var adaptDirectoryColumns = isLinux ? adaptDirectoryColumnsLinux : adaptDirectoryColumnsWindows
 export var adaptConflictColumns = isLinux ? adaptConflictColumnsLinux : adaptConflictColumnsWindows
 export var getRootPath = isLinux ? getRootPathLinux : getRootPathWindows
+export var getDrives = isLinux ? getDrivesLinux : getDrivesWindows
 export var pathDelimiter = isLinux ? pathDelimiterLinux : pathDelimiterWindows
 export var parentIsRoot = isLinux ? parentIsRootLinux : parentIsRootWindows
 export var adaptDisableSorting = isLinux ? adaptDisableSortingLinux : adaptDisableSortingWindows

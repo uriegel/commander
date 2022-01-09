@@ -1,6 +1,5 @@
 import { formatSize } from "./rendertools.js"
-import { adaptRootColumns, getRootPath } from '../platforms/switcher.js'
-const addon = window.require('filesystem-utilities')
+import { adaptRootColumns, getRootPath, getDrives } from '../platforms/switcher.js'
 
 export const ROOT = "root"
 export const ROOT_PATH = "root"
@@ -52,7 +51,7 @@ export const getRoot = folderId => {
     const getCurrentPath = () => ROOT
 
     const getItems = async () => {
-        const rootitems = (await addon.getDrives())
+        const rootitems = await getDrives()
         const mountedItems = rootitems.filter(n => n.isMounted)
         const unmountedItems = rootitems.filter(n => !n.isMounted)
         const android = {

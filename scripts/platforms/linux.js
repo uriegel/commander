@@ -2,7 +2,11 @@ import { RESULT_CANCEL } from "web-dialog-box"
 import { ANDROID } from "../processors/root.js"
 import { copyProcessor } from "../processors/copyProcessor.js"
 const fspath = window.require('path')
+const { homedir } = window.require('os')
+const { exec } = window.require("child_process")
 const { getExifDate, trash, copy } = window.require('filesystem-utilities')
+
+const homeDir = homedir()
 
 export function adaptWindow(dialogToSet, activeFolderSetFocusToSet, menuToSet, itemHideMenuToSet) {
     menu = menuToSet
@@ -36,6 +40,55 @@ export async function hideMenu(hide) {
     localStorage.setItem("menuAutoMode", hide)
     menu.setAttribute("automode", hide)
 }
+
+export async function getDrives() {
+    const runCmd = cmd => new Promise(res => exec(cmd, (_, stdout) => res(stdout)))
+    const drivesString = await runCmd('lsblk --bytes --output SIZE,NAME,LABEL,MOUNTPOINT,FSTYPE')
+    const driveStrings = drivesString.split("\n")
+    const columnsPositions = (() => {
+        const title = driveStrings[0]
+        const getPart = key => title.indexOf(key)
+
+        return [
+            0,
+            getPart("NAME"),
+            getPart("LABEL"),
+            getPart("MOUNT"),
+            getPart("FSTYPE")
+        ]
+    })()
+
+    //const takeOr = (text: string, alt: string) => text ? text : alt
+    const constructDrives = driveString => {
+        const getString = (pos1, pos2) =>
+            driveString.substring(columnsPositions[pos1], columnsPositions[pos2]).trim()
+        const trimName = name =>
+            name.length > 2 && name[1] == '─'
+                ? name.substring(2)
+                : name
+        const mount = getString(3, 4)
+     
+        return {
+            description: getString(2, 3),
+            name: trimName(getString(1, 2)),
+            type: 1, // TODO: Drive types enum DriveType
+            mountPoint: mount,
+            isMounted: !!mount,
+            driveType: driveString.substring(columnsPositions[4]).trim(),
+            size: parseInt(getString(0, 1), 10)
+        }
+    }
+
+    const items = [{ name: "~", description: "home", mountPoint: homeDir, isMounted: true, type: 1, size: 0 }]
+        .concat(driveStrings
+            .slice(1)
+            .filter(n => n[columnsPositions[1]] > '~')
+            .map(constructDrives)
+    )
+    const mounted = items.filter(n => n.isMounted)
+    const unmounted = items.filter(n => !n.isMounted)
+    return mounted.concat(unmounted)
+} 
 
 export function onDarkTheme(dark) {
     activateClass(document.body, "adwaita-dark", dark) 
