@@ -8,7 +8,7 @@
     "build": "webpack --config webpack.prod.js",
     "start": "npm run build-rust-release && npm run builddev && electron .",
     "dist": "electron-builder",
-    "debug-rust": "npm run build-rust-debug && node --nolazy --inspect-brk=9229 rust-test/indexWindows.js",
+    "debug-rust": "npm run build-rust-debug && node --nolazy --inspect-brk=9229 rust-test/index.js",
     "build-rust": "cargo-cp-artifact -nc index.node -- cargo build --message-format=json-render-diagnostics",
     "build-rust-debug": "npm run build-rust --",
     "build-rust-release": "npm run build-rust -- --release"
