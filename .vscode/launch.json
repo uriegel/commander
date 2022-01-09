@@ -39,6 +39,17 @@
             "terminal.integrated.automationShell.linux": "bash",
             "preLaunchTask": "build",
             "externalConsole": false,
+        }, {
+            "name": "Debug Rust (Windows)",
+            "type": "lldb",
+            "request": "launch",
+            "program": "node",
+            "args": [ "${workspaceFolder}/rust-test/indexWindows.js" ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}",
+            "preLaunchTask": "build",
+            "environment": [],
+            "externalConsole": true
         },                  
     ]
 }

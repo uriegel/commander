@@ -15,3 +15,4 @@ fn main(mut cx: ModuleContext) -> NeonResult<()> {
     cx.export_function("getIcon", get_icon_buffer)?;
     Ok(())
 }
+
