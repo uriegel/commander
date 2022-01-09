@@ -16,7 +16,7 @@ systemicons = "0.6.0"
 [dependencies.neon]
 version = "0.9.1"
 default-features = false
-features = ["napi-6" ]
+features = ["napi-6", "event-queue-api" ]
 
 #[target.'cfg(target_os="linux")'.dependencies]
 
