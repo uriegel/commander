@@ -1,4 +1,4 @@
-const { initGtk, getIcon, getFiles } = require("../index.node")
+const { initGtk, getIcon, getFiles, copyFile } = require("../index.node")
 
 console.log("Testing Rust (Javascript side)")
 
@@ -10,4 +10,4 @@ var files = getFiles("/home/uwe")
 console.log("files")
 console.log("files", files)
 
-
+copyFile()
