@@ -165,7 +165,6 @@ export const getDirectory = (folderId, path) => {
         var name = item.name.toLocaleLowerCase();
         if (name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png"))
             item.exifTime = await getExifDateAsync(fspath.join(path, item.name))
-            item.exifTime = await getExifDateAsync(fspath.join(path, item.name))
         await addAdditionalInfo(item, name, path)
     }
     
