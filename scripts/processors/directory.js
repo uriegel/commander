@@ -15,10 +15,10 @@ import {
     enhanceCopyConflictData 
 } from "../platforms/switcher.js"
 
-const { getFiles } = window.require('filesystem-utilities')
+const { getFiles } = window.require('../index.node')
 const fspath = window.require('path')
 const fs = window.require('fs')
-const { readdir, stat } = window.require('fs/promises')
+const { stat } = window.require('fs/promises')
 
 export const getDirectory = (folderId, path) => {
     const getType = () => DIRECTORY_TYPE
@@ -120,12 +120,12 @@ export const getDirectory = (folderId, path) => {
 
     const getItems = async (path, hiddenIncluded) => {
         path = fspath.normalize(path).replace(":.", ":\\")
-        var response = (await getFiles(path))
+        var response = ( getFiles(path))
             .filter(n => hiddenIncluded ? true : !n.isHidden)
 
         let items = [{
                 name: "..",
-            isNotSelectable: true,
+                isNotSelectable: true,
                 isDirectory: true
             }]
             .concat(response.filter(n => n.isDirectory))

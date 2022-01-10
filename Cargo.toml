@@ -11,10 +11,11 @@ crate-type = ["cdylib"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-systemicons = "0.6.0"
+systemicons = "0.6"
+lexical-sort = "0.3"
 
 [dependencies.neon]
-version = "0.9.1"
+version = "0.9"
 default-features = false
 features = ["napi-6", "event-queue-api" ]
 
