@@ -28,12 +28,12 @@ const copyFileAsnyc = (source, target, cb, move, overwrite) => new Promise((res,
     }, move || false, overwrite || false)
 })
 
-const getExifDateAsync = file => new Promise(res => getExifDate(file, date => res(new Date(date))))
+const getExifDateAsync = file => new Promise(res => getExifDate(file, date => res(date ? new Date(date) : null)))
 
 const run = async () => {
 
-    const date = await getExifDateAsync("/home/uwe/Bilder/Fotos/2021/Uwe/IMG_20210907_142241.jpg")
-    console.log("Exif date", date.tolo)
+    console.log("Exif date no file", await getExifDateAsync("/home/uwe/Bilder/Fotos/2021/Uwe/IMG_20210907_142241ddd.jpg"))
+    console.log("Exif date", await getExifDateAsync("/home/uwe/Bilder/Fotos/2021/Uwe/IMG_20210907_142241.jpg"))
 
     try {
         await copyFileAsnyc("/home/uwe/Videos/raw/Goldeneye.mts", "/home/uwe/test/affe.mts", a => console.log("Progress", a))

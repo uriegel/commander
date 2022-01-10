@@ -71,26 +71,27 @@ pub fn get_exif_date(mut cx: FunctionContext) -> JsResult<JsUndefined> {
         let datetime = Local.from_local_datetime(&naive_date_time).unwrap();
         datetime.timestamp_millis()
     }    
-    
-    std::thread::spawn(move || {
-        let file = File::open(path).unwrap();
-        let mut bufreader = BufReader::new(&file);        
-        let exifreader = exif::Reader::new();
-        let res = exifreader.read_from_container(&mut bufreader).ok().and_then(|exif| {
-            let exiftime = match exif.get_field(Tag::DateTimeOriginal, In::PRIMARY) {
-                Some(info) => Some(info.display_value().to_string()),
-                None => match exif.get_field(Tag::DateTime, In::PRIMARY) {
+
+    rayon::spawn(move || {
+        let exifdate = File::open(path).ok().and_then(|file| {
+            let mut bufreader = BufReader::new(&file);        
+            let exifreader = exif::Reader::new();
+            exifreader.read_from_container(&mut bufreader).ok().and_then(|exif| {
+                let exiftime = match exif.get_field(Tag::DateTimeOriginal, In::PRIMARY) {
                     Some(info) => Some(info.display_value().to_string()),
+                    None => match exif.get_field(Tag::DateTime, In::PRIMARY) {
+                        Some(info) => Some(info.display_value().to_string()),
+                        None => None
+                    } 
+                };
+                match exiftime {
+                    Some(exiftime) => Some(get_unix_time(&exiftime)),
                     None => None
-                } 
-            };
-            match exiftime {
-                Some(exiftime) => Some(get_unix_time(&exiftime)),
-                None => None
-            }            
+                }            
+            })
         });
         channel.send(move |mut cx| {
-            let arg = match res {
+            let arg = match exifdate {
                 Some(number) => cx.number(number as f64).upcast::<JsValue>(),
                 None => cx.null().upcast()
             };
