@@ -103,8 +103,11 @@ fn copy_file(mut cx: FunctionContext) -> JsResult<JsUndefined> {
             Some(FileError { description: error.to_string(), code: unsafe { (*error.into_raw()).code } } )
         } else { None };
 
-        //if error.code == 1 && file.query_exists(Some(&gio::Cancellable::new())) {
-        let error = if file.query_exists(Some(&gio::Cancellable::new())) {
+        let error = if error.code == 1 && file.query_exists(Some(&gio::Cancellable::new())) {
+
+            let parent = target.parent().unwrap();
+            parent.make_directory_with_parents(Some(&gio::Cancellable::new()));
+
             let res = if move_file {
                 file.move_(&target, 
                     if overwrite { FileCopyFlags::OVERWRITE } else { FileCopyFlags::NONE }, 
