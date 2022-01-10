@@ -9,6 +9,11 @@ pub fn is_hidden(name: &str)->bool {
     false
 }
 
+pub fn init_addon(mut cx: ModuleContext) -> NeonResult<()> {
+    cx.export_function("getIcon", get_icon_async)?;
+    Ok(())
+}
+
 fn get_icon_async(mut cx: FunctionContext) -> JsResult<JsUndefined> {
 
     let ext = cx.argument::<JsString>(0)?.value(&mut cx);
@@ -46,11 +51,5 @@ fn get_icon_async(mut cx: FunctionContext) -> JsResult<JsUndefined> {
         });
     });
     Ok(cx.undefined())
-}
-
-#[neon::main]
-fn main(mut cx: ModuleContext) -> NeonResult<()> {
-    cx.export_function("getIcon", get_icon_async)?;
-    Ok(())
 }
 

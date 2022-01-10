@@ -9,6 +9,8 @@ use crate::windows::is_hidden;
 
 #[cfg(target_os = "linux")]
 use crate::linux::init_addon;
+#[cfg(target_os = "windows")]
+use crate::windows::init_addon;
 
 #[cfg(target_os = "linux")]
 mod linux;
