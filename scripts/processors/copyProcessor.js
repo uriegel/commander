@@ -83,7 +83,7 @@ function createCopyProcessor(onCopyFinish, onShowErrors) {
 
     const addDeleteEmptyFolders = (path, folders, foldersToRefresh) => {
         folderIdsToRefresh = [...new Set(folderIdsToRefresh.concat(foldersToRefresh))]
-        queue.push({ deleteEmptyFolders: { path, folders, type: DELETE_EMPTY_FOLDERS } })
+        queue.push({ deleteEmptyFolders: { path, folders }, type: DELETE_EMPTY_FOLDERS })
 
         if (!isProcessing) {
             isProcessing = true

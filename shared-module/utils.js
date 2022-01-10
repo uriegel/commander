@@ -1,19 +1,19 @@
 const fspath = require('path')
 const { rmdir } = require('fs/promises')
-const { getFiles } = require('filesystem-utilities')
+const { getFiles } = require('../index.node')
 
 async function deleteEmptyFolders(path, folders) {
     const folderPathes = folders.map(n => fspath.join(path, n))
 
-    async function getSubDirs(path) {
+    function getSubDirs(path) {
         path = fspath.normalize(path).replace(":.", ":\\")
-        return (await getFiles(path))
+        return getFiles(path)
             .filter(n => n.isDirectory)
             .map(n => fspath.join(path, n.name))
     }
     
     async function removeDirectory(folderPath) {
-        var items = await getSubDirs(folderPath)
+        var items = getSubDirs(folderPath)
         if (items.length > 0) {
             try {
                 await Promise.all(items.map(removeDirectory))
