@@ -5,6 +5,10 @@ use neon::prelude::*;
 //     ThreadPool::new(4)
 // });
 
+pub fn is_hidden(name: &str)->bool {
+    false
+}
+
 fn get_icon_async(mut cx: FunctionContext) -> JsResult<JsUndefined> {
 
     let ext = cx.argument::<JsString>(0)?.value(&mut cx);
