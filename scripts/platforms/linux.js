@@ -4,7 +4,8 @@ import { copyProcessor } from "../processors/copyProcessor.js"
 const fspath = window.require('path')
 const { homedir } = window.require('os')
 const { exec } = window.require("child_process")
-const { getExifDate, trash, copy } = window.require('filesystem-utilities')
+const { getExifDate, trash } = window.require('filesystem-utilities')
+const { copyFile } = window.require('shared-module')
 
 const homeDir = homedir()
 
@@ -138,7 +139,7 @@ export function deleteEmptyFolders(path, folders, foldersToRefresh) {
 }
 
 export async function renameItem(item, newName) {
-    await copy(item, newName, () => {}, true)
+    await copyFile(item, newName, () => {}, true)
 }
 
 export const enhanceCopyConflictData = async item => item

@@ -1,5 +1,3 @@
-const { FileResult } = require("filesystem-utilities")
-
 const composeFunction = (...fns) => (...args) => fns.reduceRight((acc, fn) => fn(acc), args)
 
 const activateClass = (element, cls, activate) => {

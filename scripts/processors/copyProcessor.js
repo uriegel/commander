@@ -1,7 +1,6 @@
 const fs = window.require('fs')
 const http = window.require('http')
-const { copy } = window.require('filesystem-utilities')
-const { deleteEmptyFolders } = window.require ("shared-module")
+const { deleteEmptyFolders, copyFile } = window.require ("shared-module")
 
 export function initializeCopying(onFinishCallback, onShowCopyErrors) {
     copyProcessor = createCopyProcessor(onFinishCallback, onShowCopyErrors)
@@ -59,7 +58,7 @@ function createCopyProcessor(onCopyFinish, onShowErrors) {
                 try {
                     switch (job.type) {
                         case COPY:
-                            await copy(job.source, job.target, c => onProgress(alreadyCopied + c, totalSize), job.move || false, job.overwrite || false)
+                            await copyFile(job.source, job.target, c => onProgress(alreadyCopied + c, totalSize), job.move || false, job.overwrite || false)
                             break
                         case COPY_ANDROID:
                             await copyAndroid(job.source, job.target, c => onProgress(alreadyCopied + c, totalSize), job.move || false, job.overwrite || false)

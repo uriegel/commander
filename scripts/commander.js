@@ -19,7 +19,7 @@ export const BOTH = 3
 
 export const dialog = document.querySelector('dialog-box')
 
-const FileResult = window.require('filesystem-utilities').FileResult
+const FileResult = window.require('shared-module').FileResult
 
 const folderLeft = document.getElementById("folderLeft")
 const folderRight = document.getElementById("folderRight")

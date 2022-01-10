@@ -144,7 +144,10 @@ fn copy_file(mut cx: FunctionContext) -> JsResult<JsUndefined> {
             let this = cx.undefined();
             let callback = callback.into_inner(&mut cx);
             let args = match error {
-                None => vec![ cx.null().upcast::<JsValue>(), cx.null().upcast::<JsValue>() ],
+                None => {
+                    let copied = cx.number(CopyStatus::get_value() as f64);
+                    vec![ cx.null().upcast::<JsValue>(), copied.upcast::<JsValue>() ]
+                },
                 Some(error) => {
                     let obj: Handle<JsObject> = cx.empty_object();
                     let desc = cx.string(error.description);
