@@ -1,7 +1,6 @@
 import { RESULT_CANCEL } from "web-dialog-box"
 import { ANDROID } from "../processors/root.js"
 import { copyProcessor } from "../processors/copyProcessor.js"
-const fspath = window.require('path')
 const { homedir } = window.require('os')
 const { exec } = window.require("child_process")
 const { trash } = window.require('filesystem-utilities')

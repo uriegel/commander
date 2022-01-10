@@ -1,6 +1,6 @@
 const fspath = window.require('path')
 export const { getDrives } = window.require('filesystem-utilities')
-const { getExifDate, getFileVersion } = window.require('filesystem-utilities')
+const { getFileVersion } = window.require('filesystem-utilities')
 import { ANDROID_PATH } from "../processors/androids.js"
 import { compareVersion } from "../processors/rendertools.js"
 import { ANDROID } from "../processors/root.js"
@@ -56,12 +56,9 @@ export const parentIsRoot = currentPath => currentPath.length == 3 && currentPat
 
 export const adaptDisableSorting = (table, disable) => table.disableSorting(3, disable)
 
-export async function addExtendedInfo(item, path) {
-    var name = item.name.toLocaleLowerCase();
+export async function addExtendedInfo(item, name, path) {
     if (name.endsWith(".exe") || name.endsWith(".dll"))
         item.version = await getFileVersion(fspath.join(path, item.name))
-    else if (name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png"))
-        item.exifTime = await getExifDate(fspath.join(path, item.name))
 }
 
 export async function deleteItems(items) {

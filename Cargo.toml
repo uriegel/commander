@@ -17,11 +17,11 @@ kamadak-exif = "0.5"
 chrono = "0.4"
 rayon = "1.5"
 
-#[target.'cfg(target_os="linux")'.dependencies]
+[target.'cfg(target_os="linux")'.dependencies]
 gio = "0.14"
 glib = "0.14"
 
-#[target.'cfg(target_os="windows")'.dependencies]
+[target.'cfg(target_os="windows")'.dependencies]
 
 [dependencies.neon]
 version = "0.9"
