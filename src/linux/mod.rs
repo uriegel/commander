@@ -63,6 +63,15 @@ struct FileError {
     code: i32
 }
 
+impl Clone for FileError {
+    fn clone(&self) -> FileError {
+        FileError { 
+            description: self.description.clone(),
+            code: self.code            
+        }
+    }
+}
+
 fn copy_file(mut cx: FunctionContext) -> JsResult<JsUndefined> {
     let file_path = cx.argument::<JsString>(0)?.value(&mut cx);
     let target_path = cx.argument::<JsString>(1)?.value(&mut cx);
@@ -84,7 +93,7 @@ fn copy_file(mut cx: FunctionContext) -> JsResult<JsUndefined> {
     let channel = cx.channel();
     
     std::thread::spawn(move || {
-        let mut cb = |a, b |{
+        let mut cb = |a, _b |{
             CopyStatus::add_value(a as usize);
         };
 
@@ -103,10 +112,16 @@ fn copy_file(mut cx: FunctionContext) -> JsResult<JsUndefined> {
             Some(FileError { description: error.to_string(), code: unsafe { (*error.into_raw()).code } } )
         } else { None };
 
-        let error = if error.code == 1 && file.query_exists(Some(&gio::Cancellable::new())) {
+        let original_error = error.clone();
 
+        let create_dir = match error {
+            Some(e) => e.code == 1 && file.query_exists(Some(&gio::Cancellable::new())),
+            None => false
+        };
+
+        let error = if create_dir {
             let parent = target.parent().unwrap();
-            parent.make_directory_with_parents(Some(&gio::Cancellable::new()));
+            let _res = parent.make_directory_with_parents(Some(&gio::Cancellable::new()));
 
             let res = if move_file {
                 file.move_(&target, 
@@ -123,8 +138,7 @@ fn copy_file(mut cx: FunctionContext) -> JsResult<JsUndefined> {
                 Some(FileError { description: error.to_string(), code: unsafe { (*error.into_raw()).code } } )
             } else { None };
             error
-        } else { error };
-        
+        } else { original_error };
 
         channel.send(move |mut cx| {
             let this = cx.undefined();
