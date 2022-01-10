@@ -1,8 +1,9 @@
+use std::fs::Metadata;
 use systemicons::init;
 use systemicons::get_icon_as_file;
 use neon::prelude::*;
 
-pub fn is_hidden(name: &str)->bool {
+pub fn is_hidden(name: &str, _: &Metadata)->bool {
     name.as_bytes()[0] == b'.' && name.as_bytes()[1] != b'.'
 }
 
