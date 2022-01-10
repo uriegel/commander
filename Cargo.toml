@@ -13,6 +13,8 @@ crate-type = ["cdylib"]
 [dependencies]
 systemicons = "0.6"
 lexical-sort = "0.3"
+kamadak-exif = "0.5"
+chrono = "0.4"
 
 #[target.'cfg(target_os="linux")'.dependencies]
 gio = "0.14"

@@ -2,12 +2,14 @@ export const DIRECTORY_TYPE = "directory"
 import { formatDateTime, formatSize, getExtension, compareVersion } from "./rendertools.js"
 import { ROOT } from "./root.js"
 import { FILE, DIRECTORY } from '../commander.js'
+//const { getExifDate } = window.require('../index.node')
+const { getExifDate } = window.require('filesystem-utilities')
 import {
     pathDelimiter,
     adaptDirectoryColumns,
     parentIsRoot,
     adaptDisableSorting,
-    addExtendedInfo,
+    addExtendedInfo as addAdditionalInfo,
     deleteItems as platformDeleteItems,
     copyItems as platformCopyItems,
     renameItem as platformRenameItem,
@@ -156,6 +158,15 @@ export const getDirectory = (folderId, path) => {
 
     const getItem = item => currentPath == pathDelimiter ? pathDelimiter + item.name : currentPath + pathDelimiter + item.name
 
+    async function addExtendedInfo(item, path) {
+        
+        //const getExifDateAsync = file => new Promise(res => getExifDate(file, date => res(new Date(date))))
+        
+        var name = item.name.toLocaleLowerCase();
+        if (name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png"))
+            item.exifTime = await getExifDate(fspath.join(path, item.name))
+    }
+    
     const addExtendedInfos = async (path, items, refresh) => {
         for (let i = 0; i < items.length; i++ ) {
             const n = items[i]

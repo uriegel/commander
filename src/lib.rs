@@ -1,6 +1,8 @@
+use chrono::{Local, NaiveDateTime, TimeZone};
+use exif::{In, Tag};
 use lexical_sort::natural_lexical_cmp;
 use neon::prelude::*;
-use std::{ fs, time::UNIX_EPOCH };
+use std::{ fs, fs::File, io::BufReader, time::UNIX_EPOCH };
 
 #[cfg(target_os = "linux")]
 use crate::linux::is_hidden;
@@ -58,9 +60,55 @@ pub fn get_files(mut cx: FunctionContext) -> JsResult<JsArray> {
     Ok(result)
 }
 
+pub fn get_exif_date(mut cx: FunctionContext) -> JsResult<JsUndefined> {
+
+    let path = cx.argument::<JsString>(0)?.value(&mut cx);
+    let callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
+    let channel = cx.channel();
+
+    fn get_unix_time(str: &str)->i64 {
+        let naive_date_time = NaiveDateTime::parse_from_str(str, "%Y-%m-%d %H:%M:%S").unwrap();
+        let datetime = Local.from_local_datetime(&naive_date_time).unwrap();
+        datetime.timestamp_millis()
+    }    
+    
+    std::thread::spawn(move || {
+        let file = File::open(path).unwrap();
+        let mut bufreader = BufReader::new(&file);        
+        let exifreader = exif::Reader::new();
+        let res = exifreader.read_from_container(&mut bufreader).ok().and_then(|exif| {
+            let exiftime = match exif.get_field(Tag::DateTimeOriginal, In::PRIMARY) {
+                Some(info) => Some(info.display_value().to_string()),
+                None => match exif.get_field(Tag::DateTime, In::PRIMARY) {
+                    Some(info) => Some(info.display_value().to_string()),
+                    None => None
+                } 
+            };
+            match exiftime {
+                Some(exiftime) => Some(get_unix_time(&exiftime)),
+                None => None
+            }            
+        });
+        channel.send(move |mut cx| {
+            let arg = match res {
+                Some(number) => cx.number(number as f64).upcast::<JsValue>(),
+                None => cx.null().upcast()
+            };
+            let args = vec![ arg ];
+            let this = cx.undefined();
+            let callback = callback.into_inner(&mut cx);
+            callback.call(&mut cx, this, args)?;
+            Ok(())
+        });
+    });
+    Ok(cx.undefined())
+}
+
+
 #[neon::main]
 fn main(mut cx: ModuleContext) -> NeonResult<()> {
     cx.export_function("getFiles", get_files)?;
+    cx.export_function("getExifDate", get_exif_date)?;
     init_addon(cx)?;
     Ok(())
 }

@@ -4,7 +4,7 @@ import { copyProcessor } from "../processors/copyProcessor.js"
 const fspath = window.require('path')
 const { homedir } = window.require('os')
 const { exec } = window.require("child_process")
-const { getExifDate, trash } = window.require('filesystem-utilities')
+const { trash } = window.require('filesystem-utilities')
 const { copyFile } = window.require('shared-module')
 
 const homeDir = homedir()
@@ -118,11 +118,7 @@ export const parentIsRoot = currentPath => currentPath == '/'
 
 export const adaptDisableSorting = () => { }
 
-export async function addExtendedInfo(item, path) {
-    var name = item.name.toLocaleLowerCase();
-    if (name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png"))
-        item.exifTime = await getExifDate(fspath.join(path, item.name))
-}
+export async function addExtendedInfo() {}
 
 export async function deleteItems(items) {
     for (let i = 0; i < items.length; i++ ) {
