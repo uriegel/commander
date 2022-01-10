@@ -1,12 +1,14 @@
 use systemicons::get_icon;
 use neon::prelude::*;
+use std::{os::windows::fs::MetadataExt, fs::Metadata};
 
 // static THREAD_POOL: Lazy<ThreadPool> = Lazy::new(|| {
 //     ThreadPool::new(4)
 // });
 
-pub fn is_hidden(name: &str)->bool {
-    false
+pub fn is_hidden(_: &str, metadata: &Metadata)->bool {
+    let attrs = metadata.file_attributes();
+    attrs & 2 == 2
 }
 
 pub fn init_addon(mut cx: ModuleContext) -> NeonResult<()> {

@@ -17,7 +17,6 @@ mod linux;
 #[cfg(target_os = "windows")]
 mod windows;
 
-// TODO Trait std::os::windows::fs::MetadataExt
 pub fn get_files(mut cx: FunctionContext) -> JsResult<JsArray> {
     let path = cx.argument::<JsString>(0)?.value(&mut cx);
     let result: Handle<JsArray> = cx.empty_array();
@@ -37,7 +36,7 @@ pub fn get_files(mut cx: FunctionContext) -> JsResult<JsArray> {
             for (entry, metadata) in &files {
                 let obj: Handle<JsObject> = cx.empty_object();
                 let namestr = String::from(entry.file_name().to_str().unwrap());
-                let hidden = cx.boolean(is_hidden(&namestr));
+                let hidden = cx.boolean(is_hidden(&namestr, &metadata));
                 let is_dir = cx.boolean(metadata.is_dir());
                 let name = cx.string(namestr);
                 let size = cx.number(metadata.len() as f64);
