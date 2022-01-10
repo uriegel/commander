@@ -15,12 +15,28 @@ var files = getFiles(("/home/uwe"))
 console.log("files")
 console.log("files", files)
 
-const copyFileAsnyc = () => new Promise(res => copyFile(res))
+const copyFileAsnyc = (source, target, cb, move, overwrite) => new Promise((res, rej) => {
+    var timer = setInterval(() => {
+        const status = getCopyStatus()
+        if (status)
+            cb(status)
+    }, 100)
+    copyFile(source, target, err => {
+        clearInterval(timer)
+        if (err)
+            rej(err)
+        else
+            res()
+    }, move || false, overwrite || false)
+})
 
 const run = async () => {
-    var timer = setInterval(() => console.log("Progress", getCopyStatus()), 100)
-    await copyFileAsnyc()
-    clearInterval(timer)
+    try {
+        await copyFileAsnyc("/home/uwe/Videos/raw/Goldeneye.mts", "/home/uwe/test/affe.mts", a => console.log("Progress", a))
+    } catch (err) {
+        console.log("Err copy", err)
+    }
+    await copyFileAsnyc("/home/uwe/Videos/raw/Goldeneye.mts", "/home/uwe/test/affe.mts", a => console.log("Progress", a), false, true)
 }
 
 run()
