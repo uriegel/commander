@@ -116,18 +116,42 @@ fn create_directory(mut cx: FunctionContext) -> JsResult<JsUndefined> {
     Ok(cx.undefined())
 }
 
+struct DriveItem {
+    name: String
+}
+
 fn get_drives(mut cx: FunctionContext) -> JsResult<JsUndefined> {
     use std::slice::from_raw_parts;
-    unsafe {
-        let mut buffer: Vec<u16> = Vec::with_capacity(500);
-        let size = GetLogicalDriveStringsW(500, buffer.as_mut_ptr());
-        let array: &[u16] = from_raw_parts(buffer.as_mut_ptr(), size as usize);
-        let drives_string = String::from_utf16_lossy(array);
-        let drives: Vec<&str> = drives_string.split("\0").collect();
-        let affe = drives.iter().map(|&item| {
-            item
+    let callback = cx.argument::<JsFunction>(0)?.root(&mut cx);
+    let channel = cx.channel();
+    
+    rayon::spawn(move || {
+        let drives = unsafe {
+            let mut buffer: Vec<u16> = Vec::with_capacity(500);
+            let size = GetLogicalDriveStringsW(500, buffer.as_mut_ptr());
+            let array: &[u16] = from_raw_parts(buffer.as_mut_ptr(), size as usize);
+            let drives_string = String::from_utf16_lossy(array);
+            let drives: Vec<&str> = drives_string.split("\0").collect();
+            drives.iter().filter_map(|&item| match &item.len() {
+                0 => None,
+                _ => Some(DriveItem { name: item.to_string() })
+            }).collect::<Vec<DriveItem>>()
+        };
+        channel.send(move |mut cx| {
+            let result: Handle<JsArray> = cx.empty_array();
+            drives.iter().for_each(|item| {
+                let obj: Handle<JsObject> = cx.empty_object();
+                let name = cx.string(&item.name);
+                let _res = obj.set(&mut cx, "name", name);
+                let len = result.len(&mut cx);                    
+                let _res = result.set(&mut cx, len, obj);
+            });
+            let this = cx.undefined();
+            let callback = callback.into_inner(&mut cx);
+            callback.call(&mut cx, this,  vec![ result ])?;
+            Ok(())
         });
-    }
+    });
     Ok(cx.undefined())
 }
 
