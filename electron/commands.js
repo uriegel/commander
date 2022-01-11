@@ -1,6 +1,6 @@
 const { protocol } = require("electron")
-const { createFolder, copy, trash } = require("filesystem-utilities")
-const { deleteEmptyFolders } = require("shared-module")
+const { copy, trash } = require("filesystem-utilities")
+const { createFolder, deleteEmptyFolders } = require("shared-module")
 
 const registerRunCmd = () => {
     protocol.registerStringProtocol('http', async (request, callback) => {
