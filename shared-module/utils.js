@@ -1,6 +1,6 @@
 const fspath = require('path')
 const { rmdir } = require('fs/promises')
-const { getFiles, copyFile, getCopyStatus } = require('../index.node')
+const { getFiles, copyFile, getCopyStatus, trashFile } = require('../index.node')
 
 async function deleteEmptyFolders(path, folders) {
     const folderPathes = folders.map(n => fspath.join(path, n))
@@ -52,6 +52,7 @@ const copyFileAsnyc = (source, target, cb, move, overwrite) => new Promise((res,
     }, move || false, overwrite || false)
 })
 
+const trashFileAsync = file => new Promise((res, rej) => trashFile(file, err => err ? rej(err) : res()))
 
 var FileResult;
 (function (FileResult) {
@@ -65,3 +66,4 @@ var FileResult;
 
 exports.deleteEmptyFolders = deleteEmptyFolders
 exports.copyFile = copyFileAsnyc
+exports.trashFile = trashFileAsync

@@ -1,3 +1,4 @@
+use core::fmt;
 use gio::{File, FileCopyFlags, { prelude::FileExt} };
 use std::fs::Metadata;
 use systemicons::init;
@@ -42,6 +43,7 @@ pub fn init_addon(mut cx: ModuleContext) -> NeonResult<()> {
     cx.export_function("getIcon", get_icon)?;
     cx.export_function("copyFile", copy_file)?;
     cx.export_function("getCopyStatus", get_copy_status)?;
+    cx.export_function("trashFile", trash_file)?;
     Ok(())
 }
 
@@ -56,6 +58,33 @@ fn get_icon(mut cx: FunctionContext) -> JsResult<JsString> {
 
     let path = get_icon_as_file(&ext, size as i32).unwrap_or(String::from(""));
     Ok(cx.string(&path))
+}
+
+
+#[derive(Debug)]
+struct FError {
+    description: String,
+    code: u32
+}
+
+impl fmt::Display for FError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "({})", self.description)
+    }
+}
+
+impl From<glib::Error> for FError {
+    fn from(error: glib::Error) -> Self {
+        FError { 
+            description: error.to_string(), 
+            code: match unsafe { (*error.into_raw()).code } {
+                    1  => FILE_NOT_FOUND,
+                    2  => FILE_EXISTS,
+                    14 => ACCESS_DENIED,
+                    _  => UNKNOWN
+                }                
+        } 
+    }
 }
 
 struct FileError { 
@@ -92,7 +121,7 @@ fn copy_file(mut cx: FunctionContext) -> JsResult<JsUndefined> {
     let callback = cx.argument::<JsFunction>(2)?.root(&mut cx);
     let channel = cx.channel();
     
-    std::thread::spawn(move || {
+    rayon::spawn(move || {
         let mut cb = |a, _b |{
             CopyStatus::add_value(a as usize);
         };
@@ -154,7 +183,6 @@ fn copy_file(mut cx: FunctionContext) -> JsResult<JsUndefined> {
                     obj.set(&mut cx, "description", desc)?;
                     let file_error = match error.code {
                         1  => FILE_NOT_FOUND,
-                        2 => FILE_EXISTS,
                         14 => ACCESS_DENIED,
                         _ => UNKNOWN
                     };
@@ -163,6 +191,42 @@ fn copy_file(mut cx: FunctionContext) -> JsResult<JsUndefined> {
                     vec![ obj.upcast::<JsValue>(), cx.null().upcast::<JsValue>() ]
                 }
             }; 
+            callback.call(&mut cx, this, args)?;
+            Ok(())
+        });
+    });
+    Ok(cx.undefined())
+}
+
+
+fn trash(file: File) -> Result<(), FError> {
+    Ok(file.trash(Some(&gio::Cancellable::new()))?)
+}
+
+pub fn trash_file(mut cx: FunctionContext) -> JsResult<JsUndefined> {
+
+    let file_path = cx.argument::<JsString>(0)?.value(&mut cx);
+    let callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
+    let channel = cx.channel();
+    let file = File::for_path(file_path);
+    
+    rayon::spawn(move || {
+        let result = trash(file);
+    
+        channel.send(move |mut cx| {
+            let args = match result {
+                Ok(()) => vec![ cx.undefined().upcast::<JsValue>(), cx.undefined().upcast::<JsValue>() ],
+                Err(error) => {
+                    let obj: Handle<JsObject> = cx.empty_object();
+                    let desc = cx.string(error.description);
+                    obj.set(&mut cx, "description", desc)?;
+                    let code = cx.number(error.code as f64);
+                    obj.set(&mut cx, "fileResult", code)?;
+                    vec![ obj.upcast::<JsValue>(), cx.undefined().upcast::<JsValue>() ]
+                }
+            };
+            let this = cx.undefined();
+            let callback = callback.into_inner(&mut cx);
             callback.call(&mut cx, this, args)?;
             Ok(())
         });

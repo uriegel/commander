@@ -3,8 +3,7 @@ import { ANDROID } from "../processors/root.js"
 import { copyProcessor } from "../processors/copyProcessor.js"
 const { homedir } = window.require('os')
 const { exec } = window.require("child_process")
-const { trash } = window.require('filesystem-utilities')
-const { copyFile } = window.require('shared-module')
+const { copyFile, trashFile } = window.require('shared-module')
 
 const homeDir = homedir()
 
@@ -121,7 +120,7 @@ export async function addExtendedInfo() {}
 
 export async function deleteItems(items) {
     for (let i = 0; i < items.length; i++ ) {
-        await trash(items[i])
+        await trashFile(items[i])
     }
 }    
 

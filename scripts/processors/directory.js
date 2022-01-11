@@ -3,7 +3,6 @@ import { formatDateTime, formatSize, getExtension, compareVersion } from "./rend
 import { ROOT } from "./root.js"
 import { FILE, DIRECTORY } from '../commander.js'
 const { getExifDate } = window.require('../index.node')
-//const { getExifDate } = window.require('filesystem-utilities')
 import {
     pathDelimiter,
     adaptDirectoryColumns,
