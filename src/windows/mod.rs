@@ -1,7 +1,9 @@
 use neon::prelude::*;
 use std::{os::windows::fs::MetadataExt, fs::Metadata, ptr::null_mut };
 use systemicons::get_icon;
-use winapi::um::{fileapi::CreateDirectoryW, errhandlingapi::GetLastError};
+use winapi::{um::{fileapi::CreateDirectoryW, errhandlingapi::GetLastError}, shared::ntdef::PWSTR};
+
+mod shell;
 
 // Get win32 lpstr from &str, converting u8 to u16 and appending '\0'
 // See retep998's traits for a more general solution: https://users.rust-lang.org/t/tidy-pattern-to-work-with-lpstr-mutable-char-array/2976/2
@@ -12,6 +14,17 @@ pub fn to_wstring(value: &str) -> Vec<u16> {
         .encode_wide()
         .chain(std::iter::once(0))
         .collect()
+}
+
+pub unsafe fn pwstr_to_string(ptr: PWSTR) -> String {
+    use std::slice::from_raw_parts;
+    let len = (0_usize..)
+        .find(|&n| *ptr.offset(n as isize) == 0)
+        .expect("Cou
+        
+        ldn't find null terminator");
+    let array: &[u16] = from_raw_parts(ptr, len);
+    String::from_utf16_lossy(array)
 }
 
 pub fn is_hidden(_: &str, metadata: &Metadata)->bool {
@@ -72,13 +85,16 @@ fn create_directory(mut cx: FunctionContext) -> JsResult<JsUndefined> {
     
     rayon::spawn(move || {
         let path_ws = to_wstring(&path);
-        let result = unsafe { 
+        let mut result = unsafe { 
             match CreateDirectoryW(path_ws.as_ptr(), null_mut()) {
                 0 => GetLastError(),
                 _  => 0
             }
         };
-        if result == 5 { }
+        if result == 5 {
+            unsafe {shell::create_directory(&path); }
+            result = 0
+        }
         channel.send(move |mut cx| {
             let args = match result {
                 0 => vec![ cx.null().upcast::<JsValue>() ],
