@@ -4,9 +4,12 @@ use systemicons::get_icon;
 use winapi::{
     um::{
         fileapi::{
-            CreateDirectoryW, GetLogicalDriveStringsW
-        }, errhandlingapi::GetLastError
-    }, shared::ntdef::PWSTR 
+            CreateDirectoryW, GetLogicalDriveStringsW, GetVolumeInformationW, GetDiskFreeSpaceExW
+        }, 
+        errhandlingapi::GetLastError,
+        winnt::ULARGE_INTEGER 
+    }, shared::ntdef::PWSTR,
+    
 };
 
 mod shell;
@@ -117,7 +120,8 @@ fn create_directory(mut cx: FunctionContext) -> JsResult<JsUndefined> {
 }
 
 struct DriveItem {
-    name: String
+    name: String,
+    description: String
 }
 
 fn get_drives(mut cx: FunctionContext) -> JsResult<JsUndefined> {
@@ -132,9 +136,31 @@ fn get_drives(mut cx: FunctionContext) -> JsResult<JsUndefined> {
             let array: &[u16] = from_raw_parts(buffer.as_mut_ptr(), size as usize);
             let drives_string = String::from_utf16_lossy(array);
             let drives: Vec<&str> = drives_string.split("\0").collect();
+
+            unsafe fn get_drive_description(item: &str) -> String {
+                let path_ws = to_wstring(item);
+                let mut buffer: Vec<u16> = Vec::with_capacity(500);
+                let _ = GetVolumeInformationW(path_ws.as_ptr(), buffer.as_mut_ptr(), 500, null_mut(), null_mut(), null_mut(), null_mut(), 0);
+                pwstr_to_string(buffer.as_mut_ptr())                
+            }
+
+            unsafe fn get_volume_size(item: &str) -> i32 {
+                let path_ws = to_wstring(item);
+                let ul = ULARGE_INTEGER {};
+                let _ = GetDiskFreeSpaceExW(path_ws.as_ptr(), null_mut(), null_mut(), null_mut());
+                23
+            }
+
+
             drives.iter().filter_map(|&item| match &item.len() {
                 0 => None,
-                _ => Some(DriveItem { name: item.to_string() })
+                _ => {
+                    let name = item.to_string();
+                    Some(DriveItem { 
+                        name: name.clone(),
+                        description: get_drive_description(&name)
+                    }) 
+                }
             }).collect::<Vec<DriveItem>>()
         };
         channel.send(move |mut cx| {
@@ -142,7 +168,9 @@ fn get_drives(mut cx: FunctionContext) -> JsResult<JsUndefined> {
             drives.iter().for_each(|item| {
                 let obj: Handle<JsObject> = cx.empty_object();
                 let name = cx.string(&item.name);
+                let description = cx.string(&item.description);
                 let _res = obj.set(&mut cx, "name", name);
+                let _res = obj.set(&mut cx, "description", description);
                 let len = result.len(&mut cx);                    
                 let _res = result.set(&mut cx, len, obj);
             });
