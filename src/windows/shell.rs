@@ -2,7 +2,15 @@ use core::ptr::null_mut;
 use crate::windows::pwstr_to_string;
 use crate::windows::to_wstring;
 use std::path::{ Path };
-use winapi::{um::{fileapi::{GetTempFileNameW, GetTempPathW, DeleteFileW, CreateDirectoryW, RemoveDirectoryW}, shellapi::{SHFILEOPSTRUCTW, SHFileOperationW}}, shared::{minwindef::MAX_PATH, ntdef::PWSTR}};
+use winapi::{
+    um::{
+        fileapi::{
+            GetTempFileNameW, GetTempPathW, DeleteFileW, CreateDirectoryW, RemoveDirectoryW
+        }, shellapi::{
+            SHFILEOPSTRUCTW, SHFileOperationW
+        }
+    }, shared::{minwindef::MAX_PATH}
+};
 
 pub unsafe fn create_directory(path: &str) {
     let mut buffer: Vec<u16> = Vec::with_capacity(MAX_PATH as usize);
@@ -10,7 +18,7 @@ pub unsafe fn create_directory(path: &str) {
     let mut temp_file_name_buffer: Vec<u16> = Vec::with_capacity(MAX_PATH as usize);
     let _res = GetTempFileNameW(buffer.as_ptr(), to_wstring("xxx").as_ptr(), 0, temp_file_name_buffer.as_mut_ptr()); 
     let tempfile_name = pwstr_to_string(temp_file_name_buffer.as_mut_ptr());
-    
+
     let path_obj = Path::new(&path);
     let new_name = path_obj.file_name().unwrap_or_default();
     

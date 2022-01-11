@@ -1,9 +1,22 @@
 use neon::prelude::*;
 use std::{os::windows::fs::MetadataExt, fs::Metadata, ptr::null_mut };
 use systemicons::get_icon;
-use winapi::{um::{fileapi::CreateDirectoryW, errhandlingapi::GetLastError}, shared::ntdef::PWSTR};
+use winapi::{
+    um::{
+        fileapi::{
+            CreateDirectoryW, GetLogicalDriveStringsW
+        }, errhandlingapi::GetLastError
+    }, shared::ntdef::PWSTR 
+};
 
 mod shell;
+
+pub fn init_addon(mut cx: ModuleContext) -> NeonResult<()> {
+    cx.export_function("getIcon", get_icon_async)?;
+    cx.export_function("createDirectory", create_directory)?;
+    cx.export_function("getDrives", get_drives)?;
+    Ok(())
+}
 
 // Get win32 lpstr from &str, converting u8 to u16 and appending '\0'
 // See retep998's traits for a more general solution: https://users.rust-lang.org/t/tidy-pattern-to-work-with-lpstr-mutable-char-array/2976/2
@@ -20,9 +33,7 @@ pub unsafe fn pwstr_to_string(ptr: PWSTR) -> String {
     use std::slice::from_raw_parts;
     let len = (0_usize..)
         .find(|&n| *ptr.offset(n as isize) == 0)
-        .expect("Cou
-        
-        ldn't find null terminator");
+        .expect("Couldn't find null terminator");
     let array: &[u16] = from_raw_parts(ptr, len);
     String::from_utf16_lossy(array)
 }
@@ -30,12 +41,6 @@ pub unsafe fn pwstr_to_string(ptr: PWSTR) -> String {
 pub fn is_hidden(_: &str, metadata: &Metadata)->bool {
     let attrs = metadata.file_attributes();
     attrs & 2 == 2
-}
-
-pub fn init_addon(mut cx: ModuleContext) -> NeonResult<()> {
-    cx.export_function("getIcon", get_icon_async)?;
-    cx.export_function("createDirectory", create_directory)?;
-    Ok(())
 }
 
 fn get_icon_async(mut cx: FunctionContext) -> JsResult<JsUndefined> {
@@ -78,7 +83,6 @@ fn get_icon_async(mut cx: FunctionContext) -> JsResult<JsUndefined> {
 }
 
 fn create_directory(mut cx: FunctionContext) -> JsResult<JsUndefined> {
-
     let path = cx.argument::<JsString>(0)?.value(&mut cx);
     let callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
     let channel = cx.channel();
@@ -109,6 +113,21 @@ fn create_directory(mut cx: FunctionContext) -> JsResult<JsUndefined> {
             Ok(())
         });
     });
+    Ok(cx.undefined())
+}
+
+fn get_drives(mut cx: FunctionContext) -> JsResult<JsUndefined> {
+    use std::slice::from_raw_parts;
+    unsafe {
+        let mut buffer: Vec<u16> = Vec::with_capacity(500);
+        let size = GetLogicalDriveStringsW(500, buffer.as_mut_ptr());
+        let array: &[u16] = from_raw_parts(buffer.as_mut_ptr(), size as usize);
+        let drives_string = String::from_utf16_lossy(array);
+        let drives: Vec<&str> = drives_string.split("\0").collect();
+        let affe = drives.iter().map(|&item| {
+            item
+        });
+    }
     Ok(cx.undefined())
 }
 
