@@ -12,6 +12,8 @@ async function runAsync() {
 
     const version = await getFileVersionAsnyc("c:\\windows\\regedit.exe")
     console.log("version", version)
+    const versionno = await getFileVersionAsnyc("c:\\windows\\setuperr.log")
+    console.log("versionno", versionno)
 
     const drives = await getDrivesAsnyc()
     console.log("drives", drives)

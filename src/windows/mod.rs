@@ -1,5 +1,5 @@
 use neon::prelude::*;
-use std::{os::windows::fs::MetadataExt, fs::Metadata, ptr::null_mut, mem };
+use std::{os::windows::fs::MetadataExt, fs::Metadata, ptr::null_mut, mem, ffi::c_void };
 use systemicons::get_icon;
 use winapi::{
     um::{
@@ -10,7 +10,7 @@ use winapi::{
         winnt::{ULARGE_INTEGER, GENERIC_READ, FILE_SHARE_READ, FILE_SHARE_WRITE, FILE_SHARE_DELETE}, 
         handleapi::{INVALID_HANDLE_VALUE, CloseHandle}, 
         winioctl::FSCTL_IS_VOLUME_MOUNTED, ioapiset::DeviceIoControl, winver::{GetFileVersionInfoSizeW, GetFileVersionInfoW, VerQueryValueW}, 
-    }, shared::{ntdef::{PWSTR}, minwindef::DWORD}
+    }, shared::{ntdef::{PWSTR}, minwindef::{DWORD, HIWORD, LOWORD}}
 };
 
 mod shell;
@@ -140,7 +140,7 @@ struct DriveItem {
 
 fn get_drives(mut cx: FunctionContext) -> JsResult<JsUndefined> {
     use std::slice::from_raw_parts;
-    let callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
+    let callback = cx.argument::<JsFunction>(0)?.root(&mut cx);
     let channel = cx.channel();
     
     rayon::spawn(move || {
@@ -240,26 +240,74 @@ fn get_drives(mut cx: FunctionContext) -> JsResult<JsUndefined> {
     Ok(cx.undefined())
 }
 
+struct FixedFileInfo {
+    _signature: DWORD,           
+    _struc_version: DWORD,
+    file_version_ms: DWORD,
+    file_version_ls: DWORD,
+    _product_version_ms: DWORD,
+    _product_version_ls: DWORD,
+    _file_flags_mask: DWORD,
+    _file_flags: DWORD,
+    _file_os: DWORD,
+    _file_type: DWORD,
+    _file_sub_type: DWORD,
+    _file_date_ms: DWORD,
+    _ile_date_ls: DWORD
+}
+
+struct Version {
+    major: u16,
+    minor: u16,
+    build: u16,
+    patch: u16
+}
+
 fn get_file_version(mut cx: FunctionContext) -> JsResult<JsUndefined> {
     let path = cx.argument::<JsString>(0)?.value(&mut cx);
     let callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
     let channel = cx.channel();
     
     rayon::spawn(move || {
-        unsafe {
+        let version = unsafe {
             let path_ptr = to_wstring(&path);
             let mut h: DWORD = 0;
             let size = GetFileVersionInfoSizeW(path_ptr.as_ptr(), &mut h);
             if size != 0 {
-                //GetFileVersionInfoW(path_ptr.as_ptr(), 0, size, null_mut());
-                //VerQueryValueW(()
-                let seh = size;
-            } else { }
-        }
+                let mut buffer = vec![0u8; size as usize];
+                GetFileVersionInfoW(path_ptr.as_ptr(), 0, size, buffer.as_mut_ptr() as *mut c_void);
+                let p = to_wstring("\\");
+                let mut info: *mut c_void = null_mut();
+                let mut len = vec![0u32];
+                VerQueryValueW(buffer.as_ptr() as *const c_void, p.as_ptr(), &mut info, len.as_mut_ptr());
+                let info: &mut FixedFileInfo = &mut *(info as *mut FixedFileInfo);
+                Some(Version {
+                    major: HIWORD(info.file_version_ms),
+                    minor: LOWORD(info.file_version_ms),                
+                    build: HIWORD(info.file_version_ls),
+                    patch: LOWORD(info.file_version_ls),
+                })
+            } else { None }
+        };
         channel.send(move |mut cx| {
             let this = cx.undefined();
             let callback = callback.into_inner(&mut cx);
-            //callback.call(&mut cx, this,  vec![ result ])?;
+            let args = match version {
+                Some(version) => {
+                    let obj: Handle<JsObject> = cx.empty_object();
+                    let major = cx.number(version.major as f64);
+                    let minor = cx.number(version.minor as f64);
+                    let build = cx.number(version.build as f64);
+                    let patch = cx.number(version.patch as f64);
+                    let _res = obj.set(&mut cx, "major", major);
+                    let _res = obj.set(&mut cx, "minor", minor);
+                    let _res = obj.set(&mut cx, "build", build);
+                    let _res = obj.set(&mut cx, "patch", patch);
+                    vec![ obj.upcast::<JsValue>() ]
+                },
+                None => vec![ cx.null().upcast::<JsValue>() ]
+            };
+            callback.call(&mut cx, this,  args)?;
             Ok(())
         });
     });

@@ -1,6 +1,6 @@
 const fspath = window.require('path')
 const getDrivesAsync = window.require('../index.node').getDrives
-const { getFileVersion } = window.require('filesystem-utilities')
+const { getFileVersion } = window.require('../index.node')
 import { ANDROID_PATH } from "../processors/androids.js"
 import { compareVersion } from "../processors/rendertools.js"
 import { ANDROID } from "../processors/root.js"
@@ -9,6 +9,7 @@ import { onFinish } from "../processors/copyProcessor.js"
 export const adaptWindow = (menu, itemHideMenu) => itemHideMenu.isHidden = true
 
 export const getDrives = () => new Promise(res => getDrivesAsync(res))
+const getFileVersionAsnyc = file => new Promise(res => getFileVersion(file, res))
 
 export function onDarkTheme(dark) {
     activateClass(document.body, "windows-dark", dark) 
@@ -60,7 +61,7 @@ export const adaptDisableSorting = (table, disable) => table.disableSorting(3, d
 
 export async function addExtendedInfo(item, name, path) {
     if (name.endsWith(".exe") || name.endsWith(".dll"))
-        item.version = await getFileVersion(fspath.join(path, item.name))
+        item.version = await getFileVersionAsnyc(fspath.join(path, item.name))
 }
 
 export async function deleteItems(items) {
@@ -99,7 +100,7 @@ export async function deleteEmptyFolders(path, folders, foldersToRefresh) {
 
 export const enhanceCopyConflictData = async item => ({
     ...item,
-    version: await getFileVersion(item.file)
+    version: await getFileVersionAsnyc(item.file)
 })
 
-const fillVersion = version => version ? `${version.major}.${version.minor}.${version.patch}.${version.build}` : ""
+const fillVersion = version => version ? `${version.major}.${version.minor}.${version.build}.${version.patch}` : ""
