@@ -1,6 +1,14 @@
 const { protocol } = require("electron")
-const { copy, trash } = require("filesystem-utilities")
+const { copy } = require("filesystem-utilities")
+const { toRecycleBin } = require("../index.node")
 const { createFolder, deleteEmptyFolders } = require("shared-module")
+
+const toRecycleBinAsync = files => new Promise((res, rej) => toRecycleBin(files, err => {
+    if (err)
+        rej(err)
+    else
+        res()
+}))
 
 const registerRunCmd = () => {
     protocol.registerStringProtocol('http', async (request, callback) => {
@@ -26,7 +34,7 @@ const registerRunCmd = () => {
                 break
             case "trash":
                 try {
-                    await trash(input.items)
+                    await toRecycleBinAsync(input.items)
                     callback(JSON.stringify({}))
                 } catch (exception) {
                     callback(JSON.stringify({ exception }))
