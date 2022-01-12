@@ -123,12 +123,11 @@ fn create_directory(mut cx: FunctionContext) -> JsResult<JsUndefined> {
 }
 
 fn to_recycle_bin(mut cx: FunctionContext) -> JsResult<JsUndefined> {
-    let arr:Vec<Handle<JsValue>> = cx.argument::<JsArray>(0)?.to_vec(&mut cx)?;
-    for item in arr {
-        let file: Handle<JsString> = item.downcast_or_throw(&mut cx)?;
-        let affe = file.value(&mut cx);
-        let müll  = affe;
-    }
+    let files = cx.argument::<JsArray>(0)?.to_vec(&mut cx)?.iter().map(|item| {
+        // TODO: unwrap -> ok().and_then
+        let file: Handle<JsString> = item.downcast(&mut cx).unwrap();
+        file.value(&mut cx)
+    }).collect::<Vec<String>>();
     
     let callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
     let channel = cx.channel();
