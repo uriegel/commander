@@ -49,24 +49,44 @@ pub unsafe fn create_directory(path: &str) {
     RemoveDirectoryW(temp_file_name_buffer.as_ptr());
 }
 
+pub unsafe fn to_recycle_bin(pathes: &Vec<String>) -> bool {
+    let pathes_str = pathes.join("\0");
+    let mut pathes_ptr = to_wstring(&pathes_str);
+    pathes_ptr.push(0);    
+    
+    let mut fileop = SHFILEOPSTRUCTW {
+        hwnd: null_mut(),
+        fAnyOperationsAborted: 0,
+        fFlags: FOF_NOCONFIRMATION | FOF_ALLOWUNDO,
+        hNameMappings: null_mut(),
+        lpszProgressTitle: null_mut(),
+        pFrom: pathes_ptr.as_ptr(),
+        pTo: null_mut(),
+        wFunc: FO_DELETE
+    };
+
+    let res = SHFileOperationW(&mut fileop);
+    res == 0
+}
+
 const FO_MOVE: u32 = 0x0001;
 // const FO_COPY: u32 = 0x0002;
-// const FO_DELETE: u32 = 0x0003;
+const FO_DELETE: u32 = 0x0003;
 // const FO_RENAME: u32 = 0x0004;
 
-// const FOF_MULTIDESTFILES: u32 = 0x0001;
-// const FOF_CONFIRMMOUSE: u32 = 0x0002;
-// const FOF_SILENT: u32 = 0x0004;  // don't display progress UI (confirm prompts may be displayed still)
-// const FOF_RENAMEONCOLLISION: u32 = 0x0008;  // automatically rename the source files to avoid the collisions
-// const FOF_NOCONFIRMATION: u32 = 0x0010;  // don't display confirmation UI, assume "yes" for cases that can be bypassed, "no" for those that can not
-// const FOF_WANTMAPPINGHANDLE: u32 = 0x0020;  // Fill in SHFILEOPSTRUCT.hNameMappings
+// const FOF_MULTIDESTFILES: u16 = 0x0001;
+// const FOF_CONFIRMMOUSE: u16 = 0x0002;
+// const FOF_SILENT: u16 = 0x0004;  // don't display progress UI (confirm prompts may be displayed still)
+// const FOF_RENAMEONCOLLISION: u16 = 0x0008;  // automatically rename the source files to avoid the collisions
+const FOF_NOCONFIRMATION: u16 = 0x0010;  // don't display confirmation UI, assume "yes" for cases that can be bypassed, "no" for those that can not
+// const FOF_WANTMAPPINGHANDLE: u16 = 0x0020;  // Fill in SHFILEOPSTRUCT.hNameMappings
 //                                          // Must be freed using SHFreeNameMappings
-// const FOF_ALLOWUNDO: u32 = 0x0040;  // enable undo including Recycle behavior for IFileOperation::Delete()
-// const FOF_FILESONLY: u32 = 0x0080;  // only operate on the files (non folders), both files and folders are assumed without this
-// const FOF_SIMPLEPROGRESS: u32 = 0x0100;  // means don't show names of files
-// const FOF_NOCONFIRMMKDIR: u32 = 0x0200;  // don't dispplay confirmatino UI before making any needed directories, assume "Yes" in these cases
-// const FOF_NOERRORUI: u32 = 0x0400;  // don't put up error UI, other UI may be displayed, progress, confirmations
-// const FOF_NOCOPYSECURITYATTRIBS: u32 = 0x0800;  // dont copy file security attributes (ACLs)
-// const FOF_NORECURSION: u32 = 0x1000;  // don't recurse into directories for operations that would recurse
-// const FOF_NO_CONNECTED_ELEMENTS: u32 = 0x2000;  // don't operate on connected elements ("xxx_files" folders that go with .htm files)
-// const FOF_WANTNUKEWARNING: u32 = 0x4000;  // during delete operation, warn if object is being permanently destroyed instead of recycling (partially overrides FOF_NOCONFIRMATION)
+const FOF_ALLOWUNDO: u16 = 0x0040;  // enable undo including Recycle behavior for IFileOperation::Delete()
+// const FOF_FILESONLY: u16 = 0x0080;  // only operate on the files (non folders), both files and folders are assumed without this
+// const FOF_SIMPLEPROGRESS: u16 = 0x0100;  // means don't show names of files
+// const FOF_NOCONFIRMMKDIR: u16 = 0x0200;  // don't dispplay confirmatino UI before making any needed directories, assume "Yes" in these cases
+// const FOF_NOERRORUI: u16 = 0x0400;  // don't put up error UI, other UI may be displayed, progress, confirmations
+// const FOF_NOCOPYSECURITYATTRIBS: u16 = 0x0800;  // dont copy file security attributes (ACLs)
+// const FOF_NORECURSION: u16 = 0x1000;  // don't recurse into directories for operations that would recurse
+// const FOF_NO_CONNECTED_ELEMENTS: u16 = 0x2000;  // don't operate on connected elements ("xxx_files" folders that go with .htm files)
+// const FOF_WANTNUKEWARNING: u16 = 0x4000;  // during delete operation, warn if object is being permanently destroyed instead of recycling (partially overrides FOF_NOCONFIRMATION)

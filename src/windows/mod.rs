@@ -137,24 +137,20 @@ fn to_recycle_bin(mut cx: FunctionContext) -> JsResult<JsUndefined> {
     let channel = cx.channel();
     
     rayon::spawn(move || {
-        //let path_ws = to_wstring(&path);
-        // let mut result = unsafe { 
-        //     match CreateDirectoryW(path_ws.as_ptr(), null_mut()) {
-        //         0 => GetLastError(),
-        //         _  => 0
-        //     }
-        // };
         channel.send(move |mut cx| {
-            // let args = match result {
-            //     0 => vec![ cx.null().upcast::<JsValue>() ],
-            //     _  => {
-            //         let err = cx.string("Could not create folder");
-            //         vec![ err.upcast::<JsValue>() ]            
-            //     }                    
-            // };
+            let success = unsafe {
+                shell::to_recycle_bin(&files)
+            };
+            
+            let args = if success {
+                vec![ cx.null().upcast::<JsValue>() ]
+            } else {
+                let err = cx.string("Konnte nicht löschen");
+                vec![ err.upcast::<JsValue>() ]            
+            };
             let this = cx.undefined();
             let callback = callback.into_inner(&mut cx);
-//            callback.call(&mut cx, this, args)?;
+            callback.call(&mut cx, this, args)?;
             Ok(())
         });
     });
