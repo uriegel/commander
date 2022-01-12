@@ -18,6 +18,7 @@ mod shell;
 pub fn init_addon(mut cx: ModuleContext) -> NeonResult<()> {
     cx.export_function("getIcon", get_icon_async)?;
     cx.export_function("createDirectory", create_directory)?;
+    cx.export_function("toRecycleBin", to_recycle_bin)?;
     cx.export_function("getDrives", get_drives)?;
     cx.export_function("getFileVersion", get_file_version)?;
     Ok(())
@@ -115,6 +116,42 @@ fn create_directory(mut cx: FunctionContext) -> JsResult<JsUndefined> {
             let this = cx.undefined();
             let callback = callback.into_inner(&mut cx);
             callback.call(&mut cx, this, args)?;
+            Ok(())
+        });
+    });
+    Ok(cx.undefined())
+}
+
+fn to_recycle_bin(mut cx: FunctionContext) -> JsResult<JsUndefined> {
+    let arr:Vec<Handle<JsValue>> = cx.argument::<JsArray>(0)?.to_vec(&mut cx)?;
+    for item in arr {
+        let file: Handle<JsString> = item.downcast_or_throw(&mut cx)?;
+        let affe = file.value(&mut cx);
+        let müll  = affe;
+    }
+    
+    let callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
+    let channel = cx.channel();
+    
+    rayon::spawn(move || {
+        //let path_ws = to_wstring(&path);
+        // let mut result = unsafe { 
+        //     match CreateDirectoryW(path_ws.as_ptr(), null_mut()) {
+        //         0 => GetLastError(),
+        //         _  => 0
+        //     }
+        // };
+        channel.send(move |mut cx| {
+            // let args = match result {
+            //     0 => vec![ cx.null().upcast::<JsValue>() ],
+            //     _  => {
+            //         let err = cx.string("Could not create folder");
+            //         vec![ err.upcast::<JsValue>() ]            
+            //     }                    
+            // };
+            let this = cx.undefined();
+            let callback = callback.into_inner(&mut cx);
+//            callback.call(&mut cx, this, args)?;
             Ok(())
         });
     });

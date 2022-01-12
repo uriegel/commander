@@ -1,14 +1,18 @@
-const { getIcon, getDrives, getFileVersion } = require("../index.node")
+const { getIcon, getDrives, getFileVersion, toRecycleBin } = require("../index.node")
 
 console.log("Testing Rust (Javascript side)...")
 
 const getFileVersionAsnyc = file => new Promise(res => getFileVersion(file, res))
+
+const toRecycleBinAsync = files => new Promise((res, rej) => toRecycleBin(files, res))
 
 const getDrivesAsnyc = () => new Promise(res => getDrives(res))
 
 const getIconAsnyc = (ext, size) => new Promise(res => getIcon(ext, size, (err, buffer) => res(buffer)))
 
 async function runAsync() {
+
+    await toRecycleBinAsync(["C:\\Users\\urieg\\OneDrive\\Desktop\\Ordner\\Ali.mkv", "C:\\Users\\urieg\\OneDrive\\Desktop\\Ordner\\Dinos"])
 
     const version = await getFileVersionAsnyc("c:\\windows\\regedit.exe")
     console.log("version", version)

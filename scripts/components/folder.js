@@ -407,6 +407,8 @@ customElements.define('folder-table', Folder)
 // TODO Copy/Move with Drag'n'Drop
 // TODO Copy conflicts: order by red, then green, then equal
 
+// TODO Windows: sort version
+
 // TODO Show trashinfo (show trash)
 // TODO Undelete files
 // TODO Empty trash
