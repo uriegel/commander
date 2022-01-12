@@ -9,8 +9,8 @@ use winapi::{
         errhandlingapi::GetLastError,
         winnt::{ULARGE_INTEGER, GENERIC_READ, FILE_SHARE_READ, FILE_SHARE_WRITE, FILE_SHARE_DELETE}, 
         handleapi::{INVALID_HANDLE_VALUE, CloseHandle}, 
-        winioctl::FSCTL_IS_VOLUME_MOUNTED, ioapiset::DeviceIoControl, 
-    }, shared::{ntdef::{PWSTR}}
+        winioctl::FSCTL_IS_VOLUME_MOUNTED, ioapiset::DeviceIoControl, winver::{GetFileVersionInfoSizeW, GetFileVersionInfoW, VerQueryValueW}, 
+    }, shared::{ntdef::{PWSTR}, minwindef::DWORD}
 };
 
 mod shell;
@@ -19,6 +19,7 @@ pub fn init_addon(mut cx: ModuleContext) -> NeonResult<()> {
     cx.export_function("getIcon", get_icon_async)?;
     cx.export_function("createDirectory", create_directory)?;
     cx.export_function("getDrives", get_drives)?;
+    cx.export_function("getFileVersion", get_file_version)?;
     Ok(())
 }
 
@@ -139,7 +140,7 @@ struct DriveItem {
 
 fn get_drives(mut cx: FunctionContext) -> JsResult<JsUndefined> {
     use std::slice::from_raw_parts;
-    let callback = cx.argument::<JsFunction>(0)?.root(&mut cx);
+    let callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
     let channel = cx.channel();
     
     rayon::spawn(move || {
@@ -233,6 +234,32 @@ fn get_drives(mut cx: FunctionContext) -> JsResult<JsUndefined> {
             let this = cx.undefined();
             let callback = callback.into_inner(&mut cx);
             callback.call(&mut cx, this,  vec![ result ])?;
+            Ok(())
+        });
+    });
+    Ok(cx.undefined())
+}
+
+fn get_file_version(mut cx: FunctionContext) -> JsResult<JsUndefined> {
+    let path = cx.argument::<JsString>(0)?.value(&mut cx);
+    let callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
+    let channel = cx.channel();
+    
+    rayon::spawn(move || {
+        unsafe {
+            let path_ptr = to_wstring(&path);
+            let mut h: DWORD = 0;
+            let size = GetFileVersionInfoSizeW(path_ptr.as_ptr(), &mut h);
+            if size != 0 {
+                //GetFileVersionInfoW(path_ptr.as_ptr(), 0, size, null_mut());
+                //VerQueryValueW(()
+                let seh = size;
+            } else { }
+        }
+        channel.send(move |mut cx| {
+            let this = cx.undefined();
+            let callback = callback.into_inner(&mut cx);
+            //callback.call(&mut cx, this,  vec![ result ])?;
             Ok(())
         });
     });
