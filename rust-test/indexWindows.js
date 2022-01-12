@@ -3,7 +3,7 @@ const { getIcon, getDrives } = require("../index.node")
 console.log("Testing Rust (Javascript side)...")
 
 
-const getDrivesAsnyc = (ext, size) => new Promise(res => getDrives(res))
+const getDrivesAsnyc = () => new Promise(res => getDrives(res))
 
 const getIconAsnyc = (ext, size) => new Promise(res => getIcon(ext, size, (err, buffer) => res(buffer)))
 

@@ -1,5 +1,5 @@
 const fspath = window.require('path')
-export const { getDrives } = window.require('filesystem-utilities')
+const getDrivesAsync = window.require('../index.node').getDrives
 const { getFileVersion } = window.require('filesystem-utilities')
 import { ANDROID_PATH } from "../processors/androids.js"
 import { compareVersion } from "../processors/rendertools.js"
@@ -7,6 +7,8 @@ import { ANDROID } from "../processors/root.js"
 import { onFinish } from "../processors/copyProcessor.js"
 
 export const adaptWindow = (menu, itemHideMenu) => itemHideMenu.isHidden = true
+
+export const getDrives = () => new Promise(res => getDrivesAsync(res))
 
 export function onDarkTheme(dark) {
     activateClass(document.body, "windows-dark", dark) 
