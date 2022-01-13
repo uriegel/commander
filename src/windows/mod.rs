@@ -19,6 +19,7 @@ pub fn init_addon(mut cx: ModuleContext) -> NeonResult<()> {
     cx.export_function("getIcon", get_icon_async)?;
     cx.export_function("createDirectory", create_directory)?;
     cx.export_function("toRecycleBin", to_recycle_bin)?;
+    cx.export_function("copyFiles", copy_files)?;
     cx.export_function("getDrives", get_drives)?;
     cx.export_function("getFileVersion", get_file_version)?;
     Ok(())
@@ -146,6 +147,59 @@ fn to_recycle_bin(mut cx: FunctionContext) -> JsResult<JsUndefined> {
                 vec![ cx.null().upcast::<JsValue>() ]
             } else {
                 let err = cx.string("Konnte nicht löschen");
+                vec![ err.upcast::<JsValue>() ]            
+            };
+            let this = cx.undefined();
+            let callback = callback.into_inner(&mut cx);
+            callback.call(&mut cx, this, args)?;
+            Ok(())
+        });
+    });
+    Ok(cx.undefined())
+}
+
+fn copy_files(mut cx: FunctionContext) -> JsResult<JsUndefined> {
+    let source_files = cx.argument::<JsArray>(0)?
+        .to_vec(&mut cx)
+        ?.iter()
+        .filter_map(|item| { 
+            (item.downcast(&mut cx).ok() as Option<Handle<JsString>>).and_then(|file|{
+                Some(file.value(&mut cx))
+            })
+        })
+        .collect::<Vec<String>>();
+    
+    let target_files = cx.argument::<JsArray>(1)?
+        .to_vec(&mut cx)
+        ?.iter()
+        .filter_map(|item| { 
+            (item.downcast(&mut cx).ok() as Option<Handle<JsString>>).and_then(|file|{
+                Some(file.value(&mut cx))
+            })
+        })
+        .collect::<Vec<String>>();
+
+    let callback = cx.argument::<JsFunction>(2)?.root(&mut cx);
+    
+    let move_files = if cx.len() > 3 {
+        cx.argument::<JsBoolean>(3)?.value(&mut cx)
+    } else {
+        false
+    };    
+
+    let channel = cx.channel();
+    
+    rayon::spawn(move || {
+        channel.send(move |mut cx| {
+            let success = unsafe {
+                shell::copy_files(&source_files, &target_files, move_files)
+            };
+            
+            let args = if success {
+                vec![ cx.null().upcast::<JsValue>() ]
+            } else {
+                // TODO get error type and description
+                let err = cx.string("Konnte nicht kopieren");
                 vec![ err.upcast::<JsValue>() ]            
             };
             let this = cx.undefined();

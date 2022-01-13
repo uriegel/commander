@@ -69,12 +69,36 @@ pub unsafe fn to_recycle_bin(pathes: &Vec<String>) -> bool {
     res == 0
 }
 
+pub unsafe fn copy_files(source_files: &Vec<String>, target_files: &Vec<String>, move_files: bool) -> bool {
+    let source_files_str = source_files.join("\0");
+    let mut source_files_ptr = to_wstring(&source_files_str);
+    source_files_ptr.push(0);    
+    
+    let target_files_str = target_files.join("\0");
+    let mut target_files_ptr = to_wstring(&target_files_str);
+    target_files_ptr.push(0);    
+
+    let mut fileop = SHFILEOPSTRUCTW {
+        hwnd: null_mut(),
+        fAnyOperationsAborted: 0,
+        fFlags:  FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR | FOF_MULTIDESTFILES,
+        hNameMappings: null_mut(),
+        lpszProgressTitle: null_mut(),
+        pFrom: source_files_ptr.as_ptr(),
+        pTo: target_files_ptr.as_ptr(),
+        wFunc: if move_files { FO_MOVE } else { FO_COPY }
+    };
+
+    let res = SHFileOperationW(&mut fileop);
+    res == 0
+}
+
 const FO_MOVE: u32 = 0x0001;
-// const FO_COPY: u32 = 0x0002;
+const FO_COPY: u32 = 0x0002;
 const FO_DELETE: u32 = 0x0003;
 // const FO_RENAME: u32 = 0x0004;
 
-// const FOF_MULTIDESTFILES: u16 = 0x0001;
+const FOF_MULTIDESTFILES: u16 = 0x0001;
 // const FOF_CONFIRMMOUSE: u16 = 0x0002;
 // const FOF_SILENT: u16 = 0x0004;  // don't display progress UI (confirm prompts may be displayed still)
 // const FOF_RENAMEONCOLLISION: u16 = 0x0008;  // automatically rename the source files to avoid the collisions
@@ -84,7 +108,7 @@ const FOF_NOCONFIRMATION: u16 = 0x0010;  // don't display confirmation UI, assum
 const FOF_ALLOWUNDO: u16 = 0x0040;  // enable undo including Recycle behavior for IFileOperation::Delete()
 // const FOF_FILESONLY: u16 = 0x0080;  // only operate on the files (non folders), both files and folders are assumed without this
 // const FOF_SIMPLEPROGRESS: u16 = 0x0100;  // means don't show names of files
-// const FOF_NOCONFIRMMKDIR: u16 = 0x0200;  // don't dispplay confirmatino UI before making any needed directories, assume "Yes" in these cases
+const FOF_NOCONFIRMMKDIR: u16 = 0x0200;  // don't dispplay confirmatino UI before making any needed directories, assume "Yes" in these cases
 // const FOF_NOERRORUI: u16 = 0x0400;  // don't put up error UI, other UI may be displayed, progress, confirmations
 // const FOF_NOCOPYSECURITYATTRIBS: u16 = 0x0800;  // dont copy file security attributes (ACLs)
 // const FOF_NORECURSION: u16 = 0x1000;  // don't recurse into directories for operations that would recurse

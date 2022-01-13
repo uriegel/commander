@@ -1,6 +1,5 @@
 const { protocol } = require("electron")
-const { copy } = require("filesystem-utilities")
-const { toRecycleBin } = require("../index.node")
+const { copyFiles, toRecycleBin } = require("../index.node")
 const { createFolder, deleteEmptyFolders } = require("shared-module")
 
 const toRecycleBinAsync = files => new Promise((res, rej) => toRecycleBin(files, err => {
@@ -9,6 +8,13 @@ const toRecycleBinAsync = files => new Promise((res, rej) => toRecycleBin(files,
     else
         res()
 }))
+
+const copyFilesAsync = (sourceFiles, targetFiles, move) => new Promise((res, rej) => copyFiles(sourceFiles, targetFiles, err => {
+    if (err)
+        rej(err)
+    else
+        res()
+}, move))
 
 const registerRunCmd = () => {
     protocol.registerStringProtocol('http', async (request, callback) => {
@@ -26,7 +32,7 @@ const registerRunCmd = () => {
                 try {
                     const sources = input.copyInfo.items.map(n => n.file)
                     const targets = input.copyInfo.items.map(n => n.targetFile)
-                    await copy(sources, targets, input.move)
+                    await copyFilesAsync(sources, targets, input.move)
                     callback(JSON.stringify({}))
                 } catch (exception) {
                     callback(JSON.stringify({ exception }))
