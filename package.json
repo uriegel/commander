@@ -46,7 +46,7 @@
   "dependencies": {
     "electron-settings": "^4.0.2",
     "shared-module": "file:shared-module",
-    "theme-change-detect": "0.0.1"
+    "theme-change-detect": "1.0.0"
   },
   "devDependencies": {
     "cargo-cp-artifact": "^0.1.6",
