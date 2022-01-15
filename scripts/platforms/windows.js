@@ -1,6 +1,6 @@
 const fspath = window.require('path')
-const getDrivesAsync = window.require('../index.node').getDrives
-const { getFileVersion } = window.require('../index.node')
+const getDrivesAsync = window.require('rust-addon').getDrives
+const { getFileVersion } = window.require('rust-addon')
 import { ANDROID_PATH } from "../processors/androids.js"
 import { compareVersion } from "../processors/rendertools.js"
 import { ANDROID } from "../processors/root.js"

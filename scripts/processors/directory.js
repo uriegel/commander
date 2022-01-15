@@ -2,7 +2,7 @@ export const DIRECTORY_TYPE = "directory"
 import { formatDateTime, formatSize, getExtension, compareVersion } from "./rendertools.js"
 import { ROOT } from "./root.js"
 import { FILE, DIRECTORY } from '../commander.js'
-const { getExifDate } = window.require('../index.node')
+const { getExifDate } = window.require('rust-addon')
 import {
     pathDelimiter,
     adaptDirectoryColumns,
@@ -16,7 +16,7 @@ import {
     enhanceCopyConflictData 
 } from "../platforms/switcher.js"
 
-const { getFiles } = window.require('../index.node')
+const { getFiles } = window.require('rust-addon')
 const fspath = window.require('path')
 const fs = window.require('fs')
 const { stat } = window.require('fs/promises')

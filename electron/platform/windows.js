@@ -1,5 +1,5 @@
 const { protocol } = require("electron")
-const { getIcon } = require("../../index.node")
+const { getIcon } = require("rust-addon")
 
 const getIconAsnyc = ext => new Promise(res => getIcon(ext, 16, (err, buffer) => res(buffer)))
 

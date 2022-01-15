@@ -1,4 +1,4 @@
-const { initGtk, getIcon, getFiles, copyFile, getCopyStatus, getExifDate, trashFile } = require("../index.node")
+const { initGtk, getIcon, getFiles, copyFile, getCopyStatus, getExifDate, trashFile } = require("rust-addon")
 
 console.log("Testing Rust (Javascript side)")
 

@@ -1,5 +1,5 @@
 const { protocol } = require("electron")
-const { getIcon } = require("../../index.node")
+const { getIcon } = require("rust-addon")
 
 function registerGetIconProtocol() {
     protocol.registerFileProtocol('icon', async (request, callback) => {

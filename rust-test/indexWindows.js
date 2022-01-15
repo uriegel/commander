@@ -1,4 +1,4 @@
-const { getIcon, getDrives, getFileVersion, toRecycleBin } = require("../index.node")
+const { getIcon, getDrives, getFileVersion, toRecycleBin } = require("rust-addon")
 
 console.log("Testing Rust (Javascript side)...")
 

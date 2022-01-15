@@ -1,6 +1,6 @@
 const fspath = require('path')
 const { rmdir } = require('fs/promises')
-const { getFiles, copyFile, getCopyStatus, trashFile, createDirectory } = require('../index.node')
+const { getFiles, copyFile, getCopyStatus, trashFile, createDirectory } = require('rust-addon')
 
 async function deleteEmptyFolders(path, folders) {
     const folderPathes = folders.map(n => fspath.join(path, n))

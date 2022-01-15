@@ -5,11 +5,11 @@
   "main": "electron/main.js",
   "scripts": {
     "builddev": "webpack --config webpack.dev.js",
-    "build": "webpack --config webpack.prod.js",
+    "build": "npm run build-rust-release && webpack --config webpack.prod.js",
     "start": "npm run build-rust-release && npm run builddev && electron .",
-    "dist": "electron-builder",
+    "dist": "npm run build && electron-builder",
     "debug-rust": "npm run build-rust-debug && node --nolazy --inspect-brk=9229 rust-test/index.js",
-    "build-rust": "cargo-cp-artifact -nc index.node -- cargo build --message-format=json-render-diagnostics",
+    "build-rust": "cargo-cp-artifact -nc rust-addon/index.node -- cargo build --message-format=json-render-diagnostics",
     "build-rust-debug": "npm run build-rust --",
     "build-rust-release": "npm run build-rust -- --release"
   },
@@ -17,13 +17,13 @@
     "appId": "de.uriegel.commander",
     "copyright": "Copyright 2021 Uwe Riegel",
     "productName": "Commander",
-    "electronVersion": "15.2.0",
+    "electronVersion": "16.0.5",
     "nodeGypRebuild": false,
     "linux": {
       "target": [
-        "AppImage",
-        "rpm"
-      ]
+        "snap"
+      ],
+      "icon": "web/assets/kirk.png"
     }
   },
   "repository": {
@@ -46,6 +46,7 @@
   "dependencies": {
     "electron-settings": "^4.0.2",
     "shared-module": "file:shared-module",
+    "rust-addon": "file:rust-addon",
     "theme-change-detect": "1.0.0"
   },
   "devDependencies": {
