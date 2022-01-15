@@ -33,6 +33,10 @@
         "snap"
       ],
       "icon": "web/assets/kirk.png"
+    },
+    "windows": {
+      "target": "nsis",
+      "icon": "Kirk.ico"
     }
   },
   "repository": {
