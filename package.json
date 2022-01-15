@@ -19,7 +19,15 @@
     "productName": "Commander",
     "electronVersion": "16.0.5",
     "nodeGypRebuild": false,
-    "files": [ "!.vscode", "!rust-test", "!src", "!local-modules", "!target", "!Cargo.*", "!webpack.*" ],
+    "files": [
+      "!.vscode",
+      "!rust-test",
+      "!src",
+      "!local-modules",
+      "!target",
+      "!Cargo.*",
+      "!webpack.*"
+    ],
     "linux": {
       "target": [
         "snap"
@@ -46,8 +54,8 @@
   "homepage": "https://github.com/uriegel/window-commander#readme",
   "dependencies": {
     "electron-settings": "^4.0.2",
-    "shared-module": "file:local-modules/shared-module",
     "rust-addon": "file:local-modules/rust-addon",
+    "shared-module": "file:local-modules/shared-module",
     "theme-change-detect": "1.0.0"
   },
   "devDependencies": {
