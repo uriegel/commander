@@ -18,6 +18,12 @@ const createWindow = async () => {
 
     registerRunCmd()        
 
+    protocol.registerFileProtocol('view', async (request, callback) => {
+        const url = request.url
+        var path = decodeURI(url.substring(7))
+        callback(path)
+    })
+
     const bounds = {
         x: settings.getSync("x"),
         y: settings.getSync("y"),

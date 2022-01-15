@@ -2,6 +2,6 @@
   "name": "rust-addon",
   "version": "1.0.0",
   "description": "Rust native binary for electron and renderer",
-  "main": "../../rust-addon/index.node",
+  "main": "../../local-modules/rust-addon/index.node",
   "author": "Uwe Riegel"
 }
