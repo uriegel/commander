@@ -34,7 +34,7 @@
       ],
       "icon": "web/assets/kirk.png"
     },
-    "windows": {
+    "win": {
       "target": "nsis",
       "icon": "Kirk.ico"
     }
