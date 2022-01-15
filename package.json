@@ -19,6 +19,7 @@
     "productName": "Commander",
     "electronVersion": "16.0.5",
     "nodeGypRebuild": false,
+    "files": [ "!.vscode", "!rust-test", "!src", "!local-modules", "!target", "!Cargo.*", "!webpack.*" ],
     "linux": {
       "target": [
         "snap"
