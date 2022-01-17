@@ -8,6 +8,7 @@ import {
     adaptDirectoryColumns,
     parentIsRoot,
     adaptDisableSorting,
+    createFolder as platformCreateFolder,
     addExtendedInfo as addAdditionalInfo,
     deleteItems as platformDeleteItems,
     copyItems as platformCopyItems,
@@ -184,11 +185,6 @@ export const getDirectory = (folderId, path) => {
 
     const getIconPath = name => currentPath + pathDelimiter + name
 
-    const createFolder = newFolder => runCmd({
-        method: "createFolder", 
-        path: fspath.join(currentPath, newFolder)
-    })
-    
     const deleteItems = items => platformDeleteItems(items.map(n => fspath.join(currentPath, n)))
 
     async function extractFilesInFolders(sourcePath, targetPath, items, sourceFolder) {
@@ -278,6 +274,8 @@ export const getDirectory = (folderId, path) => {
     const copyItems = platformCopyItems
 
     const deleteEmptyFolders = platformDeleteEmptyFolders
+
+    const createFolder = async newFolder => await platformCreateFolder(fspath.join(currentPath, newFolder))
 
     const renameItem = async (item, newName) => await platformRenameItem(fspath.join(currentPath, item), fspath.join(currentPath, newName))
 

@@ -4,6 +4,9 @@ import { copyProcessor } from "../processors/copyProcessor.js"
 const { homedir } = window.require('os')
 const { exec } = window.require("child_process")
 const { copyFile, trashFile } = window.require('shared-module')
+const FileResult = window.require('shared-module').FileResult
+const fs = window.require('fs')
+const fsa = fs.promises
 
 const homeDir = homedir()
 
@@ -102,6 +105,30 @@ export function adaptRootColumns(columns) {
         },
         columns[2]
     ]
+}
+
+export const createFolder = async path => {
+    try {
+        await fsa.mkdir(path, { recursive: true })   
+    } catch (e) {
+        switch (e.errno) {
+            case -13:
+                throw ({
+                    fileResult: FileResult.AccessDenied,
+                    description: e.stack
+                })
+            case -17:
+                throw ({
+                    fileResult: FileResult.FileExists,
+                    description: e.stack
+                })
+            default:
+                throw ({
+                    fileResult: FileResult.Unknown,
+                    description: "Unknown error occurred"
+                })
+        }
+    }
 }
 
 export const adaptDirectoryColumns = columns => columns

@@ -12,6 +12,7 @@ import {
     parentIsRoot as parentIsRootLinux,
     adaptDisableSorting as adaptDisableSortingLinux,
     addExtendedInfo as addExtendedInfoLinux,
+    createFolder as createFolderLinux,
     deleteItems as deleteItemsLinux,
     copyItems as copyItemsLinux,
     renameItem as renameItemLinux,
@@ -30,6 +31,7 @@ import {
     parentIsRoot as parentIsRootWindows,
     adaptDisableSorting as adaptDisableSortingWindows,
     addExtendedInfo as addExtendedInfoWindows,
+    createFolder as createFolderWindows,
     deleteItems as deleteItemsWindows,
     copyItems as copyItemsWindows,
     renameItem as renameItemWindows,
@@ -49,6 +51,7 @@ export var pathDelimiter = isLinux ? pathDelimiterLinux : pathDelimiterWindows
 export var parentIsRoot = isLinux ? parentIsRootLinux : parentIsRootWindows
 export var adaptDisableSorting = isLinux ? adaptDisableSortingLinux : adaptDisableSortingWindows
 export var addExtendedInfo = isLinux ? addExtendedInfoLinux : addExtendedInfoWindows
+export var createFolder = isLinux ? createFolderLinux : createFolderWindows
 export var deleteItems = isLinux ? deleteItemsLinux : deleteItemsWindows
 export var copyItems = isLinux ? copyItemsLinux : copyItemsWindows
 export var renameItem = isLinux ? renameItemLinux : renameItemWindows
