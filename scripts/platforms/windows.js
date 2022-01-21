@@ -1,9 +1,9 @@
 const fspath = window.require('path')
 const getDrivesAsync = window.require('rust-addon').getDrives
 const { getFileVersion } = window.require('rust-addon')
-import { ANDROID_PATH } from "../processors/androids.js"
+import { EXTERNAL_TYPE } from "../processors/external"
 import { compareVersion } from "../processors/rendertools.js"
-import { ANDROID } from "../processors/root.js"
+import { EXTERN } from "../processors/root.js"
 import { onFinish } from "../processors/copyProcessor.js"
 
 export const adaptWindow = (menu, itemHideMenu) => itemHideMenu.isHidden = true
@@ -56,7 +56,7 @@ export const createFolder = async newFolder => runCmd({
     path: newFolder
 })
 
-export const getRootPath = async item => [ item.name != ANDROID ? item.name : ANDROID_PATH, null ]
+export const getRootPath = async item => [ item.name != EXTERN ? item.name : EXTERNAL_TYPE, null ]
 
 export const pathDelimiter = "\\"
 

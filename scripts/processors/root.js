@@ -3,7 +3,7 @@ import { adaptRootColumns, getRootPath, getDrives } from '../platforms/switcher.
 
 export const ROOT = "root"
 export const ROOT_PATH = "root"
-export const ANDROID = "Android"
+export const EXTERN = "extern"
 
 export const getRoot = folderId => {
     const getType = () => ROOT
@@ -14,11 +14,11 @@ export const getRoot = folderId => {
         let columns = adaptRootColumns([{
             name: "Name",
             render: (td, item) => {
-                var t = item.name != ANDROID 
+                var t = item.name != EXTERN 
                     ? item.name != "~" 
                     ? document.querySelector('#driveIcon')
                     : document.querySelector('#homeIcon')
-                    : document.querySelector('#androidIcon')
+                    : document.querySelector('#remoteIcon')
                 td.appendChild(document.importNode(t.content, true))
                 const span = document.createElement('span')
                 span.innerHTML = item.name
@@ -55,8 +55,8 @@ export const getRoot = folderId => {
         const mountedItems = rootitems.filter(n => n.isMounted)
         const unmountedItems = rootitems.filter(n => !n.isMounted)
         const android = {
-            name: "Android",
-            description: "Zugriff auf Android Handy",
+            name: EXTERN,
+            description: "Zugriff auf externe Geräte",
             isMounted: true
         }
         const items = mountedItems

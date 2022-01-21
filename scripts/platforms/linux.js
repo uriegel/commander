@@ -1,5 +1,5 @@
 import { RESULT_CANCEL } from "web-dialog-box"
-import { ANDROID } from "../processors/root.js"
+import { EXTERN } from "../processors/root.js"
 import { copyProcessor } from "../processors/copyProcessor.js"
 const { homedir } = window.require('os')
 const { exec } = window.require("child_process")
@@ -135,7 +135,7 @@ export const adaptDirectoryColumns = columns => columns
 
 export const adaptConflictColumns = columns => columns
 
-export const getRootPath = async item => [item.mountPoint || (item.name == ANDROID ? "android" : ""), null]
+export const getRootPath = async item => [item.mountPoint || (item.name == EXTERN ? "external" : ""), null]
 
 export const pathDelimiter = "/"
 

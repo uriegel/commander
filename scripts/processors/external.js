@@ -2,13 +2,13 @@ import { RESULT_OK } from "web-dialog-box"
 import { dialog } from "../commander.js"
 import { ROOT_PATH } from "./root.js"
 
-export const ANDROIDS_TYPE = "androids"
-export const ANDROID_PATH = "android"
+export const EXTERNAL_TYPE = "external"
+export const EXTERNAL_PATH = "external"
 
 let items = JSON.parse(localStorage.getItem("androids") || "[]")
 
-export const getAndroids = folderId => {
-    const getType = () => ANDROIDS_TYPE
+export const getExternals = folderId => {
+    const getType = () => EXTERNAL_TYPE
 
     const getColumns = () => {
         const widthstr = localStorage.getItem(`${folderId}-androids-widths`)
@@ -38,7 +38,7 @@ export const getAndroids = folderId => {
 
     const getItems = async () => {
         return {
-            path: "android",
+            path: EXTERNAL_PATH,
             items: [{ name: "..", type: "parent" }]
                     .concat(items)
                     .concat({ name: "Hinzufügen...", type: "add"})

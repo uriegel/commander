@@ -1,9 +1,9 @@
-import { ANDROID_PATH } from "./androids"
 import { formatDateTime, formatSize, getExtension } from "./rendertools.js"
 import { copyProcessor } from "../processors/copyProcessor.js"
 const http = window.require('http')
 
 export const ANDROID_TYPE = "android"
+export const ANDROID_PATH = "android"
 
 export const getAndroid = (folderId, path) => {
     const ip = path.substring(8, path.indexOf('/', 9)) 
