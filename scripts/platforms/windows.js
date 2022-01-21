@@ -1,7 +1,7 @@
 const fspath = window.require('path')
 const getDrivesAsync = window.require('rust-addon').getDrives
 const { getFileVersion } = window.require('rust-addon')
-import { EXTERNAL_TYPE } from "../processors/external"
+import { EXTERNALS_TYPE } from "../processors/externals"
 import { compareVersion } from "../processors/rendertools.js"
 import { EXTERN } from "../processors/root.js"
 import { onFinish } from "../processors/copyProcessor.js"
@@ -56,7 +56,7 @@ export const createFolder = async newFolder => runCmd({
     path: newFolder
 })
 
-export const getRootPath = async item => [ item.name != EXTERN ? item.name : EXTERNAL_TYPE, null ]
+export const getRootPath = async item => [ item.name != EXTERN ? item.name : EXTERNALS_TYPE, null ]
 
 export const pathDelimiter = "\\"
 

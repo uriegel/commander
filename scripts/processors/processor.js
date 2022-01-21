@@ -1,5 +1,5 @@
-import { ANDROID_TYPE, ANDROID_PATH, getAndroid } from "./android.js"
-import { EXTERNAL_PATH, EXTERNAL_TYPE, getExternals } from "./external"
+import { ANDROID_TYPE, ANDROID_PATH, getAndroid } from "./external.js"
+import { EXTERNALS_PATH, EXTERNALS_TYPE, getExternals } from "./externals"
 import { DIRECTORY_TYPE, getDirectory } from "./directory.js"
 import { getRoot, ROOT, ROOT_PATH } from "./root.js"
 
@@ -19,8 +19,8 @@ export const getProcessor = (folderId, path, recentProcessor) => {
                 processor: getRoot(folderId), 
                 changed: true
             }
-    } else if (path == EXTERNAL_PATH || path == ANDROID_PATH) {
-        if (recentProcessor && recentProcessor.getType() == EXTERNAL_TYPE) 
+    } else if (path == EXTERNALS_PATH || path == ANDROID_PATH) {
+        if (recentProcessor && recentProcessor.getType() == EXTERNALS_TYPE) 
             return {
                 processor: recentProcessor, 
                 changed: false

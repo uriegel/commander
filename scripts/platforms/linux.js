@@ -1,6 +1,7 @@
 import { RESULT_CANCEL } from "web-dialog-box"
 import { EXTERN } from "../processors/root.js"
 import { copyProcessor } from "../processors/copyProcessor.js"
+import { EXTERNALS_PATH } from "../processors/externals.js"
 const { homedir } = window.require('os')
 const { exec } = window.require("child_process")
 const { copyFile, trashFile } = window.require('shared-module')
@@ -135,7 +136,7 @@ export const adaptDirectoryColumns = columns => columns
 
 export const adaptConflictColumns = columns => columns
 
-export const getRootPath = async item => [item.mountPoint || (item.name == EXTERN ? "external" : ""), null]
+export const getRootPath = async item => [item.mountPoint || (item.name == EXTERN ? EXTERNALS_PATH : ""), null]
 
 export const pathDelimiter = "/"
 

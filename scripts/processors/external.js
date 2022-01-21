@@ -1,112 +1,241 @@
-import { RESULT_OK } from "web-dialog-box"
-import { dialog } from "../commander.js"
-import { ROOT_PATH } from "./root.js"
+import { formatDateTime, formatSize, getExtension } from "./rendertools.js"
+import { copyProcessor } from "../processors/copyProcessor.js"
+const http = window.require('http')
 
-export const EXTERNAL_TYPE = "external"
-export const EXTERNAL_PATH = "external"
+export const ANDROID_TYPE = "android"
+export const ANDROID_PATH = "android"
 
-let items = JSON.parse(localStorage.getItem("androids") || "[]")
+export const getAndroid = (folderId, path) => {
+    const ip = path.substring(8, path.indexOf('/', 9)) 
+    const rootPath = `android/${ip}/`
+    const pathBegin = rootPath.length - 1
+    const getType = () => ANDROID_TYPE
 
-export const getExternals = folderId => {
-    const getType = () => EXTERNAL_TYPE
+    let currentPath = ""
 
     const getColumns = () => {
-        const widthstr = localStorage.getItem(`${folderId}-androids-widths`)
+        const widthstr = localStorage.getItem(`${folderId}-external-widths`)
         const widths = widthstr ? JSON.parse(widthstr) : []
         let columns = [{
             name: "Name",
+            isSortable: true,
+            subItem: {
+                name: "Ext.",
+                isSortable: true
+            },            
             render: (td, item) => {
-                const selector = item.type == "parent" 
-                ? '#parentIcon' 
-                : item.type == "add" 
-                ? '#newIcon'
-                : '#androidIcon'
-                var t = document.querySelector(selector)
-                td.appendChild(document.importNode(t.content, true))
+                const selector = item.name == ".." 
+                    ? '#parentIcon' 
+                    : item.isDirectory
+                        ? '#folderIcon'
+                        : '#fileIcon'
+                if (selector != '#fileIcon') {
+                    var t = document.querySelector(selector)
+                    td.appendChild(document.importNode(t.content, true))
+                } else {
+                    const img = document.createElement("img")
+                    const ext = getExtension(item.name)
+                        img.src = `icon://${ext}`
+                        img.classList.add("image")
+                        td.appendChild(img)
+                }
+
                 const span = document.createElement('span')
                 span.innerHTML = item.name
                 td.appendChild(span)
+            }            
+        }, {
+            name: "Datum",
+            isSortable: true,
+            render: (td, item) => {
+                td.innerHTML = formatDateTime(item.exifTime || item.time)
+                if (item.exifTime)
+                    td.classList.add("exif")
             }
         }, {
-            name: "IP-Adresse",
-            render: (td, item) => td.innerHTML = item.ip || ""
+            name: "Größe",
+            isSortable: true,
+            isRightAligned: true,
+            render: (td, item) => {
+                td.innerHTML = formatSize(item.size)
+                td.classList.add("rightAligned")
+            }
         }]
         if (widths)
-            columns = columns.map((n, i) => ({ ...n, width: widths[i] }))
+            columns = columns.map((n, i)=> ({ ...n, width: widths[i]}))
         return columns
     }
 
-    const getItems = async () => {
-        return {
-            path: EXTERNAL_PATH,
-            items: [{ name: "..", type: "parent" }]
-                    .concat(items)
-                    .concat({ name: "Hinzufügen...", type: "add"})
+    const getItems = async (path, hiddenIncluded) => {
+        var response = (await getFiles(path.substring(pathBegin)))
+            .filter(n => hiddenIncluded ? true : !n.isHidden)
+
+        let items = [{
+                name: "..",
+            isNotSelectable: true,
+                isDirectory: true
+            }]
+            .concat(response.filter(n => n.isDirectory))
+            .concat(response.filter(n => !n.isDirectory))
+        if (items && items.length)
+            currentPath = path
+        return { items, path }
+    }
+
+    const getPath = async item => item.isDirectory 
+        ? item.name != ".."
+            ? [
+                currentPath.length == pathBegin + 1 ?  `${currentPath}${item.name}` : `${currentPath}/${item.name}`, 
+                null]
+            : currentPath == rootPath  
+                ? [ANDROID_PATH, null]
+                : getParentDir(currentPath)
+        : [null, null]
+
+    const renderRow = (item, tr) => {
+        tr.setAttribute("draggable", "true")
+        if (item.isHidden)
+            tr.style.opacity = 0.5
+    }
+
+    const getParentDir = path => {
+        let pos = path.lastIndexOf('/')
+        let parent = pos ? path.substr(0, pos) : '/'
+        return [parent, path.substr(pos + 1)]
+    }
+
+    const addExtendedInfos = async (path, items, refresh) => {
+        // for (let i = 0; i < items.length; i++ ) {
+        //     const n = items[i]
+        //     await addExtendedInfo(n, path)
+        //     if (i != 0 && i % 50 == 0)
+        //         refresh()
+        // }
+        // refresh()
+    }
+
+    const disableSorting = (table, disable) => table.disableSorting(1, disable)
+
+    const getCurrentPath = () => currentPath
+
+    const getItem = item => currentPath == `${currentPath}/${item.name}`
+
+    const saveWidths = widths => localStorage.setItem(`${folderId}-external-widths`, JSON.stringify(widths))
+
+    const getSortFunction = (column, isSubItem) => {
+        switch (column) {
+            case 0:
+                return isSubItem == false 
+                    ? ([a, b]) => a.name.localeCompare(b.name)
+                    : ([a, b]) => getExtension(a.name).localeCompare(getExtension(b.name))
+            case 1: 
+                return ([a, b]) => (a.exifTime ? a.exifTime : a.time) - (b.exifTime ? b.exifTime : b.time)
+            case 2: 
+                return ([a, b]) => a.size - b.size
+            case 3:
+                return ([a, b]) => compareVersion(a.version, b.version)
+            default:
+                return null
         }
     }
 
-    const disableSorting = (table, disable) => {}
-
-    const renderRow = (item, tr) => {
-        tr.ondragstart = undefined
-        tr.ondrag = undefined
-        tr.ondragend = undefined
+    const readDir = async path => {
+        return await getFiles(path)
     }
 
-    const getItem = item => item.name
-
-    const getPath = async (item, refresh) => {
-        if (item.type == "parent")
-            return [ROOT_PATH, null]
-        else if (item.type == "add") {
-            const androidAdder = document.getElementById('android-adder')
-            const inputs = [...androidAdder.querySelectorAll("input")]
-            const adderName = document.getElementById("adder-name")
-            adderName.value = ""
-            const adderIp = document.getElementById("adder-ip")
-            adderIp.value = ""
-            const res = await dialog.show({
-                text: "Android-Verbindung anlegen",
-                extended: "android-adder",
-                extendedFocusables: inputs,
-                btnOk: true,
-                btnCancel: true,
-                defBtnOk: true
-            })    
-            if (res.result == RESULT_OK) {
-                const name = adderName.value
-                const ip = adderIp.value
-                items = items.concat([{name, ip}])
-                localStorage.setItem("androids", JSON.stringify(items))
-                refresh()
-            }
-            return [null, null]
-        } else
-            return [`android/${item.ip}/`, null]
+    const copyItems = async (copyInfo, move, overwrite, foldersToRefresh) => {
+        copyInfo.items.forEach(n => copyProcessor.addJob(n.file, n.targetFile, move, overwrite, foldersToRefresh, true))
     }
 
-    const saveWidths = widths => localStorage.setItem(`${folderId}-androids-widths`, JSON.stringify(widths))
-
-    const getCurrentPath = () => ANDROID_PATH
-
-    const deleteItems = itemsToDelete => {
-        items = items.filter(n => !itemsToDelete.includes(n.name))
-        localStorage.setItem("androids", JSON.stringify(items))
+    const getFilesInfos = async (files, subPath) => {
+        if (!files || files.length == 0)
+            return []
+        const fileInfos = await request("getfilesinfos", { files: files.map(n => n.substring(pathBegin)) })
+        return fileInfos.map(n => ({
+            file: n.file,
+            name: subPath ? n.file.substr(subPath.length + 1) : undefined,
+            size: n.size,
+            time: new Date(n.time)
+        }))
     }
 
-    const addExtendedInfos = () => []
+    const getFiles = path => request("getfiles", { path })
+    
+    async function extractFilesInFolders(sourcePath, targetPath, items) {
+
+        const readdir = async path => (await getFiles(path)).map(n => ({ name: n.name, isDirectory: n.isDirectory}))
+
+        const extractFiles = async (path, target) => await extractFilesInFolders(path, target, await readdir(path))
+
+        const paths = (await Promise.all(items.map(async n => {
+            const file = fspath.join(sourcePath, n.name)
+            const targetFile = fspath.join(targetPath, n.name)
+            return n.isDirectory() 
+                ? extractFiles(file, targetFile) 
+                : { file, 
+                    targetFile, 
+                    targetExists: fs.existsSync(targetFile)
+                } 
+        }))).flatMap(n => n)
+        return paths
+    }
+
+    const deleteEmptyFolders = () => {}
+
+    async function request(path, data) {
+        const keepAliveAgent = new http.Agent({
+            keepAlive: true,
+            keepAliveMsecs: 40000
+        })
+
+        return new Promise((resolve, reject) => {
+            var payload = JSON.stringify(data)
+            let responseData = ''
+            const req = http.request({
+                hostname: ip,
+                port: 8080,
+                path,
+                agent: keepAliveAgent,
+                timeout: 40000,
+                method: 'POST',
+                headers: {
+					'Content-Type': 'application/json; charset=UTF-8',
+					'Content-Length': Buffer.byteLength(payload)
+				}            
+            }, response => {
+                response.setEncoding('utf8')
+                response.on('data', chunk => responseData += chunk)
+                response.on('end', () => {
+                    const result = JSON.parse(responseData)
+                    resolve(result)
+                })
+            })        
+            
+            req.on('error', e => {
+                console.log("error", "problem with request", e)
+                reject(e)
+            })
+            req.write(payload)
+            req.end()        
+        }) 
+    }    
 
     return {
         getType,
         getColumns,
         getItems,
-        disableSorting,
         renderRow,
-        getItem,
         getPath,
-        saveWidths,
+        disableSorting,
+        getItem,
+        addExtendedInfos,
         getCurrentPath,
-        deleteItems,
-        addExtendedInfos
-    }    
+        saveWidths,
+        getSortFunction,
+        extractFilesInFolders,
+        readDir,
+        copyItems,
+        getFilesInfos,
+        deleteEmptyFolders
+    }
 }

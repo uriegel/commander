@@ -54,13 +54,13 @@ export const getRoot = folderId => {
         const rootitems = await getDrives()
         const mountedItems = rootitems.filter(n => n.isMounted)
         const unmountedItems = rootitems.filter(n => !n.isMounted)
-        const android = {
+        const externals = {
             name: EXTERN,
             description: "Zugriff auf externe Geräte",
             isMounted: true
         }
         const items = mountedItems
-            .concat(android)
+            .concat(externals)
             .concat(unmountedItems)
             .map(n => {
                 n.isNotSelectable = true
