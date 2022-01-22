@@ -166,6 +166,17 @@ export async function renameItem(item, newName) {
 
 export const enhanceCopyConflictData = async item => item
 
+export const onEnter = (fileName, path) => {
+    const file = path + '/' + fileName
+    try {
+        fs.accessSync(file, fs.constants.X_OK)
+        exec(file)
+    } catch {
+        exec(`xdg-open '${file}'`)
+    }
+    
+}
+
 var itemHideMenu
 var menu
 var dialog

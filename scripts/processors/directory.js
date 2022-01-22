@@ -14,7 +14,8 @@ import {
     copyItems as platformCopyItems,
     renameItem as platformRenameItem,
     deleteEmptyFolders as platformDeleteEmptyFolders,
-    enhanceCopyConflictData 
+    enhanceCopyConflictData,
+    onEnter as platformOnEnter
 } from "../platforms/switcher.js"
 
 const { getFiles } = window.require('rust-addon')
@@ -279,6 +280,10 @@ export const getDirectory = (folderId, path) => {
 
     const renameItem = async (item, newName) => await platformRenameItem(fspath.join(currentPath, item), fspath.join(currentPath, newName))
 
+    const onEnter = file => {
+        platformOnEnter(file, currentPath)
+    }
+
     const readDir = async path => {
         path = fspath.normalize(path).replace(":.", ":\\")
         return await getFiles(path)
@@ -306,6 +311,7 @@ export const getDirectory = (folderId, path) => {
         renameItem,
         deleteEmptyFolders,
         readDir,
-        getFilesInfos
+        getFilesInfos,
+        onEnter
     }
 }

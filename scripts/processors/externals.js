@@ -96,6 +96,8 @@ export const getExternals = folderId => {
 
     const addExtendedInfos = () => []
 
+    const onEnter = () => {}
+
     return {
         getType,
         getColumns,
@@ -107,6 +109,7 @@ export const getExternals = folderId => {
         saveWidths,
         getCurrentPath,
         deleteItems,
-        addExtendedInfos
+        addExtendedInfos,
+        onEnter
     }    
 }

@@ -17,7 +17,8 @@ import {
     copyItems as copyItemsLinux,
     renameItem as renameItemLinux,
     deleteEmptyFolders as deleteEmptyFoldersLinux,
-    enhanceCopyConflictData as enhanceCopyConflictDataLinux
+    enhanceCopyConflictData as enhanceCopyConflictDataLinux,
+    onEnter as onEnterLinux
 } from "./linux"
 import {
     adaptWindow as adaptWindowWindows,
@@ -36,7 +37,8 @@ import {
     copyItems as copyItemsWindows,
     renameItem as renameItemWindows,
     deleteEmptyFolders as deleteEmptyFoldersWindows,
-    enhanceCopyConflictData as enhanceCopyConflictDataWindows
+    enhanceCopyConflictData as enhanceCopyConflictDataWindows,
+    onEnter as onEnterWindows
 } from "./windows"
 
 export { hideMenu } from "./linux"
@@ -57,6 +59,8 @@ export var copyItems = isLinux ? copyItemsLinux : copyItemsWindows
 export var renameItem = isLinux ? renameItemLinux : renameItemWindows
 export var deleteEmptyFolders = isLinux ? deleteEmptyFoldersLinux : deleteEmptyFoldersWindows
 export var enhanceCopyConflictData = isLinux ? enhanceCopyConflictDataLinux : enhanceCopyConflictDataWindows
+export var onEnter = isLinux ? onEnterLinux : onEnterWindows
+
 
 
     
