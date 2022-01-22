@@ -5,13 +5,13 @@ import { ROOT_PATH } from "./root.js"
 export const EXTERNALS_TYPE = "externals"
 export const EXTERNALS_PATH = "externals"
 
-let items = JSON.parse(localStorage.getItem("androids") || "[]")
+let items = JSON.parse(localStorage.getItem("externals") || "[]")
 
 export const getExternals = folderId => {
     const getType = () => EXTERNALS_TYPE
 
     const getColumns = () => {
-        const widthstr = localStorage.getItem(`${folderId}-androids-widths`)
+        const widthstr = localStorage.getItem(`${folderId}-externals-widths`)
         const widths = widthstr ? JSON.parse(widthstr) : []
         let columns = [{
             name: "Name",
@@ -20,7 +20,9 @@ export const getExternals = folderId => {
                 ? '#parentIcon' 
                 : item.type == "add" 
                 ? '#newIcon'
-                : '#androidIcon'
+                : item.type == "android" 
+                ? '#androidIcon'
+                : '#remoteIcon'
                 var t = document.querySelector(selector)
                 td.appendChild(document.importNode(t.content, true))
                 const span = document.createElement('span')
@@ -59,15 +61,15 @@ export const getExternals = folderId => {
         if (item.type == "parent")
             return [ROOT_PATH, null]
         else if (item.type == "add") {
-            const androidAdder = document.getElementById('android-adder')
-            const inputs = [...androidAdder.querySelectorAll("input")]
+            const externalAdder = document.getElementById('external-adder')
+            const inputs = [...externalAdder.querySelectorAll("input")]
             const adderName = document.getElementById("adder-name")
             adderName.value = ""
             const adderIp = document.getElementById("adder-ip")
             adderIp.value = ""
             const res = await dialog.show({
-                text: "Android-Verbindung anlegen",
-                extended: "android-adder",
+                text: "Remote-Verbindung anlegen",
+                extended: "external-adder",
                 extendedFocusables: inputs,
                 btnOk: true,
                 btnCancel: true,
@@ -77,12 +79,12 @@ export const getExternals = folderId => {
                 const name = adderName.value
                 const ip = adderIp.value
                 items = items.concat([{name, ip}])
-                localStorage.setItem("androids", JSON.stringify(items))
+                localStorage.setItem("externals", JSON.stringify(items))
                 refresh()
             }
             return [null, null]
         } else
-            return [`android/${item.ip}/`, null]
+            return [`external/${item.ip}/`, null]
     }
 
     const saveWidths = widths => localStorage.setItem(`${folderId}-externals-widths`, JSON.stringify(widths))

@@ -2,14 +2,14 @@ import { formatDateTime, formatSize, getExtension } from "./rendertools.js"
 import { copyProcessor } from "../processors/copyProcessor.js"
 const http = window.require('http')
 
-export const ANDROID_TYPE = "android"
-export const ANDROID_PATH = "android"
+export const EXTERNAL_TYPE = "external"
+export const EXTERNAL_PATH = "external"
 
-export const getAndroid = (folderId, path) => {
+export const getExternal = (folderId, path) => {
     const ip = path.substring(8, path.indexOf('/', 9)) 
-    const rootPath = `android/${ip}/`
+    const rootPath = `external/${ip}/`
     const pathBegin = rootPath.length - 1
-    const getType = () => ANDROID_TYPE
+    const getType = () => EXTERNAL_TYPE
 
     let currentPath = ""
 
@@ -88,7 +88,7 @@ export const getAndroid = (folderId, path) => {
                 currentPath.length == pathBegin + 1 ?  `${currentPath}${item.name}` : `${currentPath}/${item.name}`, 
                 null]
             : currentPath == rootPath  
-                ? [ANDROID_PATH, null]
+                ? [EXTERNAL_PATH, null]
                 : getParentDir(currentPath)
         : [null, null]
 
