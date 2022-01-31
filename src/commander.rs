@@ -1,6 +1,6 @@
 use std::{sync::Mutex, str::from_boxed_utf8_unchecked};
 
-use crate::{folder::Folder, error::StringError};
+use crate::{folder::Folder, error::StringError, engine::folder_engine::FolderEngine};
 
 use lazy_static::lazy_static;
 use napi::{Error, Task, bindgen_prelude::AsyncTask, JsUndefined, Env};
@@ -42,7 +42,7 @@ struct Commander{
 }
 
 impl Commander {
-    const fn new() -> Commander {
+    fn new() -> Commander {
         Commander { 
             folder_left: Folder::new(), 
             folder_right: Folder::new() 

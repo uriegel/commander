@@ -20,6 +20,7 @@ use crate::windows::init_addon;
 mod commander;
 mod folder;
 mod error;
+mod engine;
 
 // #[cfg(target_os = "linux")]
 // mod linux;
