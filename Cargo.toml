@@ -11,8 +11,9 @@ crate-type = ["cdylib"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-napi = {version="2", features=["async"]}
+napi = {version="2", features=[ "full" ]}
 napi-derive = "2"
+lazy_static = "1.4"
 # systemicons = "0.6"
 # lexical-sort = "0.3"
 # kamadak-exif = "0.5"

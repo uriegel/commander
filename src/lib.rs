@@ -17,7 +17,9 @@ extern crate napi_derive;
 #[cfg(target_os = "windows")]
 use crate::windows::init_addon;
 
+mod commander;
 mod folder;
+mod error;
 
 // #[cfg(target_os = "linux")]
 // mod linux;

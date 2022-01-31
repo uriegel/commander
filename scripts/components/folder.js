@@ -1,11 +1,14 @@
 import 'virtual-table-component'
 const ipcRenderer = window.require('electron').ipcRenderer
 const fspath = window.require('path')
+const { Folder } = window.require("rust-addon")
 
-class Folder extends HTMLElement {
+class FolderComponent extends HTMLElement {
     constructor() {
         super()
         this.folderId = this.getAttribute("id")
+        /*** enum FolderInst in rust */
+        this.folderInst = this.folderId == "folderLeft" ? 2 : 1
         this.latestRequest = 0
         const additionalStyle = ".exif {color: var(--exif-color);} .isSelected .exif {color: var(--selected-exif-color); }"
         this.innerHTML = `
@@ -25,26 +28,26 @@ class Folder extends HTMLElement {
         this.backtrack = []
         this.backPosition = -1
         this.pathInput = this.getElementsByTagName("INPUT")[0]
-        this.table.renderRow = (item, tr) => {
-            tr.ondragstart = evt => this.onDragStart(evt)
-            tr.ondrag = evt => this.onDrag(evt)
-            tr.ondragend = evt => this.onDragEnd(evt)
-            tr.onmousedown = evt => {
-                if (evt.ctrlKey) {
-                    setTimeout(() => {
-                        const pos = this.table.getPosition()
-                        this.table.items[pos].isSelected = !this.table.items[pos].isNotSelectable && !this.table.items[pos].isSelected 
-                        this.computeExtendedNewNames()
-                        this.table.refresh()
-                    })
-                }
-            }
-            this.processor.renderRow(item, tr)
-        }
-
-        this.changePath() 
-        const lastPath = localStorage.getItem(`${this.folderId}-lastPath`)
-        setTimeout(() => this.changePath(lastPath))
+        // this.table.renderRow = (item, tr) => {
+        //     tr.ondragstart = evt => this.onDragStart(evt)
+        //     tr.ondrag = evt => this.onDrag(evt)
+        //     tr.ondragend = evt => this.onDragEnd(evt)
+        //     tr.onmousedown = evt => {
+        //         if (evt.ctrlKey) {
+        //             setTimeout(() => {
+        //                 const pos = this.table.getPosition()
+        //                 this.table.items[pos].isSelected = !this.table.items[pos].isNotSelectable && !this.table.items[pos].isSelected 
+        //                 this.computeExtendedNewNames()
+        //                 this.table.refresh()
+        //             })
+        //         }
+        //     }
+        //     this.processor.renderRow(item, tr)
+        // }
+        this.folder = new Folder()
+        this.folder.changePath() 
+        // const lastPath = localStorage.getItem(`${this.folderId}-lastPath`)
+        // setTimeout(() => this.changePath(lastPath))
     }
 
     get id() { return this.folderId }
@@ -401,7 +404,7 @@ class Folder extends HTMLElement {
 }
 
 
-customElements.define('folder-table', Folder)
+customElements.define('folder-table', FolderComponent)
 
 // 
 

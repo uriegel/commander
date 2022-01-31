@@ -1,16 +1,22 @@
-#[napi]
 pub struct Folder {
-    name: String
+    path: Option<String>
 }
 
-#[napi]
 impl Folder {
-    #[napi(constructor)]
-    pub fn new() -> Self { Folder { name: "".to_string() }  }
+    pub const fn new() -> Folder {
+        Folder { path: None }
+    }
 
-    #[napi(getter)]
-    pub fn get_name(&self) -> &str { self.name.as_str() }
-  
-    #[napi(setter)]
-    pub fn set_name(&mut self, name: String) { self.name = name; }    
+    pub fn change_path(&self, path: Option<String>, from_backlog: Option<bool>) {
+        
+    }
+
+    pub fn set_path(&mut self, path: String) {
+        self.path = Some(path);
+    }
+
+    pub fn get_path(&self) -> String {
+        self.path.as_ref().unwrap_or(&"root".to_string()).clone()
+    }
 }
+
