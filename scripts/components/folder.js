@@ -187,13 +187,23 @@ class FolderComponent extends HTMLElement {
     }
 
     async changePath(path, fromBacklog) {
+
+        // TODO: in node thread
+
+
         const result = getProcessor(this.folderId, path, this.processor)
         const req = ++this.latestRequest
+
+        // TODO  C H E C K  F I R S T 
+        // get static function get_items from folder_object, transfer it to threadpool, call it there, transform result back to node thread
+
         const itemsResult = (await result.processor.getItems(path, this.showHiddenItems))
         path = itemsResult.path
         let items = itemsResult.items
         if (!items || req < this.latestRequest) 
             return
+
+        // TODO call another step function, get columns and items
 
         this.table.setItems([])
         if (result.changed || this.columnsChangeRequest) {

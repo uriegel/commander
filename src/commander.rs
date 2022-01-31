@@ -1,12 +1,16 @@
-use std::{sync::Mutex, str::from_boxed_utf8_unchecked};
+use std::{sync::Mutex};
 
-use crate::{folder::Folder, error::StringError, engine::folder_engine::FolderEngine};
+use crate::{folder::Folder, error::StringError};
 
 use lazy_static::lazy_static;
-use napi::{Error, Task, bindgen_prelude::AsyncTask, JsUndefined, Env};
+use napi::{Task, bindgen_prelude::AsyncTask, JsUndefined, Env};
 
 #[napi]
 pub fn change_path(inst: u32, path: Option<String>, from_backlog: Option<bool>) -> AsyncTask<AsyncChangePath> {
+    let mut commander = COMMANDER.lock().unwrap();
+    let mut folder = commander.get_mut_folder(FolderInst::from_arg(inst)?);
+    folder.change_path(path.clone(), from_backlog);
+
     AsyncTask::new(AsyncChangePath { inst, path, from_backlog })
 }
 
@@ -22,9 +26,6 @@ impl Task for AsyncChangePath {
 
   	fn compute(&mut self) -> napi::Result<Self::Output> {
         // // TODO in uv thread
-        let mut commander = COMMANDER.lock().unwrap();
-        let mut folder = commander.get_mut_folder(FolderInst::from_arg(self.inst)?);
-        folder.change_path(self.path.clone(), self.from_backlog);
         
         // // TODO run all from folder.js changePath
         Ok(())
