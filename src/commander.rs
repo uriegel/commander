@@ -7,10 +7,15 @@ use napi::{Task, bindgen_prelude::AsyncTask, JsUndefined, Env};
 
 #[napi]
 pub fn change_path(inst: u32, path: Option<String>, from_backlog: Option<bool>) -> AsyncTask<AsyncChangePath> {
+
+    // TODO:
+    // run this in foreground: change_path
+
     let mut commander = COMMANDER.lock().unwrap();
     let mut folder = commander.get_mut_folder(FolderInst::from_arg(inst)?);
     folder.change_path(path.clone(), from_backlog);
 
+    // TODO extra call in background: retrieve_items
     AsyncTask::new(AsyncChangePath { inst, path, from_backlog })
 }
 
