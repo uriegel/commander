@@ -3,25 +3,38 @@ use std::{sync::Mutex, str::from_boxed_utf8_unchecked};
 use crate::{folder::Folder, error::StringError};
 
 use lazy_static::lazy_static;
-use napi::Error;
+use napi::{Error, Task, bindgen_prelude::AsyncTask, JsUndefined, Env};
 
 #[napi]
-pub fn change_path(inst: u32, path: Option<String>, from_backlog: Option<bool>) -> Result<(), Error> {
-
-    // TODO call async pattern
-
-
-
-    // TODO in uv thread
-    let mut commander = COMMANDER.lock().unwrap();
-    let mut folder = commander.get_mut_folder(FolderInst::from_arg(inst)?);
-    folder.change_path(path, from_backlog);
-    
-    // TODO run all from folder.js changePath
-
-
-    Ok(())
+pub fn change_path(inst: u32, path: Option<String>, from_backlog: Option<bool>) -> AsyncTask<AsyncChangePath> {
+    AsyncTask::new(AsyncChangePath { inst, path, from_backlog })
 }
+
+pub struct AsyncChangePath {
+	inst: u32, 
+    path: Option<String>, 
+    from_backlog: Option<bool>
+}
+
+impl Task for AsyncChangePath {
+	type Output = ();
+  	type JsValue = JsUndefined;
+
+  	fn compute(&mut self) -> napi::Result<Self::Output> {
+        // // TODO in uv thread
+        let mut commander = COMMANDER.lock().unwrap();
+        let mut folder = commander.get_mut_folder(FolderInst::from_arg(self.inst)?);
+        folder.change_path(self.path.clone(), self.from_backlog);
+        
+        // // TODO run all from folder.js changePath
+        Ok(())
+  	}
+
+  	fn resolve(&mut self, env: Env, _: ()) -> napi::Result<Self::JsValue> {
+    	env.get_undefined()
+  	}
+}
+
 
 struct Commander{
     folder_left: Folder,
