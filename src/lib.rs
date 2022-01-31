@@ -17,14 +17,11 @@ extern crate napi_derive;
 #[cfg(target_os = "windows")]
 use crate::windows::init_addon;
 
+mod folder;
+
 // #[cfg(target_os = "linux")]
 // mod linux;
 
 // #[cfg(target_os = "windows")]
 // mod windows;
 
-// TODO: create class Folder
-#[napi]
-pub fn test(a: String, b: String) -> String {
-    format!("{a} und {b}")
-}
