@@ -11,6 +11,8 @@ crate-type = ["cdylib"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+napi = {version="2", features=["async"]}
+napi-derive = "2"
 # systemicons = "0.6"
 # lexical-sort = "0.3"
 # kamadak-exif = "0.5"
@@ -26,3 +28,5 @@ crate-type = ["cdylib"]
 #     "winuser", "winnt", "fileapi", "shellapi", "errhandlingapi", "ioapiset", "winioctl", "winver"
 # ]}
 
+[build-dependencies]
+napi-build = "1.2"

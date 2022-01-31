@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate napi_derive;
+
 // use chrono::{Local, NaiveDateTime, TimeZone};
 // use exif::{In, Tag};
 // use lexical_sort::natural_lexical_cmp;
@@ -20,3 +23,8 @@ use crate::windows::init_addon;
 // #[cfg(target_os = "windows")]
 // mod windows;
 
+// TODO: create class Folder
+#[napi]
+pub fn test(a: String, b: String) -> String {
+    format!("{a} und {b}")
+}
