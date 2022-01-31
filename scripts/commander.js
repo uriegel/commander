@@ -5,10 +5,9 @@ import 'web-menu-bar'
 import 'web-electron-titlebar'
 import 'web-pie-progress'
 import { adaptWindow, onDarkTheme } from './platforms/switcher.js'
-import { initializeCopying } from './processors/copyProcessor.js'
+//import { initializeCopying } from './processors/copyProcessor.js'
 import './components/pdfviewer.js'
 import './components/folder.js'
-import './components/copyconflicts'
 import './components/externaladder'
 import './components/extendedrename'
 import { showViewer, refreshViewer} from './viewer.js'
@@ -19,7 +18,7 @@ export const BOTH = 3
 
 export const dialog = document.querySelector('dialog-box')
 
-const FileResult = window.require('shared-module').FileResult
+//const FileResult = window.require('shared-module').FileResult
 
 const folderLeft = document.getElementById("folderLeft")
 const folderRight = document.getElementById("folderRight")
@@ -50,7 +49,7 @@ menu.addEventListener('menuclosed', () => activeFolder.setFocus())
 folderLeft.addEventListener("onFocus", () => activeFolder = folderLeft)
 folderRight.addEventListener("onFocus", () => activeFolder = folderRight)
 
-initializeCopying(onCopyFinish, onShowCopyErrors)
+//initializeCopying(onCopyFinish, onShowCopyErrors)
 
 const onPathChanged = evt => {
     currentPath = evt.detail.path

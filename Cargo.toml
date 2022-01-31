@@ -11,23 +11,18 @@ crate-type = ["cdylib"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-systemicons = "0.6"
-lexical-sort = "0.3"
-kamadak-exif = "0.5"
-chrono = "0.4"
-rayon = "1.5"
-
-[dependencies.neon]
-version = "0.9"
-default-features = false
-features = ["napi-6", "event-queue-api" ]
+# systemicons = "0.6"
+# lexical-sort = "0.3"
+# kamadak-exif = "0.5"
+# chrono = "0.4"
+# rayon = "1.5"
 
 [target.'cfg(target_os="linux")'.dependencies]
-gio = "0.14"
-glib = "0.14"
+# gio = "0.14"
+# glib = "0.14"
 
 [target.'cfg(target_os="windows")'.dependencies]
-winapi = { version = "0.3", features = [
-    "winuser", "winnt", "fileapi", "shellapi", "errhandlingapi", "ioapiset", "winioctl", "winver"
-]}
+# winapi = { version = "0.3", features = [
+#     "winuser", "winnt", "fileapi", "shellapi", "errhandlingapi", "ioapiset", "winioctl", "winver"
+# ]}
 

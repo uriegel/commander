@@ -4,7 +4,7 @@ const path = require("path")
 const settings = require('electron-settings')
 const { registerRunCmd } = require('./commands')
 const isLinux = process.platform == "linux"
-const { registerGetIconProtocol } = require(isLinux ? './platform/linux': './platform/windows')
+//const { registerGetIconProtocol } = require(isLinux ? './platform/linux': './platform/windows')
 
 // if (process.env.NODE_ENV == 'DEV')
 //     require('vue-devtools').install()
@@ -14,7 +14,7 @@ const icon = path.join(__dirname, '../web/assets/kirk.png')
 
 const createWindow = async () => {    
 
-    registerGetIconProtocol()
+    //registerGetIconProtocol()
 
     registerRunCmd()        
 

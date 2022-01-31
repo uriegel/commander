@@ -1,6 +1,6 @@
 const { protocol } = require("electron")
-const { copyFiles, toRecycleBin } = require("rust-addon")
-const { createFolder, deleteEmptyFolders } = require("shared-module")
+//const { copyFiles, toRecycleBin } = require("rust-addon")
+
 
 const toRecycleBinAsync = files => new Promise((res, rej) => toRecycleBin(files, err => {
     if (err)

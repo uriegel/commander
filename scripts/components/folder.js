@@ -1,6 +1,4 @@
 import 'virtual-table-component'
-import { getProcessor } from '../processors/processor.js'
-import { getExtension } from "../processors/rendertools.js"
 const ipcRenderer = window.require('electron').ipcRenderer
 const fspath = window.require('path')
 

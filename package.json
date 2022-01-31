@@ -59,7 +59,6 @@
   "dependencies": {
     "electron-settings": "^4.0.2",
     "rust-addon": "file:local-modules/rust-addon",
-    "shared-module": "file:local-modules/shared-module",
     "theme-change-detect": "1.0.0"
   },
   "devDependencies": {

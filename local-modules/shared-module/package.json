@@ -1,7 +1,0 @@
-{
-  "name": "shared-module",
-  "version": "1.0.0",
-  "description": "Shared code for electron and renderer",
-  "main": "utils.js",
-  "author": "Uwe Riegel"
-}
