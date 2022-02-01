@@ -13,20 +13,14 @@ crate-type = ["cdylib"]
 [dependencies]
 napi = {version="2", features=["full"]}
 napi-derive = "2"
-
-[build-dependencies]
-napi-build = "1.2.1"
-
 # systemicons = "0.6"
-# lexical-sort = "0.3"
+lexical-sort = "0.3"
 # kamadak-exif = "0.5"
 # chrono = "0.4"
 # rayon = "1.5"
 
-# [dependencies.neon]
-# version = "0.9"
-# default-features = false
-# features = ["napi-6", "event-queue-api" ]
+[build-dependencies]
+napi-build = "1.2.1"
 
 [target.'cfg(target_os="linux")'.dependencies]
 # gio = "0.14"

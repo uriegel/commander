@@ -1,13 +1,16 @@
-const { test } = require("rust-addon")
+const { test, getFiles } = require("rust-addon")
 
 console.log("Testing Rust (Javascript side)")
-
 
 const OS = require('os')
 process.env.UV_THREADPOOL_SIZE = OS.cpus().length
 
 // //clearTimeout(timer)const trashFileAsync = file => new Promise((res, rej) => trashFile(file, err => err ? rej(err) : res()))
 //const async testAsync = () => new Promise(res => test(res))
+
+
+const files = getFiles("/home/uwe")
+console.log("files", files)
 
 async function runTest(i) {
     console.log(`Running ${i}`)
@@ -20,7 +23,7 @@ async function run() {
         runTest(i)
     }
 }
-run()
+//run()
 
 // initGtk()
 
