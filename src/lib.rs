@@ -115,36 +115,4 @@ fn main(mut cx: ModuleContext) -> NeonResult<()> {
     Ok(())
 }
 
-
-// fn compress_finish(mut cx: FunctionContext) -> JsResult<JsPromise> {
-//     // Get a shallow clone of `CompressStream`; same as in `compress_chunk`
-//     // This is an alternative to the `&**` syntax used earlier. Instead, it uses auto-deref
-//     // and universal call syntax for the `clone` call to coerce to proper type.
-//     let stream = CompressStream::clone(&&cx.argument::<JsBox<CompressStream>>(0)?);
-
-//     let buffer = vec![2u8, 3u8,4u8 ,5u8,6u8];
-
-//     let mut js_buffer = cx.buffer((6)?;
-
-//     cx.borrow_mut(&mut js_buffer, |js_buffer| {
-//         let buf = js_buffer.as_mut_slice();
-//         buf.copy_from_slice(&buffer);
-//     });
-
-//     let schrott = vec![
-//         cx.null().upcast::<JsValue>(),
-//         js_buffer.upcast(),
-//     ];
-
-//     JsBuffer::external(cx, data)
-
-//     let promise = cx
-//         // Finish the stream on the Node worker pool
-//         .task(move || stream.finish())
-//         // Convert the remaining output into an `ArrayBuffer` and resolve the promise
-//         // on the JavaScript main thread.
-//         .promise(CompressStream::and_buffer);
-
-//     Ok(promise)
-// }
-
+// TODO Implement all commented rust functions with callbacks
