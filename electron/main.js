@@ -5,10 +5,11 @@ const settings = require('electron-settings')
 const { registerRunCmd } = require('./commands')
 const isLinux = process.platform == "linux"
 const { registerGetIconProtocol } = require(isLinux ? './platform/linux': './platform/windows')
+const os = require('os')
 
 // if (process.env.NODE_ENV == 'DEV')
 //     require('vue-devtools').install()
-
+process.env.UV_THREADPOOL_SIZE = os.cpus().length
 
 const icon = path.join(__dirname, '../web/assets/kirk.png')
 
