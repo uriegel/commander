@@ -20,6 +20,27 @@ mod linux;
 #[cfg(target_os = "windows")]
 mod windows;
 
+
+
+// TODO
+// rayon::spawn number of virtual cores
+//1.     => electron: set number of libuv threads in electron and renderer
+// Check if you can resize libuv cores to 8
+
+// TODO callback -> promise
+
+// TODO Step 1: test(cb) rayon::spawn -> thread::sleep
+// TODO for loop 20 how many parallel requests are processed ( == 8)
+// TODO Step 2: delete complete rust addon code
+// TODO Step 3: async test() -> thread::sleep
+// TODO for loop 20 how many parallel requests are processed ( == 4)
+// TODO Step 4 resize parallel threads in Electron main
+// TODO Step 5 resize parallel threads in Electron renderer
+
+
+
+
+
 pub fn get_files(mut cx: FunctionContext) -> JsResult<JsArray> {
     let path = cx.argument::<JsString>(0)?.value(&mut cx);
     let result: Handle<JsArray> = cx.empty_array();
