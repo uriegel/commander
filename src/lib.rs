@@ -31,13 +31,6 @@ use napi::{Task, Env, Result, bindgen_prelude::{AsyncTask}, JsUndefined};
 
 // TODO callback -> promise
 
-// PASSED Step 1: test(cb) rayon::spawn -> thread::sleep 
-// PASSED for loop 20 how many parallel requests are processed ( == 8)
-// PASSED Step 2: delete complete rust addon code
-// PASSED Step 3: async test() -> thread::sleep
-// PASSED for loop 20 how many parallel requests are processed ( == 4)
-// PASSED Step 4 resize parallel threads in Electron main
-// TODO Step 5 resize parallel threads in Electron renderer
 
 
 
