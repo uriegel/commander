@@ -102,14 +102,6 @@ pub fn get_files(env: Env, path: String) -> Result<Array> {
 // }
 
 #[napi]
-pub fn test2(env: Env, a: String, b: i32) -> Result<Array> {
-    println!("a: {a}, b: {b}");
-	let res = env.create_array(3);
-	res
-}
-
-
-#[napi]
 pub fn test() -> AsyncTask<Test> {
     AsyncTask::new(Test { })
 }
