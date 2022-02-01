@@ -2,12 +2,16 @@ const { test } = require("rust-addon")
 
 console.log("Testing Rust (Javascript side)")
 
+
+const OS = require('os')
+process.env.UV_THREADPOOL_SIZE = OS.cpus().length
+
 // //clearTimeout(timer)const trashFileAsync = file => new Promise((res, rej) => trashFile(file, err => err ? rej(err) : res()))
-const testAsync = () => new Promise(res => test(res))
+//const async testAsync = () => new Promise(res => test(res))
 
 async function runTest(i) {
     console.log(`Running ${i}`)
-    await testAsync()
+    await test()
     console.log(`Running ${i}  finished`)
 }
 
