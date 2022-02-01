@@ -160,12 +160,9 @@ export const getDirectory = (folderId, path) => {
     const getItem = item => currentPath == pathDelimiter ? pathDelimiter + item.name : currentPath + pathDelimiter + item.name
 
     async function addExtendedInfo(item, path) {
-        
-        const getExifDateAsync = file => new Promise(res => getExifDate(file, date => res(date ? new Date(date) : null)))
-        
         var name = item.name.toLocaleLowerCase();
         if (name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png"))
-            item.exifTime = await getExifDateAsync(fspath.join(path, item.name))
+            item.exifTime = await getExifDate(fspath.join(path, item.name))
         await addAdditionalInfo(item, name, path)
     }
     

@@ -61,11 +61,9 @@ pub fn get_files(mut cx: FunctionContext) -> JsResult<JsArray> {
     Ok(result)
 }
 
-pub fn get_exif_date(mut cx: FunctionContext) -> JsResult<JsUndefined> {
+pub fn get_exif_date(mut cx: FunctionContext) -> JsResult<JsPromise> {
 
     let path = cx.argument::<JsString>(0)?.value(&mut cx);
-    let callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
-    let channel = cx.channel();
 
     fn get_unix_time(str: &str)->i64 {
         let naive_date_time = NaiveDateTime::parse_from_str(str, "%Y-%m-%d %H:%M:%S").unwrap();
@@ -73,37 +71,51 @@ pub fn get_exif_date(mut cx: FunctionContext) -> JsResult<JsUndefined> {
         datetime.timestamp_millis()
     }    
 
-    rayon::spawn(move || {
-        let exifdate = File::open(path).ok().and_then(|file| {
-            let mut bufreader = BufReader::new(&file);        
-            let exifreader = exif::Reader::new();
-            exifreader.read_from_container(&mut bufreader).ok().and_then(|exif| {
-                let exiftime = match exif.get_field(Tag::DateTimeOriginal, In::PRIMARY) {
-                    Some(info) => Some(info.display_value().to_string()),
-                    None => match exif.get_field(Tag::DateTime, In::PRIMARY) {
+    let promise = cx
+        // Finish the stream on the Node worker pool
+        .task(move || {
+            let exifdate = File::open(path).ok().and_then(|file| {
+                let mut bufreader = BufReader::new(&file);        
+                let exifreader = exif::Reader::new();
+                exifreader.read_from_container(&mut bufreader).ok().and_then(|exif| {
+                    let exiftime = match exif.get_field(Tag::DateTimeOriginal, In::PRIMARY) {
                         Some(info) => Some(info.display_value().to_string()),
+                        None => match exif.get_field(Tag::DateTime, In::PRIMARY) {
+                            Some(info) => Some(info.display_value().to_string()),
+                            None => None
+                        } 
+                    };
+                    match exiftime {
+                        Some(exiftime) => Some(get_unix_time(&exiftime)),
                         None => None
-                    } 
-                };
-                match exiftime {
-                    Some(exiftime) => Some(get_unix_time(&exiftime)),
-                    None => None
-                }            
-            })
-        });
-        channel.send(move |mut cx| {
-            let arg = match exifdate {
+                    }            
+                })
+            });
+            Ok(exifdate)
+        })
+        // Convert the remaining output into an `ArrayBuffer` and resolve the promise
+        // on the JavaScript main thread.
+        .promise(|mut cx, res: Result<Option<i64>, String>| {
+            let exifdate = res.unwrap();
+            let res = match exifdate {
                 Some(number) => cx.number(number as f64).upcast::<JsValue>(),
                 None => cx.null().upcast()
             };
-            let args = vec![ arg ];
-            let this = cx.undefined();
-            let callback = callback.into_inner(&mut cx);
-            callback.call(&mut cx, this, args)?;
-            Ok(())
+            Ok(res)
         });
-    });
-    Ok(cx.undefined())
+
+    Ok(promise)    
+
+    // rayon::spawn(move || {
+    //     channel.send(move |mut cx| {
+    //         let args = vec![ arg ];
+    //         let this = cx.undefined();
+    //         let callback = callback.into_inner(&mut cx);
+    //         callback.call(&mut cx, this, args)?;
+    //         Ok(())
+    //     });
+    // });
+    // Ok(cx.undefined())
 }
 
 #[neon::main]

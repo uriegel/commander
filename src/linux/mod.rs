@@ -102,99 +102,99 @@ impl Clone for FileError {
 }
 
 fn copy_file(mut cx: FunctionContext) -> JsResult<JsUndefined> {
-    let file_path = cx.argument::<JsString>(0)?.value(&mut cx);
-    let target_path = cx.argument::<JsString>(1)?.value(&mut cx);
-    let move_file = if cx.len() > 3 {
-        cx.argument::<JsBoolean>(3)?.value(&mut cx)
-    } else {
-        false
-    };
-    let overwrite = if cx.len() > 4 {
-        cx.argument::<JsBoolean>(4)?.value(&mut cx)
-    } else {
-        false
-    };
+    // let file_path = cx.argument::<JsString>(0)?.value(&mut cx);
+    // let target_path = cx.argument::<JsString>(1)?.value(&mut cx);
+    // let move_file = if cx.len() > 3 {
+    //     cx.argument::<JsBoolean>(3)?.value(&mut cx)
+    // } else {
+    //     false
+    // };
+    // let overwrite = if cx.len() > 4 {
+    //     cx.argument::<JsBoolean>(4)?.value(&mut cx)
+    // } else {
+    //     false
+    // };
         
-    let file = File::for_path(file_path);
-    let target = File::for_path(target_path);
+    // let file = File::for_path(file_path);
+    // let target = File::for_path(target_path);
 
-    let callback = cx.argument::<JsFunction>(2)?.root(&mut cx);
-    let channel = cx.channel();
+    // let callback = cx.argument::<JsFunction>(2)?.root(&mut cx);
+    // let channel = cx.channel();
     
-    rayon::spawn(move || {
-        let mut cb = |a, _b |{
-            CopyStatus::add_value(a as usize);
-        };
+    // rayon::spawn(move || {
+    //     let mut cb = |a, _b |{
+    //         CopyStatus::add_value(a as usize);
+    //     };
 
-        let res = if move_file {
-            file.move_(&target, 
-                if overwrite { FileCopyFlags::OVERWRITE } else { FileCopyFlags::NONE }, 
-                Some(&gio::Cancellable::new()), 
-                Some(&mut cb))
-        } else {
-            file.copy(&target, 
-                if overwrite { FileCopyFlags::OVERWRITE } else { FileCopyFlags::NONE }, 
-                Some(&gio::Cancellable::new()), 
-                Some(&mut cb))
-        };
-        let error = if let Err(error) = res {
-            Some(FileError { description: error.to_string(), code: unsafe { (*error.into_raw()).code } } )
-        } else { None };
+    //     let res = if move_file {
+    //         file.move_(&target, 
+    //             if overwrite { FileCopyFlags::OVERWRITE } else { FileCopyFlags::NONE }, 
+    //             Some(&gio::Cancellable::new()), 
+    //             Some(&mut cb))
+    //     } else {
+    //         file.copy(&target, 
+    //             if overwrite { FileCopyFlags::OVERWRITE } else { FileCopyFlags::NONE }, 
+    //             Some(&gio::Cancellable::new()), 
+    //             Some(&mut cb))
+    //     };
+    //     let error = if let Err(error) = res {
+    //         Some(FileError { description: error.to_string(), code: unsafe { (*error.into_raw()).code } } )
+    //     } else { None };
 
-        let original_error = error.clone();
+    //     let original_error = error.clone();
 
-        let create_dir = match error {
-            Some(e) => e.code == 1 && file.query_exists(Some(&gio::Cancellable::new())),
-            None => false
-        };
+    //     let create_dir = match error {
+    //         Some(e) => e.code == 1 && file.query_exists(Some(&gio::Cancellable::new())),
+    //         None => false
+    //     };
 
-        let error = if create_dir {
-            let parent = target.parent().unwrap();
-            let _res = parent.make_directory_with_parents(Some(&gio::Cancellable::new()));
+    //     let error = if create_dir {
+    //         let parent = target.parent().unwrap();
+    //         let _res = parent.make_directory_with_parents(Some(&gio::Cancellable::new()));
 
-            let res = if move_file {
-                file.move_(&target, 
-                    if overwrite { FileCopyFlags::OVERWRITE } else { FileCopyFlags::NONE }, 
-                    Some(&gio::Cancellable::new()), 
-                    Some(&mut cb))
-            } else {
-                file.copy(&target, 
-                    if overwrite { FileCopyFlags::OVERWRITE } else { FileCopyFlags::NONE }, 
-                    Some(&gio::Cancellable::new()), 
-                    Some(&mut cb))
-            };
-            let error = if let Err(error) = res {
-                Some(FileError { description: error.to_string(), code: unsafe { (*error.into_raw()).code } } )
-            } else { None };
-            error
-        } else { original_error };
+    //         let res = if move_file {
+    //             file.move_(&target, 
+    //                 if overwrite { FileCopyFlags::OVERWRITE } else { FileCopyFlags::NONE }, 
+    //                 Some(&gio::Cancellable::new()), 
+    //                 Some(&mut cb))
+    //         } else {
+    //             file.copy(&target, 
+    //                 if overwrite { FileCopyFlags::OVERWRITE } else { FileCopyFlags::NONE }, 
+    //                 Some(&gio::Cancellable::new()), 
+    //                 Some(&mut cb))
+    //         };
+    //         let error = if let Err(error) = res {
+    //             Some(FileError { description: error.to_string(), code: unsafe { (*error.into_raw()).code } } )
+    //         } else { None };
+    //         error
+    //     } else { original_error };
 
-        channel.send(move |mut cx| {
-            let this = cx.undefined();
-            let callback = callback.into_inner(&mut cx);
-            let args = match error {
-                None => {
-                    let copied = cx.number(CopyStatus::get_value() as f64);
-                    vec![ cx.null().upcast::<JsValue>(), copied.upcast::<JsValue>() ]
-                },
-                Some(error) => {
-                    let obj: Handle<JsObject> = cx.empty_object();
-                    let desc = cx.string(error.description);
-                    obj.set(&mut cx, "description", desc)?;
-                    let file_error = match error.code {
-                        1  => FILE_NOT_FOUND,
-                        14 => ACCESS_DENIED,
-                        _ => UNKNOWN
-                    };
-                    let code = cx.number(file_error as f64);
-                    obj.set(&mut cx, "fileResult", code)?;
-                    vec![ obj.upcast::<JsValue>(), cx.null().upcast::<JsValue>() ]
-                }
-            }; 
-            callback.call(&mut cx, this, args)?;
-            Ok(())
-        });
-    });
+    //     channel.send(move |mut cx| {
+    //         let this = cx.undefined();
+    //         let callback = callback.into_inner(&mut cx);
+    //         let args = match error {
+    //             None => {
+    //                 let copied = cx.number(CopyStatus::get_value() as f64);
+    //                 vec![ cx.null().upcast::<JsValue>(), copied.upcast::<JsValue>() ]
+    //             },
+    //             Some(error) => {
+    //                 let obj: Handle<JsObject> = cx.empty_object();
+    //                 let desc = cx.string(error.description);
+    //                 obj.set(&mut cx, "description", desc)?;
+    //                 let file_error = match error.code {
+    //                     1  => FILE_NOT_FOUND,
+    //                     14 => ACCESS_DENIED,
+    //                     _ => UNKNOWN
+    //                 };
+    //                 let code = cx.number(file_error as f64);
+    //                 obj.set(&mut cx, "fileResult", code)?;
+    //                 vec![ obj.upcast::<JsValue>(), cx.null().upcast::<JsValue>() ]
+    //             }
+    //         }; 
+    //         callback.call(&mut cx, this, args)?;
+    //         Ok(())
+    //     });
+    // });
     Ok(cx.undefined())
 }
 
@@ -205,32 +205,32 @@ fn trash(file: File) -> Result<(), FError> {
 
 pub fn trash_file(mut cx: FunctionContext) -> JsResult<JsUndefined> {
 
-    let file_path = cx.argument::<JsString>(0)?.value(&mut cx);
-    let callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
-    let channel = cx.channel();
-    let file = File::for_path(file_path);
+    // let file_path = cx.argument::<JsString>(0)?.value(&mut cx);
+    // let callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
+    // let channel = cx.channel();
+    // let file = File::for_path(file_path);
     
-    rayon::spawn(move || {
-        let result = trash(file);
+    // rayon::spawn(move || {
+    //     let result = trash(file);
     
-        channel.send(move |mut cx| {
-            let args = match result {
-                Ok(()) => vec![ cx.undefined().upcast::<JsValue>(), cx.undefined().upcast::<JsValue>() ],
-                Err(error) => {
-                    let obj: Handle<JsObject> = cx.empty_object();
-                    let desc = cx.string(error.description);
-                    obj.set(&mut cx, "description", desc)?;
-                    let code = cx.number(error.code as f64);
-                    obj.set(&mut cx, "fileResult", code)?;
-                    vec![ obj.upcast::<JsValue>(), cx.undefined().upcast::<JsValue>() ]
-                }
-            };
-            let this = cx.undefined();
-            let callback = callback.into_inner(&mut cx);
-            callback.call(&mut cx, this, args)?;
-            Ok(())
-        });
-    });
+    //     channel.send(move |mut cx| {
+    //         let args = match result {
+    //             Ok(()) => vec![ cx.undefined().upcast::<JsValue>(), cx.undefined().upcast::<JsValue>() ],
+    //             Err(error) => {
+    //                 let obj: Handle<JsObject> = cx.empty_object();
+    //                 let desc = cx.string(error.description);
+    //                 obj.set(&mut cx, "description", desc)?;
+    //                 let code = cx.number(error.code as f64);
+    //                 obj.set(&mut cx, "fileResult", code)?;
+    //                 vec![ obj.upcast::<JsValue>(), cx.undefined().upcast::<JsValue>() ]
+    //             }
+    //         };
+    //         let this = cx.undefined();
+    //         let callback = callback.into_inner(&mut cx);
+    //         callback.call(&mut cx, this, args)?;
+    //         Ok(())
+    //     });
+    // });
     Ok(cx.undefined())
 }
 
