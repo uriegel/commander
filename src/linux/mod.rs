@@ -5,12 +5,9 @@ use systemicons::init;
 use systemicons::get_icon_as_file;
 use neon::prelude::*;
 
-const UNKNOWN: u32 = 1;
-const ACCESS_DENIED: u32 = 2;
-const FILE_EXISTS: u32 = 3;
-const FILE_NOT_FOUND: u32 = 4;
-
 use std::sync::atomic::{AtomicUsize, Ordering};
+
+use crate::{FileError, FileErrorType};
 
 trait Tr {
     fn get_counter() -> &'static AtomicUsize {
@@ -60,44 +57,23 @@ fn get_icon(mut cx: FunctionContext) -> JsResult<JsString> {
     Ok(cx.string(&path))
 }
 
-
-#[derive(Debug)]
-struct FError {
-    description: String,
-    code: u32
-}
-
-impl fmt::Display for FError {
+impl fmt::Display for FileError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "({})", self.description)
     }
 }
 
-impl From<glib::Error> for FError {
+impl From<glib::Error> for FileError {
     fn from(error: glib::Error) -> Self {
-        FError { 
+        FileError { 
             description: error.to_string(), 
             code: match unsafe { (*error.into_raw()).code } {
-                    1  => FILE_NOT_FOUND,
-                    2  => FILE_EXISTS,
-                    14 => ACCESS_DENIED,
-                    _  => UNKNOWN
+                    1  => FileErrorType::FileNotFound,
+                    2  => FileErrorType::FileExists,
+                    14 => FileErrorType::AccessDenied,
+                    _  => FileErrorType::Unknown
                 }                
         } 
-    }
-}
-
-struct FileError { 
-    description: String,
-    code: i32
-}
-
-impl Clone for FileError {
-    fn clone(&self) -> FileError {
-        FileError { 
-            description: self.description.clone(),
-            code: self.code            
-        }
     }
 }
 
@@ -198,42 +174,30 @@ fn copy_file(mut cx: FunctionContext) -> JsResult<JsUndefined> {
     Ok(cx.undefined())
 }
 
-
-fn trash(file: File) -> Result<(), FError> {
-    Ok(file.trash(Some(&gio::Cancellable::new()))?)
-}
-
-pub fn trash_file(mut cx: FunctionContext) -> JsResult<JsUndefined> {
-
-    // let file_path = cx.argument::<JsString>(0)?.value(&mut cx);
-    // let callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
-    // let channel = cx.channel();
-    // let file = File::for_path(file_path);
+pub fn trash_file(mut cx: FunctionContext) -> JsResult<JsPromise> {
+    let file_path = cx.argument::<JsString>(0)?.value(&mut cx);
+    let file = File::for_path(file_path);
     
-    // rayon::spawn(move || {
-    //     let result = trash(file);
-    
-    //     channel.send(move |mut cx| {
-    //         let args = match result {
-    //             Ok(()) => vec![ cx.undefined().upcast::<JsValue>(), cx.undefined().upcast::<JsValue>() ],
-    //             Err(error) => {
-    //                 let obj: Handle<JsObject> = cx.empty_object();
-    //                 let desc = cx.string(error.description);
-    //                 obj.set(&mut cx, "description", desc)?;
-    //                 let code = cx.number(error.code as f64);
-    //                 obj.set(&mut cx, "fileResult", code)?;
-    //                 vec![ obj.upcast::<JsValue>(), cx.undefined().upcast::<JsValue>() ]
-    //             }
-    //         };
-    //         let this = cx.undefined();
-    //         let callback = callback.into_inner(&mut cx);
-    //         callback.call(&mut cx, this, args)?;
-    //         Ok(())
-    //     });
-    // });
-    Ok(cx.undefined())
-}
+    fn trash(file: File) -> Result<(), FileError> {
+        Ok(file.trash(Some(&gio::Cancellable::new()))?)
+    }
 
+    let promise = cx
+        // Finish the stream on the Node worker pool
+        .task(move || { trash(file) })    
+        .promise(|mut cx, result: Result<(), FileError>| {
+            match result {
+                Ok(()) => Ok(cx.undefined()),
+                Err(error) => {
+                    let json = serde_json::to_string(&error).unwrap();
+                    cx.throw_error(json)
+                }
+            }
+        });
+
+    Ok(promise)    
+}    
+    
 fn get_copy_status(mut cx: FunctionContext) -> JsResult<JsNumber> {
     Ok(cx.number(CopyStatus::get_value() as f64))
 }

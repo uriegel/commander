@@ -2,6 +2,8 @@ use chrono::{Local, NaiveDateTime, TimeZone};
 use exif::{In, Tag};
 use lexical_sort::natural_lexical_cmp;
 use neon::prelude::*;
+use serde::Serialize;
+use serde_repr::Serialize_repr;
 use std::{ fs, fs::File, io::BufReader, time::UNIX_EPOCH };
 
 #[cfg(target_os = "linux")]
@@ -19,6 +21,30 @@ mod linux;
 
 #[cfg(target_os = "windows")]
 mod windows;
+
+#[derive(Debug, Serialize_repr, PartialEq)]
+#[repr(u8)]
+pub enum FileErrorType {
+    Unknown = 1,
+    AccessDenied = 2,
+    FileExists = 3,
+    FileNotFound = 4
+}
+
+#[derive(Debug, Serialize)]
+pub struct FileError { 
+    description: String,
+    code: FileErrorType
+}
+
+// impl Clone for FileError {
+//     fn clone(&self) -> FileError {
+//         FileError { 
+//             description: self.description.clone(),
+//             code: self.code            
+//         }
+//     }
+// }
 
 pub fn get_files(mut cx: FunctionContext) -> JsResult<JsArray> {
     let path = cx.argument::<JsString>(0)?.value(&mut cx);
@@ -62,7 +88,6 @@ pub fn get_files(mut cx: FunctionContext) -> JsResult<JsArray> {
 }
 
 pub fn get_exif_date(mut cx: FunctionContext) -> JsResult<JsPromise> {
-
     let path = cx.argument::<JsString>(0)?.value(&mut cx);
 
     fn get_unix_time(str: &str)->i64 {
@@ -93,8 +118,6 @@ pub fn get_exif_date(mut cx: FunctionContext) -> JsResult<JsPromise> {
             });
             Ok(exifdate)
         })
-        // Convert the remaining output into an `ArrayBuffer` and resolve the promise
-        // on the JavaScript main thread.
         .promise(|mut cx, res: Result<Option<i64>, String>| {
             let exifdate = res.unwrap();
             let res = match exifdate {
@@ -115,4 +138,5 @@ fn main(mut cx: ModuleContext) -> NeonResult<()> {
     Ok(())
 }
 
-// TODO Implement all commented rust functions with callbacks
+// // TODO Implement all commented rust functions with callbacks
+

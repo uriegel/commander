@@ -33,25 +33,31 @@ const run = async () => {
     console.log("Exif date no file", await getExifDate("/home/uwe/Bilder/Fotos/2021/Uwe/IMG_20210907_142241ddd.jpg"))
     console.log("Exif date", await getExifDate("/home/uwe/Bilder/Fotos/2021/Uwe/IMG_20210907_142241.jpg"))
 
+    // try {
+    //     await copyFileAsnyc("/home/uwe/Videos/raw/Goldeneye.mts", "/home/uwe/test/affe.mts", a => console.log("Progress", a))
+    // } catch (err) {
+    //     console.log("Err copy", err)
+    // }
+    // await copyFileAsnyc("/home/uwe/Videos/raw/Goldeneye.mts", "/home/uwe/test/affe.mts", a => console.log("Progress", a), false, true)
+    await trashFile("/home/uwe/test/affe.txt")
     try {
-        await copyFileAsnyc("/home/uwe/Videos/raw/Goldeneye.mts", "/home/uwe/test/affe.mts", a => console.log("Progress", a))
+        await trashFile("/home/uwe/test/affe.txt")
     } catch (err) {
-        console.log("Err copy", err)
+        const e = JSON.parse(err.message)
+        console.log("Konnte nicht löschen", e.code, e.description)
     }
-    await copyFileAsnyc("/home/uwe/Videos/raw/Goldeneye.mts", "/home/uwe/test/affe.mts", a => console.log("Progress", a), false, true)
-    await trashFileAsync("/home/uwe/test/affe.mts")
-    await copyFileAsnyc("/home/uwe/Videos/raw/Goldeneye.mts", "/home/uwe/test/neuer/nocheiner/affe.mts", a => console.log("Progress", a), false, true)
+    // await copyFileAsnyc("/home/uwe/Videos/raw/Goldeneye.mts", "/home/uwe/test/neuer/nocheiner/affe.mts", a => console.log("Progress", a), false, true)
 
-    try {
-        await trashFileAsync("/home/uwe/test/affe23.mts")
-    } catch (err) {
-        console.log("Err trashFileAsync", err)
-    }
-    try {
-        await trashFileAsync("/etc/cron.daily/google-chrome")
-    } catch (err) {
-        console.log("Err trashFileAsync", err)
-    }
+    // try {
+    //     await trashFileAsync("/home/uwe/test/affe23.mts")
+    // } catch (err) {
+    //     console.log("Err trashFileAsync", err)
+    // }
+    // try {
+    //     await trashFileAsync("/etc/cron.daily/google-chrome")
+    // } catch (err) {
+    //     console.log("Err trashFileAsync", err)
+    // }
 }
 
 run()
