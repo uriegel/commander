@@ -1,6 +1,6 @@
 const fspath = require('path')
 const { rmdir } = require('fs/promises')
-const { getFiles, copyFile, getCopyStatus, trashFile, createDirectory } = require('rust-addon')
+const { getFiles, copyFile, getCopyStatus, createDirectory } = require('rust-addon')
 
 async function deleteEmptyFolders(path, folders) {
     const folderPathes = folders.map(n => fspath.join(path, n))
@@ -35,24 +35,21 @@ async function deleteEmptyFolders(path, folders) {
     }
 }
 
-const copyFileAsnyc = (source, target, cb, move, overwrite) => new Promise((res, rej) => {
+async function copyFileAsnyc(source, target, cb, move, overwrite) {
     var timer = setInterval(() => {
         const status = getCopyStatus()
         if (status)
             cb(status)
     }, 100)
-    copyFile(source, target, (err, copied) => {
+    try {
+        await copyFile(source, target, move || false, overwrite || false)
         clearInterval(timer)
-        if (err)
-            rej(err)
-        else {
-            cb(copied)
-            res()
-        }
-    }, move || false, overwrite || false)
-})
-
-const trashFileAsync = file => new Promise((res, rej) => trashFile(file, err => err ? rej(err) : res()))
+    } catch (e) {
+        throw (JSON.parse(e.message))
+    } finally {
+        clearInterval(timer)
+    }
+}
 
 const createFolder = path => new Promise((res, rej) => createDirectory(path, err => err ? rej(err) : res()))
 
@@ -68,5 +65,4 @@ var FileResult;
 
 exports.deleteEmptyFolders = deleteEmptyFolders
 exports.copyFile = copyFileAsnyc
-exports.trashFile = trashFileAsync
 exports.createFolder = createFolder

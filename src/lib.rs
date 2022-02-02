@@ -37,15 +37,6 @@ pub struct FileError {
     code: FileErrorType
 }
 
-// impl Clone for FileError {
-//     fn clone(&self) -> FileError {
-//         FileError { 
-//             description: self.description.clone(),
-//             code: self.code            
-//         }
-//     }
-// }
-
 pub fn get_files(mut cx: FunctionContext) -> JsResult<JsArray> {
     let path = cx.argument::<JsString>(0)?.value(&mut cx);
     let result: Handle<JsArray> = cx.empty_array();
@@ -138,5 +129,5 @@ fn main(mut cx: ModuleContext) -> NeonResult<()> {
     Ok(())
 }
 
-// // TODO Implement all commented rust functions with callbacks
+// TODO Implement all commented rust functions for windows
 

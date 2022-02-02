@@ -4,7 +4,8 @@ import { copyProcessor } from "../processors/copyProcessor.js"
 import { EXTERNALS_PATH } from "../processors/externals.js"
 const { homedir } = window.require('os')
 const { exec } = window.require("child_process")
-const { copyFile, trashFile } = window.require('shared-module')
+const { trashFile } = window.require('rust-addon')
+const { copyFile } = window.require('shared-module')
 const FileResult = window.require('shared-module').FileResult
 const fs = window.require('fs')
 const fsa = fs.promises
