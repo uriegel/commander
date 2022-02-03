@@ -68,124 +68,107 @@ fn get_icon_async(mut cx: FunctionContext) -> JsResult<JsPromise> {
     Ok(promise)    
 }
 
-fn create_directory(mut cx: FunctionContext) -> JsResult<JsUndefined> {
+fn create_directory(mut cx: FunctionContext) -> JsResult<JsPromise> {
     let path = cx.argument::<JsString>(0)?.value(&mut cx);
-    
-    // rayon::spawn(move || {
-    //     let path_ws = to_wstring(&path);
-    //     let mut result = unsafe { 
-    //         match CreateDirectoryW(path_ws.as_ptr(), null_mut()) {
-    //             0 => GetLastError(),
-    //             _  => 0
-    //         }
-    //     };
-    //     if result == 5 {
-    //         unsafe {shell::create_directory(&path); }
-    //         result = 0
-    //     }
-    //     channel.send(move |mut cx| {
-    //         let args = match result {
-    //             0 => vec![ cx.null().upcast::<JsValue>() ],
-    //             _  => {
-    //                 let err = cx.string("Could not create folder");
-    //                 vec![ err.upcast::<JsValue>() ]            
-    //             }                    
-    //         };
-    //         let this = cx.undefined();
-    //         let callback = callback.into_inner(&mut cx);
-    //         callback.call(&mut cx, this, args)?;
-    //         Ok(())
-    //     });
-    // });
-    Ok(cx.undefined())
+    let promise = cx
+        // Finish the stream on the Node worker pool
+        .task(move || {
+            let path_ws = to_wstring(&path);
+            let mut result = unsafe { 
+                match CreateDirectoryW(path_ws.as_ptr(), null_mut()) {
+                    0 => GetLastError(),
+                    _  => 0
+                }
+            };
+            if result == 5 {
+                unsafe {shell::create_directory(&path); }
+                result = 0
+            }
+            Ok(result)
+        })
+        .promise(|mut cx, result: Result<u32, String>| {
+            // TODO get error type and description
+            let arg = match result.unwrap() {
+                0 => cx.null().upcast::<JsValue>(),
+                _  => cx.string("Could not create folder").upcast::<JsValue>()             
+            };
+            Ok(arg)
+        });
+    Ok(promise)
 }
 
-fn to_recycle_bin(mut cx: FunctionContext) -> JsResult<JsUndefined> {
-    // let files = cx.argument::<JsArray>(0)?
-    //     .to_vec(&mut cx)
-    //     ?.iter()
-    //     .filter_map(|item| { 
-    //         (item.downcast(&mut cx).ok() as Option<Handle<JsString>>).and_then(|file|{
-    //             Some(file.value(&mut cx))
-    //         })
-    //     })
-    //     .collect::<Vec<String>>();
-    
-    // let callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
-    // let channel = cx.channel();
-    
-    // rayon::spawn(move || {
-    //     channel.send(move |mut cx| {
-    //         let success = unsafe {
-    //             shell::to_recycle_bin(&files)
-    //         };
-            
-    //         let args = if success {
-    //             vec![ cx.null().upcast::<JsValue>() ]
-    //         } else {
-    //             let err = cx.string("Konnte nicht löschen");
-    //             vec![ err.upcast::<JsValue>() ]            
-    //         };
-    //         let this = cx.undefined();
-    //         let callback = callback.into_inner(&mut cx);
-    //         callback.call(&mut cx, this, args)?;
-    //         Ok(())
-    //     });
-    // });
-    Ok(cx.undefined())
+fn to_recycle_bin(mut cx: FunctionContext) -> JsResult<JsPromise> {
+    let files = cx.argument::<JsArray>(0)?
+        .to_vec(&mut cx)
+        ?.iter()
+        .filter_map(|item| { 
+            (item.downcast(&mut cx).ok() as Option<Handle<JsString>>).and_then(|file|{
+                Some(file.value(&mut cx))
+            })
+        })
+        .collect::<Vec<String>>();
+    let promise = cx
+        // Finish the stream on the Node worker pool
+        .task(move || {
+            let success = unsafe {
+                shell::to_recycle_bin(&files)
+            };
+            Ok(success)
+        })
+        .promise(|mut cx, result: Result<bool, String>| {
+            // TODO get error type and description
+            let arg = match result.unwrap() {
+                true => cx.null().upcast::<JsValue>(),
+                _  => cx.string("Konnte nicht löschen").upcast::<JsValue>()             
+            };
+            Ok(arg)
+        });
+    Ok(promise)
 }
 
-fn copy_files(mut cx: FunctionContext) -> JsResult<JsUndefined> {
-    // let source_files = cx.argument::<JsArray>(0)?
-    //     .to_vec(&mut cx)
-    //     ?.iter()
-    //     .filter_map(|item| { 
-    //         (item.downcast(&mut cx).ok() as Option<Handle<JsString>>).and_then(|file|{
-    //             Some(file.value(&mut cx))
-    //         })
-    //     })
-    //     .collect::<Vec<String>>();
+fn copy_files(mut cx: FunctionContext) -> JsResult<JsPromise> {
+    let source_files = cx.argument::<JsArray>(0)?
+        .to_vec(&mut cx)
+        ?.iter()
+        .filter_map(|item| { 
+            (item.downcast(&mut cx).ok() as Option<Handle<JsString>>).and_then(|file|{
+                Some(file.value(&mut cx))
+            })
+        })
+        .collect::<Vec<String>>();
     
-    // let target_files = cx.argument::<JsArray>(1)?
-    //     .to_vec(&mut cx)
-    //     ?.iter()
-    //     .filter_map(|item| { 
-    //         (item.downcast(&mut cx).ok() as Option<Handle<JsString>>).and_then(|file|{
-    //             Some(file.value(&mut cx))
-    //         })
-    //     })
-    //     .collect::<Vec<String>>();
+    let target_files = cx.argument::<JsArray>(1)?
+        .to_vec(&mut cx)
+        ?.iter()
+        .filter_map(|item| { 
+            (item.downcast(&mut cx).ok() as Option<Handle<JsString>>).and_then(|file|{
+                Some(file.value(&mut cx))
+            })
+        })
+        .collect::<Vec<String>>();
 
-    // let callback = cx.argument::<JsFunction>(2)?.root(&mut cx);
-    
-    // let move_files = if cx.len() > 3 {
-    //     cx.argument::<JsBoolean>(3)?.value(&mut cx)
-    // } else {
-    //     false
-    // };    
-
-    // let channel = cx.channel();
-    
-    // rayon::spawn(move || {
-    //     channel.send(move |mut cx| {
-    //         let success = unsafe {
-    //             shell::copy_files(&source_files, &target_files, move_files)
-    //         };
-            
-    //         let args = if success {
-    //             vec![ cx.null().upcast::<JsValue>() ]
-    //         } else {
-    //             // TODO get error type and description
-    //             let err = cx.string("Konnte nicht kopieren");
-    //             vec![ err.upcast::<JsValue>() ]            
-    //         };
-    //         let this = cx.undefined();
-    //         let callback = callback.into_inner(&mut cx);
-    //         callback.call(&mut cx, this, args)?;
-    //         Ok(())
-    //     });
-    // });
-    Ok(cx.undefined())
+    let move_files = if cx.len() > 2 {
+        cx.argument::<JsBoolean>(2)?.value(&mut cx)
+    } else {
+        false
+    };    
+    let promise = cx
+        // Finish the stream on the Node worker pool
+        .task(move || {
+            let success = unsafe {
+                shell::copy_files(&source_files, &target_files, move_files)
+            };
+            Ok(success)
+        })
+        .promise(|mut cx, result: Result<bool, String>| {
+            // TODO get error type and description
+            let arg = match result.unwrap() {
+                true => cx.null().upcast::<JsValue>(),
+                _  => cx.string("Konnte nicht kopieren").upcast::<JsValue>()             
+            };
+            Ok(arg)
+        });
+    Ok(promise)
 }
 
 #[derive(Copy, Clone, PartialEq)]
@@ -279,7 +262,7 @@ fn get_drives(mut cx: FunctionContext) -> JsResult<JsPromise> {
             };
             Ok(drives)
         })
-        .promise(|mut cx: TaskContext, drives: Result<Vec<DriveItem>, String>| {
+        .promise(|mut cx, drives: Result<Vec<DriveItem>, String>| {
             let result: Handle<JsArray> = cx.empty_array();
             drives.unwrap().iter().for_each(|item| {
                 let obj: Handle<JsObject> = cx.empty_object();
@@ -354,7 +337,7 @@ fn get_file_version(mut cx: FunctionContext) -> JsResult<JsPromise> {
                 };
             Ok(version)
         })
-        .promise(|mut cx: TaskContext, version: Result<Option<Version>, String>| {
+        .promise(|mut cx, version: Result<Option<Version>, String>| {
             let result = match version.unwrap() {
                 Some(version) => {
                     let obj: Handle<JsObject> = cx.empty_object();

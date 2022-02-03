@@ -2,20 +2,6 @@ const { protocol } = require("electron")
 const { copyFiles, toRecycleBin } = require("rust-addon")
 const { createFolder, deleteEmptyFolders } = require("shared-module")
 
-const toRecycleBinAsync = files => new Promise((res, rej) => toRecycleBin(files, err => {
-    if (err)
-        rej(err)
-    else
-        res()
-}))
-
-const copyFilesAsync = (sourceFiles, targetFiles, move) => new Promise((res, rej) => copyFiles(sourceFiles, targetFiles, err => {
-    if (err)
-        rej(err)
-    else
-        res()
-}, move))
-
 const registerRunCmd = () => {
     protocol.registerStringProtocol('http', async (request, callback) => {
         const input = JSON.parse(request.uploadData[0].bytes)
@@ -32,7 +18,7 @@ const registerRunCmd = () => {
                 try {
                     const sources = input.copyInfo.items.map(n => n.file)
                     const targets = input.copyInfo.items.map(n => n.targetFile)
-                    await copyFilesAsync(sources, targets, input.move)
+                    await copyFiles(sources, targets, input.move)
                     callback(JSON.stringify({}))
                 } catch (exception) {
                     callback(JSON.stringify({ exception }))
@@ -40,7 +26,7 @@ const registerRunCmd = () => {
                 break
             case "trash":
                 try {
-                    await toRecycleBinAsync(input.items)
+                    await toRecycleBin(input.items)
                     callback(JSON.stringify({}))
                 } catch (exception) {
                     callback(JSON.stringify({ exception }))

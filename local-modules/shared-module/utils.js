@@ -51,7 +51,7 @@ async function copyFileAsnyc(source, target, cb, move, overwrite) {
     }
 }
 
-const createFolder = path => new Promise((res, rej) => createDirectory(path, err => err ? rej(err) : res()))
+const createFolder = createDirectory
 
 var FileResult;
 (function (FileResult) {
