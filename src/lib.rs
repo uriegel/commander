@@ -129,5 +129,3 @@ fn main(mut cx: ModuleContext) -> NeonResult<()> {
     Ok(())
 }
 
-// TODO Implement all commented rust functions for windows
-
