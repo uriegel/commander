@@ -262,7 +262,7 @@ fn get_drives(mut cx: FunctionContext) -> JsResult<JsPromise> {
                     }
                 }
 
-                let drives = drives.iter().filter_map(|&item| match &item.len() {
+                drives.iter().filter_map(|&item| match &item.len() {
                     0 => None,
                     _ => {
                         let name = item.to_string();
@@ -275,11 +275,11 @@ fn get_drives(mut cx: FunctionContext) -> JsResult<JsPromise> {
                             is_mounted: if drive_type == DriveType::HARDDRIVE { true} else { is_mounted(&name) }
                         }) 
                     }
-                }).collect::<Vec<DriveItem>>();
+                }).collect::<Vec<DriveItem>>()
             };
             Ok(drives)
         })
-        .promise(|mut cx, drives: Result<Vec<DriveItem>, String>| {
+        .promise(|mut cx: TaskContext, drives: Result<Vec<DriveItem>, String>| {
             let result: Handle<JsArray> = cx.empty_array();
             drives.unwrap().iter().for_each(|item| {
                 let obj: Handle<JsObject> = cx.empty_object();

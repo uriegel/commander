@@ -1,6 +1,6 @@
 const fspath = window.require('path')
-const getDrivesAsync = window.require('rust-addon').getDrives
 const { getFileVersion } = window.require('rust-addon')
+export const getDrives = window.require('rust-addon').getDrives
 import { EXTERNALS_TYPE } from "../processors/externals"
 import { compareVersion } from "../processors/rendertools.js"
 import { EXTERN } from "../processors/root.js"
@@ -8,7 +8,6 @@ import { onFinish } from "../processors/copyProcessor.js"
 
 export const adaptWindow = (menu, itemHideMenu) => itemHideMenu.isHidden = true
 
-export const getDrives = () => new Promise(res => getDrivesAsync(res))
 const getFileVersionAsnyc = file => new Promise(res => getFileVersion(file, res))
 
 export function onDarkTheme(dark) {
