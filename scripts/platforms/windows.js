@@ -8,8 +8,6 @@ import { onFinish } from "../processors/copyProcessor.js"
 
 export const adaptWindow = (menu, itemHideMenu) => itemHideMenu.isHidden = true
 
-const getFileVersionAsnyc = file => new Promise(res => getFileVersion(file, res))
-
 export function onDarkTheme(dark) {
     activateClass(document.body, "windows-dark", dark) 
     activateClass(document.body, "windows", !dark) 
@@ -65,7 +63,7 @@ export const adaptDisableSorting = (table, disable) => table.disableSorting(3, d
 
 export async function addExtendedInfo(item, name, path) {
     if (name.endsWith(".exe") || name.endsWith(".dll"))
-        item.version = await getFileVersionAsnyc(fspath.join(path, item.name))
+        item.version = await getFileVersion(fspath.join(path, item.name))
 }
 
 export async function deleteItems(items) {
@@ -104,7 +102,7 @@ export async function deleteEmptyFolders(path, folders, foldersToRefresh) {
 
 export const enhanceCopyConflictData = async item => ({
     ...item,
-    version: await getFileVersionAsnyc(item.file)
+    version: await getFileVersion(item.file)
 })
 
 export const onEnter = () => {}

@@ -326,54 +326,52 @@ struct Version {
     patch: u16
 }
 
-fn get_file_version(mut cx: FunctionContext) -> JsResult<JsUndefined> {
-    // let path = cx.argument::<JsString>(0)?.value(&mut cx);
-    // let callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
-    // let channel = cx.channel();
-    
-    // rayon::spawn(move || {
-    //     let version = unsafe {
-    //         let path_ptr = to_wstring(&path);
-    //         let mut h: DWORD = 0;
-    //         let size = GetFileVersionInfoSizeW(path_ptr.as_ptr(), &mut h);
-    //         if size != 0 {
-    //             let mut buffer = vec![0u8; size as usize];
-    //             GetFileVersionInfoW(path_ptr.as_ptr(), 0, size, buffer.as_mut_ptr() as *mut c_void);
-    //             let p = to_wstring("\\");
-    //             let mut info: *mut c_void = null_mut();
-    //             let mut len = vec![0u32];
-    //             VerQueryValueW(buffer.as_ptr() as *const c_void, p.as_ptr(), &mut info, len.as_mut_ptr());
-    //             let info: &mut FixedFileInfo = &mut *(info as *mut FixedFileInfo);
-    //             Some(Version {
-    //                 major: HIWORD(info.file_version_ms),
-    //                 minor: LOWORD(info.file_version_ms),                
-    //                 build: HIWORD(info.file_version_ls),
-    //                 patch: LOWORD(info.file_version_ls),
-    //             })
-    //         } else { None }
-    //     };
-    //     channel.send(move |mut cx| {
-    //         let this = cx.undefined();
-    //         let callback = callback.into_inner(&mut cx);
-    //         let args = match version {
-    //             Some(version) => {
-    //                 let obj: Handle<JsObject> = cx.empty_object();
-    //                 let major = cx.number(version.major as f64);
-    //                 let minor = cx.number(version.minor as f64);
-    //                 let build = cx.number(version.build as f64);
-    //                 let patch = cx.number(version.patch as f64);
-    //                 let _res = obj.set(&mut cx, "major", major);
-    //                 let _res = obj.set(&mut cx, "minor", minor);
-    //                 let _res = obj.set(&mut cx, "build", build);
-    //                 let _res = obj.set(&mut cx, "patch", patch);
-    //                 vec![ obj.upcast::<JsValue>() ]
-    //             },
-    //             None => vec![ cx.null().upcast::<JsValue>() ]
-    //         };
-    //         callback.call(&mut cx, this,  args)?;
-    //         Ok(())
-    //     });
-    // });
-    Ok(cx.undefined())
+fn get_file_version(mut cx: FunctionContext) -> JsResult<JsPromise> {
+    let path = cx.argument::<JsString>(0)?.value(&mut cx);
+    let promise = cx
+        // Finish the stream on the Node worker pool
+        .task(move || {
+            let version = 
+                unsafe {
+                    let path_ptr = to_wstring(&path);
+                    let mut h: DWORD = 0;
+                    let size = GetFileVersionInfoSizeW(path_ptr.as_ptr(), &mut h);
+                    if size != 0 {
+                        let mut buffer = vec![0u8; size as usize];
+                        GetFileVersionInfoW(path_ptr.as_ptr(), 0, size, buffer.as_mut_ptr() as *mut c_void);
+                        let p = to_wstring("\\");
+                        let mut info: *mut c_void = null_mut();
+                        let mut len = vec![0u32];
+                        VerQueryValueW(buffer.as_ptr() as *const c_void, p.as_ptr(), &mut info, len.as_mut_ptr());
+                        let info: &mut FixedFileInfo = &mut *(info as *mut FixedFileInfo);
+                        Some(Version {
+                            major: HIWORD(info.file_version_ms),
+                            minor: LOWORD(info.file_version_ms),                
+                            build: HIWORD(info.file_version_ls),
+                            patch: LOWORD(info.file_version_ls),
+                        })
+                    } else { None }
+                };
+            Ok(version)
+        })
+        .promise(|mut cx: TaskContext, version: Result<Option<Version>, String>| {
+            let result = match version.unwrap() {
+                Some(version) => {
+                    let obj: Handle<JsObject> = cx.empty_object();
+                    let major = cx.number(version.major as f64);
+                    let minor = cx.number(version.minor as f64);
+                    let build = cx.number(version.build as f64);
+                    let patch = cx.number(version.patch as f64);
+                    let _ = obj.set(&mut cx, "major", major);
+                    let _ = obj.set(&mut cx, "minor", minor);
+                    let _ = obj.set(&mut cx, "build", build);
+                    let _ = obj.set(&mut cx, "patch", patch);
+                    obj.upcast::<JsValue>()
+                },
+                None => cx.null().upcast::<JsValue>()
+            };
+            Ok(result)
+        });
+    Ok(promise)
 }
 
