@@ -2,16 +2,17 @@
   "name": "commander",
   "version": "1.0.0",
   "description": "A Norton Commander clone based on Electron and  Web Components",
-  "main": "electron/main.js",
+  "main": "electron/dist/main.js",
   "scripts": {
     "builddev": "webpack --config webpack.dev.js",
     "build": "npm run build-rust-release && webpack --config webpack.prod.js",
-    "start": "npm run build-rust-release && npm run builddev && electron .",
+    "start": "npm run tsc && npm run build-rust-release && npm run builddev && electron .",
     "dist": "npm run build && electron-builder",
     "debug-rust": "npm run build-rust-debug && node --nolazy --inspect-brk=9229 rust-test/index.js",
     "build-rust": "cargo-cp-artifact -nc local-modules/rust-addon/index.node -- cargo build --message-format=json-render-diagnostics",
     "build-rust-debug": "npm run build-rust --",
-    "build-rust-release": "npm run build-rust -- --release"
+    "build-rust-release": "npm run build-rust -- --release",
+    "tsc": "tsc -p electron/typescript"
   },
   "build": {
     "appId": "de.uriegel.commander",
@@ -63,10 +64,12 @@
     "theme-change-detect": "1.0.0"
   },
   "devDependencies": {
+    "@types/node": "^17.0.14",
     "cargo-cp-artifact": "^0.1.6",
     "electron": "^16.0.5",
     "electron-builder": "^22.13.1",
     "grid-splitter": "^0.1.0",
+    "typescript": "^4.5.5",
     "virtual-table-component": "^1.1.1",
     "web-dialog-box": "^2.0.2",
     "web-electron-titlebar": "^0.2.0",

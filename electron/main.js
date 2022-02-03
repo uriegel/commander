@@ -1,5 +1,5 @@
 const { app, BrowserWindow, ipcMain, protocol } = require('electron')
-const process = require("process")
+
 const path = require("path")
 const settings = require('electron-settings')
 const { registerRunCmd } = require('./commands')
