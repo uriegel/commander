@@ -1,5 +1,5 @@
 use neon::prelude::*;
-use std::{os::windows::fs::MetadataExt, fs::Metadata, ptr::null_mut, mem, ffi::c_void };
+use std::{os::windows::fs::MetadataExt, fs::Metadata, ptr::null_mut, mem, ffi::c_void, slice::from_raw_parts };
 use systemicons::get_icon;
 use winapi::{
     um::{
@@ -37,7 +37,6 @@ pub fn to_wstring(value: &str) -> Vec<u16> {
 }
 
 pub unsafe fn pwstr_to_string(ptr: PWSTR) -> String {
-    use std::slice::from_raw_parts;
     let len = (0_usize..)
         .find(|&n| *ptr.offset(n as isize) == 0)
         .expect("Couldn't find null terminator");
@@ -68,17 +67,9 @@ fn get_icon_async(mut cx: FunctionContext) -> JsResult<JsPromise> {
 
     Ok(promise)    
 }
-    //         let this = cx.undefined();
-    //         let callback = callback.into_inner(&mut cx);
-    //         callback.call(&mut cx, this, args)?;
-    //         Ok(())
-    //     });
-    // });
 
 fn create_directory(mut cx: FunctionContext) -> JsResult<JsUndefined> {
-    // let path = cx.argument::<JsString>(0)?.value(&mut cx);
-    // let callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
-    // let channel = cx.channel();
+    let path = cx.argument::<JsString>(0)?.value(&mut cx);
     
     // rayon::spawn(move || {
     //     let path_ws = to_wstring(&path);
@@ -214,106 +205,102 @@ struct DriveItem {
     is_mounted: bool
 }
 
-fn get_drives(mut cx: FunctionContext) -> JsResult<JsUndefined> {
-    // use std::slice::from_raw_parts;
-    // let callback = cx.argument::<JsFunction>(0)?.root(&mut cx);
-    // let channel = cx.channel();
-    
-    // rayon::spawn(move || {
-    //     let drives = unsafe {
-    //         let mut buffer: Vec<u16> = Vec::with_capacity(500);
-    //         let size = GetLogicalDriveStringsW(500, buffer.as_mut_ptr());
-    //         let array: &[u16] = from_raw_parts(buffer.as_mut_ptr(), size as usize);
-    //         let drives_string = String::from_utf16_lossy(array);
-    //         let drives: Vec<&str> = drives_string.split("\0").collect();
+fn get_drives(mut cx: FunctionContext) -> JsResult<JsPromise> {
+    let promise = cx
+        // Finish the stream on the Node worker pool
+        .task(move || {
+            let drives = unsafe {
+                let mut buffer: Vec<u16> = Vec::with_capacity(500);
+                let size = GetLogicalDriveStringsW(500, buffer.as_mut_ptr());
+                let array: &[u16] = from_raw_parts(buffer.as_mut_ptr(), size as usize);
+                let drives_string = String::from_utf16_lossy(array);
+                let drives: Vec<&str> = drives_string.split("\0").collect();
 
-    //         unsafe fn get_drive_description(item: &str) -> String {
-    //             let path_ws = to_wstring(item);
-    //             let mut buffer: Vec<u16> = Vec::with_capacity(500);
-    //             match GetVolumeInformationW(path_ws.as_ptr(), buffer.as_mut_ptr(), 500, 
-    //                 null_mut(), null_mut(), null_mut(), null_mut(), 0) {
-    //                 0 => String::from(""),
-    //                 _ => pwstr_to_string(buffer.as_mut_ptr())
-    //             }
-    //         }
+                unsafe fn get_drive_description(item: &str) -> String {
+                    let path_ws = to_wstring(item);
+                    let mut buffer: Vec<u16> = Vec::with_capacity(500);
+                    match GetVolumeInformationW(path_ws.as_ptr(), buffer.as_mut_ptr(), 500, 
+                        null_mut(), null_mut(), null_mut(), null_mut(), 0) {
+                        0 => String::from(""),
+                        _ => pwstr_to_string(buffer.as_mut_ptr())
+                    }
+                }
 
-    //         unsafe fn get_volume_size(item: &str) -> u64 {
-    //             let path_ws = to_wstring(item);
-    //             let mut ul: ULARGE_INTEGER = { mem::zeroed() };
-    //             let _ = GetDiskFreeSpaceExW(path_ws.as_ptr(), null_mut(), &mut ul, null_mut());
-    //             *ul.QuadPart()
-    //         }
+                unsafe fn get_volume_size(item: &str) -> u64 {
+                    let path_ws = to_wstring(item);
+                    let mut ul: ULARGE_INTEGER = { mem::zeroed() };
+                    let _ = GetDiskFreeSpaceExW(path_ws.as_ptr(), null_mut(), &mut ul, null_mut());
+                    *ul.QuadPart()
+                }
 
-    //         unsafe fn get_drive_type(item: &str) -> DriveType {
-    //             let path_ws = to_wstring(item);
-    //             match GetDriveTypeW(path_ws.as_ptr()) {
-    //                 2 => DriveType::REMOVABLE,
-    //                 3 => DriveType::HARDDRIVE,
-    //                 4 => DriveType::NETWORK,
-    //                 5 => DriveType::ROM,
-    //                 _ => DriveType::UNKNOWN
-    //             }
-    //         }
+                unsafe fn get_drive_type(item: &str) -> DriveType {
+                    let path_ws = to_wstring(item);
+                    match GetDriveTypeW(path_ws.as_ptr()) {
+                        2 => DriveType::REMOVABLE,
+                        3 => DriveType::HARDDRIVE,
+                        4 => DriveType::NETWORK,
+                        5 => DriveType::ROM,
+                        _ => DriveType::UNKNOWN
+                    }
+                }
 
-    //         unsafe fn is_mounted(item: &str) -> bool {
-    //             let volume = format!("\\\\.\\{}", item[0..2].to_string());
-    //             let path_ws = to_wstring(&volume);
-    //             let handle = CreateFileW(path_ws.as_ptr(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, null_mut(), 
-    //             OPEN_EXISTING, 0, null_mut());
-    //             if handle != INVALID_HANDLE_VALUE {
-    //                 let result = DeviceIoControl(handle, FSCTL_IS_VOLUME_MOUNTED, null_mut(), 0, null_mut(), 
-    //                 0, null_mut(), null_mut());
-    //                 CloseHandle(handle);
-    //                 result != 0
-    //             } else {
-    //         		// 2 means "no disk", anything else means by inference "disk
-	// 	            // in drive, but you do not have admin privs to do a
-	// 	            // CreateFile on that volume".
-	// 	            GetLastError() != 2
-    //             }
-    //         }
+                unsafe fn is_mounted(item: &str) -> bool {
+                    let volume = format!("\\\\.\\{}", item[0..2].to_string());
+                    let path_ws = to_wstring(&volume);
+                    let handle = CreateFileW(path_ws.as_ptr(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, null_mut(), 
+                        OPEN_EXISTING, 0, null_mut());
+                    if handle != INVALID_HANDLE_VALUE {
+                        let result = DeviceIoControl(handle, FSCTL_IS_VOLUME_MOUNTED, null_mut(), 0, null_mut(), 
+                            0, null_mut(), null_mut());
+                        CloseHandle(handle);
+                        result != 0
+                    } else {
+        //         		// 2 means "no disk", anything else means by inference "disk
+        // 	            // in drive, but you do not have admin privs to do a
+        // 	            // CreateFile on that volume".
+                        GetLastError() != 2
+                    }
+                }
 
-    //         drives.iter().filter_map(|&item| match &item.len() {
-    //             0 => None,
-    //             _ => {
-    //                 let name = item.to_string();
-    //                 let drive_type = get_drive_type(&name);
-    //                 Some(DriveItem { 
-    //                     name: name.clone(),
-    //                     description: get_drive_description(&name),
-    //                     size: get_volume_size(&name),
-    //                     drive_type,
-    //                     is_mounted: if drive_type == DriveType::HARDDRIVE { true} else { is_mounted(&name) }
-    //                 }) 
-    //             }
-    //         }).collect::<Vec<DriveItem>>()
-    //     };
-    //     channel.send(move |mut cx| {
-    //         let result: Handle<JsArray> = cx.empty_array();
-    //         drives.iter().for_each(|item| {
-    //             let obj: Handle<JsObject> = cx.empty_object();
-    //             let name = cx.string(&item.name);
-    //             let size = cx.number(item.size as f64);
-    //             let description = cx.string(&item.description);
-    //             let drive_type = cx.number(item.drive_type as i32 as f64);
-    //             let is_mounted = cx.boolean(item.is_mounted);
+                let drives = drives.iter().filter_map(|&item| match &item.len() {
+                    0 => None,
+                    _ => {
+                        let name = item.to_string();
+                        let drive_type = get_drive_type(&name);
+                        Some(DriveItem { 
+                            name: name.clone(),
+                            description: get_drive_description(&name),
+                            size: get_volume_size(&name),
+                            drive_type,
+                            is_mounted: if drive_type == DriveType::HARDDRIVE { true} else { is_mounted(&name) }
+                        }) 
+                    }
+                }).collect::<Vec<DriveItem>>();
+            };
+            Ok(drives)
+        })
+        .promise(|mut cx, drives: Result<Vec<DriveItem>, String>| {
+            let result: Handle<JsArray> = cx.empty_array();
+            drives.unwrap().iter().for_each(|item| {
+                let obj: Handle<JsObject> = cx.empty_object();
+                let name = cx.string(&item.name);
+                let size = cx.number(item.size as f64);
+                let description = cx.string(&item.description);
+                let drive_type = cx.number(item.drive_type as i32 as f64);
+                let is_mounted = cx.boolean(item.is_mounted);
                 
-    //             let _res = obj.set(&mut cx, "name", name);
-    //             let _res = obj.set(&mut cx, "description", description);
-    //             let _res = obj.set(&mut cx, "size", size);
-    //             let _res = obj.set(&mut cx, "driveType", drive_type);
-    //             let _res = obj.set(&mut cx, "isMounted", is_mounted);
+                let _ = obj.set(&mut cx, "name", name);
+                let _ = obj.set(&mut cx, "description", description);
+                let _ = obj.set(&mut cx, "size", size);
+                let _ = obj.set(&mut cx, "driveType", drive_type);
+                let _ = obj.set(&mut cx, "isMounted", is_mounted);
                 
-    //             let len = result.len(&mut cx);                    
-    //             let _res = result.set(&mut cx, len, obj);
-    //         });
-    //         let this = cx.undefined();
-    //         let callback = callback.into_inner(&mut cx);
-    //         callback.call(&mut cx, this,  vec![ result ])?;
-    //         Ok(())
-    //     });
-    // });
-    Ok(cx.undefined())
+                let len = result.len(&mut cx);                    
+                let _ = result.set(&mut cx, len, obj);
+            });
+            Ok(result)
+        });
+    Ok(promise)
 }
 
 struct FixedFileInfo {
