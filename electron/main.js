@@ -15,7 +15,7 @@ const { registerRunCmd } = require('./commands')
         y: settings.getSync("y"),
         width: settings.getSync("width") || 600,
         height: settings.getSync("height") || 800,
-        //show: false,
+        show: false,
         frame: isLinux,
         icon: 'web/assets/kirk.png',
         webPreferences: {
