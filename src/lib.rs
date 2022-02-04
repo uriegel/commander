@@ -78,6 +78,14 @@ pub fn get_files(mut cx: FunctionContext) -> JsResult<JsArray> {
     Ok(result)
 }
 
+pub fn test(mut cx: FunctionContext) -> JsResult<JsPromise> {
+    let promise = cx
+        // Finish the stream on the Node worker pool
+        .task(move || Ok(std::thread::sleep(std::time::Duration::from_secs(5))))
+        .promise(|mut cx, _: Result<(), String>| Ok(cx.undefined()));
+    Ok(promise)    
+}
+
 pub fn get_exif_date(mut cx: FunctionContext) -> JsResult<JsPromise> {
     let path = cx.argument::<JsString>(0)?.value(&mut cx);
 
@@ -123,6 +131,10 @@ pub fn get_exif_date(mut cx: FunctionContext) -> JsResult<JsPromise> {
 
 #[neon::main]
 fn main(mut cx: ModuleContext) -> NeonResult<()> {
+
+    cx.export_function("test", test)?;
+
+
     cx.export_function("getFiles", get_files)?;
     cx.export_function("getExifDate", get_exif_date)?;
     init_addon(cx)?;
