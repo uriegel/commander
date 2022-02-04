@@ -4,6 +4,8 @@ import { app, BrowserWindow, BrowserWindowConstructorOptions } from "electron"
 import * as os from 'os'    
 import * as settings from 'electron-settings'
 const isLinux = process.platform == "linux"
+import { createPlatform } from './platforms/platforms'
+
 // if (process.env.NODE_ENV == 'DEV')
 //     require('vue-devtools').install()
 
@@ -13,6 +15,9 @@ process.env['UV_THREADPOOL_SIZE'] = os.cpus().length.toString()
 //const icon = path.join(__dirname, '../web/assets/kirk.png')
 
 const createWindow = async () => {    
+
+    const platform = createPlatform()
+    platform.registerGetIconProtocol()
 
     const bounds: BrowserWindowConstructorOptions = {
         x: settings.getSync("x") as number,

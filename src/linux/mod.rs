@@ -51,9 +51,8 @@ fn init_gtk(mut cx: FunctionContext) -> JsResult<JsUndefined> {
 
 fn get_icon(mut cx: FunctionContext) -> JsResult<JsString> {
     let ext = cx.argument::<JsString>(0)?.value(&mut cx);
-    let size = cx.argument::<JsNumber>(1)?.value(&mut cx);
 
-    let path = get_icon_as_file(&ext, size as i32).unwrap_or(String::from(""));
+    let path = get_icon_as_file(&ext, 16).unwrap_or(String::from(""));
     Ok(cx.string(&path))
 }
 
