@@ -16,7 +16,7 @@ use winapi::{
 mod shell;
 
 pub fn init_addon(mut cx: ModuleContext) -> NeonResult<()> {
-    cx.export_function("getIcon", get_icon_async)?;
+    cx.export_function("getIconAsync", get_icon_async)?;
     cx.export_function("createDirectory", create_directory)?;
     cx.export_function("toRecycleBin", to_recycle_bin)?;
     cx.export_function("copyFiles", copy_files)?;
@@ -51,11 +51,10 @@ pub fn is_hidden(_: &str, metadata: &Metadata)->bool {
 
 fn get_icon_async(mut cx: FunctionContext) -> JsResult<JsPromise> {
     let ext = cx.argument::<JsString>(0)?.value(&mut cx);
-    let size = cx.argument::<JsNumber>(1)?.value(&mut cx);
 
     let promise = cx
     // Finish the stream on the Node worker pool
-    .task(move || { get_icon(&ext, size as i32) })
+    .task(move || { get_icon(&ext, 16) })
     // Convert the remaining output into an `ArrayBuffer` and resolve the promise
     // on the JavaScript main thread.
     .promise(|mut cx, result: Result<Vec<u8>, systemicons::Error>| {

@@ -6,8 +6,8 @@ export class LinuxPlatform implements Platform {
     registerGetIconProtocol() {
         protocol.registerFileProtocol('icon', async (request, callback) => {
             const url = request.url
-            var ext = url.substring(7)
-            var path = getIcon(ext)
+            const ext = url.substring(7)
+            const path = getIcon(ext) as string
             callback(path)
         })
     }
