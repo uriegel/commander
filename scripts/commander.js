@@ -17,22 +17,6 @@ export const DIRECTORY = 1
 export const FILE = 2
 export const BOTH = 3
 
-
-const { test } = window.require("rust-addon")
-
-async function run()  {
-    async function testrun(i) { 
-        console.log("Renne", i)
-        await test()
-        console.log("Renne zurück", i)
-    }
-
-    for (let i = 0; i < 20; i++)
-        testrun(i)
-}
-run()
-
-
 export const dialog = document.querySelector('dialog-box')
 
 const FileResult = window.require('shared-module').FileResult
