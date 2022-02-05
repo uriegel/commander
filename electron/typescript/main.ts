@@ -1,8 +1,8 @@
-//import * as path from 'path'
-import * as process from "process"
-import { app, BrowserWindow, BrowserWindowConstructorOptions } from "electron"
-import * as os from 'os'    
-import * as settings from 'electron-settings'
+import { app, BrowserWindow, BrowserWindowConstructorOptions, ipcMain, protocol } from "electron"
+import settings from 'electron-settings'
+import path from 'path'
+import process from "process"
+import os from 'os'    
 const isLinux = process.platform == "linux"
 import { createPlatform } from './platforms/platforms'
 
@@ -12,12 +12,19 @@ import { createPlatform } from './platforms/platforms'
 // TODO Windows: not working for main process
 process.env['UV_THREADPOOL_SIZE'] = os.cpus().length.toString()
 
-//const icon = path.join(__dirname, '../web/assets/kirk.png')
+const icon = path.join(__dirname, '../web/assets/kirk.png')
 
 const createWindow = async () => {    
 
     const platform = createPlatform()
     platform.registerGetIconProtocol()
+    platform.registerCommands()
+
+    protocol.registerFileProtocol('view', async (request, callback) => {
+        const url = request.url
+        var path = decodeURI(url.substring(7))
+        callback(path)
+    })
 
     const bounds: BrowserWindowConstructorOptions = {
         x: settings.getSync("x") as number,
@@ -38,6 +45,20 @@ const createWindow = async () => {
     win.removeMenu()
     if (settings.getSync("isMaximized"))
         win.maximize()
+
+    ipcMain.on("openDevTools",  () => win.webContents.openDevTools())
+    ipcMain.on("fullscreen",  () => win.setFullScreen(!win.isFullScreen()))
+    ipcMain.on("minimize",  () => win.minimize())
+    ipcMain.on("maximize",  () => {
+        if (win.isMaximized())
+            win.restore()
+        else
+            win.maximize()  
+    })
+
+    ipcMain.on("dragStart", (evt, files: string[]) => { 
+        win.webContents.startDrag({ file: "", files, icon })
+    })
 
     win.once('ready-to-show', () => win.show()) 
     
@@ -69,9 +90,6 @@ const createWindow = async () => {
 }
 
 app.on('ready', createWindow)
-
-// TODO eliminate main.js electron
-// TODO test createfolder and copy with progress
 
 // TODO "web-menu-bar": "^0.3.0",
 // TODO "web-electron-titlebar": "^0.2.0",

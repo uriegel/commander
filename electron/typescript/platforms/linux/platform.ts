@@ -11,4 +11,5 @@ export class LinuxPlatform implements Platform {
             callback(path)
         })
     }
+    registerCommands() {}
 }

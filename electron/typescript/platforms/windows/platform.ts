@@ -1,6 +1,7 @@
 import { protocol } from "electron"
 import { Platform } from "../platforms"
 import { getIconAsync } from "rust-addon"
+import { registerCommands } from "./commands"
 
 export class WindowsPlatform implements Platform {
     registerGetIconProtocol() {
@@ -11,5 +12,6 @@ export class WindowsPlatform implements Platform {
             callback({ mimeType: 'img/png', data: icon })
         })
     }
+    registerCommands() { registerCommands() }
 }
 

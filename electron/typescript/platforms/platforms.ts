@@ -4,6 +4,7 @@ import { WindowsPlatform } from "./windows/platform"
 
 export interface Platform {
     registerGetIconProtocol: ()=>void
+    registerCommands: ()=>void
 }
 const isLinux = process.platform == "linux"
 
