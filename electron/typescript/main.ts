@@ -70,8 +70,9 @@ const createWindow = async () => {
 
 app.on('ready', createWindow)
 
-// TODO "web-pie-progress": "^0.0.1",
+// TODO eliminate main.js electron
+// TODO test createfolder and copy with progress
+
 // TODO "web-menu-bar": "^0.3.0",
 // TODO "web-electron-titlebar": "^0.2.0",
-// TODO eliminate main.js electron
 // TODO typescript renderer
