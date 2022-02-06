@@ -73,7 +73,7 @@
     "virtual-table-component": "^2.0.0",
     "web-dialog-box": "^3.0.0",
     "web-electron-titlebar": "^0.2.0",
-    "web-menu-bar": "^0.3.0",
+    "web-menu-bar": "^1.0.1",
     "web-pie-progress": "^1.0.0",
     "webpack": "^5.59.1",
     "webpack-cli": "^4.9.1",

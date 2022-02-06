@@ -91,6 +91,6 @@ const createWindow = async () => {
 
 app.on('ready', createWindow)
 
-// TODO "web-menu-bar": "^0.3.0",
 // TODO "web-electron-titlebar": "^0.2.0",
+// TODO theme-change-detect d.ts Typescript
 // TODO typescript renderer
