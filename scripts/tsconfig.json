@@ -5,6 +5,7 @@
         "sourceMap": true,
         "strict": true,
         "allowJs": true,
+        "moduleResolution": "node",
         "allowUnreachableCode": false,
         "exactOptionalPropertyTypes": true,
         "noFallthroughCasesInSwitch": true,

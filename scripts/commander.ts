@@ -1,8 +1,10 @@
 import 'web-electron-titlebar'
 import 'web-menu-bar'
 import 'grid-splitter'
+import { Menubar } from 'web-menu-bar'
 import { initialize as initializeMenu } from './menu'
 import { showViewer as viewer } from './viewer'
+import { createPlatform } from './platforms/platforms'
 
 var currentPath = ""
 
@@ -24,5 +26,10 @@ function showViewer(show: boolean) {
 const commander: Commander = {
     showViewer
 }
+
+const menu = document.getElementById("menu")! as Menubar
+
+const platform = createPlatform()
+platform.adaptWindow(menu)
 
 initializeMenu(commander)
