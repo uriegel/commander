@@ -2,6 +2,7 @@ import 'virtual-table-component'
 import { VirtualTable } from 'virtual-table-component'
 import { Engine, getEngine } from '../engines/engines'
 import { NullEngine } from '../engines/nullengine'
+import { Platform } from '../platforms/platforms'
 
 export class Folder extends HTMLElement {
     constructor() {
@@ -45,8 +46,8 @@ export class Folder extends HTMLElement {
         setTimeout(() => this.changePath(lastPath))
     }
 
-    async changePath(path?: string|null, fromBacklog?: boolean) {
-        const result = getEngine(this.folderId, path, this.engine)
+    async changePath(platform: Platform, path?: string|null, fromBacklog?: boolean) {
+        const result = getEngine(this.folderId, path, this.engine, platform)
         const req = ++this.latestRequest
         const itemsResult = (await result.engine.getItems(path, this.showHiddenItems))
         path = itemsResult.path

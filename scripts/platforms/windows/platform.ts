@@ -14,4 +14,8 @@ export class WindowsPlatform implements Platform {
         activateClass(document.body, "windows-dark", dark) 
         activateClass(document.body, "windows", !dark) 
     }
+
+    async getDrives() {
+        return []
+    }
 }
