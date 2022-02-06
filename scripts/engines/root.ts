@@ -10,12 +10,12 @@ export type RootItem = {
 
 export class RootEngine implements Engine {
 
-    constructor(private platform: Platform) {}
+    constructor() {}
 
     isSuitable(path: string|null|undefined) { return path == ROOT_PATH }
     
     async getItems(path: string|null|undefined, showHiddenItems?: boolean) {
-        const rootitems = await this.platform.getDrives() as RootItem[]
+        const rootitems = await Platform.getDrives() as RootItem[]
         const mountedItems = rootitems.filter(n => n.isMounted)
         const unmountedItems = rootitems.filter(n => !n.isMounted)
         // const externals = {

@@ -13,6 +13,4 @@ export interface Platform {
     getDrives: ()=>Promise<RootItem[]>
 }
 
-export function createPlatform() {
-    return isLinux ? new LinuxPlatform() as Platform : new WindowsPlatform() as Platform
-}
+export const Platform = isLinux ? new LinuxPlatform() as Platform : new WindowsPlatform() as Platform

@@ -6,12 +6,11 @@ import './components/folder'
 import { Menubar, MenuItem } from 'web-menu-bar'
 import { initialize as initializeMenu } from './menu'
 import { showViewer as viewer } from './viewer'
-import { createPlatform } from './platforms/platforms'
 import { DialogBox } from 'web-dialog-box'
+import { Platform } from './platforms/platforms'
 
 var currentPath = ""
 
-const platform = createPlatform()
 const dialog = document.querySelector('dialog-box') as DialogBox
 
 export type Commander = {
@@ -27,7 +26,7 @@ function showViewer(show: boolean) {
 }
 
 function hideMenu(hide: boolean) {
-    platform.hideMenu(hide)
+    Platform.hideMenu(hide)
 }
 
 const commander: Commander = {
@@ -37,10 +36,10 @@ const commander: Commander = {
 
 const menu = document.getElementById("menu")! as Menubar
 
-platform.adaptWindow(dialog, menu, document.getElementById("hidemenu") as MenuItem)
+Platform.adaptWindow(dialog, menu, document.getElementById("hidemenu") as MenuItem)
 
 const themeChanges = window.require("theme-change-detect")
-themeChanges.register((theme: any) => platform.onDarkTheme(theme.isDark))
-platform.onDarkTheme(themeChanges.getTheme().isDark)
+themeChanges.register((theme: any) => Platform.onDarkTheme(theme.isDark))
+Platform.onDarkTheme(themeChanges.getTheme().isDark)
 
 initializeMenu(commander)

@@ -1,4 +1,3 @@
-import { Platform } from "../platforms/platforms"
 import { NullEngine } from "./nullengine"
 import { RootEngine, ROOT_PATH } from "./root"
 
@@ -13,10 +12,10 @@ export type Engine = {
 
 }
 
-export function getEngine(folderId: string, path: string|null|undefined, current: Engine, platform: Platform): {engine: Engine, changed: boolean} {
+export function getEngine(folderId: string, path: string|null|undefined, current: Engine): {engine: Engine, changed: boolean} {
     if (current.isSuitable(path))
         return { engine: current, changed: false } 
-    else if (path == ROOT_PATH)         
-        return { engine: new RootEngine(platform), changed: true } 
+    else if (!path || path == ROOT_PATH)         
+        return { engine: new RootEngine(), changed: true } 
     return { engine: new NullEngine(), changed: true }
 }
