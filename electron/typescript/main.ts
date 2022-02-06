@@ -91,6 +91,4 @@ const createWindow = async () => {
 
 app.on('ready', createWindow)
 
-// TODO "web-electron-titlebar": "^0.2.0",
-// TODO theme-change-detect d.ts Typescript
 // TODO typescript renderer

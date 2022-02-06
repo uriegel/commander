@@ -61,7 +61,7 @@
     "electron-settings": "^4.0.2",
     "rust-addon": "file:local-modules/rust-addon",
     "shared-module": "file:local-modules/shared-module",
-    "theme-change-detect": "1.0.0"
+    "theme-change-detect": "1.0.1"
   },
   "devDependencies": {
     "@types/node": "^17.0.14",
@@ -72,7 +72,7 @@
     "typescript": "^4.5.5",
     "virtual-table-component": "^2.0.0",
     "web-dialog-box": "^3.0.0",
-    "web-electron-titlebar": "^0.2.0",
+    "web-electron-titlebar": "^1.0.0",
     "web-menu-bar": "^1.0.1",
     "web-pie-progress": "^1.0.0",
     "webpack": "^5.59.1",
