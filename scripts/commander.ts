@@ -1,14 +1,13 @@
 import 'web-electron-titlebar'
 import 'web-menu-bar'
 import 'grid-splitter'
-import { Menubar } from 'web-menu-bar'
+import { Menubar, MenuItem } from 'web-menu-bar'
 import { initialize as initializeMenu } from './menu'
 import { showViewer as viewer } from './viewer'
 import { createPlatform } from './platforms/platforms'
 
 var currentPath = ""
 
-// TODO Electron titlebar 
 // TODO theming
 
 
@@ -30,6 +29,6 @@ const commander: Commander = {
 const menu = document.getElementById("menu")! as Menubar
 
 const platform = createPlatform()
-platform.adaptWindow(menu)
+platform.adaptWindow(menu, document.getElementById("hidemenu") as MenuItem)
 
 initializeMenu(commander)

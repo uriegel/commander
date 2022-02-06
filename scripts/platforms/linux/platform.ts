@@ -1,8 +1,8 @@
-import { Menubar } from 'web-menu-bar'
+import { Menubar, MenuItem } from 'web-menu-bar'
 import { Platform } from "../platforms"
 
 export class LinuxPlatform implements Platform {
-    adaptWindow(/*dialogToSet: any, activeFolderSetFocusToSet, */ menu: Menubar/*, itemHideMenuToSet*/) {
+    adaptWindow(/*dialogToSet: any, activeFolderSetFocusToSet, */ menu: Menubar, itemHideMenu: MenuItem) {
       //  this.menu = menu
         //itemHideMenu = itemHideMenuToSet
         //dialog = dialogToSet
