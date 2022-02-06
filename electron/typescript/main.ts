@@ -42,16 +42,7 @@ const createWindow = async () => {
     } 
     
     const win = new BrowserWindow(bounds)
-    
-    
-    
-    
-    //win.removeMenu()
-
-
-
-
-
+    win.removeMenu()
     if (settings.getSync("isMaximized"))
         win.maximize()
 
