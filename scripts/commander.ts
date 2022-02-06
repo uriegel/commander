@@ -10,8 +10,6 @@ import { DialogBox } from 'web-dialog-box'
 
 var currentPath = ""
 
-// TODO theming
-
 const platform = createPlatform()
 const dialog = document.querySelector('dialog-box') as DialogBox
 
@@ -39,5 +37,9 @@ const commander: Commander = {
 const menu = document.getElementById("menu")! as Menubar
 
 platform.adaptWindow(dialog, menu, document.getElementById("hidemenu") as MenuItem)
+
+const themeChanges = window.require("theme-change-detect")
+themeChanges.register((theme: any) => platform.onDarkTheme(theme.isDark))
+platform.onDarkTheme(themeChanges.getTheme().isDark)
 
 initializeMenu(commander)

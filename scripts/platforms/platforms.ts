@@ -8,6 +8,7 @@ export const isLinux = process.platform == "linux"
 export interface Platform {
     adaptWindow: (dialog: DialogBox, /*activeFolderSetFocusToSet, */ menuToSet: Menubar, itemHideMenu: MenuItem)=>void
     hideMenu: (hide: boolean)=>Promise<void>
+    onDarkTheme: (dark: boolean)=>void
 }
 
 export function createPlatform() {

@@ -1,5 +1,6 @@
 import { DialogBox, Result } from 'web-dialog-box'
 import { Menubar, MenuItem } from 'web-menu-bar'
+import { activateClass } from '../../utils'
 import { Platform } from "../platforms"
 
 export class LinuxPlatform implements Platform {
@@ -35,6 +36,11 @@ export class LinuxPlatform implements Platform {
     
         localStorage.setItem("menuAutoMode", hide ? "true" : "false")
         this.menu!.setAttribute("automode", hide ? "true" : "false")
+    }
+
+    onDarkTheme(dark: boolean) {
+        activateClass(document.body, "adwaita-dark", dark) 
+        activateClass(document.body, "adwaita", !dark) 
     }
 
     private dialog: DialogBox | null = null
