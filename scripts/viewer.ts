@@ -1,33 +1,33 @@
-const viewerSplitter = document.getElementById('viewerSplitter')
-const viewerImg = document.getElementById('viewerImg')
-const viewerPdf = document.getElementById('viewerPdf')
-const viewerVideo = document.getElementById('viewerVideo')
+const viewerSplitter = document.getElementById('viewerSplitter')!
+const viewerImg = document.getElementById('viewerImg')! as HTMLSourceElement
+const viewerPdf = document.getElementById('viewerPdf')! 
+const viewerVideo = document.getElementById('viewerVideo')! as HTMLVideoElement
 
-export function showViewer(show, path) {
+export function showViewer(show?: boolean, path?: string) {
     if (show == undefined)
         show = !viewerActive
     viewerActive = show
-    viewerSplitter.setAttribute("secondInvisible", !show)
-    if (show) 
+    viewerSplitter.setAttribute("secondInvisible", show == true ? "false" : "true")
+    if (show && path) 
         refresh(path)
     else {
-        viewerImg.src = undefined
-        viewerVideo.src = undefined
+        viewerImg.src = ""
+        viewerVideo.src = ""
     }
 }
 
-export const refreshViewer = path => {
+export const refreshViewer = (path: string) => {
     if (viewerActive) {
         if (viewerRefresher)
             clearTimeout(viewerRefresher)
         viewerRefresher = setTimeout(() => {
             viewerRefresher = 0
             refresh(path)
-        }, 50)
+        }, 50) as any as number
     }
 }
 
-const refresh = path => {
+const refresh = (path: string) => {
     const extPos = path.lastIndexOf(".")
     const ext = extPos != -1 ? path.substr(extPos+1).toLowerCase() : ""
     switch (ext) {
@@ -37,14 +37,14 @@ const refresh = path => {
             viewerVideo.classList.add("hidden")
             viewerImg.classList.remove("hidden")
             viewerImg.src = `view://${path}` 
-            viewerVideo.src = null
+            viewerVideo.src = ""
             break
         case "pdf":
             viewerImg.classList.add("hidden")
             viewerVideo.classList.add("hidden")
             viewerPdf.classList.remove("hidden")
-            viewerPdf.load(`view://${path}`) 
-            viewerVideo.src = null
+            //viewerPdf.load(`view://${path}`) 
+            viewerVideo.src = ""
             break
         case "mp3":
         case "mp4":
@@ -59,7 +59,7 @@ const refresh = path => {
             viewerVideo.classList.add("hidden")
             viewerImg.classList.add("hidden")
             viewerPdf.classList.add("hidden")
-            viewerVideo.src = null
+            viewerVideo.src = ""
             break
     }
 }
