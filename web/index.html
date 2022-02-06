@@ -12,7 +12,7 @@
 
     <body class="themeLight">
         <div class="root">
-            <!-- <electron-titlebar id="titlebar" icon="assets/kirk.png" window-title="Commander">
+            <electron-titlebar id="titlebar" icon="assets/kirk.png" window-title="Commander">
                 <menubar-mainmenu id="menu" automode=false>
                     <menubar-submenu header="_Datei">
                         <menubar-menuitem text="_Umbenennen" action="onRename" shortcut="F2"></menubar-menuitem>
@@ -49,22 +49,22 @@
                         <menubar-menuitem text="_Entwicklerwerkzeuge" action="onDevTools" shortcut="F12"></menubar-menuitem>
                     </menubar-submenu>
                 </menubar-mainmenu>
-            </electron-titlebar> -->
-            <!-- <grid-splitter id="viewerSplitter" orientation="vertical" secondinvisible="true">
+            </electron-titlebar>
+            <grid-splitter id="viewerSplitter" orientation="vertical" secondinvisible="true">
                 <grid-splitter id="splitter" slot="first" orientation="HORIZONTAL">
                     <div id="first" slot="first" class="tableContainer">
-                        <folder-table id="folderLeft"></folder-table>
+                        <!-- <folder-table id="folderLeft"></folder-table> -->
                     </div>
                     <div id="second" slot="second" class="tableContainer">
-                        <folder-table id="folderRight" scrollbar-right="5px"></folder-table>
+                        <!-- <folder-table id="folderRight" scrollbar-right="5px"></folder-table> -->
                     </div>
                 </grid-splitter>
                 <div slot="second" id="viewer">
                     <img id="viewerImg" class="hidden" />
-                    <pdf-viewer id="viewerPdf" class="hidden"></pdf-viewer>
+                    <!-- <pdf-viewer id="viewerPdf" class="hidden"></pdf-viewer> -->
                     <video id="viewerVideo" controls autoplay class="hidden"></video>
                 </div>
-            </grid-splitter> -->
+            </grid-splitter>
             <div class="statusbar">                
                 <span id="statusText"></span>
                 <span class = "filler"></span>
@@ -77,12 +77,12 @@
                 </div>
             </div>
 
-            <dialog-box>
+            <!-- <dialog-box>
                 <div id="error-list"></div>
                 <copy-conflicts class="wdb-focusable" id="copy-conflicts"></copy-conflicts>
                 <external-adder id="external-adder"></external-adder>
                 <extended-rename id="extended-rename"></extended-rename>
-            </dialog-box>
+            </dialog-box> -->
         </div>
         
         <template id="conflictName">

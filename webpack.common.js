@@ -8,7 +8,8 @@ module.exports = {
 		rules: [
 		  {
 			test: /\.tsx?$/,
-			use: 'ts-loader'
+			use: 'ts-loader',
+			exclude: /node_modules/
 		  },
 		],
 	  },	
@@ -16,5 +17,8 @@ module.exports = {
       	filename: 'index.js',
 		path: path.resolve(__dirname, 'web', 'dist'),
 		clean: true
-    }
+    },
+	resolve: {
+        extensions: [ '.ts', '.js' ],
+    }	
 }
