@@ -6,7 +6,6 @@ import { showViewer as viewer } from './viewer'
 
 var currentPath = ""
 
-// TODO PdfViewer include, typescript
 // TODO Electron titlebar 
 // TODO menu 
 // TODO theming
@@ -19,6 +18,7 @@ export type Commander = {
 function showViewer(show: boolean) {
     currentPath = "/home/uwe/Bilder/Fotos/2019/Bild267.jpg"
     currentPath = "/home/uwe/Videos/Tatort - Fürchte Dich.mp4"
+    //currentPath = "/home/uwe/Bücher/Beginning Blender.pdf"
     viewer(show, currentPath)
 }
 

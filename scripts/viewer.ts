@@ -1,6 +1,8 @@
+import "./components/pdfviewer"
+import { PdfViewer } from "./components/pdfviewer"
 const viewerSplitter = document.getElementById('viewerSplitter')!
 const viewerImg = document.getElementById('viewerImg')! as HTMLSourceElement
-const viewerPdf = document.getElementById('viewerPdf')! 
+const viewerPdf = document.getElementById('viewerPdf')! as PdfViewer
 const viewerVideo = document.getElementById('viewerVideo')! as HTMLVideoElement
 
 export function showViewer(show?: boolean, path?: string) {
@@ -43,7 +45,7 @@ const refresh = (path: string) => {
             viewerImg.classList.add("hidden")
             viewerVideo.classList.add("hidden")
             viewerPdf.classList.remove("hidden")
-            //viewerPdf.load(`view://${path}`) 
+            viewerPdf.load(`view://${path}`) 
             viewerVideo.src = ""
             break
         case "mp3":
