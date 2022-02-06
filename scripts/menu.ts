@@ -5,6 +5,7 @@ export function initialize(commanderToSet: Commander) { commander = commanderToS
 
 window.onClose = () => close()
 window.onViewer = isChecked => commander.showViewer(isChecked)
+window.onHideMenu = (isChecked: boolean) => commander.hideMenu(isChecked)
 window.onFullscreen = () => electron.ipcRenderer.send("fullscreen")
 window.onDevTools = () => electron.ipcRenderer.send("openDevTools")
 

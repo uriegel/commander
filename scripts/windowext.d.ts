@@ -4,6 +4,7 @@ export declare global {
         
         onClose: ()=>void
         onViewer: (isChecked: boolean)=>void
+        onHideMenu: (isChecked: boolean)=>void
         onFullscreen: ()=>void
         onDevTools: ()=>void
     }

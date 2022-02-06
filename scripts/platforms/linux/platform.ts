@@ -1,11 +1,12 @@
+import { DialogBox, Result } from 'web-dialog-box'
 import { Menubar, MenuItem } from 'web-menu-bar'
 import { Platform } from "../platforms"
 
 export class LinuxPlatform implements Platform {
-    adaptWindow(/*dialogToSet: any, activeFolderSetFocusToSet, */ menu: Menubar, itemHideMenu: MenuItem) {
-      //  this.menu = menu
-        //itemHideMenu = itemHideMenuToSet
-        //dialog = dialogToSet
+    adaptWindow(dialog: DialogBox, /* activeFolderSetFocusToSet, */ menu: Menubar, itemHideMenu: MenuItem) {
+        this.dialog = dialog
+        this.menu = menu
+        this.itemHideMenu = itemHideMenu
         //activeFolderSetFocus = activeFolderSetFocusToSet
     
         const titlebar = document.getElementById("titlebar")!
@@ -14,8 +15,29 @@ export class LinuxPlatform implements Platform {
         const automode = localStorage.getItem("menuAutoMode") == "true"
         if (automode)
             menu.setAttribute("automode", "true")
-        //itemHideMenu.isChecked = automode == "true"
+        itemHideMenu.isChecked = automode
     }
 
-    //private menu: Menubar | null = null
+    async hideMenu(hide: boolean) {
+        if (hide) {
+            const res = await this.dialog!.show({
+                text: "Soll das Menü verborgen werden? Aktivieren mit Alt-Taste",
+                btnOk: true,
+                btnCancel: true,
+                defBtnOk: true
+            })
+            //     activeFolderSetFocus()
+            if (res.result == Result.Cancel) {
+                this.itemHideMenu!.isChecked = false
+                return
+            }
+        }
+    
+        localStorage.setItem("menuAutoMode", hide ? "true" : "false")
+        this.menu!.setAttribute("automode", hide ? "true" : "false")
+    }
+
+    private dialog: DialogBox | null = null
+    private itemHideMenu: MenuItem | null = null
+    private menu: Menubar | null = null
 }
