@@ -1,9 +1,12 @@
 import 'virtual-table-component'
 import { VirtualTable } from 'virtual-table-component'
+import { Engine, getEngine } from '../engines/engines'
+import { NullEngine } from '../engines/nullengine'
 
 export class Folder extends HTMLElement {
     constructor() {
         super()
+        this.folderId = this.getAttribute("id")!
 
         const additionalStyle = ".exif {color: var(--exif-color);} .isSelected .exif {color: var(--selected-exif-color); }"
         this.innerHTML = `
@@ -19,10 +22,76 @@ export class Folder extends HTMLElement {
         const sbr = this.getAttribute("scrollbar-right")
         if (sbr)
             this.table.setAttribute("scrollbar-right", sbr)
+
+        this.table.renderRow = (item, tr) => {
+            // tr.ondragstart = evt => this.onDragStart(evt)
+            // tr.ondrag = evt => this.onDrag(evt)
+            // tr.ondragend = evt => this.onDragEnd(evt)
+            // tr.onmousedown = evt => {
+            //     if (evt.ctrlKey) {
+            //         setTimeout(() => {
+            //             const pos = this.table.getPosition()
+            //             this.table.items[pos].isSelected = !this.table.items[pos].isNotSelectable && !this.table.items[pos].isSelected 
+            //             this.computeExtendedNewNames()
+            //             this.table.refresh()
+            //         })
+            //     }
+            // }
+            //this.processor.renderRow(item, tr)
+        }
+
+        this.changePath() 
+        const lastPath = localStorage.getItem(`${this.folderId}-lastPath`)
+        setTimeout(() => this.changePath(lastPath))
+    }
+
+    async changePath(path?: string|null, fromBacklog?: boolean) {
+        const result = getEngine(this.folderId, path, this.engine)
+        const req = ++this.latestRequest
+        const itemsResult = (await result.engine.getItems(path, this.showHiddenItems))
+        path = itemsResult.path
+        let items = itemsResult.items
+        if (!items || req < this.latestRequest) 
+            return
+
+        this.table.setItems([])
+        // if (result.changed || this.columnsChangeRequest) {
+        //     this.columnsChangeRequest = false
+        //     this.processor = result.processor
+        //     const columns = this.processor.getColumns(this.isExtendedRename)
+        //     this.table.setColumns(columns)
+        //     this.sortFunction = null
+        // }
+
+        // this.processor.disableSorting(this.table, true)
+
+        // const dirs = items.filter(n => n.isDirectory)
+        // const files = items.filter(n => !n.isDirectory)
+        // this.dirsCount = dirs.length
+        // this.filesCount = files.length
+
+        // if (this.sortFunction) 
+        //     items = dirs.concat(files.sort(this.sortFunction))
+
+        // this.table.setItems(items)
+        // this.table.setRestriction((items, restrictValue) => 
+        //     items.filter(n => n.name.toLowerCase()
+        //         .startsWith(restrictValue.toLowerCase())
+        // ))
+        
+        // this.onPathChanged(path, fromBacklog)
+        // setTimeout(async () => {
+        //     await this.processor.addExtendedInfos(path, this.table.items, () => this.table.refresh())
+        //     this.processor.disableSorting(this.table, false)
+        // })
     }
 
     private table: VirtualTable
     //private folderRoot: HTMLElement
+    private folderId = ""
+    private engine: Engine = new NullEngine()
+    private latestRequest = 0
+    private showHiddenItems = false
 }
 
 customElements.define('folder-table', Folder)
