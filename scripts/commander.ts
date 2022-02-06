@@ -7,7 +7,6 @@ import { showViewer as viewer } from './viewer'
 var currentPath = ""
 
 // TODO Electron titlebar 
-// TODO menu 
 // TODO theming
 
 
