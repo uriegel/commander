@@ -149,6 +149,31 @@ export class Folder extends HTMLElement {
 
     setFocus() { this.table.setFocus() }
 
+    getCurrentPath() {
+        return this.engine.currentPath
+    }
+
+    showHidden(hidden: boolean) {
+        this.showHiddenItems = hidden
+        this.reloadItems()
+    }
+
+    reloadItems() {
+        this.changePath(this.engine.currentPath)
+    }
+
+    selectAll() {
+        this.table.items.forEach(n => n.isSelected = !n.isNotSelectable)
+//        this.computeExtendedNewNames()
+        this.table.refresh()
+    }
+
+    selectNone() {
+        this.table.items.forEach(n => n.isSelected = false)
+//        this.computeExtendedNewNames()
+        this.table.refresh()
+    }
+
     private onPathChanged(newPath: string, fromBacklog?: boolean) {
         const path = newPath || this.engine.currentPath
         this.pathInput!.value = path
@@ -169,10 +194,6 @@ export class Folder extends HTMLElement {
                 files: this.filesCount
             }
         }))
-    }
-
-    private reloadItems() {
-        this.changePath(this.engine.currentPath)
     }
 
     private table: VirtualTable

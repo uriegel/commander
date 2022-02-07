@@ -53,25 +53,8 @@ class Folder extends HTMLElement {
     
     get selectedItems() { return this.getSelectedItems() }
     
-    showHidden(hidden) {
-        this.showHiddenItems = hidden
-        this.reloadItems()
-    }
-
     reloadItems() {
         this.changePath(this.processor.getCurrentPath())
-    }
-
-    selectAll() {
-        this.table.items.forEach(n => n.isSelected = !n.isNotSelectable)
-        this.computeExtendedNewNames()
-        this.table.refresh()
-    }
-
-    selectNone() {
-        this.table.items.forEach(n => n.isSelected = false)
-        this.computeExtendedNewNames()
-        this.table.refresh()
     }
 
     setFocus() { this.table.setFocus() }

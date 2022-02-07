@@ -11,6 +11,16 @@ import { DialogBox } from 'web-dialog-box'
 import { Platform } from './platforms/platforms'
 import { Folder } from './components/folder'
 
+export type Commander = {
+    showViewer: (show: boolean)=>void
+    hideMenu: (hide: boolean)=>void
+    refresh: (folderId?: string)=>void
+    adaptPath: ()=>void
+    selectAll: ()=>void
+    selectNone: ()=>void
+    showHidden: (hidden: boolean)=>void 
+}
+
 var currentPath = ""
 const folderLeft = document.getElementById("folderLeft")! as Folder
 const folderRight = document.getElementById("folderRight")! as Folder
@@ -31,11 +41,6 @@ folderLeft.addEventListener("pathChanged", onPathChanged)
 folderRight.addEventListener("pathChanged", onPathChanged)
 folderLeft.addEventListener("tab", () => folderRight.setFocus())
 folderRight.addEventListener("tab", () => folderLeft.setFocus())
-
-export type Commander = {
-    showViewer: (show: boolean)=>void
-    hideMenu: (hide: boolean)=>void
-}
 
 function showViewer(show: boolean) {
     viewer(show, currentPath)
@@ -58,9 +63,41 @@ function setStatus(path: string, dirs: number, files: number) {
     filesText.innerText = `${dirs ? files : "" } Dateien` 
 }
 
+function refresh(folderId?: string) {
+    const folder = 
+        folderId 
+        ? folderId == "folderLeft" ? folderLeft : folderRight
+        : activeFolder
+    folder.reloadItems()
+}
+
+function selectAll() {
+    activeFolder.selectAll()
+}
+
+function selectNone() {
+    activeFolder.selectNone()
+}
+
+function getInactiveFolder() { return activeFolder == folderLeft ? folderRight : folderLeft }
+
+function adaptPath() {
+    getInactiveFolder().changePath(activeFolder.getCurrentPath())
+}
+
+function showHidden(hidden: boolean) {
+    folderLeft.showHidden(hidden)
+    folderRight.showHidden(hidden)
+}
+
 const commander: Commander = {
     showViewer,
-    hideMenu
+    hideMenu,
+    refresh,
+    adaptPath,
+    selectAll,
+    selectNone,
+    showHidden
 }
 
 Platform.adaptWindow(dialog, menu, document.getElementById("hidemenu") as MenuItem)
