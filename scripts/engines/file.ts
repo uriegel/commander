@@ -113,6 +113,12 @@ export class FileEngine implements Engine {
         : { }
     }
 
+    renderRow(item: FolderItem, tr: HTMLTableRowElement) {
+        tr.setAttribute("draggable", "true")
+        if ((item as FileItem).isHidden)
+            tr.style.opacity = "0.5"
+    }
+
     private getParentDir(path: string): PathResult {
         let pos = path.lastIndexOf(Platform.pathDelimiter)
         let parent = pos ? path.substring(0, pos) : Platform.pathDelimiter

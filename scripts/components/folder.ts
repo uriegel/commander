@@ -38,9 +38,16 @@ export class Folder extends HTMLElement {
             //         })
             //     }
             // }
-            //this.processor.renderRow(item, tr)
+            this.engine.renderRow(item, tr)
         }
 
+        this.changePath() 
+        const lastPath = localStorage.getItem(`${this.folderId}-lastPath`)
+        setTimeout(() => this.changePath(lastPath))
+    }
+
+    connectedCallback() {
+        //this.table.addEventListener("columnwidths", evt => this.engine.saveWidths((evt as CustomEvent).detail))
         this.table.addEventListener("currentIndexChanged", evt => this.sendStatusInfo((evt as CustomEvent).detail))
         this.table.addEventListener("focusin", async evt => {
             this.dispatchEvent(new CustomEvent('onFocus', { detail: this.id }))
@@ -49,7 +56,7 @@ export class Folder extends HTMLElement {
         this.table.addEventListener("keydown", evt => {
             switch (evt.which) {
                 case 8: // backspace
-                    //this.getHistoryPath(evt.shiftKey)
+                    this.getHistoryPath(evt.shiftKey)
                     return
                 case 9: // tab
                     if (evt.shiftKey) {
@@ -60,7 +67,7 @@ export class Folder extends HTMLElement {
                     evt.stopPropagation()
                     break
                 case 27: // Escape
-                    //this.selectNone()
+                    this.selectNone()
                     break
                 case 35: // end
                     if (evt.shiftKey) {
@@ -101,9 +108,18 @@ export class Folder extends HTMLElement {
             }
         })
 
-        this.changePath() 
-        const lastPath = localStorage.getItem(`${this.folderId}-lastPath`)
-        setTimeout(() => this.changePath(lastPath))
+        this.table.addEventListener("focusin", async evt => {
+            this.dispatchEvent(new CustomEvent('onFocus', { detail: this.id }))
+            this.sendStatusInfo(this.table.getPosition())
+        })
+
+        this.pathInput!.onkeydown = evt => {
+            if (evt.which == 13) {
+                this.changePath(this.pathInput!.value)
+                this.table.setFocus()
+            }
+        }
+        this.pathInput!.onfocus = () => setTimeout(() => this.pathInput!.select())
     }
 
     async changePath(path?: string|null, fromBacklog?: boolean) {
@@ -194,6 +210,16 @@ export class Folder extends HTMLElement {
                 files: this.filesCount
             }
         }))
+    }
+
+    private getHistoryPath(forward?: boolean) {
+        if (!forward && this.backPosition >= 0) {
+            this.backPosition--
+            this.changePath(this.backtrack[this.backPosition], true)
+        } else if (forward && this.backPosition < this.backtrack.length - 1) {
+            this.backPosition++
+            this.changePath(this.backtrack[this.backPosition], true)
+        }
     }
 
     private table: VirtualTable

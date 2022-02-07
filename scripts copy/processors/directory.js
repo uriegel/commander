@@ -97,11 +97,6 @@ export const getDirectory = (folderId, path) => {
         return columns
     }
 
-    const renderRow = (item, tr) => {
-        tr.setAttribute("draggable", "true")
-        if (item.isHidden)
-            tr.style.opacity = 0.5
-    }
 
     const getParentDir = path => {
         let pos = path.lastIndexOf(pathDelimiter)

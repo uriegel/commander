@@ -24,6 +24,7 @@ export type Engine = {
     getItemPath: (item: FolderItem)=>string
     getColumns(): Column[]
     getPath: (item: FolderItem, refresh: ()=>void)=>Promise<PathResult>
+    renderRow: (item: FolderItem, tr: HTMLTableRowElement)=>void
 }
 
 export function getEngine(folderId: string, path: string|null|undefined, current: Engine): {engine: Engine, changed: boolean} {

@@ -75,4 +75,12 @@ export class RootEngine implements Engine {
     async getPath(item: FolderItem, _: ()=>void) { 
         return { path: await Platform.getRootPath(item as RootItem) } 
     }
+
+    renderRow(item: FolderItem, tr: HTMLTableRowElement) {
+        if (!(item as RootItem).isMounted)
+            tr.style.opacity = "0.5"
+        tr.ondragstart = null
+        tr.ondrag = null
+        tr.ondragend = null
+    }
 }
