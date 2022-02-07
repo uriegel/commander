@@ -16,28 +16,6 @@ export const formatSize = size => {
     return sizeStr    
 }
 
-export const getExtension = path => {
-    let index = path.lastIndexOf(".")
-    return index > 0 ? path.substr(index) : ""
-}
-
-const dateFormat = Intl.DateTimeFormat("de-DE", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-})
-
-const timeFormat = Intl.DateTimeFormat("de-DE", {
-    hour: "2-digit",
-    minute: "2-digit"
-})
-
-export const formatDateTime = unixDate => {
-    if (!unixDate)
-        return ''
-
-    return dateFormat.format(unixDate) + " " + timeFormat.format(unixDate)  
-}
 
 export const compareVersion = (versionLeft, versionRight) =>
     !versionLeft

@@ -109,17 +109,6 @@ export const getDirectory = (folderId, path) => {
         return [parent, path.substr(pos + 1)]
     }
     
-    const getCurrentPath = () => currentPath
-
-    const getPath = async item => item.isDirectory 
-        ? item.name != ".."
-            ? [
-                currentPath != "\\" ? currentPath + pathDelimiter + item.name : currentPath + item.name, 
-                null]
-            : parentIsRoot(currentPath)  
-                ? [ROOT, null]
-                : getParentDir(currentPath)
-        : [null, null]
 
     const getItems = async (path, hiddenIncluded) => {
         path = fspath.normalize(path).replace(":.", ":\\")

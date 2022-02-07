@@ -8,12 +8,16 @@ import { WindowsPlatform } from "./windows/platform"
 export const isLinux = process.platform == "linux"
 
 export interface Platform {
+    readonly pathDelimiter: string
     adaptWindow: (dialog: DialogBox, /*activeFolderSetFocusToSet, */ menuToSet: Menubar, itemHideMenu: MenuItem)=>void
     hideMenu: (hide: boolean)=>Promise<void>
     onDarkTheme: (dark: boolean)=>void
     getDrives: ()=>Promise<RootItem[]>
     adaptRootColumns: (columns: Column[])=>Column[]
+    adaptDirectoryColumns: (columns: Column[])=>Column[]
     getRootPath: (item: RootItem)=>Promise<string>
+    isFileEnginePath: (path: string|null|undefined)=>boolean
+    parentIsRoot: (path: string)=>boolean
 }
 
 export const Platform = isLinux ? new LinuxPlatform() as Platform : new WindowsPlatform() as Platform

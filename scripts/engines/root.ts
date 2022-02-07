@@ -19,7 +19,7 @@ export class RootEngine implements Engine {
 
     isSuitable(path: string|null|undefined) { return path == ROOT_PATH }
     
-    async getItems(path: string|null|undefined, showHiddenItems?: boolean) {
+    async getItems(_: string|null|undefined, __?: boolean) {
         const rootitems = await Platform.getDrives() as RootItem[]
         const mountedItems = rootitems.filter(n => n.isMounted)
         const unmountedItems = rootitems.filter(n => !n.isMounted)

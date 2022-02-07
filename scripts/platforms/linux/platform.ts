@@ -16,6 +16,9 @@ interface DriveItem extends RootItem {
 }
 
 export class LinuxPlatform implements Platform {
+
+    readonly pathDelimiter = '/'
+
     adaptWindow(dialog: DialogBox, /* activeFolderSetFocusToSet, */ menu: Menubar, itemHideMenu: MenuItem) {
         this.dialog = dialog
         this.menu = menu
@@ -114,6 +117,14 @@ export class LinuxPlatform implements Platform {
             columns[2] 
         ] 
     }
+
+    adaptDirectoryColumns(columns: Column[]) { return columns }
+
+    isFileEnginePath(path: string|null|undefined) {
+        return !!path && path[0] == '/'
+    }
+
+    parentIsRoot(path: string) { return path == '/' }
 
     // TODO:async getRootPath(item: RootItem){ return item.mountPoint || (item.name == EXTERN ? EXTERNALS_PATH : "")
     async getRootPath(item: RootItem){ return (item as DriveItem).mountPoint }

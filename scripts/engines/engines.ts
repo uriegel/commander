@@ -1,5 +1,5 @@
 import { Column } from "virtual-table-component"
-import { NullEngine } from "./nullengine"
+import { FileEngine } from "./file"
 import { RootEngine, ROOT_PATH } from "./root"
 
 export type ItemResult = {
@@ -20,7 +20,7 @@ export type PathResult = {
 export type Engine = {
     currentPath: string
     isSuitable: (path: string|null|undefined)=>boolean
-    getItems: (path: string|null|undefined, showHiddenItems?: boolean)=>Promise<ItemResult>
+    getItems: (path?: string|null, showHiddenItems?: boolean)=>Promise<ItemResult>
     getItemPath: (item: FolderItem)=>string
     getColumns(): Column[]
     getPath: (item: FolderItem, refresh: ()=>void)=>Promise<PathResult>
@@ -31,7 +31,7 @@ export function getEngine(folderId: string, path: string|null|undefined, current
         return { engine: current, changed: false } 
     else if (!path || path == ROOT_PATH)         
         return { engine: new RootEngine(folderId), changed: true } 
-    return { engine: new NullEngine(), changed: true }
+    return { engine: new FileEngine(folderId), changed: true }
 }
 
 export function formatSize(size: number) {
@@ -50,4 +50,27 @@ export function formatSize(size: number) {
         sizeStr = strfirst + sizeStr
     }
     return sizeStr    
+}
+
+export const getExtension = (path: string) => {
+    let index = path.lastIndexOf(".")
+    return index > 0 ? path.substr(index) : ""
+}
+
+const dateFormat = Intl.DateTimeFormat("de-DE", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+})
+
+const timeFormat = Intl.DateTimeFormat("de-DE", {
+    hour: "2-digit",
+    minute: "2-digit"
+})
+
+export const formatDateTime = (unixDate: number) => {
+    if (!unixDate)
+        return ''
+
+    return dateFormat.format(unixDate) + " " + timeFormat.format(unixDate)  
 }
