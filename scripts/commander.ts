@@ -6,7 +6,7 @@ import 'web-pie-progress'
 import './components/folder'
 import { Menubar, MenuItem } from 'web-menu-bar'
 import { initialize as initializeMenu } from './menu'
-import { showViewer as viewer } from './viewer'
+import { refreshViewer, showViewer as viewer } from './viewer'
 import { DialogBox } from 'web-dialog-box'
 import { Platform } from './platforms/platforms'
 import { Folder } from './components/folder'
@@ -38,9 +38,6 @@ export type Commander = {
 }
 
 function showViewer(show: boolean) {
-    currentPath = "/home/uwe/Bilder/Fotos/2019/Bild267.jpg"
-    currentPath = "/home/uwe/Videos/Tatort - Fürchte Dich.mp4"
-    //currentPath = "/home/uwe/Bücher/Beginning Blender.pdf"
     viewer(show, currentPath)
 }
 
@@ -51,7 +48,7 @@ function hideMenu(hide: boolean) {
 function onPathChanged(evt: Event) {
     const detail = (evt as CustomEvent).detail
     currentPath = detail.path
-    //refreshViewer(detail.path)
+    refreshViewer(detail.path)
     setStatus(detail.path, detail.dirs, detail.files)
 }
 

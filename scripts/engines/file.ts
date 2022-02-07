@@ -101,7 +101,7 @@ export class FileEngine implements Engine {
         return columns
     }
 
-    getItemPath(item: FolderItem) { return item.name }
+    getItemPath(item: FolderItem) { return fspath.join(this.currentPath, item.name) }
     
     async getPath(item: FolderItem, _: ()=>void) {
         return item.isDirectory 
