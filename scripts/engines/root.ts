@@ -1,9 +1,9 @@
 import { Platform } from "../platforms/platforms"
-import { Engine, formatSize } from "./engines"
+import { Engine, FolderItem, formatSize } from "./engines"
 
 export const ROOT_PATH = "root"
 
-export type RootItem = {
+export interface RootItem extends FolderItem {
     isMounted: boolean
     isNotSelectable?: boolean
     name: string,

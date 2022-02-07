@@ -65,9 +65,8 @@ export class Folder extends HTMLElement {
 
         // this.processor.disableSorting(this.table, true)
 
-        // FolderItem instead of any with isDirectory as base for all EngineItems 
-        //const dirs = items.filter(n => n.isDirectory)
-        //const files = items.filter(n => !n.isDirectory)
+        // const dirs = items.filter(n => n.isDirectory)
+        // const files = items.filter(n => !n.isDirectory)
         //this.dirsCount = dirs.length
         //this.filesCount = files.length
 

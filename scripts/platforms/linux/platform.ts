@@ -87,13 +87,14 @@ export class LinuxPlatform implements Platform {
                 name: trimName(getString(1, 2)),
                 type: 1, // TODO: Drive types enum DriveType
                 mountPoint: mount,
+                isDirectory: false,
                 isMounted: !!mount,
                 driveType: driveString.substring(columnsPositions[4]).trim(),
                 size: parseInt(getString(0, 1), 10) 
             } as DriveItem
         }
     
-        const items = [{ name: "~", description: "home", mountPoint: homeDir, isMounted: true, type: 1, size: 0 }]
+        const items = [{ name: "~", description: "home", mountPoint: homeDir, isMounted: true, isDirectory: false, type: 1, size: 0 }]
             .concat(driveStrings
                 .slice(1)
                 .filter(n => n[columnsPositions[1]] > '~')

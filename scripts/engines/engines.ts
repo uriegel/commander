@@ -3,8 +3,12 @@ import { NullEngine } from "./nullengine"
 import { RootEngine, ROOT_PATH } from "./root"
 
 export type ItemResult = {
-    items: any[]
+    items: FolderItem[]
     path: string
+}
+
+export interface FolderItem {
+    isDirectory: boolean
 }
 
 export type Engine = {
