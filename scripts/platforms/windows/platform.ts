@@ -1,6 +1,7 @@
 import { Column } from 'virtual-table-component'
 import { DialogBox } from 'web-dialog-box'
 import { Menubar, MenuItem } from 'web-menu-bar'
+import { RootItem } from '../../engines/root'
 import { activateClass } from '../../utils'
 import { Platform } from "../platforms"
 
@@ -21,4 +22,6 @@ export class WindowsPlatform implements Platform {
     }
 
     adaptRootColumns(columns: Column[]) { return columns}
+
+    async getRootPath(item: RootItem) { return item.name }
 }

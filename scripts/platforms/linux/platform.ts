@@ -115,6 +115,9 @@ export class LinuxPlatform implements Platform {
         ] 
     }
 
+    // TODO:async getRootPath(item: RootItem){ return item.mountPoint || (item.name == EXTERN ? EXTERNALS_PATH : "")
+    async getRootPath(item: RootItem){ return (item as DriveItem).mountPoint }
+
     private dialog: DialogBox | null = null
     private itemHideMenu: MenuItem | null = null
     private menu: Menubar | null = null

@@ -87,6 +87,20 @@ export class Folder extends HTMLElement {
                 }
             }
         })
+        this.table.addEventListener("enter", async evt => {
+            const { path, recentFolder } = await this.engine.getPath(this.table.items[(evt as CustomEvent).detail.currentItem], () => this.reloadItems())
+            if (path) {
+                await this.changePath(path)
+                if (recentFolder) {
+                    const index = this.table.items.findIndex(n => n.name == recentFolder)
+                    this.table.setPosition(index)
+                }
+            } else {
+//                this.processor.onEnter(this.table.items[evt.detail.currentItem].name)
+                this.setFocus()
+            }
+        })
+
         this.changePath() 
         const lastPath = localStorage.getItem(`${this.folderId}-lastPath`)
         setTimeout(() => this.changePath(lastPath))
@@ -157,7 +171,9 @@ export class Folder extends HTMLElement {
         }))
     }
 
-
+    private reloadItems() {
+        this.changePath(this.engine.currentPath)
+    }
 
     private table: VirtualTable
     //private folderRoot: HTMLElement

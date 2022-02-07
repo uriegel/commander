@@ -12,13 +12,18 @@ export interface FolderItem {
     isDirectory: boolean
 }
 
+export type PathResult = {
+    path?: string 
+    recentFolder?: string
+}
+
 export type Engine = {
     currentPath: string
     isSuitable: (path: string|null|undefined)=>boolean
     getItems: (path: string|null|undefined, showHiddenItems?: boolean)=>Promise<ItemResult>
     getItemPath: (item: FolderItem)=>string
     getColumns(): Column[]
-        
+    getPath: (item: FolderItem, refresh: ()=>void)=>Promise<PathResult>
 }
 
 export function getEngine(folderId: string, path: string|null|undefined, current: Engine): {engine: Engine, changed: boolean} {

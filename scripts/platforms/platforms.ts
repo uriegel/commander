@@ -13,6 +13,7 @@ export interface Platform {
     onDarkTheme: (dark: boolean)=>void
     getDrives: ()=>Promise<RootItem[]>
     adaptRootColumns: (columns: Column[])=>Column[]
+    getRootPath: (item: RootItem)=>Promise<string>
 }
 
 export const Platform = isLinux ? new LinuxPlatform() as Platform : new WindowsPlatform() as Platform

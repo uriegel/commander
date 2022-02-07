@@ -71,4 +71,8 @@ export class RootEngine implements Engine {
     }
 
     getItemPath(item: FolderItem) { return item.name }
+    
+    async getPath(item: FolderItem, _: ()=>void) { 
+        return { path: await Platform.getRootPath(item as RootItem) } 
+    }
 }

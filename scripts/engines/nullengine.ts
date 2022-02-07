@@ -10,4 +10,5 @@ export class NullEngine implements Engine {
     getColumns() { return [] }
     adaptRootColumns(columns: Column[]) { return  [] }
     getItemPath(item: FolderItem) { return "" }
+    async getPath(item: FolderItem, refresh: ()=>void) { return {} }
 }
