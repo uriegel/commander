@@ -55,25 +55,26 @@ export class Folder extends HTMLElement {
             return
 
         this.table.setItems([])
-        // if (result.changed || this.columnsChangeRequest) {
-        //     this.columnsChangeRequest = false
-        //     this.processor = result.processor
-        //     const columns = this.processor.getColumns(this.isExtendedRename)
-        //     this.table.setColumns(columns)
-        //     this.sortFunction = null
-        // }
+        if (result.changed || this.columnsChangeRequest) {
+            this.columnsChangeRequest = false
+            this.engine = result.engine
+            const columns = this.engine.getColumns() // TODO this.isExtendedRename)
+            this.table.setColumns(columns)
+            //this.sortFunction = null
+        }
 
         // this.processor.disableSorting(this.table, true)
 
-        // const dirs = items.filter(n => n.isDirectory)
-        // const files = items.filter(n => !n.isDirectory)
-        // this.dirsCount = dirs.length
-        // this.filesCount = files.length
+        // FolderItem instead of any with isDirectory as base for all EngineItems 
+        //const dirs = items.filter(n => n.isDirectory)
+        //const files = items.filter(n => !n.isDirectory)
+        //this.dirsCount = dirs.length
+        //this.filesCount = files.length
 
         // if (this.sortFunction) 
         //     items = dirs.concat(files.sort(this.sortFunction))
 
-        // this.table.setItems(items)
+        this.table.setItems(items)
         // this.table.setRestriction((items, restrictValue) => 
         //     items.filter(n => n.name.toLowerCase()
         //         .startsWith(restrictValue.toLowerCase())
@@ -92,6 +93,11 @@ export class Folder extends HTMLElement {
     private engine: Engine = new NullEngine()
     private latestRequest = 0
     private showHiddenItems = false
+    private columnsChangeRequest = false
+    // TODO: in another engine
+    //private isExtendedRename = false
+    // TODO: into engine
+    //private sortFunction = null
 }
 
 customElements.define('folder-table', Folder)

@@ -1,3 +1,4 @@
+import { Column } from 'virtual-table-component'
 import { DialogBox } from 'web-dialog-box'
 import { Menubar, MenuItem } from 'web-menu-bar'
 import { activateClass } from '../../utils'
@@ -18,4 +19,6 @@ export class WindowsPlatform implements Platform {
     async getDrives() {
         return []
     }
+
+    adaptRootColumns(columns: Column[]) { return columns}
 }

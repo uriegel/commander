@@ -1,16 +1,19 @@
 import { Platform } from "../platforms/platforms"
-import { Engine } from "./engines"
+import { Engine, formatSize } from "./engines"
 
 export const ROOT_PATH = "root"
 
 export type RootItem = {
     isMounted: boolean
     isNotSelectable?: boolean
+    name: string,
+    description: string,
+    size: number
 }
 
 export class RootEngine implements Engine {
 
-    constructor() {}
+    constructor(private folderId: string) {}
 
     isSuitable(path: string|null|undefined) { return path == ROOT_PATH }
     
@@ -31,5 +34,37 @@ export class RootEngine implements Engine {
                 return n
             })
         return  { items, path: ROOT_PATH }
+    }
+
+    getColumns() { 
+        const widthstr = localStorage.getItem(`${this.folderId}-root-widths`)
+        const widths = widthstr ? JSON.parse(widthstr) : []
+        let columns = Platform.adaptRootColumns([{
+            name: "Name",
+            render: (td: HTMLTableCellElement, item: RootItem) => {
+                var t = //item.name != EXTERN 
+                    item.name != "~" 
+                    ? document.querySelector('#driveIcon') as HTMLTemplateElement
+                    : document.querySelector('#homeIcon') as HTMLTemplateElement
+                    //: document.querySelector('#remoteIcon')
+                td.appendChild(document.importNode(t.content, true))
+                const span = document.createElement('span')
+                span.innerHTML = item.name
+                td.appendChild(span)
+            }
+        }, {
+            name: "Bezeichnung",
+            render: (td: HTMLTableCellElement, item: RootItem) => td.innerHTML = item.description
+        }, {
+            name: "Größe",
+            isRightAligned: true,
+            render: (td: HTMLTableCellElement, item: RootItem) => {
+                td.innerHTML = formatSize(item.size)
+                td.classList.add("rightAligned")
+            }
+        }])
+        if (widths)
+            columns = columns.map((n, i) => ({ ...n, width: widths[i] }))
+        return columns
     }
 }

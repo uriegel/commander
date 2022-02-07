@@ -1,3 +1,4 @@
+import { Column } from 'virtual-table-component'
 import { DialogBox, Result } from 'web-dialog-box'
 import { Menubar, MenuItem } from 'web-menu-bar'
 import { RootItem } from '../../engines/root'
@@ -7,6 +8,12 @@ const { homedir } = window.require('os')
 const { exec } = window.require('child_process')
 
 const homeDir = homedir()
+
+interface DriveItem extends RootItem {
+    mountPoint: string
+    driveType: string
+    type: number
+}
 
 export class LinuxPlatform implements Platform {
     adaptWindow(dialog: DialogBox, /* activeFolderSetFocusToSet, */ menu: Menubar, itemHideMenu: MenuItem) {
@@ -82,8 +89,8 @@ export class LinuxPlatform implements Platform {
                 mountPoint: mount,
                 isMounted: !!mount,
                 driveType: driveString.substring(columnsPositions[4]).trim(),
-                size: parseInt(getString(0, 1), 10)
-            }
+                size: parseInt(getString(0, 1), 10) 
+            } as DriveItem
         }
     
         const items = [{ name: "~", description: "home", mountPoint: homeDir, isMounted: true, type: 1, size: 0 }]
@@ -96,6 +103,16 @@ export class LinuxPlatform implements Platform {
         const unmounted = items.filter(n => !n.isMounted)
         return mounted.concat(unmounted) as RootItem[]
     } 
+
+    adaptRootColumns(columns: Column[]) {
+        return [
+            ...columns.slice(0, 2), {
+                name: "Mountpoint",
+                render: (td: HTMLElement, item: DriveItem) => td.innerHTML = item.mountPoint || ""
+            },
+            columns[2] 
+        ] 
+    }
 
     private dialog: DialogBox | null = null
     private itemHideMenu: MenuItem | null = null

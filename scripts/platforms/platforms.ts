@@ -1,3 +1,4 @@
+import { Column } from 'virtual-table-component'
 import { DialogBox } from 'web-dialog-box'
 import { Menubar, MenuItem } from 'web-menu-bar'
 import { RootItem } from '../engines/root'
@@ -11,6 +12,7 @@ export interface Platform {
     hideMenu: (hide: boolean)=>Promise<void>
     onDarkTheme: (dark: boolean)=>void
     getDrives: ()=>Promise<RootItem[]>
+    adaptRootColumns: (columns: Column[])=>Column[]
 }
 
 export const Platform = isLinux ? new LinuxPlatform() as Platform : new WindowsPlatform() as Platform
