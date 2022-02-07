@@ -6,7 +6,6 @@ export const ROOT_PATH = "root"
 export interface RootItem extends FolderItem {
     isMounted: boolean
     isNotSelectable?: boolean
-    name: string,
     description: string,
     size: number
 }
@@ -14,6 +13,9 @@ export interface RootItem extends FolderItem {
 export class RootEngine implements Engine {
 
     constructor(private folderId: string) {}
+
+    get currentPath() { return ROOT_PATH }
+    set currentPath(_: string) {}
 
     isSuitable(path: string|null|undefined) { return path == ROOT_PATH }
     
@@ -67,4 +69,6 @@ export class RootEngine implements Engine {
             columns = columns.map((n, i) => ({ ...n, width: widths[i] }))
         return columns
     }
+
+    getItemPath(item: FolderItem) { return item.name }
 }

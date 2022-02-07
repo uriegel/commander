@@ -8,12 +8,15 @@ export type ItemResult = {
 }
 
 export interface FolderItem {
+    name: string
     isDirectory: boolean
 }
 
 export type Engine = {
+    currentPath: string
     isSuitable: (path: string|null|undefined)=>boolean
     getItems: (path: string|null|undefined, showHiddenItems?: boolean)=>Promise<ItemResult>
+    getItemPath: (item: FolderItem)=>string
     getColumns(): Column[]
         
 }

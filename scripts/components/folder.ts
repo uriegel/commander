@@ -22,6 +22,7 @@ export class Folder extends HTMLElement {
         const sbr = this.getAttribute("scrollbar-right")
         if (sbr)
             this.table.setAttribute("scrollbar-right", sbr)
+        this.pathInput = this.getElementsByTagName("INPUT")[0]! as HTMLInputElement
 
         this.table.renderRow = (item, tr) => {
             // tr.ondragstart = evt => this.onDragStart(evt)
@@ -40,6 +41,52 @@ export class Folder extends HTMLElement {
             //this.processor.renderRow(item, tr)
         }
 
+        this.table.addEventListener("currentIndexChanged", evt => this.sendStatusInfo((evt as CustomEvent).detail))
+        this.table.addEventListener("focusin", async evt => {
+            this.dispatchEvent(new CustomEvent('onFocus', { detail: this.id }))
+            this.sendStatusInfo(this.table.getPosition())
+        })
+        this.table.addEventListener("keydown", evt => {
+            switch (evt.which) {
+                case 8: // backspace
+                    //this.getHistoryPath(evt.shiftKey)
+                    return
+                case 9: // tab
+                    if (evt.shiftKey) {
+                        this.pathInput!.focus()
+                    } else 
+                        this.dispatchEvent(new CustomEvent('tab', { detail: this.id }))
+                    evt.preventDefault()
+                    evt.stopPropagation()
+                    break
+                case 27: // Escape
+                    //this.selectNone()
+                    break
+                case 35: // end
+                    if (evt.shiftKey) {
+                        const pos = this.table.getPosition()
+                        this.table.items.forEach((item, i) => item.isSelected = !item.isNotSelectable && i >= pos)                     
+                      //  this.computeExtendedNewNames()
+                        this.table.refresh()
+                    }
+                    break
+                case 36: // home
+                    if (evt.shiftKey) {
+                        const pos = this.table.getPosition()
+                        this.table.items.forEach((item, i) => item.isSelected = !item.isNotSelectable && i <= pos)                     
+                        //this.computeExtendedNewNames()
+                        this.table.refresh()
+                    }
+                    break
+                case 45: { // Ins
+                    const pos = this.table.getPosition()
+                    this.table.items[pos].isSelected = !this.table.items[pos].isNotSelectable && !this.table.items[pos].isSelected 
+                    //this.computeExtendedNewNames()
+                    this.table.setPosition(pos + 1)
+                    break
+                }
+            }
+        })
         this.changePath() 
         const lastPath = localStorage.getItem(`${this.folderId}-lastPath`)
         setTimeout(() => this.changePath(lastPath))
@@ -65,10 +112,10 @@ export class Folder extends HTMLElement {
 
         // this.processor.disableSorting(this.table, true)
 
-        // const dirs = items.filter(n => n.isDirectory)
-        // const files = items.filter(n => !n.isDirectory)
-        //this.dirsCount = dirs.length
-        //this.filesCount = files.length
+        const dirs = items.filter(n => n.isDirectory)
+        const files = items.filter(n => !n.isDirectory)
+        this.dirsCount = dirs.length
+        this.filesCount = files.length
 
         // if (this.sortFunction) 
         //     items = dirs.concat(files.sort(this.sortFunction))
@@ -79,12 +126,38 @@ export class Folder extends HTMLElement {
         //         .startsWith(restrictValue.toLowerCase())
         // ))
         
-        // this.onPathChanged(path, fromBacklog)
+        this.onPathChanged(path, fromBacklog)
         // setTimeout(async () => {
         //     await this.processor.addExtendedInfos(path, this.table.items, () => this.table.refresh())
         //     this.processor.disableSorting(this.table, false)
         // })
     }
+
+    setFocus() { this.table.setFocus() }
+
+    private onPathChanged(newPath: string, fromBacklog?: boolean) {
+        const path = newPath || this.engine.currentPath
+        this.pathInput!.value = path
+        localStorage.setItem(`${this.folderId}-lastPath`, path)
+        if (!fromBacklog) {
+            this.backPosition++
+            this.backtrack.length = this.backPosition
+            if (this.backPosition == 0 || this.backtrack[this.backPosition - 1] != path)
+                this.backtrack.push(path)
+        }
+    }
+
+    private sendStatusInfo(index: number) {
+        if (this.table.items && this.table.items.length > 0)
+            this.dispatchEvent(new CustomEvent('pathChanged', { detail: {
+                path: this.engine.getItemPath(this.table.items[index]),
+                dirs: this.dirsCount,
+                files: this.filesCount
+            }
+        }))
+    }
+
+
 
     private table: VirtualTable
     //private folderRoot: HTMLElement
@@ -93,6 +166,12 @@ export class Folder extends HTMLElement {
     private latestRequest = 0
     private showHiddenItems = false
     private columnsChangeRequest = false
+    private backtrack: string[] = []
+    private backPosition = -1
+    private pathInput: HTMLInputElement | null = null
+    private dirsCount = 0
+    private filesCount = 0
+
     // TODO: in another engine
     //private isExtendedRename = false
     // TODO: into engine
