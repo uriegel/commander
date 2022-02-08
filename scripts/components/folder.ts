@@ -47,6 +47,24 @@ export class Folder extends HTMLElement {
     }
 
     connectedCallback() {
+        this.table.addEventListener("columnclick", evt => {
+            const detail = (evt as CustomEvent).detail
+            const sortfn = this.engine.getSortFunction(detail.column, detail.subItem)
+            if (!sortfn)
+                return
+            const ascDesc = (sortResult: any) => detail.descending ? -sortResult : sortResult
+            this.sortFunction = this.composeFunction(ascDesc, sortfn as (a: any, b: any) => any) 
+            this.table.restrictClose()
+            const dirs = this.table.items.filter(n => n.isDirectory)
+            const files = this.table.items.filter(n => !n.isDirectory)
+            const pos = this.table.getPosition()
+            const item = this.table.items[pos]
+            this.table.items = dirs.concat(files.sort(this.sortFunction))
+            const newPos = this.table.items.findIndex(n => n.name == item.name)
+            this.table.setPosition(newPos)
+            //this.computeExtendedNewNames()
+            this.table.refresh()
+        })
         this.table.addEventListener("columnwidths", evt => this.engine.saveWidths((evt as CustomEvent).detail))
         this.table.addEventListener("currentIndexChanged", evt => this.sendStatusInfo((evt as CustomEvent).detail))
         this.table.addEventListener("focusin", async evt => {
@@ -137,7 +155,7 @@ export class Folder extends HTMLElement {
             this.engine = result.engine
             const columns = this.engine.getColumns() // TODO this.isExtendedRename)
             this.table.setColumns(columns)
-            //this.sortFunction = null
+            this.sortFunction = null
         }
 
         // this.processor.disableSorting(this.table, true)
@@ -147,8 +165,8 @@ export class Folder extends HTMLElement {
         this.dirsCount = dirs.length
         this.filesCount = files.length
 
-        // if (this.sortFunction) 
-        //     items = dirs.concat(files.sort(this.sortFunction))
+        if (this.sortFunction) 
+            items = dirs.concat(files.sort(this.sortFunction))
 
         this.table.setItems(items)
         // this.table.setRestriction((items, restrictValue) => 
@@ -222,6 +240,8 @@ export class Folder extends HTMLElement {
         }
     }
 
+    private composeFunction = (...fns: ((...args: any[])=>any)[]) => (...args: any[]) => fns.reduceRight((acc, fn) => fn(acc), args)
+        
     private table: VirtualTable
     //private folderRoot: HTMLElement
     private folderId = ""
@@ -234,6 +254,8 @@ export class Folder extends HTMLElement {
     private pathInput: HTMLInputElement | null = null
     private dirsCount = 0
     private filesCount = 0
+    private sortFunction: ((a: any, b: any) => any) | null = null
+
 
     // TODO: in another engine
     //private isExtendedRename = false

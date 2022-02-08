@@ -84,4 +84,6 @@ export class RootEngine implements Engine {
     }
 
     saveWidths(widths: number[]) { localStorage.setItem(`${this.folderId}-root-widths`, JSON.stringify(widths)) }
+
+    getSortFunction(column: number, isSubItem: boolean) { return null }
 }

@@ -1,5 +1,3 @@
-const composeFunction = (...fns) => (...args) => fns.reduceRight((acc, fn) => fn(acc), args)
-
 const runCmd = async input => {
     const response = await fetch("http://runcmd", {
         method: 'POST',

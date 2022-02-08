@@ -6,6 +6,9 @@ const { getFiles } = window.require('rust-addon')
 
 export interface FileItem extends FolderItem {
     isHidden?: boolean
+    size: number
+    exifTime?: number
+    time: number
 }
 
 export class FileEngine implements Engine {
@@ -27,6 +30,8 @@ export class FileEngine implements Engine {
                 name: "..",
                 isNotSelectable: true,
                 isDirectory: true,
+                size: 0,
+                time: 0
             } as FileItem ]
             .concat(response.filter(n => n.isDirectory))
             .concat(response.filter(n => !n.isDirectory))
@@ -121,6 +126,27 @@ export class FileEngine implements Engine {
 
  //   saveWidths(widths:number[]) { localStorage.setItem(`${this.folderId}-${(extendedRename ? "extended-" : "")}directory-widths`, JSON.stringify(widths)) }
     saveWidths(widths:number[]) { localStorage.setItem(`${this.folderId}-directory-widths`, JSON.stringify(widths)) }
+
+    getSortFunction(column: number, isSubItem: boolean): (([a, b]: FolderItem[]) => number) | null {
+        switch (column) {
+            case 1:
+                return isSubItem == false 
+                    ? ([a, b]: FolderItem[]) => a.name.localeCompare(b.name) 
+                    : ([a, b]: FolderItem[]) => getExtension(a.name).localeCompare(getExtension(b.name))
+            case 2: 
+                // return ([a, b]: FolderItem[]) => ((a as any as FileItem).exifTime ? (a as any as FileItem).exifTime : (a as any as FileItem).time 
+                //     - (b as any as FileItem).exifTime ? (b as any as FileItem).exifTime : (b as any as FileItem).time)
+                return ([a, b]: FolderItem[]) => (a as any as FileItem).time - (b as any as FileItem).time
+            case 3: 
+                return ([a, b]: FolderItem[]) => (a as any as FileItem).size - (b as any as FileItem).size
+            // TODO Windows
+            // case 4:
+            //     return ([a, b]: FileItem[]) => compareVersion(a.version, b.version)
+            default:
+                return null
+        } 
+    }
+
 
     private getParentDir(path: string): PathResult {
         let pos = path.lastIndexOf(Platform.pathDelimiter)

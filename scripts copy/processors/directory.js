@@ -122,23 +122,6 @@ export const getDirectory = (folderId, path) => {
         return { items, path }
     }    
 
-    const getSortFunction = (column, isSubItem) => {
-        switch (column) {
-            case 1:
-                return isSubItem == false 
-                    ? ([a, b]) => a.name.localeCompare(b.name)
-                    : ([a, b]) => getExtension(a.name).localeCompare(getExtension(b.name))
-            case 2: 
-                return ([a, b]) => (a.exifTime ? a.exifTime : a.time) - (b.exifTime ? b.exifTime : b.time)
-            case 3: 
-                return ([a, b]) => a.size - b.size
-            case 4:
-                return ([a, b]) => compareVersion(a.version, b.version)
-            default:
-                return null
-        }
-    }
-
     const saveWidths = widths => localStorage.setItem(`${folderId}-${(extendedRename ? "extended-" : "")}directory-widths`, JSON.stringify(widths))
 
     const getItem = item => currentPath == pathDelimiter ? pathDelimiter + item.name : currentPath + pathDelimiter + item.name

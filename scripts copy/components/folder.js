@@ -8,24 +8,6 @@ class Folder extends HTMLElement {
     get selectedItems() { return this.getSelectedItems() }
     
     connectedCallback() {
-        this.table.addEventListener("columnclick", e => {
-            const sortfn = this.processor.getSortFunction(e.detail.column, e.detail.subItem)
-            if (!sortfn)
-                return
-            const ascDesc = sortResult => e.detail.descending ? -sortResult : sortResult
-            this.sortFunction = composeFunction(ascDesc, sortfn) 
-            this.table.restrictClose()
-            const dirs = this.table.items.filter(n => n.isDirectory)
-            const files = this.table.items.filter(n => !n.isDirectory)
-            const pos = this.table.getPosition()
-            const item = this.table.items[pos]
-            this.table.items = dirs.concat(files.sort(this.sortFunction))
-            const newPos = this.table.items.findIndex(n => n.name == item.name)
-            this.table.setPosition(newPos)
-            this.computeExtendedNewNames()
-            this.table.refresh()
-        })
-
         this.table.addEventListener("delete", async evt => {
             const selectedItems = this.getSelectedItems()
             if (selectedItems.length > 0)
