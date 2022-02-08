@@ -2,7 +2,6 @@ export const DIRECTORY_TYPE = "directory"
 import { formatDateTime, formatSize, getExtension, compareVersion } from "./rendertools.js"
 import { ROOT } from "./root.js"
 import { FILE, DIRECTORY } from '../commander.js'
-const { getExifDate } = window.require('rust-addon')
 import {
     pathDelimiter,
     adaptDirectoryColumns,
@@ -27,107 +26,8 @@ export const getDirectory = (folderId, path) => {
     const getType = () => DIRECTORY_TYPE
     
     let currentPath = ""
-    let extendedRename = false
-
-    const getColumns = extendedRenameToSet => {
-        extendedRename = extendedRenameToSet
-        const widthstr = localStorage.getItem(`${folderId}-${(extendedRename ? "extended-" : "")}directory-widths`)
-        const widths = widthstr ? JSON.parse(widthstr) : []
-        let columns = adaptDirectoryColumns([{
-            name: "Name",
-            isSortable: true,
-            sortIndex: 1,
-            subItem: {
-                name: "Ext.",
-                isSortable: true
-            },            
-            render: (td, item) => {
-                const selector = item.name == ".." 
-                    ? '#parentIcon' 
-                    : item.isDirectory
-                        ? '#folderIcon'
-                        : '#fileIcon'
-                if (selector != '#fileIcon') {
-                    var t = document.querySelector(selector)
-                    td.appendChild(document.importNode(t.content, true))
-                } else {
-                    const img = document.createElement("img")
-                    const ext = getExtension(item.name)
-                    // TODO: Windows
-                    //if (ext) {
-                        // if (ext == "exe") {
-                        //    img.src = `icon://${}`
-                        // } else 
-                        img.src = `icon://${ext}`
-                        img.classList.add("image")
-                        td.appendChild(img)
-                    // } else {
-                    //     var t = document.querySelector(selector)
-                    //     td.appendChild(document.importNode(t.content, true))
-                    // }
-                }
-
-                const span = document.createElement('span')
-                span.innerHTML = item.name
-                td.appendChild(span)
-            }            
-        }, {
-            name: "Datum",
-            isSortable: true,
-            sortIndex: 2,
-            render: (td, item) => {
-                td.innerHTML = formatDateTime(item.exifTime || item.time)
-                if (item.exifTime)
-                    td.classList.add("exif")
-            }
-        }, {
-            name: "Größe",
-            isSortable: true,
-            sortIndex: 3,
-            isRightAligned: true,
-            render: (td, item) => {
-                td.innerHTML = formatSize(item.size)
-                td.classList.add("rightAligned")
-            }
-        }])
-        if (extendedRename) 
-            columns.splice(1, 0, { name: "Neuer Name", render: (td, item) => { td.innerHTML = item.newName || ""}})
-        if (widths)
-            columns = columns.map((n, i)=> ({ ...n, width: widths[i]}))
-        return columns
-    }
-
-
-    const getParentDir = path => {
-        let pos = path.lastIndexOf(pathDelimiter)
-        let parent = pos ? path.substr(0, pos) : pathDelimiter
-        return [parent, path.substr(pos + 1)]
-    }
-    
-
-    const getItems = async (path, hiddenIncluded) => {
-        path = fspath.normalize(path).replace(":.", ":\\")
-        var response = ( getFiles(path))
-            .filter(n => hiddenIncluded ? true : !n.isHidden)
-
-        let items = [{
-                name: "..",
-                isNotSelectable: true,
-                isDirectory: true
-            }]
-            .concat(response.filter(n => n.isDirectory))
-            .concat(response.filter(n => !n.isDirectory))
-        if (items && items.length)
-            currentPath = path
-        return { items, path }
-    }    
-
-    const saveWidths = widths => localStorage.setItem(`${folderId}-${(extendedRename ? "extended-" : "")}directory-widths`, JSON.stringify(widths))
 
     const getItem = item => currentPath == pathDelimiter ? pathDelimiter + item.name : currentPath + pathDelimiter + item.name
-
-
-    const getIconPath = name => currentPath + pathDelimiter + name
 
     const deleteItems = items => platformDeleteItems(items.map(n => fspath.join(currentPath, n)))
 
@@ -232,29 +132,3 @@ export const getDirectory = (folderId, path) => {
         return await getFiles(path)
     }
 
-    return {
-        getType,
-        getColumns,
-        renderRow,
-        getCurrentPath,
-        getPath,
-        getItems,
-        getSortFunction,
-        saveWidths,
-        getItem,
-        getIconPath,
-        addExtendedInfos,
-        disableSorting,
-        createFolder,
-        deleteItems,
-        extractFilesInFolders,
-        getCopyConflicts,
-        prepareCopyItems,
-        copyItems, 
-        renameItem,
-        deleteEmptyFolders,
-        readDir,
-        getFilesInfos,
-        onEnter
-    }
-}

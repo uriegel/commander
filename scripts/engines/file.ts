@@ -42,6 +42,7 @@ export class FileEngine implements Engine {
     }
 
     getColumns() { 
+        //const widthstr = localStorage.getItem(`${folderId}-${(extendedRename ? "extended-" : "")}directory-widths`)
         const widthstr = localStorage.getItem(`${this.folderId}-directory-widths`)
         const widths = widthstr ? JSON.parse(widthstr) : []
         let columns = Platform.adaptDirectoryColumns([{
