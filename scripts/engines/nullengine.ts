@@ -12,4 +12,5 @@ export class NullEngine implements Engine {
     getItemPath(item: FolderItem) { return "" }
     async getPath(item: FolderItem, refresh: ()=>void) { return {} }
     renderRow(item: FolderItem, tr: HTMLTableRowElement) {}
+    saveWidths(widths: number[]) { }
 }

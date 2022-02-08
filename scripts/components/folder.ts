@@ -47,7 +47,7 @@ export class Folder extends HTMLElement {
     }
 
     connectedCallback() {
-        //this.table.addEventListener("columnwidths", evt => this.engine.saveWidths((evt as CustomEvent).detail))
+        this.table.addEventListener("columnwidths", evt => this.engine.saveWidths((evt as CustomEvent).detail))
         this.table.addEventListener("currentIndexChanged", evt => this.sendStatusInfo((evt as CustomEvent).detail))
         this.table.addEventListener("focusin", async evt => {
             this.dispatchEvent(new CustomEvent('onFocus', { detail: this.id }))

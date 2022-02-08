@@ -119,10 +119,12 @@ export class FileEngine implements Engine {
             tr.style.opacity = "0.5"
     }
 
+ //   saveWidths(widths:number[]) { localStorage.setItem(`${this.folderId}-${(extendedRename ? "extended-" : "")}directory-widths`, JSON.stringify(widths)) }
+    saveWidths(widths:number[]) { localStorage.setItem(`${this.folderId}-directory-widths`, JSON.stringify(widths)) }
+
     private getParentDir(path: string): PathResult {
         let pos = path.lastIndexOf(Platform.pathDelimiter)
         let parent = pos ? path.substring(0, pos) : Platform.pathDelimiter
         return { path: parent, recentFolder: path.substring(pos + 1) }
     }
-
 }

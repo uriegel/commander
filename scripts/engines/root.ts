@@ -15,7 +15,6 @@ export class RootEngine implements Engine {
     constructor(private folderId: string) {}
 
     get currentPath() { return ROOT_PATH }
-    set currentPath(_: string) {}
 
     isSuitable(path: string|null|undefined) { return path == ROOT_PATH }
     
@@ -83,4 +82,6 @@ export class RootEngine implements Engine {
         tr.ondrag = null
         tr.ondragend = null
     }
+
+    saveWidths(widths: number[]) { localStorage.setItem(`${this.folderId}-root-widths`, JSON.stringify(widths)) }
 }
