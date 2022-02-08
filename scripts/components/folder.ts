@@ -28,16 +28,16 @@ export class Folder extends HTMLElement {
             // tr.ondragstart = evt => this.onDragStart(evt)
             // tr.ondrag = evt => this.onDrag(evt)
             // tr.ondragend = evt => this.onDragEnd(evt)
-            // tr.onmousedown = evt => {
-            //     if (evt.ctrlKey) {
-            //         setTimeout(() => {
-            //             const pos = this.table.getPosition()
-            //             this.table.items[pos].isSelected = !this.table.items[pos].isNotSelectable && !this.table.items[pos].isSelected 
-            //             this.computeExtendedNewNames()
-            //             this.table.refresh()
-            //         })
-            //     }
-            // }
+            tr.onmousedown = evt => {
+                if (evt.ctrlKey) {
+                    setTimeout(() => {
+                        const pos = this.table.getPosition()
+                        this.table.items[pos].isSelected = !this.table.items[pos].isNotSelectable && !this.table.items[pos].isSelected 
+                        //this.computeExtendedNewNames()
+                        this.table.refresh()
+                    })
+                }
+            }
             this.engine.renderRow(item, tr)
         }
 
@@ -158,7 +158,7 @@ export class Folder extends HTMLElement {
             this.sortFunction = null
         }
 
-        // this.processor.disableSorting(this.table, true)
+        this.engine.disableSorting(this.table, true)
 
         const dirs = items.filter(n => n.isDirectory)
         const files = items.filter(n => !n.isDirectory)
@@ -169,16 +169,16 @@ export class Folder extends HTMLElement {
             items = dirs.concat(files.sort(this.sortFunction))
 
         this.table.setItems(items)
-        // this.table.setRestriction((items, restrictValue) => 
-        //     items.filter(n => n.name.toLowerCase()
-        //         .startsWith(restrictValue.toLowerCase())
-        // ))
+        this.table.setRestriction((items, restrictValue) => 
+            items.filter(n => n.name.toLowerCase()
+                .startsWith(restrictValue.toLowerCase())
+        ))
         
         this.onPathChanged(path, fromBacklog)
-        // setTimeout(async () => {
-        //     await this.processor.addExtendedInfos(path, this.table.items, () => this.table.refresh())
-        //     this.processor.disableSorting(this.table, false)
-        // })
+        setTimeout(async () => {
+            await this.engine.addExtendedInfos(path, this.table.items, () => this.table.refresh())
+            this.engine.disableSorting(this.table, false)
+        })
     }
 
     setFocus() { this.table.setFocus() }
@@ -259,8 +259,6 @@ export class Folder extends HTMLElement {
 
     // TODO: in another engine
     //private isExtendedRename = false
-    // TODO: into engine
-    //private sortFunction = null
 }
 
 customElements.define('folder-table', Folder)

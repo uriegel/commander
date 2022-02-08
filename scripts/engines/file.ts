@@ -1,8 +1,9 @@
+import { VirtualTable } from "virtual-table-component"
 import { Platform } from "../platforms/platforms"
 import { Engine, FolderItem, formatDateTime, formatSize, getExtension, ItemResult, PathResult } from "./engines"
 import { ROOT_PATH } from "./root"
 const fspath = window.require('path')
-const { getFiles } = window.require('rust-addon')
+const { getFiles, getExifDate } = window.require('rust-addon')
 
 export interface FileItem extends FolderItem {
     isHidden?: boolean
@@ -134,9 +135,8 @@ export class FileEngine implements Engine {
                     ? ([a, b]: FolderItem[]) => a.name.localeCompare(b.name) 
                     : ([a, b]: FolderItem[]) => getExtension(a.name).localeCompare(getExtension(b.name))
             case 2: 
-                // return ([a, b]: FolderItem[]) => ((a as any as FileItem).exifTime ? (a as any as FileItem).exifTime : (a as any as FileItem).time 
-                //     - (b as any as FileItem).exifTime ? (b as any as FileItem).exifTime : (b as any as FileItem).time)
-                return ([a, b]: FolderItem[]) => (a as any as FileItem).time - (b as any as FileItem).time
+                return ([a, b]: FolderItem[]) => ((a as any as FileItem).exifTime ? (a as any as FileItem).exifTime! : (a as any as FileItem).time 
+                    - (b && (b as any as FileItem).exifTime ? (b as any as FileItem).exifTime! : (b as any as FileItem).time))
             case 3: 
                 return ([a, b]: FolderItem[]) => (a as any as FileItem).size - (b as any as FileItem).size
             // TODO Windows
@@ -145,6 +145,29 @@ export class FileEngine implements Engine {
             default:
                 return null
         } 
+    }
+
+    disableSorting(table: VirtualTable, disable: boolean) {
+        table.disableSorting(1, disable)
+        Platform.disableSorting(table, disable)
+    }
+
+    async addExtendedInfos(path: string|undefined|null, items: FolderItem[], refresh: ()=>void) {
+        for (let i = 0; i < items.length; i++ ) {
+            const n = items[i]
+            await this.addExtendedInfo(n as FileItem, path!)
+            if (i != 0 && i % 50 == 0)
+                refresh()
+        }
+        refresh()
+
+    }
+
+    private async addExtendedInfo(item: FileItem, path: string) {
+        var name = item.name.toLocaleLowerCase();
+        if (name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png"))
+            item.exifTime = await getExifDate(fspath.join(path, item.name))
+        // await addAdditionalInfo(item, name, path)
     }
 
 

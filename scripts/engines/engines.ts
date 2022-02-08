@@ -1,4 +1,4 @@
-import { Column } from "virtual-table-component"
+import { Column, VirtualTable } from "virtual-table-component"
 import { FileEngine } from "./file"
 import { RootEngine, ROOT_PATH } from "./root"
 
@@ -26,7 +26,9 @@ export type Engine = {
     getPath: (item: FolderItem, refresh: ()=>void)=>Promise<PathResult>
     renderRow: (item: FolderItem, tr: HTMLTableRowElement)=>void
     saveWidths: (widths: number[])=>void
-    getSortFunction: (column: number, isSubItem: boolean) => (([a, b]: FolderItem[]) => number) | null  
+    getSortFunction: (column: number, isSubItem: boolean)=>(([a, b]: FolderItem[]) => number) | null  
+    disableSorting: (table: VirtualTable, disable: boolean)=>void
+    addExtendedInfos: (path: string|undefined|null, items: FolderItem[], refresh: ()=>void)=>Promise<void>
 }
 
 export function getEngine(folderId: string, path: string|null|undefined, current: Engine): {engine: Engine, changed: boolean} {

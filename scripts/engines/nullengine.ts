@@ -1,4 +1,4 @@
-import { Column } from "virtual-table-component"
+import { Column, VirtualTable } from "virtual-table-component"
 import { Engine, FolderItem, ItemResult } from "./engines"
 
 export class NullEngine implements Engine {
@@ -14,4 +14,6 @@ export class NullEngine implements Engine {
     renderRow(item: FolderItem, tr: HTMLTableRowElement) {}
     saveWidths(widths: number[]) { }
     getSortFunction(column: number, isSubItem: boolean) { return null }
+    disableSorting(table: VirtualTable, disable: boolean) {}
+    async addExtendedInfos(path: string|undefined|null, items: FolderItem[], refresh: ()=>void) {}
 }

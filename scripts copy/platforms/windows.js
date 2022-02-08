@@ -59,8 +59,6 @@ export const pathDelimiter = "\\"
 
 export const parentIsRoot = currentPath => currentPath.length == 3 && currentPath[1] == ':'
 
-export const adaptDisableSorting = (table, disable) => table.disableSorting(3, disable)
-
 export async function addExtendedInfo(item, name, path) {
     if (name.endsWith(".exe") || name.endsWith(".dll"))
         item.version = await getFileVersion(fspath.join(path, item.name))

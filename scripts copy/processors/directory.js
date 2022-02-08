@@ -126,27 +126,6 @@ export const getDirectory = (folderId, path) => {
 
     const getItem = item => currentPath == pathDelimiter ? pathDelimiter + item.name : currentPath + pathDelimiter + item.name
 
-    async function addExtendedInfo(item, path) {
-        var name = item.name.toLocaleLowerCase();
-        if (name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png"))
-            item.exifTime = await getExifDate(fspath.join(path, item.name))
-        await addAdditionalInfo(item, name, path)
-    }
-    
-    const addExtendedInfos = async (path, items, refresh) => {
-        for (let i = 0; i < items.length; i++ ) {
-            const n = items[i]
-            await addExtendedInfo(n, path)
-            if (i != 0 && i % 50 == 0)
-                refresh()
-        }
-        refresh()
-    }
-
-    const disableSorting = (table, disable) => {
-        table.disableSorting(1, disable)
-        adaptDisableSorting(table, disable)
-    }
 
     const getIconPath = name => currentPath + pathDelimiter + name
 

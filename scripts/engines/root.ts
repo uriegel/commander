@@ -1,3 +1,4 @@
+import { VirtualTable } from "virtual-table-component"
 import { Platform } from "../platforms/platforms"
 import { Engine, FolderItem, formatSize } from "./engines"
 
@@ -86,4 +87,8 @@ export class RootEngine implements Engine {
     saveWidths(widths: number[]) { localStorage.setItem(`${this.folderId}-root-widths`, JSON.stringify(widths)) }
 
     getSortFunction(column: number, isSubItem: boolean) { return null }
+
+    disableSorting(table: VirtualTable, disable: boolean) {}
+
+    async addExtendedInfos(path: string|undefined|null, items: FolderItem[], refresh: ()=>void) {}
 }

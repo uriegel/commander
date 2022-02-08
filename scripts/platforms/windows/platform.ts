@@ -1,4 +1,4 @@
-import { Column } from 'virtual-table-component'
+import { Column, VirtualTable } from 'virtual-table-component'
 import { DialogBox } from 'web-dialog-box'
 import { Menubar, MenuItem } from 'web-menu-bar'
 import { FolderItem } from '../../engines/engines'
@@ -57,6 +57,10 @@ export class WindowsPlatform implements Platform {
 
     parentIsRoot(path: string) {
         return path.length == 3 && path[1] == ':'
+    }
+
+    disableSorting(table: VirtualTable, disable: boolean) {
+        table.disableSorting(3, disable)
     }
 }
 
