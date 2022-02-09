@@ -24,16 +24,6 @@ class Folder extends HTMLElement {
         return this.table.items[this.table.getPosition()].name
     }
 
-    getSelectedItems() {
-        const selectedItems = this.table.items
-            .filter(n => n.isSelected) 
-        if (selectedItems.length == 0 && this.table.getPosition() == 0 && this.table.items[0].name == "..")
-            return []
-        return selectedItems.length > 0
-            ? selectedItems
-            : [this.table.items[this.table.getPosition()]]
-    }
-
     async createFolder(newFolder) {
         await this.processor.createFolder(newFolder)
         this.reloadItems()

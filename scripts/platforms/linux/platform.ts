@@ -126,7 +126,6 @@ export class LinuxPlatform implements Platform {
 
     parentIsRoot(path: string) { return path == '/' }
 
-    // TODO:async getRootPath(item: RootItem){ return item.mountPoint || (item.name == EXTERN ? EXTERNALS_PATH : "")
     async getRootPath(item: RootItem){ return (item as DriveItem).mountPoint }
 
     disableSorting(table: VirtualTable, disable: boolean) {}

@@ -4,12 +4,14 @@ import 'web-dialog-box'
 import 'grid-splitter'
 import 'web-pie-progress'
 import './components/folder'
+import './components/externaladder'
 import { Menubar, MenuItem } from 'web-menu-bar'
 import { initialize as initializeMenu } from './menu'
 import { refreshViewer, showViewer as viewer } from './viewer'
 import { DialogBox } from 'web-dialog-box'
 import { Platform } from './platforms/platforms'
 import { Folder } from './components/folder'
+//import { FolderItem } from './engines/engines'
 
 export type Commander = {
     showViewer: (show: boolean)=>void
@@ -19,14 +21,31 @@ export type Commander = {
     selectAll: ()=>void
     selectNone: ()=>void
     showHidden: (hidden: boolean)=>void 
+    rename: ()=>void
 }
+
+// enum ItemsType {
+//     Directory,
+//     File,
+//     Both
+// }
+
+// function getItemsTypes(selectedItems: FolderItem[]) {
+//     const types = selectedItems
+//         .map(n => n.isDirectory)
+//         .filter((item, index, resultList) => resultList
+//             .findIndex(n => n == item) == index)
+//     return types.length == 1
+//     ? types[0] ? ItemsType.Directory : ItemsType.File
+//     : ItemsType.Both
+// }
 
 var currentPath = ""
 const folderLeft = document.getElementById("folderLeft")! as Folder
 const folderRight = document.getElementById("folderRight")! as Folder
 var activeFolder = folderLeft
 
-const dialog = document.querySelector('dialog-box') as DialogBox
+export const dialog = document.querySelector('dialog-box') as DialogBox
 
 const statusText = document.getElementById("statusText")!
 const dirsText = document.getElementById("dirs")!
@@ -90,6 +109,56 @@ function showHidden(hidden: boolean) {
     folderRight.showHidden(hidden)
 }
 
+async function rename() {
+    try {
+        // if (activeFolder.isExtendedRename) {
+        //     activeFolder.doExtendedRename()
+        //     return
+        // }
+
+        // const selectedItems = activeFolder.getSelectedItems()
+        // if (selectedItems.length != 1)    
+        //     return
+        // const itemsType = getItemsTypes(selectedItems)
+        // const itemToRename = selectedItems[0].name
+        // const text = itemsType == ItemsType.File
+        //     ? "Datei umbenennen"
+        //     : "Ordner umbenennen"
+        
+        // const getInputRange = () => {
+        //     const pos = itemToRename.lastIndexOf(".")
+        //     if (pos == -1)
+        //         return [0, itemToRename.length]
+        //     else
+        //         return [0, pos]
+        // }
+
+        // const res = await dialog.show({
+        //     text,
+        //     inputText: itemToRename,
+        //     inputSelectRange: getInputRange(),
+        //     btnOk: true,
+        //     btnCancel: true,
+        //     defBtnOk: true
+        // })    
+        // activeFolder.setFocus()
+        // if (res.result == Result.Ok)
+        //     await activeFolder.renameItem(itemToRename, res.input)
+    } catch (e) {
+        // const text = e.fileResult == FileResult.AccessDenied
+        //         ? "Zugriff verweigert"
+        //         : "Die Aktion konnte nicht ausgeführt werden"
+        // setTimeout(async () => {
+        //     await dialog.show({
+        //         text,
+        //         btnOk: true
+        //     })
+        //     activeFolder.setFocus()        
+        // },
+        // 500)
+    }
+}
+
 const commander: Commander = {
     showViewer,
     hideMenu,
@@ -97,7 +166,8 @@ const commander: Commander = {
     adaptPath,
     selectAll,
     selectNone,
-    showHidden
+    showHidden,
+    rename
 }
 
 Platform.adaptWindow(dialog, menu, document.getElementById("hidemenu") as MenuItem)

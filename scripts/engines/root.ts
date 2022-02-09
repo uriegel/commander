@@ -1,8 +1,10 @@
 import { VirtualTable } from "virtual-table-component"
 import { Platform } from "../platforms/platforms"
 import { Engine, FolderItem, formatSize } from "./engines"
+import { EXTERNALS_PATH } from "./externals"
 
 export const ROOT_PATH = "root"
+const EXTERNALS = "extern"
 
 export interface RootItem extends FolderItem {
     isMounted: boolean
@@ -23,13 +25,15 @@ export class RootEngine implements Engine {
         const rootitems = await Platform.getDrives() as RootItem[]
         const mountedItems = rootitems.filter(n => n.isMounted)
         const unmountedItems = rootitems.filter(n => !n.isMounted)
-        // const externals = {
-        //     name: EXTERN,
-        //     description: "Zugriff auf externe Geräte",
-        //     isMounted: true
-        // }
+        const externals = {
+            name: EXTERNALS,
+            description: "Zugriff auf externe Geräte",
+            isMounted: true,
+            isDirectory: true,
+            size: 0
+        }
         const items = mountedItems
-//            .concat(externals)
+            .concat(externals)
             .concat(unmountedItems)
             .map(n => {
                 n.isNotSelectable = true
@@ -44,11 +48,11 @@ export class RootEngine implements Engine {
         let columns = Platform.adaptRootColumns([{
             name: "Name",
             render: (td: HTMLTableCellElement, item: RootItem) => {
-                var t = //item.name != EXTERN 
-                    item.name != "~" 
-                    ? document.querySelector('#driveIcon') as HTMLTemplateElement
-                    : document.querySelector('#homeIcon') as HTMLTemplateElement
-                    //: document.querySelector('#remoteIcon')
+                var t = (item.name != EXTERNALS 
+                    ? item.name != "~" 
+                    ? document.querySelector('#driveIcon') 
+                    : document.querySelector('#homeIcon') 
+                    : document.querySelector('#remoteIcon')) as HTMLTemplateElement
                 td.appendChild(document.importNode(t.content, true))
                 const span = document.createElement('span')
                 span.innerHTML = item.name
@@ -73,7 +77,11 @@ export class RootEngine implements Engine {
     getItemPath(item: FolderItem) { return item.name }
     
     async getPath(item: FolderItem, _: ()=>void) { 
-        return { path: await Platform.getRootPath(item as RootItem) } 
+        return { 
+            path: item.name == EXTERNALS 
+                ? EXTERNALS_PATH 
+                : await Platform.getRootPath(item as RootItem) 
+        } 
     }
 
     renderRow(item: FolderItem, tr: HTMLTableRowElement) {

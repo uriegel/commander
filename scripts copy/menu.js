@@ -1,6 +1,4 @@
 
-window.onRename = () => commander.rename()
-
 window.onExtendedRename = () => {
     commander.extendedRename()
 }

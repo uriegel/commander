@@ -1,6 +1,6 @@
 import 'virtual-table-component'
 import { VirtualTable } from 'virtual-table-component'
-import { Engine, getEngine } from '../engines/engines'
+import { Engine, FolderItem, getEngine } from '../engines/engines'
 import { NullEngine } from '../engines/nullengine'
 
 export class Folder extends HTMLElement {
@@ -185,6 +185,16 @@ export class Folder extends HTMLElement {
 
     getCurrentPath() {
         return this.engine.currentPath
+    }
+
+    getSelectedItems(): FolderItem[] {
+        const selectedItems = this.table.items
+            .filter(n => n.isSelected) 
+        if (selectedItems.length == 0 && this.table.getPosition() == 0 && this.table.items[0].name == "..")
+            return []
+        return selectedItems.length > 0
+            ? selectedItems
+            : [this.table.items[this.table.getPosition()]]
     }
 
     showHidden(hidden: boolean) {

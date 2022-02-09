@@ -3,20 +3,6 @@ import { initializeCopying } from './processors/copyProcessor.js'
 import './components/copyconflicts'
 import './components/externaladder'
 import './components/extendedrename'
-export const DIRECTORY = 1
-export const FILE = 2
-export const BOTH = 3
-
-
-function getItemsTypes(selectedItems) {
-    const types = selectedItems
-        .map(n => n.isDirectory)
-        .filter((item, index, resultList) => resultList
-            .findIndex(n => n == item) == index)
-    return types.length == 1
-    ? types[0] ? DIRECTORY : FILE
-    : BOTH
-}
 
 initializeCopying(onCopyFinish, onShowCopyErrors)
 
@@ -47,56 +33,6 @@ async function copy(move) {
     }
 }
 
-async function rename() {
-    try {
-        if (activeFolder.isExtendedRename) {
-            activeFolder.doExtendedRename()
-            return
-        }
-
-        const selectedItems = activeFolder.getSelectedItems()
-        if (selectedItems.length != 1)    
-            return
-        const itemsType = getItemsTypes(selectedItems)
-        const itemToRename = selectedItems[0].name
-        const text = itemsType == FILE 
-            ? "Datei umbenennen"
-            : "Ordner umbenennen"
-        
-        const getInputRange = () => {
-            const pos = itemToRename.lastIndexOf(".")
-            if (pos == -1)
-                return [0, itemToRename.length]
-            else
-                return [0, pos]
-        }
-
-        const res = await dialog.show({
-            text,
-            input: true,
-            inputText: itemToRename,
-            inputSelectRange: getInputRange(),
-            btnOk: true,
-            btnCancel: true,
-            defBtnOk: true
-        })    
-        activeFolder.setFocus()
-        if (res.result == RESULT_OK)
-            await activeFolder.renameItem(itemToRename, res.input)
-    } catch (e) {
-        const text = e.fileResult == FileResult.AccessDenied
-                ? "Zugriff verweigert"
-                : "Die Aktion konnte nicht ausgeführt werden"
-        setTimeout(async () => {
-            await dialog.show({
-                text,
-                btnOk: true
-            })
-            activeFolder.setFocus()        
-        },
-        500)
-    }
-}
 
 async function extendedRename() {
     const extendedRename = document.getElementById("extended-rename")
