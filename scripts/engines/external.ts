@@ -63,6 +63,16 @@ export class ExternalEngine extends FileEngine {
         : { }
     }
 
+    protected override getParentDir(path: string): PathResult {
+        let pos = path.lastIndexOf('/')
+        let parent = pos ? path.substring(0, pos) : '/'
+        return { path: parent, recentFolder: path.substring(pos + 1) }
+    }
+
+    protected override async addAdditionalInfo(item: FileItem, name: string, path: string) { }
+
+    protected override getAdditionalSortFunction(column: number, isSubItem: boolean): (([a, b]: FolderItem[]) => number) | null { return null}
+
     private async getFiles(path: string): Promise<File[]> {
         return this.request("getfiles", { path })
     }
@@ -104,12 +114,6 @@ export class ExternalEngine extends FileEngine {
             req.end()        
         }) 
     }    
-
-    protected override getParentDir(path: string): PathResult {
-        let pos = path.lastIndexOf('/')
-        let parent = pos ? path.substring(0, pos) : '/'
-        return { path: parent, recentFolder: path.substring(pos + 1) }
-    }
 
     private ip: string
     private rootPath: string

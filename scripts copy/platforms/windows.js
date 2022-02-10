@@ -6,23 +6,6 @@ import { compareVersion } from "../processors/rendertools.js"
 import { EXTERN } from "../processors/root.js"
 import { onFinish } from "../processors/copyProcessor.js"
 
-export const adaptWindow = (menu, itemHideMenu) => itemHideMenu.isHidden = true
-
-export function onDarkTheme(dark) {
-    activateClass(document.body, "windows-dark", dark) 
-    activateClass(document.body, "windows", !dark) 
-}
-
-export const adaptRootColumns = columns => columns
-
-export const adaptDirectoryColumns = columns => [
-    ...columns.slice(0, columns.length), {
-        name: "Version",
-        isSortable: true,
-        render: (td, item) => td.innerHTML = fillVersion(item.version)
-    }
-]
-
 export const adaptConflictColumns = columns => [
     ...columns.slice(0, columns.length), {
         name: "Version",
@@ -52,12 +35,6 @@ export const createFolder = async newFolder => runCmd({
     method: "createFolder", 
     path: newFolder
 })
-
-export const getRootPath = async item => [ item.name != EXTERN ? item.name : EXTERNALS_TYPE, null ]
-
-export const pathDelimiter = "\\"
-
-export const parentIsRoot = currentPath => currentPath.length == 3 && currentPath[1] == ':'
 
 export async function addExtendedInfo(item, name, path) {
     if (name.endsWith(".exe") || name.endsWith(".dll"))

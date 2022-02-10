@@ -1,6 +1,7 @@
 import { Column, VirtualTable } from 'virtual-table-component'
 import { DialogBox, Result } from 'web-dialog-box'
 import { Menubar, MenuItem } from 'web-menu-bar'
+import { FileItem } from '../../engines/file'
 import { RootItem } from '../../engines/root'
 import { activateClass } from '../../utils'
 import { Platform } from "../platforms"
@@ -129,6 +130,10 @@ export class LinuxPlatform implements Platform {
     async getRootPath(item: RootItem){ return (item as DriveItem).mountPoint }
 
     disableSorting(table: VirtualTable, disable: boolean) {}
+
+    async addAdditionalInfo(item: FileItem, name: string, path: string) { }
+
+    getAdditionalSortFunction(column: number, isSubItem: boolean) { return null }
 
     private dialog: DialogBox | null = null
     private itemHideMenu: MenuItem | null = null

@@ -6,6 +6,8 @@ import { FileItem } from '../../engines/file'
 import { RootItem } from '../../engines/root'
 import { activateClass } from '../../utils'
 import { Platform } from "../platforms"
+const fspath = window.require('path')
+const { getFileVersion } = window.require('rust-addon')
 
 type Version = {
     major: number 
@@ -44,6 +46,7 @@ export class WindowsPlatform implements Platform {
             ...columns.slice(0, columns.length), {
                 name: "Version",
                 isSortable: true,
+                sortIndex: 4,
                 render: (td: HTMLTableCellElement, item: FolderItem) => td.innerHTML = fillVersion((item as WindowsFileItem).version)
             }
         ]
@@ -62,8 +65,33 @@ export class WindowsPlatform implements Platform {
     disableSorting(table: VirtualTable, disable: boolean) {
         table.disableSorting(3, disable)
     }
+
+    async addAdditionalInfo(item: FileItem, name: string, path: string) { 
+        if (name.endsWith(".exe") || name.endsWith(".dll"))
+            (item as WindowsFileItem).version = await getFileVersion(fspath.join(path, item.name))
+    }
+
+    getAdditionalSortFunction(column: number, _: boolean): (([a, b]: FolderItem[]) => number) | null { 
+        return column == 4 
+            ? ([a, b]: FolderItem[]) => compareVersion((a as WindowsFileItem).version, (b as WindowsFileItem).version)
+            : null
+    }
 }
 
 function fillVersion(version: Version) {
     return version ? `${version.major}.${version.minor}.${version.build}.${version.patch}` : ""
+}
+
+function compareVersion(versionLeft: Version, versionRight: Version) {
+    return !versionLeft
+        ? -1
+        : !versionRight
+        ? 1
+        : versionLeft.major != versionRight.major 
+        ? versionLeft.major - versionRight.major
+        : versionLeft.minor != versionRight.minor
+        ? versionLeft.minor - versionRight.minor
+        : versionLeft.patch != versionRight.patch
+        ? versionLeft.patch - versionRight.patch
+        : versionLeft.build - versionRight.build
 }

@@ -142,17 +142,18 @@ export class FileEngine implements Engine {
                     - (b && (b as any as FileItem).exifTime ? (b as any as FileItem).exifTime! : (b as any as FileItem).time))
             case 3: 
                 return ([a, b]: FolderItem[]) => (a as any as FileItem).size - (b as any as FileItem).size
-            // TODO Windows
-            // case 4:
-            //     return ([a, b]: FileItem[]) => compareVersion(a.version, b.version)
             default:
-                return null
+                return this.getAdditionalSortFunction(column, isSubItem)
         } 
     }
 
     disableSorting(table: VirtualTable, disable: boolean) {
         table.disableSorting(1, disable)
         Platform.disableSorting(table, disable)
+    }
+
+    protected getAdditionalSortFunction(column: number, isSubItem: boolean): (([a, b]: FolderItem[]) => number) | null {
+        return Platform.getAdditionalSortFunction(column, isSubItem)
     }
 
     async addExtendedInfos(path: string|undefined|null, items: FolderItem[], refresh: ()=>void) {
@@ -166,18 +167,21 @@ export class FileEngine implements Engine {
 
     }
 
-    private async addExtendedInfo(item: FileItem, path: string) {
-        var name = item.name.toLocaleLowerCase();
-        if (name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png"))
-            item.exifTime = await getExifDate(fspath.join(path, item.name))
-        // await addAdditionalInfo(item, name, path)
-    }
-
-
     protected getParentDir(path: string): PathResult {
         let pos = path.lastIndexOf(Platform.pathDelimiter)
         let parent = pos ? path.substring(0, pos) : Platform.pathDelimiter
         return { path: parent, recentFolder: path.substring(pos + 1) }
+    }
+
+    protected async addAdditionalInfo(item: FileItem, name: string, path: string) { 
+        await Platform.addAdditionalInfo(item, name, path) 
+    }
+
+    private async addExtendedInfo(item: FileItem, path: string) {
+        var name = item.name.toLocaleLowerCase();
+        if (name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png"))
+            item.exifTime = await getExifDate(fspath.join(path, item.name))
+        await this.addAdditionalInfo(item, name, path)
     }
 
     private folderId: string;
