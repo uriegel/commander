@@ -1,4 +1,5 @@
-import { ItemResult } from "./engines"
+import { FolderItem, ItemResult, PathResult } from "./engines"
+import { EXTERNALS_PATH } from "./externals"
 import { FileEngine, FileItem } from "./file"
 const http = window.require('http')
 
@@ -25,10 +26,13 @@ export class ExternalEngine extends FileEngine {
     constructor(folderId: string, path: string) {
         super(`${folderId}-external`)
 
-        this.ip = path.substring(8, path.indexOf('/', 9)) 
-        this.rootPath = `external/${this.ip}/`
-        this.pathBegin = this.rootPath.length - 1
+        const pos = path.indexOf('/', 10)
+        this.ip = pos == -1 ? path.substring(9) : path.substring(9, pos)
+        this.rootPath = `external/${this.ip}`
+        this.pathBegin = this.rootPath.length
     }
+
+    override isSuitable(path: string|null|undefined) { return path != EXTERNALS_PATH && path?.startsWith(EXTERNAL_PATH) == true }
 
     override async getItems(path: string|null = "", showHiddenItems?: boolean) {
         var response = (await this.getFiles(path!.substring(this.pathBegin)))
@@ -47,6 +51,16 @@ export class ExternalEngine extends FileEngine {
         if (items && items.length)
             this.currentPath = path!
         return { items, path } as ItemResult
+    }
+
+    override async getPath(item: FolderItem, _: ()=>void) {
+        return item.isDirectory 
+        ? item.name != ".."
+            ? { path: this.currentPath + '/' + item.name }
+            : this.currentPath == this.rootPath
+                ? { path: EXTERNALS_PATH }
+                : this.getParentDir(this.currentPath) 
+        : { }
     }
 
     private async getFiles(path: string): Promise<File[]> {
@@ -90,6 +104,12 @@ export class ExternalEngine extends FileEngine {
             req.end()        
         }) 
     }    
+
+    protected override getParentDir(path: string): PathResult {
+        let pos = path.lastIndexOf('/')
+        let parent = pos ? path.substring(0, pos) : '/'
+        return { path: parent, recentFolder: path.substring(pos + 1) }
+    }
 
     private ip: string
     private rootPath: string

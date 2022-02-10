@@ -174,7 +174,7 @@ export class FileEngine implements Engine {
     }
 
 
-    private getParentDir(path: string): PathResult {
+    protected getParentDir(path: string): PathResult {
         let pos = path.lastIndexOf(Platform.pathDelimiter)
         let parent = pos ? path.substring(0, pos) : Platform.pathDelimiter
         return { path: parent, recentFolder: path.substring(pos + 1) }

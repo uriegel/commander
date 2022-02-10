@@ -88,7 +88,7 @@ export class ExternalsEngine implements Engine {
             // }
             return {}
         } else
-            return { path: `external/${extenalItem.ip}/`}
+            return { path: `external/${extenalItem.ip}`}
     }
 
     renderRow(item: FolderItem, tr: HTMLTableRowElement) {
