@@ -8,6 +8,7 @@ import { activateClass } from '../../utils'
 import { Platform } from "../platforms"
 const fspath = window.require('path')
 const { getFileVersion } = window.require('rust-addon')
+const { getDrives } = window.require('rust-addon')
 
 type Version = {
     major: number 
@@ -36,7 +37,7 @@ export class WindowsPlatform implements Platform {
     }
 
     async getDrives() {
-        return []
+        return await getDrives()
     }
 
     adaptRootColumns(columns: Column[]) { return columns}
