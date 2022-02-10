@@ -1,4 +1,5 @@
 import { Column, VirtualTable } from "virtual-table-component"
+import { ExternalEngine, EXTERNAL_PATH } from "./external"
 import { ExternalsEngine, EXTERNALS_PATH } from "./externals"
 import { FileEngine } from "./file"
 import { RootEngine, ROOT_PATH } from "./root"
@@ -39,6 +40,8 @@ export function getEngine(folderId: string, path: string|null|undefined, current
         return { engine: new RootEngine(folderId), changed: true } 
     else if (path == EXTERNALS_PATH)         
         return { engine: new ExternalsEngine(folderId), changed: true } 
+    else if (path.startsWith(EXTERNAL_PATH))         
+        return { engine: new ExternalEngine(folderId, path), changed: true } 
     else
         return { engine: new FileEngine(folderId), changed: true }
 }

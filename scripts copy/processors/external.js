@@ -14,7 +14,7 @@ export const getExternal = (folderId, path) => {
     let currentPath = ""
 
     const getColumns = () => {
-        const widthstr = localStorage.getItem(`${folderId}-external-widths`)
+
         const widths = widthstr ? JSON.parse(widthstr) : []
         let columns = [{
             name: "Name",
@@ -64,22 +64,6 @@ export const getExternal = (folderId, path) => {
         if (widths)
             columns = columns.map((n, i)=> ({ ...n, width: widths[i]}))
         return columns
-    }
-
-    const getItems = async (path, hiddenIncluded) => {
-        var response = (await getFiles(path.substring(pathBegin)))
-            .filter(n => hiddenIncluded ? true : !n.isHidden)
-
-        let items = [{
-                name: "..",
-            isNotSelectable: true,
-                isDirectory: true
-            }]
-            .concat(response.filter(n => n.isDirectory))
-            .concat(response.filter(n => !n.isDirectory))
-        if (items && items.length)
-            currentPath = path
-        return { items, path }
     }
 
     const getPath = async item => item.isDirectory 
@@ -159,8 +143,6 @@ export const getExternal = (folderId, path) => {
         }))
     }
 
-    const getFiles = path => request("getfiles", { path })
-    
     async function extractFilesInFolders(sourcePath, targetPath, items) {
 
         const readdir = async path => (await getFiles(path)).map(n => ({ name: n.name, isDirectory: n.isDirectory}))
@@ -181,61 +163,4 @@ export const getExternal = (folderId, path) => {
     }
 
     const deleteEmptyFolders = () => {}
-
-    async function request(path, data) {
-        const keepAliveAgent = new http.Agent({
-            keepAlive: true,
-            keepAliveMsecs: 40000
-        })
-
-        return new Promise((resolve, reject) => {
-            var payload = JSON.stringify(data)
-            let responseData = ''
-            const req = http.request({
-                hostname: ip,
-                port: 8080,
-                path,
-                agent: keepAliveAgent,
-                timeout: 40000,
-                method: 'POST',
-                headers: {
-					'Content-Type': 'application/json; charset=UTF-8',
-					'Content-Length': Buffer.byteLength(payload)
-				}            
-            }, response => {
-                response.setEncoding('utf8')
-                response.on('data', chunk => responseData += chunk)
-                response.on('end', () => {
-                    const result = JSON.parse(responseData)
-                    resolve(result)
-                })
-            })        
-            
-            req.on('error', e => {
-                console.log("error", "problem with request", e)
-                reject(e)
-            })
-            req.write(payload)
-            req.end()        
-        }) 
-    }    
-
-    return {
-        getType,
-        getColumns,
-        getItems,
-        renderRow,
-        getPath,
-        disableSorting,
-        getItem,
-        addExtendedInfos,
-        getCurrentPath,
-        saveWidths,
-        getSortFunction,
-        extractFilesInFolders,
-        readDir,
-        copyItems,
-        getFilesInfos,
-        deleteEmptyFolders
-    }
 }

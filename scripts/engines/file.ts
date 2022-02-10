@@ -14,10 +14,12 @@ export interface FileItem extends FolderItem {
 
 export class FileEngine implements Engine {
 
-    constructor(private folderId: string) {}
+    constructor(folderId: string) {
+        this.folderId = folderId
+    }
 
     get currentPath() { return this._currentPath }
-    private set currentPath(value: string) { this._currentPath = value }
+    protected set currentPath(value: string) { this._currentPath = value }
     private _currentPath = ""
 
     isSuitable(path: string|null|undefined) { return Platform.isFileEnginePath(path) }
@@ -177,4 +179,6 @@ export class FileEngine implements Engine {
         let parent = pos ? path.substring(0, pos) : Platform.pathDelimiter
         return { path: parent, recentFolder: path.substring(pos + 1) }
     }
+
+    private folderId: string;
 }
