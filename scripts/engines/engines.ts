@@ -1,4 +1,5 @@
 import { Column, VirtualTable } from "virtual-table-component"
+import { Folder } from "../components/folder"
 import { ExternalEngine, EXTERNAL_PATH } from "./external"
 import { ExternalsEngine, EXTERNALS_PATH } from "./externals"
 import { FileEngine } from "./file"
@@ -31,6 +32,7 @@ export type Engine = {
     getSortFunction: (column: number, isSubItem: boolean)=>(([a, b]: FolderItem[]) => number) | null  
     disableSorting: (table: VirtualTable, disable: boolean)=>void
     addExtendedInfos: (path: string|undefined|null, items: FolderItem[], refresh: ()=>void)=>Promise<void>
+    renameItem: (item: FolderItem, folder: Folder)=>Promise<void>
 }
 
 export function getEngine(folderId: string, path: string|null|undefined, current: Engine): {engine: Engine, changed: boolean} {

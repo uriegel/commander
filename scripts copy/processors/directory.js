@@ -121,8 +121,6 @@ export const getDirectory = (folderId, path) => {
 
     const createFolder = async newFolder => await platformCreateFolder(fspath.join(currentPath, newFolder))
 
-    const renameItem = async (item, newName) => await platformRenameItem(fspath.join(currentPath, item), fspath.join(currentPath, newName))
-
     const onEnter = file => {
         platformOnEnter(file, currentPath)
     }

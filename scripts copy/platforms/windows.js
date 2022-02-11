@@ -58,14 +58,6 @@ export async function copyItems(copyInfo, move, overwrite, foldersToRefresh) {
     onFinish(foldersToRefresh)
 }
 
-export async function renameItem(item, newName) {
-    await runCmd({
-        method: "rename", 
-        item,
-        newName
-    })
-}
-
 export async function deleteEmptyFolders(path, folders, foldersToRefresh) {
     await runCmd({
         method: "deleteEmptyFolders", 

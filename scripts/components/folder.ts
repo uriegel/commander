@@ -218,6 +218,13 @@ export class Folder extends HTMLElement {
         this.table.refresh()
     }
 
+    renameItem() {
+        const selectedItems = this.getSelectedItems()
+            if (selectedItems.length != 1)    
+                return        
+        this.engine.renameItem(selectedItems[0], this)
+    }
+
     private onPathChanged(newPath: string, fromBacklog?: boolean) {
         const path = newPath || this.engine.currentPath
         this.pathInput!.value = path

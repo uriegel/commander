@@ -23,6 +23,7 @@ export interface Platform {
     disableSorting: (table: VirtualTable, disable: boolean)=>void
     addAdditionalInfo: (item: FileItem, name: string, path: string)=>Promise<void>
     getAdditionalSortFunction: (column: number, isSubItem: boolean)=>(([a, b]: FolderItem[]) => number) | null 
+    renameItem: (item: string, newName: string)=>Promise<void>
 }
 
 export const Platform = isLinux ? new LinuxPlatform() as Platform : new WindowsPlatform() as Platform

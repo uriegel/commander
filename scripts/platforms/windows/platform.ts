@@ -7,8 +7,7 @@ import { RootItem } from '../../engines/root'
 import { activateClass } from '../../utils'
 import { Platform } from "../platforms"
 const fspath = window.require('path')
-const { getFileVersion } = window.require('rust-addon')
-const { getDrives } = window.require('rust-addon')
+const { getFileVersion, getDrives } = window.require('rust-addon')
 
 type Version = {
     major: number 
@@ -76,6 +75,15 @@ export class WindowsPlatform implements Platform {
         return column == 4 
             ? ([a, b]: FolderItem[]) => compareVersion((a as WindowsFileItem).version, (b as WindowsFileItem).version)
             : null
+    }
+
+    async renameItem(item: string, newName: string) {
+        // TODO
+        // await runCmd({
+        //     method: "rename", 
+        //     item,
+        //     newName
+        // })
     }
 }
 

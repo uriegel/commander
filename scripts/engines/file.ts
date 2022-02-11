@@ -2,6 +2,9 @@ import { VirtualTable } from "virtual-table-component"
 import { Platform } from "../platforms/platforms"
 import { Engine, FolderItem, formatDateTime, formatSize, getExtension, ItemResult, PathResult } from "./engines"
 import { ROOT_PATH } from "./root"
+import { dialog } from "../commander"
+import { Folder } from "../components/folder"
+import { Result } from "web-dialog-box"
 const fspath = window.require('path')
 const { getFiles, getExifDate } = window.require('rust-addon')
 
@@ -10,6 +13,24 @@ export interface FileItem extends FolderItem {
     size: number
     exifTime?: number
     time: number
+}
+
+enum ItemsType {
+    Directory,
+    File,
+    Both
+}
+
+function getItemsTypes(folderItem: FolderItem): ItemsType; 
+function getItemsTypes(folderItems: FolderItem[] | FolderItem): ItemsType {
+    const items = Array.isArray(folderItems) ? folderItems : [ folderItems ]
+    const types = items
+        .map(n => n.isDirectory)
+        .filter((item, index, resultList) => resultList
+            .findIndex(n => n == item) == index)
+    return types.length == 1
+    ? types[0] ? ItemsType.Directory : ItemsType.File
+    : ItemsType.Both
 }
 
 export class FileEngine implements Engine {
@@ -167,6 +188,55 @@ export class FileEngine implements Engine {
 
     }
 
+    async renameItem(item: FolderItem, folder: Folder) {
+        try {
+            // if (activeFolder.isExtendedRename) {
+            //     activeFolder.doExtendedRename()
+            //     return
+            // }
+                
+            const itemsType = getItemsTypes(item)
+            const text = itemsType == ItemsType.File
+                ? "Datei umbenennen"
+                : "Ordner umbenennen"
+            
+            const getInputRange = () => {
+                const pos = item.name.lastIndexOf(".")
+                if (pos == -1)
+                    return [0, item.name.length]
+                else
+                    return [0, pos]
+            }
+    
+            const res = await dialog.show({
+                text,
+                inputText: item.name,
+                inputSelectRange: getInputRange(),
+                btnOk: true,
+                btnCancel: true,
+                defBtnOk: true
+            })    
+            folder.setFocus()
+            if (res.result == Result.Ok && res.input) {
+                await this.rename(item.name, res.input)
+                folder.reloadItems()
+            }
+        } catch (e: any) {
+            // TODO
+            // const text = e.fileResult == FileResult.AccessDenied
+            //         ? "Zugriff verweigert"
+            //         : "Die Aktion konnte nicht ausgeführt werden"
+            // setTimeout(async () => {
+            //     await dialog.show({
+            //         text,
+            //         btnOk: true
+            //     })
+            //     folder.setFocus()        
+            // },
+            // 500)
+        }
+    }
+
     protected getParentDir(path: string): PathResult {
         let pos = path.lastIndexOf(Platform.pathDelimiter)
         let parent = pos ? path.substring(0, pos) : Platform.pathDelimiter
@@ -175,6 +245,10 @@ export class FileEngine implements Engine {
 
     protected async addAdditionalInfo(item: FileItem, name: string, path: string) { 
         await Platform.addAdditionalInfo(item, name, path) 
+    }
+
+    protected async rename(item: string, newName: string) {
+        await Platform.renameItem(fspath.join(this.currentPath, item), fspath.join(this.currentPath, newName))
     }
 
     private async addExtendedInfo(item: FileItem, path: string) {

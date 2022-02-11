@@ -1,7 +1,8 @@
-import { VirtualTable } from "virtual-table-component";
-import { dialog } from "../commander";
-import { Engine, FolderItem } from "./engines";
-import { ROOT_PATH } from "./root";
+import { VirtualTable } from "virtual-table-component"
+import { dialog } from "../commander"
+import { Folder } from "../components/folder"
+import { Engine, FolderItem } from "./engines"
+import { ROOT_PATH } from "./root"
 
 export const EXTERNALS_PATH = "externals"
 
@@ -104,6 +105,10 @@ export class ExternalsEngine implements Engine {
     getSortFunction(column: number, isSubItem: boolean) { return null }
 
     disableSorting(table: VirtualTable, disable: boolean) {}
+
+    async renameItem(item: FolderItem, folder: Folder) {
+        // TODO
+    }
 
     async addExtendedInfos(path: string|undefined|null, items: FolderItem[], refresh: ()=>void) {}
     

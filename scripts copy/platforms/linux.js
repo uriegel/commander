@@ -94,10 +94,6 @@ export function deleteEmptyFolders(path, folders, foldersToRefresh) {
     copyProcessor.addDeleteEmptyFolders(path, folders, foldersToRefresh)
 }
 
-export async function renameItem(item, newName) {
-    await copyFile(item, newName, () => {}, true)
-}
-
 export const enhanceCopyConflictData = async item => item
 
 export const onEnter = (fileName, path) => {

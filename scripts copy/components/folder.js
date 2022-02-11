@@ -54,11 +54,6 @@ class Folder extends HTMLElement {
         await this.processor.deleteEmptyFolders(this.getCurrentPath(), folders, foldersToRefresh)
     }
 
-    async renameItem(item, newName) {
-        await this.processor.renameItem(item, newName)
-        this.reloadItems()
-    }
-
     readDir(path) {
         return this.processor.readDir(path)
     }

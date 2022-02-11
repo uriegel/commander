@@ -1,4 +1,5 @@
 import { VirtualTable } from "virtual-table-component"
+import { Folder } from "../components/folder"
 import { Platform } from "../platforms/platforms"
 import { Engine, FolderItem, formatSize } from "./engines"
 import { EXTERNALS_PATH } from "./externals"
@@ -99,4 +100,7 @@ export class RootEngine implements Engine {
     disableSorting(table: VirtualTable, disable: boolean) {}
 
     async addExtendedInfos(path: string|undefined|null, items: FolderItem[], refresh: ()=>void) {}
+
+    async renameItem(item: FolderItem, folder: Folder) {}
+
 }
