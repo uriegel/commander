@@ -28,7 +28,8 @@ pub enum FileErrorType {
     Unknown = 1,
     AccessDenied = 2,
     FileExists = 3,
-    FileNotFound = 4
+    FileNotFound = 4,
+    TrashNotPossible = 5
 }
 
 #[derive(Debug, Serialize)]

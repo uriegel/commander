@@ -31,7 +31,6 @@ export enum FileErrorType {
     AccessDenied = 2,
     FileExists = 3,
     FileNotFound = 4,
-    // TODO
     TrashNotPossible = 5
 }
 
@@ -278,7 +277,7 @@ export class FileEngine implements Engine {
             const fileError = e as FileError
             const text = fileError.code == FileErrorType.AccessDenied
                     ? "Zugriff verweigert"
-                    : e.fileError.code == FileErrorType.TrashNotPossible
+                    : fileError.code == FileErrorType.TrashNotPossible
                     ? "Löschen in den Papierkorb nicht möglich"
                     : "Die Aktion konnte nicht ausgeführt werden"
             setTimeout(async () => {

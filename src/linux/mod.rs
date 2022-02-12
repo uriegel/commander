@@ -70,6 +70,7 @@ impl From<glib::Error> for FileError {
                     1  => FileErrorType::FileNotFound,
                     2  => FileErrorType::FileExists,
                     14 => FileErrorType::AccessDenied,
+                    15 => FileErrorType::TrashNotPossible,
                     _  => FileErrorType::Unknown
                 }                
         } 

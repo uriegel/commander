@@ -142,8 +142,12 @@ export class LinuxPlatform implements Platform {
     }
 
     async deleteFiles(items: string[]) {
-        for (let i = 0; i < items.length; i++ ) {
-            await trashFile(items[i])
+        try {
+            for (let i = 0; i < items.length; i++ ) {
+                await trashFile(items[i])
+            }
+        } catch (e: any) {
+            throw JSON.parse((e as FileException).message) as FileError            
         }
     }
 
@@ -168,7 +172,7 @@ async function copyFileAsync(source: string, target: string,
     try {
         await copyFile(source, target, move || false, overwrite || false)
     } catch (e: any) {
-        throw (JSON.parse((e as FileException).message) as FileError)
+        throw JSON.parse((e as FileException).message) as FileError
     } finally {
         if (timer)
             clearInterval(timer)

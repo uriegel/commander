@@ -33,7 +33,11 @@ const run = async () => {
 
     console.log("Exif date no file", await getExifDate("/home/uwe/Bilder/Fotos/2021/Uwe/IMG_20210907_142241ddd.jpg"))
     console.log("Exif date", await getExifDate("/home/uwe/Bilder/Fotos/2021/Uwe/IMG_20210907_142241.jpg"))
-
+    try {
+        await trashFile("/etc/alsa")
+    } catch (err) {
+        console.log("Err copy", err)
+    }
     try {
         await copyFileAsnyc("/home/uwe/Videos/raw/Goldeneye.mts", "/home/uwe/test/affe.mts", a => console.log("Progress", a))
     } catch (err) {

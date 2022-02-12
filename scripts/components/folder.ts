@@ -65,7 +65,6 @@ export class Folder extends HTMLElement {
             const files = (this.table.items as FolderItem[]).filter(n => !n.isDirectory) 
             const pos = this.table.getPosition()
             const item = this.table.items[pos]
-            // TODO functional operator when true sort
             this.table.items = dirs.concat(files.sort((a, b) => this.sortFunction!([a, b])))
             const newPos = this.table.items.findIndex(n => n.name == item.name)
             this.table.setPosition(newPos)
