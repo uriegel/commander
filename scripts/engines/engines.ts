@@ -29,7 +29,7 @@ export type Engine = {
     getPath: (item: FolderItem, refresh: ()=>void)=>Promise<PathResult>
     renderRow: (item: FolderItem, tr: HTMLTableRowElement)=>void
     saveWidths: (widths: number[])=>void
-    getSortFunction: (column: number, isSubItem: boolean)=>(([a, b]: FolderItem[]) => number) | null  
+    getSortFunction: (column: number, isSubItem: boolean)=>((row: [a: FolderItem, b: FolderItem]) => number) | null  
     disableSorting: (table: VirtualTable, disable: boolean)=>void
     addExtendedInfos: (path: string|undefined|null, items: FolderItem[], refresh: ()=>void)=>Promise<void>
     renameItem: (item: FolderItem, folder: Folder)=>Promise<void>

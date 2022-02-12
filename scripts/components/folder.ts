@@ -2,6 +2,7 @@ import 'virtual-table-component'
 import { VirtualTable } from 'virtual-table-component'
 import { Engine, FolderItem, getEngine } from '../engines/engines'
 import { NullEngine } from '../engines/nullengine'
+import { compose } from '../utils'
 
 export class Folder extends HTMLElement {
     constructor() {
@@ -52,14 +53,15 @@ export class Folder extends HTMLElement {
             const sortfn = this.engine.getSortFunction(detail.column, detail.subItem)
             if (!sortfn)
                 return
-            const ascDesc = (sortResult: any) => detail.descending ? -sortResult : sortResult
-            this.sortFunction = this.composeFunction(ascDesc, sortfn as (a: any, b: any) => any) 
+            const ascDesc = (sortResult: number) => detail.descending ? -sortResult : sortResult
+            this.sortFunction = compose(ascDesc, sortfn) 
             this.table.restrictClose()
-            const dirs = this.table.items.filter(n => n.isDirectory)
-            const files = this.table.items.filter(n => !n.isDirectory)
+            const dirs = (this.table.items as FolderItem[]).filter(n => n.isDirectory)
+            const files = (this.table.items as FolderItem[]).filter(n => !n.isDirectory) 
             const pos = this.table.getPosition()
             const item = this.table.items[pos]
-            this.table.items = dirs.concat(files.sort(this.sortFunction))
+            // TODO functional operator when true sort
+            this.table.items = dirs.concat(files.sort((a, b) => this.sortFunction!([a, b])))
             const newPos = this.table.items.findIndex(n => n.name == item.name)
             this.table.setPosition(newPos)
             //this.computeExtendedNewNames()
@@ -166,7 +168,7 @@ export class Folder extends HTMLElement {
         this.filesCount = files.length
 
         if (this.sortFunction) 
-            items = dirs.concat(files.sort(this.sortFunction))
+            items = dirs.concat(files.sort((a, b) => this.sortFunction!([a, b])))
 
         this.table.setItems(items)
         this.table.setRestriction((items, restrictValue) => 
@@ -261,8 +263,6 @@ export class Folder extends HTMLElement {
         }
     }
 
-    private composeFunction = (...fns: ((...args: any[])=>any)[]) => (...args: any[]) => fns.reduceRight((acc, fn) => fn(acc), args)
-        
     private table: VirtualTable
     //private folderRoot: HTMLElement
     private folderId = ""
@@ -275,7 +275,7 @@ export class Folder extends HTMLElement {
     private pathInput: HTMLInputElement | null = null
     private dirsCount = 0
     private filesCount = 0
-    private sortFunction: ((a: any, b: any) => any) | null = null
+    private sortFunction: ((row: [a: FolderItem, b: FolderItem]) => number) | null = null
 
 
     // TODO: in another engine
