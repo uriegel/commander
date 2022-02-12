@@ -202,8 +202,12 @@ export class Folder extends HTMLElement {
         this.reloadItems()
     }
 
-    reloadItems() {
-        this.changePath(this.engine.currentPath)
+    async reloadItems(keepSelection?: boolean) {
+        const pos = keepSelection == true ? this.table.getPosition() : 0
+        this.table.items[pos].isSelected = !this.table.items[pos].isNotSelectable && !this.table.items[pos].isSelected 
+        await this.changePath(this.engine.currentPath)
+        if (pos)
+            this.table.setPosition(pos)
     }
 
     selectAll() {
@@ -285,7 +289,6 @@ customElements.define('folder-table', Folder)
 // TODO Copy conflicts: order by red, then green, then equal
 
 // TODO Shellexecute on Windows
-// TODO Windows: sort version
 
 // TODO Show trashinfo (show trash)
 // TODO Undelete files

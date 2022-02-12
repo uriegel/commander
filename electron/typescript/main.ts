@@ -91,4 +91,3 @@ const createWindow = async () => {
 
 app.on('ready', createWindow)
 
-// TODO typescript renderer

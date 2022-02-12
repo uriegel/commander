@@ -231,7 +231,7 @@ export class FileEngine implements Engine {
             folder.setFocus()
             if (res.result == Result.Ok && res.input) {
                 await this.rename(item.name, res.input)
-                folder.reloadItems()
+                folder.reloadItems(true)
             }
         } catch (e: any) {
             const fileError = e as FileError
