@@ -21,6 +21,18 @@ enum ItemsType {
     Both
 }
 
+export type FileError = {
+    description: string
+    code: FileErrorType
+}
+
+export enum FileErrorType {
+    Unknown = 1,
+    AccessDenied = 2,
+    FileExists = 3,
+    FileNotFound = 4
+}
+
 function getItemsTypes(folderItem: FolderItem): ItemsType; 
 function getItemsTypes(folderItems: FolderItem[] | FolderItem): ItemsType {
     const items = Array.isArray(folderItems) ? folderItems : [ folderItems ]
@@ -222,18 +234,18 @@ export class FileEngine implements Engine {
                 folder.reloadItems()
             }
         } catch (e: any) {
-            // TODO
-            // const text = e.fileResult == FileResult.AccessDenied
-            //         ? "Zugriff verweigert"
-            //         : "Die Aktion konnte nicht ausgeführt werden"
-            // setTimeout(async () => {
-            //     await dialog.show({
-            //         text,
-            //         btnOk: true
-            //     })
-            //     folder.setFocus()        
-            // },
-            // 500)
+            const fileError = e as FileError
+            const text = fileError.code == FileErrorType.AccessDenied
+                    ? "Zugriff verweigert"
+                    : "Die Aktion konnte nicht ausgeführt werden"
+            setTimeout(async () => {
+                await dialog.show({
+                    text,
+                    btnOk: true
+                })
+                folder.setFocus()        
+            },
+            500)
         }
     }
 

@@ -1,13 +1,13 @@
 import { Column, VirtualTable } from 'virtual-table-component'
 import { DialogBox, Result } from 'web-dialog-box'
 import { Menubar, MenuItem } from 'web-menu-bar'
-import { FileItem } from '../../engines/file'
+import { FileError, FileItem } from '../../engines/file'
 import { RootItem } from '../../engines/root'
 import { activateClass } from '../../utils'
 import { Platform } from "../platforms"
 const { homedir } = window.require('os')
 const { exec } = window.require('child_process')
-const { copyFile } = window.require('rust-addon')
+const { copyFile, getCopyStatus } = window.require('rust-addon')
 
 const homeDir = homedir()
 
@@ -137,10 +137,33 @@ export class LinuxPlatform implements Platform {
     getAdditionalSortFunction(column: number, isSubItem: boolean) { return null }
 
     async renameItem(item: string, newName: string) {
-        await copyFile(item, newName, () => {}, true)
+        await copyFileAsync(item, newName, undefined, true)
     }
 
     private dialog: DialogBox | null = null
     private itemHideMenu: MenuItem | null = null
     private menu: Menubar | null = null
+}
+
+type FileException = {
+    message: string
+}
+
+async function copyFileAsync(source: string, target: string, 
+        cb?: (progress: number)=>void, move?: boolean, overwrite?: boolean) {
+    const timer = cb 
+        ? setInterval(() => {
+            const status: number = getCopyStatus()
+            if (status)
+                cb(status)
+        }, 100)
+        : 0
+    try {
+        await copyFile(source, target, move || false, overwrite || false)
+    } catch (e: any) {
+        throw (JSON.parse((e as FileException).message) as FileError)
+    } finally {
+        if (timer)
+            clearInterval(timer)
+    }
 }
