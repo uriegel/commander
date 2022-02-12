@@ -24,7 +24,7 @@ export type Commander = {
     rename: ()=>void
 }
 
-
+// TODO Function composition with currying (sort function))
 // TODO engine externals rename
 // TODO delete in all engines
 // TODO createFolder
