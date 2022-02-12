@@ -25,6 +25,7 @@ export interface Platform {
     getAdditionalSortFunction: (column: number, isSubItem: boolean)=>(([a, b]: FolderItem[]) => number) | null 
     renameFile: (item: string, newName: string)=>Promise<void>
     deleteFiles: (items: string[])=>Promise<void>
+    createFolder: (item: string)=>Promise<void>
 }
 
 export const Platform = isLinux ? new LinuxPlatform() as Platform : new WindowsPlatform() as Platform

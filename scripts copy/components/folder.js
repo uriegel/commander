@@ -10,11 +10,6 @@ class Folder extends HTMLElement {
         this.folderRoot.addEventListener("drop", evt => this.onDrop(evt))
     }
 
-    async createFolder(newFolder) {
-        await this.processor.createFolder(newFolder)
-        this.reloadItems()
-    }
-
     async prepareCopyItems(fromLeft, itemsType, sourcePath, items, move, sourceFolder) {
         const targetPath = this.processor.getCurrentPath()
         const copyInfo = {}

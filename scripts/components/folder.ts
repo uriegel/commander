@@ -247,6 +247,11 @@ export class Folder extends HTMLElement {
         this.engine.deleteItems(selectedItems, this)
     }
 
+    createFolder() {
+        const selectedItems = this.getSelectedItems()
+        this.engine.createFolder(selectedItems.length == 1 ? selectedItems[0].name : "", this)
+    }
+
     private onPathChanged(newPath: string, fromBacklog?: boolean) {
         const path = newPath || this.engine.currentPath
         this.pathInput!.value = path

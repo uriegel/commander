@@ -23,12 +23,13 @@ export type Commander = {
     showHidden: (hidden: boolean)=>void 
     rename: ()=>void
     deleteSelectedItems: ()=>void
+    createFolder: ()=>void
 }
 
-// TODO delete Windows
-// TODO delete Externals
-// TODO createFolder
+// TODO createFolder (Linux)
 // TODO engine externals create
+// TODO delete Externals
+// TODO CopyProcessors (file -> file, file -> extenal, external -> file) 
 
 var currentPath = ""
 const folderLeft = document.getElementById("folderLeft")! as Folder
@@ -107,6 +108,10 @@ function deleteSelectedItems() {
     activeFolder.deleteSelectedItems()
 }
 
+function createFolder() {
+    activeFolder.createFolder()
+}
+
 const commander: Commander = {
     showViewer,
     hideMenu,
@@ -116,7 +121,8 @@ const commander: Commander = {
     selectNone,
     showHidden,
     rename,
-    deleteSelectedItems
+    deleteSelectedItems,
+    createFolder
 }
 
 Platform.adaptWindow(dialog, menu, document.getElementById("hidemenu") as MenuItem)

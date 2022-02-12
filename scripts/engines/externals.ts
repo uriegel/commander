@@ -130,6 +130,7 @@ export class ExternalsEngine implements Engine {
 
     async addExtendedInfos(path: string | undefined | null, items: FolderItem[], refresh: () => void) { }
     async deleteItems(items: FolderItem[], folder: Folder) {}
+    async createFolder(suggestedName: string, folder: Folder) {}
     
     private items = JSON.parse(localStorage.getItem("externals") || "[]") as Item[]
 }

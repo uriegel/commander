@@ -151,6 +151,9 @@ export class LinuxPlatform implements Platform {
         }
     }
 
+    async createFolder(item: string) {
+    }
+
     private dialog: DialogBox | null = null
     private itemHideMenu: MenuItem | null = null
     private menu: Menubar | null = null

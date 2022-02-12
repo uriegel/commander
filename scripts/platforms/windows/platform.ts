@@ -86,7 +86,17 @@ export class WindowsPlatform implements Platform {
     }
 
     async deleteFiles(items: string[]) {
-        // TODO
+        return runCmd({
+            method: "trash", 
+            items,
+        })
+    }
+
+    async createFolder(newFolder: string) {
+        return runCmd({
+            method: "createFolder", 
+            path: newFolder
+        })        
     }
 }
 

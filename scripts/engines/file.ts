@@ -291,6 +291,38 @@ export class FileEngine implements Engine {
         }
     }
 
+    async createFolder(suggestedName: string, folder: Folder) {
+        try {
+            const res = await dialog.show({
+                text: "Neuen Ordner anlegen",
+                inputText: suggestedName,
+                btnOk: true,
+                btnCancel: true,
+                defBtnOk: true
+            })
+            folder.setFocus()
+            if (res.result == Result.Ok && res.input) {
+                await this.processCreateFolder(res.input)
+                folder.reloadItems(true)
+            }
+        } catch (e: any) {
+            const fileError = e as FileError
+            const text = fileError.code == FileErrorType.FileExists
+                ? "Die angegebene Datei existiert bereits"
+                : fileError.code == FileErrorType.AccessDenied
+                    ? "Zugriff verweigert"
+                    : "Die Aktion konnte nicht ausgeführt werden"
+            setTimeout(async () => {
+                await dialog.show({
+                    text,
+                    btnOk: true
+                })
+                folder.setFocus()        
+            },
+            500)
+        }
+    }
+
     protected getParentDir(path: string): PathResult {
         let pos = path.lastIndexOf(Platform.pathDelimiter)
         let parent = pos ? path.substring(0, pos) : Platform.pathDelimiter
@@ -307,6 +339,10 @@ export class FileEngine implements Engine {
 
     protected async delete(items: FolderItem[]) {
         await Platform.deleteFiles(items.map(n => fspath.join(this.currentPath, n.name)))
+    }
+
+    protected async processCreateFolder(name: string) {
+        await Platform.createFolder(fspath.join(this.currentPath, name))
     }
     
     private async addExtendedInfo(item: FileItem, path: string) {

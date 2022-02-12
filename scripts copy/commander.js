@@ -7,10 +7,6 @@ import './components/extendedrename'
 initializeCopying(onCopyFinish, onShowCopyErrors)
 
 
-
-
-folderLeft.addEventListener("delete", evt => onDelete(evt.detail))
-folderRight.addEventListener("delete", evt => onDelete(evt.detail))
 folderLeft.addEventListener("dragAndDrop", evt => copy(evt.detail))
 folderRight.addEventListener("dragAndDrop", evt => copy(evt.detail))
 
@@ -50,37 +46,6 @@ async function extendedRename() {
     }
 }
 
-async function createFolder() {
-    try {
-        const selectedItems = activeFolder.selectedItems
-        const res = await dialog.show({
-            text: "Neuen Ordner anlegen",
-            input: true,
-            inputText: selectedItems.length == 1 ? selectedItems[0].name : "",
-            btnOk: true,
-            btnCancel: true,
-            defBtnOk: true
-        })
-        activeFolder.setFocus()
-        if (res.result == RESULT_OK)
-            await activeFolder.createFolder(res.input)
-    } catch (e) {
-        const text = e.fileResult == FileResult.FileExists
-            ? "Die angegebene Datei existiert bereits"
-            : e.fileResult == FileResult.AccessDenied
-                ? "Zugriff verweigert"
-                : "Die Aktion konnte nicht ausgeführt werden"
-        setTimeout(async () => {
-            await dialog.show({
-                text,
-                btnOk: true
-            })
-            activeFolder.setFocus()        
-        },
-        500)
-    }
-}
-
 function onCopyFinish(folderIdsToRefresh) {
     folderIdsToRefresh.forEach(n => refresh(n))
 }
@@ -91,9 +56,7 @@ async function onShowCopyErrors(errorContent) {
 }
 
 var commander = {
-    createFolder,
     copy,
-    rename,
     extendedRename,
 }
 

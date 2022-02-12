@@ -29,6 +29,7 @@ export type Engine = {
     addExtendedInfos: (path: string|undefined|null, items: FolderItem[], refresh: ()=>void)=>Promise<void>
     renameItem: (item: FolderItem, folder: Folder)=>Promise<void>
     deleteItems: (items: FolderItem[], folder: Folder)=>Promise<void>
+    createFolder: (suggestedName: string, folder: Folder)=>Promise<void>
 }
 
 export function getEngine(folderId: string, path: string|null|undefined, current: Engine): {engine: Engine, changed: boolean} {

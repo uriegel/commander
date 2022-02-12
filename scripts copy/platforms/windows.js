@@ -31,11 +31,6 @@ export const adaptConflictColumns = columns => [
     }
 ]
 
-export const createFolder = async newFolder => runCmd({
-    method: "createFolder", 
-    path: newFolder
-})
-
 export async function addExtendedInfo(item, name, path) {
     if (name.endsWith(".exe") || name.endsWith(".dll"))
         item.version = await getFileVersion(fspath.join(path, item.name))

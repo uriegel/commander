@@ -2,6 +2,7 @@ export declare global {
 	interface Window {
         close(): ()=>void
 
+        onCreateFolder: ()=>void
         onDelete: ()=>void        
         onRename: ()=>void        
         onClose: ()=>void

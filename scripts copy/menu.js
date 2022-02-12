@@ -5,7 +5,7 @@ window.onExtendedRename = () => {
 
 window.onCopy = () => commander.copy()
 window.onMove = () => commander.copy(true)
-window.onCreateFolder = () => commander.createFolder()
+
 
 
 
