@@ -1,7 +1,7 @@
 import { Column, VirtualTable } from 'virtual-table-component'
 import { DialogBox } from 'web-dialog-box'
 import { Menubar, MenuItem } from 'web-menu-bar'
-import { FolderItem } from '../engines/engines'
+import { FolderItem } from '../components/folder'
 import { FileItem } from '../engines/file'
 import { RootItem } from '../engines/root'
 import { LinuxPlatform } from "./linux/platform"
@@ -15,12 +15,12 @@ export interface Platform {
     hideMenu: (hide: boolean)=>Promise<void>
     onDarkTheme: (dark: boolean)=>void
     getDrives: ()=>Promise<RootItem[]>
-    adaptRootColumns: (columns: Column[])=>Column[]
-    adaptDirectoryColumns: (columns: Column[])=>Column[]
+    adaptRootColumns: (columns: Column<FolderItem>[])=>Column<FolderItem>[]
+    adaptDirectoryColumns: (columns: Column<FolderItem>[])=>Column<FolderItem>[]
     getRootPath: (item: RootItem)=>Promise<string>
     isFileEnginePath: (path: string|null|undefined)=>boolean
     parentIsRoot: (path: string)=>boolean
-    disableSorting: (table: VirtualTable, disable: boolean)=>void
+    disableSorting: (table: VirtualTable<FolderItem>, disable: boolean)=>void
     addAdditionalInfo: (item: FileItem, name: string, path: string)=>Promise<void>
     getAdditionalSortFunction: (column: number, isSubItem: boolean)=>(([a, b]: FolderItem[]) => number) | null 
     renameItem: (item: string, newName: string)=>Promise<void>

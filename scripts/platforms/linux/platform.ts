@@ -1,6 +1,7 @@
 import { Column, VirtualTable } from 'virtual-table-component'
 import { DialogBox, Result } from 'web-dialog-box'
 import { Menubar, MenuItem } from 'web-menu-bar'
+import { FolderItem } from '../../components/folder'
 import { FileError, FileItem } from '../../engines/file'
 import { RootItem } from '../../engines/root'
 import { activateClass } from '../../utils'
@@ -110,17 +111,17 @@ export class LinuxPlatform implements Platform {
         return mounted.concat(unmounted) as RootItem[]
     } 
 
-    adaptRootColumns(columns: Column[]) {
+    adaptRootColumns(columns: Column<FolderItem>[]) {
         return [
             ...columns.slice(0, 2), {
                 name: "Mountpoint",
-                render: (td: HTMLElement, item: DriveItem) => td.innerHTML = item.mountPoint || ""
-            },
+                render: (td, item) => td.innerHTML = (item as DriveItem).mountPoint || ""
+            } as Column<FolderItem>,
             columns[2] 
         ] 
     }
 
-    adaptDirectoryColumns(columns: Column[]) { return columns }
+    adaptDirectoryColumns(columns: Column<FolderItem>[]) { return columns }
 
     isFileEnginePath(path: string|null|undefined) {
         return !!path && path[0] == '/'
@@ -130,7 +131,7 @@ export class LinuxPlatform implements Platform {
 
     async getRootPath(item: RootItem){ return (item as DriveItem).mountPoint }
 
-    disableSorting(table: VirtualTable, disable: boolean) {}
+    disableSorting(table: VirtualTable<FolderItem>, disable: boolean) {}
 
     async addAdditionalInfo(item: FileItem, name: string, path: string) { }
 

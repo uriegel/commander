@@ -1,7 +1,7 @@
 import { Column, VirtualTable } from 'virtual-table-component'
 import { DialogBox } from 'web-dialog-box'
 import { Menubar, MenuItem } from 'web-menu-bar'
-import { FolderItem } from '../../engines/engines'
+import { FolderItem } from '../../components/folder'
 import { FileItem } from '../../engines/file'
 import { RootItem } from '../../engines/root'
 import { activateClass } from '../../utils'
@@ -39,9 +39,9 @@ export class WindowsPlatform implements Platform {
         return await getDrives()
     }
 
-    adaptRootColumns(columns: Column[]) { return columns}
+    adaptRootColumns(columns: Column<FolderItem>[]) { return columns}
 
-    adaptDirectoryColumns(columns: Column[]) { 
+    adaptDirectoryColumns(columns: Column<FolderItem>[]) { 
         return [
             ...columns.slice(0, columns.length), {
                 name: "Version",
@@ -62,7 +62,7 @@ export class WindowsPlatform implements Platform {
         return path.length == 3 && path[1] == ':'
     }
 
-    disableSorting(table: VirtualTable, disable: boolean) {
+    disableSorting(table: VirtualTable<FolderItem>, disable: boolean) {
         table.disableSorting(3, disable)
     }
 

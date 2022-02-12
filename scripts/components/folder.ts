@@ -1,8 +1,14 @@
 import 'virtual-table-component'
-import { VirtualTable } from 'virtual-table-component'
-import { Engine, FolderItem, getEngine } from '../engines/engines'
+import { TableItem, VirtualTable } from 'virtual-table-component'
+import { Engine, getEngine } from '../engines/engines'
 import { NullEngine } from '../engines/nullengine'
 import { compose } from '../utils'
+
+export interface FolderItem extends TableItem{
+    name: string
+    isDirectory: boolean
+    isNotSelectable?: boolean
+}
 
 export class Folder extends HTMLElement {
     constructor() {
@@ -18,8 +24,7 @@ export class Folder extends HTMLElement {
                 </div>
             </div`
         
-        this.table = this.getElementsByTagName("VIRTUAL-TABLE")[0]! as VirtualTable
-      //  this.folderRoot = this.getElementsByClassName("folderroot")[0]! as HTMLElement
+        this.table = this.getElementsByTagName("VIRTUAL-TABLE")[0]! as VirtualTable<FolderItem>
         const sbr = this.getAttribute("scrollbar-right")
         if (sbr)
             this.table.setAttribute("scrollbar-right", sbr)
@@ -263,8 +268,7 @@ export class Folder extends HTMLElement {
         }
     }
 
-    private table: VirtualTable
-    //private folderRoot: HTMLElement
+    private table: VirtualTable<FolderItem>
     private folderId = ""
     private engine: Engine = new NullEngine()
     private latestRequest = 0

@@ -1,5 +1,5 @@
 import { Column, VirtualTable } from "virtual-table-component"
-import { Folder } from "../components/folder"
+import { Folder, FolderItem } from "../components/folder"
 import { ExternalEngine, EXTERNAL_PATH } from "./external"
 import { ExternalsEngine, EXTERNALS_PATH } from "./externals"
 import { FileEngine } from "./file"
@@ -8,11 +8,6 @@ import { RootEngine, ROOT_PATH } from "./root"
 export type ItemResult = {
     items: FolderItem[]
     path: string
-}
-
-export interface FolderItem {
-    name: string
-    isDirectory: boolean
 }
 
 export type PathResult = {
@@ -25,12 +20,12 @@ export type Engine = {
     isSuitable: (path: string|null|undefined)=>boolean
     getItems: (path?: string|null, showHiddenItems?: boolean)=>Promise<ItemResult>
     getItemPath: (item: FolderItem)=>string
-    getColumns(): Column[]
+    getColumns(): Column<FolderItem>[]
     getPath: (item: FolderItem, refresh: ()=>void)=>Promise<PathResult>
     renderRow: (item: FolderItem, tr: HTMLTableRowElement)=>void
     saveWidths: (widths: number[])=>void
     getSortFunction: (column: number, isSubItem: boolean)=>((row: [a: FolderItem, b: FolderItem]) => number) | null  
-    disableSorting: (table: VirtualTable, disable: boolean)=>void
+    disableSorting: (table: VirtualTable<FolderItem>, disable: boolean)=>void
     addExtendedInfos: (path: string|undefined|null, items: FolderItem[], refresh: ()=>void)=>Promise<void>
     renameItem: (item: FolderItem, folder: Folder)=>Promise<void>
 }

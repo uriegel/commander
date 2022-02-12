@@ -1,9 +1,9 @@
 import { VirtualTable } from "virtual-table-component"
 import { Platform } from "../platforms/platforms"
-import { Engine, FolderItem, formatDateTime, formatSize, getExtension, ItemResult, PathResult } from "./engines"
+import { Engine, formatDateTime, formatSize, getExtension, ItemResult, PathResult } from "./engines"
 import { ROOT_PATH } from "./root"
 import { dialog } from "../commander"
-import { Folder } from "../components/folder"
+import { Folder, FolderItem } from "../components/folder"
 import { Result } from "web-dialog-box"
 const fspath = window.require('path')
 const { getFiles, getExifDate } = window.require('rust-addon')
@@ -122,8 +122,8 @@ export class FileEngine implements Engine {
             isSortable: true,
             sortIndex: 2,
             render: (td, item) => {
-                td.innerHTML = formatDateTime(item.exifTime || item.time)
-                if (item.exifTime)
+                td.innerHTML = formatDateTime((item as FileItem).exifTime || (item as FileItem).time)
+                if ((item as FileItem).exifTime)
                     td.classList.add("exif")
             }
         }, {
@@ -132,7 +132,7 @@ export class FileEngine implements Engine {
             sortIndex: 3,
             isRightAligned: true,
             render: (td, item) => {
-                td.innerHTML = formatSize(item.size)
+                td.innerHTML = formatSize((item as FileItem).size)
                 td.classList.add("rightAligned")
             }
         }])
@@ -180,7 +180,7 @@ export class FileEngine implements Engine {
         } 
     }
 
-    disableSorting(table: VirtualTable, disable: boolean) {
+    disableSorting(table: VirtualTable<FolderItem>, disable: boolean) {
         table.disableSorting(1, disable)
         Platform.disableSorting(table, disable)
     }

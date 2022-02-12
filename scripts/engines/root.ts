@@ -1,7 +1,7 @@
 import { VirtualTable } from "virtual-table-component"
-import { Folder } from "../components/folder"
+import { Folder, FolderItem } from "../components/folder"
 import { Platform } from "../platforms/platforms"
-import { Engine, FolderItem, formatSize } from "./engines"
+import { Engine, formatSize } from "./engines"
 import { EXTERNALS_PATH } from "./externals"
 
 export const ROOT_PATH = "root"
@@ -48,7 +48,7 @@ export class RootEngine implements Engine {
         const widths = widthstr ? JSON.parse(widthstr) : []
         let columns = Platform.adaptRootColumns([{
             name: "Name",
-            render: (td: HTMLTableCellElement, item: RootItem) => {
+            render: (td, item) => {
                 var t = (item.name != EXTERNALS 
                     ? item.name != "~" 
                     ? document.querySelector('#driveIcon') 
@@ -61,12 +61,12 @@ export class RootEngine implements Engine {
             }
         }, {
             name: "Bezeichnung",
-            render: (td: HTMLTableCellElement, item: RootItem) => td.innerHTML = item.description
+            render: (td, item) => td.innerHTML = (item as RootItem).description
         }, {
             name: "Größe",
             isRightAligned: true,
-            render: (td: HTMLTableCellElement, item: RootItem) => {
-                td.innerHTML = formatSize(item.size)
+            render: (td, item) => {
+                td.innerHTML = formatSize((item as RootItem).size)
                 td.classList.add("rightAligned")
             }
         }])
@@ -97,7 +97,7 @@ export class RootEngine implements Engine {
 
     getSortFunction(column: number, isSubItem: boolean) { return null }
 
-    disableSorting(table: VirtualTable, disable: boolean) {}
+    disableSorting(table: VirtualTable<FolderItem>, disable: boolean) {}
 
     async addExtendedInfos(path: string|undefined|null, items: FolderItem[], refresh: ()=>void) {}
 

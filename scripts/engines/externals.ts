@@ -1,7 +1,7 @@
-import { VirtualTable } from "virtual-table-component"
+import { Column, VirtualTable } from "virtual-table-component"
 import { dialog } from "../commander"
-import { Folder } from "../components/folder"
-import { Engine, FolderItem } from "./engines"
+import { Folder, FolderItem } from "../components/folder"
+import { Engine } from "./engines"
 import { ROOT_PATH } from "./root"
 
 export const EXTERNALS_PATH = "externals"
@@ -18,34 +18,34 @@ interface Item extends FolderItem {
 }
 
 export class ExternalsEngine implements Engine {
-    constructor(private folderId: string) {}
+    constructor(private folderId: string) { }
 
     get currentPath() { return EXTERNALS_PATH }
 
-    isSuitable(path: string|null|undefined) { return path == EXTERNALS_PATH }
+    isSuitable(path: string | null | undefined) { return path == EXTERNALS_PATH }
 
-    async getItems(_: string|null|undefined, __?: boolean) {
+    async getItems(_: string | null | undefined, __?: boolean) {
         return {
             path: EXTERNALS_PATH,
-            items: [{ name: "..", type: ItemType.Parent, isDirectory: true } ]
-                    .concat(this.items)
-                    .concat({ name: "Hinzufügen...", type: ItemType.Add, isDirectory: false} )
-        }    
+            items: [{ name: "..", type: ItemType.Parent, isDirectory: true }]
+                .concat(this.items)
+                .concat({ name: "Hinzufügen...", type: ItemType.Add, isDirectory: false })
+        }
     }
 
-    getColumns() { 
+    getColumns() {
         const widthstr = localStorage.getItem(`${this.folderId}-externals-widths`)
         const widths = widthstr ? JSON.parse(widthstr) : []
-        let columns = [{
+        let columns: Column<FolderItem>[] = [{
             name: "Name",
-            render: (td: HTMLTableCellElement, item: Item) => {
-                const selector = item.type == ItemType.Parent
-                    ? '#parentIcon' 
-                    : item.type == ItemType.Add
-                    ? '#newIcon'
-                    // : item.type == "android" 
-                    // ? '#androidIcon'
-                    : '#remoteIcon'
+            render: (td, item) => {
+                const selector = (item as Item).type == ItemType.Parent
+                    ? '#parentIcon'
+                    : (item as Item).type == ItemType.Add
+                        ? '#newIcon'
+                        // : item.type == "android" 
+                        // ? '#androidIcon'
+                        : '#remoteIcon'
                 var t = document.querySelector(selector) as HTMLTemplateElement
                 td.appendChild(document.importNode(t.content, true))
                 const span = document.createElement('span')
@@ -54,7 +54,7 @@ export class ExternalsEngine implements Engine {
             }
         }, {
             name: "IP-Adresse",
-            render: (td: HTMLTableCellElement, item: Item) => td.innerHTML = item.ip || ""
+            render: (td, item) => td.innerHTML = (item as Item).ip || ""
         }]
         if (widths)
             columns = columns.map((n, i) => ({ ...n, width: widths[i] }))
@@ -63,7 +63,7 @@ export class ExternalsEngine implements Engine {
 
     getItemPath(item: FolderItem) { return item.name }
 
-    async getPath(item: FolderItem, refresh: ()=>void) { 
+    async getPath(item: FolderItem, refresh: () => void) {
         const extenalItem = item as Item
         if (extenalItem.type == ItemType.Parent)
             return { path: ROOT_PATH }
@@ -79,7 +79,7 @@ export class ExternalsEngine implements Engine {
                 btnOk: true,
                 btnCancel: true,
                 defBtnOk: true
-            })    
+            })
             // if (res.result == RESULT_OK) {
             //     const name = adderName.value
             //     const ip = adderIp.value
@@ -89,7 +89,7 @@ export class ExternalsEngine implements Engine {
             // }
             return {}
         } else
-            return { path: `external/${extenalItem.ip}`}
+            return { path: `external/${extenalItem.ip}` }
     }
 
     renderRow(item: FolderItem, tr: HTMLTableRowElement) {
@@ -104,13 +104,13 @@ export class ExternalsEngine implements Engine {
 
     getSortFunction(column: number, isSubItem: boolean) { return null }
 
-    disableSorting(table: VirtualTable, disable: boolean) {}
+    disableSorting(table: VirtualTable<FolderItem>, disable: boolean) { }
 
     async renameItem(item: FolderItem, folder: Folder) {
         // TODO
     }
 
-    async addExtendedInfos(path: string|undefined|null, items: FolderItem[], refresh: ()=>void) {}
-    
+    async addExtendedInfos(path: string | undefined | null, items: FolderItem[], refresh: () => void) { }
+
     private items = JSON.parse(localStorage.getItem("externals") || "[]") as Item[]
 }

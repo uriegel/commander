@@ -1,4 +1,5 @@
-import { FolderItem, ItemResult, PathResult } from "./engines"
+import { FolderItem } from "../components/folder"
+import { ItemResult, PathResult } from "./engines"
 import { EXTERNALS_PATH } from "./externals"
 import { FileEngine, FileItem } from "./file"
 const http = window.require('http')
