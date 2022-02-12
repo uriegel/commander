@@ -26,10 +26,9 @@ export type Commander = {
     createFolder: ()=>void
 }
 
-// TODO createFolder (Linux)
-// TODO engine externals create
-// TODO delete Externals
 // TODO CopyProcessors (file -> file, file -> extenal, external -> file) 
+// TODO Drag and drop
+// TODO extended rename
 
 var currentPath = ""
 const folderLeft = document.getElementById("folderLeft")! as Folder

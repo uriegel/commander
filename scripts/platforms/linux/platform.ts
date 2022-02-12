@@ -2,13 +2,15 @@ import { Column, VirtualTable } from 'virtual-table-component'
 import { DialogBox, Result } from 'web-dialog-box'
 import { Menubar, MenuItem } from 'web-menu-bar'
 import { FolderItem } from '../../components/folder'
-import { FileError, FileItem } from '../../engines/file'
+import { FileError, FileErrorType, FileItem } from '../../engines/file'
 import { RootItem } from '../../engines/root'
 import { activateClass } from '../../utils'
 import { Platform } from "../platforms"
 const { homedir } = window.require('os')
 const { exec } = window.require('child_process')
+const fs = window.require('fs').promises
 const { copyFile, getCopyStatus, trashFile } = window.require('rust-addon')
+
 
 const homeDir = homedir()
 
@@ -151,7 +153,28 @@ export class LinuxPlatform implements Platform {
         }
     }
 
-    async createFolder(item: string) {
+    async createFolder(path: string) {
+        try {
+            await fs.mkdir(path, { recursive: true })   
+        } catch (e: any) {
+            switch (e.errno) {
+                case -13:
+                    throw ({
+                        code: FileErrorType.AccessDenied,
+                        description: e.stack
+                    } as FileError)
+                case -17:
+                    throw ({
+                        code: FileErrorType.FileExists,
+                        description: e.stack
+                    } as FileError)
+                default:
+                    throw ({
+                        code: FileErrorType.Unknown,
+                        description: "Unknown error occurred"
+                    } as FileError)
+            }
+        }
     }
 
     private dialog: DialogBox | null = null

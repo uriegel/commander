@@ -28,9 +28,9 @@ export class ExternalsEngine implements Engine {
     async getItems(_: string | null | undefined, __?: boolean) {
         return {
             path: EXTERNALS_PATH,
-            items: ([{ name: "..", type: ItemType.Parent, isDirectory: true }] as Item[])
+            items: ([{ name: "..", type: ItemType.Parent, isDirectory: true, isNotSelectable: true }] as Item[])
                 .concat(this.items)
-                .concat({ name: "Hinzufügen...", type: ItemType.Add, isDirectory: false })
+                .concat({ name: "Hinzufügen...", type: ItemType.Add, isDirectory: false, isNotSelectable: true })
         }
     }
 
@@ -73,21 +73,20 @@ export class ExternalsEngine implements Engine {
             adderName.value = ""
             const adderIp = document.getElementById("adder-ip") as HTMLInputElement
             adderIp.value = ""
-            //const res = 
-            await dialog.show({
+            const res = await dialog.show({
                 text: "Remote-Verbindung anlegen",
                 extended: "external-adder",
                 btnOk: true,
                 btnCancel: true,
                 defBtnOk: true
             })
-            // if (res.result == RESULT_OK) {
-            //     const name = adderName.value
-            //     const ip = adderIp.value
-            //     items = items.concat([{name, ip}])
-            //     localStorage.setItem("externals", JSON.stringify(items))
-            //     refresh()
-            // }
+            if (res.result == Result.Ok) {
+                const name = adderName.value
+                const ip = adderIp.value
+                this.items = this.items.concat([{name, ip, isDirectory: false}])
+                this.saveItems()
+                refresh()
+            }
             return {}
         } else
             return { path: `external/${extenalItem.ip}` }
@@ -123,14 +122,41 @@ export class ExternalsEngine implements Engine {
             if (res.result == Result.Ok && res.input) {
                 item.name = res.input
                 folder.reloadItems(true)
-                localStorage.setItem("externals", JSON.stringify(this.items))
+                this.saveItems()            
+            }
+        } catch (e: any) {}
+    }
+
+    async deleteItems(items: FolderItem[], folder: Folder) {
+        try {
+            const itemsToDelete = items.filter(n => !(n as Item).type || (n as Item).type == ItemType.Item)
+            if (itemsToDelete.length == 0)
+                return
+            
+            const res = await dialog.show({
+                text: "Einträge löschen",
+                btnOk: true,
+                btnCancel: true,
+                defBtnOk: true
+            })    
+            folder.setFocus()
+            if (res.result == Result.Ok) {
+                this.items = this.items.filter(n => !itemsToDelete.includes(n))
+                this.saveItems()
+                folder.reloadItems(true)
             }
         } catch (e: any) {}
     }
 
     async addExtendedInfos(path: string | undefined | null, items: FolderItem[], refresh: () => void) { }
-    async deleteItems(items: FolderItem[], folder: Folder) {}
     async createFolder(suggestedName: string, folder: Folder) {}
+
+    private saveItems() {
+        localStorage.setItem("externals", JSON.stringify(this.items.map(n => {
+            n.isSelected = false
+            return n
+        })))
+    }
     
     private items = JSON.parse(localStorage.getItem("externals") || "[]") as Item[]
 }
