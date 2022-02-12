@@ -35,7 +35,7 @@ export const registerCommands = () => {
                 break
             case "rename":
                 try {
-                    await copyFiles(input.item, input.newName, true)
+                    await copyFiles([input.item], [input.newName], true)
                     callback(JSON.stringify({}))
                 } catch (exception) {
                     callback(JSON.stringify({ exception }))

@@ -78,12 +78,11 @@ export class WindowsPlatform implements Platform {
     }
 
     async renameItem(item: string, newName: string) {
-        // TODO
-        // await runCmd({
-        //     method: "rename", 
-        //     item,
-        //     newName
-        // })
+        await runCmd({
+            method: "rename", 
+            item,
+            newName
+        })
     }
 }
 
@@ -103,4 +102,15 @@ function compareVersion(versionLeft: Version, versionRight: Version) {
         : versionLeft.patch != versionRight.patch
         ? versionLeft.patch - versionRight.patch
         : versionLeft.build - versionRight.build
+}
+
+async function runCmd(input: any) {
+    const response = await fetch("http://runcmd", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input)
+    })
+    const res = await response.json()
+    if (res.exception)
+        throw (res.exception)
 }
