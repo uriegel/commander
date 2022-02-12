@@ -2,35 +2,16 @@ const ipcRenderer = window.require('electron').ipcRenderer
 const fspath = window.require('path')
 
 class Folder extends HTMLElement {
-
-    get id() { return this.folderId }
-    
-    get selectedItems() { return this.getSelectedItems() }
-    
+   
     connectedCallback() {
-        this.table.addEventListener("delete", async evt => {
-            const selectedItems = this.getSelectedItems()
-            if (selectedItems.length > 0)
-                this.dispatchEvent(new CustomEvent('delete', { detail: selectedItems }))
-        })
-                
         this.folderRoot.addEventListener("dragenter", evt => this.onDragEnter(evt))
         this.folderRoot.addEventListener("dragleave", evt => this.onDragLeave(evt))
         this.folderRoot.addEventListener("dragover", evt => this.onDragOver(evt))
         this.folderRoot.addEventListener("drop", evt => this.onDrop(evt))
     }
 
-    getSelectedItem() {
-        return this.table.items[this.table.getPosition()].name
-    }
-
     async createFolder(newFolder) {
         await this.processor.createFolder(newFolder)
-        this.reloadItems()
-    }
-
-    async deleteItems(items) {
-        await this.processor.deleteItems(items)
         this.reloadItems()
     }
 

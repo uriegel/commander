@@ -22,9 +22,11 @@ export type Commander = {
     selectNone: ()=>void
     showHidden: (hidden: boolean)=>void 
     rename: ()=>void
+    deleteSelectedItems: ()=>void
 }
 
-// TODO delete in all engines
+// TODO delete Windows
+// TODO delete Externals
 // TODO createFolder
 // TODO engine externals create
 
@@ -101,6 +103,10 @@ function rename() {
     activeFolder.renameItem()
 }
 
+function deleteSelectedItems() {
+    activeFolder.deleteSelectedItems()
+}
+
 const commander: Commander = {
     showViewer,
     hideMenu,
@@ -109,7 +115,8 @@ const commander: Commander = {
     selectAll,
     selectNone,
     showHidden,
-    rename
+    rename,
+    deleteSelectedItems
 }
 
 Platform.adaptWindow(dialog, menu, document.getElementById("hidemenu") as MenuItem)

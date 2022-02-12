@@ -4,6 +4,7 @@ const electron = window.require('electron')
 export function initialize(commanderToSet: Commander) { commander = commanderToSet }
 
 window.onRename = () => commander.rename()
+window.onDelete = () => commander.deleteSelectedItems()
 window.onClose = () => close()
 window.onSelectAll = () => commander.selectAll()
 window.onSelectNone = () => commander.selectNone()

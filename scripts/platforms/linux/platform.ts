@@ -8,7 +8,7 @@ import { activateClass } from '../../utils'
 import { Platform } from "../platforms"
 const { homedir } = window.require('os')
 const { exec } = window.require('child_process')
-const { copyFile, getCopyStatus } = window.require('rust-addon')
+const { copyFile, getCopyStatus, trashFile } = window.require('rust-addon')
 
 const homeDir = homedir()
 
@@ -137,8 +137,14 @@ export class LinuxPlatform implements Platform {
 
     getAdditionalSortFunction(column: number, isSubItem: boolean) { return null }
 
-    async renameItem(item: string, newName: string) {
+    async renameFile(item: string, newName: string) {
         await copyFileAsync(item, newName, undefined, true)
+    }
+
+    async deleteFiles(items: string[]) {
+        for (let i = 0; i < items.length; i++ ) {
+            await trashFile(items[i])
+        }
     }
 
     private dialog: DialogBox | null = null

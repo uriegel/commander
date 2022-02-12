@@ -78,6 +78,11 @@ export class Folder extends HTMLElement {
             this.dispatchEvent(new CustomEvent('onFocus', { detail: this.id }))
             this.sendStatusInfo(this.table.getPosition())
         })
+        this.table.addEventListener("delete", async evt => {
+            const selectedItems = this.getSelectedItems()
+            if (selectedItems.length > 0)
+                this.deleteSelectedItems()
+        })
         this.table.addEventListener("keydown", evt => {
             switch (evt.which) {
                 case 8: // backspace
@@ -234,6 +239,13 @@ export class Folder extends HTMLElement {
             if (selectedItems.length != 1)    
                 return        
         this.engine.renameItem(selectedItems[0], this)
+    }
+
+    deleteSelectedItems() {
+        const selectedItems = this.getSelectedItems()
+        if (selectedItems.length == 0)    
+            return        
+        this.engine.deleteItems(selectedItems, this)
     }
 
     private onPathChanged(newPath: string, fromBacklog?: boolean) {

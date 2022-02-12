@@ -77,12 +77,16 @@ export class WindowsPlatform implements Platform {
             : null
     }
 
-    async renameItem(item: string, newName: string) {
+    async renameFile(item: string, newName: string) {
         await runCmd({
             method: "rename", 
             item,
             newName
         })
+    }
+
+    async deleteFiles(items: string[]) {
+        // TODO
     }
 }
 

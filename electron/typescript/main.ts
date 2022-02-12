@@ -92,33 +92,33 @@ const createWindow = async () => {
 app.on('ready', createWindow)
 
 
+// TODO
+// const trim = (str: string) => str.trim()
+// const capitalize = (str: string) => str.toUpperCase()
+// const replace = (f: string, r: string, str: string) => str.split(f).join(r)
 
-const trim = (str: string) => str.trim()
-const capitalize = (str: string) => str.toUpperCase()
-const replace = (f: string, r: string, str: string) => str.split(f).join(r)
+// const compose = <T1, T2, T3>(f: (x: T2)=>T3, g: (x:T1)=>T2) => (x: T1) => f(g(x))
 
-const compose = <T1, T2, T3>(f: (x: T2)=>T3, g: (x:T1)=>T2) => (x: T1) => f(g(x))
-
-const trimAndCapitalize = compose(capitalize, trim)
+// const trimAndCapitalize = compose(capitalize, trim)
 
 
-function curry3<T1, T2, T3, T4>(fn: (a: T1, b: T2, c: T3)=>T4) {
-    return (a: T1) => (b: T2) => (c: T3) => fn(a, b, c)
-}
-
-// function curry4<T1, T2, T3, T4, T5>(fn: (a: T1, b: T2, c: T3, d: T4)=>T5) {
-//     return (a: T1) => (b: T2) => (c: T3) => (d: T4) => fn(a, b, c, d)
+// function curry3<T1, T2, T3, T4>(fn: (a: T1, b: T2, c: T3)=>T4) {
+//     return (a: T1) => (b: T2) => (c: T3) => fn(a, b, c)
 // }
 
-const curriedReplace = curry3(replace)
+// // function curry4<T1, T2, T3, T4, T5>(fn: (a: T1, b: T2, c: T3, d: T4)=>T5) {
+// //     return (a: T1) => (b: T2) => (c: T3) => (d: T4) => fn(a, b, c, d)
+// // }
 
-const affe = curriedReplace("/")("-")("    09/Aug/1965    ")
-console.log(trimAndCapitalize(affe))
+// const curriedReplace = curry3(replace)
 
-const curriedReplaceSlashWithMinus = curriedReplace("/")("-")
+// const affe = curriedReplace("/")("-")("    09/Aug/1965    ")
+// console.log(trimAndCapitalize(affe))
 
-const trimAndCapitalizeAndReplace = compose(trimAndCapitalize, curriedReplaceSlashWithMinus)
+// const curriedReplaceSlashWithMinus = curriedReplace("/")("-")
 
-console.log(trimAndCapitalize(" hällo Wörlt  "))
+// const trimAndCapitalizeAndReplace = compose(trimAndCapitalize, curriedReplaceSlashWithMinus)
 
-console.log(trimAndCapitalizeAndReplace("    09/Aug/1965    "))
+// console.log(trimAndCapitalize(" hällo Wörlt  "))
+
+// console.log(trimAndCapitalizeAndReplace("    09/Aug/1965    "))

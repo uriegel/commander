@@ -30,10 +30,13 @@ export enum FileErrorType {
     Unknown = 1,
     AccessDenied = 2,
     FileExists = 3,
-    FileNotFound = 4
+    FileNotFound = 4,
+    // TODO
+    TrashNotPossible = 5
 }
 
 function getItemsTypes(folderItem: FolderItem): ItemsType; 
+function getItemsTypes(folderItems: FolderItem[]): ItemsType; 
 function getItemsTypes(folderItems: FolderItem[] | FolderItem): ItemsType {
     const items = Array.isArray(folderItems) ? folderItems : [ folderItems ]
     const types = items
@@ -249,6 +252,46 @@ export class FileEngine implements Engine {
         }
     }
 
+    async deleteItems(items: FolderItem[], folder: Folder) {
+        try {
+            const itemsType = getItemsTypes(items)
+            const text = itemsType == ItemsType.File 
+                ? items.length == 1 
+                    ? "Möchtest Du die Datei löschen?"
+                    : "Möchtest Du die Dateien löschen?"
+                : itemsType == ItemsType.Directory
+                ?  items.length == 1 
+                    ? "Möchtest Du den Ordner löschen?"
+                    : "Möchtest Du die Ordner löschen?"
+                : "Möchtest Du die Einträge löschen?"
+            const res = await dialog.show({
+                text,
+                btnOk: true,
+                btnCancel: true
+            })    
+            folder.setFocus()
+            if (res.result == Result.Ok) {
+                await this.delete(items)
+                folder.reloadItems(true)
+            }
+        } catch (e: any) {
+            const fileError = e as FileError
+            const text = fileError.code == FileErrorType.AccessDenied
+                    ? "Zugriff verweigert"
+                    : e.fileError.code == FileErrorType.TrashNotPossible
+                    ? "Löschen in den Papierkorb nicht möglich"
+                    : "Die Aktion konnte nicht ausgeführt werden"
+            setTimeout(async () => {
+                await dialog.show({
+                    text,
+                    btnOk: true
+                })
+                folder.setFocus()        
+            },
+            500)
+        }
+    }
+
     protected getParentDir(path: string): PathResult {
         let pos = path.lastIndexOf(Platform.pathDelimiter)
         let parent = pos ? path.substring(0, pos) : Platform.pathDelimiter
@@ -260,9 +303,13 @@ export class FileEngine implements Engine {
     }
 
     protected async rename(item: string, newName: string) {
-        await Platform.renameItem(fspath.join(this.currentPath, item), fspath.join(this.currentPath, newName))
+        await Platform.renameFile(fspath.join(this.currentPath, item), fspath.join(this.currentPath, newName))
     }
 
+    protected async delete(items: FolderItem[]) {
+        await Platform.deleteFiles(items.map(n => fspath.join(this.currentPath, n.name)))
+    }
+    
     private async addExtendedInfo(item: FileItem, path: string) {
         var name = item.name.toLocaleLowerCase();
         if (name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png"))

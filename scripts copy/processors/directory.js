@@ -23,14 +23,6 @@ const fs = window.require('fs')
 const { stat } = window.require('fs/promises')
 
 export const getDirectory = (folderId, path) => {
-    const getType = () => DIRECTORY_TYPE
-    
-    let currentPath = ""
-
-    const getItem = item => currentPath == pathDelimiter ? pathDelimiter + item.name : currentPath + pathDelimiter + item.name
-
-    const deleteItems = items => platformDeleteItems(items.map(n => fspath.join(currentPath, n)))
-
     async function extractFilesInFolders(sourcePath, targetPath, items, sourceFolder) {
 
         const extractFiles = async (path, target) => await extractFilesInFolders(path, target, await sourceFolder.readDir(path), sourceFolder)

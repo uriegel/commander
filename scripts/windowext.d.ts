@@ -1,7 +1,8 @@
 export declare global {
 	interface Window {
         close(): ()=>void
-        
+
+        onDelete: ()=>void        
         onRename: ()=>void        
         onClose: ()=>void
         onSelectAll: ()=>void

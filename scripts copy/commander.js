@@ -50,44 +50,6 @@ async function extendedRename() {
     }
 }
 
-async function onDelete(itemsToDelete) {
-    try {
-        const itemsType = getItemsTypes(itemsToDelete)
-        const text = itemsType == FILE 
-            ? itemsToDelete.length == 1 
-                ? "Möchtest Du die Datei löschen?"
-                : "Möchtest Du die Dateien löschen?"
-            : itemsType == DIRECTORY
-            ?  itemsToDelete.length == 1 
-                ? "Möchtest Du den Ordner löschen?"
-                : "Möchtest Du die Ordner löschen?"
-            : "Möchtest Du die Einträge löschen?"
-
-        const res = await dialog.show({
-            text,
-            btnOk: true,
-            btnCancel: true
-        })    
-        activeFolder.setFocus()
-        if (res.result == RESULT_OK)
-            await activeFolder.deleteItems(itemsToDelete.map(n => n.name))
-    } catch (e) {
-        const text = e.fileResult == FileResult.AccessDenied
-                ? "Zugriff verweigert"
-                : e.fileResult == FileResult.TrashNotPossible
-                ? "Löschen in den Papierkorb nicht möglich"
-                : "Die Aktion konnte nicht ausgeführt werden"
-        setTimeout(async () => {
-            await dialog.show({
-                text,
-                btnOk: true
-            })
-            activeFolder.setFocus()        
-        },
-        500)
-    }
-}
-
 async function createFolder() {
     try {
         const selectedItems = activeFolder.selectedItems

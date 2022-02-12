@@ -18,4 +18,5 @@ export class NullEngine implements Engine {
     disableSorting(table: VirtualTable<FolderItem>, disable: boolean) {}
     async addExtendedInfos(path: string|undefined|null, items: FolderItem[], refresh: ()=>void) {}
     async renameItem(item: FolderItem, folder: Folder) {}
+    async deleteItems(items: FolderItem[], folder: Folder) {}
 }

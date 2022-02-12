@@ -80,12 +80,6 @@ export const adaptDisableSorting = () => { }
 
 export async function addExtendedInfo() {}
 
-export async function deleteItems(items) {
-    for (let i = 0; i < items.length; i++ ) {
-        await trashFile(items[i])
-    }
-}    
-
 export async function copyItems(copyInfo, move, overwrite, foldersToRefresh) {
     copyInfo.items.forEach(n => copyProcessor.addJob(n.file, n.targetFile, move, overwrite, foldersToRefresh))
 }
