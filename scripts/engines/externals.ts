@@ -1,4 +1,5 @@
 import { Column, VirtualTable } from "virtual-table-component"
+import { Result } from "web-dialog-box"
 import { dialog } from "../commander"
 import { Folder, FolderItem } from "../components/folder"
 import { Engine } from "./engines"
@@ -13,8 +14,8 @@ enum ItemType {
 }
 
 interface Item extends FolderItem {
-    type: ItemType
-    ip: string
+    type?: ItemType
+    ip?: string
 }
 
 export class ExternalsEngine implements Engine {
@@ -27,7 +28,7 @@ export class ExternalsEngine implements Engine {
     async getItems(_: string | null | undefined, __?: boolean) {
         return {
             path: EXTERNALS_PATH,
-            items: [{ name: "..", type: ItemType.Parent, isDirectory: true }]
+            items: ([{ name: "..", type: ItemType.Parent, isDirectory: true }] as Item[])
                 .concat(this.items)
                 .concat({ name: "Hinzufügen...", type: ItemType.Add, isDirectory: false })
         }
@@ -107,7 +108,24 @@ export class ExternalsEngine implements Engine {
     disableSorting(table: VirtualTable<FolderItem>, disable: boolean) { }
 
     async renameItem(item: FolderItem, folder: Folder) {
-        // TODO
+        try {
+            if ((item as Item).type && (item as Item).type != ItemType.Item)
+                return
+            
+            const res = await dialog.show({
+                text: "Eintrag umbenennen",
+                inputText: item.name,
+                btnOk: true,
+                btnCancel: true,
+                defBtnOk: true
+            })    
+            folder.setFocus()
+            if (res.result == Result.Ok && res.input) {
+                item.name = res.input
+                folder.reloadItems(true)
+                localStorage.setItem("externals", JSON.stringify(this.items))
+            }
+        } catch (e: any) {}
     }
 
     async addExtendedInfos(path: string | undefined | null, items: FolderItem[], refresh: () => void) { }

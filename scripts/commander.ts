@@ -24,11 +24,9 @@ export type Commander = {
     rename: ()=>void
 }
 
-// TODO engine externals create
-// TODO engine externals rename
 // TODO delete in all engines
 // TODO createFolder
-
+// TODO engine externals create
 
 var currentPath = ""
 const folderLeft = document.getElementById("folderLeft")! as Folder
