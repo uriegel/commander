@@ -258,7 +258,7 @@ export class Folder extends HTMLElement {
         if (selectedItems.length == 0)
             return
         const copy = getCopyEngine(this.engine, other.engine, fromLeft, move)
-        if (copy && await copy.process(selectedItems)) {
+        if (copy && await copy.process(selectedItems, () => this.setFocus())) {
             other.reloadItems()
             if (move == true)
                 this.reloadItems()

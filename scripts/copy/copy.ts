@@ -3,7 +3,7 @@ import { Engine, EngineId } from "../engines/engines"
 import { FileCopyEngine } from "./fileCopyEngine"
 
 export interface CopyEngine {
-    process: (selectedItems: FolderItem[])=>Promise<boolean>
+    process: (selectedItems: FolderItem[], focus: ()=>void)=>Promise<boolean>
 }
 
 export function getCopyEngine(engine: Engine, other: Engine, fromLeft: boolean, move?: boolean): CopyEngine | null {

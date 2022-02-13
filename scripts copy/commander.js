@@ -10,19 +10,6 @@ initializeCopying(onCopyFinish, onShowCopyErrors)
 folderLeft.addEventListener("dragAndDrop", evt => copy(evt.detail))
 folderRight.addEventListener("dragAndDrop", evt => copy(evt.detail))
 
-async function copy(move) {
-    
-    activeFolder.setFocus()
-    if (res.result != RESULT_CANCEL) {
-        if (res.result == RESULT_NO) 
-            copyInfo.items = copyInfo.items.filter(n => !copyInfo.conflicts.find(m => m.source.file == n.file))
-        await activeFolder.copyItems(copyInfo, move, res.result == RESULT_YES, move ? [activeFolder.id, inactiveFolder.id] : [inactiveFolder.id])
-        if (move)
-            await activeFolder.deleteEmptyFolders(itemsToCopy.filter(n => n.isDirectory).map(n => n.name), [activeFolder.id, inactiveFolder.id])
-    }
-}
-
-
 async function extendedRename() {
     const extendedRename = document.getElementById("extended-rename")
     extendedRename.initialize()

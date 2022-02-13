@@ -1,41 +1,52 @@
+import { Result } from "web-dialog-box"
 import { dialog } from "../commander"
 import { CopyConflict, CopyConflicts } from "../components/copyconflicts"
 import { FolderItem } from "../components/folder"
 import { Engine } from "../engines/engines"
-import { getItemsTypes, ItemsType } from "../engines/file"
+import { FileItem, getItemsTypes, ItemsType } from "../engines/file"
 import { Platform } from "../platforms/platforms"
 import { CopyEngine } from "./copy"
 const fspath = window.require('path')
 const fs = window.require('fs')
 const { stat } = window.require('fs/promises')
-
-// TODO: Preparing folder: recursion
-// TODO: cannot copy when path is the same
+const { getFiles } = window.require('rust-addon')
 
 export class FileCopyEngine implements CopyEngine {
     constructor(private engine: Engine, private other: Engine, private fromLeft: boolean, private move?: boolean) {}
 
-    async process(selectedItems: FolderItem[]) {
+    async process(selectedItems: FolderItem[], focus: ()=>void) {
+
+        if (this.engine.currentPath == this.other.currentPath)
+            return false
+
         const itemsType = getItemsTypes(selectedItems)
         const items = await this.extractFilesInFolders(this.engine.currentPath, this.other.currentPath, selectedItems)
+        console.log("affe", items)
         const conflicts = await this.getCopyConflicts(items, this.engine.currentPath)
         const copyInfo = { items, conflicts } as CopyInfo
-        const copyPrepare = await this.prepareCopyItems(itemsType, copyInfo, items.length == 1, this.fromLeft, this.move)
-        const res = await dialog.show(copyPrepare.dialogData)
-        console.log(res)
-
-
-        return true
+        await this.prepareCopyItems(itemsType, copyInfo, items.length == 1, this.fromLeft, this.move)
+        const res = await dialog.show(copyInfo.dialogData)
+        focus()
+        if (res.result != Result.Cancel) {
+            if (res.result == Result.No) 
+                copyInfo.items = copyInfo.items.filter(n => !copyInfo.conflicts.find(m => m.source.file == n.file))
+            // await activeFolder.copyItems(copyInfo, move, res.result == RESULT_YES, move ? [activeFolder.id, inactiveFolder.id] : [inactiveFolder.id])
+            // if (move)
+            //     await activeFolder.deleteEmptyFolders(itemsToCopy.filter(n => n.isDirectory).map(n => n.name), [activeFolder.id, inactiveFolder.id])
+            return true
+        } else 
+            return false
     }
 
     private async extractFilesInFolders(sourcePath: string, targetPath: string, selectedItems: FolderItem[]): Promise<CopyItem[]> {
 
-        const extractFiles = async (path: string, target: string) => await this.extractFilesInFolders(path, target, (await this.engine.getItems(path)).items)
+        const extractFiles = async (path: string, target: string) => 
+            await this.extractFilesInFolders(path, target, await getFiles(path) as FileItem[])
 
         const paths = (await Promise.all(selectedItems.map(async n => {
             const file = fspath.join(sourcePath, n.name)
             const targetFile = fspath.join(targetPath, n.name)
-            return n.isDirectory
+            return n.isDirectory && n.name != ".."
                 ? extractFiles(file, targetFile) 
                 : { file, 
                     targetFile, 
@@ -108,8 +119,6 @@ export class FileCopyEngine implements CopyEngine {
             else
                 copyInfo.dialogData.defBtnYes = true
         }
-
-        return copyInfo 
     }
 }
 
