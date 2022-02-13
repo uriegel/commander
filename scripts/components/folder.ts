@@ -259,9 +259,9 @@ export class Folder extends HTMLElement {
             return
         const copy = getCopyEngine(this.engine, other.engine, fromLeft, move)
         if (copy && await copy.process(selectedItems)) {
-            this.reloadItems(move != true)
+            other.reloadItems()
             if (move == true)
-                other.reloadItems()
+                this.reloadItems()
         }
     }
 

@@ -1,3 +1,4 @@
+import { dialog } from "../commander"
 import { CopyConflict, CopyConflicts } from "../components/copyconflicts"
 import { FolderItem } from "../components/folder"
 import { Engine } from "../engines/engines"
@@ -8,6 +9,9 @@ const fspath = window.require('path')
 const fs = window.require('fs')
 const { stat } = window.require('fs/promises')
 
+// TODO: Preparing folder: recursion
+// TODO: cannot copy when path is the same
+
 export class FileCopyEngine implements CopyEngine {
     constructor(private engine: Engine, private other: Engine, private fromLeft: boolean, private move?: boolean) {}
 
@@ -17,7 +21,8 @@ export class FileCopyEngine implements CopyEngine {
         const conflicts = await this.getCopyConflicts(items, this.engine.currentPath)
         const copyInfo = { items, conflicts } as CopyInfo
         const copyPrepare = await this.prepareCopyItems(itemsType, copyInfo, items.length == 1, this.fromLeft, this.move)
-    
+        const res = await dialog.show(copyPrepare.dialogData)
+        console.log(res)
 
 
         return true

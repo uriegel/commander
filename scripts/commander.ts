@@ -5,13 +5,13 @@ import 'grid-splitter'
 import 'web-pie-progress'
 import './components/folder'
 import './components/externaladder'
+import './components/copyconflicts'
 import { Menubar, MenuItem } from 'web-menu-bar'
 import { initialize as initializeMenu } from './menu'
 import { refreshViewer, showViewer as viewer } from './viewer'
 import { DialogBox } from 'web-dialog-box'
 import { Platform } from './platforms/platforms'
 import { Folder } from './components/folder'
-//import { FolderItem } from './engines/engines'
 
 export type Commander = {
     showViewer: (show: boolean)=>void
@@ -113,7 +113,7 @@ function createFolder() {
 }
 
 function copy(move?: boolean) {
-    activeFolder.copy(getInactiveFolder(), getInactiveFolder() == folderLeft, move)
+    activeFolder.copy(getInactiveFolder(), activeFolder == folderLeft, move)
 }
 
 const commander: Commander = {

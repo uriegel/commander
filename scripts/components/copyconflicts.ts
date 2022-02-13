@@ -1,7 +1,6 @@
 import 'virtual-table-component'
-import { TableItem, VirtualTable } from 'virtual-table-component'
-//import { formatDateTime, formatSize, getExtension } from "../processors/rendertools.js"
-//import { adaptConflictColumns } from "../platforms/switcher.js"
+import { Column, TableItem, VirtualTable } from 'virtual-table-component'
+import { formatDateTime, formatSize, getExtension } from '../engines/engines'
 
 export interface CopyConflict extends TableItem {
     source: FileInfo,
@@ -67,24 +66,24 @@ export class CopyConflicts extends HTMLElement {
                 // } else 
                 const name = item.source.name
 
-                const template = document.getElementById('conflictName')
-                const element = template.content.cloneNode(true)
-                const img = element.querySelector("img")
+                const template = document.getElementById('conflictName') as HTMLTemplateElement
+                const element = template.content.cloneNode(true) as HTMLElement
+                const img = element.querySelector("img") as HTMLImageElement
                 img.src = `icon://${ext}`
-                const text = element.querySelector("span")
-                text.innerHTML = name
+                const text = element.querySelector("span") as HTMLSpanElement
+                text.innerHTML = name ?? ""
                 td.appendChild(element)
             }            
         }, {
             name: "Datum",
             isSortable: true,
             render: (td, item) => {
-                const template = document.getElementById('conflictItem')
-                const element = template.content.cloneNode(true)
-                const source = element.querySelector("div:first-child")
-                source.innerHTML = formatDateTime(item.source.time)
-                const target = element.querySelector("div:last-child")
-                target.innerHTML = formatDateTime(item.target.time)
+                const template = document.getElementById('conflictItem') as HTMLTemplateElement
+                const element = template.content.cloneNode(true) as HTMLElement
+                const source = element.querySelector("div:first-child")!
+                source.innerHTML = formatDateTime(item.source.time.getTime())
+                const target = element.querySelector("div:last-child")!
+                target.innerHTML = formatDateTime(item.target.time.getTime())
                 if (item.target.time.getTime() == item.source.time.getTime())
                     td.classList.add("equal")
                 else if (item.source.time.getTime() > item.target.time.getTime())
@@ -98,18 +97,19 @@ export class CopyConflicts extends HTMLElement {
             isSortable: true,
             isRightAligned: true,
             render: (td, item) => {
-                const template = document.getElementById('conflictItem')
-                const element = template.content.cloneNode(true)
-                const source = element.querySelector("div:first-child")
+                const template = document.getElementById('conflictItem') as HTMLTemplateElement
+                const element = template.content.cloneNode(true) as HTMLElement
+                const source = element.querySelector("div:first-child")!
                 source.innerHTML = formatSize(item.source.size)
-                const target = element.querySelector("div:last-child")
+                const target = element.querySelector("div:last-child")!
                 target.innerHTML = formatSize(item.target.size)
                 if (item.target.size == item.source.size)
                     td.classList.add("equal")
                 td.appendChild(element)
             }
-        }]
-        this.table.setColumns(adaptConflictColumns(columns))
+        }] as Column<CopyConflict>[] 
+        //this.table.setColumns(adaptConflictColumns(columns))
+        this.table.setColumns(columns)
     }
 
     createdCallback() {
