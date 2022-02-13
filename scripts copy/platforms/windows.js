@@ -62,11 +62,6 @@ export async function deleteEmptyFolders(path, folders, foldersToRefresh) {
     onFinish(foldersToRefresh)
 }
 
-export const enhanceCopyConflictData = async item => ({
-    ...item,
-    version: await getFileVersion(item.file)
-})
-
 export const onEnter = () => {}
 
 const fillVersion = version => version ? `${version.major}.${version.minor}.${version.build}.${version.patch}` : ""

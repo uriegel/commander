@@ -2,6 +2,7 @@ import { Column, VirtualTable } from 'virtual-table-component'
 import { DialogBox } from 'web-dialog-box'
 import { Menubar, MenuItem } from 'web-menu-bar'
 import { FolderItem } from '../components/folder'
+import { FileInfo } from '../copy/fileCopyEngine'
 import { FileItem } from '../engines/file'
 import { RootItem } from '../engines/root'
 import { LinuxPlatform } from "./linux/platform"
@@ -26,6 +27,7 @@ export interface Platform {
     renameFile: (item: string, newName: string)=>Promise<void>
     deleteFiles: (items: string[])=>Promise<void>
     createFolder: (item: string)=>Promise<void>
+    enhanceFileInfo: (item: FileInfo)=>Promise<FileInfo>
 }
 
 export const Platform = isLinux ? new LinuxPlatform() as Platform : new WindowsPlatform() as Platform

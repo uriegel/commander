@@ -6,8 +6,8 @@ export interface CopyEngine {
     process: (selectedItems: FolderItem[])=>Promise<boolean>
 }
 
-export function getCopyEngine(engine: Engine, other: Engine, move?: boolean): CopyEngine | null {
+export function getCopyEngine(engine: Engine, other: Engine, fromLeft: boolean, move?: boolean): CopyEngine | null {
     if (engine.id == EngineId.Files && other.id == EngineId.Files)
-        return new FileCopyEngine(engine, other, move)
+        return new FileCopyEngine(engine, other, fromLeft, move)
     return null;
 }

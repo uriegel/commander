@@ -2,6 +2,7 @@ import { Column, VirtualTable } from 'virtual-table-component'
 import { DialogBox, Result } from 'web-dialog-box'
 import { Menubar, MenuItem } from 'web-menu-bar'
 import { FolderItem } from '../../components/folder'
+import { FileInfo } from '../../copy/fileCopyEngine'
 import { FileError, FileErrorType, FileItem } from '../../engines/file'
 import { RootItem } from '../../engines/root'
 import { activateClass } from '../../utils'
@@ -176,6 +177,8 @@ export class LinuxPlatform implements Platform {
             }
         }
     }
+
+    async enhanceFileInfo(item: FileInfo) { return item }
 
     private dialog: DialogBox | null = null
     private itemHideMenu: MenuItem | null = null

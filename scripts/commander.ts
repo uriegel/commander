@@ -113,7 +113,7 @@ function createFolder() {
 }
 
 function copy(move?: boolean) {
-    activeFolder.copy(getInactiveFolder(), move)
+    activeFolder.copy(getInactiveFolder(), getInactiveFolder() == folderLeft, move)
 }
 
 const commander: Commander = {

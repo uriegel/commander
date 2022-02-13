@@ -15,7 +15,7 @@ export interface FileItem extends FolderItem {
     time: number
 }
 
-enum ItemsType {
+export enum ItemsType {
     Directory,
     File,
     Both
@@ -34,9 +34,9 @@ export enum FileErrorType {
     TrashNotPossible = 5
 }
 
-function getItemsTypes(folderItem: FolderItem): ItemsType; 
-function getItemsTypes(folderItems: FolderItem[]): ItemsType; 
-function getItemsTypes(folderItems: FolderItem[] | FolderItem): ItemsType {
+export function getItemsTypes(folderItem: FolderItem): ItemsType; 
+export function getItemsTypes(folderItems: FolderItem[]): ItemsType; 
+export function getItemsTypes(folderItems: FolderItem[] | FolderItem): ItemsType {
     const items = Array.isArray(folderItems) ? folderItems : [ folderItems ]
     const types = items
         .map(n => n.isDirectory)

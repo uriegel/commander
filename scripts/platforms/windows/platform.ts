@@ -2,6 +2,7 @@ import { Column, VirtualTable } from 'virtual-table-component'
 import { DialogBox } from 'web-dialog-box'
 import { Menubar, MenuItem } from 'web-menu-bar'
 import { FolderItem } from '../../components/folder'
+import { FileInfo } from '../../copy/fileCopyEngine'
 import { FileItem } from '../../engines/file'
 import { RootItem } from '../../engines/root'
 import { activateClass } from '../../utils'
@@ -97,6 +98,13 @@ export class WindowsPlatform implements Platform {
             method: "createFolder", 
             path: newFolder
         })        
+    }
+
+    async enhanceFileInfo(item: FileInfo) {
+        return {
+            ...item,
+            version: await getFileVersion(item.file)
+        } as FileInfo
     }
 }
 

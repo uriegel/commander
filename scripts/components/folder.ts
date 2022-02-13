@@ -253,11 +253,11 @@ export class Folder extends HTMLElement {
         this.engine.createFolder(selectedItems.length == 1 ? selectedItems[0].name : "", this)
     }
 
-    async copy(other: Folder, move?: boolean) {
+    async copy(other: Folder, fromLeft: boolean, move?: boolean) {
         const selectedItems = this.getSelectedItems()
         if (selectedItems.length == 0)
             return
-        const copy = getCopyEngine(this.engine, other.engine, move)
+        const copy = getCopyEngine(this.engine, other.engine, fromLeft, move)
         if (copy && await copy.process(selectedItems)) {
             this.reloadItems(move != true)
             if (move == true)

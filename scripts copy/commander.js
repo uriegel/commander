@@ -11,11 +11,8 @@ folderLeft.addEventListener("dragAndDrop", evt => copy(evt.detail))
 folderRight.addEventListener("dragAndDrop", evt => copy(evt.detail))
 
 async function copy(move) {
-    const itemsToCopy = activeFolder.selectedItems
-    const fromLeft = activeFolder == folderLeft
     const itemsType = getItemsTypes(itemsToCopy)    
     
-    const inactiveFolder = getInactiveFolder()
     const copyInfo = await inactiveFolder.prepareCopyItems(fromLeft, itemsType, activeFolder.getCurrentPath(), 
     itemsToCopy.map(n => ({name: n.name, isDirectory: n.isDirectory})), move, activeFolder)
     const res = await dialog.show(copyInfo.dialogData)
