@@ -1,5 +1,5 @@
 import { FolderItem } from "../components/folder"
-import { ItemResult, PathResult } from "./engines"
+import { EngineId, ItemResult, PathResult } from "./engines"
 import { EXTERNALS_PATH } from "./externals"
 import { FileEngine, FileItem } from "./file"
 const http = window.require('http')
@@ -25,7 +25,7 @@ type File = {
 export class ExternalEngine extends FileEngine {
 
     constructor(folderId: string, path: string) {
-        super(`${folderId}-external`)
+        super(EngineId.External, `${folderId}-external`)
 
         const pos = path.indexOf('/', 10)
         this.ip = pos == -1 ? path.substring(9) : path.substring(9, pos)

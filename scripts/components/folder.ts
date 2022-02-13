@@ -1,5 +1,6 @@
 import 'virtual-table-component'
 import { TableItem, VirtualTable } from 'virtual-table-component'
+import { getCopyEngine } from '../copy/copy'
 import { Engine, getEngine } from '../engines/engines'
 import { NullEngine } from '../engines/nullengine'
 import { compose } from '../utils'
@@ -250,6 +251,18 @@ export class Folder extends HTMLElement {
     createFolder() {
         const selectedItems = this.getSelectedItems()
         this.engine.createFolder(selectedItems.length == 1 ? selectedItems[0].name : "", this)
+    }
+
+    async copy(other: Folder, move?: boolean) {
+        const selectedItems = this.getSelectedItems()
+        if (selectedItems.length == 0)
+            return
+        const copy = getCopyEngine(this.engine, other.engine, move)
+        if (copy && await copy.process(selectedItems)) {
+            this.reloadItems(move != true)
+            if (move == true)
+                other.reloadItems()
+        }
     }
 
     private onPathChanged(newPath: string, fromBacklog?: boolean) {

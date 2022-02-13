@@ -5,6 +5,8 @@ export declare global {
         onCreateFolder: ()=>void
         onDelete: ()=>void        
         onRename: ()=>void        
+        onCopy: ()=>void        
+        onMove: ()=>void        
         onClose: ()=>void
         onSelectAll: ()=>void
         onSelectNone: ()=>void

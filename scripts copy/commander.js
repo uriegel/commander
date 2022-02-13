@@ -55,10 +55,6 @@ async function onShowCopyErrors(errorContent) {
     activeFolder.setFocus()
 }
 
-var commander = {
-    copy,
-    extendedRename,
-}
 
 
 

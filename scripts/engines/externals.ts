@@ -2,7 +2,7 @@ import { Column, VirtualTable } from "virtual-table-component"
 import { Result } from "web-dialog-box"
 import { dialog } from "../commander"
 import { Folder, FolderItem } from "../components/folder"
-import { Engine } from "./engines"
+import { Engine, EngineId } from "./engines"
 import { ROOT_PATH } from "./root"
 
 export const EXTERNALS_PATH = "externals"
@@ -19,7 +19,9 @@ interface Item extends FolderItem {
 }
 
 export class ExternalsEngine implements Engine {
-    constructor(private folderId: string) { }
+    constructor(private folderId: string) {}
+
+    id = EngineId.Externals
 
     get currentPath() { return EXTERNALS_PATH }
 

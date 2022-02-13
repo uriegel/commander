@@ -1,8 +1,9 @@
 import { Column, VirtualTable } from "virtual-table-component"
 import { Folder, FolderItem } from "../components/folder"
-import { Engine, ItemResult } from "./engines"
+import { Engine, EngineId, ItemResult } from "./engines"
 
 export class NullEngine implements Engine {
+    id = EngineId.Null
     currentPath = ""
     isSuitable(path: string|null|undefined) { return false }
     async getItems(path: string|null|undefined, showHiddenItems?: boolean) {

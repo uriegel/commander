@@ -15,7 +15,16 @@ export type PathResult = {
     recentFolder?: string
 }
 
+export enum EngineId {
+    Null,
+    Root,
+    Files,
+    External, 
+    Externals
+}
+
 export type Engine = {
+    id: EngineId
     currentPath: string
     isSuitable: (path: string|null|undefined)=>boolean
     getItems: (path?: string|null, showHiddenItems?: boolean)=>Promise<ItemResult>
@@ -42,7 +51,7 @@ export function getEngine(folderId: string, path: string|null|undefined, current
     else if (path.startsWith(EXTERNAL_PATH))         
         return { engine: new ExternalEngine(folderId, path), changed: true } 
     else
-        return { engine: new FileEngine(folderId), changed: true }
+        return { engine: new FileEngine(EngineId.Files, folderId), changed: true }
 }
 
 export function formatSize(size: number) {
@@ -65,7 +74,7 @@ export function formatSize(size: number) {
 
 export const getExtension = (path: string) => {
     let index = path.lastIndexOf(".")
-    return index > 0 ? path.substr(index) : ""
+    return index > 0 ? path.substring(index) : ""
 }
 
 const dateFormat = Intl.DateTimeFormat("de-DE", {

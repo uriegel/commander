@@ -24,6 +24,7 @@ export type Commander = {
     rename: ()=>void
     deleteSelectedItems: ()=>void
     createFolder: ()=>void
+    copy: (move?: boolean)=>void
 }
 
 // TODO CopyProcessors (file -> file, file -> extenal, external -> file) 
@@ -111,6 +112,10 @@ function createFolder() {
     activeFolder.createFolder()
 }
 
+function copy(move?: boolean) {
+    activeFolder.copy(getInactiveFolder(), move)
+}
+
 const commander: Commander = {
     showViewer,
     hideMenu,
@@ -121,7 +126,8 @@ const commander: Commander = {
     showHidden,
     rename,
     deleteSelectedItems,
-    createFolder
+    createFolder,
+    copy
 }
 
 Platform.adaptWindow(dialog, menu, document.getElementById("hidemenu") as MenuItem)

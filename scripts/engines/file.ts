@@ -1,6 +1,6 @@
 import { VirtualTable } from "virtual-table-component"
 import { Platform } from "../platforms/platforms"
-import { Engine, formatDateTime, formatSize, getExtension, ItemResult, PathResult } from "./engines"
+import { Engine, EngineId, formatDateTime, formatSize, getExtension, ItemResult, PathResult } from "./engines"
 import { ROOT_PATH } from "./root"
 import { dialog } from "../commander"
 import { Folder, FolderItem } from "../components/folder"
@@ -49,7 +49,7 @@ function getItemsTypes(folderItems: FolderItem[] | FolderItem): ItemsType {
 
 export class FileEngine implements Engine {
 
-    constructor(folderId: string) {
+    constructor(public id: EngineId, folderId: string) {
         this.folderId = folderId
     }
 

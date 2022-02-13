@@ -1,7 +1,7 @@
 import { VirtualTable } from "virtual-table-component"
 import { Folder, FolderItem } from "../components/folder"
 import { Platform } from "../platforms/platforms"
-import { Engine, formatSize } from "./engines"
+import { Engine, EngineId, formatSize } from "./engines"
 import { EXTERNALS_PATH } from "./externals"
 
 export const ROOT_PATH = "root"
@@ -17,6 +17,8 @@ export interface RootItem extends FolderItem {
 export class RootEngine implements Engine {
 
     constructor(private folderId: string) {}
+
+    id = EngineId.Root
 
     get currentPath() { return ROOT_PATH }
 

@@ -5,6 +5,8 @@ export function initialize(commanderToSet: Commander) { commander = commanderToS
 
 window.onRename = () => commander.rename()
 window.onCreateFolder = () => commander.createFolder()
+window.onCopy = () => commander.copy()
+window.onMove = () => commander.copy(true)
 window.onDelete = () => commander.deleteSelectedItems()
 window.onClose = () => close()
 window.onSelectAll = () => commander.selectAll()
