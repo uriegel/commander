@@ -1,3 +1,4 @@
+import { CopyConflict, CopyConflicts } from "../components/copyconflicts"
 import { FolderItem } from "../components/folder"
 import { Engine } from "../engines/engines"
 import { getItemsTypes, ItemsType } from "../engines/file"
@@ -6,13 +7,6 @@ import { CopyEngine } from "./copy"
 const fspath = window.require('path')
 const fs = window.require('fs')
 const { stat } = window.require('fs/promises')
-
-export type FileInfo = {
-    file: string,
-    name?: string | undefined,
-    size: number,
-    time: Date
-}
 
 export class FileCopyEngine implements CopyEngine {
     constructor(private engine: Engine, private other: Engine, private fromLeft: boolean, private move?: boolean) {}
@@ -97,7 +91,7 @@ export class FileCopyEngine implements CopyEngine {
         if (copyInfo.conflicts.length == 0) 
             copyInfo.dialogData.btnOk = true
         else {
-            const copyConflicts = document.getElementById('copy-conflicts')
+            const copyConflicts = document.getElementById('copy-conflicts') as CopyConflicts
             copyConflicts.setItems(copyInfo.conflicts)
             copyInfo.dialogData.extended = "copy-conflicts"
             copyInfo.dialogData.btnYes = true
@@ -140,7 +134,3 @@ type DialogData = {
     fullscreen?: true
 }
 
-type CopyConflict = {
-    source: FileInfo,
-    target: FileInfo
-}

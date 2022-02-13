@@ -1,8 +1,24 @@
 import 'virtual-table-component'
-import { formatDateTime, formatSize, getExtension } from "../processors/rendertools.js"
-import { adaptConflictColumns } from "../platforms/switcher.js"
+import { TableItem, VirtualTable } from 'virtual-table-component'
+//import { formatDateTime, formatSize, getExtension } from "../processors/rendertools.js"
+//import { adaptConflictColumns } from "../platforms/switcher.js"
 
-class CopyConflicts extends HTMLElement {
+export interface CopyConflict extends TableItem {
+    source: FileInfo,
+    target: FileInfo
+}
+
+export type FileInfo = {
+    file: string,
+    name?: string | undefined,
+    size: number,
+    time: Date
+}
+
+export class CopyConflicts extends HTMLElement {
+
+    private table: VirtualTable<CopyConflict>
+
     constructor() {
         super()
         const additionalStyle = `
@@ -29,7 +45,7 @@ class CopyConflicts extends HTMLElement {
                 <virtual-table additionalStyle='${additionalStyle}'></virtual-table>
             </div`
         
-        this.table = this.getElementsByTagName("VIRTUAL-TABLE")[0]
+        this.table = this.getElementsByTagName("VIRTUAL-TABLE")[0] as VirtualTable<CopyConflict>
         // const sbr = this.getAttribute("scrollbar-right")
         // if (sbr)
         //     this.table.setAttribute("scrollbar-right", sbr)
@@ -100,16 +116,16 @@ class CopyConflicts extends HTMLElement {
         this.tabIndex = 0
     }
 
-    focus() { 
+    override focus() { 
         this.table.setFocus() 
         this.tabIndex = -1
     }
 
-    blur() { 
+    override blur() { 
         this.tabIndex = 0
     }
     
-    setItems(items) {
+    setItems(items: CopyConflict[]) {
         this.table.setItems(items)
     }
 }
