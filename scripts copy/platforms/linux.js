@@ -43,16 +43,6 @@ export async function hideMenu(hide) {
     menu.setAttribute("automode", hide)
 }
 
-export const adaptDirectoryColumns = columns => columns
-
-export const adaptConflictColumns = columns => columns
-
-export const getRootPath = async item => [item.mountPoint || (item.name == EXTERN ? EXTERNALS_PATH : ""), null]
-
-export const adaptDisableSorting = () => { }
-
-export async function addExtendedInfo() {}
-
 export async function copyItems(copyInfo, move, overwrite, foldersToRefresh) {
     copyInfo.items.forEach(n => copyProcessor.addJob(n.file, n.targetFile, move, overwrite, foldersToRefresh))
 }
@@ -60,8 +50,6 @@ export async function copyItems(copyInfo, move, overwrite, foldersToRefresh) {
 export function deleteEmptyFolders(path, folders, foldersToRefresh) {
     copyProcessor.addDeleteEmptyFolders(path, folders, foldersToRefresh)
 }
-
-export const enhanceCopyConflictData = async item => item
 
 export const onEnter = (fileName, path) => {
     const file = path + '/' + fileName

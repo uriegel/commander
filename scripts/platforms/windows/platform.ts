@@ -3,6 +3,7 @@ import { DialogBox } from 'web-dialog-box'
 import { Menubar, MenuItem } from 'web-menu-bar'
 import { FileInfo } from '../../components/copyconflicts'
 import { FolderItem } from '../../components/folder'
+import { CopyItem } from '../../copy/fileCopyEngine'
 import { FileItem } from '../../engines/file'
 import { RootItem } from '../../engines/root'
 import { activateClass } from '../../utils'
@@ -106,6 +107,8 @@ export class WindowsPlatform implements Platform {
             version: await getFileVersion(item.file)
         } as FileInfo
     }
+
+    async copyItems(copyInfo: CopyItem[], overwrite: boolean, move?: boolean) {}
 }
 
 function fillVersion(version: Version) {

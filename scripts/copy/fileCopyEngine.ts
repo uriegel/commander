@@ -11,6 +11,12 @@ const fs = window.require('fs')
 const { stat } = window.require('fs/promises')
 const { getFiles } = window.require('rust-addon')
 
+export type CopyItem = {
+    file: string,
+    targetFile: string,
+    targetExists: boolean
+}
+
 export class FileCopyEngine implements CopyEngine {
     constructor(private engine: Engine, private other: Engine, private fromLeft: boolean, private move?: boolean) {}
 
@@ -30,7 +36,7 @@ export class FileCopyEngine implements CopyEngine {
         if (res.result != Result.Cancel) {
             if (res.result == Result.No) 
                 copyInfo.items = copyInfo.items.filter(n => !copyInfo.conflicts.find(m => m.source.file == n.file))
-            // await activeFolder.copyItems(copyInfo, move, res.result == RESULT_YES, move ? [activeFolder.id, inactiveFolder.id] : [inactiveFolder.id])
+            await Platform.copyItems(copyInfo.items, res.result == Result.Yes, this.move)
             // if (move)
             //     await activeFolder.deleteEmptyFolders(itemsToCopy.filter(n => n.isDirectory).map(n => n.name), [activeFolder.id, inactiveFolder.id])
             return true
@@ -120,12 +126,6 @@ export class FileCopyEngine implements CopyEngine {
                 copyInfo.dialogData.defBtnYes = true
         }
     }
-}
-
-type CopyItem = {
-    file: string,
-    targetFile: string,
-    targetExists: boolean
 }
 
 type CopyInfo = {

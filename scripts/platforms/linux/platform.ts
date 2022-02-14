@@ -3,6 +3,7 @@ import { DialogBox, Result } from 'web-dialog-box'
 import { Menubar, MenuItem } from 'web-menu-bar'
 import { FileInfo } from '../../components/copyconflicts'
 import { FolderItem } from '../../components/folder'
+import { CopyItem } from '../../copy/fileCopyEngine'
 import { FileError, FileErrorType, FileItem } from '../../engines/file'
 import { RootItem } from '../../engines/root'
 import { activateClass } from '../../utils'
@@ -180,6 +181,8 @@ export class LinuxPlatform implements Platform {
 
     async enhanceFileInfo(item: FileInfo) { return item }
 
+    async copyItems(copyInfo: CopyItem[], overwrite: boolean, move?: boolean) {}
+
     private dialog: DialogBox | null = null
     private itemHideMenu: MenuItem | null = null
     private menu: Menubar | null = null
@@ -207,3 +210,4 @@ async function copyFileAsync(source: string, target: string,
             clearInterval(timer)
     }
 }
+
