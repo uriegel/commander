@@ -141,6 +141,8 @@ export class WindowsPlatform implements Platform {
             }
         } as Column<CopyConflict>
     ]}
+
+    async copyFileAsync(source: string, target: string, cb?: (progress: number)=>void, move?: boolean, overwrite?: boolean) {}
 }
 
 function fillVersion(version: Version) {

@@ -30,6 +30,8 @@ export interface Platform {
     createFolder: (item: string)=>Promise<void>
     enhanceFileInfo: (item: FileInfo)=>Promise<FileInfo>
     copyItems: (copyInfo: CopyItem[], overwrite: boolean, move?: boolean)=>Promise<void>
+    copyFileAsync: (source: string, target: string, cb?: (progress: number)=>void, move?: boolean, overwrite?: boolean)=>Promise<void>
+
     adaptConflictsColumns: (columns: Column<CopyConflict>[])=>Column<CopyConflict>[]
 }
 

@@ -142,7 +142,7 @@ export class LinuxPlatform implements Platform {
     getAdditionalSortFunction(column: number, isSubItem: boolean) { return null }
 
     async renameFile(item: string, newName: string) {
-        await copyFileAsync(item, newName, undefined, true)
+        await this.copyFileAsync(item, newName, undefined, true)
     }
 
     async deleteFiles(items: string[]) {
@@ -181,6 +181,25 @@ export class LinuxPlatform implements Platform {
 
     async enhanceFileInfo(item: FileInfo) { return item }
 
+    async copyFileAsync(source: string, target: string, 
+        cb?: (progress: number)=>void, move?: boolean, overwrite?: boolean) {
+        const timer = cb 
+            ? setInterval(() => {
+                const status: number = getCopyStatus()
+                if (status)
+                    cb(status)
+            }, 100)
+            : 0
+        try {
+            await copyFile(source, target, move || false, overwrite || false)
+        } catch (e: any) {
+            throw JSON.parse((e as FileException).message) as FileError
+        } finally {
+            if (timer)
+                clearInterval(timer)
+        }
+    }
+
     async copyItems(copyInfo: CopyItem[], overwrite: boolean, move?: boolean) {}
     adaptConflictsColumns(columns: Column<CopyConflict>[]) { return columns}
 
@@ -191,24 +210,5 @@ export class LinuxPlatform implements Platform {
 
 type FileException = {
     message: string
-}
-
-async function copyFileAsync(source: string, target: string, 
-        cb?: (progress: number)=>void, move?: boolean, overwrite?: boolean) {
-    const timer = cb 
-        ? setInterval(() => {
-            const status: number = getCopyStatus()
-            if (status)
-                cb(status)
-        }, 100)
-        : 0
-    try {
-        await copyFile(source, target, move || false, overwrite || false)
-    } catch (e: any) {
-        throw JSON.parse((e as FileException).message) as FileError
-    } finally {
-        if (timer)
-            clearInterval(timer)
-    }
 }
 
