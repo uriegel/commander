@@ -1,6 +1,7 @@
 import 'virtual-table-component'
-import { Column, TableItem, VirtualTable } from 'virtual-table-component'
+import { TableItem, VirtualTable } from 'virtual-table-component'
 import { formatDateTime, formatSize, getExtension } from '../engines/engines'
+import { Platform } from '../platforms/platforms'
 
 export interface CopyConflict extends TableItem {
     source: FileInfo,
@@ -51,13 +52,11 @@ export class CopyConflicts extends HTMLElement {
         
         //this.table.renderRow = (item, tr) => this.processor.renderRow(item, tr)
 
-        //let columns = adaptDirectoryColumns([{
-        let columns = [{
+        const columns = Platform.adaptConflictsColumns([{
             name: "Name",
             isSortable: true,
             subItem: {
-                name: "Ext.",
-                isSortable: true
+                name: "Ext."
             },            
             render: (td, item) => {
                 const ext = getExtension(item.source.file)
@@ -107,8 +106,7 @@ export class CopyConflicts extends HTMLElement {
                     td.classList.add("equal")
                 td.appendChild(element)
             }
-        }] as Column<CopyConflict>[] 
-        //this.table.setColumns(adaptConflictColumns(columns))
+        }])
         this.table.setColumns(columns)
     }
 

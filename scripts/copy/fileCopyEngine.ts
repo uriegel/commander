@@ -22,15 +22,16 @@ export class FileCopyEngine implements CopyEngine {
 
     async process(selectedItems: FolderItem[], focus: ()=>void) {
 
-        if (this.engine.currentPath == this.other.currentPath)
-            return false
+        // TODO
+        // if (this.engine.currentPath == this.other.currentPath)
+        //     return false
 
         const itemsType = getItemsTypes(selectedItems)
         const items = await this.extractFilesInFolders(this.engine.currentPath, this.other.currentPath, selectedItems)
         console.log("affe", items)
         const conflicts = await this.getCopyConflicts(items, this.engine.currentPath)
         const copyInfo = { items, conflicts } as CopyInfo
-        await this.prepareCopyItems(itemsType, copyInfo, items.length == 1, this.fromLeft, this.move)
+        await this.prepareCopyItems(itemsType, copyInfo, selectedItems.length == 1, this.fromLeft, this.move)
         const res = await dialog.show(copyInfo.dialogData)
         focus()
         if (res.result != Result.Cancel) {

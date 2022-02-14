@@ -1,7 +1,7 @@
 import { Column, VirtualTable } from 'virtual-table-component'
 import { DialogBox } from 'web-dialog-box'
 import { Menubar, MenuItem } from 'web-menu-bar'
-import { FileInfo } from '../components/copyconflicts'
+import { CopyConflict, FileInfo } from '../components/copyconflicts'
 import { FolderItem } from '../components/folder'
 import { CopyItem } from '../copy/fileCopyEngine'
 import { FileItem } from '../engines/file'
@@ -30,6 +30,7 @@ export interface Platform {
     createFolder: (item: string)=>Promise<void>
     enhanceFileInfo: (item: FileInfo)=>Promise<FileInfo>
     copyItems: (copyInfo: CopyItem[], overwrite: boolean, move?: boolean)=>Promise<void>
+    adaptConflictsColumns: (columns: Column<CopyConflict>[])=>Column<CopyConflict>[]
 }
 
 export const Platform = isLinux ? new LinuxPlatform() as Platform : new WindowsPlatform() as Platform

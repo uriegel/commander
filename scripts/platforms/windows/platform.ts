@@ -1,7 +1,7 @@
 import { Column, VirtualTable } from 'virtual-table-component'
 import { DialogBox } from 'web-dialog-box'
 import { Menubar, MenuItem } from 'web-menu-bar'
-import { FileInfo } from '../../components/copyconflicts'
+import { CopyConflict, FileInfo } from '../../components/copyconflicts'
 import { FolderItem } from '../../components/folder'
 import { CopyItem } from '../../copy/fileCopyEngine'
 import { FileItem } from '../../engines/file'
@@ -105,10 +105,35 @@ export class WindowsPlatform implements Platform {
         return {
             ...item,
             version: await getFileVersion(item.file)
-        } as FileInfo
+        } as WindowsFileInfo
     }
 
     async copyItems(copyInfo: CopyItem[], overwrite: boolean, move?: boolean) {}
+
+    adaptConflictsColumns(columns: Column<CopyConflict>[]) { return [
+        ...columns.slice(0, columns.length), {
+            name: "Version",
+            isSortable: true,
+            sortIndex: 4,
+            render: (td, item) => {
+                const template = document.getElementById('conflictItem') as HTMLTemplateElement
+                const element = template.content.cloneNode(true) as HTMLElement
+                const source = element.querySelector("div:first-child")!
+                source.innerHTML = fillVersion((item.source as WindowsFileInfo).version)
+                const target = element.querySelector("div:last-child")!
+                target.innerHTML = fillVersion((item.target as WindowsFileInfo).version)
+    
+                var diff = compareVersion((item.source as WindowsFileInfo).version, (item.target as WindowsFileInfo).version)
+                if (diff == 0)
+                    td.classList.add("equal")
+                else if (diff > 0)
+                    source.classList.add("overwrite")
+                else 
+                    target.classList.add("not-overwrite")
+                td.appendChild(element)
+            }
+        } as Column<CopyConflict>
+    ]}
 }
 
 function fillVersion(version: Version) {
@@ -138,4 +163,8 @@ async function runCmd(input: any) {
     const res = await response.json()
     if (res.exception)
         throw (res.exception)
+}
+
+interface WindowsFileInfo extends FileInfo {
+    version: Version
 }

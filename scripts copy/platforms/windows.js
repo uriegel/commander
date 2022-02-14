@@ -6,31 +6,6 @@ import { compareVersion } from "../processors/rendertools.js"
 import { EXTERN } from "../processors/root.js"
 import { onFinish } from "../processors/copyProcessor.js"
 
-export const adaptConflictColumns = columns => [
-    ...columns.slice(0, columns.length), {
-        name: "Version",
-        isSortable: true,
-        sortIndex: 4,
-        render: (td, item) => {
-            const template = document.getElementById('conflictItem')
-            const element = template.content.cloneNode(true)
-            const source = element.querySelector("div:first-child")
-            source.innerHTML = fillVersion(item.source.version)
-            const target = element.querySelector("div:last-child")
-            target.innerHTML = fillVersion(item.target.version)
-
-            var diff = compareVersion(item.source.version, item.target.version)
-            if (diff == 0)
-                td.classList.add("equal")
-            else if (diff > 0)
-                source.classList.add("overwrite")
-            else 
-                target.classList.add("not-overwrite")
-            td.appendChild(element)
-        }
-    }
-]
-
 export async function addExtendedInfo(item, name, path) {
     if (name.endsWith(".exe") || name.endsWith(".dll"))
         item.version = await getFileVersion(fspath.join(path, item.name))
