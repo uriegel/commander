@@ -27,7 +27,8 @@ export type Commander = {
     copy: (move?: boolean)=>void
 }
 
-// TODO CopyProcessors (file -> file, file -> extenal, external -> file) 
+// TODO CopyProcessors Linux
+// TODO CopyProcessors (file -> extenal, external -> file) 
 // TODO Drag and drop
 // TODO extended rename
 

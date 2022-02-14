@@ -317,7 +317,6 @@ export class Folder extends HTMLElement {
 
 customElements.define('folder-table', Folder)
 
-// TODO Processor: CanAction can copy can move... fromProcessor toProcessor
 // TODO Copy/Move with Drag'n'Drop
 // TODO Copy conflicts: order by red, then green, then equal
 

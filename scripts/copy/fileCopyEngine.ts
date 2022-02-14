@@ -21,10 +21,8 @@ export class FileCopyEngine implements CopyEngine {
     constructor(private engine: Engine, private other: Engine, private fromLeft: boolean, private move?: boolean) {}
 
     async process(selectedItems: FolderItem[], focus: ()=>void) {
-
-        // TODO
-        // if (this.engine.currentPath == this.other.currentPath)
-        //     return false
+        if (this.engine.currentPath == this.other.currentPath)
+            return false
 
         const itemsType = getItemsTypes(selectedItems)
         const items = await this.extractFilesInFolders(this.engine.currentPath, this.other.currentPath, selectedItems)

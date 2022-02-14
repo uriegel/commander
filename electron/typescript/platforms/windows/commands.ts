@@ -17,10 +17,10 @@ export const registerCommands = () => {
                 break
             case "copy":
                 try {
-                    const sources = input.copyInfo.items.map((n: any) => n.file)
-                    const targets = input.copyInfo.items.map((n: any) => n.targetFile)
+                    const sources = input.copyInfo.map((n: any) => n.file)
+                    const targets = input.copyInfo.map((n: any) => n.targetFile)
                     await copyFiles(sources, targets, input.move)
-                    callback(JSON.stringify({}))
+                    callback(   JSON.stringify({}))
                 } catch (exception) {
                     callback(JSON.stringify({ exception }))
                 }
