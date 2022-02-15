@@ -42,10 +42,6 @@ export async function hideMenu(hide) {
 }
 
 
-export function deleteEmptyFolders(path, folders, foldersToRefresh) {
-    copyProcessor.addDeleteEmptyFolders(path, folders, foldersToRefresh)
-}
-
 export const onEnter = (fileName, path) => {
     const file = path + '/' + fileName
     try {

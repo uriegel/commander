@@ -143,6 +143,15 @@ export class WindowsPlatform implements Platform {
     ]}
 
     async copyFileAsync(source: string, target: string, cb?: (progress: number)=>void, move?: boolean, overwrite?: boolean) {}
+    deleteEmptyFolders(path: string, folders: string[], foldersToRefresh: string[]) {
+        // TODO 
+        // await runCmd({
+        //     method: "deleteEmptyFolders", 
+        //     path,
+        //     folders
+        // })
+        // onFinish(foldersToRefresh)
+    }
 }
 
 function fillVersion(version: Version) {

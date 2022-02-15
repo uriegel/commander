@@ -29,7 +29,7 @@ export type Commander = {
 }
 
 // TODO CopyProcessors show errors
-// TODO CopyProcessors delete empty folders
+// TODO CopyProcessors delete empty folders Windows
 // TODO CopyProcessors (file -> extenal, external -> file) 
 // TODO Drag and drop
 // TODO extended rename

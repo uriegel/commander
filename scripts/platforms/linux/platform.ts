@@ -190,7 +190,7 @@ export class LinuxPlatform implements Platform {
                 if (status)
                     cb(status)
             }, 100)
-            : 0
+            : 0 
         try {
             await copyFile(source, target, move || false, overwrite || false)
         } catch (e: any) {
@@ -205,6 +205,10 @@ export class LinuxPlatform implements Platform {
 
     async copyItems(copyInfo: CopyItem[], overwrite: boolean, folderIdsToRefresh: string[], move?: boolean) {
         copyInfo.forEach(n => copyProcessor.addJob(n.file, n.targetFile, move == true, overwrite, folderIdsToRefresh))
+    }
+
+    deleteEmptyFolders(path: string, folders: string[], foldersToRefresh: string[]) {
+        copyProcessor.addDeleteEmptyFolders(path, folders, foldersToRefresh)
     }
 
 

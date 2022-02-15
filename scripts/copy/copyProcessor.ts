@@ -1,6 +1,9 @@
 import { Settings } from "web-dialog-box"
 import { FileError } from "../engines/file"
 import { Platform } from "../platforms/platforms"
+const { getFiles } = window.require("rust-addon")
+const fspath = window.require('path')
+const { rmdir } = window.require('fs/promises')
 
 const fs = window.require('fs')
 //const http = window.require('http')
@@ -75,9 +78,9 @@ class CopyProcessor {
                         // case Type.CopyAndroid:
                         //     await copyAndroid(job.source, job.target, c => onProgress(alreadyCopied + c, totalSize), job.move || false, job.overwrite || false)
                         //     break
-                        // case Type.DeleteEmptyFolders:
-                        //     await deleteEmptyFolders(job.deleteEmptyFolders.path, job.deleteEmptyFolders.folders)
-                        //     break
+                        case Type.DeleteEmptyFolders:
+                            await deleteEmptyFolders(job.path, job.folders)
+                            break
                     }
                 } catch (err) {
                     this.onException(err)
@@ -94,15 +97,15 @@ class CopyProcessor {
         }
     )
 
-    // addDeleteEmptyFolders(path, folders, foldersToRefresh) {
-    //     folderIdsToRefresh = [...new Set(folderIdsToRefresh.concat(foldersToRefresh))]
-    //     queue.push({ deleteEmptyFolders: { path, folders }, type: DELETE_EMPTY_FOLDERS })
+    addDeleteEmptyFolders(path: string, folders: string[], foldersToRefresh: string[]) {
+        this.folderIdsToRefresh = [...new Set(this.folderIdsToRefresh.concat(foldersToRefresh))]
+        this.queue.push({ path, folders, size: 0, type: Type.DeleteEmptyFolders })
 
-    //     if (!isProcessing) {
-    //         isProcessing = true
-    //         process()
-    //     }
-    // }
+        if (!this.isProcessing) {
+            this.isProcessing = true
+            this.process()
+        }
+    }
 
     //addJob(source: string, target: string, move: boolean, overwrite: boolean, folderIdsToRefresh, android) {
     addJob(source: string, target: string, move: boolean, overwrite: boolean, folderIdsToRefresh: string[]) {
@@ -189,11 +192,53 @@ class CopyProcessor {
     // }
 }
 
-type Job = {
-    type: Type   
+type CopyJob = {
+    type: Type.Copy   
     size: number
     source: string
     target: string
     move: boolean
     overwrite: boolean
+}
+
+type DeleteJob = {
+    type: Type.DeleteEmptyFolders 
+    size: number
+    path: string
+    folders: string[]
+}
+
+type Job = CopyJob | DeleteJob
+
+async function deleteEmptyFolders(path: string, folders: string[]) {
+    const folderPathes = folders.map(n => fspath.join(path, n))
+
+    function getSubDirs(path: string) {
+        path = fspath.normalize(path).replace(":.", ":\\")
+        return ( getFiles(path) as any[])
+            .filter(n => n.isDirectory)
+            .map(n => fspath.join(path, n.name))
+    }
+    
+    async function removeDirectory(folderPath: string) {
+        var items = getSubDirs(folderPath)
+        if (items.length > 0) {
+            try {
+                await Promise.all(items.map(removeDirectory))
+            } catch (err)  {
+                console.log("error while deleting empty folders", err)
+            }
+        }
+        try {
+            await rmdir(folderPath)
+        } catch (err)  {
+            console.log("error while deleting empty folder", err)
+        }
+    }
+
+    try {
+        await Promise.all(folderPathes.map(removeDirectory))
+    } catch (err)  {
+        console.log("error while deleting empty folders", err)
+    }
 }

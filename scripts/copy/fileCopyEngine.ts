@@ -35,8 +35,8 @@ export class FileCopyEngine implements CopyEngine {
             if (res.result == Result.No) 
                 copyInfo.items = copyInfo.items.filter(n => !copyInfo.conflicts.find(m => m.source.file == n.file))
             await Platform.copyItems(copyInfo.items, res.result == Result.Yes, folderIdsToRefresh, this.move)
-            // if (move)
-            //     await activeFolder.deleteEmptyFolders(itemsToCopy.filter(n => n.isDirectory).map(n => n.name), [activeFolder.id, inactiveFolder.id])
+            if (this.move)
+                await Platform.deleteEmptyFolders(this.engine.currentPath, selectedItems.filter(n => n.isDirectory).map(n => n.name), folderIdsToRefresh)
             return true
         } else 
             return false

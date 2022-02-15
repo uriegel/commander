@@ -11,16 +11,6 @@ export async function addExtendedInfo(item, name, path) {
         item.version = await getFileVersion(fspath.join(path, item.name))
 }
 
-
-export async function deleteEmptyFolders(path, folders, foldersToRefresh) {
-    await runCmd({
-        method: "deleteEmptyFolders", 
-        path,
-        folders
-    })
-    onFinish(foldersToRefresh)
-}
-
 export const onEnter = () => {}
 
 const fillVersion = version => version ? `${version.major}.${version.minor}.${version.build}.${version.patch}` : ""
