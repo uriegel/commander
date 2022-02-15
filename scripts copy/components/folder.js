@@ -14,10 +14,6 @@ class Folder extends HTMLElement {
         return await this.processor.getFilesInfos(files, subPath)
     }
 
-    async copyItems(copyInfo, move, overwrite, foldersToRefresh) {
-        await this.processor.copyItems(copyInfo, move, overwrite, foldersToRefresh)
-    }
-
     async deleteEmptyFolders(folders, foldersToRefresh) {
         await this.processor.deleteEmptyFolders(this.getCurrentPath(), folders, foldersToRefresh)
     }

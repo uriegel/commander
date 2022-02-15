@@ -11,22 +11,6 @@ export async function addExtendedInfo(item, name, path) {
         item.version = await getFileVersion(fspath.join(path, item.name))
 }
 
-export async function deleteItems(items) {
-    return runCmd({
-        method: "trash", 
-        items,
-    })
-}   
-
-export async function copyItems(copyInfo, move, overwrite, foldersToRefresh) {
-    await runCmd({
-        method: "copy", 
-        copyInfo,
-        move: move || false,
-        overwrite
-    })
-    onFinish(foldersToRefresh)
-}
 
 export async function deleteEmptyFolders(path, folders, foldersToRefresh) {
     await runCmd({

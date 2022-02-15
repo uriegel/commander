@@ -8,8 +8,6 @@ const { trashFile } = window.require('rust-addon')
 const { copyFile } = window.require('shared-module')
 const FileResult = window.require('shared-module').FileResult
 
-const homeDir = homedir()
-
 export function adaptWindow(dialogToSet, activeFolderSetFocusToSet, menuToSet, itemHideMenuToSet) {
     menu = menuToSet
     itemHideMenu = itemHideMenuToSet
@@ -43,9 +41,6 @@ export async function hideMenu(hide) {
     menu.setAttribute("automode", hide)
 }
 
-export async function copyItems(copyInfo, move, overwrite, foldersToRefresh) {
-    copyInfo.items.forEach(n => copyProcessor.addJob(n.file, n.targetFile, move, overwrite, foldersToRefresh))
-}
 
 export function deleteEmptyFolders(path, folders, foldersToRefresh) {
     copyProcessor.addDeleteEmptyFolders(path, folders, foldersToRefresh)

@@ -108,7 +108,7 @@ export class WindowsPlatform implements Platform {
         } as WindowsFileInfo
     }
 
-    async copyItems(copyInfo: CopyItem[], overwrite: boolean, move?: boolean) {
+    async copyItems(copyInfo: CopyItem[], overwrite: boolean, _: any, move?: boolean) {
         await runCmd({
             method: "copy", 
             copyInfo,

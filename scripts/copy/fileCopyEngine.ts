@@ -20,13 +20,12 @@ export type CopyItem = {
 export class FileCopyEngine implements CopyEngine {
     constructor(private engine: Engine, private other: Engine, private fromLeft: boolean, private move?: boolean) {}
 
-    async process(selectedItems: FolderItem[], focus: ()=>void) {
+    async process(selectedItems: FolderItem[], focus: ()=>void, folderIdsToRefresh: string[]) {
         if (this.engine.currentPath == this.other.currentPath)
             return false
 
         const itemsType = getItemsTypes(selectedItems)
         const items = await this.extractFilesInFolders(this.engine.currentPath, this.other.currentPath, selectedItems)
-        console.log("affe", items)
         const conflicts = await this.getCopyConflicts(items, this.engine.currentPath)
         const copyInfo = { items, conflicts } as CopyInfo
         await this.prepareCopyItems(itemsType, copyInfo, selectedItems.length == 1, this.fromLeft, this.move)
@@ -35,7 +34,7 @@ export class FileCopyEngine implements CopyEngine {
         if (res.result != Result.Cancel) {
             if (res.result == Result.No) 
                 copyInfo.items = copyInfo.items.filter(n => !copyInfo.conflicts.find(m => m.source.file == n.file))
-            await Platform.copyItems(copyInfo.items, res.result == Result.Yes, this.move)
+            await Platform.copyItems(copyInfo.items, res.result == Result.Yes, folderIdsToRefresh, this.move)
             // if (move)
             //     await activeFolder.deleteEmptyFolders(itemsToCopy.filter(n => n.isDirectory).map(n => n.name), [activeFolder.id, inactiveFolder.id])
             return true

@@ -5,8 +5,8 @@ import { Platform } from "../platforms/platforms"
 const fs = window.require('fs')
 //const http = window.require('http')
 
-export function initializeCopying(onCopyFinish: ()=>void, onShowErrors: (errorContent: Settings)=>Promise<void>) {
-    copyProcessor = new CopyProcessor(onCopyFinish, onShowErrors)
+export function initializeCopying(onFinished: (folderIdsToRefresh: string[])=>void, onShowErrors: (errorContent: Settings)=>Promise<void>) {
+    copyProcessor = new CopyProcessor(onFinished, onShowErrors)
 }
 
 export var copyProcessor : CopyProcessor
@@ -18,7 +18,7 @@ enum Type {
 }
 
 class CopyProcessor {
-    constructor (onCopyFinish: ()=>void, onShowErrors: (errorContent: Settings)=>Promise<void>) { 
+    constructor (private onFinished: (folderIdsToRefresh: string[])=>void, onShowErrors: (errorContent: Settings)=>Promise<void>) { 
         this.progressError.onclick = () => {
             this.progressError.classList.add("hidden")
             setTimeout(async () => {
@@ -42,6 +42,7 @@ class CopyProcessor {
 
         this.progressErrorClose.onclick = evt => {
             this.progressError.classList.add("hidden")
+            // TODO
             //activeFolder.setFocus()
             evt.preventDefault()
             evt.stopPropagation()
@@ -56,7 +57,7 @@ class CopyProcessor {
     private queue: Job[] = []
     private totalSize = 0
     private alreadyCopied = 0
-    //private folderIdsToRefresh = []
+    private folderIdsToRefresh: string[] = []
     private isProcessing = false
     private copyExceptions: FileError[] = []
 
@@ -86,9 +87,9 @@ class CopyProcessor {
             this.totalSize = 0
             this.alreadyCopied = 0
             
-            // TODO
-            // onFinished(folderIdsToRefresh)
-            //this.folderIdsToRefresh = []
+            this.progress.classList.remove("active")            
+            this.onFinished(this.folderIdsToRefresh)
+            this.folderIdsToRefresh = []
             this.isProcessing = false
         }
     )
@@ -103,12 +104,12 @@ class CopyProcessor {
     //     }
     // }
 
-    //addJob(source: string, target: string, move: boolean, overwrite: boolean, foldersToRefresh, android) {
-    addJob(source: string, target: string, move: boolean, overwrite: boolean) {
+    //addJob(source: string, target: string, move: boolean, overwrite: boolean, folderIdsToRefresh, android) {
+    addJob(source: string, target: string, move: boolean, overwrite: boolean, folderIdsToRefresh: string[]) {
 //        const size = android ? 1 : fs.statSync(source).size
         const size = fs.statSync(source).size
         this.totalSize += size
-        //folderIdsToRefresh = [...new Set(folderIdsToRefresh.concat(foldersToRefresh))]
+        this.folderIdsToRefresh = [...new Set(this.folderIdsToRefresh.concat(folderIdsToRefresh))]
 
         this.queue.push({
             //source, target, move, overwrite, size, type: android ? COPY_ANDROID : COPY
@@ -125,11 +126,6 @@ class CopyProcessor {
         this.progress.classList.add("active")
         this.progress.setAttribute("progress", (current / total * 100.0).toString())
     }
-    
-    // onFinished(folderIdsToRefresh) {
-    //     progress.classList.remove("active")
-    //     onCopyFinish(folderIdsToRefresh)
-    // }
     
     onException(err: any) {
         this.copyExceptions = this.copyExceptions.concat(err)

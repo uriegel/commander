@@ -4,9 +4,6 @@ import './components/copyconflicts'
 import './components/externaladder'
 import './components/extendedrename'
 
-initializeCopying(onCopyFinish, onShowCopyErrors)
-
-
 folderLeft.addEventListener("dragAndDrop", evt => copy(evt.detail))
 folderRight.addEventListener("dragAndDrop", evt => copy(evt.detail))
 
@@ -24,10 +21,6 @@ async function extendedRename() {
         extendedRename.save()
         activeFolder.extendedRename = extendedRename.getExtendedInfos()
     }
-}
-
-function onCopyFinish(folderIdsToRefresh) {
-    folderIdsToRefresh.forEach(n => refresh(n))
 }
 
 async function onShowCopyErrors(errorContent) {

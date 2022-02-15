@@ -3,6 +3,7 @@ import { DialogBox, Result } from 'web-dialog-box'
 import { Menubar, MenuItem } from 'web-menu-bar'
 import { CopyConflict, FileInfo } from '../../components/copyconflicts'
 import { FolderItem } from '../../components/folder'
+import { copyProcessor } from '../../copy/copyProcessor'
 import { CopyItem } from '../../copy/fileCopyEngine'
 import { FileError, FileErrorType, FileItem } from '../../engines/file'
 import { RootItem } from '../../engines/root'
@@ -200,8 +201,12 @@ export class LinuxPlatform implements Platform {
         }
     }
 
-    async copyItems(copyInfo: CopyItem[], overwrite: boolean, move?: boolean) {}
     adaptConflictsColumns(columns: Column<CopyConflict>[]) { return columns}
+
+    async copyItems(copyInfo: CopyItem[], overwrite: boolean, folderIdsToRefresh: string[], move?: boolean) {
+        copyInfo.forEach(n => copyProcessor.addJob(n.file, n.targetFile, move == true, overwrite, folderIdsToRefresh))
+    }
+
 
     private dialog: DialogBox | null = null
     private itemHideMenu: MenuItem | null = null

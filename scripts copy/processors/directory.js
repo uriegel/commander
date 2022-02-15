@@ -17,14 +17,6 @@ import {
     onEnter as platformOnEnter
 } from "../platforms/switcher.js"
 
-const { getFiles } = window.require('rust-addon')
-
-
-
-
-export const getDirectory = (folderId, path) => {
-
-
 
     const onEnter = file => {
         platformOnEnter(file, currentPath)
