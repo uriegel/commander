@@ -12,6 +12,7 @@ import { refreshViewer, showViewer as viewer } from './viewer'
 import { DialogBox } from 'web-dialog-box'
 import { Platform } from './platforms/platforms'
 import { Folder } from './components/folder'
+import { initializeCopying } from './copy/copyProcessor'
 
 export type Commander = {
     showViewer: (show: boolean)=>void
@@ -27,7 +28,8 @@ export type Commander = {
     copy: (move?: boolean)=>void
 }
 
-// TODO CopyProcessors Linux
+// TODO CopyProcessors show errors
+// TODO CopyProcessors delete empty folders
 // TODO CopyProcessors (file -> extenal, external -> file) 
 // TODO Drag and drop
 // TODO extended rename
@@ -36,6 +38,12 @@ var currentPath = ""
 const folderLeft = document.getElementById("folderLeft")! as Folder
 const folderRight = document.getElementById("folderRight")! as Folder
 var activeFolder = folderLeft
+
+initializeCopying((ids => {
+    ids.forEach(n => getFolderById(n).reloadItems())
+}), async errorContent => {
+    // TODO
+})
 
 export const dialog = document.querySelector('dialog-box') as DialogBox
 
@@ -115,6 +123,10 @@ function createFolder() {
 
 function copy(move?: boolean) {
     activeFolder.copy(getInactiveFolder(), activeFolder == folderLeft, move)
+}
+
+function getFolderById(id: string) {
+    return id == folderLeft.id ? folderLeft : folderRight 
 }
 
 const commander: Commander = {
