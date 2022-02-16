@@ -3,6 +3,7 @@ import { DialogBox } from 'web-dialog-box'
 import { Menubar, MenuItem } from 'web-menu-bar'
 import { CopyConflict, FileInfo } from '../../components/copyconflicts'
 import { FolderItem } from '../../components/folder'
+import { copyProcessor } from '../../copy/copyProcessor'
 import { CopyItem } from '../../copy/fileCopyEngine'
 import { FileItem } from '../../engines/file'
 import { RootItem } from '../../engines/root'
@@ -142,16 +143,18 @@ export class WindowsPlatform implements Platform {
         } as Column<CopyConflict>
     ]}
 
-    async copyFileAsync(source: string, target: string, cb?: (progress: number)=>void, move?: boolean, overwrite?: boolean) {}
     deleteEmptyFolders(path: string, folders: string[], foldersToRefresh: string[]) {
-        // TODO 
-        // await runCmd({
-        //     method: "deleteEmptyFolders", 
-        //     path,
-        //     folders
-        // })
-        // onFinish(foldersToRefresh)
+        (async () => {
+            await runCmd({
+                method: "deleteEmptyFolders", 
+                path,
+                folders
+            })
+        copyProcessor.onFinished(foldersToRefresh)
+        })()
     }
+
+    async copyFileAsync(source: string, target: string, cb?: (progress: number)=>void, move?: boolean, overwrite?: boolean) {}
 }
 
 function fillVersion(version: Version) {

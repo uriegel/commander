@@ -21,7 +21,7 @@ enum Type {
 }
 
 class CopyProcessor {
-    constructor (private onFinished: (folderIdsToRefresh: string[])=>void, onShowErrors: (errorContent: Settings)=>Promise<void>) { 
+    constructor (public onFinished: (folderIdsToRefresh: string[])=>void, onShowErrors: (errorContent: Settings)=>Promise<void>) { 
         this.progressError.onclick = () => {
             this.progressError.classList.add("hidden")
             setTimeout(async () => {

@@ -10,14 +10,6 @@ class Folder extends HTMLElement {
         this.folderRoot.addEventListener("drop", evt => this.onDrop(evt))
     }
 
-    async getFilesInfos(files, subPath) {
-        return await this.processor.getFilesInfos(files, subPath)
-    }
-
-    async deleteEmptyFolders(folders, foldersToRefresh) {
-        await this.processor.deleteEmptyFolders(this.getCurrentPath(), folders, foldersToRefresh)
-    }
-
     onDragStart(evt) { 
         if (this.getSelectedItems()
                 .map(n => n.name)
