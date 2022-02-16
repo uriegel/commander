@@ -69,6 +69,8 @@ pub unsafe fn to_recycle_bin(pathes: &Vec<String>) -> bool {
     res == 0
 }
 
+// TODO copy folder to program files not working
+// TODO delete empty folder after move folder to program filesworking
 pub unsafe fn copy_files(source_files: &Vec<String>, target_files: &Vec<String>, move_files: bool) -> bool {
     let source_files_str = source_files.join("\0");
     let mut source_files_ptr = to_wstring(&source_files_str);
