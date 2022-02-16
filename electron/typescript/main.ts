@@ -12,7 +12,7 @@ import { createPlatform } from './platforms/platforms'
 // TODO Windows: not working for main process
 process.env['UV_THREADPOOL_SIZE'] = os.cpus().length.toString()
 
-const icon = path.join(__dirname, '../web/assets/kirk.png')
+const icon = path.join(__dirname, '../../web/assets/kirk.png')
 
 const createWindow = async () => {    
 

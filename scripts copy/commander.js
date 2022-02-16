@@ -4,9 +4,6 @@ import './components/copyconflicts'
 import './components/externaladder'
 import './components/extendedrename'
 
-folderLeft.addEventListener("dragAndDrop", evt => copy(evt.detail))
-folderRight.addEventListener("dragAndDrop", evt => copy(evt.detail))
-
 async function extendedRename() {
     const extendedRename = document.getElementById("extended-rename")
     extendedRename.initialize()

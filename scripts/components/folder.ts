@@ -4,6 +4,8 @@ import { getCopyEngine } from '../copy/copy'
 import { Engine, getEngine } from '../engines/engines'
 import { NullEngine } from '../engines/nullengine'
 import { compose } from '../utils'
+const { ipcRenderer } = window.require('electron')
+const fspath = window.require('path')
 
 export interface FolderItem extends TableItem{
     name: string
@@ -26,15 +28,16 @@ export class Folder extends HTMLElement {
             </div`
         
         this.table = this.getElementsByTagName("VIRTUAL-TABLE")[0]! as VirtualTable<FolderItem>
+        this.folderRoot = this.getElementsByClassName("folderroot")[0] as HTMLElement
         const sbr = this.getAttribute("scrollbar-right")
         if (sbr)
             this.table.setAttribute("scrollbar-right", sbr)
         this.pathInput = this.getElementsByTagName("INPUT")[0]! as HTMLInputElement
 
         this.table.renderRow = (item, tr) => {
-            // tr.ondragstart = evt => this.onDragStart(evt)
-            // tr.ondrag = evt => this.onDrag(evt)
-            // tr.ondragend = evt => this.onDragEnd(evt)
+            tr.ondragstart = evt => this.onDragStart(evt)
+            tr.ondrag = evt => this.onDrag(evt)
+            tr.ondragend = () => this.onDragEnd()
             tr.onmousedown = evt => {
                 if (evt.ctrlKey) {
                     setTimeout(() => {
@@ -137,11 +140,14 @@ export class Folder extends HTMLElement {
                 this.setFocus()
             }
         })
-
         this.table.addEventListener("focusin", async evt => {
             this.dispatchEvent(new CustomEvent('onFocus', { detail: this.id }))
             this.sendStatusInfo(this.table.getPosition())
         })
+        this.folderRoot.addEventListener("dragenter", () => this.onDragEnter())
+        this.folderRoot.addEventListener("dragleave", () => this.onDragLeave())
+        this.folderRoot.addEventListener("dragover", evt => this.onDragOver(evt))
+        this.folderRoot.addEventListener("drop", evt => this.onDrop(evt))
 
         this.pathInput!.onkeydown = evt => {
             if (evt.which == 13) {
@@ -234,6 +240,65 @@ export class Folder extends HTMLElement {
         this.table.refresh()
     }
 
+    onDragStart(evt: DragEvent) { 
+        if (this.getSelectedItems()
+                .map(n => n.name)
+                .includes(this.table.items[this.table.getPosition()].name)) {
+            evt.dataTransfer?.setData("internalCopy", "true")
+            this.folderRoot.classList.add("onDragStarted")
+        } else
+            evt.preventDefault()
+    }
+    onDrag(evt: DragEvent) { 
+        if (evt.screenX == 0 && evt.screenY == 0) {
+            ipcRenderer.send("dragStart", this.getSelectedItems().map(n => fspath.join(this.getCurrentPath(), n.name)))
+            this.folderRoot.classList.remove("onDragStarted")
+            evt.preventDefault()
+        } 
+    }
+    onDragEnd() { 
+        this.folderRoot.classList.remove("onDragStarted")
+    }
+
+    onDragEnter() {
+        if (!this.folderRoot.classList.contains("onDragStarted"))
+            this.folderRoot.classList.add("isDragging")
+    }
+
+    onDragLeave() {
+        this.folderRoot.classList.remove("isDragging")
+    }
+
+    onDragOver(evt: DragEvent) {
+        if (this.folderRoot.classList.contains("isDragging")) {
+            evt.dataTransfer!.dropEffect = 
+                evt.dataTransfer?.effectAllowed == "move" 
+                || evt.dataTransfer?.effectAllowed == "copyMove"
+                || evt.dataTransfer?.effectAllowed == "linkMove"
+                || evt.dataTransfer?.effectAllowed == "all"
+                ? "move" 
+                : (evt.dataTransfer?.effectAllowed == "copy" 
+                    || evt.dataTransfer?.effectAllowed == "copyLink"
+                    ? "copy"
+                    : "none")
+            if (evt.ctrlKey && evt.dataTransfer?.dropEffect == "move" && (evt.dataTransfer.effectAllowed == "copy" 
+                    || evt.dataTransfer.effectAllowed == "copyMove"
+                    || evt.dataTransfer.effectAllowed == "copyLink"
+                    || evt.dataTransfer.effectAllowed == "all"))
+                evt.dataTransfer.dropEffect = "copy"
+            this.dropEffect = evt.dataTransfer!.dropEffect
+            evt.preventDefault() // Necessary. Allows us to drop.
+        }
+    }
+
+    onDrop(evt: DragEvent) {
+        if (evt.dataTransfer?.getData("internalCopy") == "true") {
+            evt.preventDefault()
+            this.dispatchEvent(new CustomEvent('dragAndDrop', { detail: this.dropEffect == "move" }))
+        }
+        this.folderRoot.classList.remove("isDragging")
+    }
+
     renameItem() {
         const selectedItems = this.getSelectedItems()
             if (selectedItems.length != 1)    
@@ -298,6 +363,7 @@ export class Folder extends HTMLElement {
     }
 
     private table: VirtualTable<FolderItem>
+    private folderRoot: HTMLElement
     private folderId = ""
     private engine: Engine = new NullEngine()
     private latestRequest = 0
@@ -309,6 +375,7 @@ export class Folder extends HTMLElement {
     private dirsCount = 0
     private filesCount = 0
     private sortFunction: ((row: [a: FolderItem, b: FolderItem]) => number) | null = null
+    private dropEffect: "none" | "copy" | "move" = "none"
 
 
     // TODO: in another engine

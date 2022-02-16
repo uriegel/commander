@@ -28,7 +28,6 @@ export type Commander = {
     copy: (move?: boolean)=>void
 }
 
-// TODO Drag and drop
 // TODO CopyProcessors (file -> extenal, external -> file) 
 // TODO extended rename
 
@@ -59,6 +58,8 @@ folderLeft.addEventListener("pathChanged", onPathChanged)
 folderRight.addEventListener("pathChanged", onPathChanged)
 folderLeft.addEventListener("tab", () => folderRight.setFocus())
 folderRight.addEventListener("tab", () => folderLeft.setFocus())
+folderLeft.addEventListener("dragAndDrop", evt => copy((evt as CustomEvent).detail))
+folderRight.addEventListener("dragAndDrop", evt => copy((evt as CustomEvent).detail))
 
 function showViewer(show: boolean) {
     viewer(show, currentPath)
