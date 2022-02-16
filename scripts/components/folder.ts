@@ -133,7 +133,7 @@ export class Folder extends HTMLElement {
                     this.table.setPosition(index)
                 }
             } else {
-//                this.processor.onEnter(this.table.items[evt.detail.currentItem].name)
+                this.engine.onEnter(this.table.items[(evt as CustomEvent).detail.currentItem].name)
                 this.setFocus()
             }
         })

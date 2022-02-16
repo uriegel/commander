@@ -323,6 +323,10 @@ export class FileEngine implements Engine {
         }
     }
 
+    onEnter(name: string) { 
+        Platform.onEnter(name, this.currentPath)
+    }
+
     protected getParentDir(path: string): PathResult {
         let pos = path.lastIndexOf(Platform.pathDelimiter)
         let parent = pos ? path.substring(0, pos) : Platform.pathDelimiter

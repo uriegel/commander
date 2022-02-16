@@ -67,6 +67,7 @@ export class ExternalEngine extends FileEngine {
     override async renameItem(item: FolderItem, folder: any) { }
     override async deleteItems(items: FolderItem[], folder: any) {}
     override async createFolder(suggestedName: string, folder: any) {}
+    override onEnter(name: string) { }
     
     protected override getParentDir(path: string): PathResult {
         let pos = path.lastIndexOf('/')

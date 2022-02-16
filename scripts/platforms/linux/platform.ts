@@ -211,6 +211,15 @@ export class LinuxPlatform implements Platform {
         copyProcessor.addDeleteEmptyFolders(path, folders, foldersToRefresh)
     }
 
+    onEnter(fileName: string, path: string) {
+        const file = path + '/' + fileName
+        try {
+            fs.accessSync(file, fs.constants.X_OK)
+            exec(file)
+        } catch {
+            exec(`xdg-open '${file}'`)
+        }
+    }
 
     private dialog: DialogBox | null = null
     private itemHideMenu: MenuItem | null = null

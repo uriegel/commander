@@ -155,6 +155,10 @@ export class WindowsPlatform implements Platform {
     }
 
     async copyFileAsync(source: string, target: string, cb?: (progress: number)=>void, move?: boolean, overwrite?: boolean) {}
+
+    onEnter(fileName: string, path: string) { 
+        // TODO Windows
+    }
 }
 
 function fillVersion(version: Version) {

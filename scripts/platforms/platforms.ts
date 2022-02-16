@@ -33,6 +33,7 @@ export interface Platform {
     copyFileAsync: (source: string, target: string, cb?: (progress: number)=>void, move?: boolean, overwrite?: boolean)=>Promise<void>
     adaptConflictsColumns: (columns: Column<CopyConflict>[])=>Column<CopyConflict>[]
     deleteEmptyFolders: (path: string, folders: string[], foldersToRefresh: string[])=>void
+    onEnter: (fileName: string, path: string)=>void 
 }
 
 export const Platform = isLinux ? new LinuxPlatform() as Platform : new WindowsPlatform() as Platform
