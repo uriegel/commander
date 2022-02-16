@@ -29,8 +29,8 @@ export type Commander = {
 }
 
 // TODO CopyProcessors show errors
-// TODO CopyProcessors (file -> extenal, external -> file) 
 // TODO Drag and drop
+// TODO CopyProcessors (file -> extenal, external -> file) 
 // TODO extended rename
 
 var currentPath = ""
