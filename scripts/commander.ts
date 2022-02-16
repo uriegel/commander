@@ -41,7 +41,8 @@ var activeFolder = folderLeft
 initializeCopying((ids => {
     ids.forEach(n => getFolderById(n).reloadItems())
 }), async errorContent => {
-    // TODO
+    await dialog.show(errorContent)
+    activeFolder.setFocus()
 })
 
 export const dialog = document.querySelector('dialog-box') as DialogBox

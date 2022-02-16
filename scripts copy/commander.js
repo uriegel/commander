@@ -23,10 +23,6 @@ async function extendedRename() {
     }
 }
 
-async function onShowCopyErrors(errorContent) {
-    await dialog.show(errorContent)
-    activeFolder.setFocus()
-}
 
 
 
