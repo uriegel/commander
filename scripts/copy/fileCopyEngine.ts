@@ -17,6 +17,71 @@ export type CopyItem = {
     targetExists: boolean
 }
 
+export type CopyInfo = {
+    items: CopyItem[]
+    conflicts: CopyConflict[]
+    dialogData: DialogData
+}
+
+export type DialogData = {
+    btnOk?: boolean
+    btnCancel?: boolean
+    btnYes?: boolean
+    btnNo?: boolean
+    defBtnYes?: boolean
+    defBtnNo?: boolean
+    text?: string
+    slide?: boolean
+    slideReverse?: boolean
+    extended?: string
+    fullscreen?: true
+}
+
+export async function prepareCopyItems(itemsType: ItemsType, copyInfo: CopyInfo, singleItem: boolean, fromLeft: boolean, move?: boolean) {
+    const moveOrCopy = move ? "verschieben" : "kopieren"
+    const text = copyInfo.conflicts.length == 0
+        ? itemsType == ItemsType.File
+            ? singleItem
+                ? `Möchtest Du die Datei ${moveOrCopy}?`
+                : `Möchtest Du die Dateien ${moveOrCopy}?`
+            : itemsType == ItemsType.Directory
+            ?  singleItem
+                ? `Möchtest Du den Ordner ${moveOrCopy}?`
+                : `Möchtest Du die Ordner ${moveOrCopy}?`
+            : `Möchtest Du die Einträge ${moveOrCopy}?`
+        : itemsType == ItemsType.File 
+            ? singleItem
+                ? `Datei ${moveOrCopy}, Einträge überschreiben?`
+                : `Dateien ${moveOrCopy}, Einträge überschreiben?`
+            : itemsType == ItemsType.Directory
+            ?  singleItem
+                ? `Ordner ${moveOrCopy}, Einträge überschreiben?`
+                : `Ordner ${moveOrCopy}, Einträge überschreiben?`
+            : `Möchtest Du die Einträge ${moveOrCopy}, Einträge überschreiben?`
+    
+    copyInfo.dialogData = {
+        text,
+        slide: fromLeft,
+        slideReverse: !fromLeft,
+        btnCancel: true
+    }
+    if (copyInfo.conflicts.length == 0) 
+        copyInfo.dialogData.btnOk = true
+    else {
+        const copyConflicts = document.getElementById('copy-conflicts') as CopyConflicts
+        copyConflicts.setItems(copyInfo.conflicts)
+        copyInfo.dialogData.extended = "copy-conflicts"
+        copyInfo.dialogData.btnYes = true
+        copyInfo.dialogData.btnNo = true
+        copyInfo.dialogData.fullscreen = true
+        const notOverwrite = copyInfo.conflicts.filter(n => n.source.time.getTime() < n.target.time.getTime()).length > 0
+        if (notOverwrite)
+            copyInfo.dialogData.defBtnNo = true
+        else
+            copyInfo.dialogData.defBtnYes = true
+    }
+}
+
 export class FileCopyEngine implements CopyEngine {
     constructor(private engine: Engine, private other: Engine, private fromLeft: boolean, private move?: boolean) {}
 
@@ -28,7 +93,7 @@ export class FileCopyEngine implements CopyEngine {
         const items = await this.extractFilesInFolders(this.engine.currentPath, this.other.currentPath, selectedItems)
         const conflicts = await this.getCopyConflicts(items, this.engine.currentPath)
         const copyInfo = { items, conflicts } as CopyInfo
-        await this.prepareCopyItems(itemsType, copyInfo, selectedItems.length == 1, this.fromLeft, this.move)
+        await prepareCopyItems(itemsType, copyInfo, selectedItems.length == 1, this.fromLeft, this.move)
         const res = await dialog.show(copyInfo.dialogData)
         focus()
         if (res.result != Result.Cancel) {
@@ -79,70 +144,5 @@ export class FileCopyEngine implements CopyEngine {
         }
         return await Promise.all(files.map(getFileInfos))
     }
-
-    private async prepareCopyItems(itemsType: ItemsType, copyInfo: CopyInfo, singleItem: boolean, fromLeft: boolean, move?: boolean) {
-        const moveOrCopy = move ? "verschieben" : "kopieren"
-        const text = copyInfo.conflicts.length == 0
-            ? itemsType == ItemsType.File
-                ? singleItem
-                    ? `Möchtest Du die Datei ${moveOrCopy}?`
-                    : `Möchtest Du die Dateien ${moveOrCopy}?`
-                : itemsType == ItemsType.Directory
-                ?  singleItem
-                    ? `Möchtest Du den Ordner ${moveOrCopy}?`
-                    : `Möchtest Du die Ordner ${moveOrCopy}?`
-                : `Möchtest Du die Einträge ${moveOrCopy}?`
-            : itemsType == ItemsType.File 
-                ? singleItem
-                    ? `Datei ${moveOrCopy}, Einträge überschreiben?`
-                    : `Dateien ${moveOrCopy}, Einträge überschreiben?`
-                : itemsType == ItemsType.Directory
-                ?  singleItem
-                    ? `Ordner ${moveOrCopy}, Einträge überschreiben?`
-                    : `Ordner ${moveOrCopy}, Einträge überschreiben?`
-                : `Möchtest Du die Einträge ${moveOrCopy}, Einträge überschreiben?`
-        
-        copyInfo.dialogData = {
-            text,
-            slide: fromLeft,
-            slideReverse: !fromLeft,
-            btnCancel: true
-        }
-        if (copyInfo.conflicts.length == 0) 
-            copyInfo.dialogData.btnOk = true
-        else {
-            const copyConflicts = document.getElementById('copy-conflicts') as CopyConflicts
-            copyConflicts.setItems(copyInfo.conflicts)
-            copyInfo.dialogData.extended = "copy-conflicts"
-            copyInfo.dialogData.btnYes = true
-            copyInfo.dialogData.btnNo = true
-            copyInfo.dialogData.fullscreen = true
-            const notOverwrite = copyInfo.conflicts.filter(n => n.source.time.getTime() < n.target.time.getTime()).length > 0
-            if (notOverwrite)
-                copyInfo.dialogData.defBtnNo = true
-            else
-                copyInfo.dialogData.defBtnYes = true
-        }
-    }
-}
-
-type CopyInfo = {
-    items: CopyItem[]
-    conflicts: CopyConflict[]
-    dialogData: DialogData
-}
-
-type DialogData = {
-    btnOk?: boolean
-    btnCancel?: boolean
-    btnYes?: boolean
-    btnNo?: boolean
-    defBtnYes?: boolean
-    defBtnNo?: boolean
-    text?: string
-    slide?: boolean
-    slideReverse?: boolean
-    extended?: string
-    fullscreen?: true
 }
 

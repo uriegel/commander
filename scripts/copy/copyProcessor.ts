@@ -6,7 +6,7 @@ const fspath = window.require('path')
 const { rmdir } = window.require('fs/promises')
 
 const fs = window.require('fs')
-//const http = window.require('http')
+const http = window.require('http')
 
 export function initializeCopying(onFinished: (folderIdsToRefresh: string[])=>void, onShowErrors: (errorContent: Settings)=>Promise<void>) {
     copyProcessor = new CopyProcessor(onFinished, onShowErrors)
@@ -75,9 +75,9 @@ class CopyProcessor {
                         case Type.Copy:
                             await Platform.copyFileAsync(job.source, job.target, c => this.onProgress(this.alreadyCopied + c, this.totalSize), job.move, job.overwrite)
                             break
-                        // case Type.CopyAndroid:
-                        //     await copyAndroid(job.source, job.target, c => onProgress(alreadyCopied + c, totalSize), job.move || false, job.overwrite || false)
-                        //     break
+                        case Type.CopyAndroid:
+                            await this.copyAndroid(job.source, job.target, job.move, job.overwrite, c => this.onProgress(this.alreadyCopied + c, this.totalSize))
+                            break
                         case Type.DeleteEmptyFolders:
                             await deleteEmptyFolders(job.path, job.folders)
                             break
@@ -107,18 +107,30 @@ class CopyProcessor {
         }
     }
 
-    //addJob(source: string, target: string, move: boolean, overwrite: boolean, folderIdsToRefresh, android) {
     addJob(source: string, target: string, move: boolean, overwrite: boolean, folderIdsToRefresh: string[]) {
-//        const size = android ? 1 : fs.statSync(source).size
         const size = fs.statSync(source).size
         this.totalSize += size
         this.folderIdsToRefresh = [...new Set(this.folderIdsToRefresh.concat(folderIdsToRefresh))]
 
         this.queue.push({
-            //source, target, move, overwrite, size, type: android ? COPY_ANDROID : COPY
             source, target, move, overwrite, size, type: Type.Copy
         })
        
+        if (!this.isProcessing) {
+            this.isProcessing = true
+            this.process()
+        }
+    }
+
+    addExternalJob(source: string, target: string, move: boolean, overwrite: boolean, folderIdsToRefresh: string[]) {
+        const size = 1
+        this.totalSize += size
+        this.folderIdsToRefresh = [...new Set(this.folderIdsToRefresh.concat(folderIdsToRefresh))]
+
+        this.queue.push({
+            source, target, move, overwrite, size, type: Type.CopyAndroid
+        })
+        
         if (!this.isProcessing) {
             this.isProcessing = true
             this.process()
@@ -137,63 +149,63 @@ class CopyProcessor {
         this.progressError.classList.remove("hidden")
     }
     
-    // async function copyAndroid(source, target, onProgress, move, overwrite) {
-    //     onProgress(0)
+    async copyAndroid(source: string, target: string, move: boolean, overwrite: boolean, onProgress: (p: number)=>void) {
+        onProgress(0)
 
-    //     const keepAliveAgent = new http.Agent({
-    //         keepAlive: true,
-    //         keepAliveMsecs: 40000
-    //     })
+        const keepAliveAgent = new http.Agent({
+            keepAlive: true,
+            keepAliveMsecs: 40000
+        })
 
-    //     const pos = source.indexOf('/', 9)
-    //     const ip = source.substring(8, pos)
-    //     const path = source.substring(pos)
+        const pos = source.indexOf('/', 9)
+        const ip = source.substring(9, pos)
+        const path = source.substring(pos)
 
-    //     let date = 0
-    //     const download = async data => new Promise((res, rej) => {
-    //         const file = fs.createWriteStream(target)
+        let date = "0"
+        const download = async (data: any) => new Promise<void>((res, rej) => {
+            const file = fs.createWriteStream(target)
                         
-    //         var payload = JSON.stringify(data)
-    //         const req = http.request({
-    //             hostname: ip,
-    //             port: 8080,
-    //             path: "/getfile",
-    //             agent: keepAliveAgent,
-    //             timeout: 40000,
-    //             method: 'POST',
-    //             headers: {
-	// 				'Content-Type': 'application/json; charset=UTF-8',
-	// 				'Content-Length': Buffer.byteLength(payload)
-	// 			}            
-    //         }, response => {
-    //             date = response.headers["x-file-date"]
-    //             return response.pipe(file)
-    //         })
+            var payload = JSON.stringify(data)
+            const req = http.request({
+                hostname: ip,
+                port: 8080,
+                path: "/getfile",
+                agent: keepAliveAgent,
+                timeout: 40000,
+                method: 'POST',
+                headers: {
+					'Content-Type': 'application/json; charset=UTF-8',
+					'Content-Length': Buffer.byteLength(payload)
+				}            
+            }, (response: any) => {
+                date = response.headers["x-file-date"] 
+                return response.pipe(file)
+            })
 
-    //         file.on('finish', () => {
-    //             if (date) {
-    //                 const time = new Date(Number.parseInt(date))
-    //                 try {
-    //                     fs.utimesSync(target, time, time)
-    //                 } catch(e) {
-    //                     console.error("change time", e)
-    //                 }
-    //             }
-    //             res()
-    //         })
+            file.on('finish', () => {
+                if (date) {
+                    const time = new Date(Number.parseInt(date))
+                    try {
+                        fs.utimesSync(target, time, time)
+                    } catch(e) {
+                        console.error("change time", e)
+                    }
+                }
+                res()
+            })
 
-    //         req.on("error", rej)
-    //         req.write(payload)
-    //         req.end()        
-    //     })
+            req.on("error", rej)
+            req.write(payload)
+            req.end()        
+        })
 
-    //     await download({ path })
-    //     onProgress(1)
-    // }
+        await download({ path })
+        onProgress(1)
+    }
 }
 
 type CopyJob = {
-    type: Type.Copy   
+    type: Type.Copy | Type.CopyAndroid  
     size: number
     source: string
     target: string
