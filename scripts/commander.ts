@@ -28,9 +28,8 @@ export type Commander = {
     copy: (move?: boolean)=>void
 }
 
-// TODO CopyProcessors (file -> extenal, external -> file) 
 // TODO extended rename
-
+// TODO CopyProcessors (file -> extenal) 
 var currentPath = ""
 const folderLeft = document.getElementById("folderLeft")! as Folder
 const folderRight = document.getElementById("folderRight")! as Folder
