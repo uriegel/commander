@@ -22,4 +22,5 @@ export class NullEngine implements Engine {
     async deleteItems(items: FolderItem[], folder: Folder) {}
     async createFolder(suggestedName: string, folder: Folder) {}
     onEnter(name: string) { }
+    hasExtendedRename() { return false }
 }

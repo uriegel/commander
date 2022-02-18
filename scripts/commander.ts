@@ -24,6 +24,7 @@ export type Commander = {
     selectNone: ()=>void
     showHidden: (hidden: boolean)=>void 
     rename: ()=>void
+    extendedRename: ()=>void
     deleteSelectedItems: ()=>void
     createFolder: ()=>void
     copy: (move?: boolean)=>void
@@ -113,6 +114,10 @@ function rename() {
     activeFolder.renameItem()
 }
 
+function extendedRename() {
+    activeFolder.extendedRename()
+}
+
 function deleteSelectedItems() {
     activeFolder.deleteSelectedItems()
 }
@@ -138,6 +143,7 @@ const commander: Commander = {
     selectNone,
     showHidden,
     rename,
+    extendedRename,
     deleteSelectedItems,
     createFolder,
     copy

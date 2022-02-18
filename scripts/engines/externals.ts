@@ -153,7 +153,8 @@ export class ExternalsEngine implements Engine {
     async addExtendedInfos(path: string | undefined | null, items: FolderItem[], refresh: () => void) { }
     async createFolder(suggestedName: string, folder: Folder) {}
     onEnter(name: string) { }
-
+    hasExtendedRename() { return false }
+    
     private saveItems() {
         localStorage.setItem("externals", JSON.stringify(this.items.map(n => {
             n.isSelected = false

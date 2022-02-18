@@ -1,9 +1,12 @@
 import 'virtual-table-component'
 import { TableItem, VirtualTable } from 'virtual-table-component'
+import { Result } from 'web-dialog-box'
+import { dialog } from '../commander'
 import { getCopyEngine } from '../copy/copy'
 import { Engine, getEngine } from '../engines/engines'
 import { NullEngine } from '../engines/nullengine'
 import { compose } from '../utils'
+import { ExtendedInfo, ExtendedRename } from './extendedrename'
 const { ipcRenderer } = window.require('electron')
 const fspath = window.require('path')
 
@@ -158,8 +161,8 @@ export class Folder extends HTMLElement {
         this.pathInput!.onfocus = () => setTimeout(() => this.pathInput!.select())
     }
 
-    async changePath(path?: string|null, fromBacklog?: boolean) {
-        const result = getEngine(this.folderId, path, this.engine)
+    async changePath(path?: string|null, fromBacklog?: boolean, extendedRename?: ExtendedInfo) {
+        const result = getEngine(this.folderId, path, this.engine, extendedRename)
         const req = ++this.latestRequest
         const itemsResult = (await result.engine.getItems(path, this.showHiddenItems))
         path = itemsResult.path
@@ -304,6 +307,26 @@ export class Folder extends HTMLElement {
             if (selectedItems.length != 1)    
                 return        
         this.engine.renameItem(selectedItems[0], this)
+    }
+
+    async extendedRename() {
+        if (this.engine.hasExtendedRename()) {
+            this.reloadItems(true)
+            const extendedRename = document.getElementById("extended-rename") as ExtendedRename
+            extendedRename.initialize()
+            const res = await dialog.show({
+                extended: "extended-rename",
+                btnOk: true,
+                btnCancel: true,
+                defBtnOk: true
+            })    
+            this.setFocus()
+            if (res.result == Result.Ok) {
+                extendedRename.save()
+                this.changePath(this.engine.currentPath, false, extendedRename.getExtendedInfos())
+            }
+        
+        }
     }
 
     deleteSelectedItems() {

@@ -1,4 +1,10 @@
-class ExtendedRename extends HTMLElement {
+export type ExtendedInfo = {
+    prefix: string,
+    digits: number,
+    start: number
+} | null
+
+export class ExtendedRename extends HTMLElement {
     constructor() {
         super()
         this.innerHTML = `
@@ -63,12 +69,12 @@ class ExtendedRename extends HTMLElement {
         localStorage.setItem("extended-rename-start", this.start.value)
     }
 
-    getExtendedInfos() {
+    getExtendedInfos(): ExtendedInfo {
         return this.isActivated 
         ? ({
             prefix: this.prefixInput.value,
-            digits: this.digits.value,
-            start: this.start.value
+            digits: Number.parseInt(this.digits.value),
+            start: Number.parseInt(this.start.value)
         })
         : null
     }

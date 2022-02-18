@@ -5,6 +5,7 @@ import { ROOT_PATH } from "./root"
 import { dialog } from "../commander"
 import { Folder, FolderItem } from "../components/folder"
 import { Result } from "web-dialog-box"
+import { ExtendedInfo } from "../components/extendedrename"
 const fspath = window.require('path')
 const { getFiles, getExifDate } = window.require('rust-addon')
 
@@ -57,7 +58,7 @@ export class FileEngine implements Engine {
     protected set currentPath(value: string) { this._currentPath = value }
     private _currentPath = ""
 
-    isSuitable(path: string|null|undefined) { return Platform.isFileEnginePath(path) }
+    isSuitable(path: string|null|undefined, extendedRename?: ExtendedInfo) { return Platform.isFileEnginePath(path) && !extendedRename }
     
     async getItems(path: string|null = "", showHiddenItems?: boolean) {
         path = fspath.normalize(path).replace(":.", ":\\")
@@ -327,6 +328,10 @@ export class FileEngine implements Engine {
         Platform.onEnter(name, this.currentPath)
     }
 
+    hasExtendedRename() { 
+        return true
+    }
+    
     protected getParentDir(path: string): PathResult {
         let pos = path.lastIndexOf(Platform.pathDelimiter)
         let parent = pos ? path.substring(0, pos) : Platform.pathDelimiter

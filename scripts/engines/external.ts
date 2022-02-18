@@ -68,6 +68,7 @@ export class ExternalEngine extends FileEngine {
     override async deleteItems(items: FolderItem[], folder: any) {}
     override async createFolder(suggestedName: string, folder: any) {}
     override onEnter(name: string) { }
+    override hasExtendedRename() { return false }
     
     protected override getParentDir(path: string): PathResult {
         let pos = path.lastIndexOf('/')
@@ -76,7 +77,6 @@ export class ExternalEngine extends FileEngine {
     }
 
     protected override async addAdditionalInfo(item: FileItem, name: string, path: string) { }
-
     protected override getAdditionalSortFunction(column: number, isSubItem: boolean): (([a, b]: FolderItem[]) => number) | null { return null}
 
     private async getFiles(path: string): Promise<File[]> {

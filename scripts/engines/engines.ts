@@ -1,4 +1,5 @@
 import { Column, VirtualTable } from "virtual-table-component"
+import { ExtendedInfo } from "../components/extendedrename"
 import { Folder, FolderItem } from "../components/folder"
 import { ExternalEngine, EXTERNAL_PATH } from "./external"
 import { ExternalsEngine, EXTERNALS_PATH } from "./externals"
@@ -26,7 +27,7 @@ export enum EngineId {
 export type Engine = {
     id: EngineId
     currentPath: string
-    isSuitable: (path: string|null|undefined)=>boolean
+    isSuitable: (path: string|null|undefined, extendedRename?: ExtendedInfo)=>boolean
     getItems: (path?: string|null, showHiddenItems?: boolean)=>Promise<ItemResult>
     getItemPath: (item: FolderItem)=>string
     getColumns(): Column<FolderItem>[]
@@ -40,10 +41,11 @@ export type Engine = {
     deleteItems: (items: FolderItem[], folder: Folder)=>Promise<void>
     createFolder: (suggestedName: string, folder: Folder)=>Promise<void>
     onEnter: (name: string)=>void
+    hasExtendedRename: ()=>boolean
 }
 
-export function getEngine(folderId: string, path: string|null|undefined, current: Engine): {engine: Engine, changed: boolean} {
-    if (current.isSuitable(path))
+export function getEngine(folderId: string, path: string|null|undefined, current: Engine, extendedRename?: ExtendedInfo): {engine: Engine, changed: boolean} {
+    if (current.isSuitable(path, extendedRename))
         return { engine: current, changed: false } 
     else if (!path || path == ROOT_PATH)         
         return { engine: new RootEngine(folderId), changed: true } 
@@ -51,7 +53,10 @@ export function getEngine(folderId: string, path: string|null|undefined, current
         return { engine: new ExternalsEngine(folderId), changed: true } 
     else if (path.startsWith(EXTERNAL_PATH))         
         return { engine: new ExternalEngine(folderId, path), changed: true } 
-    else
+        // TODO
+    // else if (extendedRename)
+    //     return { engine: new ExtendedRenameEngine(EngineId.Files, folderId, extendedRename), changed: true }
+    else 
         return { engine: new FileEngine(EngineId.Files, folderId), changed: true }
 }
 

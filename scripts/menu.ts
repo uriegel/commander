@@ -4,6 +4,7 @@ const electron = window.require('electron')
 export function initialize(commanderToSet: Commander) { commander = commanderToSet }
 
 window.onRename = () => commander.rename()
+window.onExtendedRename = () => commander.extendedRename()
 window.onCreateFolder = () => commander.createFolder()
 window.onCopy = () => commander.copy()
 window.onMove = () => commander.copy(true)
