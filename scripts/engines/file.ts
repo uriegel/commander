@@ -80,7 +80,6 @@ export class FileEngine implements Engine {
     }
 
     getColumns() { 
-        //const widthstr = localStorage.getItem(`${folderId}-${(extendedRename ? "extended-" : "")}directory-widths`)
         const widthstr = localStorage.getItem(`${this.folderId}-directory-widths`)
         const widths = widthstr ? JSON.parse(widthstr) : []
         let columns = Platform.adaptDirectoryColumns([{
@@ -139,8 +138,6 @@ export class FileEngine implements Engine {
                 td.classList.add("rightAligned")
             }
         }])
-        // if (extendedRename) 
-        //     columns.splice(1, 0, { name: "Neuer Name", render: (td, item) => { td.innerHTML = item.newName || ""}})
         if (widths)
             columns = columns.map((n, i)=> ({ ...n, width: widths[i]}))
         return columns

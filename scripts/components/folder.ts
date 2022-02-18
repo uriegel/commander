@@ -311,7 +311,6 @@ export class Folder extends HTMLElement {
 
     async extendedRename() {
         if (this.engine.hasExtendedRename()) {
-            this.reloadItems(true)
             const extendedRename = document.getElementById("extended-rename") as ExtendedRename
             extendedRename.initialize()
             const res = await dialog.show({

@@ -79,7 +79,6 @@ export class ExtendedRename extends HTMLElement {
         : null
     }
 
-
     syncActivated() {
         if (this.activate.checked) {
             this.prefixInput.disabled = false

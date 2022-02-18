@@ -1,6 +1,7 @@
 import { Column, VirtualTable } from "virtual-table-component"
 import { ExtendedInfo } from "../components/extendedrename"
 import { Folder, FolderItem } from "../components/folder"
+import { ExtendedRenameEngine } from "./extendedRenameEngine"
 import { ExternalEngine, EXTERNAL_PATH } from "./external"
 import { ExternalsEngine, EXTERNALS_PATH } from "./externals"
 import { FileEngine } from "./file"
@@ -53,9 +54,8 @@ export function getEngine(folderId: string, path: string|null|undefined, current
         return { engine: new ExternalsEngine(folderId), changed: true } 
     else if (path.startsWith(EXTERNAL_PATH))         
         return { engine: new ExternalEngine(folderId, path), changed: true } 
-        // TODO
-    // else if (extendedRename)
-    //     return { engine: new ExtendedRenameEngine(EngineId.Files, folderId, extendedRename), changed: true }
+    else if (extendedRename)
+        return { engine: new ExtendedRenameEngine(folderId, extendedRename), changed: true }
     else 
         return { engine: new FileEngine(EngineId.Files, folderId), changed: true }
 }
