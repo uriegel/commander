@@ -34,10 +34,13 @@ class ExtendedRename extends HTMLElement {
                 </table>
             </div`
 
-        this.activate = this.querySelector('#activate')            
-        this.prefixInput = this.querySelector('#prefix')            
-        this.digits = this.querySelector('#digits')            
-        this.start = this.querySelector('#start')            
+        this.activate = this.querySelector('#activate')!            
+        this.prefixInput = this.querySelector('#prefix')!            
+        this.digits = this.querySelector('#digits')!            
+        this.start = this.querySelector('#start')!            
+    }
+
+    connectedCallback() {
         this.activate.onclick = () => this.syncActivated()
     }
 
@@ -49,9 +52,9 @@ class ExtendedRename extends HTMLElement {
 
     initialize() {
         this.isActivated = true
-        this.prefixInput.value = localStorage.getItem("extended-rename-prefix")
-        this.digits.value = localStorage.getItem("extended-rename-digits") || 3
-        this.start.value = localStorage.getItem("extended-rename-start") || 0
+        this.prefixInput.value = localStorage.getItem("extended-rename-prefix") ?? ""
+        this.digits.value = localStorage.getItem("extended-rename-digits") ?? "3"
+        this.start.value = localStorage.getItem("extended-rename-start") ?? "0"
     }
 
     save() {
@@ -82,6 +85,11 @@ class ExtendedRename extends HTMLElement {
             this.start.disabled = true
         }
     }        
+
+    private activate: HTMLInputElement
+    private prefixInput: HTMLInputElement
+    private digits: HTMLInputElement
+    private start: HTMLInputElement
 }
 
 customElements.define('extended-rename', ExtendedRename)

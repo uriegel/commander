@@ -1,9 +1,3 @@
-import { RESULT_CANCEL, RESULT_OK, RESULT_YES, RESULT_NO } from 'web-dialog-box'
-import { initializeCopying } from './processors/copyProcessor.js'
-import './components/copyconflicts'
-import './components/externaladder'
-import './components/extendedrename'
-
 async function extendedRename() {
     const extendedRename = document.getElementById("extended-rename")
     extendedRename.initialize()
