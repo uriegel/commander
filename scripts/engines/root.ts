@@ -105,4 +105,6 @@ export class RootEngine implements Engine {
     async createFolder(suggestedName: string, folder: Folder) {}
     onEnter(name: string) { }
     hasExtendedRename() { return false }
+    isSelectable() { return false }
+    beforeRefresh() {}
 }

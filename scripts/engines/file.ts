@@ -161,7 +161,6 @@ export class FileEngine implements Engine {
             tr.style.opacity = "0.5"
     }
 
- //   saveWidths(widths:number[]) { localStorage.setItem(`${this.folderId}-${(extendedRename ? "extended-" : "")}directory-widths`, JSON.stringify(widths)) }
     saveWidths(widths:number[]) { localStorage.setItem(`${this.folderId}-directory-widths`, JSON.stringify(widths)) }
 
     getSortFunction(column: number, isSubItem: boolean): (([a, b]: FolderItem[]) => number) | null {
@@ -185,6 +184,9 @@ export class FileEngine implements Engine {
         Platform.disableSorting(table, disable)
     }
 
+    isSelectable(item: FolderItem) { return item.name != '..' }
+    beforeRefresh(items: FolderItem[]) {}
+
     protected getAdditionalSortFunction(column: number, isSubItem: boolean): (([a, b]: FolderItem[]) => number) | null {
         return Platform.getAdditionalSortFunction(column, isSubItem)
     }
@@ -202,11 +204,6 @@ export class FileEngine implements Engine {
 
     async renameItem(item: FolderItem, folder: Folder) {
         try {
-            // if (activeFolder.isExtendedRename) {
-            //     activeFolder.doExtendedRename()
-            //     return
-            // }
-                
             const itemsType = getItemsTypes(item)
             const text = itemsType == ItemsType.File
                 ? "Datei umbenennen"

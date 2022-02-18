@@ -43,6 +43,8 @@ export type Engine = {
     createFolder: (suggestedName: string, folder: Folder)=>Promise<void>
     onEnter: (name: string)=>void
     hasExtendedRename: ()=>boolean
+    isSelectable: (item: FolderItem)=>boolean
+    beforeRefresh: (items: FolderItem[])=>void
 }
 
 export function getEngine(folderId: string, path: string|null|undefined, current: Engine, extendedRename?: ExtendedInfo): {engine: Engine, changed: boolean} {

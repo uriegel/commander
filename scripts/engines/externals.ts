@@ -30,9 +30,9 @@ export class ExternalsEngine implements Engine {
     async getItems(_: string | null | undefined, __?: boolean) {
         return {
             path: EXTERNALS_PATH,
-            items: ([{ name: "..", type: ItemType.Parent, isDirectory: true, isNotSelectable: true }] as Item[])
+            items: ([{ name: "..", type: ItemType.Parent, isDirectory: true }] as Item[])
                 .concat(this.items)
-                .concat({ name: "Hinzufügen...", type: ItemType.Add, isDirectory: false, isNotSelectable: true })
+                .concat({ name: "Hinzufügen...", type: ItemType.Add, isDirectory: false })
         }
     }
 
@@ -154,6 +154,8 @@ export class ExternalsEngine implements Engine {
     async createFolder(suggestedName: string, folder: Folder) {}
     onEnter(name: string) { }
     hasExtendedRename() { return false }
+    isSelectable() { return false }
+    beforeRefresh() {}
     
     private saveItems() {
         localStorage.setItem("externals", JSON.stringify(this.items.map(n => {

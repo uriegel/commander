@@ -13,7 +13,6 @@ const fspath = window.require('path')
 export interface FolderItem extends TableItem{
     name: string
     isDirectory: boolean
-    isNotSelectable?: boolean
 }
 
 export class Folder extends HTMLElement {
@@ -45,8 +44,8 @@ export class Folder extends HTMLElement {
                 if (evt.ctrlKey) {
                     setTimeout(() => {
                         const pos = this.table.getPosition()
-                        this.table.items[pos].isSelected = !this.table.items[pos].isNotSelectable && !this.table.items[pos].isSelected 
-                        //this.computeExtendedNewNames()
+                        this.table.items[pos].isSelected = this.engine.isSelectable(this.table.items[pos]) && this.table.items[pos].isSelected == true
+                        this.engine.beforeRefresh(this.table.items)
                         this.table.refresh()
                     })
                 }
@@ -75,7 +74,7 @@ export class Folder extends HTMLElement {
             this.table.items = dirs.concat(files.sort((a, b) => this.sortFunction!([a, b])))
             const newPos = this.table.items.findIndex(n => n.name == item.name)
             this.table.setPosition(newPos)
-            //this.computeExtendedNewNames()
+            this.engine.beforeRefresh(this.table.items)
             this.table.refresh()
         })
         this.table.addEventListener("columnwidths", evt => this.engine.saveWidths((evt as CustomEvent).detail))
@@ -108,23 +107,23 @@ export class Folder extends HTMLElement {
                 case 35: // end
                     if (evt.shiftKey) {
                         const pos = this.table.getPosition()
-                        this.table.items.forEach((item, i) => item.isSelected = !item.isNotSelectable && i >= pos)                     
-                      //  this.computeExtendedNewNames()
+                        this.table.items.forEach((item, i) => item.isSelected = this.engine.isSelectable(item) && i >= pos)                     
+                        this.engine.beforeRefresh(this.table.items)
                         this.table.refresh()
                     }
                     break
                 case 36: // home
                     if (evt.shiftKey) {
                         const pos = this.table.getPosition()
-                        this.table.items.forEach((item, i) => item.isSelected = !item.isNotSelectable && i <= pos)                     
-                        //this.computeExtendedNewNames()
+                        this.table.items.forEach((item, i) => item.isSelected = this.engine.isSelectable(item) && i <= pos)                     
+                        this.engine.beforeRefresh(this.table.items)
                         this.table.refresh()
                     }
                     break
                 case 45: { // Ins
                     const pos = this.table.getPosition()
-                    this.table.items[pos].isSelected = !this.table.items[pos].isNotSelectable && !this.table.items[pos].isSelected 
-                    //this.computeExtendedNewNames()
+                    this.table.items[pos].isSelected = this.engine.isSelectable(this.table.items[pos]) && !this.table.items[pos].isSelected 
+                    this.engine.beforeRefresh(this.table.items)
                     this.table.setPosition(pos + 1)
                     break
                 }
@@ -174,7 +173,7 @@ export class Folder extends HTMLElement {
         if (result.changed || this.columnsChangeRequest) {
             this.columnsChangeRequest = false
             this.engine = result.engine
-            const columns = this.engine.getColumns() // TODO this.isExtendedRename)
+            const columns = this.engine.getColumns() 
             this.table.setColumns(columns)
             this.sortFunction = null
         }
@@ -225,21 +224,21 @@ export class Folder extends HTMLElement {
 
     async reloadItems(keepSelection?: boolean) {
         const pos = keepSelection == true ? this.table.getPosition() : 0
-        this.table.items[pos].isSelected = !this.table.items[pos].isNotSelectable && !this.table.items[pos].isSelected 
+        this.table.items[pos].isSelected = this.engine.isSelectable(this.table.items[pos]) && !this.table.items[pos].isSelected 
         await this.changePath(this.engine.currentPath)
         if (pos)
             this.table.setPosition(pos)
     }
 
     selectAll() {
-        this.table.items.forEach(n => n.isSelected = !n.isNotSelectable)
-//        this.computeExtendedNewNames()
+        this.table.items.forEach(n => n.isSelected = this.engine.isSelectable(n))
+        this.engine.beforeRefresh(this.table.items)
         this.table.refresh()
     }
 
     selectNone() {
         this.table.items.forEach(n => n.isSelected = false)
-//        this.computeExtendedNewNames()
+        this.engine.beforeRefresh(this.table.items)
         this.table.refresh()
     }
 
