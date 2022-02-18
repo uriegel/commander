@@ -358,5 +358,5 @@ export class FileEngine implements Engine {
         await this.addAdditionalInfo(item, name, path)
     }
 
-    private folderId: string;
+    protected readonly folderId: string;
 }
