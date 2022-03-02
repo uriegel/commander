@@ -8,7 +8,7 @@ open FSharpTools
 let start args = 
         async {
             try 
-                let proc = new Diagnostics.Process() 
+                use proc = new Diagnostics.Process() 
                 proc.StartInfo <- Diagnostics.ProcessStartInfo()
                 proc.StartInfo.RedirectStandardOutput <- true
                 proc.StartInfo.RedirectStandardError <- true
