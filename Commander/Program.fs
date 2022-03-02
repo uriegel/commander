@@ -38,7 +38,7 @@ async {
 
 //TODO index and css and styles in Resource, served by Giraffe
 //TODO Start electron with environment x=23 y=45 w=234 h=234 isMaximized
-//TODO Windows and Linux
+//TODO Windows: not "electron", but full path to "electron.exe"
 //TODO typescript renderer script
 
 
