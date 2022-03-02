@@ -1,7 +1,0 @@
-node_modules
-package-lock.json
-web/dist
-dist/
-Cargo.lock
-index.node
-target
