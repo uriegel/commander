@@ -12,7 +12,7 @@ let start args =
                 proc.StartInfo <- Diagnostics.ProcessStartInfo()
                 proc.StartInfo.RedirectStandardOutput <- true
                 proc.StartInfo.RedirectStandardError <- true
-                proc.StartInfo.FileName <- "electron"
+                proc.StartInfo.FileName <- iswindows ? "electron.cmd" : "electron"
                 proc.StartInfo.Arguments <- args
                 proc.EnableRaisingEvents <- true
                 proc.OutputDataReceived.Add(fun data -> printfn "%s" data.Data)
