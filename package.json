@@ -1,44 +1,19 @@
 {
   "name": "commander",
   "version": "1.0.0",
-  "description": "A Norton Commander clone based on Electron and  Web Components",
+  "description": "A Norton Commander clone based on Electron, F# and  Web Components",
   "main": "electron/dist/main.js",
   "scripts": {
-    "builddev": "webpack --config webpack.dev.js",
-    "build": "npm run build-rust-release && webpack --config webpack.prod.js",
-    "start": "npm run tsc && npm run build-rust-release && npm run builddev && electron .",
-    "dist": "npm run build && electron-builder",
-    "debug-rust": "npm run build-rust-debug && node --nolazy --inspect-brk=9229 rust-test/index.js",
+    
+    "old-builddev": "webpack --config webpack.dev.js",
+    "old-build": "npm run build-rust-release && webpack --config webpack.prod.js",
+    "old-start": "npm run tsc && npm run build-rust-release && npm run builddev && electron .",
+    "old-dist": "npm run build && electron-builder",
+    "old-debug-rust": "npm run build-rust-debug && node --nolazy --inspect-brk=9229 rust-test/index.js",
     "build-rust": "cargo-cp-artifact -nc local-modules/rust-addon/index.node -- cargo build --message-format=json-render-diagnostics",
-    "build-rust-debug": "npm run build-rust --",
-    "build-rust-release": "npm run build-rust -- --release",
-    "tsc": "tsc -p electron/typescript"
-  },
-  "build": {
-    "appId": "de.uriegel.commander",
-    "copyright": "Copyright 2021 Uwe Riegel",
-    "productName": "Commander",
-    "electronVersion": "16.0.5",
-    "nodeGypRebuild": false,
-    "files": [
-      "!.vscode",
-      "!rust-test",
-      "!src",
-      "!local-modules",
-      "!target",
-      "!Cargo.*",
-      "!webpack.*"
-    ],
-    "linux": {
-      "target": [
-        "snap"
-      ],
-      "icon": "web/assets/kirk.png"
-    },
-    "win": {
-      "target": "nsis",
-      "icon": "kirk.ico"
-    }
+    "old-build-rust-debug": "npm run build-rust --",
+    "old-build-rust-release": "npm run build-rust -- --release",
+    "old-tsc": "tsc -p electron/typescript"
   },
   "repository": {
     "type": "git",
@@ -57,17 +32,10 @@
     "url": "https://github.com/uriegel/window-commander/issues"
   },
   "homepage": "https://github.com/uriegel/window-commander#readme",
-  "dependencies": {
-    "electron-settings": "^4.0.2",
-    "rust-addon": "file:local-modules/rust-addon",
-    "shared-module": "file:local-modules/shared-module",
-    "theme-change-detect": "1.0.1"
-  },
   "devDependencies": {
     "@types/node": "^17.0.14",
     "cargo-cp-artifact": "^0.1.6",
     "electron": "^16.0.5",
-    "electron-builder": "^22.13.1",
     "grid-splitter": "^1.0.0",
     "ts-loader": "^9.2.6",
     "typescript": "^4.5.5",
