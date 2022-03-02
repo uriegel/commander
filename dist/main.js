@@ -1,0 +1,1 @@
+console.log("Jetzt starte ich das Elektron...")
