@@ -13,7 +13,7 @@
     "build-rust": "cargo-cp-artifact -nc local-modules/rust-addon/index.node -- cargo build --message-format=json-render-diagnostics",
     "old-build-rust-debug": "npm run build-rust --",
     "old-build-rust-release": "npm run build-rust -- --release",
-    "old-tsc": "tsc -p electron/typescript"
+    "tsc": "tsc -p electron/typescript"
   },
   "repository": {
     "type": "git",
@@ -34,7 +34,6 @@
   "homepage": "https://github.com/uriegel/window-commander#readme",
   "devDependencies": {
     "@types/node": "^17.0.14",
-    "cargo-cp-artifact": "^0.1.6",
     "electron": "^16.0.5",
     "grid-splitter": "^1.0.0",
     "ts-loader": "^9.2.6",

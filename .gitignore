@@ -2,3 +2,6 @@ Commander/obj
 Commander/.fslsp
 Commander/bin
 .ionide
+node_modules
+resources/electron
+package-lock.json
