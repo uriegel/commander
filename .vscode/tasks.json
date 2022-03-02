@@ -2,9 +2,12 @@
     // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
     "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "build",
+    "tasks": [{
+            "label": "tsc",
+            "type": "npm",
+            "script": "tsc",
+        }, {
+            "label": "buildF",
             "command": "dotnet",
             "type": "shell",
             "args": [
@@ -19,6 +22,10 @@
                 "reveal": "silent"
             },
             "problemMatcher": "$msCompile"
-        }
+        }, {
+            "label": "build",
+            "dependsOrder": "sequence",
+            "dependsOn": ["tsc", "buildF"]
+        }            
     ]
 }
