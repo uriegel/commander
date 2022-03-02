@@ -1,1 +1,1 @@
-console.log("Jetzt starte ich das Elektron.aus typescript und aus der Resource..")
+console.log("Jetzt starte ich das Elektron.aus typescript und aus der Resource......")
