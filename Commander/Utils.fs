@@ -12,7 +12,7 @@ let takeFirstTupleElem (a, _) = a
 
 let combine2Pathes path1 path2 = IO.Path.Combine (path1, path2)
 let combine3Pathes path1 path2 path3 = IO.Path.Combine (path1, path2, path3)
-let openStream path : IO.Stream = IO.File.OpenWrite path
+let openStream path : IO.Stream = IO.File.Create path
 
 let checkDirectory path = 
     let info = IO.FileInfo path
