@@ -40,7 +40,7 @@ const createWindow = async () => {
             const req = http.request({
                 hostname: "localhost",
                 port: 9865,
-                path: "/commander",
+                path: "/commander/test",
                 agent: keepAliveAgent,
                 timeout: 40000,
                 method: 'POST',

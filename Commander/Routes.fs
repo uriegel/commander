@@ -23,7 +23,7 @@ let configure (app : IApplicationBuilder) =
 
     let routes =
         choose [  
-            route  "/commander" >=> bindJson<Cmd> (fun cmd -> 
+            route  "/commander/test" >=> bindJson<Cmd> (fun cmd -> 
                 json { Result = 2345; Description ="Schönes Ergebnis" }
             )
             route  "/"    >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)
