@@ -68,10 +68,23 @@ let configureLogging (builder : ILoggingBuilder) =
            // Add additional loggers if wanted...
     |> ignore
 
+let httpHandlerParam httpHandler param: HttpHandler = (fun () -> httpHandler(param))()
+let routePathes () (routeHandler : string -> HttpHandler) : HttpHandler =
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        Some (SubRouting.getNextPartOfPath ctx)
+        |> function
+            | Some subpath -> routeHandler subpath[1..] next ctx    
+            | None         -> skipPipeline
+
+
+let getResourceFile path = 
+    setContentType "text/css" >=> streamData false (getResource <| sprintf "web/%s" path) None None
+
 let configureRoutes (app : IApplicationBuilder) = 
     let routes =
         choose [  
-            route "/foo"  >=> text "Foo"
+            route  "/"    >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)
+            routePathes () <| httpHandlerParam getResourceFile 
         ]       
     app.UseGiraffe routes      
 
@@ -89,10 +102,10 @@ Host.CreateDefaultBuilder()
     .Start()
 
 async {
-    do! Electron.start <| saveResource (getElectronFile "main.js", "electron/main.js")
+    //do! Electron.start <| saveResource (getElectronFile "main.js", "electron/main.js")
+    do! Electron.start "http://localhost:9865"
 } |> Async.RunSynchronously
 
-//TODO index and css and styles in Resource, served by Giraffe
 //TODO Start electron with environment x=23 y=45 w=234 h=234 isMaximized
 //TODO typescript renderer script
 

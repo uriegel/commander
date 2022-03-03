@@ -29,6 +29,12 @@
     <EmbeddedResource Include="../resources/electron/main.js">
       <LogicalName>electron/main.js</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="../resources/web/index.html">
+      <LogicalName>web/index.html</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../resources/web/styles/style.css">
+      <LogicalName>web/styles/style.css</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
