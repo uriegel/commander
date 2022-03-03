@@ -15,6 +15,7 @@ let start args =
                 proc.StartInfo.RedirectStandardOutput <- true
                 proc.StartInfo.RedirectStandardError <- true
                 proc.StartInfo.FileName <- if isLinux then "electron" else "electron.cmd"
+                proc.StartInfo.CreateNoWindow <- true
                 //proc.StartInfo.Arguments <- args
                 proc.StartInfo.Arguments <- "http://localhost:9865/foo"
                 proc.EnableRaisingEvents <- true
