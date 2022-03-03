@@ -92,12 +92,9 @@ async {
     do! Electron.start <| saveResource (getElectronFile "main.js", "electron/main.js")
 } |> Async.RunSynchronously
 
-
-//TODO Windows: not "electron", but full path to "electron.exe"
-//TODO Windows: winexe with kestrel
 //TODO index and css and styles in Resource, served by Giraffe
 //TODO Start electron with environment x=23 y=45 w=234 h=234 isMaximized
 //TODO typescript renderer script
-//TODO Single file exe (Windows Linux)
+
 
 
