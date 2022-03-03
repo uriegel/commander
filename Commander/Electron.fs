@@ -1,9 +1,11 @@
 module Electron
 
+open FSharpTools
 open System
 open System.Threading
 
-open FSharpTools
+let affe = Environment.OSVersion
+let isLinux = affe.VersionString |> String.startsWith "Unix" 
 
 let start args = 
         async {
@@ -12,8 +14,9 @@ let start args =
                 proc.StartInfo <- Diagnostics.ProcessStartInfo()
                 proc.StartInfo.RedirectStandardOutput <- true
                 proc.StartInfo.RedirectStandardError <- true
-                proc.StartInfo.FileName <- iswindows ? "electron.cmd" : "electron"
-                proc.StartInfo.Arguments <- args
+                proc.StartInfo.FileName <- if isLinux then "electron" else "electron.cmd"
+                //proc.StartInfo.Arguments <- args
+                proc.StartInfo.Arguments <- "http://localhost:9865/foo"
                 proc.EnableRaisingEvents <- true
                 proc.OutputDataReceived.Add(fun data -> printfn "%s" data.Data)
                 proc.ErrorDataReceived.Add(fun data -> eprintfn "%s" data.Data)
