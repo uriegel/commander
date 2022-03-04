@@ -1,7 +1,7 @@
 import { app, BrowserWindow, BrowserWindowConstructorOptions } from "electron"
 import http from "http"
 
-console.log("Enf", process.env['Hund'], process.env['Affe'], process.env['SChwein']) 
+console.log("Enf", process.env['Bounds']) 
 
 const createWindow = async () => {    
     const bounds: BrowserWindowConstructorOptions = {

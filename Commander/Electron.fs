@@ -4,7 +4,17 @@ open FSharpTools
 open System
 open System.Threading
 
+open Requests
+
 let isLinux = Environment.OSVersion.VersionString |> String.startsWith "Unix" 
+
+let bounds =  {
+    x = -1
+    y = -1
+    width = 600
+    height = 800
+    isMaximized = false
+}
 
 let start args = 
         async {
@@ -15,8 +25,7 @@ let start args =
                 proc.StartInfo.RedirectStandardError <- true
                 proc.StartInfo.FileName <- if isLinux then "electron" else "electron.cmd"
                 proc.StartInfo.CreateNoWindow <- true
-                proc.StartInfo.Environment.Add("Affe", "Orang Utan")
-                proc.StartInfo.Environment.Add("Hund", "Roxy")
+                proc.StartInfo.Environment.Add("Bounds", Json.serialize bounds)
                 proc.StartInfo.Arguments <- args
                 proc.EnableRaisingEvents <- true
                 proc.OutputDataReceived.Add(fun data -> printfn "%s" data.Data)
