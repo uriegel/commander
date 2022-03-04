@@ -5,7 +5,6 @@
   "main": "electron/dist/main.js",
   "scripts": {
     "tsc": "tsc -p electron/typescript",
-
     "old-builddev": "webpack --config webpack.dev.js",
     "old-build": "npm run build-rust-release && webpack --config webpack.prod.js",
     "old-start": "npm run tsc && npm run build-rust-release && npm run builddev && electron .",
