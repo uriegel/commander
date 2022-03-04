@@ -10,16 +10,8 @@ open Requests
 
 let isLinux = Environment.OSVersion.VersionString |> String.startsWith "Unix" 
 
-let bounds =  {
-    X = None
-    Y = None
-    Width = 600
-    Height = 800
-    IsMaximized = false
-    Icon = Some <| saveResource (getElectronFile "appicon.ico", "web/images/appicon")
-}
-
 let start args = 
+    saveResource (getElectronFile "appicon.ico", "web/images/appicon") |> ignore
     async {
         try 
             use proc = new Diagnostics.Process() 
@@ -28,7 +20,7 @@ let start args =
             proc.StartInfo.RedirectStandardError <- true
             proc.StartInfo.FileName <- if isLinux then "electron" else "electron.cmd"
             proc.StartInfo.CreateNoWindow <- true
-            proc.StartInfo.Environment.Add("Bounds", JsonSerializer.Serialize (bounds, getJsonOptions ()))
+            proc.StartInfo.Environment.Add("Bounds", JsonSerializer.Serialize (getBounds (), getJsonOptions ()))
             proc.StartInfo.Arguments <- args
             proc.EnableRaisingEvents <- true
             proc.OutputDataReceived.Add(fun data -> printfn "%s" data.Data)
@@ -41,3 +33,5 @@ let start args =
         with
             | _ as e -> eprintfn "%s" <| e.ToString ()
     }
+
+    

@@ -2,16 +2,10 @@ module Requests
 
 open Giraffe
 
-type WindowBounds = {
-    X: int option
-    Y: int option
-    Width: int
-    Height: int
-    IsMaximized: bool
-    Icon: string option
-}
+open Configuration
 
 let sendBounds (windowBounds: WindowBounds) = 
+    saveBounds windowBounds
     text "{}"
     
     
