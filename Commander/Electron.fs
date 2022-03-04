@@ -16,6 +16,7 @@ let bounds =  {
     Width = 600
     Height = 800
     IsMaximized = false
+    Icon = Some <| saveResource (getElectronFile "appicon", "web/images/appicon")
 }
 
 let start args = 

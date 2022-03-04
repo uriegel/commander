@@ -8,6 +8,7 @@ type WindowBounds = {
     Width: int
     Height: int
     IsMaximized: bool
+    Icon: string option
 }
 
 let sendBounds (windowBounds: WindowBounds) = 

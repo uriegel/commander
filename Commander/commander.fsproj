@@ -41,4 +41,14 @@
       <LogicalName>web/styles/style.css</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup Condition="'$(IsWindows)'=='true'">
+    <EmbeddedResource Include="../resources/web/images/kirk.ico">
+      <LogicalName>web/images/appicon</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup Condition="'$(IsLinux)'=='true'">
+    <EmbeddedResource Include="../resources/web/images/kirk.png">
+      <LogicalName>web/images/appicon</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

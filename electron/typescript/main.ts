@@ -1,30 +1,25 @@
 import { app, BrowserWindow, BrowserWindowConstructorOptions } from "electron"
 import http from "http"
 
-// type bounds = {
-//     x: number
-//     y: number
+// type Bounds = {
+//     x: number | undefined
+//     y: number | undefined
 //     width: number
 //     height: number
 //     isMaximized: boolean
+//     icon: string | undefined
 // }
 
-console.log("Enf", process.env['Bounds']) 
+let bounds: BrowserWindowConstructorOptions = JSON.parse(process.env['Bounds']!)
 
 const createWindow = async () => {    
-    const bounds: BrowserWindowConstructorOptions = {
-        width: 600,
-        height: 600,
-        // TODO ico Windows
-        icon: '/home/uwe/Projekte/linux-commander/resources/kirk.png',
-        //show: false,
-        //frame: isLinux,
-        webPreferences: {
-            nodeIntegration: true,
-            allowRunningInsecureContent: true,
-            contextIsolation: false
-        }      
-    }
+    bounds.webPreferences = {
+        nodeIntegration: true,
+        allowRunningInsecureContent: true,
+        contextIsolation: false
+    }      
+    bounds.show = false
+    //bounds.frame: isLinux,
 
     const win = new BrowserWindow(bounds)
 
