@@ -1,6 +1,14 @@
 import { app, BrowserWindow, BrowserWindowConstructorOptions } from "electron"
 import http from "http"
 
+// type bounds = {
+//     x: number
+//     y: number
+//     width: number
+//     height: number
+//     isMaximized: boolean
+// }
+
 console.log("Enf", process.env['Bounds']) 
 
 const createWindow = async () => {    
@@ -31,11 +39,11 @@ const createWindow = async () => {
 
         return new Promise((resolve, reject) => {
             var payload = JSON.stringify({
-                x: 9,
                 y: 12,
                 width: 700,
                 height: 345,
-                isMaximized: false
+                isMaximized: false,
+                text: "ÖWeltäüöäüö😨"
             })
             let responseData = ''
             const req = http.request({
@@ -53,6 +61,7 @@ const createWindow = async () => {
                 response.setEncoding('utf8')
                 response.on('data', (chunk: any) => responseData += chunk)
                 response.on('end', () => {
+                    console.log("Response", responseData)
                     const result = JSON.parse(responseData)
                     resolve(result)
                 })

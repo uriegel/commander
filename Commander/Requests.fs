@@ -1,14 +1,16 @@
 module Requests
 
 open Giraffe
-open Microsoft.AspNetCore.Http
+open System.Text.Json.Serialization
 
+[<JsonFSharpConverter>]
 type WindowBounds = {
-    x: int
-    y: int
-    width: int
-    height: int
-    isMaximized: bool
+    X: int option
+    Y: int option
+    Width: int
+    Height: int
+    IsMaximized: bool
+    Text: string
 }
 
 let sendBounds (windowBounds: WindowBounds) = 

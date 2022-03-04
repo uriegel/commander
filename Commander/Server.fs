@@ -6,19 +6,16 @@ open Microsoft.AspNetCore.Server.Kestrel.Core
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
-open System
-open System.Text.Json
+
+open Configuration
 
 let configureServices (services : IServiceCollection) = 
-    let jsonOptions = JsonSerializerOptions()
-    // TODO FSharpUtils
-    //jsonOptions.DefaultIgnoreCondition <- JsonIgnoreCondition.WhenWritingNull
-//    jsonOptions.Converters.Add(JsonFSharpConverter())
+    
     services
+        .AddSingleton(getJsonOptions ()) 
+        .AddSingleton<Json.ISerializer, SystemTextJson.Serializer>() 
         .AddGiraffe()
-        //.AddSingleton(jsonOptions) 
-        //.AddSingleton<Json.ISerializer, SystemTextJson.Serializer>() 
-    |> ignore
+        |> ignore
 
 let configureKestrel (options: KestrelServerOptions) = 
     options.ListenAnyIP 9865

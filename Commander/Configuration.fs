@@ -2,8 +2,22 @@ module Configuration
 
 open FSharpTools.Functional
 open System
+open System.Text.Json
+open System.Text.Encodings.Web;
+open System.Text.Json.Serialization
 
 open Utils
+
+let getJsonOptions () = 
+    // TODO memoize
+    let getJsonOptions () = 
+        let jsonOptions = JsonSerializerOptions()
+        jsonOptions.PropertyNamingPolicy <- JsonNamingPolicy.CamelCase
+        jsonOptions.Encoder <- JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        jsonOptions.Converters.Add(JsonFSharpConverter())
+        jsonOptions
+    let options = getJsonOptions ()
+    options
 
 let retrieveConfigDirectory application = combine3Pathes (Environment.GetFolderPath Environment.SpecialFolder.ApplicationData) "uriegel.de" application
 let getConfigDirectory = memoize retrieveConfigDirectory

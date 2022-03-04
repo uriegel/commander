@@ -12,7 +12,7 @@ open Utils
 let configure (app : IApplicationBuilder) = 
     let getResourceFile path = 
         setContentType "text/css" >=> streamData false (getResource <| sprintf "web/%s" path) None None
-
+    
     let routes =
         choose [  
             route  "/commander/sendbounds" >=> bindJson<WindowBounds> sendBounds
