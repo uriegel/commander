@@ -8,16 +8,15 @@ open System.Text.Json.Serialization
 
 open Utils
 
-let getJsonOptions () = 
-    // TODO memoize
+let getJsonOptions = 
     let getJsonOptions () = 
         let jsonOptions = JsonSerializerOptions()
         jsonOptions.PropertyNamingPolicy <- JsonNamingPolicy.CamelCase
         jsonOptions.Encoder <- JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        jsonOptions.DefaultIgnoreCondition <- JsonIgnoreCondition.WhenWritingNull
         jsonOptions.Converters.Add(JsonFSharpConverter())
         jsonOptions
-    let options = getJsonOptions ()
-    options
+    memoizeSingle getJsonOptions
 
 let retrieveConfigDirectory application = combine3Pathes (Environment.GetFolderPath Environment.SpecialFolder.ApplicationData) "uriegel.de" application
 let getConfigDirectory = memoize retrieveConfigDirectory

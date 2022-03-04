@@ -19,5 +19,7 @@ let configure (app : IApplicationBuilder) =
             route  "/"                     >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)
             routePathes ()                  <| httpHandlerParam getResourceFile 
         ]       
-    app.UseGiraffe routes      
+    app
+        .UseResponseCompression()
+        .UseGiraffe routes      
      

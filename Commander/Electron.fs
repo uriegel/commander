@@ -16,7 +16,6 @@ let bounds =  {
     Width = 600
     Height = 800
     IsMaximized = false
-    Text = "ÖWeltäüöäüö😨"
 }
 
 let start args = 

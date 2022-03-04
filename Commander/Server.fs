@@ -1,10 +1,11 @@
 module Server 
 
 open Giraffe
+open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 open Microsoft.AspNetCore.Server.Kestrel.Core
-open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.Logging
 
 open Configuration
@@ -14,6 +15,7 @@ let configureServices (services : IServiceCollection) =
     services
         .AddSingleton(getJsonOptions ()) 
         .AddSingleton<Json.ISerializer, SystemTextJson.Serializer>() 
+        .AddResponseCompression()
         .AddGiraffe()
         |> ignore
 

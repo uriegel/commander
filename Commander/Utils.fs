@@ -8,6 +8,10 @@ let tee f x =
     f x
     x
 
+let memoizeSingle funToMemoize =
+    let memoized = funToMemoize ()
+    (fun () -> memoized)
+
 let takeFirstTupleElem (a, _) = a
 
 let combine2Pathes path1 path2 = IO.Path.Combine (path1, path2)
