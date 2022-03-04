@@ -15,8 +15,8 @@ const createWindow = async () => {
     const bounds: BrowserWindowConstructorOptions = {
         width: 600,
         height: 600,
-        // TODO
-        icon: 'kirk.png',
+        // TODO ico Windows
+        icon: '/home/uwe/Projekte/linux-commander/resources/kirk.png',
         //show: false,
         //frame: isLinux,
         webPreferences: {
