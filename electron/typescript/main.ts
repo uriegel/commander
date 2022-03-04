@@ -5,8 +5,6 @@ console.log("Enf", process.env['Hund'], process.env['Affe'], process.env['SChwei
 
 const createWindow = async () => {    
     const bounds: BrowserWindowConstructorOptions = {
-        x: 22,
-        y: 22,
         width: 600,
         height: 600,
         // TODO
@@ -33,14 +31,17 @@ const createWindow = async () => {
 
         return new Promise((resolve, reject) => {
             var payload = JSON.stringify({
-                name: "Uwe Rögäl",
-                id: 9865
+                x: 9,
+                y: 12,
+                width: 700,
+                height: 345,
+                isMaximized: false
             })
             let responseData = ''
             const req = http.request({
                 hostname: "localhost",
                 port: 9865,
-                path: "/commander/test",
+                path: "/commander/sendbounds",
                 agent: keepAliveAgent,
                 timeout: 40000,
                 method: 'POST',
@@ -68,7 +69,8 @@ const createWindow = async () => {
 
     async function run() {
         let res = await request()
-        console.log("Ergenis", res)
+        await request()
+        console.log("Ergebnis", res)
     }
     run()
 }

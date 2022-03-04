@@ -6,16 +6,8 @@ open Microsoft.Extensions.Logging
 open System
 
 open Configuration
+open Requests
 open Utils
-
-type Cmd = {
-    Name: string
-    Id: int
-}
-type Result = {
-    Result: int
-    Description: string
-}
 
 let configure (app : IApplicationBuilder) = 
     let getResourceFile path = 
@@ -23,10 +15,9 @@ let configure (app : IApplicationBuilder) =
 
     let routes =
         choose [  
-            route  "/commander/test" >=> bindJson<Cmd> (fun cmd -> 
-                json { Result = 2345; Description ="Schönes Ergebnis" }
-            )
-            route  "/"    >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)
-            routePathes () <| httpHandlerParam getResourceFile 
+            route  "/commander/sendbounds" >=> bindJson<WindowBounds> sendBounds
+            route  "/"                     >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)
+            routePathes ()                  <| httpHandlerParam getResourceFile 
         ]       
     app.UseGiraffe routes      
+     
