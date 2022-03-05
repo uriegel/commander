@@ -91,7 +91,6 @@ const createWindow = async () => {
                     console.log("evt", evt)
                     switch (evt.method) {
                         case EventMethod.ShowDevTools:
-                            console.log("Show def tuhls")
                             win.webContents.openDevTools()
                             break
                     }
