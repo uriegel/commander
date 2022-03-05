@@ -21,9 +21,10 @@ let configure (app : IApplicationBuilder) =
     
     let routes =
         choose [  
-            route  "/commander/sendbounds" >=> bindJson<WindowBounds> sendBounds
-            route  "/"                     >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)
-            routePathes ()                  <| httpHandlerParam getResourceFile 
+            route  "/commander/sendbounds"   >=> bindJson<WindowBounds> sendBounds
+            route  "/commander/showdevtools" >=> warbler (fun _ -> showDevTools ())
+            route  "/"                       >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)
+            routePathes ()                    <| httpHandlerParam getResourceFile 
         ]       
     app
         .UseResponseCompression()
