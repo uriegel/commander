@@ -1,5 +1,6 @@
 import 'web-electron-titlebar'
 import 'web-menu-bar'
+import 'web-dialog-box'
 import { initializeMenu } from './menu'
 
 const titlebar = document.getElementById("titlebar")!

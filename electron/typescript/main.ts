@@ -36,7 +36,7 @@ const createWindow = async () => {
     const win = new BrowserWindow(bounds)
     if ((bounds as Bounds).isMaximized)
         win.maximize()
-    win.menuBarVisible = false
+    win.removeMenu()
 
     win.once('ready-to-show', win.show)
     win.on('maximize', async () => {

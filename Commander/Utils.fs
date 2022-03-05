@@ -5,7 +5,6 @@ open FSharpTools
 open Microsoft.AspNetCore.Http
 open System
 open System.Text.Json
-open System.Text.Json.Serialization
 open System.Threading.Tasks
 
 let tee f x = 
