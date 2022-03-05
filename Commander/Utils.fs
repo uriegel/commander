@@ -4,6 +4,9 @@ open FSharpRailway.Option
 open FSharpTools
 open Microsoft.AspNetCore.Http
 open System
+open System.Text.Json
+open System.Text.Json.Serialization
+open System.Threading.Tasks
 
 let tee f x = 
     f x
@@ -45,3 +48,24 @@ let routePathes () (routeHandler : string -> HttpHandler) : HttpHandler =
         |> function
             | Some subpath -> routeHandler subpath[1..] next ctx    
             | None         -> skipPipeline
+
+let createSse<'a> (observable: IObservable<'a>) (jsonOptions: JsonSerializerOptions) =  
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+            let res = ctx.Response
+            ctx.SetStatusCode 200
+            ctx.SetHttpHeader("Content-Type", "text/event-stream")
+            ctx.SetHttpHeader("Cache-Control", "no-cache")
+            while true do
+                let tcs = TaskCompletionSource<'a>()
+                use subscription = observable.Subscribe (fun evt -> tcs.SetResult(evt))
+                let! evt = tcs.Task
+                let payload = JsonSerializer.Serialize(evt, jsonOptions)
+                do! res.WriteAsync $"data:{payload}\n\n"
+                do! res.Body.FlushAsync()
+
+            // This won't be hit because we're expecting
+            // the browser to break the connection
+            // although you can indeed break from the loop above and get here
+            return! text "" next ctx
+        }        

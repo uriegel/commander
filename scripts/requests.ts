@@ -1,7 +1,9 @@
 
 export const ShowDevTools = "showdevtools"
+export const ShowFullscreen = "showfullscreen"
 type ShowDevToolsType = "showdevtools"
-export type RequestType = ShowDevToolsType
+type ShowFullscreenType = "showfullscreen"
+export type RequestType = ShowDevToolsType | ShowFullscreenType
 
 type Empty = {}
 export type RequestInput = Empty

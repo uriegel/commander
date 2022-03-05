@@ -5,9 +5,11 @@ open Microsoft.AspNetCore.Http
 open System.Threading.Tasks
 
 open Configuration
+open Utils
 
 type EventMethod = 
     | ShowDevTools = 1
+    | ShowFullscreen = 2
 
 type Events = {
     Method: EventMethod
@@ -22,6 +24,10 @@ let sendBounds (windowBounds: WindowBounds) =
 let showDevTools () =
     observable.Trigger({ Method = EventMethod.ShowDevTools })
     text "{}"
+
+let showFullscreen () =
+    observable.Trigger({ Method = EventMethod.ShowFullscreen })
+    text "{}"
     
 let getEvents () = 
     fun (next : HttpFunc) (ctx : HttpContext) ->
@@ -32,3 +38,4 @@ let getEvents () =
             return! json evt next ctx
         }
   
+let sse () = createSse observable.Publish <| getJsonOptions ()

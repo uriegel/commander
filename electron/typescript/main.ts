@@ -3,7 +3,8 @@ import http from "http"
 
 enum EventMethod {
     NoEvent = 0,
-    ShowDevTools = 1
+    ShowDevTools = 1,
+    ShowFullscreen = 2
 } 
 
 type Events = {
@@ -92,6 +93,9 @@ const createWindow = async () => {
                     switch (evt.method) {
                         case EventMethod.ShowDevTools:
                             win.webContents.openDevTools()
+                            break
+                        case EventMethod.ShowFullscreen:
+                            win.setFullScreen(!win.isFullScreen())
                             break
                     }
                     resolve()

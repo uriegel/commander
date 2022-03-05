@@ -2,8 +2,8 @@ module Configuration
 
 open FSharpTools.Functional
 open System
-open System.Text.Json
 open System.Text.Encodings.Web;
+open System.Text.Json
 open System.Text.Json.Serialization
 
 open Utils
