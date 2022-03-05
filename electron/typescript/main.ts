@@ -20,7 +20,7 @@ const createWindow = async () => {
         contextIsolation: false
     }      
     bounds.show = false
-    //bounds.frame: isLinux,
+    bounds.frame = true
 
     const win = new BrowserWindow(bounds)
     if ((bounds as Bounds).isMaximized)
