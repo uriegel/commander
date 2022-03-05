@@ -10,7 +10,6 @@ type Events = {
     method: EventMethod
 }
 
-
 type Methods = "sendbounds" | "getevents"
 type Bounds = {
     x: number | undefined
@@ -36,10 +35,9 @@ const createWindow = async () => {
     const win = new BrowserWindow(bounds)
     if ((bounds as Bounds).isMaximized)
         win.maximize()
-        
+    win.menuBarVisible = false
 
     win.once('ready-to-show', win.show)
-
     win.on('maximize', async () => {
         const bounds: Bounds = win.getBounds()
         bounds.isMaximized = true
