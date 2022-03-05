@@ -23,6 +23,7 @@ let configure (app : IApplicationBuilder) =
         choose [  
             route  "/commander/sendbounds"   >=> bindJson<WindowBounds> sendBounds
             route  "/commander/showdevtools" >=> warbler (fun _ -> showDevTools ())
+            route  "/commander/getevents"    >=> warbler (fun _ -> getEvents ())
             route  "/"                       >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)
             routePathes ()                    <| httpHandlerParam getResourceFile 
         ]       

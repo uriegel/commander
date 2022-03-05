@@ -1,7 +1,17 @@
 import { app, BrowserWindow, BrowserWindowConstructorOptions } from "electron"
 import http from "http"
 
-type Methods = "sendbounds"
+enum EventMethod {
+    NoEvent = 0,
+    ShowDevTools = 1
+} 
+
+type Events = {
+    method: EventMethod
+}
+
+
+type Methods = "sendbounds" | "getevents"
 type Bounds = {
     x: number | undefined
     y: number | undefined
@@ -9,7 +19,8 @@ type Bounds = {
     height: number
     isMaximized?: boolean
 }
-type InputData = Bounds
+type Empty = {}
+type InputData = Bounds | Empty
 
 let bounds: BrowserWindowConstructorOptions = JSON.parse(process.env['Bounds']!)
 
@@ -25,6 +36,7 @@ const createWindow = async () => {
     const win = new BrowserWindow(bounds)
     if ((bounds as Bounds).isMaximized)
         win.maximize()
+        
 
     win.once('ready-to-show', win.show)
 
@@ -44,10 +56,16 @@ const createWindow = async () => {
             win.close()
         }
     })   
-    
+
     win.loadURL("http://localhost:9865")
 
-    async function request(method: Methods, inputData: InputData): Promise<Response> {
+    async function getEvents() {
+        await request("getevents", {})
+        getEvents()    
+    }
+    getEvents()
+
+    async function request(method: Methods, inputData: InputData): Promise<void> {
         const keepAliveAgent = new http.Agent({
             keepAlive: true,
             keepAliveMsecs: 40000
@@ -71,8 +89,15 @@ const createWindow = async () => {
                 response.setEncoding('utf8')
                 response.on('data', (chunk: any) => responseData += chunk)
                 response.on('end', () => {
-                    const result = JSON.parse(responseData)
-                    resolve(result)
+                    const evt = JSON.parse(responseData) as Events
+                    console.log("evt", evt)
+                    switch (evt.method) {
+                        case EventMethod.ShowDevTools:
+                            console.log("Show def tuhls")
+                            win.webContents.openDevTools()
+                            break
+                    }
+                    resolve()
                 })
             })        
             
