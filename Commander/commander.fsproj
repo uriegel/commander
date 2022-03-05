@@ -41,6 +41,18 @@
     <EmbeddedResource Include="../resources/web/styles/style.css">
       <LogicalName>web/styles/style.css</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="../resources/web/styles/themes/adwaita.css">
+      <LogicalName>web/styles/themes/adwaita.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../resources/web/styles/themes/adwaitaDark.css">
+      <LogicalName>web/styles/themes/adwaitaDark.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../resources/web/styles/themes/windows.css">
+      <LogicalName>web/styles/themes/windows.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../resources/web/styles/themes/windowsDark.css">
+      <LogicalName>web/styles/themes/windowsDark.css</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="../resources/web/scripts/index.js">
       <LogicalName>web/scripts/index.js</LogicalName>
     </EmbeddedResource>
