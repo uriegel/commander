@@ -27,6 +27,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FSharp.SystemTextJson" Version="0.17.4" />
+    <PackageReference Include="FSharpRailway" Version="0.2.0" />
     <PackageReference Include="FSharpTools" Version="6.1.0" />
     <PackageReference Include="Giraffe" Version="6.0.0-alpha-2" />
   </ItemGroup>
@@ -39,6 +40,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="../resources/web/styles/style.css">
       <LogicalName>web/styles/style.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../resources/web/scripts/index.js">
+      <LogicalName>web/scripts/index.js</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup Condition="'$(IsWindows)'=='true'">

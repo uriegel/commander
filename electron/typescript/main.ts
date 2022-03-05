@@ -38,9 +38,9 @@ const createWindow = async () => {
     win.on("close", async (evt: Event) => {
         if (!doClose &&!win.isMaximized()) {
             evt.preventDefault()
+            doClose = true
             const bounds: Bounds = win.getBounds()
             await request("sendbounds", bounds)
-            doClose = true
             win.close()
         }
     })   

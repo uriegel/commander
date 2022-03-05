@@ -10,8 +10,14 @@ open Requests
 open Utils
 
 let configure (app : IApplicationBuilder) = 
+    let getMimeType path = 
+        match getExtension path with
+        | Some ".js"  -> "text/javascript"
+        | Some ".css" -> "text/css"
+        | _          -> "text/plain"
+        
     let getResourceFile path = 
-        setContentType "text/css" >=> streamData false (getResource <| sprintf "web/%s" path) None None
+        setContentType <| getMimeType path >=> streamData false (getResource <| sprintf "web/%s" path) None None
     
     let routes =
         choose [  

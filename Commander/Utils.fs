@@ -1,6 +1,7 @@
 module Utils
 
-open Giraffe
+open FSharpRailway.Option
+open FSharpTools
 open Microsoft.AspNetCore.Http
 open System
 
@@ -27,6 +28,14 @@ let checkDirectory path =
 
 let securedCreateStream = checkDirectory >> createStream
 let securedOpenStream = checkDirectory >> openStream
+
+let getExtension file =
+    let getExtensionIndex () = file |> String.lastIndexOfChar '.'
+    let getExtensionFromIndex index = Some (file |> String.substring index)
+    let getExtension = getExtensionIndex >=> getExtensionFromIndex
+    getExtension ()
+
+open Giraffe
 
 // TODO Giraffe Utils
 let httpHandlerParam httpHandler param: HttpHandler = (fun () -> httpHandler(param))()

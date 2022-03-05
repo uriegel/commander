@@ -15,7 +15,7 @@ module.exports = {
 	  },	
     output: {
       	filename: 'index.js',
-		path: path.resolve(__dirname, 'web', 'dist'),
+		path: path.resolve(__dirname, 'resources', 'web', 'scripts'),
 		clean: true
     },
 	resolve: {
