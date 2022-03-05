@@ -7,6 +7,7 @@ async {
 } |> Async.RunSynchronously
 
 
-
+// TODO Show Fullscreen
+// TODO Autohide menu (and save it in localStorage)
 
 
