@@ -31,7 +31,27 @@
             },
             "problemMatcher": "$msCompile"
         }, {
+            "label": "buildFRelease",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
+                "publish",
+                "-c",
+                "Release",
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
+        }, {
+            "label": "buildRelease",
+            "group": "build",
+            "dependsOrder": "sequence",
+            "dependsOn": ["tsc electron", "webpack-prod", "buildFRelease"]
+        }, {
             "label": "build",
+            "group": "build",
             "dependsOrder": "sequence",
             "dependsOn": ["tsc electron", "webpack", "buildF"]
         }            

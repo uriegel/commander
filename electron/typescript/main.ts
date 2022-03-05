@@ -26,7 +26,7 @@ const createWindow = async () => {
     if ((bounds as Bounds).isMaximized)
         win.maximize()
 
-    win.once('ready-to-show', () => win.show()) 
+    win.once('ready-to-show', win.show)
 
     win.on('maximize', async () => {
         const bounds: Bounds = win.getBounds()
