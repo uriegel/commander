@@ -4,7 +4,7 @@ import { request, ShowDevTools, ShowFullscreen } from "./requests"
 export function initializeMenu() {}
 
 const menu = document.getElementById("menu")! as Menubar
-const itemHideMenu = document.getElementById("hidemenu") as MenuItem
+const itemHideMenu = document.getElementById("onHideMenu") as MenuItem
 const dialog = document.querySelector('dialog-box') as DialogBox
 
 const automode = localStorage.getItem("menuAutoMode") == "true"
@@ -13,10 +13,10 @@ if (automode)
     menu.setAttribute("automode", "true")
 itemHideMenu.isChecked = automode
 
-window.onClose = ()                      => close()
-window.onHideMenu = (isChecked: boolean) => hideMenu(isChecked)
-window.onDevTools = async ()             => await request(ShowDevTools)
-window.onFullscreen = async ()           => await request(ShowFullscreen)
+document.getElementById("onClose")?.addEventListener("menubar-action", close)
+itemHideMenu.addEventListener("menubar-checkbox", (evt: Event) => hideMenu((evt as CustomEvent).detail.isChecked))
+document.getElementById("onDevTools")?.addEventListener("menubar-action", () => request(ShowDevTools))
+document.getElementById("onFullscreen")?.addEventListener("menubar-action", () => request(ShowFullscreen))
 
 async function hideMenu(hide: boolean) {
     if (hide) {

@@ -3,7 +3,7 @@
     <head>
         <title>Commander</title>
         <meta charset="utf-8"/>
-        <!-- <meta http-equiv="Content-Security-Policy" content="script-src 'self';"> -->
+        <meta http-equiv="Content-Security-Policy" content="script-src 'self';">
         <link rel="stylesheet" href="styles/style.css">
         <link rel="stylesheet" href="styles/themes/adwaita.css">
         <link rel="stylesheet" href="styles/themes/adwaitaDark.css">
@@ -16,38 +16,38 @@
             <electron-titlebar id="titlebar" window-title="Commander">
                 <menubar-mainmenu id="menu" automode=false>
                     <menubar-submenu header="_Datei">
-                        <menubar-menuitem text="_Umbenennen" action="onRename" shortcut="F2"></menubar-menuitem>
-                        <menubar-menuitem text="Er_weitertes Umbenennen" action="onExtendedRename" shortcut="Strg+F2"></menubar-menuitem>
+                        <menubar-menuitem text="_Umbenennen" id="onRename" shortcut="F2"></menubar-menuitem>
+                        <menubar-menuitem text="Er_weitertes Umbenennen" id="onExtendedRename" shortcut="Strg+F2"></menubar-menuitem>
                         <menubar-separator></menubar-separator>
-                        <menubar-menuitem text="_Kopieren" action="onCopy" shortcut="F5"></menubar-menuitem>
-                        <menubar-menuitem text="_Verschieben" action="onMove" shortcut="F6"></menubar-menuitem>
-                        <menubar-menuitem text="_Löschen" action="onDelete" shortcut="Entf"></menubar-menuitem>
+                        <menubar-menuitem text="_Kopieren" id="onCopy" shortcut="F5"></menubar-menuitem>
+                        <menubar-menuitem text="_Verschieben" id="onMove" shortcut="F6"></menubar-menuitem>
+                        <menubar-menuitem text="_Löschen" id="onDelete" shortcut="Entf"></menubar-menuitem>
                         <menubar-separator></menubar-separator>
-                        <menubar-menuitem text="_Ordner anlegen" shortcut="F7" action="onCreateFolder"></menubar-menuitem>
+                        <menubar-menuitem text="_Ordner anlegen" shortcut="F7" id="onCreateFolder"></menubar-menuitem>
                         <menubar-separator></menubar-separator>
                         <menubar-menuitem text="_Eigenschaften" shortcut="Alt+Enter"></menubar-menuitem>
                         <menubar-menuitem text="Öffnen _mit" shortcut="Strg+Enter"></menubar-menuitem>
                         <menubar-separator></menubar-separator>
-                        <menubar-menuitem text="_Beenden" shortcut="Alt+F4" action="onClose"></menubar-menuitem>
+                        <menubar-menuitem text="_Beenden" shortcut="Alt+F4" id="onClose"></menubar-menuitem>
                     </menubar-submenu>
                     <menubar-submenu header="_Navigation">
                         <menubar-menuitem text="_Favoriten" shortcut="F1"></menubar-menuitem>
-                        <menubar-menuitem text="_Gleichen Ordner öffnen" shortcut="F9" action="onAdaptPath"></menubar-menuitem>
+                        <menubar-menuitem text="_Gleichen Ordner öffnen" shortcut="F9" id="onAdaptPath"></menubar-menuitem>
                     </menubar-submenu>
                     <menubar-submenu header="_Selektion">
-                        <menubar-menuitem text="_Alles" shortcut="Num+" action="onSelectAll"></menubar-menuitem>
-                        <menubar-menuitem text="_Selektion entfernen" shortcut="Num-" action="onSelectNone"></menubar-menuitem>
+                        <menubar-menuitem text="_Alles" shortcut="Num+" id="onSelectAll"></menubar-menuitem>
+                        <menubar-menuitem text="_Selektion entfernen" shortcut="Num-" id="onSelectNone"></menubar-menuitem>
                     </menubar-submenu>
                     <menubar-submenu header="_Ansicht">
-                        <menubar-menuitem text="_Versteckte Dateien" checkbox action="onHidden" shortcut="Strg+H"></menubar-menuitem>
-                        <menubar-menuitem text="_Aktualisieren" shortcut="Strg+R" action="onRefresh"></menubar-menuitem>
+                        <menubar-menuitem text="_Versteckte Dateien" checkbox id="onHidden" shortcut="Strg+H"></menubar-menuitem>
+                        <menubar-menuitem text="_Aktualisieren" shortcut="Strg+R" id="onRefresh"></menubar-menuitem>
                         <menubar-separator></menubar-separator>
-                        <menubar-menuitem text="_Vorschau" shortcut="F3" checkbox action="onViewer"></menubar-menuitem>
+                        <menubar-menuitem text="_Vorschau" shortcut="F3" checkbox id="onViewer"></menubar-menuitem>
                         <menubar-separator></menubar-separator>
-                        <menubar-menuitem id="hidemenu" text="_Menü verbergen" checkbox action="onHideMenu"></menubar-menuitem>
-                        <menubar-menuitem text="_Vollbild" shortcut="F11"  action="onFullscreen"></menubar-menuitem>
+                        <menubar-menuitem id="onHideMenu" text="_Menü verbergen" checkbox></menubar-menuitem>
+                        <menubar-menuitem text="_Vollbild" shortcut="F11"  id="onFullscreen"></menubar-menuitem>
                         <menubar-separator></menubar-separator>
-                        <menubar-menuitem text="_Entwicklerwerkzeuge" action="onDevTools" shortcut="F12"></menubar-menuitem>
+                        <menubar-menuitem text="_Entwicklerwerkzeuge" id="onDevTools" shortcut="F12"></menubar-menuitem>
                     </menubar-submenu>
                 </menubar-mainmenu>
             </electron-titlebar>
