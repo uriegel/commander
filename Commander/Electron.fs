@@ -30,18 +30,6 @@ let start args =
             proc.BeginOutputReadLine();
             proc.BeginErrorReadLine();
             proc.EnableRaisingEvents <- true
-
-            let test () = 
-                async {
-                    do! Async.Sleep 8000
-                    proc.StandardInput.WriteLine("Guten Morgen!")                    
-                    do! Async.Sleep 2000
-                    proc.StandardInput.WriteLine("Mahlzeit!")                    
-                    do! Async.Sleep 2000
-                    proc.StandardInput.WriteLine("Guten Abend!")                    
-                } |> Async.Start
-
-            test ()
             do! proc.WaitForExitAsync CancellationToken.None |> Async.AwaitTask
         with
             | _ as e -> eprintfn "%s" <| e.ToString ()

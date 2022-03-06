@@ -23,7 +23,14 @@
     <Compile Include="Electron.fs" />
     <Compile Include="Routes.fs" />
     <Compile Include="Server.fs" />
+  </ItemGroup> 
+  <ItemGroup Condition="'$(IsWindows)'=='true'">
+    <Compile Include="WindowsTheme.fs" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(IsLinux)'=='true'">
     <Compile Include="LinuxTheme.fs" />
+  </ItemGroup>    
+  <ItemGroup>
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

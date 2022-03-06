@@ -14,9 +14,9 @@ source.addEventListener("open", function (event) {
 })
   
 // Let's skip ahead and set already our "reload" event
-source.addEventListener("reload", function (event) {
-    console.log("Reloading, file changed: ", event.data)
-})
+// source.addEventListener("reload", function (event: MessageEvent<any>) {
+//     console.log("Reloading, file changed: ", event.data)
+// })
 
 // Listen to any message sent not tied to a particular event
 source.addEventListener("message", function (event) {
