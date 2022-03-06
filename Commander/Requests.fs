@@ -6,36 +6,46 @@ open System.Threading.Tasks
 
 open Configuration
 open Utils
+open System.Reactive.Subjects
 
-type EventMethod = 
+type MainEventMethod = 
     | ShowDevTools = 1
     | ShowFullscreen = 2
 
-type Events = {
-    Method: EventMethod
+type MainEvents = {
+    Method: MainEventMethod
 }
 
-let observable = new Event<Events>()
+type RendererEventMethod = 
+    | ShowDevTools = 1
+    | ShowFullscreen = 2
+
+type RendererEvents = {
+    Method: MainEventMethod
+}
+
+let mainReplaySubject = new Subject<MainEvents>()
+let rendererReplaySubject = new Subject<RendererEvents>()
 
 let sendBounds (windowBounds: WindowBounds) = 
     saveBounds windowBounds
     text "{}"
     
 let showDevTools () =
-    observable.Trigger({ Method = EventMethod.ShowDevTools })
+    mainReplaySubject.OnNext({ Method = MainEventMethod.ShowDevTools })
     text "{}"
 
 let showFullscreen () =
-    observable.Trigger({ Method = EventMethod.ShowFullscreen })
+    mainReplaySubject.OnNext({ Method = MainEventMethod.ShowFullscreen })
     text "{}"
     
 let getEvents () = 
     fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
-            let tcs = TaskCompletionSource<Events>()
-            use subscription = observable.Publish.Subscribe (fun evt -> tcs.SetResult(evt))
+            let tcs = TaskCompletionSource<MainEvents>()
+            use subscription = mainReplaySubject.Subscribe (fun evt -> tcs.SetResult(evt))
             let! evt = tcs.Task
             return! json evt next ctx
         }
   
-let sse () = createSse observable.Publish <| getJsonOptions ()
+let sse () = createSse rendererReplaySubject <| getJsonOptions ()

@@ -13,7 +13,7 @@ if (automode)
     menu.setAttribute("automode", "true")
 itemHideMenu.isChecked = automode
 
-document.getElementById("onClose")?.addEventListener("menubar-action", close)
+document.getElementById("onClose")?.addEventListener("menubar-action", () => close())
 itemHideMenu.addEventListener("menubar-checkbox", (evt: Event) => hideMenu((evt as CustomEvent).detail.isChecked))
 document.getElementById("onDevTools")?.addEventListener("menubar-action", () => request(ShowDevTools))
 document.getElementById("onFullscreen")?.addEventListener("menubar-action", () => request(ShowFullscreen))

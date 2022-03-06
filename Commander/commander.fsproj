@@ -23,17 +23,18 @@
     <Compile Include="Electron.fs" />
     <Compile Include="Routes.fs" />
     <Compile Include="Server.fs" />
-  </ItemGroup> 
+  </ItemGroup>
   <ItemGroup Condition="'$(IsWindows)'=='true'">
     <Compile Include="WindowsTheme.fs" />
   </ItemGroup>
   <ItemGroup Condition="'$(IsLinux)'=='true'">
     <Compile Include="LinuxTheme.fs" />
-  </ItemGroup>    
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="FSharp.Control.Reactive" Version="5.0.2" />
     <PackageReference Include="FSharp.SystemTextJson" Version="0.17.4" />
     <PackageReference Include="FSharpRailway" Version="0.2.0" />
     <PackageReference Include="FSharpTools" Version="6.1.0" />
