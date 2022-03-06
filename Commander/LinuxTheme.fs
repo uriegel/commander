@@ -5,7 +5,7 @@ open System.Threading
 
 open FSharpTools
 
-let getTheme () = 
+let getTheme () =   
     let mutable output = ""
     try 
         use proc = new Process() 

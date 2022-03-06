@@ -1,6 +1,5 @@
 import { app, BrowserWindow, BrowserWindowConstructorOptions } from "electron"
 import http from "http"
-import readline from 'readline'
 
 enum EventMethod {
     NoEvent = 0,
@@ -19,6 +18,7 @@ type Bounds = {
     width: number
     height: number
     isMaximized?: boolean
+    theme?: string
 }
 type Empty = {}
 type InputData = Bounds | Empty
@@ -28,6 +28,7 @@ let bounds: BrowserWindowConstructorOptions = JSON.parse(process.env['Bounds']!)
 const createWindow = async () => {  
     bounds.show = false
     bounds.frame = true
+    bounds.backgroundColor = (bounds as Bounds).theme?.includes("Dark") ? "#000" : "#fff"
 
     const win = new BrowserWindow(bounds)
     if ((bounds as Bounds).isMaximized)
@@ -59,13 +60,6 @@ const createWindow = async () => {
         getEvents()    
     }
     getEvents()
-
-    const rl = readline.createInterface({
-        input: process.stdin,
-        terminal: false
-    })
-
-    rl.on('line', line => console.log("Linie", line))
 
     async function request(method: Methods, inputData: InputData): Promise<void> {
         const keepAliveAgent = new http.Agent({

@@ -7,6 +7,7 @@ open System.Text.Json
 open System.Text.Json.Serialization
 
 open Utils
+open System.Threading
 
 type WindowBounds = {
     X:           int option
@@ -15,6 +16,7 @@ type WindowBounds = {
     Height:      int
     IsMaximized: bool option
     Icon:        string option
+    Theme:       string option
 }
 
 let getJsonOptions = 
@@ -49,13 +51,16 @@ let saveBounds (bounds: WindowBounds) =
     use stream = securedCreateStream <| getElectronFile "bounds.json"
     JsonSerializer.Serialize (stream, bounds, getJsonOptions ())
 
-let getBounds () = 
+let getBounds theme = 
     let filename = getElectronFile "bounds.json"
     if IO.File.Exists filename then
         use stream = securedOpenStream <| getElectronFile "bounds.json"
         { 
             JsonSerializer.Deserialize<WindowBounds> (stream, getJsonOptions ())     
-                with Icon = Some <| saveResource (getElectronFile "appicon.ico", "web/images/appicon")
+                with 
+                    Icon = Some <| saveResource (getElectronFile "appicon.ico", "web/images/appicon")
+                    Theme = Some theme
+                    
         }
     else {
             X           = None
@@ -64,5 +69,6 @@ let getBounds () =
             Height      = 800
             IsMaximized = Some false
             Icon        = Some <| saveResource (getElectronFile "appicon.ico", "web/images/appicon")
+            Theme       = Some theme
         }
         

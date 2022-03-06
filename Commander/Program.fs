@@ -9,10 +9,6 @@ async {
     do! Electron.start <| saveResource (getElectronFile "main.js", "electron/main.js")
 } |> Async.RunSynchronously
 
-
-// TODO send theme via Enviropment
-// TODO Background electron window red, Body background transparent
-// TODO set electron background theme
 // TODO send theme in url
 
 // TODO automatic theme controlling Linux 
