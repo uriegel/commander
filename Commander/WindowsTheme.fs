@@ -1,3 +1,5 @@
 module Theme
 
-let test () = ()
+let getTheme () = "windowsDark"
+
+let startThemeDetection () = ()
