@@ -8,41 +8,33 @@ open Configuration
 open Utils
 open System.Reactive.Subjects
 
-type MainEventMethod = 
-    | ShowDevTools = 1
-    | ShowFullscreen = 2
+type MainEvent = 
+    | ShowDevTools 
+    | ShowFullscreen
 
-type MainEvents = {
-    Method: MainEventMethod
-}
+type RendererEvent = 
+    | ThemeChanged of string
+    | Nothing
 
-type RendererEventMethod = 
-    | ShowDevTools = 1
-    | ShowFullscreen = 2
-
-type RendererEvents = {
-    Method: MainEventMethod
-}
-
-let mainReplaySubject = new Subject<MainEvents>()
-let rendererReplaySubject = new Subject<RendererEvents>()
+let mainReplaySubject = new Subject<MainEvent>()
+let rendererReplaySubject = new Subject<RendererEvent>()
 
 let sendBounds (windowBounds: WindowBounds) = 
     saveBounds windowBounds
     text "{}"
     
 let showDevTools () =
-    mainReplaySubject.OnNext({ Method = MainEventMethod.ShowDevTools })
+    mainReplaySubject.OnNext ShowDevTools
     text "{}"
 
 let showFullscreen () =
-    mainReplaySubject.OnNext({ Method = MainEventMethod.ShowFullscreen })
+    mainReplaySubject.OnNext ShowFullscreen
     text "{}"
-    
+
 let getEvents () = 
     fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
-            let tcs = TaskCompletionSource<MainEvents>()
+            let tcs = TaskCompletionSource<MainEvent>()
             use subscription = mainReplaySubject.Subscribe (fun evt -> tcs.SetResult(evt))
             let! evt = tcs.Task
             return! json evt next ctx

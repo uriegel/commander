@@ -1,14 +1,8 @@
 import { app, BrowserWindow, BrowserWindowConstructorOptions } from "electron"
 import http from "http"
 
-enum EventMethod {
-    NoEvent = 0,
-    ShowDevTools = 1,
-    ShowFullscreen = 2
-} 
-
 type Events = {
-    method: EventMethod
+    Case: "ShowDevTools" | "ShowFullscreen"
 }
 
 type Methods = "sendbounds" | "getevents"
@@ -28,8 +22,7 @@ let bounds: BrowserWindowConstructorOptions = JSON.parse(process.env['Bounds']!)
 const createWindow = async () => {  
     bounds.show = false
     bounds.frame = true
-    bounds.backgroundColor = (bounds as Bounds).theme?.includes("Dark") ? "#000" : "#fff"
-
+    
     const win = new BrowserWindow(bounds)
     if ((bounds as Bounds).isMaximized)
         win.maximize()
@@ -87,11 +80,11 @@ const createWindow = async () => {
                 response.on('end', () => {
                     const evt = JSON.parse(responseData) as Events
                     console.log("evt", evt)
-                    switch (evt.method) {
-                        case EventMethod.ShowDevTools:
+                    switch (evt.Case) {
+                        case "ShowDevTools":
                             win.webContents.openDevTools()
                             break
-                        case EventMethod.ShowFullscreen:
+                        case "ShowFullscreen":
                             win.setFullScreen(!win.isFullScreen())
                             break
                     }

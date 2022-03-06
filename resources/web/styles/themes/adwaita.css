@@ -1,4 +1,5 @@
 :root .adwaita {
+    background-color: var(--light-background-color);
     --light-background-color: white;
     --drag-highlight: aqua;
     --electron-titlebar-background-color: #ddd9d6;

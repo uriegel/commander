@@ -17,17 +17,17 @@ let configure (app : IApplicationBuilder) =
         | _           -> "text/plain"
         
     let getResourceFile path = 
-        setContentType <| getMimeType path >=> streamData false (getResource <| sprintf "web/%s" path) None None
+        setContentType <| getMimeType path     >=> streamData false (getResource <| sprintf "web/%s" path) None None
     
     let routes =
         choose [  
-            route  "/commander/sendbounds"   >=> bindJson<WindowBounds> sendBounds
-            route  "/commander/showdevtools" >=> warbler (fun _ -> showDevTools ())
+            route  "/commander/sendbounds"     >=> bindJson<WindowBounds> sendBounds
+            route  "/commander/showdevtools"   >=> warbler (fun _ -> showDevTools ())
             route  "/commander/showfullscreen" >=> warbler (fun _ -> showFullscreen ())
-            route  "/commander/getevents"    >=> warbler (fun _ -> getEvents ())
-            route  "/commander/sse"          >=> warbler (fun _ -> sse ())
-            route  "/"                       >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)
-            routePathes ()                    <| httpHandlerParam getResourceFile 
+            route  "/commander/getevents"      >=> warbler (fun _ -> getEvents ())
+            route  "/commander/sse"            >=> warbler (fun _ -> sse ())
+            route  "/"                         >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)
+            routePathes ()                      <| httpHandlerParam getResourceFile 
         ]       
     app
         .UseResponseCompression()

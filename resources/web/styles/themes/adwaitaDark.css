@@ -67,6 +67,6 @@
     --pieprogress-background-color: var(--light-background-color);
 }
 
-body.adwaita-dark {
+body.adwaitaDark {
     font-size: 85%;
 }
