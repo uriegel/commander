@@ -1,10 +1,15 @@
 ﻿open Configuration
+open Theme
 
 Server.start ()
+
+test ()
 
 async {
     do! Electron.start <| saveResource (getElectronFile "main.js", "electron/main.js")
 } |> Async.RunSynchronously
+
+// TODO Replace long polling to electron with stdin pipe
 
 // TODO automatic theme controlling Linux 
 // [uwe@illmatic ~]$ gsettings monitor org.gnome.desktop.interface gtk-theme

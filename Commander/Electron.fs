@@ -17,6 +17,7 @@ let start args =
             use proc = new Diagnostics.Process() 
             proc.StartInfo <- Diagnostics.ProcessStartInfo()
             proc.StartInfo.RedirectStandardOutput <- true
+            proc.StartInfo.RedirectStandardInput <- true
             proc.StartInfo.RedirectStandardError <- true
             proc.StartInfo.FileName <- if isLinux then "electron" else "electron.cmd"
             proc.StartInfo.CreateNoWindow <- true
@@ -29,6 +30,18 @@ let start args =
             proc.BeginOutputReadLine();
             proc.BeginErrorReadLine();
             proc.EnableRaisingEvents <- true
+
+            let test () = 
+                async {
+                    do! Async.Sleep 8000
+                    proc.StandardInput.WriteLine("Guten Morgen!")                    
+                    do! Async.Sleep 2000
+                    proc.StandardInput.WriteLine("Mahlzeit!")                    
+                    do! Async.Sleep 2000
+                    proc.StandardInput.WriteLine("Guten Abend!")                    
+                } |> Async.Start
+
+            test ()
             do! proc.WaitForExitAsync CancellationToken.None |> Async.AwaitTask
         with
             | _ as e -> eprintfn "%s" <| e.ToString ()

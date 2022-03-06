@@ -1,5 +1,6 @@
 import { app, BrowserWindow, BrowserWindowConstructorOptions } from "electron"
 import http from "http"
+import readline from 'readline'
 
 enum EventMethod {
     NoEvent = 0,
@@ -58,6 +59,13 @@ const createWindow = async () => {
         getEvents()    
     }
     getEvents()
+
+    const rl = readline.createInterface({
+        input: process.stdin,
+        terminal: false
+    })
+
+    rl.on('line', line => console.log("Linie", line))
 
     async function request(method: Methods, inputData: InputData): Promise<void> {
         const keepAliveAgent = new http.Agent({

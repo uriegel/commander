@@ -23,6 +23,7 @@
     <Compile Include="Electron.fs" />
     <Compile Include="Routes.fs" />
     <Compile Include="Server.fs" />
+    <Compile Include="LinuxTheme.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
