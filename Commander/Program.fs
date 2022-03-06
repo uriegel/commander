@@ -16,3 +16,4 @@ async {
 // [uwe@illmatic ~]$ 
 
 // TODO automatic theme controlling Windows 
+// https://docs.microsoft.com/en-us/previous-versions/windows/desktop/regprov/registryvaluechangeevent

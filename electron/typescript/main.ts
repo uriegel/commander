@@ -24,12 +24,7 @@ type InputData = Bounds | Empty
 
 let bounds: BrowserWindowConstructorOptions = JSON.parse(process.env['Bounds']!)
 
-const createWindow = async () => {    
-    bounds.webPreferences = {
-        nodeIntegration: true, // Electron-titlebar
-    //     allowRunningInsecureContent: true,
-        contextIsolation: false // Electron-titlebar
-    }      
+const createWindow = async () => {  
     bounds.show = false
     bounds.frame = true
 
