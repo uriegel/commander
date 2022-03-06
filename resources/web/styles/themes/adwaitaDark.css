@@ -1,4 +1,4 @@
-:root .adwaita-dark {
+:root .adwaitaDark {
     background-color: var(--light-background-color);
     --light-background-color: #2f2f2f;
     --drag-highlight: darkgreen;

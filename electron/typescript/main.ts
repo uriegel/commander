@@ -53,7 +53,7 @@ const createWindow = async () => {
         }
     })   
 
-    win.loadURL("http://localhost:9865")
+    win.loadURL(`http://localhost:9865?theme=${(bounds as Bounds).theme}`)
 
     async function getEvents() {
         await request("getevents", {})

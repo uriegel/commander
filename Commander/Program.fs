@@ -9,8 +9,6 @@ async {
     do! Electron.start <| saveResource (getElectronFile "main.js", "electron/main.js")
 } |> Async.RunSynchronously
 
-// TODO send theme in url
-
 // TODO automatic theme controlling Linux 
 // [uwe@illmatic ~]$ gsettings monitor org.gnome.desktop.interface gtk-theme
 //  gtk-theme: 'Adwaita-dark'
