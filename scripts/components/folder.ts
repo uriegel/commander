@@ -131,6 +131,22 @@ export class Folder extends HTMLElement {
     }
 
     async changePath(path?: string|null, fromBacklog?: boolean) {
+        
+
+        console.log("changePath", this.id, path)
+
+        const req = ++this.latestRequest
+
+
+        // TODO getItems (?path=%path via fetch
+        // TODO returns object with items and optional columns, currentPath, engineId
+        // TODO items: files unsorted, directories with parent sorted
+        // TODO if Some set Columns
+        // set Items
+
+        //if (!items || req < this.latestRequest) 
+        if (req < this.latestRequest) 
+            return        
     }
 
     setFocus() { this.table.setFocus() }
@@ -257,6 +273,7 @@ export class Folder extends HTMLElement {
     }
 
     private table: VirtualTable<FolderItem>
+    private latestRequest = 0
     private folderRoot: HTMLElement
     private folderId = ""
     private backtrack: string[] = []
