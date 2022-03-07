@@ -8,6 +8,14 @@ open Configuration
 open Utils
 open System.Reactive.Subjects
 
+// TODO Engines
+// TODO Root
+// TODO getItems (?path=%path via fetch currentPath, engineId
+// TODO Linux and Windows
+// TODO returns object with items and optional columns, currentPath, engineId
+// TODO items: files unsorted, directories with parent sorted
+// TODO Directory
+
 type MainEvent = 
     | ShowDevTools 
     | ShowFullscreen

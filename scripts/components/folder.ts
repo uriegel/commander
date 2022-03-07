@@ -140,6 +140,7 @@ export class Folder extends HTMLElement {
 
         // TODO getItems (?path=%path via fetch
         // TODO returns object with items and optional columns, currentPath, engineId
+        // TODO Linux and Windows
         // TODO items: files unsorted, directories with parent sorted
         // TODO if Some set Columns
         // set Items
