@@ -21,6 +21,7 @@ let configure (app : IApplicationBuilder) =
     
     let routes =
         choose [  
+            route  "/commander/items"          >=> bindQuery<GetItem> None getItem
             route  "/commander/sendbounds"     >=> bindJson<WindowBounds> sendBounds
             route  "/commander/showdevtools"   >=> warbler (fun _ -> showDevTools ())
             route  "/commander/showfullscreen" >=> warbler (fun _ -> showFullscreen ())

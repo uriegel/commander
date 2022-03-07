@@ -8,10 +8,10 @@ open Configuration
 open Utils
 open System.Reactive.Subjects
 
-// TODO Engines commander/items?path=root&currentpath=root&enginid=0
+// TODO Engines commander/items?path=root&enginid=0
 // TODO Engines commander/items?path=root
 // TODO Engines commander/items?path=/home/uwe/
-// TODO Engines commander/items?path=c:\users\uwe\documents\ordner mit leerzeichen&currentpath=c:\users\uwe&engineid=9
+// TODO Engines commander/items?path=c:\users\uwe\documents\ordner mit leerzeichen&engineid=9
 // TODO Root
 // TODO getItems (?path=%path via fetch currentPath, engineId
 // TODO Linux and Windows
@@ -26,6 +26,12 @@ type MainEvent =
 type RendererEvent = 
     | ThemeChanged of string
     | Nothing
+
+[<CLIMutable>]
+type GetItem = {
+    Path:     string
+    EngineId: int
+}
 
 let mainReplaySubject = new Subject<MainEvent>()
 let rendererReplaySubject = new Subject<RendererEvent>()
@@ -52,3 +58,8 @@ let getEvents () =
         }
   
 let sse () = createSse rendererReplaySubject <| getJsonOptions ()
+
+let getItem item = 
+    // TODO get engine from path, compare engineId with engine's id
+    let drives = System.IO.DriveInfo.GetDrives ()
+    json item
