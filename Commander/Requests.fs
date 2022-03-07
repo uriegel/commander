@@ -8,7 +8,10 @@ open Configuration
 open Utils
 open System.Reactive.Subjects
 
-// TODO Engines
+// TODO Engines commander/items?path=root&currentpath=root&enginid=0
+// TODO Engines commander/items?path=root
+// TODO Engines commander/items?path=/home/uwe/
+// TODO Engines commander/items?path=c:\users\uwe\documents\ordner mit leerzeichen&currentpath=c:\users\uwe&engineid=9
 // TODO Root
 // TODO getItems (?path=%path via fetch currentPath, engineId
 // TODO Linux and Windows
