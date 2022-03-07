@@ -1,6 +1,9 @@
 import 'web-electron-titlebar'
 import 'web-menu-bar'
 import 'web-dialog-box'
+import 'grid-splitter'
+import 'web-pie-progress'
+import './components/folder'
 import { initializeMenu } from './menu'
 
 export function activateClass(element: HTMLElement, cls: string, activate: boolean) {
