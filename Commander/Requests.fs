@@ -61,5 +61,10 @@ let sse () = createSse rendererReplaySubject <| getJsonOptions ()
 
 let getItem item = 
     // TODO get engine from path, compare engineId with engine's id
-    let drives = System.IO.DriveInfo.GetDrives ()
-    json item
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+            let t = runCmd "lsblk" "--bytes --output SIZE,NAME,LABEL,MOUNTPOINT,FSTYPE"
+            let! result = t ()
+            return! json item next ctx
+        }
+    

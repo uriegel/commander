@@ -68,3 +68,14 @@ let createSse<'a> (observable: IObservable<'a>) (jsonOptions: JsonSerializerOpti
             // although you can indeed break from the loop above and get here
             return! text "" next ctx
         }        
+
+let runCmd cmd args = 
+    // TODO from FSharpRailway
+    let (>>) f g x = async {
+            let! y = f x
+            let! e = g y
+            return e
+        }
+    let getStringFromResult (result: FSharpTools.Process.ProcessResult) = async { return result.Output.Value } 
+    let runCmd () = FSharpTools.Process.run cmd args
+    runCmd >> getStringFromResult
