@@ -6,6 +6,7 @@ open Microsoft.Extensions.Logging
 open System
 
 open Configuration
+open Engine
 open Requests
 open Utils
 
@@ -21,7 +22,7 @@ let configure (app : IApplicationBuilder) =
     
     let routes =
         choose [  
-            route  "/commander/items"          >=> bindQuery<GetItem> None getItem
+            route  "/commander/items"          >=> bindQuery<GetItems> None getItems
             route  "/commander/sendbounds"     >=> bindJson<WindowBounds> sendBounds
             route  "/commander/showdevtools"   >=> warbler (fun _ -> showDevTools ())
             route  "/commander/showfullscreen" >=> warbler (fun _ -> showFullscreen ())

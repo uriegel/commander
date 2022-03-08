@@ -5,6 +5,8 @@ open Microsoft.AspNetCore.Http
 open System.Threading.Tasks
 
 open Configuration
+open Engine
+open Engines
 open Utils
 open System.Reactive.Subjects
 
@@ -26,12 +28,6 @@ type MainEvent =
 type RendererEvent = 
     | ThemeChanged of string
     | Nothing
-
-[<CLIMutable>]
-type GetItem = {
-    Path:     string
-    EngineId: int
-}
 
 let mainReplaySubject = new Subject<MainEvent>()
 let rendererReplaySubject = new Subject<RendererEvent>()
@@ -59,12 +55,12 @@ let getEvents () =
   
 let sse () = createSse rendererReplaySubject <| getJsonOptions ()
 
-let getItem item = 
+let getItems param = 
     // TODO get engine from path, compare engineId with engine's id
     fun (next : HttpFunc) (ctx : HttpContext) ->
+        let engine = getEngine param
         task {
-            let t = runCmd "lsblk" "--bytes --output SIZE,NAME,LABEL,MOUNTPOINT,FSTYPE"
-            let! result = t ()
-            return! json item next ctx
+            let! items = engine.getItems param
+            return! json items next ctx
         }
     

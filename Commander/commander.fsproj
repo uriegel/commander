@@ -19,6 +19,9 @@
   <ItemGroup>
     <Compile Include="Utils.fs" />
     <Compile Include="Configuration.fs" />
+    <Compile Include="Engine.fs" />
+    <Compile Include="LinuxRoot.fs" />
+    <Compile Include="Engines.fs" />
     <Compile Include="Requests.fs" />
   </ItemGroup>
   <ItemGroup Condition="'$(IsWindows)'=='true'">
