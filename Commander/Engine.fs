@@ -17,8 +17,17 @@ type RootItem = {
     Size:        int64
 }
 
+type Column = {
+    Name: string
+    Column: string
+    RightAligned: bool
+}
 
-type GetItemResult = RootItem[]
+type GetItemResult = {
+    Items: RootItem[]
+    Path: string
+    Columns: Column[] option
+}
 
 type IEngine = 
     abstract member Id : int with get
