@@ -1,5 +1,6 @@
 import 'virtual-table-component'
 import { TableItem, VirtualTable } from 'virtual-table-component'
+import { GetItemResult, request } from '../requests'
 
 export interface FolderItem extends TableItem{
     name: string
@@ -131,12 +132,23 @@ export class Folder extends HTMLElement {
     }
 
     async changePath(path?: string|null, fromBacklog?: boolean) {
-        
-
-        console.log("changePath", this.id, path)
-
         const req = ++this.latestRequest
+        let result = await request<GetItemResult>("getitems", {
+            engineId: 0
+        })
+        if (req < this.latestRequest) 
+            return 
+        if (result.columns)
+            this.table.setColumns(result.columns.map(n => ({
+                name: n.name, render: (td, item) => td.innerHTML = "item[`${n.column}`]aaa"
+            })))
 
+
+        let cols = result.items.map(n => Object.values(n))
+        console.log("cols", cols)
+//        let col = result.columns
+//        let c = result.engineId
+            
 
         // TODO getItems (?path=%path via fetch
         // TODO returns object with items and optional columns, currentPath, engineId
@@ -146,8 +158,6 @@ export class Folder extends HTMLElement {
         // set Items
 
         //if (!items || req < this.latestRequest) 
-        if (req < this.latestRequest) 
-            return        
     }
 
     setFocus() { this.table.setFocus() }

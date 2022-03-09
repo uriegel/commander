@@ -10,11 +10,10 @@ open Engines
 open Utils
 open System.Reactive.Subjects
 
-// TODO Engines commander/items?path=root&enginid=0
-// TODO Engines commander/items?path=root
-// TODO Engines commander/items?path=/home/uwe/
-// TODO Engines commander/items?path=c:\users\uwe\documents\ordner mit leerzeichen&engineid=9
+
 // TODO Root
+// TODO GetItemsResult: Array with string, number, date or version, in Column description is type
+// TODO GetItemsResult: Icon string
 // TODO getItems (?path=%path via fetch currentPath, engineId
 // TODO Linux and Windows
 // TODO returns object with items and optional columns, currentPath, engineId

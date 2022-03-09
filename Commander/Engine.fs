@@ -2,19 +2,20 @@ module Engine
 
 [<CLIMutable>]
 type GetItems = {
-    Path:     string
-    EngineId: int
+    Path:      string option
+    EngineId:  int
 }
+
 
 // TODO Linux Windows
 type RootItem = {
-    Description: string
     Name:        string
-    Type:        int
+    Description: string
     MountPoint:  string
+    Size:        int64
+    Type:        int
     DriveType:   string
     IsMounted:   bool
-    Size:        int64
 }
 
 type Column = {
@@ -26,6 +27,7 @@ type Column = {
 type GetItemResult = {
     Items: RootItem[]
     Path: string
+    EngineId: int
     Columns: Column[] option
 }
 

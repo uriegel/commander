@@ -38,13 +38,13 @@ type Root () =
                 let mountPoint = getString 3 4
 
                 {
-                    Description = getString 2 3
                     Name        = getString 1 2 |> trimName
+                    Description = getString 2 3
                     Type        = 1 // TODO Drivetypes enum DriveType       
+                    Size        = 999 // TODO size
                     MountPoint  = mountPoint
                     IsMounted   = mountPoint |> String.length > 0 
                     DriveType   = driveString |> String.substring columnPositions[4] |> String.trim
-                    Size        = 999 // TODO size
                 }
 
             let filterDrives (n: string) = n[columnPositions[1]] > '~'
@@ -59,12 +59,12 @@ type Root () =
             let unMounted = items |> Array.filter (fun n -> not n.IsMounted)
             let items = Array.concat [ 
                 [| { 
-                    Description = "home"
                     Name = "~"
+                    Description = "home"
                     MountPoint = getHomeDir ()
+                    Size = 0
                     IsMounted = true
                     Type = 1
-                    Size = 0
                     DriveType = "" 
                 } |]
                 mounted
@@ -73,6 +73,7 @@ type Root () =
             return {
                 Items = items
                 Path = "root"
+                EngineId = 1
                 Columns = 
                     if param.EngineId <> 1 then Some [| 
                             { Name = "Name"; Column = "Name"; RightAligned = false }
