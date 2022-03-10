@@ -159,14 +159,10 @@ export class Folder extends HTMLElement {
                     default:
                         return { name: n.name, render: (td, item) => td.innerHTML= (item as any)[`${n.column}`]}
                 }
-            }))
+            }), `${this.folderId}-${result.engineId}`)
 
         this.table.setItems(result.items)
         
-        // TODO TableView automatically save column widths 
-        
-        // setColumns(columns, saveWidthIdentifier?: string)
-
         // TODO Engine enum
         // TODO renderRow per engine
         // TODO size with format
