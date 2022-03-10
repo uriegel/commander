@@ -73,9 +73,9 @@ type Root () =
             return {
                 Items = items
                 Path = "root"
-                EngineId = 1
+                Engine = EngineType.Root
                 Columns = 
-                    if param.EngineId <> 1 then Some [| 
+                    if param.Engine <> EngineType.Root then Some [| 
                             { Name = "Name"; Column = "name"; Type = ColumnsType.Name }
                             { Name = "Bezeichnung"; Column = "description"; Type = ColumnsType.Normal }
                             { Name = "Mountpoint"; Column = "mountPoint"; Type = ColumnsType.Normal }

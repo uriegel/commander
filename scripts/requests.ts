@@ -11,10 +11,16 @@ export type RequestType =
 
 type Empty = {}
 
+export enum EngineType {
+    None =      0,     
+    Root =      1,
+    Directory = 2
+}
+
 type GetItemsType = {
-    path?:    string,
-    engineId: number
-    requestId: number
+    path?:   string,
+    engine:  EngineType
+    request: number
 }
 
 export enum ItemType {
@@ -24,7 +30,7 @@ export enum ItemType {
     Homedrive = 4
 }
 
-type RootItem = {
+export type RootItem = {
     name:        string,
     description: string,
     itemType:    ItemType,
@@ -47,11 +53,10 @@ type Column = {
 }
 
 export type GetItemResult = {
-    items: RootItem[]
-    path: string
-    engineId: number
-    requestId: number
-    columns?: Column[]
+    items:     RootItem[]
+    path:      string
+    engine:    EngineType
+    columns?:  Column[]
 }
 
 type Exception = {

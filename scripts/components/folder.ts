@@ -1,6 +1,6 @@
 import 'virtual-table-component'
 import { TableItem, VirtualTable } from 'virtual-table-component'
-import { ColumnsType, GetItemResult, ItemType, request } from '../requests'
+import { ColumnsType, EngineType, GetItemResult, ItemType, request, RootItem } from '../requests'
 
 export interface FolderItem extends TableItem {
     name    : string
@@ -29,14 +29,22 @@ export class Folder extends HTMLElement {
         this.pathInput = this.getElementsByTagName("INPUT")[0]! as HTMLInputElement
 
         this.table.renderRow = (item, tr) => {
-            tr.ondragstart = evt => this.onDragStart(evt)
-            tr.ondrag = evt => this.onDrag(evt)
-            tr.ondragend = () => this.onDragEnd()
             tr.onmousedown = evt => {
                 if (evt.ctrlKey) {
                     setTimeout(() => {
                     })
                 }
+            }
+            switch (this.engine) {
+                case EngineType.Root:
+                    if (!(item as RootItem).isMounted)
+                        tr.style.opacity = "0.5"
+                    break
+                case EngineType.Directory:
+                    tr.ondragstart = evt => this.onDragStart(evt)
+                    tr.ondrag = evt => this.onDrag(evt)
+                    tr.ondragend = () => this.onDragEnd()
+                    break
             }
         }
 
@@ -48,7 +56,6 @@ export class Folder extends HTMLElement {
     connectedCallback() {
         this.table.addEventListener("columnclick", evt => {
         })
-        //this.table.addEventListener("columnwidths", evt => this.engine.saveWidths((evt as CustomEvent).detail))
         this.table.addEventListener("currentIndexChanged", evt => this.sendStatusInfo((evt as CustomEvent).detail))
         this.table.addEventListener("focusin", async evt => {
             this.dispatchEvent(new CustomEvent('onFocus', { detail: this.id }))
@@ -134,12 +141,13 @@ export class Folder extends HTMLElement {
     async changePath(path?: string|null, fromBacklog?: boolean) {
         const req = ++this.latestRequest
         let result = await request<GetItemResult>("getitems", {
-            engineId: 0
+            engine: EngineType.None
         })
         if (req < this.latestRequest) 
             return 
         if (result.columns)
-            this.table.setColumns(result.columns.map(n => {
+            this.engine = result.engine
+            this.table.setColumns(result.columns!.map(n => {
                 switch (n.type) {
                     case ColumnsType.Name:
                         return { name: n.name, render: (td, item) => {
@@ -159,12 +167,10 @@ export class Folder extends HTMLElement {
                     default:
                         return { name: n.name, render: (td, item) => td.innerHTML= (item as any)[`${n.column}`]}
                 }
-            }), `${this.folderId}-${result.engineId}`)
+            }), `${this.folderId}-${result.engine}`)
 
         this.table.setItems(result.items)
         
-        // TODO Engine enum
-        // TODO renderRow per engine
         // TODO size with format
         // TODO Linux and Windows
         // TODO items: files unsorted, directories with parent sorted
@@ -301,6 +307,7 @@ export class Folder extends HTMLElement {
     private backPosition = -1
     private pathInput: HTMLInputElement | null = null
     private dropEffect: "none" | "copy" | "move" = "none"
+    private engine = EngineType.None
 }
 
 customElements.define('folder-table', Folder)

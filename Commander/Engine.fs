@@ -1,9 +1,14 @@
 module Engine
 
+type EngineType =
+| None =      0     
+| Root =      1
+| Directory = 2
+
 [<CLIMutable>]
 type GetItems = {
-    Path:      string option
-    EngineId:  int
+    Path:    string option
+    Engine:  EngineType
 }
 
 type ItemType =
@@ -35,9 +40,9 @@ type Column = {
 }
 
 type GetItemResult = {
-    Items: RootItem[]
-    Path: string
-    EngineId: int
+    Items:   RootItem[]
+    Path:    string
+    Engine:  EngineType
     Columns: Column[] option
 }
 
