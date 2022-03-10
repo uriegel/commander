@@ -76,10 +76,10 @@ type Root () =
                 EngineId = 1
                 Columns = 
                     if param.EngineId <> 1 then Some [| 
-                            { Name = "Name"; Column = "Name"; RightAligned = false }
-                            { Name = "Bezeichnung"; Column = "Description"; RightAligned = false }
-                            { Name = "Mountpoint"; Column = "MountPoint"; RightAligned = false }
-                            { Name = "Größe"; Column = "Size"; RightAligned = true }
+                            { Name = "Name"; Column = "name"; RightAligned = false }
+                            { Name = "Bezeichnung"; Column = "description"; RightAligned = false }
+                            { Name = "Mountpoint"; Column = "mountPoint"; RightAligned = false }
+                            { Name = "Größe"; Column = "size"; RightAligned = true }
                         |] else None
             }
         }

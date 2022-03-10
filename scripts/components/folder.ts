@@ -2,9 +2,8 @@ import 'virtual-table-component'
 import { TableItem, VirtualTable } from 'virtual-table-component'
 import { GetItemResult, request } from '../requests'
 
-export interface FolderItem extends TableItem{
+export interface FolderItem extends TableItem {
     name: string
-    isDirectory: boolean
 }
 
 export class Folder extends HTMLElement {
@@ -140,24 +139,20 @@ export class Folder extends HTMLElement {
             return 
         if (result.columns)
             this.table.setColumns(result.columns.map(n => ({
-                name: n.name, render: (td, item) => td.innerHTML = "item[`${n.column}`]aaa"
+                name: n.name, render: (td, item) => td.innerHTML= (item as any)[`${n.column}`]
             })))
-
 
         let cols = result.items.map(n => Object.values(n))
         console.log("cols", cols)
+        this.table.setItems(result.items)
 //        let col = result.columns
 //        let c = result.engineId
-            
-
-        // TODO getItems (?path=%path via fetch
-        // TODO returns object with items and optional columns, currentPath, engineId
+        
+        // TODO TableView automatically save column widths
+        // TODO icon: iconType harddrive, networkdrive, parent, directory, file (ext)
+        // TODO iconName col, size (rightAligned with dotted), dateTime (exif), normal
         // TODO Linux and Windows
         // TODO items: files unsorted, directories with parent sorted
-        // TODO if Some set Columns
-        // set Items
-
-        //if (!items || req < this.latestRequest) 
     }
 
     setFocus() { this.table.setFocus() }
@@ -169,8 +164,8 @@ export class Folder extends HTMLElement {
     getSelectedItems(): FolderItem[] {
         const selectedItems = this.table.items
             .filter(n => n.isSelected) 
-        if (selectedItems.length == 0 && this.table.getPosition() == 0 && this.table.items[0].name == "..")
-            return []
+        // if (selectedItems.length == 0 && this.table.getPosition() == 0 && this.table.items[0].name == "..")
+        //     return []
         return selectedItems.length > 0
             ? selectedItems
             : [this.table.items[this.table.getPosition()]]
@@ -202,13 +197,13 @@ export class Folder extends HTMLElement {
     }
 
     onDragStart(evt: DragEvent) { 
-        if (this.getSelectedItems()
-                .map(n => n.name)
-                .includes(this.table.items[this.table.getPosition()].name)) {
-            evt.dataTransfer?.setData("internalCopy", "true")
-            this.folderRoot.classList.add("onDragStarted")
-        } else
-            evt.preventDefault()
+        // if (this.getSelectedItems()
+        //         .map(n => n.name)
+        //         .includes(this.table.items[this.table.getPosition()].name)) {
+        //     evt.dataTransfer?.setData("internalCopy", "true")
+        //     this.folderRoot.classList.add("onDragStarted")
+        // } else
+        //     evt.preventDefault()
     }
     onDrag(evt: DragEvent) { 
     }
