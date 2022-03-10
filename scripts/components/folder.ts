@@ -139,18 +139,17 @@ export class Folder extends HTMLElement {
             return 
         if (result.columns)
             this.table.setColumns(result.columns.map(n => ({
+                //switch (n.columnType) {
                 name: n.name, render: (td, item) => td.innerHTML= (item as any)[`${n.column}`]
             })))
 
         let cols = result.items.map(n => Object.values(n))
         console.log("cols", cols)
         this.table.setItems(result.items)
-//        let col = result.columns
-//        let c = result.engineId
         
         // TODO TableView automatically save column widths
         // TODO icon: iconType harddrive, networkdrive, parent, directory, file (ext)
-        // TODO iconName col, size (rightAligned with dotted), dateTime (exif), normal
+        // TODO n.columnType: iconName col, size (rightAligned with dotted), dateTime (exif), normal
         // TODO Linux and Windows
         // TODO items: files unsorted, directories with parent sorted
     }
