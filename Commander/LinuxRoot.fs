@@ -3,17 +3,9 @@ module Root
 open FSharpTools
 
 open Engine
+open Model
+open PlatformModel
 open Utils
-
-type RootItem = {
-    Name:        string
-    Description: string
-    MountPoint:  string
-    Size:        int64
-    DriveType:   string
-    ItemType:    ItemType
-    IsMounted:   bool
-}
 
 type Root () = 
     let getHomeDir = 
