@@ -6,6 +6,11 @@ type GetItems = {
     EngineId:  int
 }
 
+type ItemType =
+| File      = 1
+| Directory = 2
+| Harddrive = 3
+| Homedrive = 4
 
 // TODO Linux Windows
 type RootItem = {
@@ -13,15 +18,20 @@ type RootItem = {
     Description: string
     MountPoint:  string
     Size:        int64
-    Type:        int
     DriveType:   string
+    ItemType:    ItemType
     IsMounted:   bool
 }
 
+type ColumnsType = 
+| Normal = 1
+| Name   = 2
+| Size   = 3  
+
 type Column = {
-    Name: string
+    Name:   string
     Column: string
-    RightAligned: bool
+    Type:   ColumnsType   
 }
 
 type GetItemResult = {

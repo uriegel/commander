@@ -17,20 +17,33 @@ type GetItemsType = {
     requestId: number
 }
 
+export enum ItemType {
+    File      = 1,
+    Directory = 2,
+    Harddrive = 3,
+    Homedrive = 4
+}
+
 type RootItem = {
-    description: string,
     name:        string,
-    type:        number,
+    description: string,
+    itemType:    ItemType,
     mountPoint:  string,
     driveType:   string,
     isMounted:   boolean,
     size:        number,
 }
 
+export enum ColumnsType {
+    Normal = 1,
+    Name   = 2,
+    Size   = 3  
+}
+
 type Column = {
     name: string
     column: string
-    rightAligned: boolean
+    type: ColumnsType
 }
 
 export type GetItemResult = {

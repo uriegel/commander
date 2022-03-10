@@ -40,9 +40,9 @@ type Root () =
                 {
                     Name        = getString 1 2 |> trimName
                     Description = getString 2 3
-                    Type        = 1 // TODO Drivetypes enum DriveType       
                     Size        = 999 // TODO size
                     MountPoint  = mountPoint
+                    ItemType    = ItemType.Harddrive
                     IsMounted   = mountPoint |> String.length > 0 
                     DriveType   = driveString |> String.substring columnPositions[4] |> String.trim
                 }
@@ -59,13 +59,13 @@ type Root () =
             let unMounted = items |> Array.filter (fun n -> not n.IsMounted)
             let items = Array.concat [ 
                 [| { 
-                    Name = "~"
+                    Name        = "~"
                     Description = "home"
-                    MountPoint = getHomeDir ()
-                    Size = 0
-                    IsMounted = true
-                    Type = 1
-                    DriveType = "" 
+                    MountPoint  = getHomeDir ()
+                    Size        = 0
+                    IsMounted   = true
+                    ItemType    = ItemType.Homedrive
+                    DriveType   = "" 
                 } |]
                 mounted
                 unMounted
@@ -76,10 +76,10 @@ type Root () =
                 EngineId = 1
                 Columns = 
                     if param.EngineId <> 1 then Some [| 
-                            { Name = "Name"; Column = "name"; RightAligned = false }
-                            { Name = "Bezeichnung"; Column = "description"; RightAligned = false }
-                            { Name = "Mountpoint"; Column = "mountPoint"; RightAligned = false }
-                            { Name = "Größe"; Column = "size"; RightAligned = true }
+                            { Name = "Name"; Column = "name"; Type = ColumnsType.Name }
+                            { Name = "Bezeichnung"; Column = "description"; Type = ColumnsType.Normal }
+                            { Name = "Mountpoint"; Column = "mountPoint"; Type = ColumnsType.Normal }
+                            { Name = "Größe"; Column = "size"; Type = ColumnsType.Size }
                         |] else None
             }
         }

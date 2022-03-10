@@ -1,9 +1,10 @@
 import 'virtual-table-component'
 import { TableItem, VirtualTable } from 'virtual-table-component'
-import { GetItemResult, request } from '../requests'
+import { ColumnsType, GetItemResult, ItemType, request } from '../requests'
 
 export interface FolderItem extends TableItem {
-    name: string
+    name    : string
+    itemType: ItemType
 }
 
 export class Folder extends HTMLElement {
@@ -138,18 +139,37 @@ export class Folder extends HTMLElement {
         if (req < this.latestRequest) 
             return 
         if (result.columns)
-            this.table.setColumns(result.columns.map(n => ({
-                //switch (n.columnType) {
-                name: n.name, render: (td, item) => td.innerHTML= (item as any)[`${n.column}`]
-            })))
+            this.table.setColumns(result.columns.map(n => {
+                switch (n.type) {
+                    case ColumnsType.Name:
+                        return { name: n.name, render: (td, item) => {
+                            var t = (item.itemType == ItemType.Harddrive
+                            ? document.querySelector('#driveIcon') 
+                            : document.querySelector('#homeIcon')) as HTMLTemplateElement
+                            td.appendChild(document.importNode(t.content, true))
+                            const span = document.createElement('span')
+                            span.innerHTML = item.name
+                            td.appendChild(span)
+                        }}
+                    case ColumnsType.Size:
+                        return { name: n.name, isRightAligned: true, render: (td, item) => {
+                            td.innerHTML = (item as any)[`${n.column}`]
+                            td.classList.add("rightAligned")
+                        }}
+                    default:
+                        return { name: n.name, render: (td, item) => td.innerHTML= (item as any)[`${n.column}`]}
+                }
+            }))
 
-        let cols = result.items.map(n => Object.values(n))
-        console.log("cols", cols)
         this.table.setItems(result.items)
         
-        // TODO TableView automatically save column widths
-        // TODO icon: iconType harddrive, networkdrive, parent, directory, file (ext)
-        // TODO n.columnType: iconName col, size (rightAligned with dotted), dateTime (exif), normal
+        // TODO TableView automatically save column widths 
+        
+        // setColumns(columns, saveWidthIdentifier?: string)
+
+        // TODO Engine enum
+        // TODO renderRow per engine
+        // TODO size with format
         // TODO Linux and Windows
         // TODO items: files unsorted, directories with parent sorted
     }
