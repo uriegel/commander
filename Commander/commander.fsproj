@@ -19,8 +19,24 @@
   <ItemGroup>
     <Compile Include="Utils.fs" />
     <Compile Include="Configuration.fs" />
+    <Compile Include="Model.fs" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(IsWindows)'=='true'">
+    <Compile Include="WindowsModel.fs" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(IsLinux)'=='true'">
+    <Compile Include="LinuxModel.fs" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Engine.fs" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(IsWindows)'=='true'">
+    <Compile Include="WindowsRoot.fs" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(IsLinux)'=='true'">
     <Compile Include="LinuxRoot.fs" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Engines.fs" />
     <Compile Include="Requests.fs" />
   </ItemGroup>

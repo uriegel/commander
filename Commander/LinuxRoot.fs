@@ -5,13 +5,23 @@ open FSharpTools
 open Engine
 open Utils
 
+type RootItem = {
+    Name:        string
+    Description: string
+    MountPoint:  string
+    Size:        int64
+    DriveType:   string
+    ItemType:    ItemType
+    IsMounted:   bool
+}
+
 type Root () = 
     let getHomeDir = 
         let getHomeDir () = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal)
         memoizeSingle getHomeDir
 
     interface IEngine with
-        member val Id = 1 with get
+        member val Id = EngineType.Root with get
         member _.getItems (param: GetItems) = async {
             let! res = runCmd "lsblk" "--bytes --output SIZE,NAME,LABEL,MOUNTPOINT,FSTYPE" ()
             let driveStrs = res |> String.splitChar '\n'

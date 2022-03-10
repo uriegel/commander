@@ -172,7 +172,6 @@ export class Folder extends HTMLElement {
         this.table.setItems(result.items)
         
         // TODO size with format
-        // TODO Linux and Windows
         // TODO items: files unsorted, directories with parent sorted
     }
 
