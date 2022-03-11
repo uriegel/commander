@@ -170,6 +170,7 @@ export class Folder extends HTMLElement {
             }), `${this.folderId}-${result.engine}`)
 
         this.table.setItems(result.items)
+        this.onPathChanged(result.path, fromBacklog)
         
         // TODO size with format
         // TODO items: files unsorted, directories with parent sorted
@@ -283,6 +284,18 @@ export class Folder extends HTMLElement {
     }
 
     async copy(other: Folder, fromLeft: boolean, move?: boolean) {
+    }
+
+    private onPathChanged(newPath: string, fromBacklog?: boolean) {
+        const path = newPath
+        this.pathInput!.value = path
+        localStorage.setItem(`${this.folderId}-lastPath`, path)
+        if (!fromBacklog) {
+            this.backPosition++
+            this.backtrack.length = this.backPosition
+            if (this.backPosition == 0 || this.backtrack[this.backPosition - 1] != path)
+                this.backtrack.push(path)
+        }
     }
 
     private sendStatusInfo(index: number) {

@@ -17,6 +17,11 @@ let memoizeSingle funToMemoize =
 
 let takeFirstTupleElem (a, _) = a
 
+let parseInt64 defaultValue (str: string) = 
+    match Int64.TryParse str with
+    | true, num -> num
+    | _         -> defaultValue
+
 let combine2Pathes path1 path2 = IO.Path.Combine (path1, path2)
 let combine3Pathes path1 path2 path3 = IO.Path.Combine (path1, path2, path3)
 let createStream path : IO.Stream = IO.File.Create path

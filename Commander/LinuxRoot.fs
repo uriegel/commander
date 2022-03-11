@@ -42,7 +42,7 @@ type Root () =
                 {
                     Name        = getString 1 2 |> trimName
                     Description = getString 2 3
-                    Size        = 999 // TODO size
+                    Size        = getString 0 1 |> parseInt64 0
                     MountPoint  = mountPoint
                     ItemType    = ItemType.Harddrive
                     IsMounted   = mountPoint |> String.length > 0 
