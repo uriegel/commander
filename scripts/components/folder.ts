@@ -161,7 +161,7 @@ export class Folder extends HTMLElement {
                         }}
                     case ColumnsType.Size:
                         return { name: n.name, isRightAligned: true, render: (td, item) => {
-                            td.innerHTML = (item as any)[`${n.column}`]
+                            td.innerHTML = this.formatSize((item as any)[`${n.column}`])
                             td.classList.add("rightAligned")
                         }}
                     default:
@@ -172,7 +172,6 @@ export class Folder extends HTMLElement {
         this.table.setItems(result.items)
         this.onPathChanged(result.path, fromBacklog)
         
-        // TODO size with format
         // TODO items: files unsorted, directories with parent sorted
     }
 
@@ -309,6 +308,24 @@ export class Folder extends HTMLElement {
             this.backPosition++
             this.changePath(this.backtrack[this.backPosition], true)
         }
+    }
+
+    formatSize(size: number) {
+        if (!size)
+            return ""
+        let sizeStr = size.toString()
+        const sep = '.'
+        if (sizeStr.length > 3) {
+            var sizePart = sizeStr
+            sizeStr = ""
+            for (let j = 3; j < sizePart.length; j += 3) {
+                const extract = sizePart.slice(sizePart.length - j, sizePart.length - j + 3)
+                sizeStr = sep + extract + sizeStr
+            }
+            const strfirst = sizePart.substring(0, (sizePart.length % 3 == 0) ? 3 : (sizePart.length % 3))
+            sizeStr = strfirst + sizeStr
+        }
+        return sizeStr    
     }
 
     private table: VirtualTable<FolderItem>
