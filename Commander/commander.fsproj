@@ -34,6 +34,7 @@
     <Compile Include="WindowsRoot.fs" />
   </ItemGroup>
   <ItemGroup Condition="'$(IsLinux)'=='true'">
+    <Compile Include="Directory.fs" />
     <Compile Include="LinuxRoot.fs" />
   </ItemGroup>
   <ItemGroup>

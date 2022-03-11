@@ -9,8 +9,9 @@ type EngineType =
 
 [<CLIMutable>]
 type GetItems = {
-    Path:    string option
-    Engine:  EngineType
+    Path:        string option
+    Engine:      EngineType
+    CurrentItem: RootItem option
 }
 
 type ColumnsType = 
@@ -31,6 +32,3 @@ type GetItemResult = {
     Columns: Column[] option
 }
 
-type IEngine = 
-    abstract member Id : EngineType with get
-    abstract member getItems: getItems: GetItems -> Async<GetItemResult>

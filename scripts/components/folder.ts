@@ -3,8 +3,9 @@ import { TableItem, VirtualTable } from 'virtual-table-component'
 import { ColumnsType, EngineType, GetItemResult, ItemType, request, RootItem } from '../requests'
 
 export interface FolderItem extends TableItem {
-    name    : string
-    itemType: ItemType
+    name:         string
+    isDirectory?: boolean
+    itemType:     ItemType
 }
 
 export class Folder extends HTMLElement {
@@ -108,7 +109,11 @@ export class Folder extends HTMLElement {
             }
         })
         this.table.addEventListener("enter", async evt => {
-            // const { path, recentFolder } = await this.engine.getPath(this.table.items[(evt as CustomEvent).detail.currentItem], () => this.reloadItems())
+            let currentItem = this.table.items[(evt as CustomEvent).detail.currentItem]
+            if (currentItem.isDirectory) {
+                await this.changePath(this.path, currentItem)            
+            }
+            // const { path, recentFolder } = await this.engine.getPath(, () => this.reloadItems())
             // if (path) {
             //     await this.changePath(path)
             //     if (recentFolder) {
@@ -138,14 +143,16 @@ export class Folder extends HTMLElement {
         this.pathInput!.onfocus = () => setTimeout(() => this.pathInput!.select())
     }
 
-    async changePath(path?: string|null, fromBacklog?: boolean) {
+    async changePath(path?: string|null, currentItem?: FolderItem, fromBacklog?: boolean) {
         const req = ++this.latestRequest
         let result = await request<GetItemResult>("getitems", {
-            engine: EngineType.None
+            engine: this.engine,
+            path,
+            currentItem
         })
         if (req < this.latestRequest) 
             return 
-        if (result.columns)
+        if (result.columns) {
             this.engine = result.engine
             this.table.setColumns(result.columns!.map(n => {
                 switch (n.type) {
@@ -168,6 +175,7 @@ export class Folder extends HTMLElement {
                         return { name: n.name, render: (td, item) => td.innerHTML= (item as any)[`${n.column}`]}
                 }
             }), `${this.folderId}-${result.engine}`)
+        }
 
         this.table.setItems(result.items)
         this.onPathChanged(result.path, fromBacklog)
@@ -286,14 +294,14 @@ export class Folder extends HTMLElement {
     }
 
     private onPathChanged(newPath: string, fromBacklog?: boolean) {
-        const path = newPath
-        this.pathInput!.value = path
-        localStorage.setItem(`${this.folderId}-lastPath`, path)
+        this.path = newPath
+        this.pathInput!.value = this.path
+        localStorage.setItem(`${this.folderId}-lastPath`, this.path)
         if (!fromBacklog) {
             this.backPosition++
             this.backtrack.length = this.backPosition
-            if (this.backPosition == 0 || this.backtrack[this.backPosition - 1] != path)
-                this.backtrack.push(path)
+            if (this.backPosition == 0 || this.backtrack[this.backPosition - 1] != this.path)
+                this.backtrack.push(this.path)
         }
     }
 
@@ -303,10 +311,10 @@ export class Folder extends HTMLElement {
     private getHistoryPath(forward?: boolean) {
         if (!forward && this.backPosition >= 0) {
             this.backPosition--
-            this.changePath(this.backtrack[this.backPosition], true)
+            this.changePath(this.backtrack[this.backPosition], undefined, true)
         } else if (forward && this.backPosition < this.backtrack.length - 1) {
             this.backPosition++
-            this.changePath(this.backtrack[this.backPosition], true)
+            this.changePath(this.backtrack[this.backPosition], undefined, true)
         }
     }
 
@@ -337,6 +345,7 @@ export class Folder extends HTMLElement {
     private pathInput: HTMLInputElement | null = null
     private dropEffect: "none" | "copy" | "move" = "none"
     private engine = EngineType.None
+    private path = ""
 }
 
 customElements.define('folder-table', Folder)

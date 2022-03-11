@@ -57,9 +57,8 @@ let sse () = createSse rendererReplaySubject <| getJsonOptions ()
 let getItems param = 
     // TODO get engine from path, compare engineId with engine's id
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        let engine = getEngine param
         task {
-            let! items = engine.getItems param
+            let! items = Engines.getItems param
             return! json items next ctx
         }
     

@@ -1,3 +1,5 @@
+import { FolderItem } from "./components/folder"
+
  
 export const ShowDevTools = "showdevtools"
 export const ShowFullscreen = "showfullscreen"
@@ -18,9 +20,9 @@ export enum EngineType {
 }
 
 type GetItemsType = {
-    path?:   string,
-    engine:  EngineType
-    request: number
+    path?:        string,
+    engine:       EngineType
+    currentItem?: FolderItem
 }
 
 export enum ItemType {
@@ -31,13 +33,14 @@ export enum ItemType {
 }
 
 export type RootItem = {
-    name:        string,
-    description: string,
-    itemType:    ItemType,
-    mountPoint:  string,
-    driveType:   string,
-    isMounted:   boolean,
-    size:        number,
+    name:         string,
+    isDirectory?: boolean
+    description:  string,
+    itemType:     ItemType,
+    mountPoint:   string,
+    driveType:    string,
+    isMounted:    boolean,
+    size:         number,
 }
 
 export enum ColumnsType {

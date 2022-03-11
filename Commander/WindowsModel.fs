@@ -8,4 +8,5 @@ type RootItem = {
     Size:        int64
     ItemType:    ItemType
     IsMounted:   bool
+    IsDirectory: bool
 }

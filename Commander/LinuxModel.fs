@@ -10,4 +10,5 @@ type RootItem = {
     DriveType:   string
     ItemType:    ItemType
     IsMounted:   bool
+    IsDirectory: bool
 }
