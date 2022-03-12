@@ -32,17 +32,6 @@ export enum ItemType {
     Homedrive = 4
 }
 
-export type RootItem = {
-    name:         string,
-    isDirectory?: boolean
-    description:  string,
-    itemType:     ItemType,
-    mountPoint:   string,
-    driveType:    string,
-    isMounted:    boolean,
-    size:         number,
-}
-
 export enum ColumnsType {
     Normal = 1,
     Name   = 2,
@@ -56,7 +45,7 @@ type Column = {
 }
 
 export type GetItemResult = {
-    items:     RootItem[]
+    items:     string
     path:      string
     engine:    EngineType
     columns?:  Column[]

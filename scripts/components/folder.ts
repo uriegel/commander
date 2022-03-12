@@ -1,6 +1,6 @@
 import 'virtual-table-component'
 import { TableItem, VirtualTable } from 'virtual-table-component'
-import { ColumnsType, EngineType, GetItemResult, ItemType, request, RootItem } from '../requests'
+import { ColumnsType, EngineType, GetItemResult, ItemType, request } from '../requests'
 
 export interface FolderItem extends TableItem {
     name:         string
@@ -38,7 +38,7 @@ export class Folder extends HTMLElement {
             }
             switch (this.engine) {
                 case EngineType.Root:
-                    if (!(item as RootItem).isMounted)
+                    if (!(item as any).isMounted)
                         tr.style.opacity = "0.5"
                     break
                 case EngineType.Directory:
@@ -177,7 +177,7 @@ export class Folder extends HTMLElement {
             }), `${this.folderId}-${result.engine}`)
         }
 
-        this.table.setItems(result.items)
+        this.table.setItems(JSON.parse(result.items))
         this.onPathChanged(result.path, fromBacklog)
         
         // TODO items: files unsorted, directories with parent sorted

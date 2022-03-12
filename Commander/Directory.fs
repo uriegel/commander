@@ -1,10 +1,13 @@
 module Directory
 
 open System.IO
+open System.Text.Json
+open System.Text.Json.Serialization
 
 open Engine
+open Model
 open PlatformModel
-
+open Configuration
 
 let getEngineAndPathFrom path item = 
     match path, item with
@@ -25,17 +28,18 @@ let getItems engine path = async {
     //         getPart "FSTYPE"
     //     |]
 
+    let items = [| { Name = ".."; Size = 0; ItemType = ItemType.Parent; IconPath = None; IsHidden = false; IsDirectory = true; Time = System.DateTime.Now } |]
     return {
-        Items = [||]
+        Items = JsonSerializer.Serialize (items, getJsonOptions ())
         Path = "/"
         Engine = EngineType.Directory
         Columns = 
-            if engine <> EngineType.Root then Some [| 
+            if engine <> EngineType.Directory then Some [| 
                     { Name = "Name"; Column = "name"; Type = ColumnsType.Name }
-                    { Name = "Bezeichnung"; Column = "description"; Type = ColumnsType.Normal }
-                    { Name = "Mountpoint"; Column = "mountPoint"; Type = ColumnsType.Normal }
+                    { Name = "Datum"; Column = "time"; Type = ColumnsType.Time }
                     { Name = "Größe"; Column = "size"; Type = ColumnsType.Size }
-                |] else None
+                |] else 
+                    None
     }
 }
 

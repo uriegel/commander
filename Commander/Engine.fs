@@ -18,6 +18,7 @@ type ColumnsType =
 | Normal = 1
 | Name   = 2
 | Size   = 3  
+| Time   = 4
 
 type Column = {
     Name:   string
@@ -26,7 +27,7 @@ type Column = {
 }
 
 type GetItemResult = {
-    Items:   RootItem[]
+    Items:   string
     Path:    string
     Engine:  EngineType
     Columns: Column[] option

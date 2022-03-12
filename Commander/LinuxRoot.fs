@@ -1,11 +1,14 @@
 module Root
 
 open FSharpTools
+open System.Text.Json
+open System.Text.Json.Serialization
 
 open Engine
 open Model
 open PlatformModel
 open Utils
+open Configuration
 
 let getEngineAndPathFrom (item: RootItem) = 
     match item.MountPoint with
@@ -77,7 +80,7 @@ let getItems engine = async {
         unMounted
     ]
     return {
-        Items = items
+        Items = JsonSerializer.Serialize (items, getJsonOptions ())
         Path = "root"
         Engine = EngineType.Root
         Columns = 
