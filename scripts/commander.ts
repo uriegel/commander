@@ -53,6 +53,20 @@ function setTheme(theme: string) {
     activateClass(document.body, theme, true) 
 }
 
+export function onRefresh() {
+    folderLeft.reloadItems()
+    folderRight.reloadItems()
+}
+
+export function onSetHidden(showHidden: boolean) {
+    folderLeft.showHidden(showHidden)
+    folderRight.showHidden(showHidden)
+}
+
+export function activeFolderSetFocus() {
+    activeFolder.setFocus()
+}
+
 const folderLeft = document.getElementById("folderLeft")! as Folder
 const folderRight = document.getElementById("folderRight")! as Folder
 var activeFolder = folderLeft

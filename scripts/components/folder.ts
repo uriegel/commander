@@ -45,6 +45,8 @@ export class Folder extends HTMLElement {
                     tr.ondragstart = evt => this.onDragStart(evt)
                     tr.ondrag = evt => this.onDrag(evt)
                     tr.ondragend = () => this.onDragEnd()
+                    if ((item as any).isHidden)
+                        tr.style.opacity = "0.5"
                     break
             }
         }
@@ -148,7 +150,8 @@ export class Folder extends HTMLElement {
         let result = await request<GetItemResult>("getitems", {
             engine: this.engine,
             path,
-            currentItem
+            currentItem,
+            showHiddenItems: this.showHiddenItems
         })
         if (req < this.latestRequest) 
             return 
@@ -196,8 +199,6 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO IsHidden control
-        // TODO Refresh
         // TODO GetIcons
         // TODO ExifDate
         // TODO Windows Version
@@ -223,16 +224,16 @@ export class Folder extends HTMLElement {
     }
 
     showHidden(hidden: boolean) {
-        //this.showHiddenItems = hidden
+        this.showHiddenItems = hidden
         this.reloadItems()
     }
 
     async reloadItems(keepSelection?: boolean) {
-        // const pos = keepSelection == true ? this.table.getPosition() : 0
-        // this.table.items[pos].isSelected = this.engine.isSelectable(this.table.items[pos]) && !this.table.items[pos].isSelected 
-        // await this.changePath(this.engine.currentPath)
-        // if (pos)
-        //     this.table.setPosition(pos)
+        const pos = keepSelection == true ? this.table.getPosition() : 0
+        //this.table.items[pos].isSelected = this.engine.isSelectable(this.table.items[pos]) && !this.table.items[pos].isSelected 
+        await this.changePath(this.path)
+        if (pos)
+            this.table.setPosition(pos)
     }
 
     selectAll() {
@@ -377,6 +378,7 @@ export class Folder extends HTMLElement {
     private dropEffect: "none" | "copy" | "move" = "none"
     private engine = EngineType.None
     private path = ""
+    private showHiddenItems = false
 }
 
 customElements.define('folder-table', Folder)

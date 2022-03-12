@@ -8,9 +8,10 @@ type EngineType =
 type Item = { Name: string }
 
 type GetItems = {
-    Path:        string option
-    Engine:      EngineType
-    CurrentItem: Item option
+    Path:            string option
+    Engine:          EngineType
+    CurrentItem:     Item option
+    ShowHiddenItems: bool
 }
 
 type ColumnsType = 

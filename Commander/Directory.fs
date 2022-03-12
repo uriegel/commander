@@ -13,7 +13,7 @@ let getEngineAndPathFrom path item =
     | Root.IsRoot -> EngineType.Root, "root"
     | _, _        -> EngineType.Directory, Path.Combine (path, item)
 
-let getItems engine path latestPath = async {
+let getItems engine path latestPath showHiddenItems = async {
 
     let getDirItem (dirInfo: DirectoryInfo) = {
         Name =        dirInfo.Name
@@ -21,7 +21,7 @@ let getItems engine path latestPath = async {
         ItemType =    ItemType.Directory
         IsDirectory = true
         IconPath    = None
-        IsHidden    = false
+        IsHidden    = dirInfo.Attributes &&& FileAttributes.Hidden = FileAttributes.Hidden
         Time        = dirInfo.LastWriteTime
     }
 
@@ -31,7 +31,7 @@ let getItems engine path latestPath = async {
         ItemType =    ItemType.File
         IsDirectory = false
         IconPath    = None
-        IsHidden    = false
+        IsHidden    = fileInfo.Attributes &&& FileAttributes.Hidden = FileAttributes.Hidden
         Time        = fileInfo.LastWriteTime
     }
 
@@ -61,6 +61,12 @@ let getItems engine path latestPath = async {
         dirs
         files
     ]
+
+    let filterHidden item = not item.IsHidden
+    let items = 
+        match showHiddenItems with
+        | true -> items 
+        | _    -> items |> Array.filter filterHidden
 
     let selectFolder = 
         match latestPath with

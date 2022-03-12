@@ -1,5 +1,6 @@
 import { DialogBox, Result } from "web-dialog-box"
 import { Menubar, MenuItem } from "web-menu-bar"
+import { activeFolderSetFocus, onRefresh, onSetHidden } from "./commander"
 import { request, ShowDevTools, ShowFullscreen } from "./requests"
 export function initializeMenu() {}
 
@@ -15,6 +16,8 @@ itemHideMenu.isChecked = automode
 
 document.getElementById("onClose")?.addEventListener("menubar-action", () => close())
 itemHideMenu.addEventListener("menubar-checkbox", (evt: Event) => hideMenu((evt as CustomEvent).detail.isChecked))
+document.getElementById("onHidden")?.addEventListener("menubar-checkbox", (evt: Event) => onSetHidden((evt as CustomEvent).detail.isChecked))
+document.getElementById("onRefresh")?.addEventListener("menubar-action", () => onRefresh())
 document.getElementById("onDevTools")?.addEventListener("menubar-action", () => request(ShowDevTools))
 document.getElementById("onFullscreen")?.addEventListener("menubar-action", () => request(ShowFullscreen))
 
@@ -26,7 +29,7 @@ async function hideMenu(hide: boolean) {
             btnCancel: true,
             defBtnOk: true
         })
-        //     activeFolderSetFocus()
+        activeFolderSetFocus()
         if (res.result == Result.Cancel) {
             itemHideMenu!.isChecked = false
             return

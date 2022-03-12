@@ -106,8 +106,9 @@ let getItems engine latestPath = async {
         let findItem path item = item.MountPoint = path
         match latestPath with
         | Some path ->
-            let item = items |> Array.find (findItem path)
-            Some item.Name
+            match items |> Array.tryFind (findItem path) with
+            | Some item -> Some item.Name
+            | None      -> None
         | None      -> 
             None
 
