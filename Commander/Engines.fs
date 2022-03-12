@@ -5,7 +5,7 @@ open Engine
 let getEngineAndPathFrom engine path item =
     match engine with
     | EngineType.Root -> Root.getEngineAndPathFrom item
-    | _               -> Directory.getEngineAndPathFrom path item
+    | _               -> Directory.getEngineAndPathFrom path item.Name
 
 let getEngineAndPathFromPath engine path =
     EngineType.Root
@@ -16,13 +16,13 @@ let getEngineAndPathFromPath engine path =
 //     | EngineType.Root        -> Root ()   
 //     | _                      -> Directory ()   
 
-let getEngineAndPath (getItems: GetItems): EngineType =
+let getEngineAndPath (getItems: GetItems) =
     match getItems.Path, getItems.CurrentItem with
     | Some path, Some item -> getEngineAndPathFrom getItems.Engine path item  
-    | Some path, _         -> getEngineAndPathFromPath getItems.Engine path 
-    | _                    -> EngineType.Root
+    //| Some path, _         -> getEngineAndPathFromPath getItems.Engine path 
+    | _                    -> EngineType.Root, "path"
 
 let getItems param = 
     match getEngineAndPath param with
-    | EngineType.Root -> Root.getItems param
-    | _               -> Root.getItems param
+    | EngineType.Root, _ -> Root.getItems param.Engine
+    | _, path            -> Directory.getItems param.Engine path

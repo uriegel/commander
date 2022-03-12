@@ -7,11 +7,16 @@ open Model
 open PlatformModel
 open Utils
 
-let getHomeDir = 
-    let getHomeDir () = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal)
-    memoizeSingle getHomeDir
+let getEngineAndPathFrom (item: RootItem) = 
+    match item.MountPoint with
+    | value when value |> String.startsWith "/" -> EngineType.Directory, item.MountPoint
+    | _                                         -> EngineType.Directory, item.MountPoint
 
-let getItems (param: GetItems) = async {
+let getItems engine = async {
+    let getHomeDir = 
+        let getHomeDir () = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal)
+        memoizeSingle getHomeDir
+
     let! res = runCmd "lsblk" "--bytes --output SIZE,NAME,LABEL,MOUNTPOINT,FSTYPE" ()
     let driveStrs = res |> String.splitChar '\n'
     let columnPositions = 
@@ -76,7 +81,7 @@ let getItems (param: GetItems) = async {
         Path = "root"
         Engine = EngineType.Root
         Columns = 
-            if param.Engine <> EngineType.Root then Some [| 
+            if engine <> EngineType.Root then Some [| 
                     { Name = "Name"; Column = "name"; Type = ColumnsType.Name }
                     { Name = "Bezeichnung"; Column = "description"; Type = ColumnsType.Normal }
                     { Name = "Mountpoint"; Column = "mountPoint"; Type = ColumnsType.Normal }
@@ -85,4 +90,3 @@ let getItems (param: GetItems) = async {
     }
 }
 
-let getEngineAndPathFrom item = EngineType.Root

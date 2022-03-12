@@ -5,6 +5,8 @@ import 'grid-splitter'
 import 'web-pie-progress'
 import './components/folder'
 import { initializeMenu } from './menu'
+import { Folder } from './components/folder'
+import { Menubar } from 'web-menu-bar'
 
 export function activateClass(element: HTMLElement, cls: string, activate: boolean) {
     if (activate != false)
@@ -50,3 +52,16 @@ function setTheme(theme: string) {
     activateClass(document.body, "windowsDark", false) 
     activateClass(document.body, theme, true) 
 }
+
+const folderLeft = document.getElementById("folderLeft")! as Folder
+const folderRight = document.getElementById("folderRight")! as Folder
+var activeFolder = folderLeft
+
+const menu = document.getElementById("menu")! as Menubar
+menu.addEventListener('menuclosed', () => activeFolder.setFocus())
+folderLeft.addEventListener("onFocus", () => activeFolder = folderLeft)
+folderRight.addEventListener("onFocus", () => activeFolder = folderRight)
+folderLeft.addEventListener("tab", () => folderRight.setFocus())
+folderRight.addEventListener("tab", () => folderLeft.setFocus())
+
+folderLeft.setFocus()
