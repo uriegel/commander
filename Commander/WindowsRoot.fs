@@ -29,7 +29,7 @@ let (|IsRoot|IsNotRoot|) (path, currentItem) =
     else
         IsNotRoot
 
-let getItems engine latestPath = async {
+let getItems engine (latestPath: string option) = async {
     let getHomeDir = 
         let getHomeDir () = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal)
         memoizeSingle getHomeDir
@@ -59,16 +59,11 @@ let getItems engine latestPath = async {
         DriveInfo.GetDrives ()
         |> Array.map getDrive
 
-    let selectedFolder = 
-        match latestPath with
-        | Some path -> path
-        | None      -> None
-
     let result = {|
         Items = drives
         Path = "root"
         Engine = EngineType.Root
-        LatestPath = selectedFolder
+        LatestPath = latestPath
         Columns = 
             if engine <> EngineType.Root then Some [| 
                 { Name = "Name"; Column = "name"; Type = ColumnsType.Name }
