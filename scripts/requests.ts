@@ -47,10 +47,11 @@ type Column = {
 }
 
 export type GetItemResult = {
-    items:     FolderItem[]
-    path:      string
-    engine:    EngineType
-    columns?:  Column[]
+    items:       FolderItem[]
+    path:        string
+    engine:      EngineType
+    columns?:    Column[]
+    latestPath?: string
 }
 
 type Exception = {

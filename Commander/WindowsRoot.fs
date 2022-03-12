@@ -18,13 +18,6 @@ type RootItem = {
     IsDirectory: bool
 }
 
-type GetItemResult = {
-    Items:   RootItem[]
-    Path:    string
-    Engine:  EngineType
-    Columns: Column[] option
-}
-
 let getEngineAndPathFrom (item: Item) _ = 
     match item.Name with
     | value when value |> String.contains ":" -> EngineType.Directory, item.Name
@@ -36,7 +29,7 @@ let (|IsRoot|IsNotRoot|) (path, currentItem) =
     else
         IsNotRoot
 
-let getItems engine = async {
+let getItems engine latestPath = async {
     let getHomeDir = 
         let getHomeDir () = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal)
         memoizeSingle getHomeDir
@@ -66,10 +59,16 @@ let getItems engine = async {
         DriveInfo.GetDrives ()
         |> Array.map getDrive
 
-    let result = {
+    let selectedFolder = 
+        match latestPath with
+        | Some path -> path
+        | None      -> None
+
+    let result = {|
         Items = drives
         Path = "root"
         Engine = EngineType.Root
+        LatestPath = selectedFolder
         Columns = 
             if engine <> EngineType.Root then Some [| 
                 { Name = "Name"; Column = "name"; Type = ColumnsType.Name }
@@ -77,7 +76,7 @@ let getItems engine = async {
                 { Name = "Größe"; Column = "size"; Type = ColumnsType.Size }
             |] else 
                 None
-    }
+    |}
     return JsonSerializer.Serialize (result, getJsonOptions ())
 }
 

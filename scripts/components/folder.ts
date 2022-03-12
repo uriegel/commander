@@ -184,6 +184,11 @@ export class Folder extends HTMLElement {
         }
 
         this.table.setItems(result.items)
+        if (result.latestPath) {
+            let index = result.items.findIndex(n => n.name == result.latestPath)
+            if (index != -1)
+                this.table.setPosition(index)
+        }
         this.table.setRestriction((items, restrictValue) => 
             items.filter(n => n.name.toLowerCase()
                 .startsWith(restrictValue.toLowerCase())
@@ -191,7 +196,6 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Last selected folder when goto parent
         // TODO IsHidden control
         // TODO GetIcons
         // TODO ExifDate

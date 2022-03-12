@@ -13,7 +13,7 @@ let getEngineAndPathFrom path item =
     | Root.IsRoot -> EngineType.Root, "root"
     | _, _        -> EngineType.Directory, Path.Combine (path, item)
 
-let getItems engine path = async {
+let getItems engine path latestPath = async {
 
     let getDirItem (dirInfo: DirectoryInfo) = {
         Name =        dirInfo.Name
@@ -61,10 +61,20 @@ let getItems engine path = async {
         dirs
         files
     ]
+
+    let selectFolder = 
+        match latestPath with
+        | Some latestPath when path |> String.endsWith ".." ->
+            let di = DirectoryInfo latestPath
+            Some di.Name
+        | _                                                 -> 
+            None
+
     let result = {|
-        Items =  items
-        Path =   dirInfo.FullName
-        Engine = EngineType.Directory
+        Items =      items
+        Path =       dirInfo.FullName
+        Engine =     EngineType.Directory
+        LatestPath = selectFolder
         Columns = 
             if engine <> EngineType.Directory then Some [| 
                     { Name = "Name"; Column = "name"; Type = ColumnsType.Name }
