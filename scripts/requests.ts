@@ -45,7 +45,7 @@ type Column = {
 }
 
 export type GetItemResult = {
-    items:     string
+    items:     FolderItem[]
     path:      string
     engine:    EngineType
     columns?:  Column[]

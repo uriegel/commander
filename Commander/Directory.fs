@@ -28,9 +28,9 @@ let getItems engine path = async {
     //         getPart "FSTYPE"
     //     |]
 
-    let items = [| { Name = ".."; Size = 0; ItemType = ItemType.Parent; IconPath = None; IsHidden = false; IsDirectory = true; Time = System.DateTime.Now } |]
-    return {
-        Items = JsonSerializer.Serialize (items, getJsonOptions ())
+    let items = [| {| Name = ".."; Size = 0; ItemType = ItemType.Parent; IconPath = None; IsHidden = false; IsDirectory = true; Time = System.DateTime.Now |} |]
+    let result = {|
+        Items = items
         Path = "/"
         Engine = EngineType.Directory
         Columns = 
@@ -40,6 +40,7 @@ let getItems engine path = async {
                     { Name = "Größe"; Column = "size"; Type = ColumnsType.Size }
                 |] else 
                     None
-    }
+    |}
+    return JsonSerializer.Serialize (result, getJsonOptions ())
 }
 

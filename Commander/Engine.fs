@@ -11,7 +11,6 @@ type EngineType =
 type GetItems = {
     Path:        string option
     Engine:      EngineType
-    CurrentItem: RootItem option
 }
 
 type ColumnsType = 
@@ -26,10 +25,4 @@ type Column = {
     Type:   ColumnsType   
 }
 
-type GetItemResult = {
-    Items:   string
-    Path:    string
-    Engine:  EngineType
-    Columns: Column[] option
-}
 

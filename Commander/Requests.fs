@@ -54,13 +54,16 @@ let getEvents () =
   
 let sse () = createSse rendererReplaySubject <| getJsonOptions ()
 
+let jsonText (str : string) : HttpHandler =
+        let bytes = System.Text.Encoding.UTF8.GetBytes str
+        fun (_ : HttpFunc) (ctx : HttpContext) ->
+            ctx.SetContentType "application/json; charset=utf-8"
+            ctx.WriteBytesAsync bytes
+
 let getItems param = 
     fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
             let! items = Engines.getItems param
-
-
-            // TODO jsontext
-            return! json items next ctx
+            return! jsonText items next ctx
         }
     

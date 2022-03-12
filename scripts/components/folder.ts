@@ -177,7 +177,7 @@ export class Folder extends HTMLElement {
             }), `${this.folderId}-${result.engine}`)
         }
 
-        this.table.setItems(JSON.parse(result.items))
+        this.table.setItems(result.items)
         this.onPathChanged(result.path, fromBacklog)
         
         // TODO items: files unsorted, directories with parent sorted

@@ -10,6 +10,24 @@ open PlatformModel
 open Utils
 open Configuration
 
+type RootItem = {
+    Name:        string
+    Description: string
+    MountPoint:  string
+    Size:        int64
+    DriveType:   string
+    ItemType:    ItemType
+    IsMounted:   bool
+    IsDirectory: bool
+}
+
+type GetItemResult = {
+    Items:   RootItem[]
+    Path:    string
+    Engine:  EngineType
+    Columns: Column[] option
+}
+
 let getEngineAndPathFrom (item: RootItem) = 
     match item.MountPoint with
     | value when value |> String.startsWith "/" -> EngineType.Directory, item.MountPoint
@@ -79,8 +97,9 @@ let getItems engine = async {
         mounted
         unMounted
     ]
-    return {
-        Items = JsonSerializer.Serialize (items, getJsonOptions ())
+
+    let result = {
+        Items = items
         Path = "root"
         Engine = EngineType.Root
         Columns = 
@@ -92,5 +111,6 @@ let getItems engine = async {
             |] else 
                 None
     }
+    return JsonSerializer.Serialize (result, getJsonOptions ())
 }
 

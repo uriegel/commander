@@ -17,10 +17,12 @@ let getEngineAndPathFromPath engine path =
 //     | _                      -> Directory ()   
 
 let getEngineAndPath (getItems: GetItems) =
-    match getItems.Path, getItems.CurrentItem with
-    | Some path, Some item -> getEngineAndPathFrom getItems.Engine path item  
+    // TODO Active patterns with json deserializing param in engine
+//    match getItems.Path, getItems.CurrentItem with
+//    | Some path, Some item -> getEngineAndPathFrom getItems.Engine path item  
     //| Some path, _         -> getEngineAndPathFromPath getItems.Engine path 
-    | _                    -> EngineType.Root, "path"
+    //| _                    -> EngineType.Root, "path"
+    EngineType.Root, "path"
 
 let getItems param = 
     match getEngineAndPath param with
