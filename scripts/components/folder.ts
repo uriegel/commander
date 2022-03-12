@@ -183,12 +183,15 @@ export class Folder extends HTMLElement {
 
         this.table.setItems(result.items)
         this.onPathChanged(result.path, fromBacklog)
-        
+
+        // TODO Backlog
+        // TODO Restriction
         // TODO Date
         // TODO IsHidden control
         // TODO GetIcons
         // TODO ExifDate
         // TODO Windows Version
+        // TODO Sorting
     }
 
     setFocus() { this.table.setFocus() }
