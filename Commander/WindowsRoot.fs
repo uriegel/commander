@@ -3,7 +3,6 @@ module Root
 open FSharpTools
 open System.IO
 open System.Text.Json
-open System.Text.Json.Serialization
 
 open Configuration
 open Engine
@@ -26,7 +25,7 @@ type GetItemResult = {
     Columns: Column[] option
 }
 
-let getEngineAndPathFrom (item: RootItem) = 
+let getEngineAndPathFrom (item: Item) _ = 
     match item.Name with
     | value when value |> String.contains ":" -> EngineType.Directory, item.Name
     | _                                       -> EngineType.Directory, item.Name

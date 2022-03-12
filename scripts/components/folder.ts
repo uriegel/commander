@@ -184,7 +184,6 @@ export class Folder extends HTMLElement {
         this.table.setItems(result.items)
         this.onPathChanged(result.path, fromBacklog)
         
-        // TODO Windows GetFiles
         // TODO Date
         // TODO IsHidden control
         // TODO GetIcons
