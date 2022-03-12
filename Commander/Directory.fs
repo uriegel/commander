@@ -1,8 +1,8 @@
 module Directory
 
+open FSharpTools
 open System.IO
 open System.Text.Json
-open System.Text.Json.Serialization
 
 open Engine
 open Model
@@ -14,23 +14,56 @@ let getEngineAndPathFrom path item =
     | _, _      -> EngineType.Directory, Path.Combine (path, item)
 
 let getItems engine path = async {
-    // let! res = runCmd "lsblk" "--bytes --output SIZE,NAME,LABEL,MOUNTPOINT,FSTYPE" ()
-    // let driveStrs = res |> String.splitChar '\n'
-    // let columnPositions = 
-    //     let title = driveStrs[0]
-    //     let getPart key = title |> String.indexOf key |> Option.defaultValue 0
-    //     [|
-    //         0
-    //         getPart "NAME"
-    //         getPart "LABEL"
-    //         getPart "MOUNT"
-    //         getPart "FSTYPE"
-    //     |]
 
-    let items = [| {| Name = ".."; Size = 0; ItemType = ItemType.Parent; IconPath = None; IsHidden = false; IsDirectory = true; Time = System.DateTime.Now |} |]
+    let getDirItem (dirInfo: DirectoryInfo) = {
+        Name =        dirInfo.Name
+        Size =        0
+        ItemType =    ItemType.Directory
+        IsDirectory = true
+        IconPath    = None
+        IsHidden    = false
+        Time        = dirInfo.LastWriteTime
+    }
+
+    let getFileItem (fileInfo: FileInfo) = {
+        Name =        fileInfo.Name
+        Size =        fileInfo.Length
+        ItemType =    ItemType.File
+        IsDirectory = false
+        IconPath    = None
+        IsHidden    = false
+        Time        = fileInfo.LastWriteTime
+    }
+
+    let sortByName item = item.Name |> String.toLower 
+
+    let dirInfo = DirectoryInfo(path)
+    let dirs = 
+        dirInfo.GetDirectories()
+        |> Array.map getDirItem 
+        |> Array.sortBy sortByName
+    let files = 
+        dirInfo.GetFiles()
+        |> Array.map getFileItem 
+
+    let parent = [| { 
+        Name = ".."
+        Size = 0
+        ItemType = ItemType.Parent
+        IconPath = None
+        IsHidden = false
+        IsDirectory = true
+        Time = System.DateTime.Now 
+    } |]
+
+    let items = Array.concat [
+        parent
+        dirs
+        files
+    ]
     let result = {|
-        Items = items
-        Path = "/"
+        Items =  items
+        Path =   dirInfo.FullName
         Engine = EngineType.Directory
         Columns = 
             if engine <> EngineType.Directory then Some [| 

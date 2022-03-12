@@ -160,6 +160,10 @@ export class Folder extends HTMLElement {
                         return { name: n.name, render: (td, item) => {
                             var t = (item.itemType == ItemType.Harddrive
                             ? document.querySelector('#driveIcon') 
+                            : item.itemType == ItemType.Parent
+                            ? document.querySelector('#parentIcon')
+                            : item.itemType == ItemType.Directory
+                            ? document.querySelector('#folderIcon')
                             : document.querySelector('#homeIcon')) as HTMLTemplateElement
                             td.appendChild(document.importNode(t.content, true))
                             const span = document.createElement('span')
@@ -180,7 +184,12 @@ export class Folder extends HTMLElement {
         this.table.setItems(result.items)
         this.onPathChanged(result.path, fromBacklog)
         
-        // TODO items: files unsorted, directories with parent sorted
+        // TODO Windows GetFiles
+        // TODO Date
+        // TODO IsHidden control
+        // TODO GetIcons
+        // TODO ExifDate
+        // TODO Windows Version
     }
 
     setFocus() { this.table.setFocus() }

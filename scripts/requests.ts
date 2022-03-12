@@ -26,10 +26,11 @@ type GetItemsType = {
 }
 
 export enum ItemType {
-    File      = 1,
-    Directory = 2,
-    Harddrive = 3,
-    Homedrive = 4
+    Parent    = 1,
+    File      = 2,
+    Directory = 3,
+    Harddrive = 4,
+    Homedrive = 5,
 }
 
 export enum ColumnsType {
