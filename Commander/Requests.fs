@@ -67,3 +67,14 @@ let getItems param =
             return! jsonText items next ctx
         }
     
+let getItemsRaw () =
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+            // Binds a JSON payload to a Car object
+            
+            let! car = ctx.ReadBodyFromRequestAsync ()
+            let affe = System.Text.Json.JsonSerializer.Deserialize<GetItems>(car, getJsonOptions ())
+
+            // Sends the object back to the client
+            return! getItems affe next ctx
+        }
