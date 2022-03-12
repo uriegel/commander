@@ -53,7 +53,7 @@ let getItems engine path = async {
         IconPath = None
         IsHidden = false
         IsDirectory = true
-        Time = System.DateTime.Now 
+        Time = System.DateTime.MinValue
     } |]
 
     let items = Array.concat [

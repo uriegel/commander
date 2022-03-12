@@ -175,6 +175,8 @@ export class Folder extends HTMLElement {
                             td.innerHTML = this.formatSize((item as any)[`${n.column}`])
                             td.classList.add("rightAligned")
                         }}
+                    case ColumnsType.Time:
+                        return { name: n.name, render: (td, item) => td.innerHTML = this.formatDateTime((item as any)[`${n.column}`]) }
                     default:
                         return { name: n.name, render: (td, item) => td.innerHTML= (item as any)[`${n.column}`]}
                 }
@@ -189,7 +191,7 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Date
+        // TODO Last selected folder when goto parent
         // TODO IsHidden control
         // TODO GetIcons
         // TODO ExifDate
@@ -352,6 +354,14 @@ export class Folder extends HTMLElement {
         return sizeStr    
     }
 
+    formatDateTime = (dateStr: string) => {
+        if (!dateStr || dateStr.startsWith("0001"))
+            return ''
+        const date = Date.parse(dateStr)
+        return dateFormat.format(date) + " " + timeFormat.format(date)  
+    }
+    
+
     private table: VirtualTable<FolderItem>
     private latestRequest = 0
     private folderRoot: HTMLElement
@@ -366,3 +376,13 @@ export class Folder extends HTMLElement {
 
 customElements.define('folder-table', Folder)
 
+var dateFormat = Intl.DateTimeFormat("de-DE", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+})
+
+var timeFormat = Intl.DateTimeFormat("de-DE", {
+    hour: "2-digit",
+    minute: "2-digit"
+})
