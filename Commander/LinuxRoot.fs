@@ -82,11 +82,12 @@ let getItems engine = async {
         Engine = EngineType.Root
         Columns = 
             if engine <> EngineType.Root then Some [| 
-                    { Name = "Name"; Column = "name"; Type = ColumnsType.Name }
-                    { Name = "Bezeichnung"; Column = "description"; Type = ColumnsType.Normal }
-                    { Name = "Mountpoint"; Column = "mountPoint"; Type = ColumnsType.Normal }
-                    { Name = "Größe"; Column = "size"; Type = ColumnsType.Size }
-                |] else None
+                { Name = "Name"; Column = "name"; Type = ColumnsType.Name }
+                { Name = "Bezeichnung"; Column = "description"; Type = ColumnsType.Normal }
+                { Name = "Mountpoint"; Column = "mountPoint"; Type = ColumnsType.Normal }
+                { Name = "Größe"; Column = "size"; Type = ColumnsType.Size }
+            |] else 
+                None
     }
 }
 
