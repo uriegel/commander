@@ -184,7 +184,6 @@ export class Folder extends HTMLElement {
         this.table.setItems(result.items)
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Backlog
         // TODO Restriction
         // TODO Date
         // TODO IsHidden control
@@ -192,6 +191,7 @@ export class Folder extends HTMLElement {
         // TODO ExifDate
         // TODO Windows Version
         // TODO Sorting
+        // TODO Access Denied Exception (Windows eigene Dokumente)
     }
 
     setFocus() { this.table.setFocus() }
