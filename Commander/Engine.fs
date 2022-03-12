@@ -5,10 +5,12 @@ type EngineType =
 | Root =      1
 | Directory = 2
 
-[<CLIMutable>]
+type Item = { Name: string }
+
 type GetItems = {
     Path:        string option
     Engine:      EngineType
+    CurrentItem: Item option
 }
 
 type ColumnsType = 

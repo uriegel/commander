@@ -84,3 +84,9 @@ let runCmd cmd args =
     let getStringFromResult (result: FSharpTools.Process.ProcessResult) = async { return result.Output.Value } 
     let runCmd () = FSharpTools.Process.run cmd args
     runCmd >> getStringFromResult
+
+let jsonText (str : string) : HttpHandler =
+        let bytes = System.Text.Encoding.UTF8.GetBytes str
+        fun (_ : HttpFunc) (ctx : HttpContext) ->
+            ctx.SetContentType "application/json; charset=utf-8"
+            ctx.WriteBytesAsync bytes

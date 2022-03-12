@@ -9,7 +9,7 @@ open Engine
 open Engines
 open Utils
 open System.Reactive.Subjects
-
+open System.Text.Json
 
 // TODO Root
 // TODO GetItemsResult: Array with string, number, date or version, in Column description is type
@@ -54,27 +54,11 @@ let getEvents () =
   
 let sse () = createSse rendererReplaySubject <| getJsonOptions ()
 
-let jsonText (str : string) : HttpHandler =
-        let bytes = System.Text.Encoding.UTF8.GetBytes str
-        fun (_ : HttpFunc) (ctx : HttpContext) ->
-            ctx.SetContentType "application/json; charset=utf-8"
-            ctx.WriteBytesAsync bytes
-
-let getItems param = 
+let getItems () =
     fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
-            let! items = Engines.getItems param
-            return! jsonText items next ctx
-        }
-    
-let getItemsRaw () =
-    fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-            // Binds a JSON payload to a Car object
-            
-            let! car = ctx.ReadBodyFromRequestAsync ()
-            let affe = System.Text.Json.JsonSerializer.Deserialize<GetItems>(car, getJsonOptions ())
-
-            // Sends the object back to the client
-            return! getItems affe next ctx
+            let! body = ctx.ReadBodyFromRequestAsync ()
+            let param = JsonSerializer.Deserialize<GetItems>(body, getJsonOptions ())
+            let! result = getItems param body
+            return! jsonText result next ctx
         }

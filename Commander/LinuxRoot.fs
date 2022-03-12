@@ -19,6 +19,12 @@ type RootItem = {
     IsDirectory: bool
 }
 
+type GetItems = {
+    Path:        string option
+    Engine:      EngineType
+    CurrentItem: RootItem
+}
+
 type GetItemResult = {
     Items:   RootItem[]
     Path:    string
@@ -26,10 +32,11 @@ type GetItemResult = {
     Columns: Column[] option
 }
 
-let getEngineAndPathFrom (item: RootItem) = 
-    match item.MountPoint with
-    | value when value |> String.startsWith "/" -> EngineType.Directory, item.MountPoint
-    | _                                         -> EngineType.Directory, item.MountPoint
+let getEngineAndPathFrom (item: Item) (body: string) = 
+    let rootItem = JsonSerializer.Deserialize<GetItems> (body, getJsonOptions ())
+    match rootItem.CurrentItem.MountPoint with
+    | value when value |> String.startsWith "/" -> EngineType.Directory, rootItem.CurrentItem.MountPoint
+    | _                                         -> EngineType.Directory, rootItem.CurrentItem.MountPoint
 
 let getItems engine = async {
     let getHomeDir = 
