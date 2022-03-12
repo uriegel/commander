@@ -182,9 +182,13 @@ export class Folder extends HTMLElement {
         }
 
         this.table.setItems(result.items)
+        this.table.setRestriction((items, restrictValue) => 
+            items.filter(n => n.name.toLowerCase()
+                .startsWith(restrictValue.toLowerCase())
+        ))
+
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Restriction
         // TODO Date
         // TODO IsHidden control
         // TODO GetIcons
@@ -192,6 +196,7 @@ export class Folder extends HTMLElement {
         // TODO Windows Version
         // TODO Sorting
         // TODO Access Denied Exception (Windows eigene Dokumente)
+        // TODO Restriction with background
     }
 
     setFocus() { this.table.setFocus() }
