@@ -2,11 +2,29 @@ module Root
 
 open FSharpTools
 open System.IO
+open System.Text.Json
+open System.Text.Json.Serialization
 
+open Configuration
 open Engine
 open Model
-open PlatformModel
 open Utils
+
+type RootItem = {
+    Name:        string
+    Description: string
+    Size:        int64
+    ItemType:    ItemType
+    IsMounted:   bool
+    IsDirectory: bool
+}
+
+type GetItemResult = {
+    Items:   RootItem[]
+    Path:    string
+    Engine:  EngineType
+    Columns: Column[] option
+}
 
 let getEngineAndPathFrom (item: RootItem) = 
     match item.Name with
@@ -43,7 +61,7 @@ let getItems engine = async {
         DriveInfo.GetDrives ()
         |> Array.map getDrive
 
-    return {
+    let result = {
         Items = drives
         Path = "root"
         Engine = EngineType.Root
@@ -55,6 +73,7 @@ let getItems engine = async {
             |] else 
                 None
     }
+    return JsonSerializer.Serialize (result, getJsonOptions ())
 }
 
 

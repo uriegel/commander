@@ -20,14 +20,6 @@
     <Compile Include="Utils.fs" />
     <Compile Include="Configuration.fs" />
     <Compile Include="Model.fs" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(IsWindows)'=='true'">
-    <Compile Include="WindowsModel.fs" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(IsLinux)'=='true'">
-    <Compile Include="LinuxModel.fs" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Engine.fs" />
     <Compile Include="Directory.fs" />
   </ItemGroup>

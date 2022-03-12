@@ -1,7 +1,5 @@
 module Engine
 
-open PlatformModel
-
 type EngineType =
 | None =      0     
 | Root =      1

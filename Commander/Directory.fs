@@ -6,7 +6,6 @@ open System.Text.Json.Serialization
 
 open Engine
 open Model
-open PlatformModel
 open Configuration
 
 let getEngineAndPathFrom path item = 
