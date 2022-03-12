@@ -21,7 +21,6 @@
     <Compile Include="Configuration.fs" />
     <Compile Include="Model.fs" />
     <Compile Include="Engine.fs" />
-    <Compile Include="Directory.fs" />
   </ItemGroup>
   <ItemGroup Condition="'$(IsWindows)'=='true'">
     <Compile Include="WindowsRoot.fs" />
@@ -30,6 +29,7 @@
     <Compile Include="LinuxRoot.fs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Directory.fs" />
     <Compile Include="Engines.fs" />
     <Compile Include="Requests.fs" />
   </ItemGroup>

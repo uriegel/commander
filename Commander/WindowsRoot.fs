@@ -30,6 +30,12 @@ let getEngineAndPathFrom (item: Item) _ =
     | value when value |> String.contains ":" -> EngineType.Directory, item.Name
     | _                                       -> EngineType.Directory, item.Name
 
+let (|IsRoot|IsNotRoot|) (path, currentItem) =
+    if path |> String.length < 4 && path[1] = ':' && currentItem = ".." then
+        IsRoot
+    else
+        IsNotRoot
+
 let getItems engine = async {
     let getHomeDir = 
         let getHomeDir () = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal)

@@ -38,6 +38,12 @@ let getEngineAndPathFrom (item: Item) (body: string) =
     | value when value |> String.startsWith "/" -> EngineType.Directory, rootItem.CurrentItem.MountPoint
     | _                                         -> EngineType.Directory, rootItem.CurrentItem.MountPoint
 
+let (|IsRoot|IsNotRoot|) (path, currentItem) =
+    if path = "/" && currentItem = ".." then
+        IsRoot
+    else
+        IsNotRoot
+
 let getItems engine = async {
     let getHomeDir = 
         let getHomeDir () = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal)

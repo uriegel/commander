@@ -10,8 +10,8 @@ open Configuration
 
 let getEngineAndPathFrom path item = 
     match path, item with
-    | "/", ".." -> EngineType.Root, "root"
-    | _, _      -> EngineType.Directory, Path.Combine (path, item)
+    | Root.IsRoot -> EngineType.Root, "root"
+    | _, _        -> EngineType.Directory, Path.Combine (path, item)
 
 let getItems engine path = async {
 
