@@ -30,7 +30,7 @@ let getItems engine path latestPath showHiddenItems = async {
         Size =        fileInfo.Length
         ItemType =    ItemType.File
         IsDirectory = false
-        IconPath    = None
+        IconPath    = Some fileInfo.Extension
         IsHidden    = fileInfo.Attributes &&& FileAttributes.Hidden = FileAttributes.Hidden
         Time        = fileInfo.LastWriteTime
     }
@@ -38,7 +38,7 @@ let getItems engine path latestPath showHiddenItems = async {
     let sortByName item = item.Name |> String.toLower 
 
     let dirInfo = DirectoryInfo(path)
-    let dirs = 
+    let     dirs = 
         dirInfo.GetDirectories()
         |> Array.map getDirItem 
         |> Array.sortBy sortByName

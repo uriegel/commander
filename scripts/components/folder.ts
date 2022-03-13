@@ -4,8 +4,11 @@ import { ColumnsType, EngineType, GetItemResult, ItemType, request } from '../re
 
 export interface FolderItem extends TableItem {
     name:         string
+    isMounted?:   boolean
+    isHidden?:    boolean
     isDirectory?: boolean
     itemType:     ItemType
+    iconPath?:    boolean
 }
 
 export class Folder extends HTMLElement {
@@ -38,14 +41,14 @@ export class Folder extends HTMLElement {
             }
             switch (this.engine) {
                 case EngineType.Root:
-                    if (!(item as any).isMounted)
+                    if (!item.isMounted)
                         tr.style.opacity = "0.5"
                     break
                 case EngineType.Directory:
                     tr.ondragstart = evt => this.onDragStart(evt)
                     tr.ondrag = evt => this.onDrag(evt)
                     tr.ondragend = () => this.onDragEnd()
-                    if ((item as any).isHidden)
+                    if (item.isHidden)
                         tr.style.opacity = "0.5"
                     break
             }
@@ -161,14 +164,22 @@ export class Folder extends HTMLElement {
                 switch (n.type) {
                     case ColumnsType.Name:
                         return { name: n.name, render: (td, item) => {
-                            var t = (item.itemType == ItemType.Harddrive
-                            ? document.querySelector('#driveIcon') 
-                            : item.itemType == ItemType.Parent
-                            ? document.querySelector('#parentIcon')
-                            : item.itemType == ItemType.Directory
-                            ? document.querySelector('#folderIcon')
-                            : document.querySelector('#homeIcon')) as HTMLTemplateElement
-                            td.appendChild(document.importNode(t.content, true))
+                            if (item.iconPath) {
+                                const img = document.createElement("img")
+                                img.src = `commander/geticon/${item.iconPath}`
+                                img.classList.add("image")
+                                td.appendChild(img)
+                            } else {
+                                var t = (item.itemType == ItemType.Harddrive
+                                ? document.querySelector('#driveIcon') 
+                                : item.itemType == ItemType.Parent
+                                ? document.querySelector('#parentIcon')
+                                : item.itemType == ItemType.Directory
+                                ? document.querySelector('#folderIcon')
+                                : document.querySelector('#homeIcon')) as HTMLTemplateElement
+                                td.appendChild(document.importNode(t.content, true))
+                            }
+
                             const span = document.createElement('span')
                             span.innerHTML = item.name
                             td.appendChild(span)
@@ -199,7 +210,10 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO GetIcons
+        // TODO GetIcons: GtkInit takes a certain time (Task Delay)
+        // TODO GetIcons: LastModified: Program start DateTime Now
+        // TODO GetIcons: without extension default extension
+        // TODO GetIcons: Windows
         // TODO ExifDate
         // TODO Windows Version
         // TODO Sorting

@@ -10,6 +10,7 @@ open Engines
 open Utils
 open System.Reactive.Subjects
 open System.Text.Json
+open PlatformDirectory
 
 // TODO Root
 // TODO GetItemsResult: Array with string, number, date or version, in Column description is type
@@ -62,3 +63,7 @@ let getItems () =
             let! result = getItems param body
             return! jsonText result next ctx
         }
+
+let getIcon: string -> HttpHandler = 
+    let getIconFile iconFile = streamFile false iconFile None None
+    PlatformDirectory.getIcon >> getIconFile

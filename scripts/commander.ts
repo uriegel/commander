@@ -54,8 +54,7 @@ function setTheme(theme: string) {
 }
 
 export function onRefresh() {
-    folderLeft.reloadItems()
-    folderRight.reloadItems()
+    activeFolder.reloadItems()
 }
 
 export function onSetHidden(showHidden: boolean) {

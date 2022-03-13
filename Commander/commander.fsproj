@@ -24,9 +24,11 @@
   </ItemGroup>
   <ItemGroup Condition="'$(IsWindows)'=='true'">
     <Compile Include="WindowsRoot.fs" />
+    <Compile Include="WindowsDirectory.fs" />
   </ItemGroup>
   <ItemGroup Condition="'$(IsLinux)'=='true'">
     <Compile Include="LinuxRoot.fs" />
+    <Compile Include="LinuxDirectory.fs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Directory.fs" />
@@ -51,6 +53,7 @@
     <PackageReference Include="FSharpRailway" Version="0.2.0" />
     <PackageReference Include="FSharpTools" Version="6.1.0" />
     <PackageReference Include="Giraffe" Version="6.0.0-alpha-2" />
+    <PackageReference Include="GtkDotNet" Version="5.6.1" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="../resources/electron/main.js">
