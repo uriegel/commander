@@ -45,5 +45,5 @@ let webHostBuilder (webHostBuilder: IWebHostBuilder) =
 let start () = 
     Host.CreateDefaultBuilder()
         .ConfigureWebHostDefaults(webHostBuilder)
-        .Build()
+        .Build()    
         .Start()

@@ -8,6 +8,13 @@ open Engine
 open Model
 open Configuration
 
+let private getDateTime = 
+    let startTime = System.DateTimeOffset.UtcNow
+    let getDateTime () = startTime
+    getDateTime
+
+let getStartDateTime () = getDateTime ()
+
 let getEngineAndPathFrom path item = 
     match path, item with
     | Root.IsRoot -> EngineType.Root, "root"
@@ -25,12 +32,18 @@ let getItems engine path latestPath showHiddenItems = async {
         Time        = dirInfo.LastWriteTime
     }
 
+    let getExtension (fileInfo: FileInfo) = 
+        match fileInfo.Extension with
+        | ext when ext |> String.length > 0 -> ext
+        | _                                 -> ".noextension"
+
+
     let getFileItem (fileInfo: FileInfo) = {
         Name =        fileInfo.Name
         Size =        fileInfo.Length
         ItemType =    ItemType.File
         IsDirectory = false
-        IconPath    = Some fileInfo.Extension
+        IconPath    = Some <| getExtension fileInfo
         IsHidden    = fileInfo.Attributes &&& FileAttributes.Hidden = FileAttributes.Hidden
         Time        = fileInfo.LastWriteTime
     }

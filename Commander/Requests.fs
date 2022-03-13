@@ -65,5 +65,6 @@ let getItems () =
         }
 
 let getIcon: string -> HttpHandler = 
-    let getIconFile iconFile = streamFile false iconFile None None
+    let startTime = Directory.getStartDateTime ()
+    let getIconFile iconFile = streamFile false iconFile None <| Some startTime
     PlatformDirectory.getIcon >> getIconFile

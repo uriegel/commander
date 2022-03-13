@@ -53,7 +53,6 @@
     <PackageReference Include="FSharpRailway" Version="0.2.0" />
     <PackageReference Include="FSharpTools" Version="6.1.0" />
     <PackageReference Include="Giraffe" Version="6.0.0-alpha-2" />
-    <PackageReference Include="GtkDotNet" Version="5.6.1" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="../resources/electron/main.js">
@@ -89,6 +88,9 @@
   <ItemGroup Condition="'$(IsLinux)'=='true'">
     <EmbeddedResource Include="../resources/web/images/kirk.png">
       <LogicalName>web/images/appicon</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../resources/python/geticon.py">
+      <LogicalName>python/geticon.py</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
 </Project>

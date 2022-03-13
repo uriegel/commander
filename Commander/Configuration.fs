@@ -7,7 +7,6 @@ open System.Text.Json
 open System.Text.Json.Serialization
 
 open Utils
-open System.Threading
 
 type WindowBounds = {
     X:           int option

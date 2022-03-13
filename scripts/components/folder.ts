@@ -210,9 +210,6 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO GetIcons: GtkInit takes a certain time (Task Delay)
-        // TODO GetIcons: LastModified: Program start DateTime Now
-        // TODO GetIcons: without extension default extension
         // TODO GetIcons: Windows
         // TODO ExifDate
         // TODO Windows Version
