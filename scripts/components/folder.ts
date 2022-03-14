@@ -2,6 +2,8 @@ import 'virtual-table-component'
 import { TableItem, VirtualTable } from 'virtual-table-component'
 import { ColumnsType, EngineType, GetItemResult, ItemType, request } from '../requests'
 
+var latestRequest = 0
+
 export interface FolderItem extends TableItem {
     index?:       number
     name:         string
@@ -150,7 +152,10 @@ export class Folder extends HTMLElement {
     }
 
     async changePath(path?: string|null, currentItem?: FolderItem, fromBacklog?: boolean) {
-        const requestId = ++this.latestRequest
+        console.log
+        this.requestId = ++latestRequest
+        console.log("this.requestId", this.requestId)
+        const requestId = this.requestId
         let result = await request<GetItemResult>("getitems", {
             folderId: this.folderId,
             requestId,
@@ -159,7 +164,7 @@ export class Folder extends HTMLElement {
             currentItem,
             showHiddenItems: this.showHiddenItems
         })
-        if (requestId < this.latestRequest) 
+        if (requestId < this.requestId) 
             return 
         if (result.columns) {
             this.engine = result.engine
@@ -382,7 +387,6 @@ export class Folder extends HTMLElement {
     
 
     private table: VirtualTable<FolderItem>
-    private latestRequest = 0
     private folderRoot: HTMLElement
     private folderId = ""
     private backtrack: string[] = []
@@ -392,6 +396,7 @@ export class Folder extends HTMLElement {
     private engine = EngineType.None
     private path = ""
     private showHiddenItems = false
+    private requestId = 0
 }
 
 customElements.define('folder-table', Folder)
@@ -406,3 +411,5 @@ var timeFormat = Intl.DateTimeFormat("de-DE", {
     hour: "2-digit",
     minute: "2-digit"
 })
+
+

@@ -35,9 +35,25 @@ let getEngineAndPathFrom path item =
     | Root.IsRoot -> EngineType.Root, "root"
     | _, _        -> EngineType.Directory, Path.Combine (path, item)
 
+type RequestId = {
+    mutable Id: int
+}
+let private leftRequestId = { Id = 0}
+let private rightRequestId = { Id = 0}
+let getRequestId folderId value = 
+    match folderId with
+    | "folderLeft"  -> 
+        leftRequestId.Id <- value
+        leftRequestId
+    | _             -> 
+        rightRequestId.Id <- value
+        rightRequestId
+
 let getItems path param = async {
     
     let latestPath = param.Path
+
+    let requestId = getRequestId param.FolderId param.RequestId
 
     let getDirItem (dirInfo: DirectoryInfo) = {
         Index =       0
@@ -124,28 +140,44 @@ let getItems path param = async {
                     None
     |}
 
-    // TODO Parallel.for
-    // all items iter -> if jpg then exif jpg with id
     // TODO Send every 100 items with requestId
     // TODO Break loop when folderId = and requestId higher
+    // TODO Parallel.for, perhaps differently in Windows and Linux
 
     let appendExifTime path (items: Item array) = 
 
         let addExifDate (item: Item) = 
-            let getExifDateOriginal = getExif >=> getDateValue ExifTag.DateTimeOriginal
-            let getExifDate = getExif >=> getDateValue ExifTag.DateTime
-            
-            let file = Path.Combine(path, item.Name)
-            { item with ExifTime = file |> getExifDateOriginal |> Option.orElseWith (fun () -> file |> getExifDate) }
+            if requestId.Id = param.RequestId then
+                System.Threading.Thread.Sleep 1_000
+                printfn "Ädd exif %d" requestId.Id
+                let getExifDateOriginal = getExif >=> getDateValue ExifTag.DateTimeOriginal
+                let getExifDate = getExif >=> getDateValue ExifTag.DateTime
+                
+                let file = Path.Combine(path, item.Name)
+                { item with ExifTime = file |> getExifDateOriginal |> Option.orElseWith (fun () -> file |> getExifDate) }
+            else
+                item
 
-        let filterEnhanced item = item.Name |> String.endsWithComparison "jpg" System.StringComparison.OrdinalIgnoreCase
+        let filterEnhanced item = 
+            item.Name |> String.endsWithComparison "jpg" System.StringComparison.OrdinalIgnoreCase
+            && requestId.Id = param.RequestId
 
-        items 
-        |> Array.filter filterEnhanced
-        |> Array.map addExifDate
+        let exifItems = 
+            items 
+            |> Array.filter filterEnhanced
+            |> Array.map addExifDate
 
-    let exifs = items |> appendExifTime result.Path
-    let a = exifs
+        if requestId.Id = param.RequestId then
+            ()
+            // TODO if requestId.Id = param.RequestId then
+            // TODO: send exifItems 
+
+
+    async {
+        let exifs = items |> appendExifTime result.Path
+        let a = exifs
+        ()
+    } |> Async.StartAsTask |> ignore
 
     return JsonSerializer.Serialize (result, getJsonOptions ())
 }
