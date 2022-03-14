@@ -57,6 +57,17 @@ export class Folder extends HTMLElement {
             }
         }
 
+        this.source = new EventSource(this.id == "folderLeft" ? "commander/sseLeft" : "commander/sseRight")
+        this.source.addEventListener("message", function (event) {
+            const evt: Event = JSON.parse(event.data)
+            console.log("SSE", evt)
+            // switch (evt.Case) {
+            //     case "ThemeChanged":
+            //     setTheme(evt.Fields[0])    
+            //     break
+            // }
+        })
+
         this.changePath() 
         const lastPath = localStorage.getItem(`${this.folderId}-lastPath`)
         setTimeout(() => this.changePath(lastPath))
@@ -386,6 +397,7 @@ export class Folder extends HTMLElement {
     }
     
 
+    private source: EventSource
     private table: VirtualTable<FolderItem>
     private folderRoot: HTMLElement
     private folderId = ""

@@ -4,6 +4,7 @@ open FSharpTools
 open FSharpTools.ExifReader
 open FSharpRailway.Option
 open System.IO
+open System.Reactive.Subjects
 open System.Text.Json
 
 open Configuration
@@ -22,6 +23,9 @@ type Item = {
     Time:        System.DateTime
     ExifTime:    System.DateTime option
 }
+
+let leftFolderReplaySubject = new Subject<Item[]>()
+let rightFolderReplaySubject = new Subject<Item[]>()
 
 let private getDateTime = 
     let startTime = System.DateTimeOffset.UtcNow
@@ -148,8 +152,6 @@ let getItems path param = async {
 
         let addExifDate (item: Item) = 
             if requestId.Id = param.RequestId then
-                System.Threading.Thread.Sleep 1_000
-                printfn "Ädd exif %d" requestId.Id
                 let getExifDateOriginal = getExif >=> getDateValue ExifTag.DateTimeOriginal
                 let getExifDate = getExif >=> getDateValue ExifTag.DateTime
                 
@@ -167,11 +169,15 @@ let getItems path param = async {
             |> Array.filter filterEnhanced
             |> Array.map addExifDate
 
-        if requestId.Id = param.RequestId then
-            ()
-            // TODO if requestId.Id = param.RequestId then
-            // TODO: send exifItems 
+        let getEventSubject () = 
+            if param.FolderId = "folderLeft" then 
+                leftFolderReplaySubject
+            else
+                rightFolderReplaySubject
 
+        if requestId.Id = param.RequestId then
+            let subj = getEventSubject ()
+            subj.OnNext exifItems
 
     async {
         let exifs = items |> appendExifTime result.Path

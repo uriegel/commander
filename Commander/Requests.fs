@@ -5,6 +5,7 @@ open Microsoft.AspNetCore.Http
 open System.Threading.Tasks
 
 open Configuration
+open Directory
 open Engine
 open Engines
 open Utils
@@ -44,6 +45,9 @@ let getEvents () =
         }
   
 let sse () = createSse rendererReplaySubject <| getJsonOptions ()
+
+let sseLeftFolder () = createSse leftFolderReplaySubject <| getJsonOptions ()
+let sseRightFolder () = createSse rightFolderReplaySubject <| getJsonOptions ()
 
 let getItems () =
     fun (next : HttpFunc) (ctx : HttpContext) ->

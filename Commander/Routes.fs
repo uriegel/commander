@@ -30,6 +30,8 @@ let configure (app : IApplicationBuilder) =
             route  "/commander/showfullscreen" >=> warbler (fun _ -> showFullscreen ())
             route  "/commander/getevents"      >=> warbler (fun _ -> getEvents ())
             route  "/commander/sse"            >=> warbler (fun _ -> sse ())
+            route  "/commander/sseLeft"        >=> warbler (fun _ -> sseLeftFolder ())
+            route  "/commander/sseRight"       >=> warbler (fun _ -> sseRightFolder ())
             route  "/"                         >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)
             routePathes ()                      <| httpHandlerParam getResourceFile 
         ]       
