@@ -169,7 +169,7 @@ export class Folder extends HTMLElement {
                         return { name: n.name, render: (td, item) => {
                             if (item.iconPath) {
                                 const img = document.createElement("img")
-                                img.src = `commander/geticon/${item.iconPath}`
+                                img.src = `commander/geticon?path=${item.iconPath}`
                                 img.classList.add("image")
                                 td.appendChild(img)
                             } else {

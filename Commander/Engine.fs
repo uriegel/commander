@@ -7,6 +7,9 @@ type EngineType =
 
 type Item = { Name: string }
 
+[<CLIMutable>]
+type GetIcon = { Path: string }
+
 type GetItems = {
     FolderId:        string
     RequestId:       int

@@ -16,20 +16,23 @@ let getIconPath (fileInfo: FileInfo) =
 
 let getIcon ext = async {
     let rec getIconHandle callCount = async {
-        let mutable shinfo = ShFileInfo()
-        SHGetFileInfo(ext, FileAttributeNormal, &shinfo, Marshal.SizeOf shinfo,
-            SHGetFileInfoConstants.ICON
-            ||| SHGetFileInfoConstants.SMALLICON
-            ||| SHGetFileInfoConstants.USEFILEATTRIBUTES
-            ||| SHGetFileInfoConstants.TYPENAME) |> ignore
-
-        if shinfo.IconHandle <> IntPtr.Zero then
-            return shinfo.IconHandle
-        elif callCount < 3 then
-            do! Async.Sleep 29
-            return! getIconHandle <| callCount + 1
+        if ext |> String.contains "\\" then
+            return Icon.ExtractAssociatedIcon(ext).Handle
         else
-            return Icon.ExtractAssociatedIcon(@"C:\Windows\system32\SHELL32.dll").Handle
+            let mutable shinfo = ShFileInfo()
+            SHGetFileInfo(ext, FileAttributeNormal, &shinfo, Marshal.SizeOf shinfo,
+                SHGetFileInfoConstants.ICON
+                ||| SHGetFileInfoConstants.SMALLICON
+                ||| SHGetFileInfoConstants.USEFILEATTRIBUTES
+                ||| SHGetFileInfoConstants.TYPENAME) |> ignore
+
+            if shinfo.IconHandle <> IntPtr.Zero then
+                return shinfo.IconHandle
+            elif callCount < 3 then
+                do! Async.Sleep 29
+                return! getIconHandle <| callCount + 1
+            else
+                return Icon.ExtractAssociatedIcon(@"C:\Windows\system32\SHELL32.dll").Handle
     }
 
     let! iconHandle = getIconHandle 0
