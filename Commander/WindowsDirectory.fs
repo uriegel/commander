@@ -1,11 +1,18 @@
 module PlatformDirectory
 
 open ClrWinApi
+open FSharpTools
 open System
 open System.Drawing
 open System.Drawing.Imaging
 open System.IO
 open System.Runtime.InteropServices
+
+let getIconPath (fileInfo: FileInfo) = 
+    match fileInfo.Extension with
+    | ext when ext |> String.toLower = ".exe" -> fileInfo.FullName
+    | ext when ext |> String.length > 0       -> ext
+    | _                                       -> ".noextension"
 
 let getIcon ext = async {
     let rec getIconHandle callCount = async {
