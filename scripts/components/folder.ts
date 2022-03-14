@@ -12,6 +12,7 @@ export interface FolderItem extends TableItem {
     isDirectory?: boolean
     itemType:     ItemType
     iconPath?:    boolean
+    exifTime?:    string
 }
 
 export class Folder extends HTMLElement {
@@ -58,14 +59,13 @@ export class Folder extends HTMLElement {
         }
 
         this.source = new EventSource(this.id == "folderLeft" ? "commander/sseLeft" : "commander/sseRight")
-        this.source.addEventListener("message", function (event) {
-            const evt: Event = JSON.parse(event.data)
-            console.log("SSE", evt)
-            // switch (evt.Case) {
-            //     case "ThemeChanged":
-            //     setTheme(evt.Fields[0])    
-            //     break
-            // }
+        this.source.addEventListener("message", event => {
+            const items: FolderItem[] = JSON.parse(event.data)
+            items.forEach(n => {
+                if (n.exifTime) 
+                    this.table.items[n.index!].exifTime = n.exifTime
+            })            
+            this.table.refresh()
         })
 
         this.changePath() 
@@ -209,7 +209,11 @@ export class Folder extends HTMLElement {
                             td.classList.add("rightAligned")
                         }}
                     case ColumnsType.Time:
-                        return { name: n.name, render: (td, item) => td.innerHTML = this.formatDateTime((item as any)[`${n.column}`]) }
+                        return { name: n.name, render: (td, item) =>  {
+                                td.innerHTML = this.formatDateTime(item.exifTime || (item as any)[`${n.column}`]) 
+                                if (item.exifTime)
+                                    td.classList.add("exif")
+                            }}
                     default:
                         return { name: n.name, render: (td, item) => td.innerHTML= (item as any)[`${n.column}`]}
                 }
@@ -229,7 +233,6 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO ExifDate
         // TODO Windows Version
         // TODO Sorting
         // TODO Access Denied Exception (Windows eigene Dokumente)

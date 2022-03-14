@@ -137,14 +137,13 @@ let getItems path param = async {
         LatestPath = selectFolder
         Columns = 
             if param.Engine <> EngineType.Directory then Some [| 
-                    { Name = "Name"; Column = "name"; Type = ColumnsType.Name }
-                    { Name = "Datum"; Column = "time"; Type = ColumnsType.Time }
-                    { Name = "Größe"; Column = "size"; Type = ColumnsType.Size }
-                |] else 
-                    None
+                { Name = "Name";  Column = "name"; Type = ColumnsType.Name }
+                { Name = "Datum"; Column = "time"; Type = ColumnsType.Time }
+                { Name = "Größe"; Column = "size"; Type = ColumnsType.Size }
+            |] else 
+                None
     |}
 
-    // TODO Send every 100 items with requestId
     // TODO Parallel.for, perhaps differently in Windows and Linux
 
     let appendExifTime path (items: Item array) = 
@@ -178,11 +177,7 @@ let getItems path param = async {
             let subj = getEventSubject ()
             subj.OnNext exifItems
 
-    async {
-        let exifs = items |> appendExifTime result.Path
-        let a = exifs
-        ()
-    } |> Async.StartAsTask |> ignore
+    async { items |> appendExifTime result.Path } |> Async.StartAsTask |> ignore
 
     return JsonSerializer.Serialize (result, getJsonOptions ())
 }

@@ -60,18 +60,23 @@ let createSse<'a> (observable: IObservable<'a>) (jsonOptions: JsonSerializerOpti
             ctx.SetStatusCode 200
             ctx.SetHttpHeader("Content-Type", "text/event-stream")
             ctx.SetHttpHeader("Cache-Control", "no-cache")
-            while true do
-                let tcs = TaskCompletionSource<'a>()
-                use subscription = observable.Subscribe (fun evt -> tcs.SetResult(evt))
-                let! evt = tcs.Task
-                let payload = JsonSerializer.Serialize(evt, jsonOptions)
-                do! res.WriteAsync $"data:{payload}\n\n"
-                do! res.Body.FlushAsync()
+            
+            let onNext evt = 
+                let t = task {
+                    let payload = JsonSerializer.Serialize(evt, jsonOptions)
+                    do! res.WriteAsync $"data:{payload}\n\n"
+                    do! res.Body.FlushAsync()
+                }
+                t.Result
 
+            observable |> Observable.subscribe onNext |> ignore
+
+            let tcs = TaskCompletionSource<'a>()
+            let! evt = tcs.Task
             // This won't be hit because we're expecting
             // the browser to break the connection
             // although you can indeed break from the loop above and get here
-            return! text "" next ctx
+            return! text "" next ctx            
         }        
 
 let runCmd cmd args = 
