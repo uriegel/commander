@@ -8,6 +8,8 @@ type EngineType =
 type Item = { Name: string }
 
 type GetItems = {
+    FolderId:        string
+    RequestId:       int
     Path:            string option
     Engine:          EngineType
     CurrentItem:     Item option

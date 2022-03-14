@@ -10,7 +10,6 @@ open Engines
 open Utils
 open System.Reactive.Subjects
 open System.Text.Json
-open PlatformDirectory
 
 type MainEvent = 
     | ShowDevTools 

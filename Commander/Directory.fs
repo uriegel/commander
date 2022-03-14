@@ -8,6 +8,16 @@ open Engine
 open Model
 open Configuration
 
+type Item = {
+    Name:        string
+    Size:        int64
+    ItemType:    ItemType
+    IconPath:    string option
+    IsHidden:    bool
+    IsDirectory: bool
+    Time:        System.DateTime
+}
+
 let private getDateTime = 
     let startTime = System.DateTimeOffset.UtcNow
     let getDateTime () = startTime
@@ -20,7 +30,9 @@ let getEngineAndPathFrom path item =
     | Root.IsRoot -> EngineType.Root, "root"
     | _, _        -> EngineType.Directory, Path.Combine (path, item)
 
-let getItems engine path latestPath showHiddenItems = async {
+let getItems path param = async {
+    
+    let latestPath = param.Path
 
     let getDirItem (dirInfo: DirectoryInfo) = {
         Name =        dirInfo.Name
@@ -36,7 +48,6 @@ let getItems engine path latestPath showHiddenItems = async {
         match fileInfo.Extension with
         | ext when ext |> String.length > 0 -> ext
         | _                                 -> ".noextension"
-
 
     let getFileItem (fileInfo: FileInfo) = {
         Name =        fileInfo.Name
@@ -76,10 +87,14 @@ let getItems engine path latestPath showHiddenItems = async {
     ]
 
     let filterHidden item = not item.IsHidden
+
+    let getItemI i (n: Item) = {| n with Index = i |}
+
     let items = 
-        match showHiddenItems with
+        match param.ShowHiddenItems with
         | true -> items 
         | _    -> items |> Array.filter filterHidden
+        |> Array.mapi getItemI
 
     let selectFolder = 
         match latestPath with
@@ -95,13 +110,19 @@ let getItems engine path latestPath showHiddenItems = async {
         Engine =     EngineType.Directory
         LatestPath = selectFolder
         Columns = 
-            if engine <> EngineType.Directory then Some [| 
+            if param.Engine <> EngineType.Directory then Some [| 
                     { Name = "Name"; Column = "name"; Type = ColumnsType.Name }
                     { Name = "Datum"; Column = "time"; Type = ColumnsType.Time }
                     { Name = "Größe"; Column = "size"; Type = ColumnsType.Size }
                 |] else 
                     None
     |}
+
+    // TODO Parallel.for
+    // all items iter -> if jpg then exif jpg with id
+    // TODO Send every 100 items with requestId
+    // TODO Break loop when folderId = and requestId higher
+
     return JsonSerializer.Serialize (result, getJsonOptions ())
 }
 

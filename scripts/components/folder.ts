@@ -3,6 +3,7 @@ import { TableItem, VirtualTable } from 'virtual-table-component'
 import { ColumnsType, EngineType, GetItemResult, ItemType, request } from '../requests'
 
 export interface FolderItem extends TableItem {
+    index?:       number
     name:         string
     isMounted?:   boolean
     isHidden?:    boolean
@@ -149,14 +150,16 @@ export class Folder extends HTMLElement {
     }
 
     async changePath(path?: string|null, currentItem?: FolderItem, fromBacklog?: boolean) {
-        const req = ++this.latestRequest
+        const requestId = ++this.latestRequest
         let result = await request<GetItemResult>("getitems", {
+            folderId: this.folderId,
+            requestId,
             engine: this.engine,
             path,
             currentItem,
             showHiddenItems: this.showHiddenItems
         })
-        if (req < this.latestRequest) 
+        if (requestId < this.latestRequest) 
             return 
         if (result.columns) {
             this.engine = result.engine

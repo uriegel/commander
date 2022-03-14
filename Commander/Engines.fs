@@ -21,4 +21,4 @@ let getEngineAndPath (getItems: GetItems) body =
 let getItems (param: GetItems) (body: string) = 
     match getEngineAndPath param body with
     | EngineType.Root, _ -> Root.getItems param.Engine param.Path
-    | _, path            -> Directory.getItems param.Engine path param.Path param.ShowHiddenItems
+    | _, path            -> Directory.getItems path param

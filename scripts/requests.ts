@@ -1,6 +1,5 @@
 import { FolderItem } from "./components/folder"
 
- 
 export const ShowDevTools = "showdevtools"
 export const ShowFullscreen = "showfullscreen"
 type ShowDevToolsType = "showdevtools"
@@ -20,6 +19,8 @@ export enum EngineType {
 }
 
 type GetItemsType = {
+    folderId?:    string
+    requestId?:   number,
     path?:        string,
     engine:       EngineType
     currentItem?: FolderItem
