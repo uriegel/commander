@@ -1,10 +1,15 @@
 module PlatformRequests
 
 open Giraffe
+open Microsoft.AspNetCore.Http
 
 open PlatformDirectory
 
 let getIcon: string -> HttpHandler = 
-    let startTime = Directory.getStartDateTime ()
-    let getIconFile iconFile = streamFile false iconFile None <| Some startTime
-    getIcon >> getIconFile
+    fun (fileExt: string) (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+            let startTime = Directory.getStartDateTime ()
+            let! iconStream = getIcon fileExt
+            return! (streamData false iconStream None <| Some startTime) next ctx
+        }    
+   

@@ -210,7 +210,7 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO GetIcons: Windows: https://github.com/uwriegel/Commander-CefSharp/blob/master/Commander/CustomProtocol.fs
+        // TODO GetIcons: Windows: exe
         // TODO ExifDate
         // TODO Windows Version
         // TODO Sorting

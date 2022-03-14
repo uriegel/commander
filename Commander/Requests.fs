@@ -12,15 +12,6 @@ open System.Reactive.Subjects
 open System.Text.Json
 open PlatformDirectory
 
-// TODO Root
-// TODO GetItemsResult: Array with string, number, date or version, in Column description is type
-// TODO GetItemsResult: Icon string
-// TODO getItems (?path=%path via fetch currentPath, engineId
-// TODO Linux and Windows
-// TODO returns object with items and optional columns, currentPath, engineId
-// TODO items: files unsorted, directories with parent sorted
-// TODO Directory
-
 type MainEvent = 
     | ShowDevTools 
     | ShowFullscreen
