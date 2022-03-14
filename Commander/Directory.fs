@@ -132,9 +132,11 @@ let getItems path param = async {
     let appendExifTime path (items: Item array) = 
 
         let addExifDate (item: Item) = 
-            // TODO alternative ExifTime
+            let getExifDateOriginal = getExif >=> getDateValue ExifTag.DateTimeOriginal
             let getExifDate = getExif >=> getDateValue ExifTag.DateTime
-            { item with ExifTime = Path.Combine(path, item.Name) |> getExifDate }
+            
+            let file = Path.Combine(path, item.Name)
+            { item with ExifTime = file |> getExifDateOriginal |> Option.orElseWith (fun () -> file |> getExifDate) }
 
         let filterEnhanced item = item.Name |> String.endsWithComparison "jpg" System.StringComparison.OrdinalIgnoreCase
 
