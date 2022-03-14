@@ -1,6 +1,7 @@
 module PlatformDirectory
 
 open Configuration
+open Engine
 
 open System.Diagnostics
 open System.IO
@@ -15,7 +16,7 @@ let getIconPath (fileInfo: FileInfo) =
     | ext when ext |> String.length > 0 -> ext
     | _                                 -> ".noextension"
 
-let getIcon ext = 
+let getIcon (param: GetIcon) = 
     let mutable output = ""
     try 
         use proc = new Process() 
@@ -24,7 +25,7 @@ let getIcon ext =
         proc.StartInfo.RedirectStandardError <- true
         proc.StartInfo.FileName <- "python3"
         proc.StartInfo.CreateNoWindow <- true
-        proc.StartInfo.Arguments <- sprintf "%s %s" (getIconScript ()) ext
+        proc.StartInfo.Arguments <- sprintf "%s %s" (getIconScript ()) param.Path
         proc.EnableRaisingEvents <- true
         proc.OutputDataReceived.Add(fun data -> if data.Data <> null then output <- data.Data)
         proc.ErrorDataReceived.Add(fun data -> eprintfn "%s" data.Data)

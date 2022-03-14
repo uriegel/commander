@@ -213,7 +213,6 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO GetIcons: Windows: exe
         // TODO ExifDate
         // TODO Windows Version
         // TODO Sorting
