@@ -4,9 +4,10 @@ open FSharpTools
 open System.IO
 open System.Text.Json
 
+open Configuration
 open Engine
 open Model
-open Configuration
+open PlatformDirectory
 
 type Item = {
     Name:        string
@@ -44,17 +45,12 @@ let getItems path param = async {
         Time        = dirInfo.LastWriteTime
     }
 
-    let getExtension (fileInfo: FileInfo) = 
-        match fileInfo.Extension with
-        | ext when ext |> String.length > 0 -> ext
-        | _                                 -> ".noextension"
-
     let getFileItem (fileInfo: FileInfo) = {
         Name =        fileInfo.Name
         Size =        fileInfo.Length
         ItemType =    ItemType.File
         IsDirectory = false
-        IconPath    = Some <| getExtension fileInfo
+        IconPath    = Some <| getIconPath fileInfo
         IsHidden    = fileInfo.Attributes &&& FileAttributes.Hidden = FileAttributes.Hidden
         Time        = fileInfo.LastWriteTime
     }

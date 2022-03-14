@@ -3,11 +3,17 @@ module PlatformDirectory
 open Configuration
 
 open System.Diagnostics
+open System.IO
 
 let private getIconScript = 
     let filename = saveResource (getElectronFile "geticon.py", "python/geticon.py")
     let getIconScript () = filename
     getIconScript
+
+let getIconPath (fileInfo: FileInfo) = 
+    match fileInfo.Extension with
+    | ext when ext |> String.length > 0 -> ext
+    | _                                 -> ".noextension"
 
 let getIcon ext = 
     let mutable output = ""
