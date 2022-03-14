@@ -36,9 +36,11 @@
     <Compile Include="Requests.fs" />
   </ItemGroup>
   <ItemGroup Condition="'$(IsWindows)'=='true'">
+    <Compile Include="WindowsRequests.fs" />
     <Compile Include="WindowsTheme.fs" />
   </ItemGroup>
   <ItemGroup Condition="'$(IsLinux)'=='true'">
+    <Compile Include="LinuxRequests.fs" />
     <Compile Include="LinuxTheme.fs" />
   </ItemGroup>
   <ItemGroup>

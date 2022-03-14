@@ -64,7 +64,3 @@ let getItems () =
             return! jsonText result next ctx
         }
 
-let getIcon: string -> HttpHandler = 
-    let startTime = Directory.getStartDateTime ()
-    let getIconFile iconFile = streamFile false iconFile None <| Some startTime
-    PlatformDirectory.getIcon >> getIconFile
