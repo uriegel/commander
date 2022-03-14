@@ -1,6 +1,8 @@
 module Directory
 
 open FSharpTools
+open FSharpTools.ExifReader
+open FSharpRailway.Option
 open System.IO
 open System.Text.Json
 
@@ -10,6 +12,7 @@ open Model
 open PlatformDirectory
 
 type Item = {
+    Index:       int
     Name:        string
     Size:        int64
     ItemType:    ItemType
@@ -17,6 +20,7 @@ type Item = {
     IsHidden:    bool
     IsDirectory: bool
     Time:        System.DateTime
+    ExifTime:    System.DateTime option
 }
 
 let private getDateTime = 
@@ -36,6 +40,7 @@ let getItems path param = async {
     let latestPath = param.Path
 
     let getDirItem (dirInfo: DirectoryInfo) = {
+        Index =       0
         Name =        dirInfo.Name
         Size =        0
         ItemType =    ItemType.Directory
@@ -43,9 +48,11 @@ let getItems path param = async {
         IconPath    = None
         IsHidden    = dirInfo.Attributes &&& FileAttributes.Hidden = FileAttributes.Hidden
         Time        = dirInfo.LastWriteTime
+        ExifTime    = None                    
     }
 
     let getFileItem (fileInfo: FileInfo) = {
+        Index =       0
         Name =        fileInfo.Name
         Size =        fileInfo.Length
         ItemType =    ItemType.File
@@ -53,12 +60,13 @@ let getItems path param = async {
         IconPath    = Some <| getIconPath fileInfo
         IsHidden    = fileInfo.Attributes &&& FileAttributes.Hidden = FileAttributes.Hidden
         Time        = fileInfo.LastWriteTime
+        ExifTime    = None                    
     }
 
     let sortByName item = item.Name |> String.toLower 
 
     let dirInfo = DirectoryInfo(path)
-    let     dirs = 
+    let dirs = 
         dirInfo.GetDirectories()
         |> Array.map getDirItem 
         |> Array.sortBy sortByName
@@ -67,13 +75,15 @@ let getItems path param = async {
         |> Array.map getFileItem 
 
     let parent = [| { 
-        Name = ".."
-        Size = 0
-        ItemType = ItemType.Parent
-        IconPath = None
-        IsHidden = false
+        Index =       0
+        Name =        ".."
+        Size =        0
+        ItemType =    ItemType.Parent
+        IconPath =    None
+        IsHidden =    false
         IsDirectory = true
-        Time = System.DateTime.MinValue
+        Time =        System.DateTime.MinValue
+        ExifTime    = None                    
     } |]
 
     let items = Array.concat [
@@ -84,9 +94,9 @@ let getItems path param = async {
 
     let filterHidden item = not item.IsHidden
 
-    let getItemI i (n: Item) = {| n with Index = i |}
+    let getItemI i (n: Item) = { n with Index = i }
 
-    let items = 
+    let items: Item array = 
         match param.ShowHiddenItems with
         | true -> items 
         | _    -> items |> Array.filter filterHidden
@@ -118,6 +128,22 @@ let getItems path param = async {
     // all items iter -> if jpg then exif jpg with id
     // TODO Send every 100 items with requestId
     // TODO Break loop when folderId = and requestId higher
+
+    let appendExifTime path (items: Item array) = 
+
+        let addExifDate (item: Item) = 
+            // TODO alternative ExifTime
+            let getExifDate = getExif >=> getDateValue ExifTag.DateTime
+            { item with ExifTime = Path.Combine(path, item.Name) |> getExifDate }
+
+        let filterEnhanced item = item.Name |> String.endsWithComparison "jpg" System.StringComparison.OrdinalIgnoreCase
+
+        items 
+        |> Array.filter filterEnhanced
+        |> Array.map addExifDate
+
+    let exifs = items |> appendExifTime result.Path
+    let a = exifs
 
     return JsonSerializer.Serialize (result, getJsonOptions ())
 }
