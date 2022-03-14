@@ -145,7 +145,6 @@ let getItems path param = async {
     |}
 
     // TODO Send every 100 items with requestId
-    // TODO Break loop when folderId = and requestId higher
     // TODO Parallel.for, perhaps differently in Windows and Linux
 
     let appendExifTime path (items: Item array) = 
@@ -175,7 +174,7 @@ let getItems path param = async {
             else
                 rightFolderReplaySubject
 
-        if requestId.Id = param.RequestId then
+        if requestId.Id = param.RequestId && exifItems.Length > 0 then
             let subj = getEventSubject ()
             subj.OnNext exifItems
 
