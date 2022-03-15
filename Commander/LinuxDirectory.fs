@@ -39,4 +39,4 @@ let getIcon (param: GetIcon) =
         | _ as e -> eprintfn "%s" <| e.ToString ()
     output
 
-let appendPlatformInfo (path: string) (items: DirectoryItem array) = ()
+let appendPlatformInfo (path: string) (items: DirectoryItem seq) = ()

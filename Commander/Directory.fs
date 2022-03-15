@@ -12,6 +12,7 @@ open Engine
 open Model
 open PlatformDirectory
 open PlatformModel
+open System.Diagnostics
 
 let leftFolderReplaySubject = new Subject<FolderEvent>()
 let rightFolderReplaySubject = new Subject<FolderEvent>()
@@ -75,13 +76,13 @@ let getItems path param = async {
     let dirInfo = DirectoryInfo(path)
     let dirs = 
         dirInfo.GetDirectories()
-        |> Array.map getDirItem 
-        |> Array.sortBy sortByName
+        |> Seq.map getDirItem 
+        |> Seq.sortBy sortByName
     let files = 
         dirInfo.GetFiles()
-        |> Array.map getFileItem 
+        |> Seq.map getFileItem 
 
-    let parent = [| { 
+    let parent = seq {{ 
         Index =       0
         Name =        ".."
         Size =        0
@@ -90,9 +91,9 @@ let getItems path param = async {
         IsHidden =    false
         IsDirectory = true
         Time =        System.DateTime.MinValue
-    } |]
+    }}
 
-    let items = Array.concat [
+    let items = Seq.concat [
         parent
         dirs
         files
@@ -102,11 +103,11 @@ let getItems path param = async {
 
     let getItemI i (n: DirectoryItem) = { n with Index = i }
 
-    let items: DirectoryItem array = 
+    let items: DirectoryItem seq = 
         match param.ShowHiddenItems with
         | true -> items 
-        | _    -> items |> Array.filter filterHidden
-        |> Array.mapi getItemI
+        | _    -> items |> Seq.filter filterHidden
+        |> Seq.mapi getItemI
 
     let selectFolder = 
         match latestPath with
@@ -130,7 +131,7 @@ let getItems path param = async {
                 None
     |}
 
-    let appendExifTime path (items: DirectoryItem array) = 
+    let appendExifTime path (items: DirectoryItem seq) = 
 
         let addExifDate (item: DirectoryItem) = 
             if requestId.Id = param.RequestId then
@@ -154,8 +155,9 @@ let getItems path param = async {
 
         let exifItems = 
             items 
-            |> Array.filter filterEnhanced
-            |> Array.map addExifDate
+            |> Seq.filter filterEnhanced
+            |> Seq.map addExifDate
+            |> Seq.toArray
 
         let getEventSubject () = 
             if param.FolderId = "folderLeft" then 
