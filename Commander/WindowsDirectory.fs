@@ -47,4 +47,4 @@ let getIcon ext = async {
     return ms
 }
 
-let appendPlatformInfo (path: string) (items: DirectoryItem array) = ()
+let appendPlatformInfo (path: string) (items: DirectoryItem seq) = ()

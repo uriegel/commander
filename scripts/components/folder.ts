@@ -242,6 +242,7 @@ export class Folder extends HTMLElement {
         // TODO Block sorting in enhanced info column until enhanced info
         // TODO Access Denied Exception (Windows eigene Dokumente)
         // TODO Restriction with background
+        // TODO GetFileItems native faster with pinvoke
     }
 
     setFocus() { this.table.setFocus() }
