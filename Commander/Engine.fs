@@ -5,7 +5,7 @@ type EngineType =
 | Root =      1
 | Directory = 2
 
-type Item = { Name: string }
+type InputItem = { Name: string }
 
 [<CLIMutable>]
 type GetIcon = { Path: string }
@@ -15,7 +15,7 @@ type GetItems = {
     RequestId:       int
     Path:            string option
     Engine:          EngineType
-    CurrentItem:     Item option
+    CurrentItem:     InputItem option
     ShowHiddenItems: bool
 }
 

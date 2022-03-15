@@ -10,6 +10,7 @@ type ItemType =
 | Homedrive = 5
 
 type DirectoryItem = {
+    Index:       int
     Name:        string
     Size:        int64
     ItemType:    ItemType

@@ -1,10 +1,11 @@
 module PlatformDirectory
 
-open Configuration
-open Engine
-
 open System.Diagnostics
 open System.IO
+
+open Configuration
+open Engine
+open Model
 
 let private getIconScript = 
     let filename = saveResource (getElectronFile "geticon.py", "python/geticon.py")
@@ -38,3 +39,4 @@ let getIcon (param: GetIcon) =
         | _ as e -> eprintfn "%s" <| e.ToString ()
     output
 
+let appendPlatformInfo (path: string) (items: DirectoryItem array) = ()

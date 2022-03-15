@@ -25,7 +25,7 @@ type GetItems = {
     CurrentItem: RootItem
 }
 
-let getEngineAndPathFrom (item: Item) (body: string) = 
+let getEngineAndPathFrom (item: InputItem) (body: string) = 
     let rootItem = JsonSerializer.Deserialize<GetItems> (body, getJsonOptions ())
     match rootItem.CurrentItem.MountPoint with
     | value when value |> String.startsWith "/" -> EngineType.Directory, rootItem.CurrentItem.MountPoint

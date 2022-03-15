@@ -13,18 +13,6 @@ open Model
 open PlatformDirectory
 open PlatformModel
 
-type Item = {
-    Index:       int
-    Name:        string
-    Size:        int64
-    ItemType:    ItemType
-    IconPath:    string option
-    IsHidden:    bool
-    IsDirectory: bool
-    Time:        System.DateTime
-    ExifTime:    System.DateTime option
-}
-
 let leftFolderReplaySubject = new Subject<FolderEvent>()
 let rightFolderReplaySubject = new Subject<FolderEvent>()
 
@@ -69,7 +57,6 @@ let getItems path param = async {
         IconPath    = None
         IsHidden    = dirInfo.Attributes &&& FileAttributes.Hidden = FileAttributes.Hidden
         Time        = dirInfo.LastWriteTime
-        ExifTime    = None                    
     }
 
     let getFileItem (fileInfo: FileInfo) = {
@@ -81,7 +68,6 @@ let getItems path param = async {
         IconPath    = Some <| getIconPath fileInfo
         IsHidden    = fileInfo.Attributes &&& FileAttributes.Hidden = FileAttributes.Hidden
         Time        = fileInfo.LastWriteTime
-        ExifTime    = None                    
     }
 
     let sortByName item = item.Name |> String.toLower 
@@ -104,7 +90,6 @@ let getItems path param = async {
         IsHidden =    false
         IsDirectory = true
         Time =        System.DateTime.MinValue
-        ExifTime    = None                    
     } |]
 
     let items = Array.concat [
@@ -115,9 +100,9 @@ let getItems path param = async {
 
     let filterHidden item = not item.IsHidden
 
-    let getItemI i (n: Item) = { n with Index = i }
+    let getItemI i (n: DirectoryItem) = { n with Index = i }
 
-    let items: Item array = 
+    let items: DirectoryItem array = 
         match param.ShowHiddenItems with
         | true -> items 
         | _    -> items |> Array.filter filterHidden
@@ -145,9 +130,9 @@ let getItems path param = async {
                 None
     |}
 
-    let appendExifTime path (items: Item array) = 
+    let appendExifTime path (items: DirectoryItem array) = 
 
-        let addExifDate (item: Item) = 
+        let addExifDate (item: DirectoryItem) = 
             if requestId.Id = param.RequestId then
                 let getExifDateOriginal = getExif >=> getDateValue ExifTag.DateTimeOriginal
                 let getExifDate = getExif >=> getDateValue ExifTag.DateTime
@@ -182,7 +167,10 @@ let getItems path param = async {
             let subj = getEventSubject ()
             subj.OnNext <| EnhancedInfo exifItems
 
-    async { items |> appendExifTime result.Path } |> Async.StartAsTask |> ignore
+    async { 
+        items |> appendExifTime result.Path |>ignore
+        items |> appendPlatformInfo result.Path |>ignore
+    } |> Async.StartAsTask |> ignore
 
     return JsonSerializer.Serialize (result, getJsonOptions ())
 }

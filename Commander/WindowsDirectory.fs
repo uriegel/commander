@@ -44,3 +44,5 @@ let getIcon ext = async {
     DestroyIcon iconHandle |> ignore
     return ms
 }
+
+let appendPlatformInfo (path: string) (items: DirectoryItem array) = ()
