@@ -54,28 +54,34 @@ let routePathes () (routeHandler : string -> HttpHandler) : HttpHandler =
             | None         -> skipPipeline
 
 let createSse<'a> (observable: IObservable<'a>) (jsonOptions: JsonSerializerOptions) =  
+
     fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
             let res = ctx.Response
             ctx.SetStatusCode 200
             ctx.SetHttpHeader("Content-Type", "text/event-stream")
             ctx.SetHttpHeader("Cache-Control", "no-cache")
-            
-            let onNext evt = 
-                let t = task {
-                    let payload = JsonSerializer.Serialize(evt, jsonOptions)
-                    do! res.WriteAsync $"data:{payload}\n\n"
-                    do! res.Body.FlushAsync()
+
+            let messageLoop (inbox: MailboxProcessor<obj>) = 
+                let rec messageLoop () = async {
+                    let! msg = inbox.Receive()
+                    let payload = JsonSerializer.Serialize(msg, jsonOptions)
+                    do! res.WriteAsync $"data:{payload}\n\n" |> Async.AwaitTask
+                    do! res.Body.FlushAsync() |> Async.AwaitTask
+                    return! messageLoop ()
                 }
-                t.Result
+                messageLoop ()
+            
+            let agent = MailboxProcessor.Start messageLoop
+            
+            let onNext evt = agent.Post evt
 
             observable |> Observable.subscribe onNext |> ignore
 
+            // Wait forever
             let tcs = TaskCompletionSource<'a>()
             let! evt = tcs.Task
-            // This won't be hit because we're expecting
-            // the browser to break the connection
-            // although you can indeed break from the loop above and get here
+            // Only needed for compiling:
             return! text "" next ctx            
         }        
 
