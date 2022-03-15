@@ -5,6 +5,7 @@ export const ShowFullscreen = "showfullscreen"
 type ShowDevToolsType = "showdevtools"
 type ShowFullscreenType = "showfullscreen"
 type GetItems = "getitems"
+
 export type RequestType = 
     ShowDevToolsType | 
     ShowFullscreenType |

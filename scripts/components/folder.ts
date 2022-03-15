@@ -15,6 +15,14 @@ export interface FolderItem extends TableItem {
     exifTime?:    string
 }
 
+type EnhancedInfo = {
+    Case: "EnhancedInfo",
+    Fields: Array<FolderItem[]>
+}
+
+type FolderEvent = 
+    | EnhancedInfo
+
 export class Folder extends HTMLElement {
     constructor() {
         super()
@@ -60,12 +68,8 @@ export class Folder extends HTMLElement {
 
         this.source = new EventSource(this.id == "folderLeft" ? "commander/sseLeft" : "commander/sseRight")
         this.source.addEventListener("message", event => {
-            const items: FolderItem[] = JSON.parse(event.data)
-            items.forEach(n => {
-                if (n.exifTime) 
-                    this.table.items[n.index!].exifTime = n.exifTime
-            })            
-            this.table.refresh()
+            const folderEvent: FolderEvent = JSON.parse(event.data)
+            this.onEvent(folderEvent)
         })
 
         this.changePath() 
@@ -235,6 +239,7 @@ export class Folder extends HTMLElement {
 
         // TODO Windows Version
         // TODO Sorting
+        // TODO Block sorting in enhanced info column until enhanced info
         // TODO Access Denied Exception (Windows eigene Dokumente)
         // TODO Restriction with background
     }
@@ -361,6 +366,18 @@ export class Folder extends HTMLElement {
         }
     }
 
+    private onEvent(evt: FolderEvent) {
+        switch (evt.Case) {
+            case "EnhancedInfo": 
+                evt.Fields[0].forEach(n => {
+                    if (n.exifTime) 
+                        this.table.items[n.index!].exifTime = n.exifTime
+                })            
+                this.table.refresh()
+                break
+        }
+    }
+
     private sendStatusInfo(index: number) {
     }
 
@@ -374,7 +391,7 @@ export class Folder extends HTMLElement {
         }
     }
 
-    formatSize(size: number) {
+    private formatSize(size: number) {
         if (!size)
             return ""
         let sizeStr = size.toString()
@@ -392,13 +409,12 @@ export class Folder extends HTMLElement {
         return sizeStr    
     }
 
-    formatDateTime = (dateStr: string) => {
+    private formatDateTime = (dateStr: string) => {
         if (!dateStr || dateStr.startsWith("0001"))
             return ''
         const date = Date.parse(dateStr)
         return dateFormat.format(date) + " " + timeFormat.format(date)  
     }
-    
 
     private source: EventSource
     private table: VirtualTable<FolderItem>

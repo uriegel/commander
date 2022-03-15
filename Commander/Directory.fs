@@ -24,8 +24,13 @@ type Item = {
     ExifTime:    System.DateTime option
 }
 
-let leftFolderReplaySubject = new Subject<Item[]>()
-let rightFolderReplaySubject = new Subject<Item[]>()
+type FolderEvent = 
+    | EnhancedInfo of Item[]
+    | Nothing
+
+
+let leftFolderReplaySubject = new Subject<FolderEvent>()
+let rightFolderReplaySubject = new Subject<FolderEvent>()
 
 let private getDateTime = 
     let startTime = System.DateTimeOffset.UtcNow
@@ -173,7 +178,7 @@ let getItems path param = async {
 
         if requestId.Id = param.RequestId && exifItems.Length > 0 then
             let subj = getEventSubject ()
-            subj.OnNext exifItems
+            subj.OnNext <| EnhancedInfo exifItems
 
     async { items |> appendExifTime result.Path } |> Async.StartAsTask |> ignore
 
