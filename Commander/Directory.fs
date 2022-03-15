@@ -144,8 +144,6 @@ let getItems path param = async {
                 None
     |}
 
-    // TODO Parallel.for, perhaps differently in Windows and Linux
-
     let appendExifTime path (items: Item array) = 
 
         let addExifDate (item: Item) = 
