@@ -1,5 +1,7 @@
 module Model
 
+open PlatformModel
+
 type ItemType =
 | Parent    = 1
 | File      = 2
@@ -16,3 +18,7 @@ type DirectoryItem = {
     IsHidden:    bool
     Time:        System.DateTime
 }
+
+type FolderEvent = 
+    | EnhancedInfo of EnhancedItem[]
+    | Nothing

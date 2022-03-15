@@ -11,6 +11,7 @@ open Configuration
 open Engine
 open Model
 open PlatformDirectory
+open PlatformModel
 
 type Item = {
     Index:       int
@@ -23,11 +24,6 @@ type Item = {
     Time:        System.DateTime
     ExifTime:    System.DateTime option
 }
-
-type FolderEvent = 
-    | EnhancedInfo of Item[]
-    | Nothing
-
 
 let leftFolderReplaySubject = new Subject<FolderEvent>()
 let rightFolderReplaySubject = new Subject<FolderEvent>()
@@ -157,9 +153,15 @@ let getItems path param = async {
                 let getExifDate = getExif >=> getDateValue ExifTag.DateTime
                 
                 let file = Path.Combine(path, item.Name)
-                { item with ExifTime = file |> getExifDateOriginal |> Option.orElseWith (fun () -> file |> getExifDate) }
+                { 
+                    Index = item.Index
+                    ExifTime = file |> getExifDateOriginal |> Option.orElseWith (fun () -> file |> getExifDate) 
+                }
             else
-                item
+                { 
+                    Index = -1
+                    ExifTime = None
+                }
 
         let filterEnhanced item = 
             item.Name |> String.endsWithComparison "jpg" System.StringComparison.OrdinalIgnoreCase
