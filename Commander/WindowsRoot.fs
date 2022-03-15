@@ -18,7 +18,7 @@ type RootItem = {
     IsDirectory: bool
 }
 
-let getEngineAndPathFrom (item: Item) _ = 
+let getEngineAndPathFrom (item: InputItem) _ = 
     match item.Name with
     | value when value |> String.contains ":" -> EngineType.Directory, item.Name
     | _                                       -> EngineType.Directory, item.Name

@@ -8,6 +8,8 @@ open System.Drawing.Imaging
 open System.IO
 open System.Runtime.InteropServices
 
+open Model
+
 let getIconPath (fileInfo: FileInfo) = 
     match fileInfo.Extension with
     | ext when ext |> String.toLower = ".exe" -> fileInfo.FullName
