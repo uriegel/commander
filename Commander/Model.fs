@@ -23,3 +23,7 @@ type DirectoryItem = {
 type FolderEvent = 
     | EnhancedInfo of EnhancedItem[]
     | Nothing
+
+type RequestId = {
+    mutable Id: int
+}

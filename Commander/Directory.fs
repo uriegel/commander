@@ -29,9 +29,6 @@ let getEngineAndPathFrom path item =
     | Root.IsRoot -> EngineType.Root, "root"
     | _, _        -> EngineType.Directory, Path.Combine (path, item)
 
-type RequestId = {
-    mutable Id: int
-}
 let private leftRequestId = { Id = 0}
 let private rightRequestId = { Id = 0}
 let getRequestId folderId value = 
@@ -171,7 +168,7 @@ let getItems path param = async {
 
     async { 
         items |> appendExifTime result.Path |>ignore
-        items |> appendPlatformInfo result.Path |>ignore
+        items |> appendPlatformInfo requestId param.RequestId result.Path |>ignore
     } |> Async.StartAsTask |> ignore
 
     return JsonSerializer.Serialize (result, getJsonOptions ())

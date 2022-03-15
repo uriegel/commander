@@ -3,6 +3,7 @@ module PlatformDirectory
 open ClrWinApi
 open FSharpTools
 open System
+open System.Diagnostics
 open System.Drawing
 open System.Drawing.Imaging
 open System.IO
@@ -47,4 +48,25 @@ let getIcon ext = async {
     return ms
 }
 
-let appendPlatformInfo (path: string) (items: DirectoryItem seq) = ()
+let appendPlatformInfo requestId id (path: string) (items: DirectoryItem seq) = 
+
+    let filterEnhanced item = 
+        (  item.Name |> String.endsWithComparison "exe" System.StringComparison.OrdinalIgnoreCase
+        || item.Name |> String.endsWithComparison "dll" System.StringComparison.OrdinalIgnoreCase)
+        && requestId.Id = id
+
+    let addVersion (item: DirectoryItem) = 
+        if requestId.Id = id then
+            Option.ofObj (FileVersionInfo.GetVersionInfo <| Path.Combine(path, item.Name))
+        else 
+            None
+
+    let versionItems = 
+        items
+        |> Seq.filter filterEnhanced
+        |> Seq.map addVersion
+        |> Seq.toArray
+
+    
+    printfn "versions: %O" (versionItems |> Seq.toArray)
+    ()
