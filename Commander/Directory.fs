@@ -139,11 +139,13 @@ let getItems path param = async {
                 { 
                     Index = item.Index
                     ExifTime = file |> getExifDateOriginal |> Option.orElseWith (fun () -> file |> getExifDate) 
+                    version = None
                 }
             else
                 { 
                     Index = -1
                     ExifTime = None
+                    version = None
                 }
 
         let filterEnhanced item = 

@@ -10,6 +10,7 @@ open System.IO
 open System.Runtime.InteropServices
 
 open Model
+open PlatformModel
 
 let getIconPath (fileInfo: FileInfo) = 
     match fileInfo.Extension with
@@ -61,12 +62,19 @@ let appendPlatformInfo requestId id (path: string) (items: DirectoryItem seq) =
         else 
             None
 
+    let mapVersion (info: FileVersionInfo) = {
+        Major = info.FileMajorPart
+        Minor = info.FileMinorPart
+        Patch = info.FilePrivatePart
+        Build = info.FileBuildPart
+    }
+
     let versionItems = 
         items
         |> Seq.filter filterEnhanced
-        |> Seq.map addVersion
+        |> Seq.choose addVersion
+        |> Seq.map mapVersion
         |> Seq.toArray
-
     
     printfn "versions: %O" (versionItems |> Seq.toArray)
     ()
