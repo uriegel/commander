@@ -7,6 +7,7 @@ open System.Diagnostics
 open System.Drawing
 open System.Drawing.Imaging
 open System.IO
+open System.Reactive.Subjects
 open System.Runtime.InteropServices
 
 open Model
@@ -49,7 +50,7 @@ let getIcon ext = async {
     return ms
 }
 
-let appendPlatformInfo requestId id (path: string) (items: DirectoryItem seq) = 
+let appendPlatformInfo (subj: Subject<FolderEvent>) requestId id (path: string) (items: DirectoryItem seq) = 
 
     let filterEnhanced item = 
         (  item.Name |> String.endsWithComparison "exe" System.StringComparison.OrdinalIgnoreCase
@@ -57,24 +58,31 @@ let appendPlatformInfo requestId id (path: string) (items: DirectoryItem seq) =
         && requestId.Id = id
 
     let addVersion (item: DirectoryItem) = 
+
+        let mapVersion (info: FileVersionInfo) = { 
+            Index = item.Index
+            ExifTime = None 
+            version = Some {
+                Major = info.FileMajorPart
+                Minor = info.FileMinorPart
+                Patch = info.FilePrivatePart
+                Build = info.FileBuildPart
+        }}
+
         if requestId.Id = id then
             Option.ofObj (FileVersionInfo.GetVersionInfo <| Path.Combine(path, item.Name))
+            |> Option.map(mapVersion)
         else 
             None
-
-    let mapVersion (info: FileVersionInfo) = {
-        Major = info.FileMajorPart
-        Minor = info.FileMinorPart
-        Patch = info.FilePrivatePart
-        Build = info.FileBuildPart
-    }
 
     let versionItems = 
         items
         |> Seq.filter filterEnhanced
         |> Seq.choose addVersion
-        |> Seq.map mapVersion
         |> Seq.toArray
     
+    if requestId.Id = id && versionItems.Length > 0 then
+        subj.OnNext <| EnhancedInfo versionItems
+
     printfn "versions: %O" (versionItems |> Seq.toArray)
     ()

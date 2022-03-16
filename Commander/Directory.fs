@@ -128,6 +128,13 @@ let getItems path param = async {
                 None
     |}
 
+    let getEventSubject folderId = 
+        if folderId = "folderLeft" then 
+            leftFolderReplaySubject
+        else
+            rightFolderReplaySubject
+
+
     let appendExifTime path (items: DirectoryItem seq) = 
 
         let addExifDate (item: DirectoryItem) = 
@@ -158,19 +165,13 @@ let getItems path param = async {
             |> Seq.map addExifDate
             |> Seq.toArray
 
-        let getEventSubject () = 
-            if param.FolderId = "folderLeft" then 
-                leftFolderReplaySubject
-            else
-                rightFolderReplaySubject
-
         if requestId.Id = param.RequestId && exifItems.Length > 0 then
-            let subj = getEventSubject ()
+            let subj = getEventSubject param.FolderId
             subj.OnNext <| EnhancedInfo exifItems
 
     async { 
         items |> appendExifTime result.Path |>ignore
-        items |> appendPlatformInfo requestId param.RequestId result.Path |>ignore
+        items |> appendPlatformInfo (getEventSubject param.FolderId) requestId param.RequestId result.Path |>ignore
     } |> Async.StartAsTask |> ignore
 
     return JsonSerializer.Serialize (result, getJsonOptions ())

@@ -4,6 +4,13 @@ import { ColumnsType, EngineType, GetItemResult, ItemType, request } from '../re
 
 var latestRequest = 0
 
+export type Version = {
+    major: number
+    minor: number
+    patch: number
+    build: number
+}
+
 export interface FolderItem extends TableItem {
     index?:       number
     name:         string
@@ -12,7 +19,8 @@ export interface FolderItem extends TableItem {
     isDirectory?: boolean
     itemType:     ItemType
     iconPath?:    boolean
-    exifTime?:    string
+    exifTime?:    Date
+    version?:     Version
 }
 
 type EnhancedInfo = {
@@ -237,6 +245,7 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
+        // TODO WIndows Column "Version"
         // TODO Windows Version
         // TODO Sorting
         // TODO Block sorting in enhanced info column until enhanced info
@@ -373,6 +382,8 @@ export class Folder extends HTMLElement {
                 evt.Fields[0].forEach(n => {
                     if (n.exifTime) 
                         this.table.items[n.index!].exifTime = n.exifTime
+                    if (n.version) 
+                        console.log("Version", n.index, n.version)
                 })            
                 this.table.refresh()
                 break
