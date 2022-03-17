@@ -7,7 +7,6 @@ open System.Reactive.Subjects
 open Configuration
 open Engine
 open Model
-open PlatformModel
 
 let extendColumns columns = columns
 

@@ -11,8 +11,6 @@ open Configuration
 open Engine
 open Model
 open PlatformDirectory
-open PlatformModel
-open System.Diagnostics
 
 let leftFolderReplaySubject = new Subject<FolderEvent>()
 let rightFolderReplaySubject = new Subject<FolderEvent>()
@@ -146,11 +144,13 @@ let getItems path param = async {
                 { 
                     Index = item.Index
                     ExifTime = file |> getExifDateOriginal |> Option.orElseWith (fun () -> file |> getExifDate) 
+                    Version = None
                 }
             else
                 { 
                     Index = -1
                     ExifTime = None
+                    Version = None
                 }
 
         let filterEnhanced item = 

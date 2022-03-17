@@ -12,7 +12,6 @@ open System.Runtime.InteropServices
 
 open Engine
 open Model
-open PlatformModel
 
 let extendColumns columns = 
     Array.concat [ columns; [| { Name = "Version";  Column = "version"; Type = ColumnsType.Version } |] ]
@@ -66,7 +65,7 @@ let appendPlatformInfo (subj: Subject<FolderEvent>) requestId id (path: string) 
         let mapVersion (info: FileVersionInfo) = { 
             Index = item.Index
             ExifTime = None 
-            version = Some {
+            Version = Some {
                 Major = info.FileMajorPart
                 Minor = info.FileMinorPart
                 Patch = info.FilePrivatePart

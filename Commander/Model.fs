@@ -1,7 +1,5 @@
 module Model
 
-open PlatformModel
-
 type ItemType =
 | Parent    = 1
 | File      = 2
@@ -24,4 +22,20 @@ type RequestId = {
     mutable Id: int
 }
 
+type FileVersion = {
+    Major: int
+    Minor: int
+    Patch: int
+    Build: int
+}
+
+type EnhancedItem = {
+    Index:    int
+    ExifTime: System.DateTime option
+    Version:  FileVersion option
+}
+
+type FolderEvent = 
+    | EnhancedInfo of EnhancedItem[]
+    | Nothing
 
