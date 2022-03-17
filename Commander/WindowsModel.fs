@@ -12,3 +12,7 @@ type EnhancedItem = {
     ExifTime: System.DateTime option
     version:  FileVersion option
 }
+
+type FolderEvent = 
+    | EnhancedInfo of EnhancedItem[]
+    | Nothing

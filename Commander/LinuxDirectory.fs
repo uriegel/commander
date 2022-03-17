@@ -2,10 +2,14 @@ module PlatformDirectory
 
 open System.Diagnostics
 open System.IO
+open System.Reactive.Subjects
 
 open Configuration
 open Engine
 open Model
+open PlatformModel
+
+let extendColumns columns = columns
 
 let private getIconScript = 
     let filename = saveResource (getElectronFile "geticon.py", "python/geticon.py")
@@ -39,4 +43,4 @@ let getIcon (param: GetIcon) =
         | _ as e -> eprintfn "%s" <| e.ToString ()
     output
 
-let appendPlatformInfo requestId id (path: string) (items: DirectoryItem seq) = ()
+let appendPlatformInfo (subj: Subject<FolderEvent>) requestId id (path: string) (items: DirectoryItem seq) = ()

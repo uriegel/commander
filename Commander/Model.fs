@@ -20,10 +20,8 @@ type DirectoryItem = {
     Time:        System.DateTime
 }
 
-type FolderEvent = 
-    | EnhancedInfo of EnhancedItem[]
-    | Nothing
-
 type RequestId = {
     mutable Id: int
 }
+
+
