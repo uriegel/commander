@@ -10,8 +10,12 @@ open System.IO
 open System.Reactive.Subjects
 open System.Runtime.InteropServices
 
+open Engine
 open Model
 open PlatformModel
+
+let extendColumns columns = 
+    Array.concat [ columns; [| { Name = "Version";  Column = "version"; Type = ColumnsType.Version } |] ]
 
 let getIconPath (fileInfo: FileInfo) = 
     match fileInfo.Extension with
@@ -84,5 +88,4 @@ let appendPlatformInfo (subj: Subject<FolderEvent>) requestId id (path: string) 
     if requestId.Id = id && versionItems.Length > 0 then
         subj.OnNext <| EnhancedInfo versionItems
 
-    printfn "versions: %O" (versionItems |> Seq.toArray)
-    ()
+

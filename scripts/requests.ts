@@ -36,10 +36,11 @@ export enum ItemType {
 }
 
 export enum ColumnsType {
-    Normal = 1,
-    Name   = 2,
-    Size   = 3,  
-    Time   = 4
+    Normal  = 1,
+    Name    = 2,
+    Size    = 3,  
+    Time    = 4,
+    Version = 5
 }
 
 type Column = {

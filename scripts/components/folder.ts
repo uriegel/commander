@@ -226,6 +226,8 @@ export class Folder extends HTMLElement {
                                 if (item.exifTime)
                                     td.classList.add("exif")
                             }}
+                    case ColumnsType.Version:
+                        return { name: n.name, render: (td, item) =>  td.innerHTML = this.formatVersion(item.version) }
                     default:
                         return { name: n.name, render: (td, item) => td.innerHTML= (item as any)[`${n.column}`]}
                 }
@@ -245,10 +247,8 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO WIndows Column "Version"
-        // TODO Windows Version
         // TODO Sorting
-        // TODO Block sorting in enhanced info column until enhanced info
+        // TODO Disable sorting in enhanced info column until enhanced info
         // TODO Access Denied Exception (Windows eigene Dokumente)
         // TODO Restriction with background
         // TODO GetFileItems native faster with pinvoke
@@ -383,7 +383,7 @@ export class Folder extends HTMLElement {
                     if (n.exifTime) 
                         this.table.items[n.index!].exifTime = n.exifTime
                     if (n.version) 
-                        console.log("Version", n.index, n.version)
+                        this.table.items[n.index!].version = n.version
                 })            
                 this.table.refresh()
                 break
@@ -427,6 +427,11 @@ export class Folder extends HTMLElement {
         const date = Date.parse(dateStr)
         return dateFormat.format(date) + " " + timeFormat.format(date)  
     }
+
+    private formatVersion = (version?: Version) => {
+        return version ? `${version.major}.${version.minor}.${version.build}.${version.patch}` : ""
+    }
+    
 
     private source: EventSource
     private table: VirtualTable<FolderItem>
