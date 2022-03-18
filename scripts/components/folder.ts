@@ -254,7 +254,7 @@ export class Folder extends HTMLElement {
                             }}
                     case ColumnsType.Version:
                         this.enhancedIndexes = this.enhancedIndexes.concat([i])
-                        return { name: n.name, render: (td, item) =>  td.innerHTML = this.formatVersion(item.version) }
+                        return { name: n.name, isSortable: true, render: (td, item) =>  td.innerHTML = this.formatVersion(item.version) }
                     default:
                         return { name: n.name, render: (td, item) => td.innerHTML= (item as any)[n.column]}
                 }
@@ -475,6 +475,8 @@ export class Folder extends HTMLElement {
                 } 
             case ColumnsType.Size:
                 return ([a, b]: FolderItem[]) => (a as any)[column] - (b as any)[column]
+            case ColumnsType.Version:
+                return ([a, b]: FolderItem[]) => this.compareVersion((a as any)[column], (b as any)[column])
             default:
                 return null
         }
@@ -484,6 +486,20 @@ export class Folder extends HTMLElement {
         this.enhancedIndexes.forEach(n => this.table.disableSorting(n, disable))
     }
    
+    private compareVersion(versionLeft: Version, versionRight: Version) {
+        return !versionLeft
+            ? -1
+            : !versionRight
+            ? 1
+            : versionLeft.major != versionRight.major 
+            ? versionLeft.major - versionRight.major
+            : versionLeft.minor != versionRight.minor
+            ? versionLeft.minor - versionRight.minor
+            : versionLeft.patch != versionRight.patch
+            ? versionLeft.patch - versionRight.patch
+            : versionLeft.build - versionRight.build
+    }
+
     private source: EventSource
     private table: VirtualTable<FolderItem>
     private folderRoot: HTMLElement
