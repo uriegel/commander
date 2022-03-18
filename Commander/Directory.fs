@@ -68,13 +68,24 @@ let getItems path param = async {
 
     let sortByName item = item.Name |> String.toLower 
 
+    let getSafeArray getArray = 
+        try 
+            getArray ()
+        with
+        | _ -> Array.empty
+
+    let getSafeDirectories (dirInfo: DirectoryInfo) = getSafeArray dirInfo.GetDirectories
+    let getSafeFiles (dirInfo: DirectoryInfo) = getSafeArray dirInfo.GetFiles
+
     let dirInfo = DirectoryInfo(path)
     let dirs = 
-        dirInfo.GetDirectories()
+        dirInfo 
+        |> getSafeDirectories
         |> Seq.map getDirItem 
         |> Seq.sortBy sortByName
     let files = 
-        dirInfo.GetFiles()
+        dirInfo
+        |> getSafeFiles
         |> Seq.map getFileItem 
 
     let parent = seq {{ 

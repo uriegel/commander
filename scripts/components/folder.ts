@@ -93,7 +93,7 @@ export class Folder extends HTMLElement {
     connectedCallback() {
         this.table.addEventListener("columnclick", evt => {
             const detail = (evt as CustomEvent).detail
-            const sortfn = this.getSortFunction(this.columns[detail.column].column, this.columns[detail.column].type)
+            const sortfn = this.getSortFunction(this.columns[detail.column].column, this.columns[detail.column].type, detail.subItem)
             if (!sortfn)
                 return
             const ascDesc = (sortResult: number) => detail.descending ? -sortResult : sortResult
@@ -218,8 +218,7 @@ export class Folder extends HTMLElement {
             this.table.setColumns(result.columns!.map((n, i) => {
                 switch (n.type) {
                     case ColumnsType.Name:
-                        // TODO NameExt with SubItem
-                        return { name: n.name, isSortable: true, render: (td, item) => {
+                        return { name: n.name, isSortable: true, subItem: { name: "Ext." }, render: (td, item) => {
                             if (item.iconPath) {
                                 const img = document.createElement("img")
                                 img.src = `commander/geticon?path=${item.iconPath}`
@@ -274,17 +273,17 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO NameExt with SubItem
         // TODO Access Denied Exception (Windows eigene Dokumente)
         // TODO Restriction field background color
         // TODO Set Selection
         // TODO GetFileItems native faster with pinvoke
+        // TODO Race condition getItems/sendEnhancedInfo
     }
 
     setFocus() { this.table.setFocus() }
 
     getCurrentPath() {
-        return "" //this.engine.currentPath
+        return "path"
     }
 
     getSelectedItems(): FolderItem[] {
@@ -463,10 +462,12 @@ export class Folder extends HTMLElement {
         return version ? `${version.major}.${version.minor}.${version.build}.${version.patch}` : ""
     }
 
-    private getSortFunction(column: string, columnType: ColumnsType): (([a, b]: FolderItem[]) => number) | null {
+    private getSortFunction(column: string, columnType: ColumnsType, isSubItem: boolean): (([a, b]: FolderItem[]) => number) | null {
         switch (columnType) {
             case ColumnsType.Name:
-                return ([a, b]: FolderItem[]) => a.name.localeCompare(b.name) 
+                return isSubItem 
+                    ? ([a, b]: FolderItem[]) => getExtension(a.name).localeCompare(getExtension(b.name)) 
+                    : ([a, b]: FolderItem[]) => a.name.localeCompare(b.name) 
             case ColumnsType.Time:
                 return ([a, b]: FolderItem[]) => {
                     let aa = a.exifTime ? a.exifTime! : (a as any)[column] as string
@@ -479,6 +480,11 @@ export class Folder extends HTMLElement {
                 return ([a, b]: FolderItem[]) => this.compareVersion((a as any)[column], (b as any)[column])
             default:
                 return null
+        }
+
+        function getExtension (path: string) {
+            let index = path.lastIndexOf(".")
+            return index > 0 ? path.substring(index) : ""
         }
     }
 
