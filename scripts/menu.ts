@@ -1,6 +1,6 @@
 import { DialogBox, Result } from "web-dialog-box"
 import { Menubar, MenuItem } from "web-menu-bar"
-import { activeFolderSetFocus, onRefresh, onSetHidden } from "./commander"
+import { activeFolderSetFocus, onAdaptPath, onRefresh, onSelectAll, onSelectNone, onSetHidden } from "./commander"
 import { request, ShowDevTools, ShowFullscreen } from "./requests"
 export function initializeMenu() {}
 
@@ -15,6 +15,9 @@ if (automode)
 itemHideMenu.isChecked = automode
 
 document.getElementById("onClose")?.addEventListener("menubar-action", () => close())
+document.getElementById("onAdaptPath")?.addEventListener("menubar-action", () => onAdaptPath())
+document.getElementById("onSelectAll")?.addEventListener("menubar-action", () => onSelectAll())
+document.getElementById("onSelectNone")?.addEventListener("menubar-action", () => onSelectNone())
 itemHideMenu.addEventListener("menubar-checkbox", (evt: Event) => hideMenu((evt as CustomEvent).detail.isChecked))
 document.getElementById("onHidden")?.addEventListener("menubar-checkbox", (evt: Event) => onSetHidden((evt as CustomEvent).detail.isChecked))
 document.getElementById("onRefresh")?.addEventListener("menubar-action", () => onRefresh())

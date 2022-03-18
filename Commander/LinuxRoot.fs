@@ -15,6 +15,7 @@ type RootItem = {
     Size:        int64
     DriveType:   string
     ItemType:    ItemType
+    Selectable:  bool
     IsMounted:   bool
     IsDirectory: bool
 }
@@ -71,6 +72,7 @@ let getItems engine latestPath = async {
             Description = getString 2 3
             Size        = getString 0 1 |> parseInt64 0
             MountPoint  = mountPoint
+            Selectable  = false
             ItemType    = ItemType.Harddrive
             IsMounted   = mountPoint |> String.length > 0 
             IsDirectory = true
@@ -94,6 +96,7 @@ let getItems engine latestPath = async {
             MountPoint  = getHomeDir ()
             Size        = 0
             IsMounted   = true
+            Selectable  = false
             IsDirectory = true
             ItemType    = ItemType.Homedrive
             DriveType   = "" 

@@ -14,6 +14,7 @@ type RootItem = {
     Description: string
     Size:        int64
     ItemType:    ItemType
+    Selectable:  bool
     IsMounted:   bool
     IsDirectory: bool
 }
@@ -50,6 +51,7 @@ let getItems engine (latestPath: string option) = async {
         Name =        driveInfo.Name
         Description = getSaveVolumeLabel driveInfo
         Size =        getSaveSize driveInfo
+        Selectable =  false
         ItemType =    ItemType.Harddrive
         IsDirectory = true
         IsMounted =   true

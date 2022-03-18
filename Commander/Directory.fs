@@ -49,6 +49,7 @@ let getItems path param = async {
         Name =        dirInfo.Name
         Size =        0
         ItemType =    ItemType.Directory
+        Selectable =  true
         IsDirectory = true
         IconPath    = None
         IsHidden    = dirInfo.Attributes &&& FileAttributes.Hidden = FileAttributes.Hidden
@@ -60,6 +61,7 @@ let getItems path param = async {
         Name =        fileInfo.Name
         Size =        fileInfo.Length
         ItemType =    ItemType.File
+        Selectable =  true
         IsDirectory = false
         IconPath    = Some <| getIconPath fileInfo
         IsHidden    = fileInfo.Attributes &&& FileAttributes.Hidden = FileAttributes.Hidden
@@ -93,6 +95,7 @@ let getItems path param = async {
         Name =        ".."
         Size =        0
         ItemType =    ItemType.Parent
+        Selectable =  false
         IconPath =    None
         IsHidden =    false
         IsDirectory = true

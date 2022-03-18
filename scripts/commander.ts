@@ -53,8 +53,22 @@ function setTheme(theme: string) {
     activateClass(document.body, theme, true) 
 }
 
+function getInactiveFolder() { return activeFolder == folderLeft ? folderRight : folderLeft }
+
+export function onAdaptPath() {
+    getInactiveFolder().changePath(activeFolder.getCurrentPath())
+}
+
 export function onRefresh() {
     activeFolder.reloadItems()
+}
+
+export function onSelectAll() {
+    activeFolder.selectAll()
+}
+
+export function onSelectNone() {
+    activeFolder.selectNone()
 }
 
 export function onSetHidden(showHidden: boolean) {

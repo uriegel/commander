@@ -11,6 +11,7 @@ type DirectoryItem = {
     Index:       int
     Name:        string
     Size:        int64
+    Selectable:  bool
     ItemType:    ItemType
     IsDirectory: bool
     IconPath:    string option

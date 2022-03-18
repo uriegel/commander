@@ -18,6 +18,7 @@ export interface FolderItem extends TableItem {
     isMounted?:   boolean
     isHidden?:    boolean
     isDirectory?: boolean
+    selectable:   boolean
     itemType:     ItemType
     iconPath?:    boolean
     exifTime?:    string
@@ -124,9 +125,9 @@ export class Folder extends HTMLElement {
                     this.getHistoryPath(evt.shiftKey)
                     return
                 case 9: // tab
-                    if (evt.shiftKey) {
+                    if (evt.shiftKey) 
                         this.pathInput!.focus()
-                    } else 
+                    else 
                         this.dispatchEvent(new CustomEvent('tab', { detail: this.id }))
                     evt.preventDefault()
                     evt.stopPropagation()
@@ -136,25 +137,25 @@ export class Folder extends HTMLElement {
                     break
                 case 35: // end
                     if (evt.shiftKey) {
-//                        const pos = this.table.getPosition()
-          //              this.table.items.forEach((item, i) => item.isSelected = this.engine.isSelectable(item) && i >= pos)                     
+                        const pos = this.table.getPosition()
+                        this.table.items.forEach((item, i) => item.isSelected = item.selectable && i >= pos)                     
             //            this.engine.beforeRefresh(this.table.items)
                         this.table.refresh()
                     }
                     break
                 case 36: // home
                     if (evt.shiftKey) {
-                        // const pos = this.table.getPosition()
-                        // this.table.items.forEach((item, i) => item.isSelected = this.engine.isSelectable(item) && i <= pos)                     
+                        const pos = this.table.getPosition()
+                        this.table.items.forEach((item, i) => item.isSelected = item.selectable && i <= pos)                     
                         // this.engine.beforeRefresh(this.table.items)
                         this.table.refresh()
                     }
                     break
                 case 45: { // Ins
-                    // const pos = this.table.getPosition()
-                    // this.table.items[pos].isSelected = this.engine.isSelectable(this.table.items[pos]) && !this.table.items[pos].isSelected 
+                    const pos = this.table.getPosition()
+                     this.table.items[pos].isSelected = this.table.items[pos].selectable && !this.table.items[pos].isSelected 
                     // this.engine.beforeRefresh(this.table.items)
-//                    this.table.setPosition(pos + 1)
+                    this.table.setPosition(pos + 1)
                     break
                 }
             }
@@ -273,7 +274,7 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Set Selection
+        // TODO 
         // TODO GetFileItems native faster with pinvoke
         // TODO Race condition getItems/sendEnhancedInfo
     }
@@ -281,14 +282,14 @@ export class Folder extends HTMLElement {
     setFocus() { this.table.setFocus() }
 
     getCurrentPath() {
-        return "path"
+        return this.path
     }
 
     getSelectedItems(): FolderItem[] {
         const selectedItems = this.table.items
             .filter(n => n.isSelected) 
-        // if (selectedItems.length == 0 && this.table.getPosition() == 0 && this.table.items[0].name == "..")
-        //     return []
+            if (selectedItems.length == 0 && this.table.getPosition() == 0 && this.table.items[0].name == "..")
+                return []
         return selectedItems.length > 0
             ? selectedItems
             : [this.table.items[this.table.getPosition()]]
@@ -301,15 +302,15 @@ export class Folder extends HTMLElement {
 
     async reloadItems(keepSelection?: boolean) {
         const pos = keepSelection == true ? this.table.getPosition() : 0
-        //this.table.items[pos].isSelected = this.engine.isSelectable(this.table.items[pos]) && !this.table.items[pos].isSelected 
+        this.table.items[pos].isSelected = this.table.items[pos].selectable && !this.table.items[pos].isSelected 
         await this.changePath(this.path)
         if (pos)
             this.table.setPosition(pos)
     }
 
     selectAll() {
-        // this.table.items.forEach(n => n.isSelected = this.engine.isSelectable(n))
-        // this.engine.beforeRefresh(this.table.items)
+        this.table.items.forEach(n => n.isSelected = n.selectable)
+        //this.engine.beforeRefresh(this.table.items)
         this.table.refresh()
     }
 
