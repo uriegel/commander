@@ -37,5 +37,5 @@ type EnhancedItem = {
 
 type FolderEvent = 
     | EnhancedInfo of EnhancedItem[]
-    | Nothing
+    | GetItemsFinished
 

@@ -170,6 +170,9 @@ let getItems path param = async {
     async { 
         items |> appendExifTime result.Path |>ignore
         items |> appendPlatformInfo (getEventSubject param.FolderId) requestId param.RequestId result.Path |>ignore
+        if requestId.Id = param.RequestId then
+            let subj = getEventSubject param.FolderId
+            subj.OnNext <| GetItemsFinished
     } |> Async.StartAsTask |> ignore
 
     return JsonSerializer.Serialize (result, getJsonOptions ())

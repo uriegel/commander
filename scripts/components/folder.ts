@@ -28,9 +28,13 @@ type EnhancedInfo = {
     Case: "EnhancedInfo",
     Fields: Array<FolderItem[]>
 }
+type GetItemsFinished = {
+    Case: "GetItemsFinished"
+}
 
 type FolderEvent = 
     | EnhancedInfo
+    | GetItemsFinished
 
 export class Folder extends HTMLElement {
     constructor() {
@@ -102,7 +106,6 @@ export class Folder extends HTMLElement {
             this.table.items = dirs.concat(files.sort((a, b) => this.sortFunction!([a, b])))
             const newPos = this.table.items.findIndex(n => n.name == item.name)
             this.table.setPosition(newPos)
-            //this.engine.beforeRefresh(this.table.items)
             this.table.refresh()
         })
         this.table.addEventListener("currentIndexChanged", evt => this.sendStatusInfo((evt as CustomEvent).detail))
@@ -192,10 +195,9 @@ export class Folder extends HTMLElement {
     }
 
     async changePath(path?: string|null, currentItem?: FolderItem, fromBacklog?: boolean) {
-        console.log
         this.requestId = ++latestRequest
-        console.log("this.requestId", this.requestId)
         const requestId = this.requestId
+        this.disableSorting(true)
         let result = await request<GetItemResult>("getitems", {
             folderId: this.folderId,
             requestId,
@@ -205,11 +207,15 @@ export class Folder extends HTMLElement {
             showHiddenItems: this.showHiddenItems
         })
         if (requestId < this.requestId) 
+        {
+            this.disableSorting(false)
             return 
+        }
         if (result.columns) {
             this.engine = result.engine
             this.columns = result.columns
-            this.table.setColumns(result.columns!.map(n => {
+            this.enhancedIndexes = []
+            this.table.setColumns(result.columns!.map((n, i) => {
                 switch (n.type) {
                     case ColumnsType.Name:
                         // TODO NameExt with SubItem
@@ -240,12 +246,14 @@ export class Folder extends HTMLElement {
                             td.classList.add("rightAligned")
                         }}
                     case ColumnsType.Time:
+                        this.enhancedIndexes = this.enhancedIndexes.concat([i])
                         return { name: n.name, isSortable: true, render: (td, item) =>  {
                                 td.innerHTML = this.formatDateTime(item.exifTime || (item as any)[n.column]) 
                                 if (item.exifTime)
                                     td.classList.add("exif")
                             }}
                     case ColumnsType.Version:
+                        this.enhancedIndexes = this.enhancedIndexes.concat([i])
                         return { name: n.name, render: (td, item) =>  td.innerHTML = this.formatVersion(item.version) }
                     default:
                         return { name: n.name, render: (td, item) => td.innerHTML= (item as any)[n.column]}
@@ -266,8 +274,6 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Windows version sortings
-        // TODO Disable sorting in enhanced info column until enhanced info
         // TODO NameExt with SubItem
         // TODO Access Denied Exception (Windows eigene Dokumente)
         // TODO Restriction field background color
@@ -407,6 +413,10 @@ export class Folder extends HTMLElement {
                 })            
                 this.table.refresh()
                 break
+            case "GetItemsFinished":
+                this.disableSorting(false)
+                this.table.refresh()
+                break
         }
     }
 
@@ -468,7 +478,11 @@ export class Folder extends HTMLElement {
                 return null
         }
     }
-    
+
+    private disableSorting(disable: boolean) {
+        this.enhancedIndexes.forEach(n => this.table.disableSorting(n, disable))
+    }
+   
     private source: EventSource
     private table: VirtualTable<FolderItem>
     private folderRoot: HTMLElement
@@ -483,6 +497,7 @@ export class Folder extends HTMLElement {
     private requestId = 0
     private columns: Column[] = []
     private sortFunction: ((row: [a: FolderItem, b: FolderItem]) => number) | null = null
+    private enhancedIndexes: number[] = []
 }
 
 customElements.define('folder-table', Folder)
