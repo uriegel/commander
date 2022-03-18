@@ -43,7 +43,7 @@ export enum ColumnsType {
     Version = 5
 }
 
-type Column = {
+export type Column = {
     name: string
     column: string
     type: ColumnsType

@@ -1,6 +1,7 @@
 import 'virtual-table-component'
 import { TableItem, VirtualTable } from 'virtual-table-component'
-import { ColumnsType, EngineType, GetItemResult, ItemType, request } from '../requests'
+import { compose } from '../functional'
+import { Column, ColumnsType, EngineType, GetItemResult, ItemType, request } from '../requests'
 
 var latestRequest = 0
 
@@ -19,7 +20,7 @@ export interface FolderItem extends TableItem {
     isDirectory?: boolean
     itemType:     ItemType
     iconPath?:    boolean
-    exifTime?:    Date
+    exifTime?:    string
     version?:     Version
 }
 
@@ -87,6 +88,22 @@ export class Folder extends HTMLElement {
 
     connectedCallback() {
         this.table.addEventListener("columnclick", evt => {
+            const detail = (evt as CustomEvent).detail
+            const sortfn = this.getSortFunction(this.columns[detail.column].column, this.columns[detail.column].type)
+            if (!sortfn)
+                return
+            const ascDesc = (sortResult: number) => detail.descending ? -sortResult : sortResult
+            this.sortFunction = compose(ascDesc, sortfn) 
+            this.table.restrictClose()
+            const dirs = (this.table.items as FolderItem[]).filter(n => n.isDirectory)
+            const files = (this.table.items as FolderItem[]).filter(n => !n.isDirectory) 
+            const pos = this.table.getPosition()
+            const item = this.table.items[pos]
+            this.table.items = dirs.concat(files.sort((a, b) => this.sortFunction!([a, b])))
+            const newPos = this.table.items.findIndex(n => n.name == item.name)
+            this.table.setPosition(newPos)
+            //this.engine.beforeRefresh(this.table.items)
+            this.table.refresh()
         })
         this.table.addEventListener("currentIndexChanged", evt => this.sendStatusInfo((evt as CustomEvent).detail))
         this.table.addEventListener("focusin", async evt => {
@@ -191,10 +208,12 @@ export class Folder extends HTMLElement {
             return 
         if (result.columns) {
             this.engine = result.engine
+            this.columns = result.columns
             this.table.setColumns(result.columns!.map(n => {
                 switch (n.type) {
                     case ColumnsType.Name:
-                        return { name: n.name, render: (td, item) => {
+                        // TODO NameExt with SubItem
+                        return { name: n.name, isSortable: true, render: (td, item) => {
                             if (item.iconPath) {
                                 const img = document.createElement("img")
                                 img.src = `commander/geticon?path=${item.iconPath}`
@@ -216,20 +235,20 @@ export class Folder extends HTMLElement {
                             td.appendChild(span)
                         }}
                     case ColumnsType.Size:
-                        return { name: n.name, isRightAligned: true, render: (td, item) => {
-                            td.innerHTML = this.formatSize((item as any)[`${n.column}`])
+                        return { name: n.name, isRightAligned: true, isSortable: true, render: (td, item) => {
+                            td.innerHTML = this.formatSize((item as any)[n.column])
                             td.classList.add("rightAligned")
                         }}
                     case ColumnsType.Time:
-                        return { name: n.name, render: (td, item) =>  {
-                                td.innerHTML = this.formatDateTime(item.exifTime || (item as any)[`${n.column}`]) 
+                        return { name: n.name, isSortable: true, render: (td, item) =>  {
+                                td.innerHTML = this.formatDateTime(item.exifTime || (item as any)[n.column]) 
                                 if (item.exifTime)
                                     td.classList.add("exif")
                             }}
                     case ColumnsType.Version:
                         return { name: n.name, render: (td, item) =>  td.innerHTML = this.formatVersion(item.version) }
                     default:
-                        return { name: n.name, render: (td, item) => td.innerHTML= (item as any)[`${n.column}`]}
+                        return { name: n.name, render: (td, item) => td.innerHTML= (item as any)[n.column]}
                 }
             }), `${this.folderId}-${result.engine}`)
         }
@@ -247,10 +266,11 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Sorting
+        // TODO Windows version sortings
         // TODO Disable sorting in enhanced info column until enhanced info
+        // TODO NameExt with SubItem
         // TODO Access Denied Exception (Windows eigene Dokumente)
-        // TODO Restriction with background
+        // TODO Restriction field background color
         // TODO GetFileItems native faster with pinvoke
     }
 
@@ -431,8 +451,24 @@ export class Folder extends HTMLElement {
     private formatVersion = (version?: Version) => {
         return version ? `${version.major}.${version.minor}.${version.build}.${version.patch}` : ""
     }
-    
 
+    private getSortFunction(column: string, columnType: ColumnsType): (([a, b]: FolderItem[]) => number) | null {
+        switch (columnType) {
+            case ColumnsType.Name:
+                return ([a, b]: FolderItem[]) => a.name.localeCompare(b.name) 
+            case ColumnsType.Time:
+                return ([a, b]: FolderItem[]) => {
+                    let aa = a.exifTime ? a.exifTime! : (a as any)[column] as string
+                    let bb = b.exifTime ? b.exifTime! : (b as any)[column] as string
+                    return aa.localeCompare(bb) 
+                } 
+            case ColumnsType.Size:
+                return ([a, b]: FolderItem[]) => (a as any)[column] - (b as any)[column]
+            default:
+                return null
+        }
+    }
+    
     private source: EventSource
     private table: VirtualTable<FolderItem>
     private folderRoot: HTMLElement
@@ -445,6 +481,8 @@ export class Folder extends HTMLElement {
     private path = ""
     private showHiddenItems = false
     private requestId = 0
+    private columns: Column[] = []
+    private sortFunction: ((row: [a: FolderItem, b: FolderItem]) => number) | null = null
 }
 
 customElements.define('folder-table', Folder)
