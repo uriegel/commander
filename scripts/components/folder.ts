@@ -277,6 +277,7 @@ export class Folder extends HTMLElement {
         // TODO NameExt with SubItem
         // TODO Access Denied Exception (Windows eigene Dokumente)
         // TODO Restriction field background color
+        // TODO Set Selection
         // TODO GetFileItems native faster with pinvoke
     }
 
