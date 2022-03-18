@@ -273,7 +273,6 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Restriction field background color
         // TODO Set Selection
         // TODO GetFileItems native faster with pinvoke
         // TODO Race condition getItems/sendEnhancedInfo
