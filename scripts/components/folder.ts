@@ -274,7 +274,12 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO 
+        // TODO Viewer
+        // TODO Android engine
+        // TODO remote engine
+        // TODO Create Directory
+        // TODO Trash
+        // TODO Copy/Move
         // TODO GetFileItems native faster with pinvoke
         // TODO Race condition getItems/sendEnhancedInfo
     }
