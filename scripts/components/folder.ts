@@ -278,7 +278,7 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Viewer: get mp4 , mp3 and jpg png
+        // TODO Viewer: get mp4 , mp3
         // TODO Viewer: get and show pdf
         // TODO Android engine
         // TODO remote engine

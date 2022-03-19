@@ -66,3 +66,6 @@ let getFilePath () =
             let! result = getFilePath param body
             return! jsonText result next ctx
         }
+
+let getImage (fileRequest: FileRequest) = 
+    streamFile false fileRequest.Path None None

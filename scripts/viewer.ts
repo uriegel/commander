@@ -38,7 +38,7 @@ const refresh = (path: string) => {
             //viewerPdf.classList.add("hidden")
             viewerVideo.classList.add("hidden")
             viewerImg.classList.remove("hidden")
-            viewerImg.src = `view://${path}` 
+            viewerImg.src = `commander/image?path=${path}` 
             viewerVideo.src = ""
             break
         case "pdf":

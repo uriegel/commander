@@ -24,9 +24,10 @@ let configure (app : IApplicationBuilder) =
     let routes =
         choose [  
             route  "/commander/getitems"       >=> warbler (fun _ -> getItems ())
-            route  "/commander/geticon"        >=> bindQuery<GetIcon> None getIcon
-            route  "/commander/getfilepath"       >=> warbler (fun _ -> getFilePath ())
+            route  "/commander/geticon"        >=> bindQuery<FileRequest> None getIcon
+            route  "/commander/getfilepath"    >=> warbler (fun _ -> getFilePath ())
             route  "/commander/sendbounds"     >=> bindJson<WindowBounds> sendBounds
+            route  "/commander/image"          >=> bindQuery<FileRequest> None getImage
             route  "/commander/showdevtools"   >=> warbler (fun _ -> showDevTools ())
             route  "/commander/showfullscreen" >=> warbler (fun _ -> showFullscreen ())
             route  "/commander/getevents"      >=> warbler (fun _ -> getEvents ())

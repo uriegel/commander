@@ -20,7 +20,7 @@ let getIconPath (fileInfo: FileInfo) =
     | ext when ext |> String.length > 0 -> ext
     | _                                 -> ".noextension"
 
-let getIcon (param: GetIcon) = 
+let getIcon (param: FileRequest) = 
     let mutable output = ""
     try 
         use proc = new Process() 
