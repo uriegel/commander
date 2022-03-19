@@ -1,8 +1,8 @@
-//import "./components/pdfviewer"
-//import { PdfViewer } from "./components/pdfviewer"
+import "./components/pdfviewer"
+import { PdfViewer } from "./components/pdfviewer"
 const viewerSplitter = document.getElementById('viewerSplitter')!
 const viewerImg = document.getElementById('viewerImg')! as HTMLSourceElement
-//const viewerPdf = document.getElementById('viewerPdf')! as PdfViewer
+const viewerPdf = document.getElementById('viewerPdf')! as PdfViewer
 const viewerVideo = document.getElementById('viewerVideo')! as HTMLVideoElement
 
 export function showViewer(show?: boolean, path?: string) {
@@ -35,7 +35,7 @@ const refresh = (path: string) => {
     switch (ext) {
         case "png":
         case "jpg":
-            //viewerPdf.classList.add("hidden")
+            viewerPdf.classList.add("hidden")
             viewerVideo.classList.add("hidden")
             viewerImg.classList.remove("hidden")
             viewerImg.src = `commander/image?path=${path}` 
@@ -44,23 +44,23 @@ const refresh = (path: string) => {
         case "pdf":
             viewerImg.classList.add("hidden")
             viewerVideo.classList.add("hidden")
-            // viewerPdf.classList.remove("hidden")
-            // viewerPdf.load(`view://${path}`) 
+            viewerPdf.classList.remove("hidden")
+            viewerPdf.load(`commander/file?path=${path}`) 
             viewerVideo.src = ""
             break
         case "mp3":
         case "mp4":
         case "mkv":
         case "wav":
-//            viewerPdf.classList.add("hidden")
+            viewerPdf.classList.add("hidden")
             viewerImg.classList.add("hidden")
             viewerVideo.classList.remove("hidden")
-            viewerVideo.src = `view://${path}` 
+            viewerVideo.src = `commander/movie?path=${path}` 
             break
         default:
             viewerVideo.classList.add("hidden")
             viewerImg.classList.add("hidden")
-//            viewerPdf.classList.add("hidden")
+            viewerPdf.classList.add("hidden")
             viewerVideo.src = ""
             break
     }
