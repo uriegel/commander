@@ -6,7 +6,7 @@ open Microsoft.AspNetCore.Http
 open Engine
 open PlatformDirectory
 
-let getIcon: GetIcon -> HttpHandler = 
+let getIcon: FileRequest -> HttpHandler = 
     fun param (next : HttpFunc) (ctx : HttpContext) ->
         task {
             let startTime = Directory.getStartDateTime ()

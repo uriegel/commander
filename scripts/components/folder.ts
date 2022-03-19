@@ -278,7 +278,6 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Windows    
         // TODO Initial sort name
         // TODO Android engine
         // TODO remote engine

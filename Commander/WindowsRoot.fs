@@ -19,6 +19,12 @@ type RootItem = {
     IsDirectory: bool
 }
 
+type GetItems = {
+    Path:        string option
+    Engine:      EngineType
+    CurrentItem: RootItem
+}
+
 let getEngineAndPathFrom (item: InputItem) _ = 
     match item.Name with
     | value when value |> String.contains ":" -> EngineType.Directory, item.Name
@@ -77,4 +83,7 @@ let getItems engine (latestPath: string option) = async {
     return JsonSerializer.Serialize (result, getJsonOptions ())
 }
 
-
+let getFile (body: string) = async {
+    let rootItem = JsonSerializer.Deserialize<GetItems> (body, getJsonOptions ())
+    return JsonSerializer.Serialize({ Path = rootItem.CurrentItem.Name }, getJsonOptions ()) 
+}
