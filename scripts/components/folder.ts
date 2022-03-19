@@ -278,7 +278,6 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Save localStorage in electron
         // TODO Viewer: get mp4 , mp3 and jpg png
         // TODO Viewer: get and show pdf
         // TODO Android engine
