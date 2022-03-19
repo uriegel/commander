@@ -38,7 +38,7 @@ let getRequestId folderId value =
         rightRequestId.Id <- value
         rightRequestId
 
-let getItems path param = async {
+let getItems path (param: GetItems) = async {
     
     let latestPath = param.Path
 
@@ -192,3 +192,7 @@ let getItems path param = async {
     return JsonSerializer.Serialize (result, getJsonOptions ())
 }
 
+let getFile (body: string) = async {
+    let item = JsonSerializer.Deserialize<GetFile> (body, getJsonOptions ())
+    return JsonSerializer.Serialize({ Path = Path.Combine (item.Path, item.CurrentItem.Name) }, getJsonOptions ()) 
+}

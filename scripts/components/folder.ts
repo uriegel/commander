@@ -1,7 +1,7 @@
 import 'virtual-table-component'
 import { TableItem, VirtualTable } from 'virtual-table-component'
 import { compose } from '../functional'
-import { Column, ColumnsType, EngineType, GetItemResult, ItemType, request } from '../requests'
+import { Column, ColumnsType, EngineType, GetFilePathResult, GetItemResult, ItemType, request } from '../requests'
 
 var latestRequest = 0
 
@@ -177,10 +177,6 @@ export class Folder extends HTMLElement {
             //     this.setFocus()
             // }
         })
-        this.table.addEventListener("focusin", async evt => {
-            this.dispatchEvent(new CustomEvent('onFocus', { detail: this.id }))
-            this.sendStatusInfo(this.table.getPosition())
-        })
         this.folderRoot.addEventListener("dragenter", () => this.onDragEnter())
         this.folderRoot.addEventListener("dragleave", () => this.onDragLeave())
         this.folderRoot.addEventListener("dragover", evt => this.onDragOver(evt))
@@ -282,8 +278,9 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO GetFilePath (from F#) in status
-        // TODO Viewer
+        // TODO Save localStorage in electron
+        // TODO Viewer: get mp4 , mp3 and jpg png
+        // TODO Viewer: get and show pdf
         // TODO Android engine
         // TODO remote engine
         // TODO Create Directory
@@ -434,14 +431,18 @@ export class Folder extends HTMLElement {
         }
     }
 
-    private sendStatusInfo(index: number) {
-        if (this.table.items && this.table.items.length > 0)
-            this.dispatchEvent(new CustomEvent('pathChanged', { detail: {
-                path: this.path,
-                dirs: this.dirsCount,
-                files: this.filesCount
-            }
-        }))
+    private async sendStatusInfo(index: number) {
+        if (this.table.items && this.table.items.length > 0) {
+            this.requestId = ++latestRequest
+            const requestId = this.requestId
+            const path = await this.getFilePath(this.table.items[index])
+            if (requestId == latestRequest)
+                this.dispatchEvent(new CustomEvent('pathChanged', { detail: {
+                    path,
+                    dirs: this.dirsCount,
+                    files: this.filesCount
+                }}))
+        }
     }
 
     private getHistoryPath(forward?: boolean) {
@@ -452,6 +453,15 @@ export class Folder extends HTMLElement {
             this.backPosition++
             this.changePath(this.backtrack[this.backPosition], undefined, true)
         }
+    }
+
+    private async getFilePath(currentItem: FolderItem) {
+        let result = await request<GetFilePathResult>("getfilepath", {
+            engine: this.engine,
+            path: this.path,
+            currentItem,
+        })
+        return result.path
     }
 
     private formatSize(size: number) {

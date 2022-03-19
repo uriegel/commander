@@ -58,3 +58,11 @@ let getItems () =
             return! jsonText result next ctx
         }
 
+let getFilePath () =
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+            let! body = ctx.ReadBodyFromRequestAsync ()
+            let param = JsonSerializer.Deserialize<GetFile>(body, getJsonOptions ())
+            let! result = getFilePath param body
+            return! jsonText result next ctx
+        }

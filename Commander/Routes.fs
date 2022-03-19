@@ -25,6 +25,7 @@ let configure (app : IApplicationBuilder) =
         choose [  
             route  "/commander/getitems"       >=> warbler (fun _ -> getItems ())
             route  "/commander/geticon"        >=> bindQuery<GetIcon> None getIcon
+            route  "/commander/getfilepath"       >=> warbler (fun _ -> getFilePath ())
             route  "/commander/sendbounds"     >=> bindJson<WindowBounds> sendBounds
             route  "/commander/showdevtools"   >=> warbler (fun _ -> showDevTools ())
             route  "/commander/showfullscreen" >=> warbler (fun _ -> showFullscreen ())

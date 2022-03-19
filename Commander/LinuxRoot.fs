@@ -132,3 +132,7 @@ let getItems engine latestPath = async {
     return JsonSerializer.Serialize (result, getJsonOptions ())
 }
 
+let getFile (body: string) = async {
+    let rootItem = JsonSerializer.Deserialize<GetItems> (body, getJsonOptions ())
+    return JsonSerializer.Serialize({ Path = rootItem.CurrentItem.Name }, getJsonOptions ()) 
+}

@@ -19,6 +19,16 @@ type GetItems = {
     ShowHiddenItems: bool
 }
 
+type GetFile = {
+    Path:            string
+    Engine:          EngineType
+    CurrentItem:     InputItem
+}
+
+type FilePath = {
+    Path: string
+}
+
 type ColumnsType = 
 | Normal  = 1
 | Name    = 2

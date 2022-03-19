@@ -9,7 +9,6 @@ const itemHideMenu = document.getElementById("onHideMenu") as MenuItem
 const dialog = document.querySelector('dialog-box') as DialogBox
 
 const automode = localStorage.getItem("menuAutoMode") == "true"
-console.log("automode", automode)
 if (automode)
     menu.setAttribute("automode", "true")
 itemHideMenu.isChecked = automode

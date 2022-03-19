@@ -5,11 +5,13 @@ export const ShowFullscreen = "showfullscreen"
 type ShowDevToolsType = "showdevtools"
 type ShowFullscreenType = "showfullscreen"
 type GetItems = "getitems"
+type GetFilePath = "getfilepath"
 
 export type RequestType = 
     ShowDevToolsType | 
     ShowFullscreenType |
-    GetItems
+    GetItems |
+    GetFilePath
 
 type Empty = {}
 
@@ -25,6 +27,12 @@ type GetItemsType = {
     path?:        string,
     engine:       EngineType
     currentItem?: FolderItem
+}
+
+type GetFilePathType = {
+    path:        string,
+    engine:      EngineType
+    currentItem: FolderItem
 }
 
 export enum ItemType {
@@ -57,13 +65,17 @@ export type GetItemResult = {
     latestPath?: string
 }
 
+export type GetFilePathResult = {
+    path: string
+}
+
 type Exception = {
     exception: string
 }
 
-type Result = GetItemResult | Exception
+type Result = GetItemResult | Exception | GetFilePathResult
     
-export type RequestInput = Empty | GetItemsType
+export type RequestInput = Empty | GetItemsType | GetFilePathType
 
 export async function request<T extends Result>(method: RequestType, input?: RequestInput) {
     const response = await fetch(`commander/${method}`, {

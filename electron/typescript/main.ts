@@ -79,7 +79,6 @@ const createWindow = async () => {
                 response.on('data', (chunk: any) => responseData += chunk)
                 response.on('end', () => {
                     const evt = JSON.parse(responseData) as Events
-                    console.log("evt", evt)
                     switch (evt.Case) {
                         case "ShowDevTools":
                             win.webContents.openDevTools()

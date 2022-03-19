@@ -1,6 +1,9 @@
 module Engines
 
 open Engine
+open Utils
+open System.Text.Json
+open Configuration
 
 let getEngineAndPathFrom engine path item body =
     match engine with
@@ -18,7 +21,20 @@ let getEngineAndPath (getItems: GetItems) body =
     | Some path, _         -> getEngineAndPathFromPath path 
     | _                    -> EngineType.Root, "path"
 
-let getItems (param: GetItems) (body: string) = 
+let getItems (param: GetItems) body = 
     match getEngineAndPath param body with
     | EngineType.Root, _ -> Root.getItems param.Engine param.Path
     | _, path            -> Directory.getItems path param
+
+let getFilePath (param: GetFile) body = 
+    let getEmptyPath = async { 
+        return  JsonSerializer.Serialize({ Path = "" }, getJsonOptions ()) 
+    }
+
+    match param.Engine with
+    | EngineType.Root      -> Root.getFile body
+    | EngineType.Directory -> Directory.getFile body
+    | _                    -> getEmptyPath 
+
+
+
