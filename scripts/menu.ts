@@ -1,6 +1,6 @@
 import { DialogBox, Result } from "web-dialog-box"
 import { Menubar, MenuItem } from "web-menu-bar"
-import { activeFolderSetFocus, onAdaptPath, onRefresh, onSelectAll, onSelectNone, onSetHidden } from "./commander"
+import { activeFolderSetFocus, onAdaptPath, onRefresh, onSelectAll, onSelectNone, onSetHidden, onViewer } from "./commander"
 import { request, ShowDevTools, ShowFullscreen } from "./requests"
 export function initializeMenu() {}
 
@@ -21,6 +21,7 @@ document.getElementById("onSelectNone")?.addEventListener("menubar-action", () =
 itemHideMenu.addEventListener("menubar-checkbox", (evt: Event) => hideMenu((evt as CustomEvent).detail.isChecked))
 document.getElementById("onHidden")?.addEventListener("menubar-checkbox", (evt: Event) => onSetHidden((evt as CustomEvent).detail.isChecked))
 document.getElementById("onRefresh")?.addEventListener("menubar-action", () => onRefresh())
+document.getElementById("onViewer")?.addEventListener("menubar-checkbox", (evt: Event) => onViewer((evt as CustomEvent).detail.isChecked))
 document.getElementById("onDevTools")?.addEventListener("menubar-action", () => request(ShowDevTools))
 document.getElementById("onFullscreen")?.addEventListener("menubar-action", () => request(ShowFullscreen))
 
@@ -42,3 +43,4 @@ async function hideMenu(hide: boolean) {
     localStorage.setItem("menuAutoMode", hide ? "true" : "false")
     menu.setAttribute("automode", hide ? "true" : "false")
 }
+

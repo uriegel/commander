@@ -7,6 +7,7 @@ import './components/folder'
 import { initializeMenu } from './menu'
 import { Folder } from './components/folder'
 import { Menubar } from 'web-menu-bar'
+import { refreshViewer, showViewer as viewer } from './viewer'
 
 export function activateClass(element: HTMLElement, cls: string, activate: boolean) {
     if (activate != false)
@@ -15,6 +16,9 @@ export function activateClass(element: HTMLElement, cls: string, activate: boole
         element.classList.remove(cls)
 }
 
+const statusText = document.getElementById("statusText")!
+const dirsText = document.getElementById("dirs")!
+const filesText = document.getElementById("files")!
 const titlebar = document.getElementById("titlebar")!
 titlebar.setAttribute("no-titlebar", "")
 
@@ -31,20 +35,21 @@ type EventThemeChanged = {
     Fields: string[1]
 }
 
-type Event = 
+type CommanderEvent = 
     | EventNothing
     | EventThemeChanged
 
+var currentPath = ""
 const source = new EventSource("commander/sse")
 source.addEventListener("message", function (event) {
-    const evt: Event = JSON.parse(event.data)
+    const evt: CommanderEvent = JSON.parse(event.data)
     switch (evt.Case) {
         case "ThemeChanged":
             setTheme(evt.Fields[0])    
             break
     }
 })
-  
+
 function setTheme(theme: string) {
     activateClass(document.body, "adwaitaDark", false) 
     activateClass(document.body, "adwaita", false) 
@@ -71,6 +76,10 @@ export function onSelectNone() {
     activeFolder.selectNone()
 }
 
+export function onViewer(show: boolean) {
+    viewer(show, currentPath)
+}
+
 export function onSetHidden(showHidden: boolean) {
     folderLeft.showHidden(showHidden)
     folderRight.showHidden(showHidden)
@@ -78,6 +87,19 @@ export function onSetHidden(showHidden: boolean) {
 
 export function activeFolderSetFocus() {
     activeFolder.setFocus()
+}
+
+function onPathChanged(evt: Event) {
+    const detail = (evt as CustomEvent).detail
+    currentPath = detail.path
+    refreshViewer(detail.path)
+    setStatus(detail.path, detail.dirs, detail.files)
+}
+
+function setStatus(path: string, dirs: number, files: number) {
+    statusText.innerText = `${path}`
+    dirsText.innerText = `${dirs ? dirs - 1 : "" } Verz.` 
+    filesText.innerText = `${dirs ? files : "" } Dateien` 
 }
 
 const folderLeft = document.getElementById("folderLeft")! as Folder
@@ -88,6 +110,8 @@ const menu = document.getElementById("menu")! as Menubar
 menu.addEventListener('menuclosed', () => activeFolder.setFocus())
 folderLeft.addEventListener("onFocus", () => activeFolder = folderLeft)
 folderRight.addEventListener("onFocus", () => activeFolder = folderRight)
+folderLeft.addEventListener("pathChanged", onPathChanged)
+folderRight.addEventListener("pathChanged", onPathChanged)
 folderLeft.addEventListener("tab", () => folderRight.setFocus())
 folderRight.addEventListener("tab", () => folderLeft.setFocus())
 

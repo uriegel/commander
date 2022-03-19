@@ -261,6 +261,14 @@ export class Folder extends HTMLElement {
             }), `${this.folderId}-${result.engine}`)
         }
 
+        const dirs = result.items.filter(n => n.isDirectory)
+        const files = result.items.filter(n => !n.isDirectory)
+        this.dirsCount = dirs.length
+        this.filesCount = files.length
+
+        if (this.sortFunction) 
+            result.items = dirs.concat(files.sort((a, b) => this.sortFunction!([a, b])))        
+
         this.table.setItems(result.items)
         if (result.latestPath) {
             let index = result.items.findIndex(n => n.name == result.latestPath)
@@ -274,12 +282,14 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
+        // TODO GetFilePath (from F#) in status
         // TODO Viewer
         // TODO Android engine
         // TODO remote engine
         // TODO Create Directory
         // TODO Trash
         // TODO Copy/Move
+        // TODO when Time sorting, then sort after exif or disable time sort
         // TODO GetFileItems native faster with pinvoke
         // TODO Race condition getItems/sendEnhancedInfo
     }
@@ -425,6 +435,13 @@ export class Folder extends HTMLElement {
     }
 
     private sendStatusInfo(index: number) {
+        if (this.table.items && this.table.items.length > 0)
+            this.dispatchEvent(new CustomEvent('pathChanged', { detail: {
+                path: this.path,
+                dirs: this.dirsCount,
+                files: this.filesCount
+            }
+        }))
     }
 
     private getHistoryPath(forward?: boolean) {
@@ -525,6 +542,8 @@ export class Folder extends HTMLElement {
     private columns: Column[] = []
     private sortFunction: ((row: [a: FolderItem, b: FolderItem]) => number) | null = null
     private enhancedIndexes: number[] = []
+    private dirsCount = 0
+    private filesCount = 0
 }
 
 customElements.define('folder-table', Folder)
