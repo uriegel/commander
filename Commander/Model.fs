@@ -6,6 +6,7 @@ type ItemType =
 | Directory = 3
 | Harddrive = 4
 | Homedrive = 5
+| Remotes   = 6
 
 type DirectoryItem = {
     Index:       int

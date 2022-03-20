@@ -102,6 +102,17 @@ let getItems engine latestPath = async {
             DriveType   = "" 
         } |]
         mounted
+        [| { 
+            Name        = "remotes"
+            Description = "Zugriff auf entfernte Geräte"
+            MountPoint  = ""
+            Size        = 0
+            IsMounted   = true
+            Selectable  = false
+            IsDirectory = true
+            ItemType    = ItemType.Remotes
+            DriveType   = "" 
+        } |]
         unMounted
     ]
 

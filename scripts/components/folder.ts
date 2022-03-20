@@ -228,6 +228,8 @@ export class Folder extends HTMLElement {
                                 ? document.querySelector('#parentIcon')
                                 : item.itemType == ItemType.Directory
                                 ? document.querySelector('#folderIcon')
+                                : item.itemType == ItemType.Remotes
+                                ? document.querySelector('#remoteIcon')
                                 : document.querySelector('#homeIcon')) as HTMLTemplateElement
                                 td.appendChild(document.importNode(t.content, true))
                             }

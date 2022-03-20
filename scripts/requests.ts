@@ -41,6 +41,7 @@ export enum ItemType {
     Directory = 3,
     Harddrive = 4,
     Homedrive = 5,
+    Remotes   = 6,
 }
 
 export enum ColumnsType {
