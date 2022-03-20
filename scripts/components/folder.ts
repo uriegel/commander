@@ -216,25 +216,31 @@ export class Folder extends HTMLElement {
             this.table.setColumns(result.columns!.map((n, i) => {
                 switch (n.type) {
                     case ColumnsType.Name:
-                        return { name: n.name, isSortable: true, subItem: { name: "Ext." }, render: (td, item) => {
-                            if (item.iconPath) {
-                                const img = document.createElement("img")
-                                img.src = `commander/geticon?path=${item.iconPath}`
-                                img.classList.add("image")
-                                td.appendChild(img)
-                            } else {
-                                var t = (item.itemType == ItemType.Harddrive
-                                ? document.querySelector('#driveIcon') 
-                                : item.itemType == ItemType.Parent
-                                ? document.querySelector('#parentIcon')
-                                : item.itemType == ItemType.Directory
-                                ? document.querySelector('#folderIcon')
-                                : item.itemType == ItemType.Remotes
-                                ? document.querySelector('#remoteIcon')
-                                : document.querySelector('#homeIcon')) as HTMLTemplateElement
-                                td.appendChild(document.importNode(t.content, true))
-                            }
-
+                    case ColumnsType.NameExtension:
+                        return { 
+                            name: n.name, 
+                            isSortable: true, 
+                            subItem: n.type == ColumnsType.NameExtension
+                                ? { name: "Ext." }
+                                : undefined,
+                            render: (td, item) => {
+                                if (item.iconPath) {
+                                    const img = document.createElement("img")
+                                    img.src = `commander/geticon?path=${item.iconPath}`
+                                    img.classList.add("image")
+                                    td.appendChild(img)
+                                } else {
+                                    var t = (item.itemType == ItemType.Harddrive
+                                    ? document.querySelector('#driveIcon') 
+                                    : item.itemType == ItemType.Parent
+                                    ? document.querySelector('#parentIcon')
+                                    : item.itemType == ItemType.Directory
+                                    ? document.querySelector('#folderIcon')
+                                    : item.itemType == ItemType.Remotes
+                                    ? document.querySelector('#remoteIcon')
+                                    : document.querySelector('#homeIcon')) as HTMLTemplateElement
+                                    td.appendChild(document.importNode(t.content, true))
+                                }
                             const span = document.createElement('span')
                             span.innerHTML = item.name
                             td.appendChild(span)
@@ -283,7 +289,6 @@ export class Folder extends HTMLElement {
         this.onPathChanged(result.path, fromBacklog)
 
 
-        // TODO Root items have name ext
         // TODO GetItems broken: option -> when going to "root" in input
         // TODO Input field not functional any more
         // TODO Android engine
@@ -501,6 +506,8 @@ export class Folder extends HTMLElement {
     private getSortFunction(column: string, columnType: ColumnsType, isSubItem: boolean): (([a, b]: FolderItem[]) => number) | null {
         switch (columnType) {
             case ColumnsType.Name:
+                return ([a, b]: FolderItem[]) => a.name.localeCompare(b.name) 
+            case ColumnsType.NameExtension:
                 return isSubItem 
                     ? ([a, b]: FolderItem[]) => getExtension(a.name).localeCompare(getExtension(b.name)) 
                     : ([a, b]: FolderItem[]) => a.name.localeCompare(b.name) 

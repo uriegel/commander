@@ -30,11 +30,12 @@ type FilePath = {
 }
 
 type ColumnsType = 
-| Normal  = 1
-| Name    = 2
-| Size    = 3  
-| Time    = 4
-| Version = 5
+| Normal        = 1
+| Name          = 2
+| NameExtension = 3
+| Size          = 4  
+| Time          = 5
+| Version       = 6
 
 type Column = {
     Name:   string

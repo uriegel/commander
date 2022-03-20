@@ -133,7 +133,7 @@ let getItems path (param: GetItems) = async {
         LatestPath = selectFolder
         Columns = 
             if param.Engine <> EngineType.Directory then Some (extendColumns [| 
-                { Name = "Name";  Column = "name"; Type = ColumnsType.Name }
+                { Name = "Name";  Column = "name"; Type = ColumnsType.NameExtension }
                 { Name = "Datum"; Column = "time"; Type = ColumnsType.Time }
                 { Name = "Größe"; Column = "size"; Type = ColumnsType.Size }
             |]) else 
