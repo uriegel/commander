@@ -211,6 +211,7 @@ export class Folder extends HTMLElement {
         if (result.columns) {
             this.engine = result.engine
             this.columns = result.columns
+            this.sortFunction = null
             this.enhancedIndexes = []
             this.table.setColumns(result.columns!.map((n, i) => {
                 switch (n.type) {
@@ -257,6 +258,7 @@ export class Folder extends HTMLElement {
                         return { name: n.name, render: (td, item) => td.innerHTML= (item as any)[n.column]}
                 }
             }), `${this.folderId}-${result.engine}`)
+            this.sortFunction = this.getSortFunction(this.columns[0].column, this.columns[0].type, false)
         }
 
         const dirs = result.items.filter(n => n.isDirectory)
@@ -280,7 +282,10 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Initial sort name
+
+        // TODO Root items have name ext
+        // TODO GetItems broken: option -> when going to "root" in input
+        // TODO Input field not functional any more
         // TODO Android engine
         // TODO remote engine
         // TODO Create Directory
