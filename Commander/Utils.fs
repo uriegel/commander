@@ -73,10 +73,8 @@ let createSse<'a> (observable: IObservable<'a>) (jsonOptions: JsonSerializerOpti
                 messageLoop ()
             
             let agent = MailboxProcessor.Start messageLoop
-            
-            let onNext evt = agent.Post evt
-
-            observable |> Observable.subscribe onNext |> ignore
+            let onValue evt = agent.Post evt
+            observable |> Observable.subscribe onValue |> ignore
 
             // Wait forever
             let tcs = TaskCompletionSource<'a>()

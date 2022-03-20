@@ -27,6 +27,7 @@
     <Compile Include="WindowsDirectory.fs" />
   </ItemGroup>
   <ItemGroup Condition="'$(IsLinux)'=='true'">
+    <Compile Include="Gtk.fs" />
     <Compile Include="LinuxRoot.fs" />
     <Compile Include="LinuxDirectory.fs" />
   </ItemGroup>
@@ -56,6 +57,7 @@
     <PackageReference Include="FSharpRailway" Version="0.2.0" />
     <PackageReference Include="FSharpTools" Version="6.1.0" />
     <PackageReference Include="Giraffe" Version="6.0.0-alpha-2" />
+    <PackageReference Include="GtkDotNet" Version="5.6.3" />
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
@@ -98,9 +100,6 @@
   <ItemGroup Condition="'$(IsLinux)'=='true'">
     <EmbeddedResource Include="../resources/web/images/kirk.png">
       <LogicalName>web/images/appicon</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="../resources/python/geticon.py">
-      <LogicalName>python/geticon.py</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
 </Project>
