@@ -184,7 +184,7 @@ export class Folder extends HTMLElement {
 
         this.pathInput!.onkeydown = evt => {
             if (evt.which == 13) {
-                this.changePath(this.pathInput!.value)
+                setTimeout(() => this.changePath(this.pathInput!.value))
                 this.table.setFocus()
             }
         }
@@ -288,9 +288,7 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-
-        // TODO GetItems broken: option -> when going to "root" in input
-        // TODO Input field not functional any more
+        // TODO Windows
         // TODO Android engine
         // TODO remote engine
         // TODO Create Directory
