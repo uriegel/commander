@@ -184,7 +184,7 @@ export class Folder extends HTMLElement {
 
         this.pathInput!.onkeydown = evt => {
             if (evt.which == 13) {
-                setTimeout(() => this.changePath(this.pathInput!.value))
+                this.changePath(this.pathInput!.value)
                 this.table.setFocus()
             }
         }
@@ -440,10 +440,10 @@ export class Folder extends HTMLElement {
 
     private async sendStatusInfo(index: number) {
         if (this.table.items && this.table.items.length > 0) {
-            this.requestId = ++latestRequest
-            const requestId = this.requestId
+            this.requestStatusId = ++latestRequest
+            const requestId = this.requestStatusId
             const path = await this.getFilePath(this.table.items[index])
-            if (requestId == latestRequest)
+            if (requestId == this.requestStatusId)
                 this.dispatchEvent(new CustomEvent('pathChanged', { detail: {
                     path,
                     dirs: this.dirsCount,
@@ -558,6 +558,7 @@ export class Folder extends HTMLElement {
     private path = ""
     private showHiddenItems = false
     private requestId = 0
+    private requestStatusId = 0
     private columns: Column[] = []
     private sortFunction: ((row: [a: FolderItem, b: FolderItem]) => number) | null = null
     private enhancedIndexes: number[] = []
