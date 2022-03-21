@@ -103,12 +103,12 @@ body {
     display: flex;
 }
 
-.external-adder {
+.add-remotes {
     display: flex;
     flex-direction: column;
 }
 
-.external-adder input {
+.add-remotes input {
     margin-bottom: 5px;
     background-color: var(--wdb-main-background-color);
     color: var(--wdb-main-color);
@@ -117,7 +117,7 @@ body {
     border-width: 1px;    
 }
 
-.external-adder input:focus {
+.add-remotes input:focus {
     outline-color: var(--wdb-input-selection-color);
     border-color: transparent;
     outline-width: 1px;

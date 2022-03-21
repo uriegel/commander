@@ -1,5 +1,6 @@
 import 'virtual-table-component'
 import { TableItem, VirtualTable } from 'virtual-table-component'
+import { DialogBox, Result } from 'web-dialog-box'
 import { compose } from '../functional'
 import { Column, ColumnsType, EngineType, GetFilePathResult, GetItemResult, ItemType, request } from '../requests'
 
@@ -162,8 +163,25 @@ export class Folder extends HTMLElement {
         })
         this.table.addEventListener("enter", async evt => {
             let currentItem = this.table.items[(evt as CustomEvent).detail.currentItem]
-            if (currentItem.itemType == ItemType.AddRemote) 
-                alert("Remote Hinzufügen")
+            if (currentItem.itemType == ItemType.AddRemote) {
+                const adderName = document.getElementById("adder-name") as HTMLInputElement
+                adderName.value = ""
+                const adderIp = document.getElementById("adder-ip") as HTMLInputElement
+                adderIp.value = ""
+                const dialog = document.querySelector('dialog-box') as DialogBox
+                const res = await dialog.show({
+                    text: "Remote-Verbindung anlegen",
+                    extended: "add-remotes",
+                    btnOk: true,
+                    btnCancel: true,
+                    defBtnOk: true
+                })
+                if (res.result == Result.Ok) {
+                    // const name = adderName.value
+                    // const ip = adderIp.value
+                    // this.saveItems()
+                }
+            }
             else if (currentItem.isDirectory) {
                 await this.changePath(this.path, currentItem)            
             }
@@ -293,7 +311,8 @@ export class Folder extends HTMLElement {
         this.onPathChanged(result.path, fromBacklog)
 
         // TODO In Remotes goto ..
-        // TODO In input enter "remotes"
+        // TODO Choose between "remote" and "android"
+        // TODO save new "remote", show remotes
         // TODO Android engine
         // TODO remote engine
         // TODO Create Directory
