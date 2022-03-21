@@ -310,7 +310,6 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO In Remotes goto ..
         // TODO Choose between "remote" and "android"
         // TODO save new "remote", show remotes
         // TODO Android engine

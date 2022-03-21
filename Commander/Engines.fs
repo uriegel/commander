@@ -13,8 +13,9 @@ let getEngineAndPathFrom engine path item body =
 
 let getEngineAndPathFromPath path =
     match path with
-    | RootID -> EngineType.Root, RootID
-    | _      -> EngineType.Directory, path
+    | RootID    -> EngineType.Root,      RootID
+    | RemotesID -> EngineType.Remotes,   RemotesID
+    | _         -> EngineType.Directory, path
 
 let getEngineAndPath (getItems: GetItems) body =
     match getItems.Path, getItems.CurrentItem with
