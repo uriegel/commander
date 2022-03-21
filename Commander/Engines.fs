@@ -1,5 +1,6 @@
 module Engines
 
+open Model
 open Engine
 open Utils
 open System.Text.Json
@@ -12,7 +13,7 @@ let getEngineAndPathFrom engine path item body =
 
 let getEngineAndPathFromPath path =
     match path with
-    | "root" -> EngineType.Root, "root"
+    | RootID -> EngineType.Root, RootID
     | _      -> EngineType.Directory, path
 
 let getEngineAndPath (getItems: GetItems) body =
@@ -23,8 +24,9 @@ let getEngineAndPath (getItems: GetItems) body =
 
 let getItems (param: GetItems) body = 
     match getEngineAndPath param body with
-    | EngineType.Root, _ -> Root.getItems param.Engine param.Path
-    | _, path            -> Directory.getItems path param
+    | EngineType.Root,    _ -> Root.getItems param.Engine param.Path
+    | EngineType.Remotes, _ -> Remotes.getItems param.Engine param.Path
+    | _, path               -> Directory.getItems path param
 
 let getFilePath (param: GetFile) body = 
     let getEmptyPath = async { 

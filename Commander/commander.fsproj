@@ -21,6 +21,7 @@
     <Compile Include="Configuration.fs" />
     <Compile Include="Model.fs" />
     <Compile Include="Engine.fs" />
+    <Compile Include="Remotes.fs" />
   </ItemGroup>
   <ItemGroup Condition="'$(IsWindows)'=='true'">
     <Compile Include="WindowsRoot.fs" />

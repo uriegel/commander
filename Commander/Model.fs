@@ -7,6 +7,12 @@ type ItemType =
 | Harddrive = 4
 | Homedrive = 5
 | Remotes   = 6
+| AddRemote = 7
+
+[<Literal>]
+let RootID    = "root"
+[<Literal>]
+let RemotesID = "remotes"
 
 type DirectoryItem = {
     Index:       int

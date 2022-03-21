@@ -162,7 +162,9 @@ export class Folder extends HTMLElement {
         })
         this.table.addEventListener("enter", async evt => {
             let currentItem = this.table.items[(evt as CustomEvent).detail.currentItem]
-            if (currentItem.isDirectory) {
+            if (currentItem.itemType == ItemType.AddRemote) 
+                alert("Remote Hinzufügen")
+            else if (currentItem.isDirectory) {
                 await this.changePath(this.path, currentItem)            
             }
             // const { path, recentFolder } = await this.engine.getPath(, () => this.reloadItems())
@@ -238,6 +240,8 @@ export class Folder extends HTMLElement {
                                     ? document.querySelector('#folderIcon')
                                     : item.itemType == ItemType.Remotes
                                     ? document.querySelector('#remoteIcon')
+                                    : item.itemType == ItemType.AddRemote
+                                    ? document.querySelector('#newIcon')
                                     : document.querySelector('#homeIcon')) as HTMLTemplateElement
                                     td.appendChild(document.importNode(t.content, true))
                                 }
@@ -288,6 +292,8 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
+        // TODO In Remotes goto ..
+        // TODO In input enter "remotes"
         // TODO Android engine
         // TODO remote engine
         // TODO Create Directory

@@ -68,8 +68,8 @@ let getItems engine (latestPath: string option) = async {
         |> Array.map getDrive
 
     let result = {|
-        Items = drives
-        Path = "root"
+        Items  = drives
+        Path   = RootID
         Engine = EngineType.Root
         LatestPath = latestPath
         Columns = 

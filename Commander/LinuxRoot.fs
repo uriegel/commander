@@ -28,9 +28,10 @@ type GetItems = {
 
 let getEngineAndPathFrom (item: InputItem) (body: string) = 
     let rootItem = JsonSerializer.Deserialize<GetItems> (body, getJsonOptions ())
-    match rootItem.CurrentItem.MountPoint with
-    | value when value |> String.startsWith "/" -> EngineType.Directory, rootItem.CurrentItem.MountPoint
-    | _                                         -> EngineType.Directory, rootItem.CurrentItem.MountPoint
+    match rootItem.CurrentItem.MountPoint, rootItem.CurrentItem.Name with
+    | value, _ when value |> String.startsWith "/" -> EngineType.Directory, rootItem.CurrentItem.MountPoint
+    | _, RemotesID                                 -> EngineType.Remotes, ""
+    | _                                            -> EngineType.Directory, rootItem.CurrentItem.MountPoint
 
 let (|IsRoot|IsNotRoot|) (path, currentItem) =
     if path = "/" && currentItem = ".." then
@@ -127,8 +128,8 @@ let getItems engine latestPath = async {
             None
 
     let result = {|
-        Items = items
-        Path = "root"
+        Items  = items
+        Path   = RootID
         Engine = EngineType.Root
         LatestPath = selectedFolder
         Columns = 

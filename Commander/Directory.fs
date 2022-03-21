@@ -24,7 +24,7 @@ let getStartDateTime () = getDateTime ()
 
 let getEngineAndPathFrom path item = 
     match path, item with
-    | Root.IsRoot -> EngineType.Root, "root"
+    | Root.IsRoot -> EngineType.Root, RootID
     | _, _        -> EngineType.Directory, Path.Combine (path, item)
 
 let private leftRequestId = { Id = 0}

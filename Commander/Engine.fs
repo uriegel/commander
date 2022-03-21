@@ -4,6 +4,7 @@ type EngineType =
 | None =      0     
 | Root =      1
 | Directory = 2
+| Remotes =   3
 
 type InputItem = { Name: string }
 
