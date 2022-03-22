@@ -20,15 +20,9 @@ type RendererEvent =
     | ThemeChanged of string
     | Nothing
 
-type RemoteItem = {
-    Name:      string
-    Ip:        string
-    IsAndroid: bool
-}
-
 type Remotes = {
     FolderId: string
-    Remotes: RemoteItem[]
+    Remotes: Remotes.Remote[]
 }
 
 let mainReplaySubject = new Subject<MainEvent>()
@@ -88,6 +82,6 @@ let getFile (fileRequest: FileRequest) =
     streamFile false fileRequest.Path None None
 
 let putRemotes (remotes: Remotes) = 
-    
+    Remotes.put remotes.FolderId remotes.Remotes
     text "{}"
 

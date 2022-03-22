@@ -3,6 +3,7 @@ open Model
 open Engine
 open System.Text.Json
 open Configuration
+open System.Collections.Concurrent
 
 type RemoteItem = {
     Name:        string
@@ -11,6 +12,14 @@ type RemoteItem = {
     Selectable:  bool
     IsDirectory: bool
 }
+
+type Remote = {
+    Name:      string
+    Ip:        string
+    IsAndroid: bool
+}
+
+let remotesMap = ConcurrentDictionary<string, Remote []>()
 
 let getItems engine latestPath = async {
 
@@ -32,7 +41,7 @@ let getItems engine latestPath = async {
     ]
     
     let selectedFolder = 
-        let findItem path item = item.Ip = path
+        let findItem path (item: RemoteItem) = item.Ip = path
         match latestPath with
         | Some path ->
             match items |> Array.tryFind (findItem path) with
@@ -54,3 +63,6 @@ let getItems engine latestPath = async {
                 None
     |}
     return JsonSerializer.Serialize (result, getJsonOptions ())}
+
+let put (folderId: string) (remotes: Remote[]) = 
+    remotesMap[folderId] <- remotes
