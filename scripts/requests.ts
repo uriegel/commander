@@ -76,7 +76,7 @@ type Exception = {
     exception: string
 }
 
-type Result = GetItemResult | Exception | GetFilePathResult
+type Result = GetItemResult | Exception | GetFilePathResult 
     
 export type RequestInput = Empty | GetItemsType | GetFilePathType
 

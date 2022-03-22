@@ -27,7 +27,7 @@ let getIcon ext = async {
         if ext |> String.contains "\\" then
             return Icon.ExtractAssociatedIcon(ext).Handle
         else
-            let mutable shinfo = ShFileInfo()
+            let shinfo = ShFileInfo()
             SHGetFileInfo(ext, FileAttributeNormal, &shinfo, Marshal.SizeOf shinfo,
                 SHGetFileInfoConstants.ICON
                 ||| SHGetFileInfoConstants.SMALLICON
