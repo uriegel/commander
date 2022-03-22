@@ -1,4 +1,11 @@
 import { DialogBox, Result } from "web-dialog-box"
+import { Nothing, request } from "./requests"
+
+export type RemoteItem = {
+    name:      string,
+    ip:        string,
+    isAndroid: boolean
+}
 
 class AddRemotes extends HTMLElement {
     constructor() {
@@ -16,7 +23,7 @@ class AddRemotes extends HTMLElement {
 
 customElements.define('add-remotes', AddRemotes)
 
-export async function addRemotes() {
+export async function addRemotes(folderId: string) {
     const adderName = document.getElementById("adder-name") as HTMLInputElement
     adderName.value = ""
     const adderIp = document.getElementById("adder-ip") as HTMLInputElement
@@ -32,14 +39,14 @@ export async function addRemotes() {
         defBtnOk: true
     })
     if (res.result == Result.Ok) {
-        const name = adderName.value
-        const ip = adderIp.value
-        const android = adderType.checked
+        const item: RemoteItem = {
+            name: adderName.value,
+            ip: adderIp.value,
+            isAndroid: adderType.checked
+        }
+        await request<Nothing>("putremotes", { folderId, remotes: [ item ] })        
         
         // save item
-        console.log(name, ip, android)
-        
-
 
     }
 

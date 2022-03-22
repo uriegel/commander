@@ -2,7 +2,7 @@ import 'virtual-table-component'
 import { TableItem, VirtualTable } from 'virtual-table-component'
 import { compose } from '../functional'
 import { Column, ColumnsType, EngineType, GetFilePathResult, GetItemResult, ItemType, request } from '../requests'
-import { addRemotes } from './addremotes'
+import { addRemotes } from '../remotes'
 
 var latestRequest = 0
 
@@ -164,7 +164,7 @@ export class Folder extends HTMLElement {
         this.table.addEventListener("enter", async evt => {
             let currentItem = this.table.items[(evt as CustomEvent).detail.currentItem]
             if (currentItem.itemType == ItemType.AddRemote) 
-                addRemotes()
+                addRemotes(this.folderId)
             else if (currentItem.isDirectory) 
                 await this.changePath(this.path, currentItem)            
             // const { path, recentFolder } = await this.engine.getPath(, () => this.reloadItems())

@@ -20,6 +20,17 @@ type RendererEvent =
     | ThemeChanged of string
     | Nothing
 
+type RemoteItem = {
+    Name:      string
+    Ip:        string
+    IsAndroid: bool
+}
+
+type Remotes = {
+    FolderId: string
+    Remotes: RemoteItem[]
+}
+
 let mainReplaySubject = new Subject<MainEvent>()
 let rendererReplaySubject = new Subject<RendererEvent>()
 
@@ -75,3 +86,8 @@ let getMovie (fileRequest: FileRequest) =
 
 let getFile (fileRequest: FileRequest) = 
     streamFile false fileRequest.Path None None
+
+let putRemotes (remotes: Remotes) = 
+    
+    text "{}"
+

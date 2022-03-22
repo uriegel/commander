@@ -1,4 +1,5 @@
 import { FolderItem } from "./components/folder"
+import { RemoteItem } from "./remotes"
 
 export const ShowDevTools = "showdevtools"
 export const ShowFullscreen = "showfullscreen"
@@ -6,12 +7,14 @@ type ShowDevToolsType = "showdevtools"
 type ShowFullscreenType = "showfullscreen"
 type GetItems = "getitems"
 type GetFilePath = "getfilepath"
+type PutRemotes = "putremotes"
 
 export type RequestType = 
     ShowDevToolsType | 
     ShowFullscreenType |
     GetItems |
-    GetFilePath
+    GetFilePath | 
+    PutRemotes
 
 type Empty = {}
 
@@ -33,6 +36,11 @@ type GetFilePathType = {
     path:        string,
     engine:      EngineType
     currentItem: FolderItem
+}
+
+type PutRemotesType = {
+    folderId: string,
+    remotes: RemoteItem[]
 }
 
 export enum ItemType {
@@ -76,9 +84,11 @@ type Exception = {
     exception: string
 }
 
-type Result = GetItemResult | Exception | GetFilePathResult 
+export type Nothing = { }
+
+type Result = GetItemResult | Exception | GetFilePathResult | Nothing
     
-export type RequestInput = Empty | GetItemsType | GetFilePathType
+export type RequestInput = Empty | GetItemsType | GetFilePathType | PutRemotesType
 
 export async function request<T extends Result>(method: RequestType, input?: RequestInput) {
     const response = await fetch(`commander/${method}`, {
