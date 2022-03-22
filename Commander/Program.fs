@@ -1,6 +1,11 @@
 ﻿open Configuration
 open Theme
 
+
+
+
+
+
 Server.start ()
 
 startThemeDetection ()

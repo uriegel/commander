@@ -163,8 +163,11 @@ export class Folder extends HTMLElement {
         })
         this.table.addEventListener("enter", async evt => {
             let currentItem = this.table.items[(evt as CustomEvent).detail.currentItem]
-            if (currentItem.itemType == ItemType.AddRemote) 
-                addRemotes(this.folderId)
+            if (currentItem.itemType == ItemType.AddRemote) {
+                await addRemotes(this.folderId)
+                this.reloadItems()
+                this.table.setFocus()
+            }
             else if (currentItem.isDirectory) 
                 await this.changePath(this.path, currentItem)            
             // const { path, recentFolder } = await this.engine.getPath(, () => this.reloadItems())
@@ -242,6 +245,10 @@ export class Folder extends HTMLElement {
                                     ? document.querySelector('#remoteIcon')
                                     : item.itemType == ItemType.AddRemote
                                     ? document.querySelector('#newIcon')
+                                    : item.itemType == ItemType.Remote
+                                    ? document.querySelector('#remoteIcon')
+                                    : item.itemType == ItemType.AndroidRemote
+                                    ? document.querySelector('#androidIcon')
                                     : document.querySelector('#homeIcon')) as HTMLTemplateElement
                                     td.appendChild(document.importNode(t.content, true))
                                 }
@@ -292,9 +299,7 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO save new "remote", 
-        // TODO send remotes to F#, ConcurrentDictionary folderId, Remote
-        // TODO show remotes
+        // TODO save and load remotes 
         // TODO Android engine
         // TODO remote engine
         // TODO Create Directory

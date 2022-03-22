@@ -3,7 +3,6 @@ open Model
 open Engine
 open System.Text.Json
 open Configuration
-open System.Collections.Concurrent
 
 type RemoteItem = {
     Name:        string
@@ -19,10 +18,25 @@ type Remote = {
     IsAndroid: bool
 }
 
-let remotesMap = ConcurrentDictionary<string, Remote []>()
+let mutable remotesMap: Map<string, Remote[]> = [] |> Map.ofList
 
-let getItems engine latestPath = async {
+let getRemotes folderId =
+    remotesMap.TryFind folderId |> Option.defaultValue [||]
 
+let getRemoteItems folderId = 
+    let mapRemote remote = 
+        {
+            Name        = remote.Name
+            Ip          = remote.Ip
+            Selectable  = true
+            IsDirectory = true
+            ItemType    = if remote.IsAndroid then ItemType.AndroidRemote else ItemType.Remote
+        }     
+
+    getRemotes folderId 
+    |> Array.map mapRemote
+
+let getItems engine folderId latestPath = async {
     let items = Array.concat [ 
         [| { 
             Name        = ".."
@@ -31,6 +45,7 @@ let getItems engine latestPath = async {
             IsDirectory = true
             ItemType    = ItemType.Parent
         } |]
+        getRemoteItems <| folderId
         [| { 
             Name        = "Hinzufügen..."
             Ip          = ""
@@ -64,5 +79,10 @@ let getItems engine latestPath = async {
     |}
     return JsonSerializer.Serialize (result, getJsonOptions ())}
 
-let put (folderId: string) (remotes: Remote[]) = 
-    remotesMap[folderId] <- remotes
+let put folderId (remotes: Remote[]) = 
+    let recentRemotes = getRemotes folderId
+    let newRemotes = Array.concat [ 
+        recentRemotes
+        remotes 
+    ]
+    remotesMap <- remotesMap |> Map.add folderId newRemotes

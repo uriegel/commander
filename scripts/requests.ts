@@ -44,13 +44,15 @@ type PutRemotesType = {
 }
 
 export enum ItemType {
-    Parent    = 1,
-    File      = 2,
-    Directory = 3,
-    Harddrive = 4,
-    Homedrive = 5,
-    Remotes   = 6,
-    AddRemote = 7
+    Parent        = 1,
+    File          = 2,
+    Directory     = 3,
+    Harddrive     = 4,
+    Homedrive     = 5,
+    Remotes       = 6,
+    AddRemote     = 7,
+    Remote        = 8,
+    AndroidRemote = 9,
 }
 
 export enum ColumnsType {

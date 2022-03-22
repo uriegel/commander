@@ -26,7 +26,7 @@ let getEngineAndPath (getItems: GetItems) body =
 let getItems (param: GetItems) body = 
     match getEngineAndPath param body with
     | EngineType.Root,    _ -> Root.getItems param.Engine param.Path
-    | EngineType.Remotes, _ -> Remotes.getItems param.Engine param.Path
+    | EngineType.Remotes, _ -> Remotes.getItems param.Engine param.FolderId param.Path 
     | _, path               -> Directory.getItems path param
 
 let getFilePath (param: GetFile) body = 
