@@ -23,6 +23,12 @@ class AddRemotes extends HTMLElement {
 
 customElements.define('add-remotes', AddRemotes)
 
+var remotes = JSON.parse(localStorage.getItem("remotes") || "[]") as RemoteItem[]
+
+export async function initRemotes(folderId: string) {
+    await request<Nothing>("putremotes", { folderId, remotes })        
+}
+
 export async function addRemotes(folderId: string) {
     const adderName = document.getElementById("adder-name") as HTMLInputElement
     adderName.value = ""
@@ -45,9 +51,8 @@ export async function addRemotes(folderId: string) {
             isAndroid: adderType.checked
         }
         await request<Nothing>("putremotes", { folderId, remotes: [ item ] })        
-        
-        // save item
 
+        remotes = remotes.concat([item])
+        localStorage.setItem("remotes", JSON.stringify(remotes))
     }
-
 }

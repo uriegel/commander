@@ -2,7 +2,7 @@ import 'virtual-table-component'
 import { TableItem, VirtualTable } from 'virtual-table-component'
 import { compose } from '../functional'
 import { Column, ColumnsType, EngineType, GetFilePathResult, GetItemResult, ItemType, request } from '../requests'
-import { addRemotes } from '../remotes'
+import { addRemotes, initRemotes } from '../remotes'
 
 var latestRequest = 0
 
@@ -58,6 +58,7 @@ export class Folder extends HTMLElement {
         if (sbr)
             this.table.setAttribute("scrollbar-right", sbr)
         this.pathInput = this.getElementsByTagName("INPUT")[0]! as HTMLInputElement
+        initRemotes(this.folderId)
 
         this.table.renderRow = (item, tr) => {
             tr.onmousedown = evt => {
@@ -299,11 +300,11 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO save and load remotes 
         // TODO Android engine
         // TODO remote engine
         // TODO Create Directory
         // TODO Trash
+        // TODO delete remotes 
         // TODO Copy/Move
         // TODO when Time sorting, then sort after exif or disable time sort
         // TODO GetFileItems native faster with pinvoke
