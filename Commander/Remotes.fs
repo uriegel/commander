@@ -18,6 +18,12 @@ type Remote = {
     IsAndroid: bool
 }
 
+type GetItems = {
+    Path:        string option
+    Engine:      EngineType
+    CurrentItem: RemoteItem
+}
+
 let mutable remotesMap: Map<string, Remote[]> = [] |> Map.ofList
 
 let getRemotes folderId =
@@ -35,6 +41,14 @@ let getRemoteItems folderId =
 
     getRemotes folderId 
     |> Array.map mapRemote
+
+let getEngineAndPathFrom (item: InputItem) (body: string) = 
+    let remoteItem = JsonSerializer.Deserialize<GetItems> (body, getJsonOptions ())
+    match remoteItem.CurrentItem.ItemType with
+    | ItemType.AndroidRemote -> EngineType.Android, sprintf "%s/%s/" AndroidID remoteItem.CurrentItem.Ip
+    | ItemType.Parent        -> EngineType.Root, RootID
+    | _                      -> EngineType.None, ""
+    
 
 let getItems engine folderId latestPath = async {
     let items = Array.concat [ 
@@ -79,10 +93,17 @@ let getItems engine folderId latestPath = async {
     |}
     return JsonSerializer.Serialize (result, getJsonOptions ())}
 
+let private monitor = new obj()
+
 let put folderId (remotes: Remote[]) = 
     let recentRemotes = getRemotes folderId
     let newRemotes = Array.concat [ 
         recentRemotes
         remotes 
     ]
-    remotesMap <- remotesMap |> Map.add folderId newRemotes
+
+    let update () = remotesMap <- remotesMap |> Map.add folderId newRemotes
+
+    lock monitor update
+
+    

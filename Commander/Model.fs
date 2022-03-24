@@ -15,6 +15,8 @@ type ItemType =
 let RootID    = "root"
 [<Literal>]
 let RemotesID = "remotes"
+[<Literal>]
+let AndroidID = "android"
 
 type DirectoryItem = {
     Index:       int

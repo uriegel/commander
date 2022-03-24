@@ -1,21 +1,25 @@
 module Engines
 
-open Model
-open Engine
-open Utils
+open FSharpTools
 open System.Text.Json
+
 open Configuration
+open Engine
+open Model
 
 let getEngineAndPathFrom engine path item body =
     match engine with
-    | EngineType.Root -> Root.getEngineAndPathFrom item body
-    | _               -> Directory.getEngineAndPathFrom path item.Name
+    | EngineType.Root    -> Root.getEngineAndPathFrom item body
+    | EngineType.Remotes -> Remotes.getEngineAndPathFrom item body
+    | EngineType.Android -> Android.getEngineAndPathFrom item body
+    | _                  -> Directory.getEngineAndPathFrom path item.Name
 
 let getEngineAndPathFromPath path =
     match path with
-    | RootID    -> EngineType.Root,      RootID
-    | RemotesID -> EngineType.Remotes,   RemotesID
-    | _         -> EngineType.Directory, path
+    | RootID                                        -> EngineType.Root,      RootID
+    | RemotesID                                     -> EngineType.Remotes,   RemotesID
+    | path when path |> String.startsWith AndroidID -> EngineType.Android,   path
+    | _                                             -> EngineType.Directory, path
 
 let getEngineAndPath (getItems: GetItems) body =
     match getItems.Path, getItems.CurrentItem with
@@ -25,9 +29,10 @@ let getEngineAndPath (getItems: GetItems) body =
 
 let getItems (param: GetItems) body = 
     match getEngineAndPath param body with
-    | EngineType.Root,    _ -> Root.getItems param.Engine param.Path
-    | EngineType.Remotes, _ -> Remotes.getItems param.Engine param.FolderId param.Path 
-    | _, path               -> Directory.getItems path param
+    | EngineType.Root, _       -> Root.getItems param.Engine param.Path
+    | EngineType.Remotes, _    -> Remotes.getItems param.Engine param.FolderId param.Path 
+    | EngineType.Android, path -> Android.getItems param.Engine path 
+    | _, path                  -> Directory.getItems path param
 
 let getFilePath (param: GetFile) body = 
     let getEmptyPath = async { 

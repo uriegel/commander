@@ -5,6 +5,7 @@ type EngineType =
 | Root =      1
 | Directory = 2
 | Remotes =   3
+| Android =   4
 
 type InputItem = { Name: string }
 
