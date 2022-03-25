@@ -242,6 +242,8 @@ export class Folder extends HTMLElement {
                                     ? document.querySelector('#parentIcon')
                                     : item.itemType == ItemType.Directory
                                     ? document.querySelector('#folderIcon')
+                                    : item.itemType == ItemType.File
+                                    ? document.querySelector('#fileIcon')
                                     : item.itemType == ItemType.Remotes
                                     ? document.querySelector('#remoteIcon')
                                     : item.itemType == ItemType.AddRemote
@@ -300,7 +302,8 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Android engine
+        // TODO Android engine: extension as file path
+        // TODO Android engine: exif or not
         // TODO remote engine
         // TODO Create Directory
         // TODO Trash

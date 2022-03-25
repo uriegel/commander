@@ -6,6 +6,7 @@ open System.Text.Json
 open Configuration
 open Engine
 open Model
+open Utils
 
 type GetItems = {
     Path:        string option
@@ -19,21 +20,26 @@ type GetFilesInput = {
 
 type AndroidItem = {
     IsDirectory: bool
-    isHidden:    bool
+    IsHidden:    bool
     Name:        string
     Size:        int64
     Time:        int64
 }
 
+let getSlashCount = getCharCount '/'
+
 let getIpAndFilePath path = 
     let getIndex () = 
         path 
         |> String.indexOfStart "/" 8 
-        |> Option.defaultValue 0
-    path
-    |> String.substring2 8 (getIndex () - 8),
-    path
-    |> String.substring (getIndex ())
+    match getIndex () with
+    | Some pos -> 
+        path
+        |> String.substring2 8 (pos - 8),
+        path
+        |> String.substring pos
+    | None     ->
+        path |> String.substring 8, "/"
 
 let getFilePath path = 
     let getIndex () = 
@@ -43,6 +49,21 @@ let getFilePath path =
     path
     |> String.substring (getIndex ())
 
+let linuxPathCombine path additional = 
+    if path |> String.endsWith "/" then path + additional
+    else path + "/" + additional
+
+let ensureRoot path = 
+    match path |> getSlashCount with
+    | 1 -> path + "/"
+    | _ -> path
+
+let getParent path = 
+    let pos = path |> String.lastIndexOfChar '/' |> Option.defaultValue 0
+    path 
+    |> String.substring2 0 pos 
+    |> ensureRoot
+
 let getEngineAndPathFrom (item: InputItem) (body: string) = 
     let pathIsRoot path = 
         path |> String.endsWith "/" && path |> getFilePath = "/"
@@ -50,16 +71,54 @@ let getEngineAndPathFrom (item: InputItem) (body: string) =
     let androidItem = JsonSerializer.Deserialize<GetItems> (body, getJsonOptions ())
     match androidItem.CurrentItem.ItemType, androidItem.Path with
     | ItemType.Parent, Some path when path |> pathIsRoot -> EngineType.Remotes, RemotesID
-    // | _, RemotesID                                 -> EngineType.Remotes, ""
+    | ItemType.Parent, Some path                         -> EngineType.Android, getParent path
+    | ItemType.Directory, Some path                      -> EngineType.Android, linuxPathCombine path androidItem.CurrentItem.Name
     | _                                                  -> EngineType.Root, RootID
 
 let getItems (engine: EngineType) path = async {
-    let ip, path = path |> getIpAndFilePath
+    let ip, filePath = path |> getIpAndFilePath
     let uri = sprintf "http://%s:8080/getfiles" ip
-    let! items = HttpRequests.post<AndroidItem array> uri { Path = path } |> Async.AwaitTask
-    printfn "Eitems %O"    items
+    let! items = HttpRequests.post<AndroidItem array> uri { Path = filePath } |> Async.AwaitTask
+    
+    let isDir item = item.IsDirectory
+    let isFile item = not item.IsDirectory
 
+    let getDirItem item = {
+        Index =       0
+        Name =        item.Name
+        Size =        item.Size
+        ItemType =    ItemType.Directory
+        Selectable =  true
+        IconPath =    None
+        IsHidden =    item.IsHidden
+        IsDirectory = true
+        Time =        item.Time |> toDateTime
+    }
 
+    let getFileItem item = {
+        Index =       0
+        Name =        item.Name
+        Size =        item.Size
+        ItemType =    ItemType.File
+        Selectable =  true
+        IconPath =    None
+        IsHidden =    item.IsHidden
+        IsDirectory = false
+        Time =        item.Time |> toDateTime
+    }
+
+    let sortByName item = item.Name |> String.toLower 
+
+    let dirs = 
+        items
+        |> Seq.filter isDir
+        |> Seq.sortBy sortByName
+        |> Seq.map getDirItem 
+
+    let files = 
+        items
+        |> Seq.filter isFile
+        |> Seq.map getFileItem 
 
     let parent = seq {{ 
         Index =       0
@@ -75,8 +134,8 @@ let getItems (engine: EngineType) path = async {
 
     let items = Seq.concat [
         parent
-//        dirs
-//        files
+        dirs
+        files
     ]
 
     let result = {|

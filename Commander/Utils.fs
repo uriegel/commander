@@ -42,6 +42,16 @@ let getExtension file =
     let getExtension = getExtensionIndex >=> getExtensionFromIndex
     getExtension ()
 
+let toDateTime (timestamp: int64) =
+    let start = DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+    start.AddMilliseconds(float timestamp).ToLocalTime()
+
+let getCharCount char str = 
+    let filterSlash chr = chr = char
+    str 
+    |> Seq.filter filterSlash
+    |> Seq.length
+
 open Giraffe
 
 // TODO Giraffe Utils
