@@ -13,16 +13,39 @@ type GetItems = {
     CurrentItem: DirectoryItem
 }
 
-let getEngineAndPathFrom (item: InputItem) (body: string) = 
-    let getCharCount char str = 
-        let filterSlash chr = chr = char
-        str 
-        |> Seq.filter filterSlash
-        |> Seq.length
-    
-    let pathIsRoot path = 
-        path |>String.endsWith "/" && path |> getCharCount '/' = 2
+type GetFilesInput = {
+    Path: string
+}
 
+type AndroidItem = {
+    IsDirectory: bool
+    isHidden:    bool
+    Name:        string
+    Size:        int64
+    Time:        int64
+}
+
+let getIpAndFilePath path = 
+    let getIndex () = 
+        path 
+        |> String.indexOfStart "/" 8 
+        |> Option.defaultValue 0
+    path
+    |> String.substring2 8 (getIndex () - 8),
+    path
+    |> String.substring (getIndex ())
+
+let getFilePath path = 
+    let getIndex () = 
+        path 
+        |> String.indexOfStart "/" 8 
+        |> Option.defaultValue 0
+    path
+    |> String.substring (getIndex ())
+
+let getEngineAndPathFrom (item: InputItem) (body: string) = 
+    let pathIsRoot path = 
+        path |> String.endsWith "/" && path |> getFilePath = "/"
 
     let androidItem = JsonSerializer.Deserialize<GetItems> (body, getJsonOptions ())
     match androidItem.CurrentItem.ItemType, androidItem.Path with
@@ -31,6 +54,13 @@ let getEngineAndPathFrom (item: InputItem) (body: string) =
     | _                                                  -> EngineType.Root, RootID
 
 let getItems (engine: EngineType) path = async {
+    let ip, path = path |> getIpAndFilePath
+    let uri = sprintf "http://%s:8080/getfiles" ip
+    let! items = HttpRequests.post<AndroidItem array> uri { Path = path } |> Async.AwaitTask
+    printfn "Eitems %O"    items
+
+
+
     let parent = seq {{ 
         Index =       0
         Name =        ".."
