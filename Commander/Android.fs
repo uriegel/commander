@@ -64,7 +64,7 @@ let getParent path =
     |> String.substring2 0 pos 
     |> ensureRoot
 
-let getEngineAndPathFrom (item: InputItem) (body: string) = 
+let getEngineAndPathFrom _ (body: string) = 
     let pathIsRoot path = 
         path |> String.endsWith "/" && path |> getFilePath = "/"
 
@@ -75,7 +75,7 @@ let getEngineAndPathFrom (item: InputItem) (body: string) =
     | ItemType.Directory, Some path                      -> EngineType.Android, linuxPathCombine path androidItem.CurrentItem.Name
     | _                                                  -> EngineType.Root, RootID
 
-let getItems (engine: EngineType) path = async {
+let getItems (engine: EngineType) path latestPath = async {
     let ip, filePath = path |> getIpAndFilePath
     let uri = sprintf "http://%s:8080/getfiles" ip
     let! items = HttpRequests.post<AndroidItem array> uri { Path = filePath } |> Async.AwaitTask
@@ -143,11 +143,24 @@ let getItems (engine: EngineType) path = async {
         files
     ]
 
+    let getName file =
+        let pos = file |> String.lastIndexOfChar '/' |> Option.defaultValue 0
+        file 
+        |> String.substring (pos + 1)
+
+    let selectFolder = 
+        match latestPath with
+        | Some latestPath when (latestPath |> String.length) > (path |> String.length) ->
+            Some (getName latestPath)
+        | _                                                 -> 
+            None
+
     let result = {|
-        Items  = items
-        Path   = path
-        Engine = EngineType.Android
-        Columns = 
+        Items      = items
+        Path       = path
+        Engine     = EngineType.Android
+        LatestPath =   selectFolder
+        Columns    = 
             if engine <> EngineType.Android then Some [| 
                 { Name = "Name";  Column = "name"; Type = ColumnsType.NameExtension }
                 { Name = "Datum"; Column = "time"; Type = ColumnsType.Time }

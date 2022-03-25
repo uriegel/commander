@@ -40,8 +40,6 @@ let getRequestId folderId value =
 
 let getItems path (param: GetItems) = async {
     
-    let latestPath = param.Path
-
     let requestId = getRequestId param.FolderId param.RequestId
 
     let getDirItem (dirInfo: DirectoryInfo) = {
@@ -119,7 +117,7 @@ let getItems path (param: GetItems) = async {
         |> Seq.mapi getItemI
 
     let selectFolder = 
-        match latestPath with
+        match param.Path with
         | Some latestPath when path |> String.endsWith ".." ->
             let di = DirectoryInfo latestPath
             Some di.Name

@@ -200,6 +200,7 @@ export class Folder extends HTMLElement {
     async changePath(path?: string|null, currentItem?: FolderItem, fromBacklog?: boolean) {
         this.requestId = ++latestRequest
         const requestId = this.requestId
+        this.disableSorting(true)
         let result = await request<GetItemResult>("getitems", {
             folderId: this.folderId,
             requestId,
@@ -277,8 +278,8 @@ export class Folder extends HTMLElement {
             this.sortFunction = this.getSortFunction(this.columns[0].column, this.columns[0].type, false)
         }
 
-        if (result.withEnhanced)
-            this.disableSorting(true)
+        if (!result.withEnhanced)
+            this.disableSorting(false)
 
         const dirs = result.items.filter(n => n.isDirectory)
         const files = result.items.filter(n => !n.isDirectory)
@@ -301,8 +302,6 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Android engine: parent select last folder
-        // TODO Remote engine: parent select last folder
         // TODO Create Directory
         // TODO Trash
         // TODO delete remotes 
@@ -311,6 +310,7 @@ export class Folder extends HTMLElement {
         // TODO remote engine
         // TODO GetFileItems native faster with pinvoke
         // TODO Race condition getItems/sendEnhancedInfo
+        // TODO Remote engine: parent select last folder    
     }
 
     setFocus() { this.table.setFocus() }
@@ -448,7 +448,6 @@ export class Folder extends HTMLElement {
                 break
             case "GetItemsFinished":
                 this.disableSorting(false)
-                this.table.refresh()
                 break
         }
     }

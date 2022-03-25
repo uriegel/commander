@@ -31,7 +31,7 @@ let getItems (param: GetItems) body =
     match getEngineAndPath param body with
     | EngineType.Root, _       -> Root.getItems param.Engine param.Path
     | EngineType.Remotes, _    -> Remotes.getItems param.Engine param.FolderId param.Path 
-    | EngineType.Android, path -> Android.getItems param.Engine path 
+    | EngineType.Android, path -> Android.getItems param.Engine path param.Path
     | _, path                  -> Directory.getItems path param
 
 let getFilePath (param: GetFile) body = 
