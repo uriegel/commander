@@ -127,10 +127,11 @@ let getItems path (param: GetItems) = async {
             None
 
     let result = {|
-        Items =      items
-        Path =       dirInfo.FullName
-        Engine =     EngineType.Directory
-        LatestPath = selectFolder
+        Items =        items
+        Path =         dirInfo.FullName
+        Engine =       EngineType.Directory
+        LatestPath =   selectFolder
+        WithEnhanced = true
         Columns = 
             if param.Engine <> EngineType.Directory then Some (extendColumns [| 
                 { Name = "Name";  Column = "name"; Type = ColumnsType.NameExtension }

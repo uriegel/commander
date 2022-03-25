@@ -200,7 +200,6 @@ export class Folder extends HTMLElement {
     async changePath(path?: string|null, currentItem?: FolderItem, fromBacklog?: boolean) {
         this.requestId = ++latestRequest
         const requestId = this.requestId
-        this.disableSorting(true)
         let result = await request<GetItemResult>("getitems", {
             folderId: this.folderId,
             requestId,
@@ -210,10 +209,7 @@ export class Folder extends HTMLElement {
             showHiddenItems: this.showHiddenItems
         })
         if (requestId < this.requestId) 
-        {
-            this.disableSorting(false)
             return 
-        }
         if (result.columns) {
             this.engine = result.engine
             this.columns = result.columns
@@ -281,6 +277,9 @@ export class Folder extends HTMLElement {
             this.sortFunction = this.getSortFunction(this.columns[0].column, this.columns[0].type, false)
         }
 
+        if (result.withEnhanced)
+            this.disableSorting(true)
+
         const dirs = result.items.filter(n => n.isDirectory)
         const files = result.items.filter(n => !n.isDirectory)
         this.dirsCount = dirs.length
@@ -302,14 +301,14 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Android engine: extension as file path
-        // TODO Android engine: exif or not
-        // TODO remote engine
+        // TODO Android engine: parent select last folder
+        // TODO Remote engine: parent select last folder
         // TODO Create Directory
         // TODO Trash
         // TODO delete remotes 
         // TODO Copy/Move
         // TODO when Time sorting, then sort after exif or disable time sort
+        // TODO remote engine
         // TODO GetFileItems native faster with pinvoke
         // TODO Race condition getItems/sendEnhancedInfo
     }

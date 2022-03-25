@@ -71,11 +71,12 @@ export type Column = {
 }
 
 export type GetItemResult = {
-    items:       FolderItem[]
-    path:        string
-    engine:      EngineType
-    columns?:    Column[]
-    latestPath?: string
+    items:         FolderItem[]
+    path:          string
+    engine:        EngineType
+    columns?:      Column[]
+    latestPath?:   string
+    withEnhanced?: boolean
 }
 
 export type GetFilePathResult = {

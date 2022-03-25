@@ -83,6 +83,11 @@ let getItems (engine: EngineType) path = async {
     let isDir item = item.IsDirectory
     let isFile item = not item.IsDirectory
 
+    let getExtension item = 
+        match item.Name |> String.indexOfChar '.' with
+        | Some pos -> Some (item.Name |> String.substring pos)
+        | None     -> None 
+
     let getDirItem item = {
         Index =       0
         Name =        item.Name
@@ -101,7 +106,7 @@ let getItems (engine: EngineType) path = async {
         Size =        item.Size
         ItemType =    ItemType.File
         Selectable =  true
-        IconPath =    None
+        IconPath =    item |> getExtension 
         IsHidden =    item.IsHidden
         IsDirectory = false
         Time =        item.Time |> toDateTime
