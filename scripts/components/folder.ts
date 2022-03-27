@@ -1,8 +1,9 @@
 import 'virtual-table-component'
 import { TableItem, VirtualTable } from 'virtual-table-component'
 import { compose } from '../functional'
-import { ActionType, Column, ColumnsType, EngineType, GetFilePathResult, GetItemResult, ItemType, request } from '../requests'
+import { ActionType, Column, ColumnsType, EngineType, GetActionTextResult, GetFilePathResult, GetItemResult, ItemType, request } from '../requests'
 import { addRemotes, initRemotes } from '../remotes'
+import { DialogBox, Result } from 'web-dialog-box'
 
 var latestRequest = 0
 
@@ -37,6 +38,8 @@ type GetItemsFinished = {
 type FolderEvent = 
     | EnhancedInfo
     | GetItemsFinished
+
+const dialog = document.querySelector('dialog-box') as DialogBox    
 
 export class Folder extends HTMLElement {
     constructor() {
@@ -420,12 +423,26 @@ export class Folder extends HTMLElement {
     async createFolder() {
         var items = this.getSelectedItems()
         const [dirs, files] = this.getSelectedItemsOverview(items)
-        await request("getactionstexts", {
+        let texts = await request<GetActionTextResult>("getactionstexts", {
             engineType: this.engine,
-            type:       ActionType.Delete,
+            type:       ActionType.CreateFolder,
             dirs,
             files
+        }) 
+        if (!texts.result)
+            return
+        const res = await dialog.show({
+            text: texts.result,
+            inputText: items.length == 1 ? items[0].name : "",
+            btnOk: true,
+            btnCancel: true,
+            defBtnOk: true
         })
+        this.setFocus()
+        if (res.result == Result.Ok && res.input) {
+            //await this.processCreateFolder(res.input)
+            this.reloadItems(true)
+        }
     }
 
     async copy(other: Folder, fromLeft: boolean, move?: boolean) {

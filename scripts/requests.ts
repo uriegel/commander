@@ -46,7 +46,8 @@ type PutRemotesType = {
 }
 
 export enum ActionType {
-    Delete = 0
+    Delete = 0,
+    CreateFolder = 1
 }
 
 type GetActionsTextsType = {
@@ -102,7 +103,9 @@ type Exception = {
 
 export type Nothing = { }
 
-type Result = GetItemResult | Exception | GetFilePathResult | Nothing
+export type GetActionTextResult = { result: string| null}
+
+type Result = GetItemResult | Exception | GetFilePathResult | Nothing | GetActionTextResult
 
 export type RequestInput = Empty | GetItemsType | GetFilePathType | PutRemotesType | GetActionsTextsType
 
