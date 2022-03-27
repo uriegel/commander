@@ -44,5 +44,26 @@ let getFilePath (param: GetFile) body =
     | EngineType.Directory -> Directory.getFile body
     | _                    -> getEmptyPath 
 
+let getActionsTexts (param: GetActionsTexts) = 
 
+    let getFilesOrDirs () = 
+        match param.Dirs, param.files with
+        | dirs, 0 when dirs = 1   -> "das Verzeichnis" 
+        | dirs, 0                 -> "die Verzeichnisse" 
+        | 0, files when files = 1 -> "die Datei" 
+        | 0, files                -> "die Dateien" 
+        | _                       -> "die Einträge" 
+
+    let getRemotes () = 
+        match param.Dirs with
+        | 1 -> "den entfernten Rechner" 
+        | _ -> "die entfernte Rechner" 
+
+    match param.EngineType, param.Type with
+    | EngineType.Directory, ActionType.CreateFolder -> Some "Neuen Ordner anlegen"
+    | EngineType.Directory, ActionType.Delete       -> Some (sprintf "Möchtest Du %s löschen?" <| getFilesOrDirs ())
+    | EngineType.Remotes, ActionType.Delete         -> Some (sprintf "Möchtest Du %s löschen?" <| getRemotes ())
+    | EngineType.Android, ActionType.Delete         -> Some (sprintf "Möchtest Du %s löschen?" <| getFilesOrDirs ())
+    | _                                             -> None
+    
 

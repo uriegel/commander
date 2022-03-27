@@ -25,6 +25,10 @@ type Remotes = {
     Remotes: Remotes.Remote[]
 }
 
+type GetActionsTextsResult = {
+    Result: string option
+}
+
 let mainReplaySubject = new Subject<MainEvent>()
 let rendererReplaySubject = new Subject<RendererEvent>()
 
@@ -61,6 +65,15 @@ let getItems () =
             let param = JsonSerializer.Deserialize<GetItems>(body, getJsonOptions ())
             let! result = getItems param body
             return! jsonText result next ctx
+        }
+
+let getActionTexts () = 
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+            let! body = ctx.ReadBodyFromRequestAsync ()
+            let param = JsonSerializer.Deserialize<GetActionsTexts>(body, getJsonOptions ())
+            let result = { Result = getActionsTexts param }
+            return! json result next ctx
         }
 
 let getFilePath () =

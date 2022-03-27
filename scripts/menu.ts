@@ -1,6 +1,6 @@
 import { DialogBox, Result } from "web-dialog-box"
 import { Menubar, MenuItem } from "web-menu-bar"
-import { activeFolderSetFocus, onAdaptPath, onRefresh, onSelectAll, onSelectNone, onSetHidden, onViewer } from "./commander"
+import { activeFolderSetFocus, onAdaptPath, onCreateFolder, onRefresh, onSelectAll, onSelectNone, onSetHidden, onViewer } from "./commander"
 import { request, ShowDevTools, ShowFullscreen } from "./requests"
 export function initializeMenu() {}
 
@@ -13,6 +13,7 @@ if (automode)
     menu.setAttribute("automode", "true")
 itemHideMenu.isChecked = automode
 
+document.getElementById("onCreateFolder")?.addEventListener("menubar-action", () => onCreateFolder())
 document.getElementById("onClose")?.addEventListener("menubar-action", () => close())
 document.getElementById("onAdaptPath")?.addEventListener("menubar-action", () => onAdaptPath())
 document.getElementById("onSelectAll")?.addEventListener("menubar-action", () => onSelectAll())

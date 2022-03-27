@@ -21,6 +21,17 @@ type GetItems = {
     ShowHiddenItems: bool
 }
 
+type ActionType = 
+| Delete       = 0
+| CreateFolder = 1
+
+type GetActionsTexts = {
+    EngineType: EngineType
+    Type:       ActionType
+    Dirs:       int
+    files:      int
+}
+
 type GetFile = {
     Path:            string
     Engine:          EngineType

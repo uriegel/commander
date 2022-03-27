@@ -1,7 +1,7 @@
 import 'virtual-table-component'
 import { TableItem, VirtualTable } from 'virtual-table-component'
 import { compose } from '../functional'
-import { Column, ColumnsType, EngineType, GetFilePathResult, GetItemResult, ItemType, request } from '../requests'
+import { ActionType, Column, ColumnsType, EngineType, GetFilePathResult, GetItemResult, ItemType, request } from '../requests'
 import { addRemotes, initRemotes } from '../remotes'
 
 var latestRequest = 0
@@ -417,7 +417,15 @@ export class Folder extends HTMLElement {
     deleteSelectedItems() {
     }
 
-    createFolder() {
+    async createFolder() {
+        var items = this.getSelectedItems()
+        const [dirs, files] = this.getSelectedItemsOverview(items)
+        await request("getactionstexts", {
+            engineType: this.engine,
+            type:       ActionType.Delete,
+            dirs,
+            files
+        })
     }
 
     async copy(other: Folder, fromLeft: boolean, move?: boolean) {
@@ -558,6 +566,12 @@ export class Folder extends HTMLElement {
             : versionLeft.patch != versionRight.patch
             ? versionLeft.patch - versionRight.patch
             : versionLeft.build - versionRight.build
+    }
+
+    private getSelectedItemsOverview(items: FolderItem[]) {
+        const dirs = items.filter(n => n.isDirectory).length
+        const files = items.filter(n => !n.isDirectory).length
+        return [dirs, files]
     }
 
     private source: EventSource

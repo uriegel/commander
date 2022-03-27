@@ -11,6 +11,5 @@ let post<'a> url data = task {
     use requestMessage = new HttpRequestMessage(HttpMethod.Post, Uri(url))
     requestMessage.Content <- JsonContent.Create(data, data.GetType (), null, getJsonOptions ()) 
     use! responseMessage = httpClient.SendAsync(requestMessage) 
-    let! test = responseMessage.Content.ReadAsStringAsync() 
     return! responseMessage.Content.ReadFromJsonAsync<'a>(getJsonOptions (), CancellationToken.None) 
 } 
