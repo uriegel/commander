@@ -1,4 +1,6 @@
 module Model
+open System.Text.Json
+open Configuration
 
 type ItemType =
 | Parent        = 1
@@ -51,3 +53,5 @@ type FolderEvent =
     | EnhancedInfo of EnhancedItem[]
     | GetItemsFinished
 
+let serializeToJson obj = 
+    JsonSerializer.Serialize (obj, getJsonOptions ())    

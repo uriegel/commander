@@ -11,6 +11,7 @@ open Configuration
 open Engine
 open Model
 open PlatformDirectory
+open Utils
 
 let leftFolderReplaySubject = new Subject<FolderEvent>()
 let rightFolderReplaySubject = new Subject<FolderEvent>()
@@ -188,7 +189,7 @@ let getItems path (param: GetItems) = async {
             subj.OnNext <| GetItemsFinished
     } |> Async.StartAsTask |> ignore
 
-    return JsonSerializer.Serialize (result, getJsonOptions ())
+    return result |> serializeToJson
 }
 
 let getFile (body: string) = async {
@@ -196,10 +197,18 @@ let getFile (body: string) = async {
     return JsonSerializer.Serialize({ Path = Path.Combine (item.Path, item.CurrentItem.Name) }, getJsonOptions ()) 
 }
 
-let createfolder path name = 
-    let newFolder = Path.Combine (path, name)
-    Directory.CreateDirectory(newFolder) |> ignore
-    // TODO No Access
-    // TODO Directory already exists
-    // TODO General Error
-    "{}"
+type Error = {
+    Error: IOError option
+}
+
+let getError err = {
+    Error = err
+}
+
+let createFolder = 
+    Path.Combine 
+    >> Directory.create
+    >> Result.mapError mapIOError
+    >> mapToErrorOption
+    >> getError
+    >> serializeToJson

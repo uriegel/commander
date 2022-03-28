@@ -28,9 +28,21 @@ let getJsonOptions =
         jsonOptions
     memoizeSingle getJsonOptions
 
-let retrieveConfigDirectory application = combine3Pathes (Environment.GetFolderPath Environment.SpecialFolder.ApplicationData) "uriegel.de" application
+let retrieveConfigDirectory application = 
+    [| 
+        Environment.GetFolderPath Environment.SpecialFolder.ApplicationData
+        "uriegel.de" 
+        application
+    |] |> Directory.combinePathes 
+
 let getConfigDirectory = memoize retrieveConfigDirectory
-let getElectronFile = combine3Pathes (getConfigDirectory "commander") "electron" 
+
+let getElectronFile file = 
+    [| 
+        getConfigDirectory "commander"
+        "electron"
+        file
+    |] |> Directory.combinePathes 
     
 let copyStream (target: IO.Stream, source: IO.Stream) = 
     source.CopyTo target

@@ -7,9 +7,37 @@ open System
 open System.Text.Json
 open System.Threading.Tasks
 
+module Directory = 
+    let combinePathes pathes = 
+        // TODO Railway
+        IO.Path.Combine pathes
+
+    let create path = 
+        try
+            Ok (IO.Directory.CreateDirectory path)
+        with
+        | e -> Error(e)
+
+    let checkExists path = 
+        // TODO error handling
+        let info = IO.FileInfo path
+        if not info.Directory.Exists then 
+            create info.DirectoryName |> ignore
+        path
+
 let tee f x = 
     f x
     x
+
+type IOError = 
+| AccessDenied
+| AlreadyExists
+| Exception of System.Exception
+
+let mapIOError (e: exn) = 
+    match e with
+    | :? System.UnauthorizedAccessException -> AccessDenied
+    | e                                     -> Exception e
 
 let memoizeSingle funToMemoize =
     let memoized = funToMemoize ()
@@ -22,19 +50,11 @@ let parseInt64 defaultValue (str: string) =
     | true, num -> num
     | _         -> defaultValue
 
-let combine2Pathes path1 path2 = IO.Path.Combine (path1, path2)
-let combine3Pathes path1 path2 path3 = IO.Path.Combine (path1, path2, path3)
 let createStream path : IO.Stream = IO.File.Create path
 let openStream path : IO.Stream = IO.File.OpenRead path
 
-let checkDirectory path = 
-    let info = IO.FileInfo path
-    if not info.Directory.Exists then 
-        IO.Directory.CreateDirectory info.DirectoryName |> ignore
-    path
-
-let securedCreateStream = checkDirectory >> createStream
-let securedOpenStream = checkDirectory >> openStream
+let securedCreateStream = Directory.checkExists >> createStream
+let securedOpenStream = Directory.checkExists >> openStream
 
 let getExtension file =
     let getExtensionIndex () = file |> String.lastIndexOfChar '.'
@@ -109,3 +129,9 @@ let jsonText (str : string) : HttpHandler =
         fun (_ : HttpFunc) (ctx : HttpContext) ->
             ctx.SetContentType "application/json; charset=utf-8"
             ctx.WriteBytesAsync bytes
+
+let mapToErrorOption result = 
+    match result with
+    | Ok    _ -> None
+    | Error u -> Some u
+

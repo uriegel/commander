@@ -76,5 +76,5 @@ let getActionsTexts (param: GetActionsTexts) =
 
 let createfolder (param: CreateFolderParam) =
     match param.Engine with
-    | EngineType.Directory -> createfolder param.Path param.Name
+    | EngineType.Directory -> [| param.Path; param.Name|] |> createFolder
     | _                    -> ""

@@ -85,7 +85,7 @@ let getFilePath () =
             return! jsonText result next ctx
         }
 
-let createfolder () =
+let createFolder () =
     fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
             let! body = ctx.ReadBodyFromRequestAsync ()
