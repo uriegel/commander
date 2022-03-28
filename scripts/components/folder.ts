@@ -440,7 +440,11 @@ export class Folder extends HTMLElement {
         })
         this.setFocus()
         if (res.result == Result.Ok && res.input) {
-            //await this.processCreateFolder(res.input)
+            await request("createfolder", {
+                engine: this.engine,
+                path: this.getCurrentPath(),
+                name: res.input
+            })
             this.reloadItems(true)
         }
     }

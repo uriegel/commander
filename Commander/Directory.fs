@@ -195,3 +195,11 @@ let getFile (body: string) = async {
     let item = JsonSerializer.Deserialize<GetFile> (body, getJsonOptions ())
     return JsonSerializer.Serialize({ Path = Path.Combine (item.Path, item.CurrentItem.Name) }, getJsonOptions ()) 
 }
+
+let createfolder path name = 
+    let newFolder = Path.Combine (path, name)
+    Directory.CreateDirectory(newFolder) |> ignore
+    // TODO No Access
+    // TODO Directory already exists
+    // TODO General Error
+    "{}"

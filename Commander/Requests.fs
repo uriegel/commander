@@ -85,6 +85,15 @@ let getFilePath () =
             return! jsonText result next ctx
         }
 
+let createfolder () =
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+            let! body = ctx.ReadBodyFromRequestAsync ()
+            let param = JsonSerializer.Deserialize<CreateFolderParam>(body, getJsonOptions ())
+            let result = createfolder param
+            return! jsonText result next ctx
+        }        
+
 let getImage (fileRequest: FileRequest) = 
     streamFile false fileRequest.Path None None
 

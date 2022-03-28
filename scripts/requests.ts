@@ -9,14 +9,17 @@ type GetItems = "getitems"
 type GetFilePath = "getfilepath"
 type PutRemotes = "putremotes"
 type GetActionsTexts = "getactionstexts"
+type CreateFolder = "createfolder"
+
 
 export type RequestType = 
-    ShowDevToolsType | 
-    ShowFullscreenType |
-    GetItems |
-    GetFilePath | 
-    PutRemotes | 
-    GetActionsTexts
+    | ShowDevToolsType 
+    | ShowFullscreenType 
+    | GetItems 
+    | GetFilePath 
+    | PutRemotes 
+    | GetActionsTexts 
+    | CreateFolder
 
 type Empty = {}
 
@@ -43,6 +46,12 @@ type GetFilePathType = {
 type PutRemotesType = {
     folderId: string,
     remotes: RemoteItem[]
+}
+
+type CreatefolderType = {
+    engineType: EngineType
+    path:       string
+    name:       string
 }
 
 export enum ActionType {
@@ -105,9 +114,20 @@ export type Nothing = { }
 
 export type GetActionTextResult = { result: string| null}
 
-type Result = GetItemResult | Exception | GetFilePathResult | Nothing | GetActionTextResult
+type Result = 
+    | GetItemResult 
+    | Exception 
+    | GetFilePathResult 
+    | Nothing 
+    | GetActionTextResult
 
-export type RequestInput = Empty | GetItemsType | GetFilePathType | PutRemotesType | GetActionsTextsType
+export type RequestInput = 
+    | Empty  
+    | GetItemsType 
+    | GetFilePathType 
+    | PutRemotesType 
+    | GetActionsTextsType 
+    | CreatefolderType
 
 export async function request<T extends Result>(method: RequestType, input?: RequestInput) {
     const response = await fetch(`commander/${method}`, {

@@ -6,6 +6,13 @@ open System.Text.Json
 open Configuration
 open Engine
 open Model
+open Directory
+
+type CreateFolderParam = {
+    Engine: EngineType
+    Path:   string
+    Name:   string
+}
 
 let getEngineAndPathFrom engine path item body =
     match engine with
@@ -67,3 +74,7 @@ let getActionsTexts (param: GetActionsTexts) =
     | _                                             -> None
     
 
+let createfolder (param: CreateFolderParam) =
+    match param.Engine with
+    | EngineType.Directory -> createfolder param.Path param.Name
+    | _                    -> ""
