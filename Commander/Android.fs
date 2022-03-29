@@ -26,7 +26,7 @@ type AndroidItem = {
     Time:        int64
 }
 
-let getSlashCount = getCharCount '/'
+let getSlashCount = String.getCharCount '/'
 
 let getIpAndFilePath path = 
     let getIndex () = 
@@ -97,7 +97,7 @@ let getItems (engine: EngineType) path latestPath = async {
         IconPath =    None
         IsHidden =    item.IsHidden
         IsDirectory = true
-        Time =        item.Time |> toDateTime
+        Time =        item.Time |> DateTime.fromUnixTime
     }
 
     let getFileItem item = {
@@ -109,7 +109,7 @@ let getItems (engine: EngineType) path latestPath = async {
         IconPath =    item |> getExtension 
         IsHidden =    item.IsHidden
         IsDirectory = false
-        Time =        item.Time |> toDateTime
+        Time =        item.Time |> DateTime.fromUnixTime
     }
 
     let sortByName item = item.Name |> String.toLower 

@@ -7,6 +7,7 @@ open System.Text.Json
 open System.Text.Json.Serialization
 
 open Utils
+open Functional
 
 type WindowBounds = {
     X:           int option
@@ -28,14 +29,7 @@ let getJsonOptions =
         jsonOptions
     memoizeSingle getJsonOptions
 
-let retrieveConfigDirectory application = 
-    [| 
-        Environment.GetFolderPath Environment.SpecialFolder.ApplicationData
-        "uriegel.de" 
-        application
-    |] |> Directory.combinePathes 
-
-let getConfigDirectory = memoize retrieveConfigDirectory
+let getConfigDirectory = Directory.getConfigDirectory "uriegel.de"     
 
 let getElectronFile file = 
     [| 

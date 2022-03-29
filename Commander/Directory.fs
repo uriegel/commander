@@ -209,6 +209,6 @@ let createFolder =
     Path.Combine 
     >> Directory.create
     >> Result.mapError mapIOError
-    >> mapToErrorOption
+    >> Result.mapErrorToOption
     >> getError
     >> serializeToJson

@@ -2,9 +2,10 @@ module Gtk
 
 open GtkDotNet
 open System.Reactive.Subjects
+open System.Threading.Tasks
 
 open Utils
-open System.Threading.Tasks
+open Functional
 
 type GtkQueueItem = {
     Extension: string

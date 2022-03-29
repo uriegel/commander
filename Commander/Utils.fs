@@ -2,15 +2,15 @@ module Utils
 
 open FSharpRailway.Option
 open FSharpTools
+open Functional
 open Microsoft.AspNetCore.Http
 open System
 open System.Text.Json
 open System.Threading.Tasks
 
 module Directory = 
-    let combinePathes pathes = 
-        // TODO Railway
-        IO.Path.Combine pathes
+
+    let combinePathes pathes = IO.Path.Combine pathes
 
     let create path = 
         try
@@ -18,16 +18,81 @@ module Directory =
         with
         | e -> Error(e)
 
-    let checkExists path = 
-        // TODO error handling
-        let info = IO.FileInfo path
-        if not info.Directory.Exists then 
-            create info.DirectoryName |> ignore
-        path
+    let retrieveConfigDirectory scheme application = 
+        [| 
+            Environment.GetFolderPath Environment.SpecialFolder.ApplicationData
+            scheme
+            application
+        |] |> combinePathes 
 
-let tee f x = 
-    f x
-    x
+    let getConfigDirectory = memoize retrieveConfigDirectory
+
+module Stream = 
+    let create path = 
+        try 
+            Ok (IO.File.Create (path) :> IO.Stream)
+        with
+        | e -> Error e
+
+    let openRead path = 
+        try 
+            Ok (IO.File.OpenRead (path) :> IO.Stream)
+        with
+        | e -> Error e
+
+let parseInt64 (str: string) = 
+    match Int64.TryParse str with
+    | true, num -> Some num
+    | _         -> None
+
+let parseInt64Def defaultValue = parseInt64 >> Option.defaultValue defaultValue
+
+module Functional = 
+
+    let tee f x = 
+        f x
+        x
+
+    let memoizeSingle funToMemoize =
+        let memoized = funToMemoize ()
+        fun () -> memoized
+
+    let takeFirstTupleElem (a, _) = a
+
+module DateTime = 
+    
+    // TODO seconds, milliseconds
+    let fromUnixTime (timestamp: int64) =
+        let start = DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+        start.AddMilliseconds(float timestamp).ToLocalTime()
+
+module Seq = 
+
+    let getElementCount char str = 
+        let filterSlash chr = chr = char
+        str 
+        |> Seq.filter filterSlash
+        |> Seq.length
+
+module String = 
+    let getCharCount (char: Char) = Seq.getElementCount char
+
+module Result = 
+    let mapErrorToOption result = 
+        match result with
+        | Ok    _ -> None
+        | Error u -> Some u
+
+    let throw result = 
+        match result with
+        | Ok value -> value
+        |Error exn -> raise exn
+
+let checkExistsDirectory path = 
+    let info = IO.FileInfo path
+    if not info.Directory.Exists then 
+        Directory.create info.DirectoryName |> ignore
+    path
 
 type IOError = 
 | AccessDenied
@@ -39,38 +104,17 @@ let mapIOError (e: exn) =
     | :? System.UnauthorizedAccessException -> AccessDenied
     | e                                     -> Exception e
 
-let memoizeSingle funToMemoize =
-    let memoized = funToMemoize ()
-    (fun () -> memoized)
+let createStream = Stream.create >> Result.throw
+let openReadStream = Stream.openRead >> Result.throw
 
-let takeFirstTupleElem (a, _) = a
-
-let parseInt64 defaultValue (str: string) = 
-    match Int64.TryParse str with
-    | true, num -> num
-    | _         -> defaultValue
-
-let createStream path : IO.Stream = IO.File.Create path
-let openStream path : IO.Stream = IO.File.OpenRead path
-
-let securedCreateStream = Directory.checkExists >> createStream
-let securedOpenStream = Directory.checkExists >> openStream
+let securedCreateStream = checkExistsDirectory >> createStream
+let securedOpenStream = checkExistsDirectory >> openReadStream
 
 let getExtension file =
     let getExtensionIndex () = file |> String.lastIndexOfChar '.'
     let getExtensionFromIndex index = Some (file |> String.substring index)
     let getExtension = getExtensionIndex >=> getExtensionFromIndex
     getExtension ()
-
-let toDateTime (timestamp: int64) =
-    let start = DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-    start.AddMilliseconds(float timestamp).ToLocalTime()
-
-let getCharCount char str = 
-    let filterSlash chr = chr = char
-    str 
-    |> Seq.filter filterSlash
-    |> Seq.length
 
 open Giraffe
 
@@ -130,8 +174,4 @@ let jsonText (str : string) : HttpHandler =
             ctx.SetContentType "application/json; charset=utf-8"
             ctx.WriteBytesAsync bytes
 
-let mapToErrorOption result = 
-    match result with
-    | Ok    _ -> None
-    | Error u -> Some u
 
