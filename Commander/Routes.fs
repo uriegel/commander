@@ -10,6 +10,7 @@ open Engine
 open PlatformRequests
 open Requests
 open Utils
+open GiraffeTools
 
 let configure (app : IApplicationBuilder) = 
     let getMimeType path = 

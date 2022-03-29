@@ -53,10 +53,10 @@ let getEvents () =
             return! json evt next ctx
         }
   
-let sse () = createSse rendererReplaySubject <| getJsonOptions ()
+let sse () = Sse.create rendererReplaySubject <| getJsonOptions ()
 
-let sseLeftFolder () = createSse leftFolderReplaySubject <| getJsonOptions ()
-let sseRightFolder () = createSse rightFolderReplaySubject <| getJsonOptions ()
+let sseLeftFolder () = Sse.create leftFolderReplaySubject <| getJsonOptions ()
+let sseRightFolder () = Sse.create rightFolderReplaySubject <| getJsonOptions ()
 
 let getItems () =
     fun (next : HttpFunc) (ctx : HttpContext) ->
@@ -64,7 +64,7 @@ let getItems () =
             let! body = ctx.ReadBodyFromRequestAsync ()
             let param = JsonSerializer.Deserialize<GetItems>(body, getJsonOptions ())
             let! result = getItems param body
-            return! jsonText result next ctx
+            return! Json.text result next ctx
         }
 
 let getActionTexts () = 
@@ -82,7 +82,7 @@ let getFilePath () =
             let! body = ctx.ReadBodyFromRequestAsync ()
             let param = JsonSerializer.Deserialize<GetFile>(body, getJsonOptions ())
             let! result = getFilePath param body
-            return! jsonText result next ctx
+            return! Json.text result next ctx
         }
 
 let createFolder () =
@@ -91,7 +91,7 @@ let createFolder () =
             let! body = ctx.ReadBodyFromRequestAsync ()
             let param = JsonSerializer.Deserialize<CreateFolderParam>(body, getJsonOptions ())
             let result = createfolder param
-            return! jsonText result next ctx
+            return! Json.text result next ctx
         }        
 
 let getImage (fileRequest: FileRequest) = 

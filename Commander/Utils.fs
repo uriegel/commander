@@ -5,8 +5,6 @@ open FSharpTools
 open Functional
 open Microsoft.AspNetCore.Http
 open System
-open System.Text.Json
-open System.Threading.Tasks
 
 let retrieveConfigDirectory = Directory.retrieveConfigDirectory "uriegel.de"
 let getConfigDirectory = memoize retrieveConfigDirectory
@@ -60,47 +58,6 @@ let getExtension file =
     let getExtension = getExtensionIndex >=> getExtensionFromIndex
     getExtension ()
 
-open Giraffe
-
-// TODO Giraffe Utils
-let httpHandlerParam httpHandler param: HttpHandler = (fun () -> httpHandler(param))()
-let routePathes () (routeHandler : string -> HttpHandler) : HttpHandler =
-    fun (next : HttpFunc) (ctx : HttpContext) ->
-        Some (SubRouting.getNextPartOfPath ctx)
-        |> function
-            | Some subpath -> routeHandler subpath[1..] next ctx    
-            | None         -> skipPipeline
-
-let createSse<'a> (observable: IObservable<'a>) (jsonOptions: JsonSerializerOptions) =  
-
-    fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-            let res = ctx.Response
-            ctx.SetStatusCode 200
-            ctx.SetHttpHeader("Content-Type", "text/event-stream")
-            ctx.SetHttpHeader("Cache-Control", "no-cache")
-
-            let messageLoop (inbox: MailboxProcessor<obj>) = 
-                let rec messageLoop () = async {
-                    let! msg = inbox.Receive()
-                    let payload = JsonSerializer.Serialize(msg, jsonOptions)
-                    do! res.WriteAsync $"data:{payload}\n\n" |> Async.AwaitTask
-                    do! res.Body.FlushAsync() |> Async.AwaitTask
-                    return! messageLoop ()
-                }
-                messageLoop ()
-            
-            let agent = MailboxProcessor.Start messageLoop
-            let onValue evt = agent.Post evt
-            observable |> Observable.subscribe onValue |> ignore
-
-            // Wait forever
-            let tcs = TaskCompletionSource<'a>()
-            let! evt = tcs.Task
-            // Only needed for compiling:
-            return! text "" next ctx            
-        }        
-
 let runCmd cmd args = 
     // TODO from FSharpRailway
     let (>>) f g x = async {
@@ -112,10 +69,5 @@ let runCmd cmd args =
     let runCmd () = FSharpTools.Process.run cmd args
     runCmd >> getStringFromResult
 
-let jsonText (str : string) : HttpHandler =
-        let bytes = System.Text.Encoding.UTF8.GetBytes str
-        fun (_ : HttpFunc) (ctx : HttpContext) ->
-            ctx.SetContentType "application/json; charset=utf-8"
-            ctx.WriteBytesAsync bytes
 
 
