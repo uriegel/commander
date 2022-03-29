@@ -9,8 +9,10 @@ open System.Text.Encodings.Web;
 open System.Text.Json
 open System.Text.Json.Serialization
 
-open Utils
-open Functional
+open FileSystem
+
+let retrieveConfigDirectory = Directory.retrieveConfigDirectory "uriegel.de"
+let getConfigDirectory = memoize retrieveConfigDirectory
 
 type WindowBounds = {
     X:           int option

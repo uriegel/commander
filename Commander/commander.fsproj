@@ -18,6 +18,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Utils.fs" />
+    <Compile Include="FileSystem.fs" />
+    <Compile Include="Process.fs" />
     <Compile Include="Configuration.fs" />
     <Compile Include="Model.fs" />
     <Compile Include="Engine.fs" />

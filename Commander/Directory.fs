@@ -1,7 +1,6 @@
 module Directory
 
 open FSharpRailway
-open Result
 open FSharpTools
 open FSharpTools.ExifReader
 open FSharpRailway.Option
@@ -11,9 +10,9 @@ open System.Text.Json
 
 open Configuration
 open Engine
+open FileSystem
 open Model
 open PlatformDirectory
-open Utils
 
 let leftFolderReplaySubject = new Subject<FolderEvent>()
 let rightFolderReplaySubject = new Subject<FolderEvent>()
