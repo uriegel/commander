@@ -8,75 +8,19 @@ open System
 open System.Text.Json
 open System.Threading.Tasks
 
-module Directory = 
-
-    let combinePathes pathes = IO.Path.Combine pathes
-
-    let create path = 
-        try
-            Ok (IO.Directory.CreateDirectory path)
-        with
-        | e -> Error(e)
-
-    let retrieveConfigDirectory scheme application = 
-        [| 
-            Environment.GetFolderPath Environment.SpecialFolder.ApplicationData
-            scheme
-            application
-        |] |> combinePathes 
-
-    let getConfigDirectory = memoize retrieveConfigDirectory
-
-module Stream = 
-    let create path = 
-        try 
-            Ok (IO.File.Create (path) :> IO.Stream)
-        with
-        | e -> Error e
-
-    let openRead path = 
-        try 
-            Ok (IO.File.OpenRead (path) :> IO.Stream)
-        with
-        | e -> Error e
-
-let parseInt64 (str: string) = 
-    match Int64.TryParse str with
-    | true, num -> Some num
-    | _         -> None
-
-let parseInt64Def defaultValue = parseInt64 >> Option.defaultValue defaultValue
+let retrieveConfigDirectory = Directory.retrieveConfigDirectory "uriegel.de"
+let getConfigDirectory = memoize retrieveConfigDirectory
 
 module Functional = 
 
+    // FSharpRailway
     let tee f x = 
         f x
         x
 
-    let memoizeSingle funToMemoize =
-        let memoized = funToMemoize ()
-        fun () -> memoized
-
     let takeFirstTupleElem (a, _) = a
 
-module DateTime = 
-    
-    // TODO seconds, milliseconds
-    let fromUnixTime (timestamp: int64) =
-        let start = DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-        start.AddMilliseconds(float timestamp).ToLocalTime()
-
-module Seq = 
-
-    let getElementCount char str = 
-        let filterSlash chr = chr = char
-        str 
-        |> Seq.filter filterSlash
-        |> Seq.length
-
-module String = 
-    let getCharCount (char: Char) = Seq.getElementCount char
-
+// FSharpRailway
 module Result = 
     let mapErrorToOption result = 
         match result with

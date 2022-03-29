@@ -1,5 +1,6 @@
 module Configuration
 
+open FSharpTools
 open FSharpTools.Functional
 open System
 open System.Text.Encodings.Web;
@@ -28,8 +29,6 @@ let getJsonOptions =
         jsonOptions.Converters.Add(JsonFSharpConverter())
         jsonOptions
     memoizeSingle getJsonOptions
-
-let getConfigDirectory = Directory.getConfigDirectory "uriegel.de"     
 
 let getElectronFile file = 
     [| 
