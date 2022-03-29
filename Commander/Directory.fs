@@ -1,5 +1,7 @@
 module Directory
 
+open FSharpRailway
+open Result
 open FSharpTools
 open FSharpTools.ExifReader
 open FSharpRailway.Option
@@ -209,6 +211,6 @@ let createFolder =
     Path.Combine 
     >> Directory.create
     >> Result.mapError mapIOError
-    >> Result.mapErrorToOption
+    >> Option.mapOnlyError
     >> getError
     >> serializeToJson

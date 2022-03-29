@@ -1,5 +1,7 @@
 module Configuration
 
+open FSharpRailway
+open Railway
 open FSharpTools
 open FSharpTools.Functional
 open System
