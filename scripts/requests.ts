@@ -114,12 +114,35 @@ export type Nothing = { }
 
 export type GetActionTextResult = { result: string| null}
 
+
+type AccessDenied = {
+    Case: "AccessDenied"
+}
+
+type AlreadyExists = {
+    Case: "AlreadyExists"
+}
+
+type Exn = {
+    Case: "Exception"
+}
+
+type IOError =
+    | AccessDenied
+    | AlreadyExists
+    | Exn 
+
+export type IOErrorResult = {
+    error: IOError
+}
+
 type Result = 
     | GetItemResult 
     | Exception 
     | GetFilePathResult 
     | Nothing 
     | GetActionTextResult
+    | IOErrorResult
 
 export type RequestInput = 
     | Empty  

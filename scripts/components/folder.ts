@@ -1,7 +1,7 @@
 import 'virtual-table-component'
 import { TableItem, VirtualTable } from 'virtual-table-component'
 import { compose } from '../functional'
-import { ActionType, Column, ColumnsType, EngineType, GetActionTextResult, GetFilePathResult, GetItemResult, ItemType, request } from '../requests'
+import { ActionType, Column, ColumnsType, EngineType, GetActionTextResult, GetFilePathResult, GetItemResult, IOErrorResult, ItemType, request } from '../requests'
 import { addRemotes, initRemotes } from '../remotes'
 import { DialogBox, Result } from 'web-dialog-box'
 
@@ -440,11 +440,23 @@ export class Folder extends HTMLElement {
         })
         this.setFocus()
         if (res.result == Result.Ok && res.input) {
-            await request("createfolder", {
+            const ioResult = await request<IOErrorResult>("createfolder", {
                 engine: this.engine,
                 path: this.getCurrentPath(),
                 name: res.input
             })
+            if (!ioResult.error) this.reloadItems(true)
+            else {
+                const text = ioResult.error.Case == "AccessDenied" 
+                            ? "Zugriff verweigert"
+                            : "Die Aktion konnte nicht ausgeführt werden"
+                setTimeout(async () => { await dialog.show({
+                        text,
+                        btnOk: true
+                    })
+                    this.setFocus()        
+                }, 500)                
+            }
             this.reloadItems(true)
         }
     }
