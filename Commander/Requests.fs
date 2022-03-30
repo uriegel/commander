@@ -8,7 +8,6 @@ open Configuration
 open Directory
 open Engine
 open Engines
-open Utils
 open System.Reactive.Subjects
 open System.Text.Json
 

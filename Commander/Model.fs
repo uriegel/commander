@@ -53,6 +53,6 @@ type FolderEvent =
     | EnhancedInfo of EnhancedItem[]
     | GetItemsFinished
 
-// TODO JSON with options
+// TODO FSharpTools JSON with options
 let serializeToJson obj = 
     JsonSerializer.Serialize (obj, getJsonOptions ())    

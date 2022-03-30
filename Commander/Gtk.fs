@@ -4,7 +4,6 @@ open GtkDotNet
 open System.Reactive.Subjects
 open System.Threading.Tasks
 
-open Utils
 open FSharpTools
 open Functional
 

@@ -6,7 +6,6 @@ open System.Text.Json
 open Configuration
 open Engine
 open Model
-open Utils
 
 type GetItems = {
     Path:        string option
