@@ -37,3 +37,11 @@ let getExtension file =
     let getExtensionFromIndex index = Some (file |> String.substring index)
     let getExtension = getExtensionIndex >=> getExtensionFromIndex
     getExtension ()
+
+type Error = {
+    Error: IOError option
+}
+
+let getError err = {
+    Error = err
+}

@@ -1,10 +1,13 @@
 module PlatformDirectory
 
+open FSharpRailway
 open System.IO
 open System.Reactive.Subjects
 
 open Engine
+open Gtk
 open Model
+open FileSystem
 
 let extendColumns columns = columns
 
@@ -14,12 +17,12 @@ let getIconPath (fileInfo: FileInfo) =
     | _                                 -> ".noextension"
 
 let getIcon (param: FileRequest) = 
-    Gtk.getIcon param.Path
+    getIcon param.Path
 
 let appendPlatformInfo (subj: Subject<FolderEvent>) requestId id (path: string) (items: DirectoryItem seq) = ()
 
 let deleteItems = 
     deleteItems
-    >> mapOnlyError
+    >> Option.mapOnlyError
     >> getError
     >> serializeToJson

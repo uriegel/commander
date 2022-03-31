@@ -198,14 +198,6 @@ let getFile (body: string) = async {
     return JsonSerializer.Serialize({ Path = Path.Combine (item.Path, item.CurrentItem.Name) }, getJsonOptions ()) 
 }
 
-type Error = {
-    Error: IOError option
-}
-
-let getError err = {
-    Error = err
-}
-
 let createFolder = 
     Path.Combine 
     >> Directory.create
