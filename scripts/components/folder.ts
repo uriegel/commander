@@ -1,7 +1,7 @@
 import 'virtual-table-component'
 import { TableItem, VirtualTable } from 'virtual-table-component'
 import { compose } from '../functional'
-import { ActionType, Column, ColumnsType, EngineType, GetActionTextResult, GetFilePathResult, GetItemResult, IOErrorResult, ItemType, request } from '../requests'
+import { ActionType, Column, ColumnsType, EngineType, GetActionTextResult, GetFilePathResult, GetItemResult, IOError, IOErrorResult, ItemType, request } from '../requests'
 import { addRemotes, initRemotes } from '../remotes'
 import { DialogBox, Result } from 'web-dialog-box'
 
@@ -305,8 +305,8 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Create Directory
-        // TODO Trash
+        // TODO Trash Windows
+        // TODO rename
         // TODO delete remotes 
         // TODO Copy/Move
         // TODO when Time sorting, then sort after exif or disable time sort
@@ -417,7 +417,32 @@ export class Folder extends HTMLElement {
     async extendedRename() {
     }
 
-    deleteSelectedItems() {
+    async deleteSelectedItems() {
+        var items = this.getSelectedItems()
+        const [dirs, files] = this.getSelectedItemsOverview(items)
+        let texts = await request<GetActionTextResult>("getactionstexts", {
+            engineType: this.engine,
+            type:       ActionType.Delete,
+            dirs,
+            files
+        }) 
+        if (!texts.result)
+            return
+        const res = await dialog.show({
+            text: texts.result,
+            btnOk: true,
+            btnCancel: true,
+            defBtnOk: true
+        })
+        this.setFocus()
+        if (res.result == Result.Ok) {
+            const ioResult = await request<IOErrorResult>("deleteitems", {
+                engine: this.engine,
+                path: this.getCurrentPath(),
+                items: items.map(n => n.name)
+            })
+            this.checkResult(ioResult.error) 
+        }
     }
 
     async createFolder() {
@@ -445,23 +470,29 @@ export class Folder extends HTMLElement {
                 path: this.getCurrentPath(),
                 name: res.input
             })
-            if (!ioResult.error) this.reloadItems(true)
-            else {
-                const text = ioResult.error.Case == "AccessDenied" 
-                            ? "Zugriff verweigert"
-                            : "Die Aktion konnte nicht ausgeführt werden"
-                setTimeout(async () => { await dialog.show({
-                        text,
-                        btnOk: true
-                    })
-                    this.setFocus()        
-                }, 500)                
-            }
-            this.reloadItems(true)
+            this.checkResult(ioResult.error) 
         }
     }
 
     async copy(other: Folder, fromLeft: boolean, move?: boolean) {
+    }
+
+    private checkResult(error: IOError) {
+        if (!error) 
+            this.reloadItems(true)
+        else {
+            const text = error.Case == "AccessDenied" 
+                        ? "Zugriff verweigert"
+                        : error.Case == "DeleteToTrashNotPossible"
+                        ? "Löschen nicht möglich"
+                        : "Die Aktion konnte nicht ausgeführt werden"
+            setTimeout(async () => { await dialog.show({
+                    text,
+                    btnOk: true
+                })
+                this.setFocus()        
+            }, 500)                
+        }
     }
 
     private onPathChanged(newPath: string, fromBacklog?: boolean) {

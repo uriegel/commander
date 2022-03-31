@@ -10,7 +10,7 @@ type GetFilePath = "getfilepath"
 type PutRemotes = "putremotes"
 type GetActionsTexts = "getactionstexts"
 type CreateFolder = "createfolder"
-
+type DeleteItems = "deleteitems"
 
 export type RequestType = 
     | ShowDevToolsType 
@@ -20,6 +20,7 @@ export type RequestType =
     | PutRemotes 
     | GetActionsTexts 
     | CreateFolder
+    | DeleteItems
 
 type Empty = {}
 
@@ -52,6 +53,12 @@ type CreatefolderType = {
     engineType: EngineType
     path:       string
     name:       string
+}
+
+type DeleteItemsType = {
+    engineType: EngineType
+    path:       string
+    items:      string[]
 }
 
 export enum ActionType {
@@ -123,13 +130,23 @@ type AlreadyExists = {
     Case: "AlreadyExists"
 }
 
+type FileNotFound = {
+    Case: "FileNotFound"
+}
+
+type DeleteToTrashNotPossible = {
+    Case: "DeleteToTrashNotPossible"
+}
+
 type Exn = {
     Case: "Exception"
 }
 
-type IOError =
+export type IOError =
     | AccessDenied
     | AlreadyExists
+    | FileNotFound
+    | DeleteToTrashNotPossible
     | Exn 
 
 export type IOErrorResult = {
@@ -151,6 +168,7 @@ export type RequestInput =
     | PutRemotesType 
     | GetActionsTextsType 
     | CreatefolderType
+    | DeleteItemsType
 
 export async function request<T extends Result>(method: RequestType, input?: RequestInput) {
     const response = await fetch(`commander/${method}`, {

@@ -65,6 +65,10 @@ export function onCreateFolder() {
     activeFolder.createFolder()
 }
 
+export function onDelete() {
+    activeFolder.deleteSelectedItems()
+}
+
 export function onAdaptPath() {
     getInactiveFolder().changePath(activeFolder.getCurrentPath())
 }

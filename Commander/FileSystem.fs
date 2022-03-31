@@ -7,6 +7,8 @@ open System
 type IOError = 
 | AccessDenied
 | AlreadyExists
+| FileNotFound
+| DeleteToTrashNotPossible
 | Exception of exn
 
 let mapIOError (e: exn) = 

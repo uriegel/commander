@@ -93,6 +93,15 @@ let createFolder () =
             return! Json.text result next ctx
         }        
 
+let deleteItems  () =
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+            let! body = ctx.ReadBodyFromRequestAsync ()
+            let param = JsonSerializer.Deserialize<DeleteItemsParam>(body, getJsonOptions ())
+            let result = deleteItems param
+            return! Json.text result next ctx
+        }              
+
 let getImage (fileRequest: FileRequest) = 
     streamFile false fileRequest.Path None None
 

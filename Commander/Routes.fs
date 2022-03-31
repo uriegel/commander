@@ -32,6 +32,7 @@ let configure (app : IApplicationBuilder) =
             route  "/commander/movie"          >=> bindQuery<FileRequest> None getMovie
             route  "/commander/file"           >=> bindQuery<FileRequest> None getFile
             route  "/commander/getactionstexts">=> warbler (fun _ -> getActionTexts ())
+            route  "/commander/deleteitems"    >=> warbler (fun _ -> deleteItems ())
             route  "/commander/createfolder"   >=> warbler (fun _ -> createFolder ())
             route  "/commander/showdevtools"   >=> warbler (fun _ -> showDevTools ())
             route  "/commander/showfullscreen" >=> warbler (fun _ -> showFullscreen ())

@@ -1,18 +1,47 @@
 module Gtk
 
+open FileSystem
+open FSharpRailway
 open GtkDotNet
 open System.Reactive.Subjects
 open System.Threading.Tasks
 
 open FSharpTools
 open Functional
+open Result
 
-type GtkQueueItem = {
+type IconQueueItem = {
     Extension: string
     Tcs:       TaskCompletionSource<string>
 }
 
+type TrashQueueItem = {
+    Items:     string array
+    Tcs:       TaskCompletionSource<Result<unit, IOError>>
+}
+
+type GtkQueueItem = 
+    | Icon of IconQueueItem
+    | Trash of TrashQueueItem
+
 let private subject = new ReplaySubject<GtkQueueItem> 10
+
+let errorFromGException (gee: GErrorException) = 
+    match gee.Code with
+    | 1  -> FileNotFound
+    | 2  -> AlreadyExists
+    | 14 -> AccessDenied
+    | 15 -> DeleteToTrashNotPossible
+    | _  -> Exception gee
+
+let mapToIOError (e: exn) =
+    match e with
+    | :? GErrorException as gee -> errorFromGException gee
+    | _                         -> Exception e
+
+let trash file = 
+    exceptionToResult <| fun () -> GFile.Trash file
+    |> mapError mapToIOError
 
 let start = 
     let start () = 
@@ -21,10 +50,22 @@ let start =
 
             let messageLoop (inbox: MailboxProcessor<GtkQueueItem>) = 
                 let rec messageLoop () = async {
-                    let! evt = inbox.Receive()
-                    use iconInfo = IconInfo.Choose (evt.Extension, 16, IconLookup.NoSvg)
-                    evt.Tcs.SetResult <| iconInfo.GetFileName ()
-                    return! messageLoop ()
+                    match! inbox.Receive() with
+                    | Icon  item -> 
+                        use iconInfo = IconInfo.Choose (item.Extension, 16, IconLookup.NoSvg)
+                        item.Tcs.SetResult <| iconInfo.GetFileName ()
+                        return! messageLoop ()
+                    | Trash item -> 
+
+                        let trashIfNoError (result: Result<unit, IOError>) file =
+                            match result with
+                            | Ok _      -> trash file
+                            | Error err -> Error err
+
+                        let result = item.Items |> Array.fold trashIfNoError (Ok ())
+                        item.Tcs.SetResult <| result
+                        
+                        return! messageLoop ()
                 }
                 messageLoop ()
             
@@ -48,9 +89,18 @@ let getIcon ext =
 
     let getIcon () = 
         let tcs = TaskCompletionSource<string> ()
-        subject.OnNext { Extension = ext; Tcs = tcs }
+        subject.OnNext <| Icon { Extension = ext; Tcs = tcs }
         tcs.Task.Result
     
     lock monitor getIcon
     
+let deleteItems items =
+    
+    start()
 
+    let deleteItems () = 
+        let tcs = TaskCompletionSource<Result<unit, IOError>> ()
+        subject.OnNext <| Trash { Items = items; Tcs = tcs }
+        tcs.Task.Result  
+    
+    lock monitor deleteItems
