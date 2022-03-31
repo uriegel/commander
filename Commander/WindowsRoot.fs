@@ -6,8 +6,8 @@ open System.Text.Json
 
 open Configuration
 open Engine
+open Functional
 open Model
-open Utils
 
 type RootItem = {
     Name:        string

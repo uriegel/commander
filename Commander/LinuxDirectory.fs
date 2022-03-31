@@ -18,4 +18,8 @@ let getIcon (param: FileRequest) =
 
 let appendPlatformInfo (subj: Subject<FolderEvent>) requestId id (path: string) (items: DirectoryItem seq) = ()
 
-let deleteItems = Gtk.deleteItems
+let deleteItems = 
+    deleteItems
+    >> mapOnlyError
+    >> getError
+    >> serializeToJson

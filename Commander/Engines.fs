@@ -4,9 +4,10 @@ open FSharpTools
 open System.Text.Json
 
 open Configuration
+open Directory
 open Engine
 open Model
-open Directory
+open PlatformDirectory
 
 type CreateFolderParam = {
     Engine: EngineType

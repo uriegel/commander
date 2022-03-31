@@ -13,7 +13,6 @@ open Engine
 open FileSystem
 open Model
 open PlatformDirectory
-open Gtk
 
 let leftFolderReplaySubject = new Subject<FolderEvent>()
 let rightFolderReplaySubject = new Subject<FolderEvent>()
@@ -211,12 +210,6 @@ let createFolder =
     Path.Combine 
     >> Directory.create
     >> Result.mapError mapIOError
-    >> mapOnlyError
-    >> getError
-    >> serializeToJson
-
-let deleteItems = 
-    deleteItems
     >> mapOnlyError
     >> getError
     >> serializeToJson

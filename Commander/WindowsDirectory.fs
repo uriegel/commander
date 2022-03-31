@@ -27,7 +27,7 @@ let getIcon ext = async {
         if ext |> String.contains "\\" then
             return Icon.ExtractAssociatedIcon(ext).Handle
         else
-            let shinfo = ShFileInfo()
+            let mutable shinfo = ShFileInfo()
             SHGetFileInfo(ext, FileAttributeNormal, &shinfo, Marshal.SizeOf shinfo,
                 SHGetFileInfoConstants.ICON
                 ||| SHGetFileInfoConstants.SMALLICON
@@ -56,8 +56,8 @@ let getIcon ext = async {
 let appendPlatformInfo (subj: Subject<FolderEvent>) requestId id (path: string) (items: DirectoryItem seq) = 
 
     let filterEnhanced item = 
-        (  item.Name |> String.endsWithComparison "exe" System.StringComparison.OrdinalIgnoreCase
-        || item.Name |> String.endsWithComparison "dll" System.StringComparison.OrdinalIgnoreCase)
+        (  item.Name |> String.endsWithComparison "exe" StringComparison.OrdinalIgnoreCase
+        || item.Name |> String.endsWithComparison "dll" StringComparison.OrdinalIgnoreCase)
         && requestId.Id = id
 
     let addVersion (item: DirectoryItem) = 
@@ -87,4 +87,13 @@ let appendPlatformInfo (subj: Subject<FolderEvent>) requestId id (path: string) 
     if requestId.Id = id && versionItems.Length > 0 then
         subj.OnNext <| EnhancedInfo versionItems
 
+let deleteItems p = 
+    ""
+    // let deleteItems (items: string array) =
+    //     ()
+    
+    // deleteItems
+    // >> mapOnlyError
+    // >> getError
+    // >> serializeToJson
 
