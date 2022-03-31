@@ -11,6 +11,7 @@ open System.Reactive.Subjects
 open System.Runtime.InteropServices
 
 open Engine
+open FileSystem
 open Model
 
 let extendColumns columns = 
@@ -87,13 +88,22 @@ let appendPlatformInfo (subj: Subject<FolderEvent>) requestId id (path: string) 
     if requestId.Id = id && versionItems.Length > 0 then
         subj.OnNext <| EnhancedInfo versionItems
 
-let deleteItems p = 
-    ""
-    // let deleteItems (items: string array) =
-    //     ()
-    
-    // deleteItems
-    // >> mapOnlyError
-    // >> getError
-    // >> serializeToJson
+let deleteItems items = 
+
+    let append toAppend str =  str + toAppend
+
+    let input = 
+         items 
+        |> String.joinStr "\U00000000"
+        |> append "\U00000000\U00000000"
+
+    let mutable fileOperation = SHFILEOPSTRUCT() 
+    fileOperation.Func                  <- FileFuncFlags.DELETE
+    fileOperation.From                  <- input
+    fileOperation.Flags                 <- FileOpFlags.NOCONFIRMATION ||| FileOpFlags.ALLOWUNDO
+    let res = SHFileOperation fileOperation 
+    match res with
+    | 0 -> None
+    | _ -> Some (Exception <| exn "Löschen fehlgeschlagen")
+    |> serializeToJson
 
