@@ -105,5 +105,6 @@ let deleteItems items =
     match res with
     | 0 -> None
     | _ -> Some (Exception <| exn "Löschen fehlgeschlagen")
+    |> getError
     |> serializeToJson
 
