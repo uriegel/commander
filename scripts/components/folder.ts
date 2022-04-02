@@ -305,6 +305,16 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
+
+        // TODO         echo $DESKTOP_SESSION: plasma or gnome
+        // TODO kreadconfig5 --group "Icons" --key "Theme"
+        // TODO import mimetypes
+        // TODO print(mimetypes.guess_type("sample.java"))
+        // TODO qmlnet
+        
+
+
+        // TODO delete on linux with trash-put
         // TODO delete remotes 
         // TODO rename
         // TODO Copy/Move
