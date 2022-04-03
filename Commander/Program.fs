@@ -8,7 +8,7 @@ let session =
     "DESKTOP_SESSION"
     |> String.retrieveEnvironmentVariable 
     |> Option.defaultValue ""
-printfn "desktop %s" session // plasmawayland, plasma
+printfn "desktop %s" session // plasmawayland, plasma, gnome
 
 Server.start ()
 
