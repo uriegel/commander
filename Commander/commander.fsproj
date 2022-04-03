@@ -112,5 +112,8 @@
     <EmbeddedResource Include="../resources/web/images/kirk.png">
       <LogicalName>web/images/appicon</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="../resources/python/geticon.py">
+      <LogicalName>python/geticon.py</LogicalName>
+    </EmbeddedResource>    
   </ItemGroup>
 </Project>

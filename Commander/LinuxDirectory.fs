@@ -4,6 +4,7 @@ open FSharpRailway
 open System.IO
 open System.Reactive.Subjects
 
+open Configuration
 open Engine
 open Gtk
 open Model
@@ -15,6 +16,11 @@ let getIconPath (fileInfo: FileInfo) =
     match fileInfo.Extension with
     | ext when ext |> String.length > 0 -> ext
     | _                                 -> ".noextension"
+
+let private getIconScript = 
+    let filename = saveResource (getElectronFile "geticon.py", "python/geticon.py")
+    let getIconScript () = filename
+    getIconScript    
 
 let getIcon (param: FileRequest) = 
     getIcon param.Path

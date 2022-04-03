@@ -306,12 +306,7 @@ export class Folder extends HTMLElement {
         this.onPathChanged(result.path, fromBacklog)
 
 
-        // TODO import mimetypes
-        // TODO print(mimetypes.guess_type("sample.java"))
         // TODO qmlnet
-        
-
-
         // TODO delete on linux with trash-put
         // TODO delete remotes 
         // TODO rename
