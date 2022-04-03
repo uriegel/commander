@@ -50,6 +50,7 @@ let copyStream (target: IO.Stream, source: IO.Stream) =
     source.CopyTo target
     source.Flush ()
     target.Close ()
+    Threading.Thread.Sleep 2000
 
 let getResource resourcePath = 
     let assembly = Reflection.Assembly.GetEntryAssembly ()
@@ -58,7 +59,10 @@ let getResource resourcePath =
 let getFileAndResourceStreams (getFileStream: string->IO.Stream) (getResourceStream: string->IO.Stream) (filePath, resourcePath) =
     (getFileStream filePath, getResourceStream resourcePath)
 
-let saveResource = tee (getFileAndResourceStreams securedCreateStream getResource >> copyStream) >> takeFirstTupleElem
+let saveResource = 
+    let saveResource = 
+        tee (getFileAndResourceStreams securedCreateStream getResource >> copyStream) >> takeFirstTupleElem
+    memoize saveResource 
 
 let saveBounds (bounds: WindowBounds) = 
     use stream = securedCreateStream <| getElectronFile "bounds.json"

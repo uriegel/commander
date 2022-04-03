@@ -22,8 +22,13 @@ let private getIconScript =
     let getIconScript () = filename
     getIconScript    
 
-let getIcon (param: FileRequest) = 
-    getIcon param.Path
+
+let getIcon ext = async {
+
+    let! affe = FSharpTools.Process.runCmd "python3" (sprintf "%s *%s" (getIconScript ()) ext)
+    printfn "%s %s" ext affe
+    return "affe"
+}
 
 let appendPlatformInfo (subj: Subject<FolderEvent>) requestId id (path: string) (items: DirectoryItem seq) = ()
 
