@@ -14,6 +14,11 @@ open FileSystem
 let retrieveConfigDirectory = Directory.retrieveConfigDirectory "uriegel.de"
 let getConfigDirectory = memoize retrieveConfigDirectory
 
+type Platform =
+    | Kde     = 0
+    | Gnome   = 1
+    | Windows = 2
+
 type WindowBounds = {
     X:           int option
     Y:           int option

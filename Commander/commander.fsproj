@@ -19,6 +19,7 @@
   <ItemGroup>
     <Compile Include="FileSystem.fs" />
     <Compile Include="Configuration.fs" />
+    <Compile Include="ConfigurationLinux.fs" />
     <Compile Include="Model.fs" />
     <Compile Include="Engine.fs" />
     <Compile Include="HttpRequests.fs" />
@@ -79,6 +80,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="../resources/web/styles/themes/adwaitaDark.css">
       <LogicalName>web/styles/themes/adwaitaDark.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../resources/web/styles/themes/breeze.css">
+      <LogicalName>web/styles/themes/breeze.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../resources/web/styles/themes/breezeDark.css">
+      <LogicalName>web/styles/themes/breezeDark.css</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="../resources/web/styles/themes/windows.css">
       <LogicalName>web/styles/themes/windows.css</LogicalName>

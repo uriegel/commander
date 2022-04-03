@@ -54,6 +54,8 @@ source.addEventListener("message", function (event) {
 function setTheme(theme: string) {
     activateClass(document.body, "adwaitaDark", false) 
     activateClass(document.body, "adwaita", false) 
+    activateClass(document.body, "breezeDark", false) 
+    activateClass(document.body, "breeze", false) 
     activateClass(document.body, "windows", false) 
     activateClass(document.body, "windowsDark", false) 
     activateClass(document.body, theme, true) 
