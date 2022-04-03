@@ -45,7 +45,7 @@ let getItems engine latestPath = async {
         let getHomeDir () = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal)
         memoizeSingle getHomeDir
 
-    let! res = runCmd "lsblk" "--bytes --output SIZE,NAME,LABEL,MOUNTPOINT,FSTYPE" ()
+    let! res = runCmd "lsblk" "--bytes --output SIZE,NAME,LABEL,MOUNTPOINT,FSTYPE" 
     let driveStrs = res |> String.splitChar '\n'
     let columnPositions = 
         let title = driveStrs[0]
