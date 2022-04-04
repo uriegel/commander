@@ -46,7 +46,7 @@ let getIcon ext = async {
             | s -> s
 
         let! mimeType = Process.runCmd "python3" (sprintf "%s *%s" (getIconScript ()) ext)
-        // TODO gnome <-> KDE
+
         let icon = 
             sprintf "/usr/share/icons/breeze/mimetypes/16/%s.svg" (mimeType |> getMime |> defaultValue "application-x-zerosize")
             |> mapVarious
