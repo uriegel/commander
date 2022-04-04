@@ -1,6 +1,7 @@
 module PlatformDirectory
 
 open FSharpRailway
+open FSharpTools
 open System.IO
 open System.Reactive.Subjects
 
@@ -22,18 +23,29 @@ let private getIconScript =
     let getIconScript () = filename
     getIconScript    
 
+open Option
 
 let getIcon ext = async {
+    let extractMime str = 
+        let pos1 = str |> String.indexOf "('" 
+        let pos2 = str |> String.indexOf "',"
+        match pos1, pos2 with
+        | Some pos1, Some pos2 -> Some (str |> String.substring2 (pos1+2) (pos2-pos1-2))
+        | _                    -> None
 
-    let! affe = FSharpTools.Process.runCmd "python3" (sprintf "%s *%s" (getIconScript ()) ext)
-    printfn "%s %s" ext affe
-    return "affe"
+    let replaceSlash str = Some (str |> String.replaceChar  '/' '-')
+    let getMime = extractMime >=> replaceSlash
+
+    let! mimeType = Process.runCmd "python3" (sprintf "%s *%s" (getIconScript ()) ext)
+    // TODO default icon
+    // TODO gnome <-> KDE
+    return sprintf "/usr/share/icons/breeze/mimetypes/16/%s.svg" (mimeType |> getMime |> defaultValue "nix"), "image/svg+xml"
 }
 
-let appendPlatformInfo (subj: Subject<FolderEvent>) requestId id (path: string) (items: DirectoryItem seq) = ()
+let appendPlatformInfo _ _ _ _ _ = ()
 
 let deleteItems = 
     deleteItems
-    >> Option.mapOnlyError
+    >> mapOnlyError
     >> getError
     >> serializeToJson

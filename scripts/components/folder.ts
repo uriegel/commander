@@ -305,9 +305,8 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-
-        // TODO qmlnet
         // TODO delete on linux with trash-put
+        // TODO remove gtk and prerequisite
         // TODO delete remotes 
         // TODO rename
         // TODO Copy/Move
@@ -316,6 +315,7 @@ export class Folder extends HTMLElement {
         // TODO GetFileItems native faster with pinvoke
         // TODO Race condition getItems/sendEnhancedInfo
         // TODO Remote engine: parent select last folder    
+        // TODO qmlnet    
     }
 
     setFocus() { this.table.setFocus() }
