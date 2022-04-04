@@ -6,6 +6,7 @@ open System.IO
 open System.Reactive.Subjects
 
 open Configuration
+open Directory
 open Engine
 open Gtk
 open Model
@@ -36,12 +37,22 @@ let getIcon ext = async {
     let replaceSlash str = Some (str |> String.replaceChar  '/' '-')
     let getMime = extractMime >=> replaceSlash
 
+    let mapVarious mime =
+        match mime with
+        | "/usr/share/icons/breeze/mimetypes/16/application-x-msdos-program.svg" -> "/usr/share/icons/breeze/mimetypes/16/application-x-ms-dos-executable.svg"
+        | "/usr/share/icons/breeze/mimetypes/16/application-java-archive.svg"    -> "/usr/share/icons/breeze/mimetypes/16/application-x-jar.svg"
+        | s -> s
+
     let! mimeType = Process.runCmd "python3" (sprintf "%s *%s" (getIconScript ()) ext)
-    // TODO: mapping exe, jar
-    // TODO: ifFileNotExists def icon
     // TODO gnome <-> KDE
-    return sprintf "/usr/share/icons/breeze/mimetypes/16/%s.svg" (mimeType |> getMime |> defaultValue "application-x-zerosize"), "image/svg+xml"
+    let icon = 
+        sprintf "/usr/share/icons/breeze/mimetypes/16/%s.svg" (mimeType |> getMime |> defaultValue "application-x-zerosize")
+        |> mapVarious
+        |> getExistingFile
+        |> Option.defaultValue "/usr/share/icons/breeze/mimetypes/16/application-x-zerosize.svg"
+    return icon, "image/svg+xml"
 }
+
 
 let appendPlatformInfo _ _ _ _ _ = ()
 

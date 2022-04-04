@@ -77,7 +77,6 @@ let getBounds theme =
                 with 
                     Icon = Some <| saveResource (getElectronFile "appicon.ico", "web/images/appicon")
                     Theme = Some theme
-                    
         }
     else {
             X           = None
