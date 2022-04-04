@@ -37,9 +37,10 @@ let getIcon ext = async {
     let getMime = extractMime >=> replaceSlash
 
     let! mimeType = Process.runCmd "python3" (sprintf "%s *%s" (getIconScript ()) ext)
-    // TODO default icon
+    // TODO: mapping exe, jar
+    // TODO: ifFileNotExists def icon
     // TODO gnome <-> KDE
-    return sprintf "/usr/share/icons/breeze/mimetypes/16/%s.svg" (mimeType |> getMime |> defaultValue "nix"), "image/svg+xml"
+    return sprintf "/usr/share/icons/breeze/mimetypes/16/%s.svg" (mimeType |> getMime |> defaultValue "application-x-zerosize"), "image/svg+xml"
 }
 
 let appendPlatformInfo _ _ _ _ _ = ()
