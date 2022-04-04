@@ -11,6 +11,8 @@ let getPlatform =
             |> String.retrieveEnvironmentVariable 
             |> Option.defaultValue ""
 
+        printfn "Wailand"
+
         match session with
         | "plasmawayland" -> Platform.Kde
         | "plasma"        -> Platform.Kde
