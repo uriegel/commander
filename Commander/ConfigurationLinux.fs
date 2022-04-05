@@ -1,8 +1,12 @@
 module PlatformConfiguration
 open FSharpTools 
 
-open Configuration
 open Functional
+
+type Platform =
+    | Kde     = 0
+    | Gnome   = 1
+    | Windows = 2
 
 let getPlatform = 
     let getPlatform () = 
@@ -17,3 +21,6 @@ let getPlatform =
         | _               -> Platform.Gnome
 
     getPlatform |> memoizeSingle
+
+
+let appicon = "web/images/kirk.png"

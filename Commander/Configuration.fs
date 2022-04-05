@@ -72,9 +72,9 @@ let getBounds theme =
         { 
             JsonSerializer.Deserialize<WindowBounds> (stream, getJsonOptions ())     
                 with 
-                    Icon  = Some <| saveResource (getElectronFile "appicon.ico", "web/images/appicon")
+                    Icon  = Some <| saveResource (getElectronFile "appicon.ico", appicon)
                     Theme = Some theme
-                    Frame = Some (getPlatform <> Platform.Windows)
+                    Frame = Some (getPlatform () <> Platform.Windows)
         }
     else {
             X           = None
@@ -82,8 +82,8 @@ let getBounds theme =
             Width       = 600
             Height      = 800
             IsMaximized = Some false
-            Icon        = Some <| saveResource (getElectronFile "appicon.ico", "web/images/appicon")
+            Icon        = Some <| saveResource (getElectronFile "appicon.ico", appicon)
             Theme       = Some theme
-            Frame       = Some (getPlatform <> Platform.Windows)
+            Frame       = Some (getPlatform () <> Platform.Windows)
         }
         

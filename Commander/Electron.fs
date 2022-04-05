@@ -6,12 +6,13 @@ open System.Text.Json
 open System.Threading
 
 open Configuration
+open PlatformConfiguration
 open Theme
 
 let isLinux = Environment.OSVersion.VersionString |> String.startsWith "Unix" 
 
 let start args = 
-    saveResource (getElectronFile "appicon.ico", "web/images/appicon") |> ignore
+    saveResource (getElectronFile "appicon.ico", appicon) |> ignore
     async {
         try 
             use proc = new Diagnostics.Process() 

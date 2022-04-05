@@ -5,4 +5,6 @@ type Platform =
     | Gnome   = 1
     | Windows = 2
 
-let getPlatform = Platform.Windows
+let getPlatform () = Platform.Windows
+
+let appicon = "web/images/appicon"
