@@ -10,14 +10,10 @@ open System.Text.Json
 open System.Text.Json.Serialization
 
 open FileSystem
+open PlatformConfiguration
 
 let retrieveConfigDirectory = Directory.retrieveConfigDirectory "uriegel.de"
 let getConfigDirectory = memoize retrieveConfigDirectory
-
-type Platform =
-    | Kde     = 0
-    | Gnome   = 1
-    | Windows = 2
 
 type WindowBounds = {
     X:           int option
@@ -27,6 +23,7 @@ type WindowBounds = {
     IsMaximized: bool option
     Icon:        string option
     Theme:       string option
+    Frame:       bool option
 }
 
 let getJsonOptions = 
@@ -75,8 +72,9 @@ let getBounds theme =
         { 
             JsonSerializer.Deserialize<WindowBounds> (stream, getJsonOptions ())     
                 with 
-                    Icon = Some <| saveResource (getElectronFile "appicon.ico", "web/images/appicon")
+                    Icon  = Some <| saveResource (getElectronFile "appicon.ico", "web/images/appicon")
                     Theme = Some theme
+                    Frame = Some (getPlatform <> Platform.Windows)
         }
     else {
             X           = None
@@ -86,5 +84,6 @@ let getBounds theme =
             IsMaximized = Some false
             Icon        = Some <| saveResource (getElectronFile "appicon.ico", "web/images/appicon")
             Theme       = Some theme
+            Frame       = Some (getPlatform <> Platform.Windows)
         }
         

@@ -7,12 +7,13 @@ type Events = {
 
 type Methods = "sendbounds" | "getevents"
 type Bounds = {
-    x: number | undefined
-    y: number | undefined
-    width: number
-    height: number
+    x:            number | undefined
+    y:            number | undefined
+    width:        number
+    height:       number
     isMaximized?: boolean
-    theme?: string
+    theme?:       string
+    frame?:       boolean
 }
 type Empty = {}
 type InputData = Bounds | Empty
@@ -21,7 +22,6 @@ let bounds: BrowserWindowConstructorOptions = JSON.parse(process.env['Bounds']!)
 
 const createWindow = async () => {  
     bounds.show = false
-    bounds.frame = true
     
     const win = new BrowserWindow(bounds)
     if ((bounds as Bounds).isMaximized)
@@ -46,7 +46,7 @@ const createWindow = async () => {
         }
     })   
 
-    win.loadURL(`http://localhost:9865?theme=${(bounds as Bounds).theme}`)
+    win.loadURL(`http://localhost:9865?theme=${(bounds as Bounds).theme}&frame=${(bounds as Bounds).frame}`)
 
     async function getEvents() {
         await request("getevents", {})
