@@ -20,12 +20,14 @@ export function activateClass(element: HTMLElement, cls: string, activate: boole
 const statusText = document.getElementById("statusText")!
 const dirsText = document.getElementById("dirs")!
 const filesText = document.getElementById("files")!
+const titlebar = document.getElementById("titlebar")!
 
 const params = new URLSearchParams(window.location.search)
-if (params.get("frame") == "true") {
-    const titlebar = document.getElementById("titlebar")!
+if (params.get("frame") == "true") 
     titlebar.setAttribute("no-titlebar", "")
-}
+else 
+    titlebar.setAttribute("icon", "images/kirk.png")
+
 initializeMenu()
 setTheme(params.get("theme") || "") 
 

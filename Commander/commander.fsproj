@@ -110,7 +110,7 @@
       <LogicalName>web/worker.js</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="../resources/web/images/kirk.png">
-      <LogicalName>web/images/appicon</LogicalName>
+      <LogicalName>web/images/kirk.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup Condition="'$(IsWindows)'=='true'">
