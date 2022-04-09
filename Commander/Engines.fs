@@ -93,4 +93,4 @@ let deleteItems (param: DeleteItemsParam) =
     
     match param.Engine with
     | EngineType.Directory -> deleteItems <| getItems ()
-    | _                    -> ""
+    | _                    -> task { return "" }

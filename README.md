@@ -1,5 +1,5 @@
 # Commander
-A Norton Commander clone based on Electron (globally insdtalled), F#, Typescript and Web Components
+A Norton Commander clone based on Electron (globally installed), F#, Typescript and Web Components
 
 ## Setup
 `npm i -g electron`

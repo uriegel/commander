@@ -3,12 +3,10 @@ module PlatformDirectory
 open FSharpRailway
 open FSharpTools
 open System.IO
-open System.Reactive.Subjects
 
 open Configuration
 open PlatformConfiguration
 open Directory
-open Engine
 open Gtk
 open Model
 open FileSystem
@@ -26,6 +24,7 @@ let getIconPath (fileInfo: FileInfo) =
     | _                                 -> ".noextension"
 
 open Option
+open FSharpTools.Process
 
 let getIcon ext = async {
     let getKdeIcon ext = async {
@@ -51,20 +50,31 @@ let getIcon ext = async {
             sprintf "/usr/share/icons/breeze/mimetypes/16/%s.svg" (mimeType |> getMime |> defaultValue "application-x-zerosize")
             |> mapVarious
             |> getExistingFile
-            |> Option.defaultValue "/usr/share/icons/breeze/mimetypes/16/application-x-zerosize.svg"
+            |> defaultValue "/usr/share/icons/breeze/mimetypes/16/application-x-zerosize.svg"
         return icon, "image/svg+xml"
     }
 
     return! 
         match getPlatform () with
         | Platform.Kde -> getKdeIcon ext
-        | _            -> async { return Gtk.getIcon ext, "image/png" }
+        | _            -> async { return getIcon ext, "image/png" }
 }
 
 let appendPlatformInfo _ _ _ _ _ = ()
 
-let deleteItems = 
-    deleteItems
-    >> mapOnlyError
-    >> getError
-    >> serializeToJson
+open Async
+
+let runCmd2 cmd hallo = 
+        let getStringFromResult11 (result: ProcessResult) = async { return result.Output.Value } 
+        let runCmd4 = run cmd 
+        let affe = runCmd4
+        affe "{}"
+
+let deleteItems (items: string array) = task {
+    let! res = 
+        items
+        |> Seq.map (sprintf "'%s'")
+        |> String.join ' '
+        |> runCmd2 "trash-put" 
+    return "{}"
+}

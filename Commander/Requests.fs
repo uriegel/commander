@@ -98,7 +98,7 @@ let deleteItems  () =
         task {
             let! body = ctx.ReadBodyFromRequestAsync ()
             let param = JsonSerializer.Deserialize<DeleteItemsParam>(body, getJsonOptions ())
-            let result = deleteItems param
+            let! result = deleteItems param
             return! Json.text result next ctx
         }              
 
