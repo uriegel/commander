@@ -6,9 +6,6 @@ import os from 'os'
 const isLinux = process.platform == "linux"
 import { createPlatform } from './platforms/platforms'
 
-// if (process.env.NODE_ENV == 'DEV')
-//     require('vue-devtools').install()
-
 // TODO Windows: not working for main process
 process.env['UV_THREADPOOL_SIZE'] = os.cpus().length.toString()
 
