@@ -9,7 +9,7 @@ import { createPlatform } from './platforms/platforms'
 // TODO Windows: not working for main process
 process.env['UV_THREADPOOL_SIZE'] = os.cpus().length.toString()
 
-const icon = path.join(__dirname, '../../web/assets/kirk.png')
+const icon = path.join(__dirname, '../../web/assets/kirk32.png')
 
 const createWindow = async () => {    
 
@@ -28,7 +28,7 @@ const createWindow = async () => {
         y: settings.getSync("y") as number,
         width: settings.getSync("width") as number || 600,
         height: settings.getSync("height") as number || 800,
-        icon: 'web/assets/kirk.png',
+        icon: 'web/assets/kirk32.png',
         show: false,
         frame: isLinux,
         webPreferences: {

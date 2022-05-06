@@ -33,7 +33,7 @@
       "target": [
         "deb"
       ],
-      "icon": "web/assets/kirk.png"
+      "icon": "web/assets/kirk32.png"
     },
     "win": {
       "target": "nsis",
