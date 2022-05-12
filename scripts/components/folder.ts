@@ -405,6 +405,7 @@ export class Folder extends HTMLElement {
 
 customElements.define('folder-table', Folder)
 
+// TODO Kirk Icon on Linux too small
 // TODO Icon and python script in deb dist
 // TODO Copy/Move with Drag'n'Drop
 // TODO Copy conflicts: order by red, then green, then equal
