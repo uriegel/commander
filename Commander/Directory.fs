@@ -205,3 +205,12 @@ let createFolder =
     >> mapOnlyError
     >> getError
     >> serializeToJson
+
+let renameItem (p: string[]) = 
+    //Path.Combine 
+    // >> Directory.create
+    // >> Result.mapError mapIOError
+    // >> mapOnlyError
+    // >> getError
+    // >> serializeToJson
+    "{}"

@@ -454,17 +454,34 @@ export class Folder extends HTMLElement {
         })
         if (!texts.result)
             return
-        //const res = await dialog.show({
-             await dialog.show({
-                text: texts.result,
-                inputText: items.length == 1 ? items[0].name : "",
-                btnOk: true,
-                btnCancel: true,
-                defBtnOk: true
-            })
-            this.setFocus()
-        }
+        var item = items[0]
 
+        const getInputRange = () => {
+            const pos = item.name.lastIndexOf(".")
+            if (pos == -1)
+                return [0, item.name.length]
+            else
+                return [0, pos]
+        }
+        const res = await dialog.show({
+            text: texts.result,
+            inputText: items.length == 1 ? items[0].name : "",
+            inputSelectRange: getInputRange(),
+            btnOk: true,
+            btnCancel: true,
+            defBtnOk: true
+        })
+        this.setFocus()
+        if (res.result == Result.Ok && res.input) {
+            const ioResult = await request<IOErrorResult>("renameItem", {
+                engine: this.engine,
+                path: this.getCurrentPath(),
+                name: res.input
+            })
+            this.checkResult(ioResult.error) 
+        }
+    }
+    
     async createFolder() {
         var items = this.getSelectedItems()
         const [dirs, files] = this.getSelectedItemsOverview(items)

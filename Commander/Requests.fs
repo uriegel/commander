@@ -93,6 +93,15 @@ let createFolder () =
             return! Json.text result next ctx
         }        
 
+let renameItem () = 
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+            let! body = ctx.ReadBodyFromRequestAsync ()
+            let param = JsonSerializer.Deserialize<RenameItemParam>(body, getJsonOptions ())
+            let result = renameItem param
+            return! Json.text result next ctx
+        }        
+
 let deleteItems  () =
     fun (next : HttpFunc) (ctx : HttpContext) ->
         task {

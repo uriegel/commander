@@ -11,6 +11,7 @@ type PutRemotes = "putremotes"
 type GetActionsTexts = "getactionstexts"
 type CreateFolder = "createfolder"
 type DeleteItems = "deleteitems"
+type RenameItem = "renameItem"
 
 export type RequestType = 
     | ShowDevToolsType 
@@ -21,6 +22,7 @@ export type RequestType =
     | GetActionsTexts 
     | CreateFolder
     | DeleteItems
+    | RenameItem
 
 type Empty = {}
 
