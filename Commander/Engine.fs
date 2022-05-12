@@ -24,6 +24,7 @@ type GetItems = {
 type ActionType = 
 | Delete       = 0
 | CreateFolder = 1
+| Rename       = 2
 
 type GetActionsTexts = {
     EngineType: EngineType

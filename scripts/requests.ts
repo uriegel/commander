@@ -62,8 +62,9 @@ type DeleteItemsType = {
 }
 
 export enum ActionType {
-    Delete = 0,
-    CreateFolder = 1
+    Delete       = 0,
+    CreateFolder = 1,
+    Rename       = 2,
 }
 
 type GetActionsTextsType = {

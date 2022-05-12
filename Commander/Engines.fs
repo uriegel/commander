@@ -75,9 +75,10 @@ let getActionsTexts (param: GetActionsTexts) =
 
     match param.EngineType, param.Type with
     | EngineType.Directory, ActionType.CreateFolder -> Some "Neuen Ordner anlegen"
-    | EngineType.Directory, ActionType.Delete       -> Some (sprintf "Möchtest Du %s löschen?" <| getFilesOrDirs ())
-    | EngineType.Remotes, ActionType.Delete         -> Some (sprintf "Möchtest Du %s löschen?" <| getRemotes ())
-    | EngineType.Android, ActionType.Delete         -> Some (sprintf "Möchtest Du %s löschen?" <| getFilesOrDirs ())
+    | EngineType.Directory, ActionType.Delete       -> Some (sprintf "Möchtest Du %s löschen?"    <| getFilesOrDirs ())
+    | EngineType.Remotes, ActionType.Delete         -> Some (sprintf "Möchtest Du %s löschen?"    <| getRemotes ())
+    | EngineType.Android, ActionType.Delete         -> Some (sprintf "Möchtest Du %s löschen?"    <| getFilesOrDirs ())
+    | EngineType.Directory, ActionType.Rename       -> Some (sprintf "Möchtest Du %s umbenennen?" <| getFilesOrDirs ())
     | _                                             -> None
     
 

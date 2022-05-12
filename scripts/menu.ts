@@ -1,6 +1,9 @@
 import { DialogBox, Result } from "web-dialog-box"
 import { Menubar, MenuItem } from "web-menu-bar"
-import { activeFolderSetFocus, onAdaptPath, onCreateFolder, onDelete, onRefresh, onSelectAll, onSelectNone, onSetHidden, onViewer } from "./commander"
+import {
+    activeFolderSetFocus, onAdaptPath, onCreateFolder, onDelete, onRefresh, onSelectAll,
+    onSelectNone, onSetHidden, onViewer, onRename
+} from "./commander"
 import { request, ShowDevTools, ShowFullscreen } from "./requests"
 export function initializeMenu() {}
 
@@ -13,18 +16,19 @@ if (automode)
     menu.setAttribute("automode", "true")
 itemHideMenu.isChecked = automode
 
+document.getElementById("onRename")?.addEventListener("menubar-action",       () => onRename())
 document.getElementById("onCreateFolder")?.addEventListener("menubar-action", () => onCreateFolder())
-document.getElementById("onDelete")?.addEventListener("menubar-action", () => onDelete())
-document.getElementById("onClose")?.addEventListener("menubar-action", () => close())
-document.getElementById("onAdaptPath")?.addEventListener("menubar-action", () => onAdaptPath())
-document.getElementById("onSelectAll")?.addEventListener("menubar-action", () => onSelectAll())
-document.getElementById("onSelectNone")?.addEventListener("menubar-action", () => onSelectNone())
-itemHideMenu.addEventListener("menubar-checkbox", (evt: Event) => hideMenu((evt as CustomEvent).detail.isChecked))
-document.getElementById("onHidden")?.addEventListener("menubar-checkbox", (evt: Event) => onSetHidden((evt as CustomEvent).detail.isChecked))
-document.getElementById("onRefresh")?.addEventListener("menubar-action", () => onRefresh())
-document.getElementById("onViewer")?.addEventListener("menubar-checkbox", (evt: Event) => onViewer((evt as CustomEvent).detail.isChecked))
-document.getElementById("onDevTools")?.addEventListener("menubar-action", () => request(ShowDevTools))
-document.getElementById("onFullscreen")?.addEventListener("menubar-action", () => request(ShowFullscreen))
+document.getElementById("onDelete")?.addEventListener("menubar-action",       () => onDelete())
+document.getElementById("onClose")?.addEventListener("menubar-action",        () => close())
+document.getElementById("onAdaptPath")?.addEventListener("menubar-action",    () => onAdaptPath())
+document.getElementById("onSelectAll")?.addEventListener("menubar-action",    () => onSelectAll())
+document.getElementById("onSelectNone")?.addEventListener("menubar-action",   () => onSelectNone())
+itemHideMenu.addEventListener("menubar-checkbox",                             (evt: Event) => hideMenu((evt as CustomEvent).detail.isChecked))
+document.getElementById("onHidden")?.addEventListener("menubar-checkbox",     (evt: Event) => onSetHidden((evt as CustomEvent).detail.isChecked))
+document.getElementById("onRefresh")?.addEventListener("menubar-action",      () => onRefresh())
+document.getElementById("onViewer")?.addEventListener("menubar-checkbox",     (evt: Event) => onViewer((evt as CustomEvent).detail.isChecked))
+document.getElementById("onDevTools")?.addEventListener("menubar-action",     () => request(ShowDevTools))
+document.getElementById("onFullscreen")?.addEventListener("menubar-action",   () => request(ShowFullscreen))
 
 async function hideMenu(hide: boolean) {
     if (hide) {

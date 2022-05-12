@@ -412,9 +412,6 @@ export class Folder extends HTMLElement {
         this.folderRoot.classList.remove("isDragging")
     }
 
-    renameItem() {
-    }
-
     async extendedRename() {
     }
 
@@ -446,9 +443,33 @@ export class Folder extends HTMLElement {
         }
     }
 
+    async onRename() {
+        var items = this.getSelectedItems()
+        const [dirs, files] = this.getSelectedItemsOverview(items)
+        let texts = await request<GetActionTextResult>("getactionstexts", {
+            engineType: this.engine,
+            type: ActionType.Rename,
+            dirs,
+            files
+        })
+        if (!texts.result)
+            return
+        //const res = await dialog.show({
+             await dialog.show({
+                text: texts.result,
+                inputText: items.length == 1 ? items[0].name : "",
+                btnOk: true,
+                btnCancel: true,
+                defBtnOk: true
+            })
+            this.setFocus()
+        }
+
     async createFolder() {
         var items = this.getSelectedItems()
         const [dirs, files] = this.getSelectedItemsOverview(items)
+        if (dirs + files != 1)
+            return
         let texts = await request<GetActionTextResult>("getactionstexts", {
             engineType: this.engine,
             type:       ActionType.CreateFolder,

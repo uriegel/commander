@@ -67,6 +67,10 @@ function setTheme(theme: string) {
 
 function getInactiveFolder() { return activeFolder == folderLeft ? folderRight : folderLeft }
 
+export function onRename() {
+    activeFolder.onRename()
+}
+
 export function onCreateFolder() {
     activeFolder.createFolder()
 }
