@@ -45,3 +45,6 @@ type Error = {
 let getError err = {
     Error = err
 }
+
+let moveFile (path: string) (newPath: string) = 
+    IO.Directory.Move (path, newPath)

@@ -11,7 +11,7 @@ type PutRemotes = "putremotes"
 type GetActionsTexts = "getactionstexts"
 type CreateFolder = "createfolder"
 type DeleteItems = "deleteitems"
-type RenameItem = "renameItem"
+type RenameItem = "renameitem"
 
 export type RequestType = 
     | ShowDevToolsType 
@@ -51,11 +51,20 @@ type PutRemotesType = {
     remotes: RemoteItem[]
 }
 
-type CreatefolderType = {
+type CreateFolderType = {
     engineType: EngineType
     path:       string
     name:       string
 }
+
+type RenameItemType = {
+    engineType: EngineType
+    path:       string
+    name:       string
+    newName:    string
+}
+
+
 
 type DeleteItemsType = {
     engineType: EngineType
@@ -170,7 +179,8 @@ export type RequestInput =
     | GetFilePathType 
     | PutRemotesType 
     | GetActionsTextsType 
-    | CreatefolderType
+    | CreateFolderType
+    | RenameItemType
     | DeleteItemsType
 
 export async function request<T extends Result>(method: RequestType, input?: RequestInput) {

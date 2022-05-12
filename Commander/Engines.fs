@@ -22,9 +22,10 @@ type DeleteItemsParam = {
 }
 
 type RenameItemParam = {
-    Engine: EngineType
-    Path:   string
-    Name:   string
+    Engine:  EngineType
+    Path:    string
+    Name:    string
+    NewName: string
 }
 
 let getEngineAndPathFrom engine path item body =
@@ -95,7 +96,7 @@ let createfolder (param: CreateFolderParam) =
 
 let renameItem (param: RenameItemParam) =
     match param.Engine with
-    | EngineType.Directory -> [| param.Path; param.Name|] |> renameItem
+    | EngineType.Directory -> renameItem {Path = param.Path; Name = param.Name; NewName = param.NewName}
     | _                    -> ""
 
 let deleteItems (param: DeleteItemsParam) =

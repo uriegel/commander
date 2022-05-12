@@ -305,7 +305,8 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO rename
+        // TODO rename Error handling
+        // TODO delete Error handling
         // TODO Copy/Move
         // TODO delete remotes 
         // TODO Windows Title Icon is blurry
@@ -465,7 +466,7 @@ export class Folder extends HTMLElement {
         }
         const res = await dialog.show({
             text: texts.result,
-            inputText: items.length == 1 ? items[0].name : "",
+            inputText: item.name,
             inputSelectRange: getInputRange(),
             btnOk: true,
             btnCancel: true,
@@ -473,10 +474,11 @@ export class Folder extends HTMLElement {
         })
         this.setFocus()
         if (res.result == Result.Ok && res.input) {
-            const ioResult = await request<IOErrorResult>("renameItem", {
-                engine: this.engine,
-                path: this.getCurrentPath(),
-                name: res.input
+            const ioResult = await request<IOErrorResult>("renameitem", {
+                engine:  this.engine,
+                path:    this.getCurrentPath(),
+                name:    item.name,
+                newName: res.input
             })
             this.checkResult(ioResult.error) 
         }

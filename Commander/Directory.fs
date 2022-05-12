@@ -206,11 +206,28 @@ let createFolder =
     >> getError
     >> serializeToJson
 
-let renameItem (p: string[]) = 
-    //Path.Combine 
-    // >> Directory.create
-    // >> Result.mapError mapIOError
-    // >> mapOnlyError
-    // >> getError
-    // >> serializeToJson
-    "{}"
+type TwoFilePath = {
+    Path   : string
+    Name   : string
+    NewName: string
+}
+
+open Result
+
+let renameItem = 
+    
+    // TODO FSharpTools
+    let move (sourcePath: string, targetPath: string) = 
+        let move () = Directory.Move (sourcePath, targetPath)
+        exceptionToResult move
+
+    let rename param =
+        let combinePath = Directory.combine2Pathes param.Path
+    
+        move (combinePath param.Name, combinePath param.NewName)
+
+    rename
+    >> Result.mapError mapIOError
+    >> mapOnlyError
+    >> getError
+    >> serializeToJson
