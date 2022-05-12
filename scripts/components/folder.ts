@@ -305,11 +305,10 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO delete on linux with trash-put
-        // TODO delete remotes 
-        // TODO Windows Title Icon is blurry
         // TODO rename
         // TODO Copy/Move
+        // TODO delete remotes 
+        // TODO Windows Title Icon is blurry
         // TODO when Time sorting, then sort after exif or disable time sort
         // TODO remote engine
         // TODO GetFileItems native faster with pinvoke
