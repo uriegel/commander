@@ -16,34 +16,22 @@
     <OutputType>Exe</OutputType>
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
   </PropertyGroup>
-  <ItemGroup Condition="'$(IsWindows)'=='true'">
-    <Compile Include="ConfigurationWindows.fs" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(IsWindows)'=='true'">
-    <Compile Include="WindowsRoot.fs" />
-    <Compile Include="WindowsDirectory.fs" />
-    <Compile Include="WindowsRequests.fs" />
-  </ItemGroup>
   <ItemGroup>
     <Compile Include="WindowBounds.fs" />
     <Compile Include="Directory.fs" />
     <Compile Include="Engines.fs" />
     <Compile Include="Requests.fs" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Electron.fs" />
     <Compile Include="Routes.fs" />
     <Compile Include="Server.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ClrWinApi" Version="1.0.1" />
     <PackageReference Include="FSharp.Control.Reactive" Version="5.0.2" />
     <PackageReference Include="FSharpRailway" Version="0.3.2" />
     <PackageReference Include="FSharpTools" Version="6.3.2" />
     <PackageReference Include="Giraffe" Version="6.0.0-alpha-2" />
     <PackageReference Include="GiraffeTools" Version="0.1.0-beta-1" />
-    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="../resources/electron/main.js">

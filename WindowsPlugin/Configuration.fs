@@ -1,4 +1,4 @@
-module PlatformConfiguration
+module Configuration
 
 type Platform =
     | Kde     = 0

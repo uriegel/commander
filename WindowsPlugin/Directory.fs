@@ -1,4 +1,4 @@
-module PlatformDirectory
+module Directory
 
 open ClrWinApi
 open FSharpTools
