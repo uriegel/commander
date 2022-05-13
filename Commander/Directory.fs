@@ -17,13 +17,6 @@ open PlatformDirectory
 let leftFolderReplaySubject = new Subject<FolderEvent>()
 let rightFolderReplaySubject = new Subject<FolderEvent>()
 
-let private getDateTime = 
-    let startTime = System.DateTimeOffset.UtcNow
-    let getDateTime () = startTime
-    getDateTime
-
-let getStartDateTime () = getDateTime ()
-
 let getEngineAndPathFrom path item = 
     match path, item with
     | Root.IsRoot -> EngineType.Root, RootID

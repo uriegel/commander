@@ -4,6 +4,7 @@ open Giraffe
 open Microsoft.AspNetCore.Http
 open System.Threading.Tasks
 open Theme
+open WindowBounds
 
 open Configuration
 open Directory

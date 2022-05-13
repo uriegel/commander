@@ -10,7 +10,13 @@ open System.Text.Json
 open System.Text.Json.Serialization
 
 open FileSystem
-open PlatformConfiguration
+
+let private getDateTime = 
+    let startTime = System.DateTimeOffset.UtcNow
+    let getDateTime () = startTime
+    getDateTime
+
+let getStartDateTime () = getDateTime ()
 
 let retrieveConfigDirectory = Directory.retrieveConfigDirectory "uriegel.de"
 let getConfigDirectory = memoize retrieveConfigDirectory
@@ -61,29 +67,3 @@ let saveResource =
         tee (getFileAndResourceStreams securedCreateStream getResource >> copyStream) >> takeFirstTupleElem
     memoize saveResource 
 
-let saveBounds (bounds: WindowBounds) = 
-    use stream = securedCreateStream <| getElectronFile "bounds.json"
-    JsonSerializer.Serialize (stream, bounds, getJsonOptions ())
-
-let getBounds theme = 
-    let filename = getElectronFile "bounds.json"
-    if IO.File.Exists filename then
-        use stream = securedOpenStream <| getElectronFile "bounds.json"
-        { 
-            JsonSerializer.Deserialize<WindowBounds> (stream, getJsonOptions ())     
-                with 
-                    Icon  = Some <| saveResource (getElectronFile "appicon.ico", appicon)
-                    Theme = Some theme
-                    Frame = Some (getPlatform () <> Platform.Windows)
-        }
-    else {
-            X           = None
-            Y           = None
-            Width       = 600
-            Height      = 800
-            IsMaximized = Some false
-            Icon        = Some <| saveResource (getElectronFile "appicon.ico", appicon)
-            Theme       = Some theme
-            Frame       = Some (getPlatform () <> Platform.Windows)
-        }
-        

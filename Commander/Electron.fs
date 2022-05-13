@@ -8,6 +8,7 @@ open System.Threading
 open Configuration
 open PlatformConfiguration
 open Theme
+open WindowBounds
 
 let isLinux = Environment.OSVersion.VersionString |> String.startsWith "Unix" 
 
