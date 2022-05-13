@@ -6,3 +6,5 @@ node_modules
 resources/electron
 package-lock.json
 resources/web/scripts/index.js
+LinuxPlugin/bin
+LinuxPlugin/obj

@@ -1,10 +1,13 @@
 ﻿open Configuration
-open Theme
 
 Server.start ()
 
-startThemeDetection ()
+Requests.startThemeDetection ()
 
 async {
     do! Electron.start <| saveResource (getElectronFile "main.js", "electron/main.js")
 } |> Async.RunSynchronously
+
+
+// TODO Test KDE theme 
+// TODO Windows Theme

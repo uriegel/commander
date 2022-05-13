@@ -3,6 +3,7 @@ module Requests
 open Giraffe
 open Microsoft.AspNetCore.Http
 open System.Threading.Tasks
+open Theme
 
 open Configuration
 open Directory
@@ -30,6 +31,11 @@ type GetActionsTextsResult = {
 
 let mainReplaySubject = new Subject<MainEvent>()
 let rendererReplaySubject = new Subject<RendererEvent>()
+
+let startThemeDetection () = 
+    let onChanged theme = rendererReplaySubject.OnNext (ThemeChanged theme)
+    startThemeDetection onChanged
+
 
 let sendBounds (windowBounds: WindowBounds) = 
     saveBounds windowBounds

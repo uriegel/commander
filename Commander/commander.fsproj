@@ -53,7 +53,6 @@
   </ItemGroup>
   <ItemGroup Condition="'$(IsLinux)'=='true'">
     <Compile Include="LinuxRequests.fs" />
-    <Compile Include="LinuxTheme.fs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Electron.fs" />
@@ -122,5 +121,8 @@
     <EmbeddedResource Include="../resources/python/geticon.py">
       <LogicalName>python/geticon.py</LogicalName>
     </EmbeddedResource>    
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LinuxPlugin\LinuxPlugin.fsproj" />
   </ItemGroup>
 </Project>
