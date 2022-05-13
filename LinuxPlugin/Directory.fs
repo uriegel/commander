@@ -1,4 +1,4 @@
-module PlatformDirectory
+module Directory
 
 open FSharpRailway
 open FSharpTools
@@ -6,7 +6,6 @@ open System.IO
 open System.Reactive.Subjects
 
 open Configuration
-open PlatformConfiguration
 open Directory
 open Engine
 open Gtk

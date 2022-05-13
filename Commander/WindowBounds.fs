@@ -10,8 +10,6 @@ let saveBounds (bounds: WindowBounds) =
     use stream = securedCreateStream <| getElectronFile "bounds.json"
     JsonSerializer.Serialize (stream, bounds, getJsonOptions ())
 
-open PlatformConfiguration
-
 let getBounds theme = 
     let filename = getElectronFile "bounds.json"
     if IO.File.Exists filename then

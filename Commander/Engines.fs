@@ -7,7 +7,6 @@ open Configuration
 open Directory
 open Engine
 open Model
-open PlatformDirectory
 
 type CreateFolderParam = {
     Engine: EngineType

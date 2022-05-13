@@ -1,10 +1,10 @@
-module PlatformRequests
+module Requests
 
 open Giraffe
 open Microsoft.AspNetCore.Http
 
 open Engine
-open PlatformDirectory
+open Directory
 
 let getIcon: FileRequest -> HttpHandler = 
     fun param (next : HttpFunc) (ctx : HttpContext) ->

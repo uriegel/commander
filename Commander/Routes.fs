@@ -9,7 +9,6 @@ open Configuration
 open Engine
 open FileSystem
 open GiraffeTools
-open PlatformRequests
 open Requests
 
 let configure (app : IApplicationBuilder) = 

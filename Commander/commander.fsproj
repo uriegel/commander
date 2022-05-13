@@ -16,35 +16,13 @@
     <OutputType>Exe</OutputType>
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="FileSystem.fs" />
-    <Compile Include="Configuration.fs" />
-    <Compile Include="Model.fs" />
-    <Compile Include="Engine.fs" />
-    <Compile Include="HttpRequests.fs" />
-    <Compile Include="Android.fs" />
-    <Compile Include="Remotes.fs" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(IsLinux)'=='true'">
-    <Compile Include="ConfigurationLinux.fs" />
-  </ItemGroup>
   <ItemGroup Condition="'$(IsWindows)'=='true'">
     <Compile Include="ConfigurationWindows.fs" />
   </ItemGroup>
   <ItemGroup Condition="'$(IsWindows)'=='true'">
     <Compile Include="WindowsRoot.fs" />
     <Compile Include="WindowsDirectory.fs" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(IsLinux)'=='true'">
-    <Compile Include="Gtk.fs" />
-    <Compile Include="LinuxRoot.fs" />
-    <Compile Include="LinuxDirectory.fs" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(IsWindows)'=='true'">
     <Compile Include="WindowsRequests.fs" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(IsLinux)'=='true'">
-    <Compile Include="LinuxRequests.fs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="WindowBounds.fs" />
@@ -61,12 +39,10 @@
   <ItemGroup>
     <PackageReference Include="ClrWinApi" Version="1.0.1" />
     <PackageReference Include="FSharp.Control.Reactive" Version="5.0.2" />
-    <PackageReference Include="FSharp.SystemTextJson" Version="0.17.4" />
     <PackageReference Include="FSharpRailway" Version="0.3.2" />
     <PackageReference Include="FSharpTools" Version="6.3.2" />
     <PackageReference Include="Giraffe" Version="6.0.0-alpha-2" />
     <PackageReference Include="GiraffeTools" Version="0.1.0-beta-1" />
-    <PackageReference Include="GtkDotNet" Version="5.6.3" />
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
@@ -125,5 +101,8 @@
   </ItemGroup>
   <ItemGroup Condition="'$(IsWindows)'=='true'">
     <ProjectReference Include="..\WindowsPlugin\WindowsPlugin.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.fsproj" />
   </ItemGroup>
 </Project>

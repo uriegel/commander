@@ -1,4 +1,5 @@
-module PluginConfiguration
+module Configuration
+
 open FSharpTools 
 
 open Functional

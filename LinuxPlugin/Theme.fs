@@ -4,7 +4,7 @@ open FSharpTools
 open System.Diagnostics
 open System.Threading
 
-open PluginConfiguration
+open Configuration
 
 let getTheme () =   
     let getKdeTheme () =   

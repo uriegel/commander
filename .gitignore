@@ -10,3 +10,5 @@ LinuxPlugin/bin
 LinuxPlugin/obj
 WindowsPlugin/bin
 WindowsPlugin/obj
+Core/bin
+Core/obj

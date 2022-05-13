@@ -12,7 +12,7 @@ open Configuration
 open Engine
 open FileSystem
 open Model
-open PlatformDirectory
+open Directory
 
 let leftFolderReplaySubject = new Subject<FolderEvent>()
 let rightFolderReplaySubject = new Subject<FolderEvent>()

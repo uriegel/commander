@@ -6,7 +6,6 @@ open System.Text.Json
 open System.Threading
 
 open Configuration
-open PlatformConfiguration
 open Theme
 open WindowBounds
 

@@ -9,6 +9,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "LinuxPlugin", "LinuxPlugin\
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WindowsPlugin", "WindowsPlugin\WindowsPlugin.fsproj", "{2A9810E7-D34B-4592-B543-3B41A86454EA}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Core", "Core\Core.fsproj", "{E8FB2045-5EF8-43E6-8AC0-0480BA76AD96}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{2A9810E7-D34B-4592-B543-3B41A86454EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A9810E7-D34B-4592-B543-3B41A86454EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A9810E7-D34B-4592-B543-3B41A86454EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8FB2045-5EF8-43E6-8AC0-0480BA76AD96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8FB2045-5EF8-43E6-8AC0-0480BA76AD96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8FB2045-5EF8-43E6-8AC0-0480BA76AD96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8FB2045-5EF8-43E6-8AC0-0480BA76AD96}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
