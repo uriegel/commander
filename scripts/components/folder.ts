@@ -305,16 +305,20 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO rename Error handling
-        // TODO delete Error handling
+        // TODO Windows Minimize/Maximize
+        // TODO Windows/Linux Assemblies
+        // TODO rename Windows
+        // TODO delete Windows
+        // TODO createFolder Windows
         // TODO Copy/Move
-        // TODO delete remotes 
+        // TODO delete remotes
         // TODO Windows Title Icon is blurry
         // TODO when Time sorting, then sort after exif or disable time sort
         // TODO remote engine
         // TODO GetFileItems native faster with pinvoke
         // TODO Race condition getItems/sendEnhancedInfo
         // TODO Remote engine: parent select last folder    
+        // TODO Strings always from F# as Resource strings (Culture)    
         // TODO qmlnet    
     }
 
@@ -526,6 +530,10 @@ export class Folder extends HTMLElement {
                         ? "Zugriff verweigert"
                         : error.Case == "DeleteToTrashNotPossible"
                         ? "Löschen nicht möglich"
+                        : error.Case == "AlreadyExists"
+                        ? "Das Element existiert bereits"
+                        : error.Case == "FileNotFound"
+                        ? "Das Element ist nicht vorhanden"
                         : "Die Aktion konnte nicht ausgeführt werden"
             setTimeout(async () => { await dialog.show({
                     text,

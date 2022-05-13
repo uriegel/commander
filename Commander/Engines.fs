@@ -73,7 +73,7 @@ let getActionsTexts (param: GetActionsTexts) =
         | dirs, 0                 -> "die Verzeichnisse" 
         | 0, files when files = 1 -> "die Datei" 
         | 0, files                -> "die Dateien" 
-        | _                       -> "die Einträge" 
+        | _                            -> "die Einträge" 
 
     let getRemotes () = 
         match param.Dirs with

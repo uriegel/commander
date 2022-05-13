@@ -32,12 +32,12 @@ let errorFromGException (gee: GErrorException) =
     | 2  -> AlreadyExists
     | 14 -> AccessDenied
     | 15 -> DeleteToTrashNotPossible
-    | _  -> Exception gee
+    | _  -> Exception gee.Message
 
 let mapToIOError (e: exn) =
     match e with
     | :? GErrorException as gee -> errorFromGException gee
-    | _                         -> Exception e
+    | _                         -> Exception e.Message
 
 let trash file = 
     exceptionToResult <| fun () -> GFile.Trash file

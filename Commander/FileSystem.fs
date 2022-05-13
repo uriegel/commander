@@ -9,12 +9,14 @@ type IOError =
 | AlreadyExists
 | FileNotFound
 | DeleteToTrashNotPossible
-| Exception of exn
+| Exception of string
 
 let mapIOError (e: exn) = 
     match e with
     | :? UnauthorizedAccessException -> AccessDenied
-    | e                              -> Exception e
+    | e when e.HResult = 13          -> AccessDenied
+    | e when e.HResult = -2146232800 -> AlreadyExists
+    | e                              -> Exception e.Message
 
 let checkExistsDirectory path = 
     let info = IO.FileInfo path
