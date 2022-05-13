@@ -306,7 +306,6 @@ export class Folder extends HTMLElement {
         this.onPathChanged(result.path, fromBacklog)
 
         // TODO Windows Minimize/Maximize
-        // TODO Windows/Linux Assemblies
         // TODO rename Windows
         // TODO delete Windows
         // TODO createFolder Windows
