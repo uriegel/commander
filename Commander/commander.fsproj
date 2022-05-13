@@ -125,6 +125,6 @@
     <ProjectReference Include="..\LinuxPlugin\LinuxPlugin.fsproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(IsWindows)'=='true'">
-    <ProjectReference Include="..\LinuxPlugin\LinuxPlugin.fsproj" />
+    <ProjectReference Include="..\WindowsPlugin\WindowsPlugin.fsproj" />
   </ItemGroup>
 </Project>

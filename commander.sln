@@ -7,6 +7,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "commander", "Commander\comm
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "LinuxPlugin", "LinuxPlugin\LinuxPlugin.fsproj", "{4F0345D9-65F4-4358-944E-A322E0F60A26}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WindowsPlugin", "WindowsPlugin\WindowsPlugin.fsproj", "{2A9810E7-D34B-4592-B543-3B41A86454EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{4F0345D9-65F4-4358-944E-A322E0F60A26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F0345D9-65F4-4358-944E-A322E0F60A26}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F0345D9-65F4-4358-944E-A322E0F60A26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A9810E7-D34B-4592-B543-3B41A86454EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A9810E7-D34B-4592-B543-3B41A86454EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A9810E7-D34B-4592-B543-3B41A86454EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A9810E7-D34B-4592-B543-3B41A86454EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

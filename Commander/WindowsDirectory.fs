@@ -104,7 +104,7 @@ let deleteItems items =
     let res = SHFileOperation fileOperation 
     match res with
     | 0 -> None
-    | _ -> Some (Exception <| exn "Löschen fehlgeschlagen")
+    | _ -> Some (Exception "Löschen fehlgeschlagen")
     |> getError
     |> serializeToJson
 

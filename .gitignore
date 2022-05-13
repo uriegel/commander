@@ -8,3 +8,5 @@ package-lock.json
 resources/web/scripts/index.js
 LinuxPlugin/bin
 LinuxPlugin/obj
+WindowsPlugin/bin
+WindowsPlugin/obj
