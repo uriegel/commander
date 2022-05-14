@@ -284,6 +284,7 @@ export class Folder extends HTMLElement {
         if (!result.withEnhanced)
             this.disableSorting(false)
 
+        this.items = result.items
         const dirs = result.items.filter(n => n.isDirectory)
         const files = result.items.filter(n => !n.isDirectory)
         this.dirsCount = dirs.length
@@ -305,10 +306,8 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
+        // TODO check disposal of exif reader
         // TODO end admin commander when ui commander ends: admin commander requests end, commander keeps request open till end
-        // TODO Exif: close file handle
-        // TODO One exif reader for original Exif and Exif
-        // TODO exif dates wrong sort order
         // TODO Windows Minimize/Maximize
         // TODO rename Windows
         // TODO delete Windows
@@ -565,9 +564,10 @@ export class Folder extends HTMLElement {
             case "EnhancedInfo": 
                 evt.Fields[0].forEach(n => {
                     if (n.exifTime) 
-                        this.table.items[n.index!].exifTime = n.exifTime
+                        this.items[n.index!].exifTime = n.exifTime
+                        //this.table.items[n.index!].exifTime = n.exifTime
                     if (n.version) 
-                        this.table.items[n.index!].version = n.version
+                        this.items[n.index!].version = n.version
                 })            
                 this.table.refresh()
                 break
@@ -695,6 +695,7 @@ export class Folder extends HTMLElement {
     private table: VirtualTable<FolderItem>
     private folderRoot: HTMLElement
     private folderId = ""
+    private items: FolderItem[] = []
     private backtrack: string[] = []
     private backPosition = -1
     private pathInput: HTMLInputElement | null = null

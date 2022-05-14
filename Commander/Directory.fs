@@ -4,6 +4,7 @@ open FSharpRailway
 open FSharpTools
 open FSharpTools.ExifReader
 open FSharpRailway.Option
+open System
 open System.IO
 open System.Reactive.Subjects
 open System.Text.Json
@@ -140,18 +141,27 @@ let getItems path (param: GetItems) = async {
         else
             rightFolderReplaySubject
 
-
     let appendExifTime path (items: DirectoryItem seq) = 
+
+        let getExifDate (file: string) = 
+            let getExifDate reader =
+                reader 
+                |> getDateValue ExifTag.DateTimeOriginal
+                |> Option.orElseWith (fun () -> reader |> getDateValue ExifTag.DateTime) 
+            let reader = getExif file
+            let result = 
+                reader 
+                |> Option.map getExifDate 
+                |> Option.flatten
+            reader |> Option.map (fun reader -> (reader :> IDisposable).Dispose ()) |> ignore
+            result
 
         let addExifDate (item: DirectoryItem) = 
             if requestId.Id = param.RequestId then
-                let getExifDateOriginal = getExif >=> getDateValue ExifTag.DateTimeOriginal
-                let getExifDate = getExif >=> getDateValue ExifTag.DateTime
-                
                 let file = Path.Combine(path, item.Name)
                 { 
                     Index = item.Index
-                    ExifTime = file |> getExifDateOriginal |> Option.orElseWith (fun () -> file |> getExifDate) 
+                    ExifTime = file |> getExifDate
                     Version = None
                 }
             else
