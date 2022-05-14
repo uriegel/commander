@@ -46,7 +46,7 @@ const createWindow = async () => {
         }
     })   
 
-    win.loadURL(`http://localhost:9865?theme=${(bounds as Bounds).theme}&frame=${(bounds as Bounds).frame}`)
+    win.loadURL(`http://localhost:20000?theme=${(bounds as Bounds).theme}&frame=${(bounds as Bounds).frame}`)
 
     async function getEvents() {
         await request("getevents", {})
@@ -65,7 +65,7 @@ const createWindow = async () => {
             let responseData = ''
             const req = http.request({
                 hostname: "localhost",
-                port: 9865,
+                port: 20000,
                 path: `/commander/${method}`,
                 agent: keepAliveAgent,
                 timeout: 40000,
