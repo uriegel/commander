@@ -305,11 +305,16 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
+        // TODO end admin commander when ui commander ends: admin commander requests end, commander keeps request open till end
+        // TODO Exif: close file handle
+        // TODO One exif reader for original Exif and Exif
+        // TODO exif dates wrong sort order
         // TODO Windows Minimize/Maximize
         // TODO rename Windows
         // TODO delete Windows
         // TODO createFolder Windows
         // TODO Copy/Move
+        // TODO Copy/Move with admin commander: admincommander requests (post) progress to commander
         // TODO delete remotes
         // TODO Windows Title Icon is blurry
         // TODO when Time sorting, then sort after exif or disable time sort
