@@ -306,6 +306,7 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
+        // TODO Windows: save bounds
         // TODO Maximize: toggle Restore
         // TODO Fullscreen: hide electron title bar
         // TODO rename Windows
