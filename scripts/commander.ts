@@ -10,6 +10,7 @@ import { Folder } from './components/folder'
 import { Menubar } from 'web-menu-bar'
 import { request,  } from "./requests"
 import { refreshViewer, showViewer as viewer } from './viewer'
+import { ElectronTitlebar } from 'web-electron-titlebar'
 
 export function activateClass(element: HTMLElement, cls: string, activate: boolean) {
     if (activate != false)
@@ -21,16 +22,16 @@ export function activateClass(element: HTMLElement, cls: string, activate: boole
 const statusText = document.getElementById("statusText")!
 const dirsText = document.getElementById("dirs")!
 const filesText = document.getElementById("files")!
-const titlebar = document.getElementById("titlebar")!
+const titlebar = document.getElementById("titlebar")! as ElectronTitlebar
 
 const params = new URLSearchParams(window.location.search)
-//if (params.get("frame") == "true") 
-if (params.get("frame") == "false") 
-    titlebar.setAttribute("no-titlebar", "")
+if (params.get("frame") == "true") 
+    titlebar.setAttribute("no-titlebar", "true")
 else {
     titlebar.setAttribute("icon", "images/kirk.png")
     titlebar.addEventListener("onmaximize", () => request("maximize"))
     titlebar.addEventListener("onminimize", () => request("minimize"))
+    titlebar.addEventListener("onrestore", () => request("restore"))
     titlebar.addEventListener("onclose", () => request("close"))
 }
 
@@ -46,9 +47,25 @@ type EventThemeChanged = {
     Fields: string[1]
 }
 
+type EventMaximize = {
+    Case: "ElectronMaximize"
+}
+
+type EventUnmaximize = {
+    Case: "ElectronUnmaximize"
+}
+
+type EventFullScreen = {
+    Case: "Fullscreen",
+    Fields: boolean[]
+}
+
 type CommanderEvent = 
     | EventNothing
     | EventThemeChanged
+    | EventMaximize
+    | EventUnmaximize
+    | EventFullScreen
 
 var currentPath = ""
 const source = new EventSource("commander/sse")
@@ -58,7 +75,16 @@ source.addEventListener("message", function (event) {
         case "ThemeChanged":
             setTheme(evt.Fields[0])    
             break
-    }
+        case "ElectronMaximize":
+            titlebar.setMaximized(true)
+            break
+        case "ElectronUnmaximize":
+            titlebar.setMaximized(false)
+            break
+        case "Fullscreen":
+            titlebar.showTitlebar(!evt.Fields[0])
+            break
+        }
 })
 
 function setTheme(theme: string) {

@@ -2,10 +2,10 @@ import { app, BrowserWindow, BrowserWindowConstructorOptions } from "electron"
 import http from "http"
 
 type Events = {
-    Case: "ShowDevTools" | "ShowFullscreen" | "Maximize" | "Minimize" | "Close"
+    Case: "ShowDevTools" | "ShowFullscreen" | "Maximize" | "Minimize" | "Restore" | "Close"
 }
 
-type Methods = "sendbounds" | "getevents"
+type Methods = "sendbounds" | "getevents" | "electronmaximize" | "electronunmaximize" | "fullscreen" | "fullscreenoff"
 type Bounds = {
     x:            number | undefined
     y:            number | undefined
@@ -33,6 +33,10 @@ const createWindow = async () => {
         const bounds: Bounds = win.getBounds()
         bounds.isMaximized = true
         await request("sendbounds", bounds)
+        await request("electronmaximize", {})
+    })
+    win.on('unmaximize', async () => {
+        await request("electronunmaximize", {})
     })
 
     let doClose = false
@@ -85,12 +89,19 @@ const createWindow = async () => {
                             break
                         case "ShowFullscreen":
                             win.setFullScreen(!win.isFullScreen())
+                            if (win.isFullScreen())
+                                request("fullscreen", {})
+                            else
+                                request("fullscreenoff", {})
                             break
                         case "Maximize":
                             win.maximize()
                             break
                         case "Minimize":
                             win.minimize()
+                            break
+                        case "Restore":
+                            win.unmaximize()
                             break
                         case "Close":
                             win.close()

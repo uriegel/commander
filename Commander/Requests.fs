@@ -18,10 +18,14 @@ type MainEvent =
     | ShowFullscreen
     | Maximize
     | Minimize
+    | Restore
     | Close
 
 type RendererEvent = 
     | ThemeChanged of string
+    | ElectronMaximize 
+    | ElectronUnmaximize 
+    | Fullscreen of bool
     | Nothing
 
 type Remotes = {
@@ -56,8 +60,24 @@ let maximize () =
     mainReplaySubject.OnNext Maximize
     text "{}"
 
+let electronMaximize () =
+    rendererReplaySubject.OnNext ElectronMaximize  
+    text "{}"
+
+let electronUnmaximize () =
+    rendererReplaySubject.OnNext ElectronUnmaximize  
+    text "{}"
+
 let minimize () =
     mainReplaySubject.OnNext Minimize
+    text "{}"
+
+let restore () = 
+    mainReplaySubject.OnNext Restore
+    text "{}"
+
+let fullscreen on = 
+    rendererReplaySubject.OnNext <| Fullscreen on
     text "{}"
 
 let close () =
