@@ -495,8 +495,6 @@ export class Folder extends HTMLElement {
     async createFolder() {
         var items = this.getSelectedItems()
         const [dirs, files] = this.getSelectedItemsOverview(items)
-        if (dirs + files != 1)
-            return
         let texts = await request<GetActionTextResult>("getactionstexts", {
             engineType: this.engine,
             type:       ActionType.CreateFolder,

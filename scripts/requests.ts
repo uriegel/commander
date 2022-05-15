@@ -200,23 +200,26 @@ export async function request<T extends Result>(method: RequestType, input?: Req
         throw ((res as Exception).exception)
     else {
         const ioError = res as IOErrorResult
-        // TODO only when 20001 active
         if (ioError?.error && ioError.error.Case == "AccessDenied") {
-            const response = await fetch(`http://localhost:20001/commander/${method}`, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(input || {})
-            }) 
-            const res2 = await response.json() as T
-            if ((res2 as Exception).exception)
-                return res
-            else {
-                const ioError = res2 as IOErrorResult
-                if (ioError?.error)
+            try {
+                const response = await fetch(`http://localhost:20001/commander/${method}`, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(input || {})
+                })
+                const res2 = await response.json() as T
+                if ((res2 as Exception).exception)
                     return res
-                else
-                    return res2
+                else {
+                    const ioError = res2 as IOErrorResult
+                    if (ioError?.error)
+                        return res
+                    else
+                        return res2
+                }
+            } catch { 
+                return res    
             }
         }
         else
