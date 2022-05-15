@@ -8,6 +8,7 @@ import './remotes'
 import { initializeMenu } from './menu'
 import { Folder } from './components/folder'
 import { Menubar } from 'web-menu-bar'
+import { request,  } from "./requests"
 import { refreshViewer, showViewer as viewer } from './viewer'
 
 export function activateClass(element: HTMLElement, cls: string, activate: boolean) {
@@ -25,8 +26,11 @@ const titlebar = document.getElementById("titlebar")!
 const params = new URLSearchParams(window.location.search)
 if (params.get("frame") == "true") 
     titlebar.setAttribute("no-titlebar", "")
-else 
+else {
     titlebar.setAttribute("icon", "images/kirk.png")
+    titlebar.addEventListener("onMaximize", () => request("maximize"))
+    titlebar.addEventListener("onMinimize", () => request("minimize"))
+}
 
 initializeMenu()
 setTheme(params.get("theme") || "") 

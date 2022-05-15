@@ -2,7 +2,7 @@ import { app, BrowserWindow, BrowserWindowConstructorOptions } from "electron"
 import http from "http"
 
 type Events = {
-    Case: "ShowDevTools" | "ShowFullscreen"
+    Case: "ShowDevTools" | "ShowFullscreen" | "Maximize" | "Minimize"
 }
 
 type Methods = "sendbounds" | "getevents"
@@ -86,7 +86,13 @@ const createWindow = async () => {
                         case "ShowFullscreen":
                             win.setFullScreen(!win.isFullScreen())
                             break
-                    }
+                        case "Maximize":
+                            win.maximize()
+                            break
+                        case "Minimize":
+                            win.minimize()
+                            break
+                }
                     resolve()
                 })
             })        

@@ -1,10 +1,10 @@
 import { FolderItem } from "./components/folder"
 import { RemoteItem } from "./remotes"
 
-export const ShowDevTools = "showdevtools"
-export const ShowFullscreen = "showfullscreen"
 type ShowDevToolsType = "showdevtools"
 type ShowFullscreenType = "showfullscreen"
+type MaximizeType = "maximize"
+type MinimizeType = "minimize"
 type GetItems = "getitems"
 type GetFilePath = "getfilepath"
 type PutRemotes = "putremotes"
@@ -16,6 +16,8 @@ type RenameItem = "renameitem"
 export type RequestType = 
     | ShowDevToolsType 
     | ShowFullscreenType 
+    | MaximizeType
+    | MinimizeType
     | GetItems 
     | GetFilePath 
     | PutRemotes 

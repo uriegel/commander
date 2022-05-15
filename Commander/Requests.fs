@@ -16,6 +16,8 @@ open System.Text.Json
 type MainEvent = 
     | ShowDevTools 
     | ShowFullscreen
+    | Maximize
+    | Minimize
 
 type RendererEvent = 
     | ThemeChanged of string
@@ -48,6 +50,14 @@ let showDevTools () =
 
 let showFullscreen () =
     mainReplaySubject.OnNext ShowFullscreen
+    text "{}"
+
+let maximize () =
+    mainReplaySubject.OnNext Maximize
+    text "{}"
+
+let minimize () =
+    mainReplaySubject.OnNext Minimize
     text "{}"
 
 let check () = text "Living"    

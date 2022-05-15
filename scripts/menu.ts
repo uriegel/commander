@@ -4,7 +4,7 @@ import {
     activeFolderSetFocus, onAdaptPath, onCreateFolder, onDelete, onRefresh, onSelectAll,
     onSelectNone, onSetHidden, onViewer, onRename
 } from "./commander"
-import { request, ShowDevTools, ShowFullscreen } from "./requests"
+import { request } from "./requests"
 export function initializeMenu() {}
 
 const menu = document.getElementById("menu")! as Menubar
@@ -27,8 +27,8 @@ itemHideMenu.addEventListener("menubar-checkbox",                             (e
 document.getElementById("onHidden")?.addEventListener("menubar-checkbox",     (evt: Event) => onSetHidden((evt as CustomEvent).detail.isChecked))
 document.getElementById("onRefresh")?.addEventListener("menubar-action",      () => onRefresh())
 document.getElementById("onViewer")?.addEventListener("menubar-checkbox",     (evt: Event) => onViewer((evt as CustomEvent).detail.isChecked))
-document.getElementById("onDevTools")?.addEventListener("menubar-action",     () => request(ShowDevTools))
-document.getElementById("onFullscreen")?.addEventListener("menubar-action",   () => request(ShowFullscreen))
+document.getElementById("onDevTools")?.addEventListener("menubar-action",     () => request("showdevtools"))
+document.getElementById("onFullscreen")?.addEventListener("menubar-action",   () => request("showfullscreen"))
 
 async function hideMenu(hide: boolean) {
     if (hide) {
