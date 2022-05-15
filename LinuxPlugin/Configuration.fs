@@ -26,4 +26,3 @@ let getPlatform =
 
 let appicon = "web/images/kirk.png"
 
-let init () = (20000, true)

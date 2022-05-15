@@ -1,8 +1,6 @@
 ﻿open Configuration
 
-open System.Threading
-
-let (port, uiMode) = init ()
+let (port, uiMode) = Plugin.init ()
 
 Server.start port
 
@@ -13,9 +11,5 @@ if uiMode then
         do! Electron.start <| saveResource (getElectronFile "main.js", "electron/main.js")
     } |> Async.RunSynchronously
 else
-    // TODO Wait for main Commander to exit
-    let mre = new ManualResetEvent false
-    mre.WaitOne () |> ignore    
+    Plugin.run ()
 
-// TODO Test KDE theme 
-// TODO Test Yaru theme

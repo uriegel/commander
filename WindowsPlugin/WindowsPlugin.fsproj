@@ -9,6 +9,7 @@
     <Compile Include="Directory.fs" />
     <Compile Include="Requests.fs" />
     <Compile Include="Theme.fs" />
+    <Compile Include="Plugin.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.fsproj" />
@@ -18,5 +19,5 @@
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
     <PackageReference Include="FSharp.Control.Reactive" Version="5.0.2" />
     <PackageReference Include="Giraffe" Version="6.0.0-alpha-2" />
-  </ItemGroup>      
+  </ItemGroup>
 </Project>

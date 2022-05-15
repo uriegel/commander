@@ -50,6 +50,8 @@ let showFullscreen () =
     mainReplaySubject.OnNext ShowFullscreen
     text "{}"
 
+let check () = text "Living"    
+
 let getEvents () = 
     fun (next : HttpFunc) (ctx : HttpContext) ->
         task {

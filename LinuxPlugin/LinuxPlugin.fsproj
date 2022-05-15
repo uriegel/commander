@@ -10,6 +10,7 @@
     <Compile Include="Directory.fs" />
     <Compile Include="Requests.fs" />
     <Compile Include="Theme.fs" />
+    <Compile Include="Plugin.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FSharpTools" Version="6.3.2" />

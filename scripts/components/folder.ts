@@ -306,12 +306,12 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO check disposal of exif reader
-        // TODO end admin commander when ui commander ends: admin commander requests end, commander keeps request open till end
-        // TODO Windows Minimize/Maximize
+        // TODO Windows Minimize/Maximize: send to F# -> send to electron main 
         // TODO rename Windows
         // TODO delete Windows
         // TODO createFolder Windows
+        // TODO Test KDE theme 
+        // TODO Test Yaru theme
         // TODO Copy/Move
         // TODO Copy/Move with admin commander: admincommander requests (post) progress to commander
         // TODO delete remotes

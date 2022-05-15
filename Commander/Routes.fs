@@ -41,6 +41,7 @@ let configure (app : IApplicationBuilder) =
             route  "/commander/sse"            >=> warbler (fun _ -> sse ())
             route  "/commander/sseLeft"        >=> warbler (fun _ -> sseLeftFolder ())
             route  "/commander/sseRight"       >=> warbler (fun _ -> sseRightFolder ())
+            route  "/commander/check"          >=> warbler (fun _ -> check ())
             route  "/"                         >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)
             routePathes ()                      <| httpHandlerParam getResourceFile 
         ]       

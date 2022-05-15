@@ -14,7 +14,7 @@
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "integratedTerminal"
-        },         {
+        }, {
             "name": ".NET Core Launch (Windows)",
             "type": "coreclr",
             "request": "launch",
