@@ -306,12 +306,6 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Windows: save bounds
-        // TODO Maximize: toggle Restore
-        // TODO Fullscreen: hide electron title bar
-        // TODO Tester WebElectronTitlebar electron 2.0 automatically build and save
-        // TODO WebElectronTitlebar 2.0.0
-
         // TODO rename Windows
         // TODO delete Windows
         // TODO createFolder Windows
@@ -328,6 +322,8 @@ export class Folder extends HTMLElement {
         // TODO Remote engine: parent select last folder    
         // TODO Strings always from F# as Resource strings (Culture)    
         // TODO qmlnet    
+        // TODO Fullscreen: Windows hide menu
+        // TODO Windows: no hide menu item
     }
 
     setFocus() { this.table.setFocus() }
