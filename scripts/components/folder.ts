@@ -306,9 +306,9 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
+        // TODO createFolder Windows
         // TODO rename Windows
         // TODO delete Windows
-        // TODO createFolder Windows
         // TODO Test KDE theme 
         // TODO Test Yaru theme
         // TODO Copy/Move
