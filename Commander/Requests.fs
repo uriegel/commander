@@ -18,6 +18,7 @@ type MainEvent =
     | ShowFullscreen
     | Maximize
     | Minimize
+    | Close
 
 type RendererEvent = 
     | ThemeChanged of string
@@ -39,7 +40,6 @@ let startThemeDetection () =
     let onChanged theme = rendererReplaySubject.OnNext (ThemeChanged theme)
     startThemeDetection onChanged
 
-
 let sendBounds (windowBounds: WindowBounds) = 
     saveBounds windowBounds
     text "{}"
@@ -58,6 +58,10 @@ let maximize () =
 
 let minimize () =
     mainReplaySubject.OnNext Minimize
+    text "{}"
+
+let close () =
+    mainReplaySubject.OnNext Close
     text "{}"
 
 let check () = text "Living"    

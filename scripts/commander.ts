@@ -25,11 +25,13 @@ const titlebar = document.getElementById("titlebar")!
 
 const params = new URLSearchParams(window.location.search)
 if (params.get("frame") == "true") 
+//if (params.get("frame") == "false") 
     titlebar.setAttribute("no-titlebar", "")
 else {
     titlebar.setAttribute("icon", "images/kirk.png")
-    titlebar.addEventListener("onMaximize", () => request("maximize"))
-    titlebar.addEventListener("onMinimize", () => request("minimize"))
+    titlebar.addEventListener("onmaximize", () => request("maximize"))
+    titlebar.addEventListener("onminimize", () => request("minimize"))
+    titlebar.addEventListener("onclose", () => request("close"))
 }
 
 initializeMenu()

@@ -38,6 +38,7 @@ let configure (app : IApplicationBuilder) =
             route  "/commander/showfullscreen" >=> warbler (fun _ -> showFullscreen ())
             route  "/commander/maximize"       >=> warbler (fun _ -> maximize ())
             route  "/commander/minimize"       >=> warbler (fun _ -> minimize ())
+            route  "/commander/close"          >=> warbler (fun _ -> close ())
             route  "/commander/putremotes"     >=> bindJson<Remotes> putRemotes
             route  "/commander/getevents"      >=> warbler (fun _ -> getEvents ())
             route  "/commander/sse"            >=> warbler (fun _ -> sse ())

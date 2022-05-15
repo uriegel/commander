@@ -5,6 +5,7 @@ type ShowDevToolsType = "showdevtools"
 type ShowFullscreenType = "showfullscreen"
 type MaximizeType = "maximize"
 type MinimizeType = "minimize"
+type CloseType = "close"
 type GetItems = "getitems"
 type GetFilePath = "getfilepath"
 type PutRemotes = "putremotes"
@@ -18,6 +19,7 @@ export type RequestType =
     | ShowFullscreenType 
     | MaximizeType
     | MinimizeType
+    | CloseType
     | GetItems 
     | GetFilePath 
     | PutRemotes 

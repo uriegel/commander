@@ -307,6 +307,11 @@ export class Folder extends HTMLElement {
         this.onPathChanged(result.path, fromBacklog)
 
         // TODO Windows: save bounds
+        // TODO Maximize: toggle Restore
+        // TODO Fullscreen: hide electron title bar
+        // TODO Tester WebElectronTitlebar electron 2.0 automatically build and save
+        // TODO WebElectronTitlebar 2.0.0
+
         // TODO rename Windows
         // TODO delete Windows
         // TODO createFolder Windows
@@ -316,8 +321,6 @@ export class Folder extends HTMLElement {
         // TODO Copy/Move with admin commander: admincommander requests (post) progress to commander
         // TODO delete remotes
         // TODO Windows Title Icon is blurry
-        // TODO Maximize: toggle Restore
-        // TODO Fullscreen: hide electron title bar
         // TODO when Time sorting, then sort after exif or disable time sort
         // TODO remote engine
         // TODO GetFileItems native faster with pinvoke
