@@ -24,8 +24,8 @@ const filesText = document.getElementById("files")!
 const titlebar = document.getElementById("titlebar")!
 
 const params = new URLSearchParams(window.location.search)
-if (params.get("frame") == "true") 
-//if (params.get("frame") == "false") 
+//if (params.get("frame") == "true") 
+if (params.get("frame") == "false") 
     titlebar.setAttribute("no-titlebar", "")
 else {
     titlebar.setAttribute("icon", "images/kirk.png")
