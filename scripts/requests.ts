@@ -1,3 +1,4 @@
+import { requestBox } from "./commander"
 import { FolderItem } from "./components/folder"
 import { RemoteItem } from "./remotes"
 
@@ -69,8 +70,6 @@ type RenameItemType = {
     name:       string
     newName:    string
 }
-
-
 
 type DeleteItemsType = {
     engineType: EngineType
@@ -189,6 +188,15 @@ export type RequestInput =
     | RenameItemType
     | DeleteItemsType
 
+async function checkAdmin() {
+    try {
+        await (await fetch("http://localhost:20001/commander/check")).status
+        return true
+    } catch { 
+        return false
+    }
+}    
+
 export async function request<T extends Result>(method: RequestType, input?: RequestInput) {
 
     const msg = {
@@ -203,8 +211,9 @@ export async function request<T extends Result>(method: RequestType, input?: Req
         throw ((res as Exception).exception)
     else {
         const ioError = res as IOErrorResult
-        if (ioError?.error && ioError.error.Case == "AccessDenied") {
-            // TODO: Admin enabled and Dialog request "Aktion erfordert Administratorrechte"
+        if (ioError?.error && ioError.error.Case == "AccessDenied" && await checkAdmin()) {
+            if (!await requestBox("Administratorrechte für diese Aktion gewähren"))
+                return res
             try {
                 const response = await fetch(`http://localhost:20001/commander/${method}`, msg)
                 const resAdmin = await response.json() as T
@@ -225,3 +234,4 @@ export async function request<T extends Result>(method: RequestType, input?: Req
             return res
     }
 }
+

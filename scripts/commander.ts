@@ -11,12 +11,27 @@ import { Menubar } from 'web-menu-bar'
 import { request,  } from "./requests"
 import { refreshViewer, showViewer as viewer } from './viewer'
 import { ElectronTitlebar } from 'web-electron-titlebar'
+import { DialogBox, Result } from 'web-dialog-box'
 
 export function activateClass(element: HTMLElement, cls: string, activate: boolean) {
     if (activate != false)
         element.classList.add(cls)
     else
         element.classList.remove(cls)
+}
+
+const dialog = document.querySelector('dialog-box') as DialogBox    
+
+export async function requestBox(text: string) {
+    
+    const res = await dialog!.show({
+        text,
+        btnOk: true,
+        btnCancel: true,
+        defBtnOk: true
+    })
+    activeFolderSetFocus()
+    return res.result == Result.Ok
 }
 
 const statusText = document.getElementById("statusText")!
