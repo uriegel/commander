@@ -190,33 +190,32 @@ export type RequestInput =
     | DeleteItemsType
 
 export async function request<T extends Result>(method: RequestType, input?: RequestInput) {
-    const response = await fetch(`commander/${method}`, {
+
+    const msg = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input || {})
-    }) 
+    }
+
+    const response = await fetch(`commander/${method}`, msg) 
     const res = await response.json() as T
     if ((res as Exception).exception)
         throw ((res as Exception).exception)
     else {
         const ioError = res as IOErrorResult
         if (ioError?.error && ioError.error.Case == "AccessDenied") {
+            // TODO: Admin enabled and Dialog request "Aktion erfordert Administratorrechte"
             try {
-                const response = await fetch(`http://localhost:20001/commander/${method}`, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(input || {})
-                })
-                const res2 = await response.json() as T
-                if ((res2 as Exception).exception)
+                const response = await fetch(`http://localhost:20001/commander/${method}`, msg)
+                const resAdmin = await response.json() as T
+                if ((resAdmin as Exception).exception)
                     return res
                 else {
-                    const ioError = res2 as IOErrorResult
+                    const ioError = resAdmin as IOErrorResult
                     if (ioError?.error)
                         return res
                     else
-                        return res2
+                        return resAdmin
                 }
             } catch { 
                 return res    

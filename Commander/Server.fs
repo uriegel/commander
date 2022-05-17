@@ -16,6 +16,7 @@ let mutable private port = 0
 let configureServices (services : IServiceCollection) = 
     
     services
+        .AddCors()
         .AddSingleton(getJsonOptions ()) 
         .AddSingleton<Json.ISerializer, SystemTextJson.Serializer>() 
         .AddResponseCompression()

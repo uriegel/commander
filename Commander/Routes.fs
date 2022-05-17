@@ -2,6 +2,7 @@ module Routes
 
 open Giraffe
 open Microsoft.AspNetCore.Builder
+open Microsoft.AspNetCore.Cors
 open Microsoft.Extensions.Logging
 open System
 
@@ -10,6 +11,13 @@ open Engine
 open FileSystem
 open GiraffeTools
 open Requests
+
+let configureCors (builder: Infrastructure.CorsPolicyBuilder) =
+    let SetIsOriginAllowed (origin: string) =
+        origin = "http://localhost:20000"
+
+    builder.SetIsOriginAllowed SetIsOriginAllowed |> ignore
+    builder.AllowAnyHeader () |> ignore
 
 let configure (app : IApplicationBuilder) = 
     let getMimeType path = 
@@ -55,5 +63,6 @@ let configure (app : IApplicationBuilder) =
         ]       
     app
         .UseResponseCompression()
+        .UseCors(configureCors)
         .UseGiraffe routes      
      
