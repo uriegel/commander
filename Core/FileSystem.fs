@@ -15,6 +15,7 @@ let mapIOError (e: exn) =
     match e with
     | :? UnauthorizedAccessException -> AccessDenied
     | e when e.HResult = 13          -> AccessDenied
+    | e when e.HResult = -2147024891 -> AccessDenied
     | e when e.HResult = -2146232800 -> AlreadyExists
     | e                              -> Exception e.Message
 
