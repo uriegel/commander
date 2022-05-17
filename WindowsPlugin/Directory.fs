@@ -97,14 +97,24 @@ let deleteItems items =
         |> String.joinStr "\U00000000"
         |> append "\U00000000\U00000000"
 
+    let flags = 
+        FileOpFlags.NOCONFIRMATION 
+        ||| FileOpFlags.NOERRORUI
+        ||| FileOpFlags.NOCONFIRMMKDIR
+        ||| FileOpFlags.SILENT
+        ||| FileOpFlags.ALLOWUNDO
+
     let mutable fileOperation = SHFILEOPSTRUCT() 
     fileOperation.Func                  <- FileFuncFlags.DELETE
     fileOperation.From                  <- input
-    fileOperation.Flags                 <- FileOpFlags.NOCONFIRMATION ||| FileOpFlags.ALLOWUNDO
+    fileOperation.Flags                 <- flags
+    
     let res = SHFileOperation fileOperation 
     match res with
-    | 0 -> None
-    | _ -> Some (Exception "Löschen fehlgeschlagen")
+    | 0     -> None
+    | 2     -> Some FileNotFound
+    | 0x78  -> Some AccessDenied
+    | _     -> Some (Exception "Löschen fehlgeschlagen")
     |> getError
     |> serializeToJson
 

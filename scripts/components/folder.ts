@@ -306,13 +306,11 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO delete Windows
-        // TODO Test KDE theme 
-        // TODO Test Yaru theme
         // TODO Copy/Move
         // TODO Copy/Move with admin commander: admincommander requests (post) progress to commander
         // TODO delete remotes
         // TODO Windows Title Icon is blurry
+        // TODO Adapt Yaru theme
         // TODO when Time sorting, then sort after exif or disable time sort
         // TODO remote engine
         // TODO GetFileItems native faster with pinvoke
