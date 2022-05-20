@@ -185,7 +185,6 @@ let getItems path (param: GetItems) = async {
             let subj = getEventSubject param.FolderId
             subj.OnNext <| EnhancedInfo exifItems
 
-    // TODO file handles are note closed!
     async { 
         items |> appendExifTime result.Path |>ignore
         items |> appendPlatformInfo (getEventSubject param.FolderId) requestId param.RequestId result.Path |>ignore

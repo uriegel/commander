@@ -25,12 +25,15 @@ type ActionType =
 | Delete       = 0
 | CreateFolder = 1
 | Rename       = 2
+| Copy         = 3
+| Move         = 4
 
 type GetActionsTexts = {
-    EngineType: EngineType
-    Type:       ActionType
-    Dirs:       int
-    files:      int
+    EngineType:      EngineType
+    OtherEngineType: EngineType option
+    Type:            ActionType
+    Dirs:            int
+    files:           int
 }
 
 type GetFile = {

@@ -2,7 +2,7 @@ import { DialogBox, Result } from "web-dialog-box"
 import { Menubar, MenuItem } from "web-menu-bar"
 import {
     activeFolderSetFocus, onAdaptPath, onCreateFolder, onDelete, onRefresh, onSelectAll,
-    onSelectNone, onSetHidden, onViewer, onRename
+    onSelectNone, onSetHidden, onViewer, onRename, onCopy, onMove
 } from "./commander"
 import { request } from "./requests"
 export function initializeMenu() {}
@@ -16,6 +16,8 @@ if (automode)
     menu.setAttribute("automode", "true")
 itemHideMenu.isChecked = automode
 
+document.getElementById("onCopy")?.addEventListener("menubar-action",         () => onCopy())
+document.getElementById("onMove")?.addEventListener("menubar-action",         () => onMove())
 document.getElementById("onRename")?.addEventListener("menubar-action",       () => onRename())
 document.getElementById("onCreateFolder")?.addEventListener("menubar-action", () => onCreateFolder())
 document.getElementById("onDelete")?.addEventListener("menubar-action",       () => onDelete())

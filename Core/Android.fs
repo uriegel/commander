@@ -151,7 +151,7 @@ let getItems (engine: EngineType) path latestPath = async {
         match latestPath with
         | Some latestPath when (latestPath |> String.length) > (path |> String.length) ->
             Some (getName latestPath)
-        | _                                                 -> 
+        | _                                                                            -> 
             None
 
     let result = {|

@@ -79,12 +79,14 @@ let getActionsTexts (param: GetActionsTexts) =
         | 1 -> "den entfernten Rechner" 
         | _ -> "die entfernte Rechner" 
 
-    match param.EngineType, param.Type with
-    | EngineType.Directory, ActionType.CreateFolder -> Some "Neuen Ordner anlegen"
-    | EngineType.Directory, ActionType.Delete       -> Some (sprintf "Möchtest Du %s löschen?"    <| getFilesOrDirs ())
-    | EngineType.Remotes, ActionType.Delete         -> Some (sprintf "Möchtest Du %s löschen?"    <| getRemotes ())
-    | EngineType.Android, ActionType.Delete         -> Some (sprintf "Möchtest Du %s löschen?"    <| getFilesOrDirs ())
-    | EngineType.Directory, ActionType.Rename       -> Some (sprintf "Möchtest Du %s umbenennen?" <| getFilesOrDirs ())
+    match param.EngineType, param.OtherEngineType, param.Type with
+    | EngineType.Directory, _, ActionType.CreateFolder                  -> Some "Neuen Ordner anlegen"
+    | EngineType.Directory, _, ActionType.Delete                        -> Some (sprintf "Möchtest Du %s löschen?"    <| getFilesOrDirs ())
+    | EngineType.Directory, Some(EngineType.Directory), ActionType.Copy -> Some (sprintf "Möchtest Du %s kopieren?"   <| getFilesOrDirs ())
+    | EngineType.Directory, Some(EngineType.Directory), ActionType.Move -> Some (sprintf "Möchtest Du %s verschieben?"<| getFilesOrDirs ())
+    | EngineType.Directory, _, ActionType.Rename                        -> Some (sprintf "Möchtest Du %s umbenennen?" <| getFilesOrDirs ())
+    | EngineType.Remotes, _, ActionType.Delete                          -> Some (sprintf "Möchtest Du %s löschen?"    <| getRemotes ())
+    | EngineType.Android, _, ActionType.Delete                          -> Some (sprintf "Möchtest Du %s löschen?"    <| getFilesOrDirs ())
     | _                                             -> None
     
 

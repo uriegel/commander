@@ -114,6 +114,14 @@ function setTheme(theme: string) {
 
 function getInactiveFolder() { return activeFolder == folderLeft ? folderRight : folderLeft }
 
+export function onCopy() {
+    activeFolder.copy(getInactiveFolder(), activeFolder == folderLeft)
+}
+
+export function onMove() {
+    activeFolder.copy(getInactiveFolder(), activeFolder == folderLeft, true)
+}
+
 export function onRename() {
     activeFolder.onRename()
 }

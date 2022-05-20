@@ -451,6 +451,8 @@ export class Folder extends HTMLElement {
     async onRename() {
         var items = this.getSelectedItems()
         const [dirs, files] = this.getSelectedItemsOverview(items)
+        if (dirs + files != 1)
+            return
         let texts = await request<GetActionTextResult>("getactionstexts", {
             engineType: this.engine,
             type: ActionType.Rename,
@@ -518,7 +520,41 @@ export class Folder extends HTMLElement {
     }
 
     async copy(other: Folder, fromLeft: boolean, move?: boolean) {
-    }
+        var items = this.getSelectedItems()
+        const [dirs, files] = this.getSelectedItemsOverview(items)
+        if (dirs + files == 0)
+            return
+
+        // TODO getCopyConflicts, but not in dirs, one call together with getactionstexts
+        // TODO send getactionstexts copyConflitcs
+                
+        let texts = await request<GetActionTextResult>("getactionstexts", {
+            engineType: this.engine,
+            otherEngineType: other.engine,
+            type: move ? ActionType.Move : ActionType.Copy,
+            dirs,
+            files
+        })
+        if (!texts.result)
+            return
+        const res = await dialog.show({
+                text: texts.result,
+                slide: fromLeft,
+                slideReverse: !fromLeft,
+                btnOk: true,
+                btnCancel: true,
+                defBtnOk: true
+            })
+            this.setFocus()
+            if (res.result == Result.Ok && res.input) {
+                // const ioResult = await request<IOErrorResult>("createfolder", {
+                //     engine: this.engine,
+                //     path: this.getCurrentPath(),
+                //     name: res.input
+                // })
+                // this.checkResult(ioResult.error) 
+            }
+        }
 
     private checkResult(error: IOError) {
         if (!error) 

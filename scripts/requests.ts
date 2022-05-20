@@ -81,13 +81,16 @@ export enum ActionType {
     Delete       = 0,
     CreateFolder = 1,
     Rename       = 2,
+    Copy         = 3,
+    Move         = 4
 }
 
 type GetActionsTextsType = {
-    engineType: EngineType
-    type:       ActionType
-    dirs:       number
-    files:      number
+    engineType:       EngineType
+    otherEngineType?: EngineType
+    type:             ActionType
+    dirs:             number
+    files:            number
 }
 
 export enum ItemType {
