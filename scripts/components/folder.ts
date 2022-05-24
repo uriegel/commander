@@ -525,9 +525,13 @@ export class Folder extends HTMLElement {
         if (dirs + files == 0)
             return
 
-        // TODO getCopyConflicts, but not in dirs, one call together with getactionstexts
-        // TODO send getactionstexts copyConflitcs
-                
+        await request<GetActionTextResult>("getcopyconflicts", {
+            sourceEngineType: this.engine,
+            sourcePath:       this.path,
+            targetEngineType: other.engine,
+            targetPath:       other.path,
+            items:            items.map(n => n.name)
+        })
         let texts = await request<GetActionTextResult>("getactionstexts", {
             engineType: this.engine,
             otherEngineType: other.engine,

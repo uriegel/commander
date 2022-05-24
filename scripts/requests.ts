@@ -2,19 +2,20 @@ import { requestBox } from "./commander"
 import { FolderItem } from "./components/folder"
 import { RemoteItem } from "./remotes"
 
-type ShowDevToolsType = "showdevtools"
+type ShowDevToolsType =   "showdevtools"
 type ShowFullscreenType = "showfullscreen"
-type MaximizeType = "maximize"
-type MinimizeType = "minimize"
-type RestoreType = "restore"
-type CloseType = "close"
-type GetItems = "getitems"
-type GetFilePath = "getfilepath"
-type PutRemotes = "putremotes"
-type GetActionsTexts = "getactionstexts"
-type CreateFolder = "createfolder"
-type DeleteItems = "deleteitems"
-type RenameItem = "renameitem"
+type MaximizeType       = "maximize"
+type MinimizeType       = "minimize"
+type RestoreType =        "restore"
+type CloseType =          "close"
+type GetItems =           "getitems"
+type GetFilePath =        "getfilepath"
+type PutRemotes =         "putremotes"
+type GetActionsTexts =    "getactionstexts"
+type CreateFolder =       "createfolder"
+type DeleteItems =        "deleteitems"
+type RenameItem =         "renameitem"
+type GetCopyConflicts =   "getcopyconflicts"
 
 export type RequestType = 
     | ShowDevToolsType 
@@ -30,6 +31,7 @@ export type RequestType =
     | CreateFolder
     | DeleteItems
     | RenameItem
+    | GetCopyConflicts
 
 type Empty = {}
 
@@ -75,6 +77,14 @@ type DeleteItemsType = {
     engineType: EngineType
     path:       string
     items:      string[]
+}
+
+type GetCopyConflictsType = {
+    sourceEngineType: EngineType
+    sourcePath:       string
+    items:            string[]
+    targetEngineType: EngineType
+    targetPath:       string
 }
 
 export enum ActionType {
@@ -190,10 +200,11 @@ export type RequestInput =
     | CreateFolderType
     | RenameItemType
     | DeleteItemsType
+    | GetCopyConflictsType
 
 async function checkAdmin() {
     try {
-        await (await fetch("http://localhost:20001/commander/check")).status
+        (await fetch("http://localhost:20001/commander/check")).status
         return true
     } catch { 
         return false

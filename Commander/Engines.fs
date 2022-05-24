@@ -27,6 +27,14 @@ type RenameItemParam = {
     NewName: string
 }
 
+type GetCopyConflictsParam = {
+    SourceEngineType: EngineType
+    SourcePath:       string
+    Items:            string[]
+    TargetEngineType: EngineType
+    TargetPath:       string
+}
+
 let getEngineAndPathFrom engine path item body =
     match engine with
     | EngineType.Root    -> Root.getEngineAndPathFrom item body
@@ -108,3 +116,8 @@ let deleteItems (param: DeleteItemsParam) =
     match param.Engine with
     | EngineType.Directory -> deleteItems <| getItems ()
     | _                    -> ""
+
+let getCopyConflicts (param: GetCopyConflictsParam) =
+    match param.SourceEngineType, param.TargetEngineType with
+    | EngineType.Directory, EngineType.Directory -> getCopyConflicts param.Items param.SourcePath param.TargetPath
+    | _ -> ""

@@ -67,3 +67,43 @@ let deleteItems =
     >> mapOnlyError
     >> getError
     >> serializeToJson
+
+
+type ConflictItem = {
+    Conflict:   string
+    SourceTime: System.DateTime
+    TargetTime: System.DateTime
+    SourceSize: int64
+    TargetSize: int64
+}
+
+let getCopyConflicts items sourcePath targetPath =
+
+    let getInfo item = 
+        let sourcePath = combine2Pathes sourcePath item 
+        let targetPath = combine2Pathes targetPath item 
+        
+        let getInfo item = 
+            match existsFile item with
+            | true -> 
+                let info = FileInfo item
+                Some {
+                    Time = info.LastWriteTime
+                    Size = info.Length
+                }
+        
+
+    let exists item = 
+        let isFile = existsFile <| 
+        isFile
+//        let isDir existsDir <| combine2Pathes targetPath item
+
+    // let getConflicts item = 
+    //     let getInfo = 
+
+
+    let conflictItems = 
+        items |>
+        Seq.filter exists    
+    "()"
+

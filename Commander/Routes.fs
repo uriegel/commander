@@ -42,6 +42,7 @@ let configure (app : IApplicationBuilder) =
             route  "/commander/deleteitems"        >=> warbler (fun _ -> deleteItems ())
             route  "/commander/createfolder"       >=> warbler (fun _ -> createFolder ())
             route  "/commander/renameitem"         >=> warbler (fun _ -> renameItem ())
+            route  "/commander/getcopyconflicts"   >=> warbler (fun _ -> getCopyConflicts ())
             route  "/commander/showdevtools"       >=> warbler (fun _ -> showDevTools ())
             route  "/commander/showfullscreen"     >=> warbler (fun _ -> showFullscreen ())
             route  "/commander/maximize"           >=> warbler (fun _ -> maximize ())

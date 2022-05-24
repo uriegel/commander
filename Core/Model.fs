@@ -56,3 +56,4 @@ type FolderEvent =
 // TODO FSharpTools JSON with options
 let serializeToJson obj = 
     JsonSerializer.Serialize (obj, getJsonOptions ())    
+

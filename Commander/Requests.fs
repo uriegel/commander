@@ -154,6 +154,15 @@ let deleteItems  () =
             return! Json.text result next ctx
         }              
 
+let getCopyConflicts () = 
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+            let! body = ctx.ReadBodyFromRequestAsync ()
+            let param = JsonSerializer.Deserialize<GetCopyConflictsParam>(body, getJsonOptions ())
+            let result = getCopyConflicts param
+            return! Json.text result next ctx
+        }              
+
 let getImage (fileRequest: FileRequest) = 
     streamFile false fileRequest.Path None None
 
