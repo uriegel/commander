@@ -119,14 +119,9 @@ let getCopyConflicts items sourcePath targetPath =
                 }
             | _ -> None        
 
-//        let isDir existsDir <| combine2Pathes targetPath item
-
-    // let getConflicts item = 
-    //     let getInfo = 
-
-
     let conflictItems = 
-        items |>
-        Seq.filter exists    
+        items 
+        |> Seq.map getInfo
+        |> Seq.filter Option.isSome    
     "()"
 
