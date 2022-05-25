@@ -1,9 +1,11 @@
 import 'virtual-table-component'
+import './copyconflicts'
 import { TableItem, VirtualTable } from 'virtual-table-component'
 import { compose } from '../functional'
 import { ActionType, Column, ColumnsType, ConflictItem, EngineType, GetActionTextResult, GetFilePathResult, GetItemResult, IOError, IOErrorResult, ItemType, request } from '../requests'
 import { addRemotes, initRemotes } from '../remotes'
 import { DialogBox, Result } from 'web-dialog-box'
+import { CopyConflicts } from './copyconflicts'
 
 var latestRequest = 0
 
@@ -40,6 +42,36 @@ type FolderEvent =
     | GetItemsFinished
 
 const dialog = document.querySelector('dialog-box') as DialogBox    
+
+export function getExtension (path: string) {
+    let index = path.lastIndexOf(".")
+    return index > 0 ? path.substring(index) : ""
+}
+
+export function formatDateTime(dateStr: string) {
+    if (!dateStr || dateStr.startsWith("0001"))
+        return ''
+    const date = Date.parse(dateStr)
+    return dateFormat.format(date) + " " + timeFormat.format(date)  
+}
+
+export function formatSize(size: number) {
+    if (!size)
+        return ""
+    let sizeStr = size.toString()
+    const sep = '.'
+    if (sizeStr.length > 3) {
+        var sizePart = sizeStr
+        sizeStr = ""
+        for (let j = 3; j < sizePart.length; j += 3) {
+            const extract = sizePart.slice(sizePart.length - j, sizePart.length - j + 3)
+            sizeStr = sep + extract + sizeStr
+        }
+        const strfirst = sizePart.substring(0, (sizePart.length % 3 == 0) ? 3 : (sizePart.length % 3))
+        sizeStr = strfirst + sizeStr
+    }
+    return sizeStr    
+}
 
 export class Folder extends HTMLElement {
     constructor() {
@@ -261,13 +293,13 @@ export class Folder extends HTMLElement {
                         }}
                     case ColumnsType.Size:
                         return { name: n.name, isRightAligned: true, isSortable: true, render: (td, item) => {
-                            td.innerHTML = this.formatSize((item as any)[n.column])
+                            td.innerHTML = formatSize((item as any)[n.column])
                             td.classList.add("rightAligned")
                         }}
                     case ColumnsType.Time:
                         this.enhancedIndexes = this.enhancedIndexes.concat([i])
                         return { name: n.name, isSortable: true, render: (td, item) =>  {
-                                td.innerHTML = this.formatDateTime(item.exifTime || (item as any)[n.column]) 
+                                td.innerHTML = formatDateTime(item.exifTime || (item as any)[n.column]) 
                                 if (item.exifTime)
                                     td.classList.add("exif")
                             }}
@@ -525,18 +557,13 @@ export class Folder extends HTMLElement {
         if (dirs + files == 0)
             return
 
-        let conflicts  = await request<ConflictItem[]>("getcopyconflicts", {
+        let conflicts = await request<ConflictItem[]>("getcopyconflicts", {
             sourceEngineType: this.engine,
-            sourcePath:       this.path,
+            sourcePath: this.path,
             targetEngineType: other.engine,
-            targetPath:       other.path,
-            items:            items.map(n => n.name)
+            targetPath: other.path,
+            items: items.map(n => n.name)
         })
-
-        console.log("conflicts", conflicts)
-        // TODO: if no conflicts show dialog
-        // TODO: if conflicts show dialog with conflict overview
-
 
         let texts = await request<GetActionTextResult>("getactionstexts", {
             engineType: this.engine,
@@ -547,24 +574,50 @@ export class Folder extends HTMLElement {
         })
         if (!texts.result)
             return
-        const res = await dialog.show({
+
+        const settings = conflicts.length == 0
+            ? {
                 text: texts.result,
                 slide: fromLeft,
                 slideReverse: !fromLeft,
-                btnOk: true,
                 btnCancel: true,
+                btnOk: true,
                 defBtnOk: true
-            })
-            this.setFocus()
-            if (res.result == Result.Ok && res.input) {
-                // const ioResult = await request<IOErrorResult>("createfolder", {
-                //     engine: this.engine,
-                //     path: this.getCurrentPath(),
-                //     name: res.input
-                // })
-                // this.checkResult(ioResult.error) 
             }
+            : {
+                text: texts.result,
+                slide: fromLeft,
+                slideReverse: !fromLeft,
+                btnCancel: true,
+                extended: "copy-conflicts",
+                btnYes: true,
+                btnNo: true,
+                fullscreen: true,
+                defBtnNo: true
+            }
+        
+        if (conflicts.length > 0) {
+            const copyConflicts = document.getElementById('copy-conflicts') as CopyConflicts
+            copyConflicts.setItems(conflicts)
         }
+        
+            
+        console.log("conflicts", conflicts)
+        // TODO: if no conflicts show dialog
+        // TODO: if conflicts show dialog with conflict overview
+
+
+        const res = await dialog.show(settings)
+        this.setFocus()
+        if (res.result == Result.Ok && res.input) {
+            // const ioResult = await request<IOErrorResult>("createfolder", {
+            //     engine: this.engine,
+            //     path: this.getCurrentPath(),
+            //     name: res.input
+            // })
+            // this.checkResult(ioResult.error) 
+        }
+    }
 
     private checkResult(error: IOError) {
         if (!error) 
@@ -651,31 +704,6 @@ export class Folder extends HTMLElement {
         return result.path
     }
 
-    private formatSize(size: number) {
-        if (!size)
-            return ""
-        let sizeStr = size.toString()
-        const sep = '.'
-        if (sizeStr.length > 3) {
-            var sizePart = sizeStr
-            sizeStr = ""
-            for (let j = 3; j < sizePart.length; j += 3) {
-                const extract = sizePart.slice(sizePart.length - j, sizePart.length - j + 3)
-                sizeStr = sep + extract + sizeStr
-            }
-            const strfirst = sizePart.substring(0, (sizePart.length % 3 == 0) ? 3 : (sizePart.length % 3))
-            sizeStr = strfirst + sizeStr
-        }
-        return sizeStr    
-    }
-
-    private formatDateTime = (dateStr: string) => {
-        if (!dateStr || dateStr.startsWith("0001"))
-            return ''
-        const date = Date.parse(dateStr)
-        return dateFormat.format(date) + " " + timeFormat.format(date)  
-    }
-
     private formatVersion = (version?: Version) => {
         return version ? `${version.major}.${version.minor}.${version.build}.${version.patch}` : ""
     }
@@ -700,11 +728,6 @@ export class Folder extends HTMLElement {
                 return ([a, b]: FolderItem[]) => this.compareVersion((a as any)[column], (b as any)[column])
             default:
                 return null
-        }
-
-        function getExtension (path: string) {
-            let index = path.lastIndexOf(".")
-            return index > 0 ? path.substring(index) : ""
         }
     }
 

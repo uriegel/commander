@@ -1,3 +1,4 @@
+import { TableItem } from "virtual-table-component"
 import { requestBox } from "./commander"
 import { FolderItem } from "./components/folder"
 import { RemoteItem } from "./remotes"
@@ -143,10 +144,10 @@ export type GetFilePathResult = {
     path: string
 }
 
-export type ConflictItem = {
+export interface ConflictItem extends TableItem {
     conflict:   string
-    sourceTime: Date
-    targetTime: Date
+    sourceTime: string
+    targetTime: string
     sourceSize: number
     targetSize: number
 }
