@@ -119,9 +119,7 @@ let getCopyConflicts items sourcePath targetPath =
                 }
             | _ -> None        
 
-    let conflictItems = 
-        items 
-        |> Seq.map getInfo
-        |> Seq.filter Option.isSome    
-    "()"
+    items 
+    |> Seq.choose getInfo
+    |> serializeToJson
 

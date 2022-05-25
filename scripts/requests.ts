@@ -143,6 +143,14 @@ export type GetFilePathResult = {
     path: string
 }
 
+export type ConflictItem = {
+    conflict:   string
+    sourceTime: Date
+    targetTime: Date
+    sourceSize: number
+    targetSize: number
+}
+
 type Exception = {
     exception: string
 }
@@ -190,6 +198,7 @@ type Result =
     | Nothing 
     | GetActionTextResult
     | IOErrorResult
+    | ConflictItem[]
 
 export type RequestInput = 
     | Empty  

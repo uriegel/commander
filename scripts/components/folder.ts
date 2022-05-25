@@ -1,7 +1,7 @@
 import 'virtual-table-component'
 import { TableItem, VirtualTable } from 'virtual-table-component'
 import { compose } from '../functional'
-import { ActionType, Column, ColumnsType, EngineType, GetActionTextResult, GetFilePathResult, GetItemResult, IOError, IOErrorResult, ItemType, request } from '../requests'
+import { ActionType, Column, ColumnsType, ConflictItem, EngineType, GetActionTextResult, GetFilePathResult, GetItemResult, IOError, IOErrorResult, ItemType, request } from '../requests'
 import { addRemotes, initRemotes } from '../remotes'
 import { DialogBox, Result } from 'web-dialog-box'
 
@@ -525,13 +525,19 @@ export class Folder extends HTMLElement {
         if (dirs + files == 0)
             return
 
-        await request<GetActionTextResult>("getcopyconflicts", {
+        let conflicts  = await request<ConflictItem[]>("getcopyconflicts", {
             sourceEngineType: this.engine,
             sourcePath:       this.path,
             targetEngineType: other.engine,
             targetPath:       other.path,
             items:            items.map(n => n.name)
         })
+
+        console.log("conflicts", conflicts)
+        // TODO: if no conflicts show dialog
+        // TODO: if conflicts show dialog with conflict overview
+
+
         let texts = await request<GetActionTextResult>("getactionstexts", {
             engineType: this.engine,
             otherEngineType: other.engine,
