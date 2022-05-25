@@ -77,25 +77,48 @@ type ConflictItem = {
     TargetSize: int64
 }
 
+type FileSystemType = 
+    | None = 0
+    | File = 1
+    | Directory = 2
+
 let getCopyConflicts items sourcePath targetPath =
+
+    let getFileSystemType path = 
+        if existsFile path then
+            FileSystemType.File
+        else if existsDirectory path then
+            FileSystemType.Directory
+        else
+            FileSystemType.None
 
     let getInfo item = 
         let sourcePath = combine2Pathes sourcePath item 
         let targetPath = combine2Pathes targetPath item 
         
-        let getInfo item = 
-            match existsFile item with
-            | true -> 
-                let info = FileInfo item
+        match getFileSystemType targetPath with 
+            | FileSystemType.File -> 
+                let sourceInfo = FileInfo sourcePath
+                let targetInfo = FileInfo targetPath
                 Some {
-                    Time = info.LastWriteTime
-                    Size = info.Length
+                    Conflict = item
+                    SourceTime = sourceInfo.LastWriteTime
+                    SourceSize = sourceInfo.Length
+                    TargetTime = targetInfo.LastWriteTime
+                    TargetSize = targetInfo.Length
                 }
-        
+            | FileSystemType.Directory -> 
+                let sourceInfo = DirectoryInfo sourcePath
+                let targetInfo = DirectoryInfo targetPath
+                Some {
+                    Conflict = item
+                    SourceTime = sourceInfo.LastWriteTime
+                    SourceSize = 0
+                    TargetTime = targetInfo.LastWriteTime
+                    TargetSize = 0
+                }
+            | _ -> None        
 
-    let exists item = 
-        let isFile = existsFile <| 
-        isFile
 //        let isDir existsDir <| combine2Pathes targetPath item
 
     // let getConflicts item = 
