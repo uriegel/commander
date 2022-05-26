@@ -145,11 +145,13 @@ export type GetFilePathResult = {
 }
 
 export interface ConflictItem extends TableItem {
-    conflict:   string
-    sourceTime: string
-    targetTime: string
-    sourceSize: number
-    targetSize: number
+    conflict:    string
+    isDirectory: boolean
+    iconPath?:   string
+    sourceTime:  string
+    targetTime:  string
+    sourceSize:  number
+    targetSize:  number
 }
 
 type Exception = {

@@ -25,7 +25,10 @@ export class CopyConflicts extends HTMLElement {
             overflow: hidden;
         }
         .equal {
-            color: gray
+            color: gray;
+        }
+        .hidden {
+            display: none;
         }
         .overwrite {
             color: black;
@@ -64,7 +67,12 @@ export class CopyConflicts extends HTMLElement {
                 const template = document.getElementById('conflictName') as HTMLTemplateElement
                 const element = template.content.cloneNode(true) as HTMLElement
                 const img = element.querySelector("img") as HTMLImageElement
-                img.src = `icon://${ext}`
+                if (item.isDirectory) {
+                    var dirIcon = document.querySelector('#folderIcon') as HTMLTemplateElement
+                    td.appendChild(document.importNode(dirIcon.content, true))
+                    img.classList.add("hidden")
+                } else
+                    img.src = `commander/geticon?path=${ext}`
                 const text = element.querySelector("span") as HTMLSpanElement
                 text.innerHTML = name ?? ""
                 td.appendChild(element)

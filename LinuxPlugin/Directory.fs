@@ -70,11 +70,13 @@ let deleteItems =
 
 
 type ConflictItem = {
-    Conflict:   string
-    SourceTime: System.DateTime
-    TargetTime: System.DateTime
-    SourceSize: int64
-    TargetSize: int64
+    Conflict:    string
+    IsDirectory: bool
+    IconPath:    string option
+    SourceTime:  System.DateTime
+    TargetTime:  System.DateTime
+    SourceSize:  int64
+    TargetSize:  int64
 }
 
 type FileSystemType = 
@@ -101,21 +103,25 @@ let getCopyConflicts items sourcePath targetPath =
                 let sourceInfo = FileInfo sourcePath
                 let targetInfo = FileInfo targetPath
                 Some {
-                    Conflict = item
-                    SourceTime = sourceInfo.LastWriteTime
-                    SourceSize = sourceInfo.Length
-                    TargetTime = targetInfo.LastWriteTime
-                    TargetSize = targetInfo.Length
+                    Conflict   =  item
+                    IsDirectory = false
+                    IconPath   =  Some <| getIconPath sourceInfo
+                    SourceTime =  sourceInfo.LastWriteTime
+                    SourceSize =  sourceInfo.Length
+                    TargetTime =  targetInfo.LastWriteTime
+                    TargetSize =  targetInfo.Length
                 }
             | FileSystemType.Directory -> 
                 let sourceInfo = DirectoryInfo sourcePath
                 let targetInfo = DirectoryInfo targetPath
                 Some {
-                    Conflict = item
-                    SourceTime = sourceInfo.LastWriteTime
-                    SourceSize = 0
-                    TargetTime = targetInfo.LastWriteTime
-                    TargetSize = 0
+                    Conflict =    item
+                    IsDirectory = true
+                    IconPath =    None
+                    SourceTime =  sourceInfo.LastWriteTime
+                    SourceSize =  0
+                    TargetTime =  targetInfo.LastWriteTime
+                    TargetSize =  0
                 }
             | _ -> None        
 

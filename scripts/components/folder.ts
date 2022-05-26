@@ -24,7 +24,7 @@ export interface FolderItem extends TableItem {
     isDirectory?: boolean
     selectable:   boolean
     itemType:     ItemType
-    iconPath?:    boolean
+    iconPath?:    string
     exifTime?:    string
     version?:     Version
 }
@@ -53,6 +53,44 @@ export function formatDateTime(dateStr: string) {
         return ''
     const date = Date.parse(dateStr)
     return dateFormat.format(date) + " " + timeFormat.format(date)  
+}
+
+export type IconItem = {
+    name:      string
+    iconPath?: string
+    itemType:  ItemType
+}
+    
+
+export function renderIcon(td: HTMLTableCellElement, item: IconItem) {
+    if (item.iconPath) {
+        const img = document.createElement("img")
+        img.src = `commander/geticon?path=${item.iconPath}`
+        img.classList.add("image")
+        td.appendChild(img)
+    } else {
+        var t = (item.itemType == ItemType.Harddrive
+        ? document.querySelector('#driveIcon') 
+        : item.itemType == ItemType.Parent
+        ? document.querySelector('#parentIcon')
+        : item.itemType == ItemType.Directory
+        ? document.querySelector('#folderIcon')
+        : item.itemType == ItemType.File
+        ? document.querySelector('#fileIcon')
+        : item.itemType == ItemType.Remotes
+        ? document.querySelector('#remoteIcon')
+        : item.itemType == ItemType.AddRemote
+        ? document.querySelector('#newIcon')
+        : item.itemType == ItemType.Remote
+        ? document.querySelector('#remoteIcon')
+        : item.itemType == ItemType.AndroidRemote
+        ? document.querySelector('#androidIcon')
+        : document.querySelector('#homeIcon')) as HTMLTemplateElement
+        td.appendChild(document.importNode(t.content, true))
+    }
+    const span = document.createElement('span')
+    span.innerHTML = item.name
+    td.appendChild(span)
 }
 
 export function formatSize(size: number) {
@@ -261,36 +299,8 @@ export class Folder extends HTMLElement {
                             subItem: n.type == ColumnsType.NameExtension
                                 ? { name: "Ext." }
                                 : undefined,
-                            render: (td, item) => {
-                                if (item.iconPath) {
-                                    const img = document.createElement("img")
-                                    img.src = `commander/geticon?path=${item.iconPath}`
-                                    img.classList.add("image")
-                                    td.appendChild(img)
-                                } else {
-                                    var t = (item.itemType == ItemType.Harddrive
-                                    ? document.querySelector('#driveIcon') 
-                                    : item.itemType == ItemType.Parent
-                                    ? document.querySelector('#parentIcon')
-                                    : item.itemType == ItemType.Directory
-                                    ? document.querySelector('#folderIcon')
-                                    : item.itemType == ItemType.File
-                                    ? document.querySelector('#fileIcon')
-                                    : item.itemType == ItemType.Remotes
-                                    ? document.querySelector('#remoteIcon')
-                                    : item.itemType == ItemType.AddRemote
-                                    ? document.querySelector('#newIcon')
-                                    : item.itemType == ItemType.Remote
-                                    ? document.querySelector('#remoteIcon')
-                                    : item.itemType == ItemType.AndroidRemote
-                                    ? document.querySelector('#androidIcon')
-                                    : document.querySelector('#homeIcon')) as HTMLTemplateElement
-                                    td.appendChild(document.importNode(t.content, true))
-                                }
-                            const span = document.createElement('span')
-                            span.innerHTML = item.name
-                            td.appendChild(span)
-                        }}
+                            render: renderIcon
+                        }
                     case ColumnsType.Size:
                         return { name: n.name, isRightAligned: true, isSortable: true, render: (td, item) => {
                             td.innerHTML = formatSize((item as any)[n.column])
@@ -338,9 +348,8 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Copy/Move Conflicts: icon
-        // TODO Copy/Move Conflicts: default yes or no
         // TODO Copy/Move
+        // TODO Copy/Move Conflicts: default yes or no
         // TODO Copy/Move with admin commander: admincommander requests (post) progress to commander
         // TODO Copy/Move Conflicts: Version
         // TODO delete remotes
