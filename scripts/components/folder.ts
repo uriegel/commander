@@ -338,8 +338,11 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
+        // TODO Copy/Move Conflicts: icon
+        // TODO Copy/Move Conflicts: default yes or no
         // TODO Copy/Move
         // TODO Copy/Move with admin commander: admincommander requests (post) progress to commander
+        // TODO Copy/Move Conflicts: Version
         // TODO delete remotes
         // TODO Windows Title Icon is blurry
         // TODO Adapt Yaru theme
