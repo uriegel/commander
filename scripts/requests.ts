@@ -17,6 +17,7 @@ type CreateFolder =       "createfolder"
 type DeleteItems =        "deleteitems"
 type RenameItem =         "renameitem"
 type GetCopyConflicts =   "getcopyconflicts"
+type CopyItems =          "copyitems"
 
 export type RequestType = 
     | ShowDevToolsType 
@@ -33,6 +34,7 @@ export type RequestType =
     | DeleteItems
     | RenameItem
     | GetCopyConflicts
+    | CopyItems
 
 type Empty = {}
 
@@ -80,12 +82,13 @@ type DeleteItemsType = {
     items:      string[]
 }
 
-type GetCopyConflictsType = {
+type CopyItemsType = {
     sourceEngineType: EngineType
-    sourcePath:       string
-    items:            string[]
     targetEngineType: EngineType
+    sourcePath:       string
     targetPath:       string
+    items:            string[]
+    move?:            boolean
 }
 
 export enum ActionType {
@@ -212,7 +215,7 @@ export type RequestInput =
     | CreateFolderType
     | RenameItemType
     | DeleteItemsType
-    | GetCopyConflictsType
+    | CopyItemsType
 
 async function checkAdmin() {
     try {

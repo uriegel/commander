@@ -43,6 +43,7 @@ let configure (app : IApplicationBuilder) =
             route  "/commander/createfolder"       >=> warbler (fun _ -> createFolder ())
             route  "/commander/renameitem"         >=> warbler (fun _ -> renameItem ())
             route  "/commander/getcopyconflicts"   >=> warbler (fun _ -> getCopyConflicts ())
+            route  "/commander/copyitems"          >=> warbler (fun _ -> copyItems ())
             route  "/commander/showdevtools"       >=> warbler (fun _ -> showDevTools ())
             route  "/commander/showfullscreen"     >=> warbler (fun _ -> showFullscreen ())
             route  "/commander/maximize"           >=> warbler (fun _ -> maximize ())
@@ -60,7 +61,7 @@ let configure (app : IApplicationBuilder) =
             route  "/commander/sseRight"           >=> warbler (fun _ -> sseRightFolder ())
             route  "/commander/check"              >=> warbler (fun _ -> check ())
             route  "/"                             >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)
-            routePathes ()                      <| httpHandlerParam getResourceFile 
+            routePathes () <| httpHandlerParam getResourceFile 
         ]       
     app
         .UseResponseCompression()

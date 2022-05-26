@@ -158,8 +158,17 @@ let getCopyConflicts () =
     fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
             let! body = ctx.ReadBodyFromRequestAsync ()
-            let param = JsonSerializer.Deserialize<GetCopyConflictsParam>(body, getJsonOptions ())
+            let param = JsonSerializer.Deserialize<CopyItemsParam>(body, getJsonOptions ())
             let result = getCopyConflicts param
+            return! Json.text result next ctx
+        }              
+
+let copyItems () = 
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+            let! body = ctx.ReadBodyFromRequestAsync ()
+            let param = JsonSerializer.Deserialize<CopyItemsParam>(body, getJsonOptions ())
+            let result = copyItems param
             return! Json.text result next ctx
         }              
 

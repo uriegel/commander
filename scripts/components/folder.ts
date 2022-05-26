@@ -578,7 +578,7 @@ export class Folder extends HTMLElement {
         })
 
         let texts = await request<GetActionTextResult>("getactionstexts", {
-            engineType: this.engine,
+            engineType:      this.engine,
             otherEngineType: other.engine,
             type: move ? ActionType.Move : ActionType.Copy,
             dirs,
@@ -612,22 +612,24 @@ export class Folder extends HTMLElement {
             const copyConflicts = document.getElementById('copy-conflicts') as CopyConflicts
             copyConflicts.setItems(conflicts)
         }
-        
-            
-        console.log("conflicts", conflicts)
-        // TODO: if no conflicts show dialog
-        // TODO: if conflicts show dialog with conflict overview
-
-
+       
         const res = await dialog.show(settings)
         this.setFocus()
-        if (res.result == Result.Ok && res.input) {
-            // const ioResult = await request<IOErrorResult>("createfolder", {
-            //     engine: this.engine,
-            //     path: this.getCurrentPath(),
-            //     name: res.input
-            // })
-            // this.checkResult(ioResult.error) 
+        if (res.result == Result.No) {
+            items = items.filter(n => conflicts.find(e => e.conflict == n.name) == undefined)
+            if (items.length == 0)
+                return
+        }
+        if (res.result == Result.Ok || res.result == Result.No || res.result == Result.Yes) {
+            const ioResult = await request<IOErrorResult>("copyitems", {
+                sourceEngineType: this.engine,
+                targetEngineType: other.engine,
+                sourcePath:       this.path,
+                targetPath:       other.path,
+                items:            items.map(n => n.name),
+                move
+            })
+            this.checkResult(ioResult.error) 
         }
     }
 
