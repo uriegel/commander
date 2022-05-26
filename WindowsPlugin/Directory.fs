@@ -10,6 +10,7 @@ open System.IO
 open System.Reactive.Subjects
 open System.Runtime.InteropServices
 
+open Directory
 open Engine
 open FileSystem
 open Model
@@ -116,5 +117,50 @@ let deleteItems items =
     | 0x78  -> Some AccessDenied
     | _     -> Some (Exception "Löschen fehlgeschlagen")
     |> getError
+    |> serializeToJson
+
+let getCopyConflicts items sourcePath targetPath =
+
+    let getFileSystemType path = 
+        if existsFile path then
+            FileSystemType.File
+        else if existsDirectory path then
+            FileSystemType.Directory
+        else
+            FileSystemType.None
+
+    let getInfo item = 
+        let sourcePath = combine2Pathes sourcePath item 
+        let targetPath = combine2Pathes targetPath item 
+        
+        match getFileSystemType targetPath with 
+            | FileSystemType.File -> 
+                let sourceInfo = FileInfo sourcePath
+                let targetInfo = FileInfo targetPath
+                Some {
+                    Conflict   =  item
+                    IsDirectory = false
+                    IconPath   =  Some <| getIconPath sourceInfo
+                    SourceTime =  sourceInfo.LastWriteTime
+                    SourceSize =  sourceInfo.Length
+                    TargetTime =  targetInfo.LastWriteTime
+                    TargetSize =  targetInfo.Length
+                }
+            | FileSystemType.Directory -> 
+                let sourceInfo = DirectoryInfo sourcePath
+                let targetInfo = DirectoryInfo targetPath
+                Some {
+                    Conflict =    item
+                    IsDirectory = true
+                    IconPath =    None
+                    SourceTime =  sourceInfo.LastWriteTime
+                    SourceSize =  0
+                    TargetTime =  targetInfo.LastWriteTime
+                    TargetSize =  0
+                }
+            | _ -> None        
+
+    items 
+    |> Seq.choose getInfo
     |> serializeToJson
 

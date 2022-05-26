@@ -68,22 +68,6 @@ let deleteItems =
     >> getError
     >> serializeToJson
 
-
-type ConflictItem = {
-    Conflict:    string
-    IsDirectory: bool
-    IconPath:    string option
-    SourceTime:  System.DateTime
-    TargetTime:  System.DateTime
-    SourceSize:  int64
-    TargetSize:  int64
-}
-
-type FileSystemType = 
-    | None = 0
-    | File = 1
-    | Directory = 2
-
 let getCopyConflicts items sourcePath targetPath =
 
     let getFileSystemType path = 
