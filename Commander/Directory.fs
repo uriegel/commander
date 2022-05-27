@@ -235,3 +235,5 @@ let renameItem =
     >> getError
     >> serializeToJson
 
+let copyItems items sourcePath targetPath =
+    ""

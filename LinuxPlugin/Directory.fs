@@ -113,5 +113,3 @@ let getCopyConflicts items sourcePath targetPath =
     |> Seq.choose getInfo
     |> serializeToJson
 
-let copyItems items sourcePath targetPath =
-    ""
