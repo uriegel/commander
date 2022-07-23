@@ -348,7 +348,10 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Copy/Move
+        // TODO Copy/Move Show Copy Dialog with overall and current progress /Sleep instead of copy
+        // TODO Copy/Move Copy Dialog Cancel
+        // TODO Copy/Move Copy files with progress
+        // TODO Copy/Move Compare copied
         // TODO Copy/Move Conflicts: default yes or no
         // TODO Copy/Move with admin commander: admincommander requests (post) progress to commander
         // TODO Copy/Move Conflicts: Version
