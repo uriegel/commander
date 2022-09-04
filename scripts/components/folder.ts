@@ -1,5 +1,6 @@
 import 'virtual-table-component'
 import './copyconflicts'
+import './copyprogress'
 import { TableItem, VirtualTable } from 'virtual-table-component'
 import { compose } from '../functional'
 import { ActionType, Column, ColumnsType, ConflictItem, EngineType, GetActionTextResult, GetFilePathResult, GetItemResult, IOError, IOErrorResult, ItemType, request } from '../requests'
@@ -348,13 +349,6 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Copy/Move Show Copy Dialog with overall and current progress /Sleep instead of copy
-        // TODO Copy/Move Copy Dialog Cancel
-        // TODO Copy/Move Copy files with progress
-        // TODO Copy/Move Compare copied
-        // TODO Copy/Move Conflicts: default yes or no
-        // TODO Copy/Move with admin commander: admincommander requests (post) progress to commander
-        // TODO Copy/Move Conflicts: Version
         // TODO delete remotes
         // TODO Windows Title Icon is blurry
         // TODO Adapt Yaru theme
@@ -624,6 +618,8 @@ export class Folder extends HTMLElement {
                 return
         }
         if (res.result == Result.Ok || res.result == Result.No || res.result == Result.Yes) {
+            showProgress()
+
             const ioResult = await request<IOErrorResult>("copyitems", {
                 sourceEngineType: this.engine,
                 targetEngineType: other.engine,
@@ -633,8 +629,35 @@ export class Folder extends HTMLElement {
                 move
             })
             this.checkResult(ioResult.error) 
+
+            async function showProgress() {
+                await dialog.show({
+                    text: "Kopierfortschritt",
+                    slide: fromLeft,
+                    slideReverse: !fromLeft,
+                    extended: "copy-progress",
+                    fullscreen: true,
+                    btnCancel: true
+                })
+            }
         }
     }
+
+    // TODO Copy/Move Show Copy Dialog with overall and current progress /Sleep instead of copy:
+
+    // TODO Dialog with List of files yet to copy
+    // TODO above the List Progress Bar
+    // TODO when finished one File remove it from the list
+
+    // TODO Show Dialog with files to copy
+    // TODO Send SSE with progress, file name 
+
+    // TODO Copy/Move Copy Dialog Cancel
+    // TODO Copy/Move Copy files with progress
+    // TODO Copy/Move Compare copied
+    // TODO Copy/Move Conflicts: default yes or no
+    // TODO Copy/Move with admin commander: admincommander requests (post) progress to commander
+    // TODO Copy/Move Conflicts: Version
 
     private checkResult(error: IOError) {
         if (!error) 

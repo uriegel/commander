@@ -181,3 +181,7 @@ body {
     position: relative;
 }
 
+#copy-progress {
+    height: 100%;
+    position: relative;
+}
