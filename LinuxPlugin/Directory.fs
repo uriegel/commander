@@ -21,8 +21,9 @@ let private getIconScript =
 
 let getIconPath (fileInfo: FileInfo) = 
     match fileInfo.Extension with
-    | ext when ext |> String.length > 0 -> ext
-    | _                                 -> ".noextension"
+    | ext when ext |> String.length > 0 
+         -> ext
+    | _  -> ".noextension"
 
 open Option
 
@@ -32,17 +33,20 @@ let getIcon ext = async {
             let pos1 = str |> String.indexOf "('" 
             let pos2 = str |> String.indexOf "',"
             match pos1, pos2 with
-            | Some pos1, Some pos2 -> Some (str |> String.substring2 (pos1+2) (pos2-pos1-2))
-            | _                    -> None
+            | Some pos1, Some pos2 
+                -> Some (str |> String.substring2 (pos1+2) (pos2-pos1-2))
+            | _ -> None
 
         let replaceSlash str = Some (str |> String.replaceChar  '/' '-')
         let getMime = extractMime >=> replaceSlash
 
         let mapVarious mime =
             match mime with
-            | "/usr/share/icons/breeze/mimetypes/16/application-x-msdos-program.svg" -> "/usr/share/icons/breeze/mimetypes/16/application-x-ms-dos-executable.svg"
-            | "/usr/share/icons/breeze/mimetypes/16/application-java-archive.svg"    -> "/usr/share/icons/breeze/mimetypes/16/application-x-jar.svg"
-            | s -> s
+            | "/usr/share/icons/breeze/mimetypes/16/application-x-msdos-program.svg" 
+                            -> "/usr/share/icons/breeze/mimetypes/16/application-x-ms-dos-executable.svg"
+            | "/usr/share/icons/breeze/mimetypes/16/application-java-archive.svg"    
+                            -> "/usr/share/icons/breeze/mimetypes/16/application-x-jar.svg"
+            | s     -> s
 
         let! mimeType = Process.runCmd "python3" (sprintf "%s *%s" (getIconScript ()) ext)
 
@@ -73,7 +77,7 @@ let getCopyConflicts items sourcePath targetPath =
     let getFileSystemType path = 
         if existsFile path then
             FileSystemType.File
-        else if existsDirectory path then
+        elif existsDirectory path then
             FileSystemType.Directory
         else
             FileSystemType.None

@@ -30,9 +30,10 @@ type GetItems = {
 let getEngineAndPathFrom (item: InputItem) (body: string) = 
     let rootItem = JsonSerializer.Deserialize<GetItems> (body, getJsonOptions ())
     match rootItem.CurrentItem.MountPoint, rootItem.CurrentItem.Name with
-    | value, _ when value |> String.startsWith "/" -> EngineType.Directory, rootItem.CurrentItem.MountPoint
-    | _, RemotesID                                 -> EngineType.Remotes, ""
-    | _                                            -> EngineType.Directory, rootItem.CurrentItem.MountPoint
+    | value, _ when value |> String.startsWith "/" 
+                    -> EngineType.Directory, rootItem.CurrentItem.MountPoint
+    | _, RemotesID  -> EngineType.Remotes, ""
+    | _             -> EngineType.Directory, rootItem.CurrentItem.MountPoint
 
 let (|IsRoot|IsNotRoot|) (path, currentItem) =
     if path = "/" && currentItem = ".." then
@@ -83,10 +84,10 @@ let getItems engine latestPath = async {
 
     let filterDrives (n: string) = n[columnPositions[1]] > '~'
     let getItems () = 
-            driveStrs
-            |> Array.skip 1
-            |> Array.filter filterDrives
-            |> Array.map constructDrives
+        driveStrs
+        |> Array.skip 1
+        |> Array.filter filterDrives
+        |> Array.map constructDrives
 
     let items = getItems ()
     let mounted = items |> Array.filter (fun n -> n.IsMounted)
