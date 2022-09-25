@@ -83,6 +83,7 @@ type DeleteItemsType = {
 }
 
 type CopyItemsType = {
+    folderId:         string
     sourceEngineType: EngineType
     targetEngineType: EngineType
     sourcePath:       string

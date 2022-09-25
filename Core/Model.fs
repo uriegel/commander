@@ -49,9 +49,21 @@ type EnhancedItem = {
     Version:  FileVersion option
 }
 
+type CopyProgressInfo = {
+    Total:  int64
+    Current: int64
+}
+
+type CopyProgress = {
+    CurrentFile: string
+    Total:       CopyProgressInfo
+    Current:     CopyProgressInfo
+}
+
 type FolderEvent = 
     | EnhancedInfo of EnhancedItem[]
     | GetItemsFinished
+    | CopyProgress of CopyProgress
 
 // TODO FSharpTools JSON with options
 let serializeToJson obj = 

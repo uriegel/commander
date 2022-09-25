@@ -28,6 +28,7 @@ type RenameItemParam = {
 }
 
 type CopyItemsParam = {
+    FolderId:         string
     SourceEngineType: EngineType
     SourcePath:       string
     Items:            string[]
@@ -81,7 +82,7 @@ let getActionsTexts (param: GetActionsTexts) =
         | dirs, 0                 -> "die Verzeichnisse" 
         | 0, files when files = 1 -> "die Datei" 
         | 0, files                -> "die Dateien" 
-        | _                            -> "die Einträge" 
+        | _                       -> "die Einträge" 
 
     let getRemotes () = 
         match param.Dirs with
@@ -96,7 +97,7 @@ let getActionsTexts (param: GetActionsTexts) =
     | EngineType.Directory, _, ActionType.Rename                        -> Some (sprintf "Möchtest Du %s umbenennen?" <| getFilesOrDirs ())
     | EngineType.Remotes, _, ActionType.Delete                          -> Some (sprintf "Möchtest Du %s löschen?"    <| getRemotes ())
     | EngineType.Android, _, ActionType.Delete                          -> Some (sprintf "Möchtest Du %s löschen?"    <| getFilesOrDirs ())
-    | _                                             -> None
+    | _                                                                 -> None
     
 
 let createfolder (param: CreateFolderParam) =
@@ -125,5 +126,5 @@ let getCopyConflicts (param: CopyItemsParam) =
 
 let copyItems (param: CopyItemsParam) =
     match param.SourceEngineType, param.TargetEngineType with
-    | EngineType.Directory, EngineType.Directory -> copyItems param.Items param.SourcePath param.TargetPath
+    | EngineType.Directory, EngineType.Directory -> copyItems param.FolderId param.Items param.SourcePath param.TargetPath ()
     | _ -> ""

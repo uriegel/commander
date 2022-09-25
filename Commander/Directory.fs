@@ -34,6 +34,12 @@ let getRequestId folderId value =
         rightRequestId.Id <- value
         rightRequestId
 
+let getEventSubject folderId = 
+    if folderId = "folderLeft" then 
+        leftFolderReplaySubject
+    else
+        rightFolderReplaySubject
+
 let getItems path (param: GetItems) = async {
     
     let requestId = getRequestId param.FolderId param.RequestId
@@ -135,12 +141,6 @@ let getItems path (param: GetItems) = async {
                 None
     |}
 
-    let getEventSubject folderId = 
-        if folderId = "folderLeft" then 
-            leftFolderReplaySubject
-        else
-            rightFolderReplaySubject
-
     let appendExifTime path (items: DirectoryItem seq) = 
 
         let getExifDate (file: string) = 
@@ -235,5 +235,33 @@ let renameItem =
     >> getError
     >> serializeToJson
 
-let copyItems items sourcePath targetPath =
-    ""
+let copyItems id items sourcePath targetPath =
+    let subj = getEventSubject id               
+
+    let copyItem (item: string) =
+        System.Threading.Thread.Sleep 3000
+        subj.OnNext <| CopyProgress { 
+            CurrentFile = item 
+            Total       = { 
+                    Total = 555
+                    Current = 333
+                }
+            Current     = { 
+                    Total = 66
+                    Current = 33
+                }
+        }
+        ()
+
+    let copyItems () = 
+        items
+        |> Array.iter copyItem
+        ""
+    
+    let a () = exceptionToResult copyItems
+    a
+    >> Result.mapError mapIOError
+    >> mapOnlyError
+    >> getError
+    >> serializeToJson
+    

@@ -34,13 +34,31 @@ type EnhancedInfo = {
     Case: "EnhancedInfo",
     Fields: Array<FolderItem[]>
 }
+
 type GetItemsFinished = {
     Case: "GetItemsFinished"
+}
+
+type CopyProgressInfo = {
+    Total:   number
+    Current: number
+}
+
+type CopyProgress = {
+    CurrentFile: string
+    Total:       CopyProgressInfo
+    Current:     CopyProgressInfo
+}
+
+type CopyProgressType = {
+    Case: "CopyProgress",
+    Fields: Array<CopyProgress>
 }
 
 type FolderEvent = 
     | EnhancedInfo
     | GetItemsFinished
+    | CopyProgressType
 
 const dialog = document.querySelector('dialog-box') as DialogBox    
 
@@ -61,7 +79,6 @@ export type IconItem = {
     iconPath?: string
     itemType:  ItemType
 }
-    
 
 export function renderIcon(td: HTMLTableCellElement, item: IconItem) {
     if (item.iconPath) {
@@ -136,10 +153,9 @@ export class Folder extends HTMLElement {
 
         this.table.renderRow = (item, tr) => {
             tr.onmousedown = evt => {
-                if (evt.ctrlKey) {
+                if (evt.ctrlKey) 
                     setTimeout(() => {
                     })
-                }
             }
             switch (this.engine) {
                 case EngineType.Root:
@@ -567,11 +583,12 @@ export class Folder extends HTMLElement {
             return
 
         let conflicts = await request<ConflictItem[]>("getcopyconflicts", {
+            folderId:         this.id,
             sourceEngineType: this.engine,
-            sourcePath: this.path,
+            sourcePath:       this.path,
             targetEngineType: other.engine,
-            targetPath: other.path,
-            items: items.map(n => n.name)
+            targetPath:       other.path,
+            items:            items.map(n => n.name)
         })
 
         let texts = await request<GetActionTextResult>("getactionstexts", {
@@ -621,6 +638,7 @@ export class Folder extends HTMLElement {
             showProgress()
 
             const ioResult = await request<IOErrorResult>("copyitems", {
+                folderId:         this.id,
                 sourceEngineType: this.engine,
                 targetEngineType: other.engine,
                 sourcePath:       this.path,
@@ -628,6 +646,9 @@ export class Folder extends HTMLElement {
                 items:            items.map(n => n.name),
                 move
             })
+
+            dialog.closeDialog(Result.Ok)
+
             this.checkResult(ioResult.error) 
 
             async function showProgress() {
