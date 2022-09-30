@@ -238,24 +238,39 @@ let renameItem =
 let copyItems id items sourcePath targetPath =
     let subj = getEventSubject id               
 
-    let copyItem (item: string) =
+    let copyItem totalSize (item: string) =
         System.Threading.Thread.Sleep 3000
         subj.OnNext <| CopyProgress { 
             CurrentFile = item 
             Total       = { 
-                    Total = 555
+                    Total = totalSize
                     Current = 333
                 }
             Current     = { 
-                    Total = 66
+                    Total = totalSize
                     Current = 33
                 }
         }
         ()
 
+    // TODO FSharpTools
+    let sideEffect action arr = 
+        action arr
+        arr
+
+// TODO flatten dirs and files to files
+
     let copyItems () = 
-        items
-        |> Array.iter copyItem
+
+        let getSize path = FileInfo(combine2Pathes sourcePath path).Length
+
+        let getTotalSize arr =
+            arr |> Array.fold (fun acc charge -> acc + getSize charge) 0L 
+
+        let totalSize = items |> getTotalSize
+        
+        items 
+        |> Array.iter (copyItem totalSize)
         ""
     
     let a () = exceptionToResult copyItems
