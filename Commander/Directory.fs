@@ -234,7 +234,9 @@ type CopyItem = {
     Conflict: ConflictItem option
 }
 
-let getCopyConflicts items sourcePath targetPath =
+let mutable copyItemArray = Array.empty<CopyItem>
+
+let prepareCopy items sourcePath targetPath =
 
     let rec getFileInfoFromDir path =
         Seq.concat <| seq {
@@ -253,58 +255,50 @@ let getCopyConflicts items sourcePath targetPath =
             getFileInfoFromDir file
 
     let getCopyItem (info: FileInfo) =
+        let targetSubPath = 
+            info.FullName 
+            |> String.substring ((sourcePath |> String.length) + 1) 
+        let targetItem = 
+            targetSubPath 
+            |> combine2Pathes targetPath
         {
             Path = info.FullName
             Time = info.LastWriteTime
             Size = info.Length
-            Conflict = Some {
-                Conflict = "ein KOnflickt"
-                IconPath = Some "eikon"
-                SourceTime = DateTime.Now
-                TargetTime = DateTime.Now
-                TargetSize = 23L
-                SourceSize = 9L
-            }
+            Conflict = 
+                if File.Exists targetItem then
+                    let targetInfo = FileInfo targetItem
+                    Some {
+                        Conflict   =  targetSubPath
+                        IconPath   =  Some <| getIconPath targetInfo
+                        SourceTime =  info.LastWriteTime
+                        SourceSize =  info.Length
+                        TargetTime =  targetInfo.LastWriteTime
+                        TargetSize =  targetInfo.Length
+                    }
+                else
+                    None        
         }
 
-    items 
-    |> Seq.collect (getFileInfo sourcePath)
-    |> Seq.map getCopyItem
-    |> serializeToJson
-    // let getInfo item = 
-    //     let sourcePath = combine2Pathes sourcePath item 
-    //     let targetPath = combine2Pathes targetPath item 
-        
-    //     match getFileSystemType targetPath with 
-    //         | FileSystemType.File -> 
-    //             let sourceInfo = FileInfo sourcePath
-    //             let targetInfo = FileInfo targetPath
-    //             Some {
-    //                 Conflict   =  item
-    //                 IsDirectory = false
-    //                 IconPath   =  Some <| getIconPath sourceInfo
-    //                 SourceTime =  sourceInfo.LastWriteTime
-    //                 SourceSize =  sourceInfo.Length
-    //                 TargetTime =  targetInfo.LastWriteTime
-    //                 TargetSize =  targetInfo.Length
-    //             }
-    //         | FileSystemType.Directory -> 
-    //             let sourceInfo = DirectoryInfo sourcePath
-    //             let targetInfo = DirectoryInfo targetPath
-    //             Some {
-    //                 Conflict =    item
-    //                 IsDirectory = true
-    //                 IconPath =    None
-    //                 SourceTime =  sourceInfo.LastWriteTime
-    //                 SourceSize =  0
-    //                 TargetTime =  targetInfo.LastWriteTime
-    //                 TargetSize =  0
-    //             }
-    //         | _ -> None        
+    // TODO remove isDirectory in ts
+    // TODO reset copyItemArray
 
-    // items 
-    // |> Seq.choose getInfo
-    // |> serializeToJson
+    copyItemArray <- 
+        items 
+        |> Seq.collect (getFileInfo sourcePath)
+        |> Seq.map getCopyItem
+        |> Seq.toArray
+    
+    let sortConflicts (item: ConflictItem) =
+        item.Conflict.ToCharArray()
+        |> Array.filter (fun n -> n = Path.DirectorySeparatorChar)
+        |> Array.length
+        , item.Conflict
+
+    copyItemArray
+    |> Array.choose (fun n -> n.Conflict)
+    |> Array.sortBy sortConflicts
+    |> serializeToJson        
 
 let copyItems id items sourcePath targetPath =
     let subj = getEventSubject id               

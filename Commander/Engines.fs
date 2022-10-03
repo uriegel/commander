@@ -119,9 +119,9 @@ let deleteItems (param: DeleteItemsParam) =
     | EngineType.Directory -> deleteItems <| getItems ()
     | _                    -> ""
 
-let getCopyConflicts (param: CopyItemsParam) =
+let prepareCopy (param: CopyItemsParam) =
     match param.SourceEngineType, param.TargetEngineType with
-    | EngineType.Directory, EngineType.Directory -> getCopyConflicts param.Items param.SourcePath param.TargetPath
+    | EngineType.Directory, EngineType.Directory -> prepareCopy param.Items param.SourcePath param.TargetPath
     | _ -> ""
 
 let copyItems (param: CopyItemsParam) =

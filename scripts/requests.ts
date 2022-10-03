@@ -16,7 +16,7 @@ type GetActionsTexts =    "getactionstexts"
 type CreateFolder =       "createfolder"
 type DeleteItems =        "deleteitems"
 type RenameItem =         "renameitem"
-type GetCopyConflicts =   "getcopyconflicts"
+type PrepareCopy =        "preparecopy"
 type CopyItems =          "copyitems"
 
 export type RequestType = 
@@ -33,7 +33,7 @@ export type RequestType =
     | CreateFolder
     | DeleteItems
     | RenameItem
-    | GetCopyConflicts
+    | PrepareCopy
     | CopyItems
 
 type Empty = {}

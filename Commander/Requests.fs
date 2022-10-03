@@ -154,12 +154,12 @@ let deleteItems  () =
             return! Json.text result next ctx
         }              
 
-let getCopyConflicts () = 
+let prepareCopy () = 
     fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
             let! body = ctx.ReadBodyFromRequestAsync ()
             let param = JsonSerializer.Deserialize<CopyItemsParam>(body, getJsonOptions ())
-            let result = getCopyConflicts param
+            let result = prepareCopy param
             return! Json.text result next ctx
         }              
 

@@ -582,7 +582,7 @@ export class Folder extends HTMLElement {
         if (dirs + files == 0)
             return
 
-        let conflicts = await request<ConflictItem[]>("getcopyconflicts", {
+        let conflicts = await request<ConflictItem[]>("preparecopy", {
             folderId:         this.id,
             sourceEngineType: this.engine,
             sourcePath:       this.path,
