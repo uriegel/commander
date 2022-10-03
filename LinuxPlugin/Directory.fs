@@ -3,11 +3,9 @@ module Directory
 open FSharpRailway
 open FSharpTools
 open System.IO
-open System.Reactive.Subjects
 
 open Configuration
 open Directory
-open Engine
 open Gtk
 open Model
 open FileSystem
@@ -71,49 +69,4 @@ let deleteItems =
     >> mapOnlyError
     >> getError
     >> serializeToJson
-
-let getCopyConflicts items sourcePath targetPath =
-
-    let getFileSystemType path = 
-        if existsFile path then
-            FileSystemType.File
-        elif existsDirectory path then
-            FileSystemType.Directory
-        else
-            FileSystemType.None
-
-    let getInfo item = 
-        let sourcePath = combine2Pathes sourcePath item 
-        let targetPath = combine2Pathes targetPath item 
-        
-        match getFileSystemType targetPath with 
-            | FileSystemType.File -> 
-                let sourceInfo = FileInfo sourcePath
-                let targetInfo = FileInfo targetPath
-                Some {
-                    Conflict   =  item
-                    IsDirectory = false
-                    IconPath   =  Some <| getIconPath sourceInfo
-                    SourceTime =  sourceInfo.LastWriteTime
-                    SourceSize =  sourceInfo.Length
-                    TargetTime =  targetInfo.LastWriteTime
-                    TargetSize =  targetInfo.Length
-                }
-            | FileSystemType.Directory -> 
-                let sourceInfo = DirectoryInfo sourcePath
-                let targetInfo = DirectoryInfo targetPath
-                Some {
-                    Conflict =    item
-                    IsDirectory = true
-                    IconPath =    None
-                    SourceTime =  sourceInfo.LastWriteTime
-                    SourceSize =  0
-                    TargetTime =  targetInfo.LastWriteTime
-                    TargetSize =  0
-                }
-            | _ -> None        
-
-    items 
-    |> Seq.choose getInfo
-    |> serializeToJson
 

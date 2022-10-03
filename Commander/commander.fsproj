@@ -17,8 +17,10 @@
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="WindowBounds.fs" />
+    <Compile Include="IO.fs" />
+    <Compile Include="FolderEvents.fs" />
     <Compile Include="Directory.fs" />
+    <Compile Include="WindowBounds.fs" />
     <Compile Include="Engines.fs" />
     <Compile Include="Requests.fs" />
     <Compile Include="Electron.fs" />

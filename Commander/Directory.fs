@@ -6,17 +6,15 @@ open FSharpTools.ExifReader
 open FSharpRailway.Option
 open System
 open System.IO
-open System.Reactive.Subjects
 open System.Text.Json
 
 open Configuration
 open Engine
 open FileSystem
+open FolderEvents
+open IO
 open Model
 open Directory
-
-let leftFolderReplaySubject = new Subject<FolderEvent>()
-let rightFolderReplaySubject = new Subject<FolderEvent>()
 
 let getEngineAndPathFrom path item = 
     match path, item with
@@ -33,12 +31,6 @@ let getRequestId folderId value =
     | _             -> 
         rightRequestId.Id <- value
         rightRequestId
-
-let getEventSubject folderId = 
-    if folderId = "folderLeft" then 
-        leftFolderReplaySubject
-    else
-        rightFolderReplaySubject
 
 let getItems path (param: GetItems) = async {
     
@@ -70,24 +62,15 @@ let getItems path (param: GetItems) = async {
 
     let sortByName item = item.Name |> String.toLower 
 
-    let getSafeArray getArray = 
-        try 
-            getArray ()
-        with
-        | _ -> Array.empty
-
-    let getSafeDirectories (dirInfo: DirectoryInfo) = getSafeArray dirInfo.GetDirectories
-    let getSafeFiles (dirInfo: DirectoryInfo) = getSafeArray dirInfo.GetFiles
-
     let dirInfo = DirectoryInfo(path)
     let dirs = 
         dirInfo 
-        |> getSafeDirectories
+        |> getSafeDirectoriesFromInfo
         |> Seq.map getDirItem 
         |> Seq.sortBy sortByName
     let files = 
         dirInfo
-        |> getSafeFiles
+        |> getSafeFilesFromInfo
         |> Seq.map getFileItem 
 
     let parent = seq {{ 
@@ -234,6 +217,94 @@ let renameItem =
     >> mapOnlyError
     >> getError
     >> serializeToJson
+
+type ConflictItem = {
+    Conflict:    string
+    IconPath:    string option
+    SourceTime:  DateTime
+    TargetTime:  DateTime
+    SourceSize:  int64
+    TargetSize:  int64
+}
+
+type CopyItem = {
+    Path: string
+    Time: DateTime
+    Size: int64
+    Conflict: ConflictItem option
+}
+
+let getCopyConflicts items sourcePath targetPath =
+
+    let rec getFileInfoFromDir path =
+        Seq.concat <| seq {
+            getSafeFiles path
+            getSafeDirectories path
+                |> Array.map (fun n -> n.FullName)
+                |> Seq.collect getFileInfoFromDir 
+                |> Seq.toArray
+        }
+
+    let getFileInfo path name = 
+        let file = Directory.combine2Pathes path name
+        if File.Exists file then
+            seq { FileInfo file }
+        else
+            getFileInfoFromDir file
+
+    let getCopyItem (info: FileInfo) =
+        {
+            Path = info.FullName
+            Time = info.LastWriteTime
+            Size = info.Length
+            Conflict = Some {
+                Conflict = "ein KOnflickt"
+                IconPath = Some "eikon"
+                SourceTime = DateTime.Now
+                TargetTime = DateTime.Now
+                TargetSize = 23L
+                SourceSize = 9L
+            }
+        }
+
+    items 
+    |> Seq.collect (getFileInfo sourcePath)
+    |> Seq.map getCopyItem
+    |> serializeToJson
+    // let getInfo item = 
+    //     let sourcePath = combine2Pathes sourcePath item 
+    //     let targetPath = combine2Pathes targetPath item 
+        
+    //     match getFileSystemType targetPath with 
+    //         | FileSystemType.File -> 
+    //             let sourceInfo = FileInfo sourcePath
+    //             let targetInfo = FileInfo targetPath
+    //             Some {
+    //                 Conflict   =  item
+    //                 IsDirectory = false
+    //                 IconPath   =  Some <| getIconPath sourceInfo
+    //                 SourceTime =  sourceInfo.LastWriteTime
+    //                 SourceSize =  sourceInfo.Length
+    //                 TargetTime =  targetInfo.LastWriteTime
+    //                 TargetSize =  targetInfo.Length
+    //             }
+    //         | FileSystemType.Directory -> 
+    //             let sourceInfo = DirectoryInfo sourcePath
+    //             let targetInfo = DirectoryInfo targetPath
+    //             Some {
+    //                 Conflict =    item
+    //                 IsDirectory = true
+    //                 IconPath =    None
+    //                 SourceTime =  sourceInfo.LastWriteTime
+    //                 SourceSize =  0
+    //                 TargetTime =  targetInfo.LastWriteTime
+    //                 TargetSize =  0
+    //             }
+    //         | _ -> None        
+
+    // items 
+    // |> Seq.choose getInfo
+    // |> serializeToJson
 
 let copyItems id items sourcePath targetPath =
     let subj = getEventSubject id               

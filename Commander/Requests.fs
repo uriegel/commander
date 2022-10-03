@@ -7,9 +7,9 @@ open Theme
 open WindowBounds
 
 open Configuration
-open Directory
 open Engine
 open Engines
+open FolderEvents
 open System.Reactive.Subjects
 open System.Text.Json
 
