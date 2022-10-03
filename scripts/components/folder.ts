@@ -3,7 +3,7 @@ import './copyconflicts'
 import './copyprogress'
 import { TableItem, VirtualTable } from 'virtual-table-component'
 import { compose } from '../functional'
-import { ActionType, Column, ColumnsType, ConflictItem, EngineType, GetActionTextResult, GetFilePathResult, GetItemResult, IOError, IOErrorResult, ItemType, request } from '../requests'
+import { ActionType, Column, ColumnsType, ConflictItem, EngineType, GetActionTextResult, GetFilePathResult, GetItemResult, IOError, IOErrorResult, ItemType, Nothing, request } from '../requests'
 import { addRemotes, initRemotes } from '../remotes'
 import { DialogBox, Result } from 'web-dialog-box'
 import { CopyConflicts } from './copyconflicts'
@@ -577,6 +577,7 @@ export class Folder extends HTMLElement {
     }
 
     async copy(other: Folder, fromLeft: boolean, move?: boolean) {
+        // TODO ROP
         var items = this.getSelectedItems()
         const [dirs, files] = this.getSelectedItemsOverview(items)
         if (dirs + files == 0)
@@ -598,8 +599,13 @@ export class Folder extends HTMLElement {
             dirs,
             files
         })
-        if (!texts.result)
+        if (!texts.result) {
+            await request<Nothing>('postcopyitems', {
+                sourceEngineType: this.engine,
+                targetEngineType: other.engine,
+            })
             return
+        }
 
         const settings = conflicts.length == 0
             ? {
@@ -631,8 +637,13 @@ export class Folder extends HTMLElement {
         this.setFocus()
         if (res.result == Result.No) {
             items = items.filter(n => conflicts.find(e => e.conflict == n.name) == undefined)
-            if (items.length == 0)
+            if (items.length == 0) {
+                await request<Nothing>('postcopyitems', {
+                    sourceEngineType: this.engine,
+                    targetEngineType: other.engine,
+                })
                 return
+            }
         }
         if (res.result == Result.Ok || res.result == Result.No || res.result == Result.Yes) {
             showProgress()
@@ -650,7 +661,7 @@ export class Folder extends HTMLElement {
             dialog.closeDialog(Result.Ok)
 
             this.checkResult(ioResult.error) 
-
+            
             async function showProgress() {
                 await dialog.show({
                     text: "Kopierfortschritt",
@@ -662,6 +673,10 @@ export class Folder extends HTMLElement {
                 })
             }
         }
+        await request<Nothing>('postcopyitems', {
+            sourceEngineType: this.engine,
+            targetEngineType: other.engine,
+        })
     }
 
     // TODO Copy/Move Show Copy Dialog with overall and current progress /Sleep instead of copy:

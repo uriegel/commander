@@ -18,6 +18,7 @@ type DeleteItems =        "deleteitems"
 type RenameItem =         "renameitem"
 type PrepareCopy =        "preparecopy"
 type CopyItems =          "copyitems"
+type PostCopyItems =      "postcopyitems"
 
 export type RequestType = 
     | ShowDevToolsType 
@@ -35,6 +36,7 @@ export type RequestType =
     | RenameItem
     | PrepareCopy
     | CopyItems
+    | PostCopyItems
 
 type Empty = {}
 
@@ -90,6 +92,11 @@ type CopyItemsType = {
     targetPath:       string
     items:            string[]
     move?:            boolean
+}
+
+type PostCopyItemsType = {
+    sourceEngineType: EngineType
+    targetEngineType: EngineType
 }
 
 export enum ActionType {
@@ -150,7 +157,6 @@ export type GetFilePathResult = {
 
 export interface ConflictItem extends TableItem {
     conflict:    string
-    isDirectory: boolean
     iconPath?:   string
     sourceTime:  string
     targetTime:  string
@@ -165,7 +171,6 @@ type Exception = {
 export type Nothing = { }
 
 export type GetActionTextResult = { result: string| null}
-
 
 type AccessDenied = {
     Case: "AccessDenied"
@@ -217,6 +222,7 @@ export type RequestInput =
     | RenameItemType
     | DeleteItemsType
     | CopyItemsType
+    | PostCopyItemsType
 
 async function checkAdmin() {
     try {

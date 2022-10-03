@@ -44,6 +44,7 @@ let configure (app : IApplicationBuilder) =
             route  "/commander/renameitem"         >=> warbler (fun _ -> renameItem ())
             route  "/commander/preparecopy"        >=> warbler (fun _ -> prepareCopy ())
             route  "/commander/copyitems"          >=> warbler (fun _ -> copyItems ())
+            route  "/commander/postcopyitems"      >=> warbler (fun _ -> postCopyItems ())
             route  "/commander/showdevtools"       >=> warbler (fun _ -> showDevTools ())
             route  "/commander/showfullscreen"     >=> warbler (fun _ -> showFullscreen ())
             route  "/commander/maximize"           >=> warbler (fun _ -> maximize ())

@@ -280,9 +280,6 @@ let prepareCopy items sourcePath targetPath =
                     None        
         }
 
-    // TODO remove isDirectory in ts
-    // TODO reset copyItemArray
-
     copyItemArray <- 
         items 
         |> Seq.collect (getFileInfo sourcePath)
@@ -318,13 +315,6 @@ let copyItems id items sourcePath targetPath =
         }
         ()
 
-    // TODO FSharpTools
-    let sideEffect action arr = 
-        action arr
-        arr
-
-// TODO flatten dirs and files to files
-
     let copyItems () = 
 
         let getSize path = FileInfo(combine2Pathes sourcePath path).Length
@@ -345,3 +335,6 @@ let copyItems id items sourcePath targetPath =
     >> getError
     >> serializeToJson
     
+let postCopyItems () = 
+    copyItemArray <- Array.empty<_>
+    ""

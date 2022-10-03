@@ -37,6 +37,11 @@ type CopyItemsParam = {
     Move:             bool option
 }
 
+type PostCopyItemsParam = {
+    SourceEngineType: EngineType
+    TargetEngineType: EngineType
+}
+
 let getEngineAndPathFrom engine path item body =
     match engine with
     | EngineType.Root    -> Root.getEngineAndPathFrom item body
@@ -127,4 +132,9 @@ let prepareCopy (param: CopyItemsParam) =
 let copyItems (param: CopyItemsParam) =
     match param.SourceEngineType, param.TargetEngineType with
     | EngineType.Directory, EngineType.Directory -> copyItems param.FolderId param.Items param.SourcePath param.TargetPath ()
+    | _ -> ""
+
+let postCopyItems (param: PostCopyItemsParam) = 
+    match param.SourceEngineType, param.TargetEngineType with
+    | EngineType.Directory, EngineType.Directory -> postCopyItems ()
     | _ -> ""
