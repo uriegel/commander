@@ -234,7 +234,7 @@ type CopyItem = {
     Conflict: ConflictItem option
 }
 
-let mutable copyItemArray = Array.empty<CopyItem>
+let mutable copyItemArray: CopyItem[] = Array.empty<CopyItem>
 
 let prepareCopy items sourcePath targetPath =
 
@@ -297,7 +297,7 @@ let prepareCopy items sourcePath targetPath =
     |> Array.sortBy sortConflicts
     |> serializeToJson        
 
-let copyItems id items sourcePath targetPath =
+let copyItems id move conflictsExcluded=
     let subj = getEventSubject id               
 
     let copyItem totalSize (item: string) =
@@ -316,16 +316,15 @@ let copyItems id items sourcePath targetPath =
         ()
 
     let copyItems () = 
+        // let getSize path = FileInfo(combine2Pathes sourcePath path).Length
 
-        let getSize path = FileInfo(combine2Pathes sourcePath path).Length
+        // let getTotalSize arr =
+        //     arr |> Array.fold (fun acc charge -> acc + getSize charge) 0L 
 
-        let getTotalSize arr =
-            arr |> Array.fold (fun acc charge -> acc + getSize charge) 0L 
-
-        let totalSize = items |> getTotalSize
+        // let totalSize = items |> getTotalSize
         
-        items 
-        |> Array.iter (copyItem totalSize)
+        // items 
+        // |> Array.iter (copyItem totalSize)
         ""
     
     let a () = exceptionToResult copyItems
@@ -337,4 +336,4 @@ let copyItems id items sourcePath targetPath =
     
 let postCopyItems () = 
     copyItemArray <- Array.empty<_>
-    ""
+    "{}"

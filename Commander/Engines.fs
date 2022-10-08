@@ -27,7 +27,7 @@ type RenameItemParam = {
     NewName: string
 }
 
-type CopyItemsParam = {
+type PrepareCopyItemsParam = {
     FolderId:         string
     SourceEngineType: EngineType
     SourcePath:       string
@@ -35,6 +35,14 @@ type CopyItemsParam = {
     TargetEngineType: EngineType
     TargetPath:       string
     Move:             bool option
+}
+
+type CopyItemsParam = {
+    FolderId:          string
+    SourceEngineType:  EngineType
+    TargetEngineType:  EngineType
+    Move:              bool option
+    ConflictsExcluded: bool
 }
 
 type PostCopyItemsParam = {
@@ -124,14 +132,14 @@ let deleteItems (param: DeleteItemsParam) =
     | EngineType.Directory -> deleteItems <| getItems ()
     | _                    -> ""
 
-let prepareCopy (param: CopyItemsParam) =
+let prepareCopy (param: PrepareCopyItemsParam) =
     match param.SourceEngineType, param.TargetEngineType with
     | EngineType.Directory, EngineType.Directory -> prepareCopy param.Items param.SourcePath param.TargetPath
     | _ -> ""
 
 let copyItems (param: CopyItemsParam) =
     match param.SourceEngineType, param.TargetEngineType with
-    | EngineType.Directory, EngineType.Directory -> copyItems param.FolderId param.Items param.SourcePath param.TargetPath ()
+    | EngineType.Directory, EngineType.Directory -> copyItems param.FolderId param.Move param.ConflictsExcluded ()
     | _ -> ""
 
 let postCopyItems (param: PostCopyItemsParam) = 

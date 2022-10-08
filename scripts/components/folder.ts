@@ -652,10 +652,8 @@ export class Folder extends HTMLElement {
                 folderId:         this.id,
                 sourceEngineType: this.engine,
                 targetEngineType: other.engine,
-                sourcePath:       this.path,
-                targetPath:       other.path,
-                items:            items.map(n => n.name),
-                move
+                move,
+                conflictsExcluded: res.result == Result.No
             })
 
             dialog.closeDialog(Result.Ok)

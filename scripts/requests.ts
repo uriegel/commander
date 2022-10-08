@@ -85,13 +85,11 @@ type DeleteItemsType = {
 }
 
 type CopyItemsType = {
-    folderId:         string
-    sourceEngineType: EngineType
-    targetEngineType: EngineType
-    sourcePath:       string
-    targetPath:       string
-    items:            string[]
-    move?:            boolean
+    folderId:          string
+    sourceEngineType:  EngineType
+    targetEngineType:  EngineType
+    move:              boolean
+    conflictsExcluded: boolean
 }
 
 type PostCopyItemsType = {
