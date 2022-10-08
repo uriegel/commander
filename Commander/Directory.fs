@@ -330,7 +330,6 @@ let copyItems id sourcePath move conflictsExcluded=
         ()
 
     let copyItems () = 
-    // TODO show path in Dialog
     // TODO conflictsExcluded
     // TODO send progress
     // TODO Cancel copy

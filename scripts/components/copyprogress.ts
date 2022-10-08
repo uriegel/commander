@@ -1,28 +1,15 @@
-import 'virtual-table-component'
-import { VirtualTable, TableItem } from 'virtual-table-component'
-
-export class CopyProgress extends HTMLElement {
+export class CopyProgressDialog extends HTMLElement {
     constructor() {
         super()
         //const additionalStyle = `
         this.innerHTML = `
             <div class='copy-progress-root' tabIndex=1>
-                <virtual-table></virtual-table>
+                <p>
+                    <span class="fileName"></span>
+                </p>
             </div`
         
-        this.table = this.getElementsByTagName("VIRTUAL-TABLE")[0]! as VirtualTable<TableItem>
-
-        const columns = [{
-            name: "Name",
-            isSortable: true,
-            render: (td: HTMLTableCellElement, item: TableItem) => {
-                var element = document.createElement("HTMLDivElement")
-                element.innerText = "item."
-                td.appendChild(element)
-            }
-        }]
-        this.table.setColumns(columns)
-        this.table.setItems([{}, {}])
+        this.fileNameSpan = this.getElementsByClassName("fileName")[0] as HTMLSpanElement
     }
 
     createdCallback() {
@@ -30,7 +17,7 @@ export class CopyProgress extends HTMLElement {
     }
 
     override focus() { 
-        this.table.setFocus() 
+        //this.table.setFocus() 
         this.tabIndex = -1
     }
 
@@ -38,8 +25,11 @@ export class CopyProgress extends HTMLElement {
         this.tabIndex = 0
     }
 
+    setFileName(value: string) {
+        this.fileNameSpan.innerText = value
+    }
 
-    private table: VirtualTable<TableItem>
+    private fileNameSpan: HTMLSpanElement
 }
 
-customElements.define('copy-progress', CopyProgress)
+customElements.define('copy-progress', CopyProgressDialog)

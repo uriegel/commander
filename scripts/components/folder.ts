@@ -10,6 +10,7 @@ import {
 import { addRemotes, initRemotes } from '../remotes'
 import { DialogBox, Result } from 'web-dialog-box'
 import { CopyConflicts } from './copyconflicts'
+import { CopyProgressDialog } from './copyprogress'
 
 var latestRequest = 0
 
@@ -43,14 +44,14 @@ type GetItemsFinished = {
 }
 
 type CopyProgressInfo = {
-    Total:   number
-    Current: number
+    total:   number
+    current: number
 }
 
 type CopyProgress = {
-    CurrentFile: string
-    Total:       CopyProgressInfo
-    Current:     CopyProgressInfo
+    currentFile: string
+    total:       CopyProgressInfo
+    current:     CopyProgressInfo
 }
 
 type CopyProgressType = {
@@ -651,6 +652,8 @@ export class Folder extends HTMLElement {
         if (res.result == Result.Ok || res.result == Result.No || res.result == Result.Yes) {
             showProgress()
 
+            this.copyProgress = document.getElementById('copy-progress') as CopyProgressDialog
+
             const ioResult = await request<IOErrorResult>("copyitems", {
                 folderId:         this.id,
                 sourcePath:       this.path,
@@ -746,6 +749,9 @@ export class Folder extends HTMLElement {
             case "GetItemsFinished":
                 this.disableSorting(false)
                 break
+            case "CopyProgress":
+                this.copyProgress?.setFileName(evt.Fields[0].currentFile)
+                break
         }
     }
 
@@ -837,6 +843,7 @@ export class Folder extends HTMLElement {
     private table: VirtualTable<FolderItem>
     private folderRoot: HTMLElement
     private folderId = ""
+    private copyProgress: CopyProgressDialog | null = null
     private items: FolderItem[] = []
     private backtrack: string[] = []
     private backPosition = -1
