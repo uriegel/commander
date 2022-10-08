@@ -3,7 +3,10 @@ import './copyconflicts'
 import './copyprogress'
 import { TableItem, VirtualTable } from 'virtual-table-component'
 import { compose } from '../functional'
-import { ActionType, Column, ColumnsType, ConflictItem, EngineType, GetActionTextResult, GetFilePathResult, GetItemResult, IOError, IOErrorResult, ItemType, Nothing, request } from '../requests'
+import {
+    ActionType, Column, ColumnsType, ConflictItem, EngineType, GetActionTextResult, GetFilePathResult,
+    GetItemResult, IOError, IOErrorResult, ItemType, Nothing, request
+} from '../requests'
 import { addRemotes, initRemotes } from '../remotes'
 import { DialogBox, Result } from 'web-dialog-box'
 import { CopyConflicts } from './copyconflicts'
@@ -650,6 +653,7 @@ export class Folder extends HTMLElement {
 
             const ioResult = await request<IOErrorResult>("copyitems", {
                 folderId:         this.id,
+                sourcePath:       this.path,
                 sourceEngineType: this.engine,
                 targetEngineType: other.engine,
                 move,

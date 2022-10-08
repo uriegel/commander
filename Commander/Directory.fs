@@ -297,12 +297,14 @@ let prepareCopy items sourcePath targetPath =
     |> Array.sortBy sortConflicts
     |> serializeToJson        
 
-let copyItems id move conflictsExcluded=
+let copyItems id sourcePath move conflictsExcluded=
     let subj = getEventSubject id               
 
-    let copyItem totalSize (item: CopyItem) =
+    let copyItem sourcePath totalSize (item: CopyItem) =
+
+        let itemPath = item.Path |> String.substring ((sourcePath |> String.length) + 1)
         subj.OnNext <| CopyProgress { 
-            CurrentFile = item.Path 
+            CurrentFile = itemPath  
             Total       = { 
                     Total = totalSize
                     Current = 333
@@ -315,7 +317,7 @@ let copyItems id move conflictsExcluded=
         
         System.Threading.Thread.Sleep 3000
         subj.OnNext <| CopyProgress { 
-            CurrentFile = item.Path 
+            CurrentFile = itemPath
             Total       = { 
                     Total = totalSize
                     Current = 333
@@ -329,13 +331,12 @@ let copyItems id move conflictsExcluded=
 
     let copyItems () = 
     // TODO show path in Dialog
-    // TODO send item name with sub path, source folder path excluded
     // TODO conflictsExcluded
     // TODO send progress
     // TODO Cancel copy
     // TODO move
         copyItemArray
-        |> Array.iter (copyItem 456L)
+        |> Array.iter (copyItem sourcePath 456L)
         // let getSize path = FileInfo(combine2Pathes sourcePath path).Length
 
         // let getTotalSize arr =

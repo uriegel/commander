@@ -39,6 +39,7 @@ type PrepareCopyItemsParam = {
 
 type CopyItemsParam = {
     FolderId:          string
+    SourcePath:        string
     SourceEngineType:  EngineType
     TargetEngineType:  EngineType
     Move:              bool option
@@ -139,7 +140,7 @@ let prepareCopy (param: PrepareCopyItemsParam) =
 
 let copyItems (param: CopyItemsParam) =
     match param.SourceEngineType, param.TargetEngineType with
-    | EngineType.Directory, EngineType.Directory -> copyItems param.FolderId param.Move param.ConflictsExcluded ()
+    | EngineType.Directory, EngineType.Directory -> copyItems param.FolderId param.SourcePath param.Move param.ConflictsExcluded ()
     | _ -> ""
 
 let postCopyItems (param: PostCopyItemsParam) = 

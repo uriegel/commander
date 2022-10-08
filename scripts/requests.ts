@@ -38,7 +38,9 @@ export type RequestType =
     | CopyItems
     | PostCopyItems
 
-type Empty = {}
+type Empty = {
+    empty?: string
+}
 
 export enum EngineType {
     None =      0,     
@@ -47,11 +49,12 @@ export enum EngineType {
 }
 
 type GetItemsType = {
-    folderId?:    string
-    requestId?:   number,
-    path?:        string,
-    engine:       EngineType
-    currentItem?: FolderItem
+    folderId?:       string
+    requestId?:      number,
+    path?:           string | null | undefined,
+    engine:          EngineType
+    currentItem?:    FolderItem | undefined
+    showHiddenItems: boolean
 }
 
 type GetFilePathType = {
@@ -66,26 +69,37 @@ type PutRemotesType = {
 }
 
 type CreateFolderType = {
-    engineType: EngineType
+    engine:     EngineType
     path:       string
     name:       string
 }
 
 type RenameItemType = {
-    engineType: EngineType
+    engine:     EngineType
     path:       string
     name:       string
     newName:    string
 }
 
 type DeleteItemsType = {
-    engineType: EngineType
+    engine:     EngineType
     path:       string
     items:      string[]
 }
 
+type PrepareCopyItemsType = {
+    folderId:          string
+    sourceEngineType:  EngineType
+    sourcePath:        string
+    targetEngineType:  EngineType
+    targetPath:        string
+    Items:             string[]
+    move:              boolean
+}
+
 type CopyItemsType = {
     folderId:          string
+    sourcePath:        string
     sourceEngineType:  EngineType
     targetEngineType:  EngineType
     move:              boolean
@@ -219,6 +233,7 @@ export type RequestInput =
     | CreateFolderType
     | RenameItemType
     | DeleteItemsType
+    | PrepareCopyItemsType
     | CopyItemsType
     | PostCopyItemsType
 
