@@ -300,10 +300,22 @@ let prepareCopy items sourcePath targetPath =
 let copyItems id move conflictsExcluded=
     let subj = getEventSubject id               
 
-    let copyItem totalSize (item: string) =
+    let copyItem totalSize (item: CopyItem) =
+        subj.OnNext <| CopyProgress { 
+            CurrentFile = item.Path 
+            Total       = { 
+                    Total = totalSize
+                    Current = 333
+                }
+            Current     = { 
+                    Total = totalSize
+                    Current = 33
+                }
+        }
+        
         System.Threading.Thread.Sleep 3000
         subj.OnNext <| CopyProgress { 
-            CurrentFile = item 
+            CurrentFile = item.Path 
             Total       = { 
                     Total = totalSize
                     Current = 333
@@ -316,6 +328,14 @@ let copyItems id move conflictsExcluded=
         ()
 
     let copyItems () = 
+    // TODO show path in Dialog
+    // TODO send item name with sub path, source folder path excluded
+    // TODO conflictsExcluded
+    // TODO send progress
+    // TODO Cancel copy
+    // TODO move
+        copyItemArray
+        |> Array.iter (copyItem 456L)
         // let getSize path = FileInfo(combine2Pathes sourcePath path).Length
 
         // let getTotalSize arr =
