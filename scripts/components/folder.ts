@@ -10,7 +10,7 @@ import {
 import { addRemotes, initRemotes } from '../remotes'
 import { DialogBox, Result } from 'web-dialog-box'
 import { CopyConflicts } from './copyconflicts'
-import { CopyProgressDialog } from './copyprogress'
+import { CopyProgress, CopyProgressDialog } from './copyprogress'
 
 var latestRequest = 0
 
@@ -41,17 +41,6 @@ type EnhancedInfo = {
 
 type GetItemsFinished = {
     Case: "GetItemsFinished"
-}
-
-type CopyProgressInfo = {
-    total:   number
-    current: number
-}
-
-type CopyProgress = {
-    currentFile: string
-    total:       CopyProgressInfo
-    current:     CopyProgressInfo
 }
 
 type CopyProgressType = {
@@ -673,7 +662,6 @@ export class Folder extends HTMLElement {
                     slide: fromLeft,
                     slideReverse: !fromLeft,
                     extended: "copy-progress",
-                    fullscreen: true,
                     btnCancel: true
                 })
             }
@@ -750,7 +738,7 @@ export class Folder extends HTMLElement {
                 this.disableSorting(false)
                 break
             case "CopyProgress":
-                this.copyProgress?.setFileName(evt.Fields[0].currentFile)
+                this.copyProgress?.setValue(evt.Fields[0])
                 break
         }
     }

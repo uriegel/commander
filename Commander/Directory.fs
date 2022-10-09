@@ -323,8 +323,6 @@ let copyItems id sourcePath move conflictsExcluded=
         ()
 
     let copyItems () = 
-    // TODO send progress one file and display it in progress bar
-    // TODO send progresses several files, use iter
     // TODO send progresses several files, use fold
     // TODO send progresses several files with total progress, use fold
     // TODO conflictsExcluded
