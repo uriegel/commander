@@ -326,7 +326,7 @@ let copyItems id sourcePath move conflictsExcluded=
                     CurrentFile = itemPath  
                     Total = { 
                         Total = totalSize
-                        Current = 333
+                        Current = total + processedBytes
                     }
                     Current = { 
                         Total = item.Size
@@ -342,7 +342,7 @@ let copyItems id sourcePath move conflictsExcluded=
                     progress processedBytes
                     copy processedBytes
                 else
-                    bytesCopied
+                    bytesCopied + total
             copy 0 
         
         let size = copy ()
@@ -357,22 +357,15 @@ let copyItems id sourcePath move conflictsExcluded=
         size
 
     let copyItems () = 
-    // TODO send progresses several files with total progress, use fold
     // TODO Cancel copy
     // TODO move
+        let totalSize = 
+            copyItemArray
+            |> Array.fold (fun acc item -> item.Size + acc) 0L
+
         copyItemArray
-        |> Array.fold (copyItem sourcePath 456L) 0L
+        |> Array.fold (copyItem sourcePath totalSize) 0L
         |> ignore
-        // let getSize path = FileInfo(combine2Pathes sourcePath path).Length
-
-        // let getTotalSize arr =
-        //     arr |> Array.fold (fun acc charge -> acc + getSize charge) 0L 
-
-        // let totalSize = items |> getTotalSize
-        
-        // items 
-        // |> Array.iter (copyItem totalSize)
-        ""
     
     let a () = exceptionToResult copyItems
     a

@@ -185,3 +185,6 @@ body {
     height: 100%;
     position: relative;
 }
+.copy-progress-root {
+    min-width: 300px;
+}

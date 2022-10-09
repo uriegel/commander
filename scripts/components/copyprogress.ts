@@ -12,39 +12,44 @@ export type CopyProgress = {
 export class CopyProgressDialog extends HTMLElement {
     constructor() {
         super()
-        //const additionalStyle = `
         this.innerHTML = `
-            <div class='copy-progress-root' tabIndex=1>
+            <div class='copy-progress-root'>
                 <p>
                     <span class="fileName"></span>
                 </p>
                 <progress class="currentProgress" max="0" value="0"></progress>
+                <p>Gesamt:</p>
+                <progress class="totalProgress" max="0" value="0"></progress>
             </div`
         
         this.fileNameSpan = this.getElementsByClassName("fileName")[0] as HTMLSpanElement
         this.currentProgress = this.getElementsByClassName("currentProgress")[0] as HTMLProgressElement
+        this.totalProgress = this.getElementsByClassName("totalProgress")[0] as HTMLProgressElement
     }
 
     createdCallback() {
         this.tabIndex = 0
     }
 
-    override focus() { 
-        this.tabIndex = 0
-    }
+    // override focus() { 
+    //     this.tabIndex = 0
+    // }
 
-    override blur() { 
-        this.tabIndex = 0
-    }
+    // override blur() { 
+    //     this.tabIndex = 0
+    // }
 
     setValue(value: CopyProgress) {
         this.fileNameSpan.innerText = value.currentFile
         this.currentProgress.max = value.current.total
         this.currentProgress.value = value.current.current
+        this.totalProgress.max = value.total.total
+        this.totalProgress.value = value.total.current
     }
 
     private fileNameSpan: HTMLSpanElement
     private currentProgress: HTMLProgressElement
+    private totalProgress: HTMLProgressElement
 }
 
 customElements.define('copy-progress', CopyProgressDialog)
