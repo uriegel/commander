@@ -300,7 +300,7 @@ let prepareCopy items sourcePath targetPath =
 let copyItems id sourcePath move conflictsExcluded=
     let subj = getEventSubject id               
 
-    let copyItem sourcePath totalSize (item: CopyItem) =
+    let copyItem sourcePath totalSize total item =
 
         let itemPath = item.Path |> String.substring ((sourcePath |> String.length) + 1)
 
@@ -320,17 +320,17 @@ let copyItems id sourcePath move conflictsExcluded=
 
         [|0L..10L|]
         |> Array.iter progress
-        ()
+        total + 9L
 
     let copyItems () = 
-    // TODO send progresses several files, use fold
     // TODO send progresses several files with total progress, use fold
     // TODO conflictsExcluded
     // TODO Cancel copy
     // TODO copy file
     // TODO move
         copyItemArray
-        |> Array.iter (copyItem sourcePath 456L)
+        |> Array.fold (copyItem sourcePath 456L) 0L
+        |> ignore
         // let getSize path = FileInfo(combine2Pathes sourcePath path).Length
 
         // let getTotalSize arr =
