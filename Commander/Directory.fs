@@ -199,6 +199,7 @@ type TwoFilePath = {
 }
 
 open Result 
+open FSharpTools
 
 let renameItem = 
     
@@ -228,10 +229,11 @@ type ConflictItem = {
 }
 
 type CopyItem = {
-    Path: string
-    Time: DateTime
-    Size: int64
-    Conflict: ConflictItem option
+    Path:       string
+    TargetPath: string
+    Time:       DateTime
+    Size:       int64
+    Conflict:   ConflictItem option
 }
 
 let mutable copyItemArray: CopyItem[] = Array.empty<CopyItem>
@@ -258,11 +260,14 @@ let prepareCopy items sourcePath targetPath =
         let targetSubPath = 
             info.FullName 
             |> String.substring ((sourcePath |> String.length) + 1) 
+
         let targetItem = 
             targetSubPath 
             |> combine2Pathes targetPath
+
         {
             Path = info.FullName
+            TargetPath = targetItem
             Time = info.LastWriteTime
             Size = info.Length
             Conflict = 
@@ -302,9 +307,19 @@ let copyItems id sourcePath move conflictsExcluded=
 
     let copyItem sourcePath totalSize total item =
 
-        let itemPath = item.Path |> String.substring ((sourcePath |> String.length) + 1)
+        let itemPath = 
+            item.Path 
+            |> String.substring ((sourcePath |> String.length) + 1)
 
-        let progress i = 
+        let buffer: byte array = Array.zeroCreate 8192
+        // Functional with Result
+        use file = File.OpenRead item.Path
+        let fi = FileInfo item.TargetPath
+        if not (Directory.existsDirectory fi.DirectoryName) then
+            Directory.CreateDirectory fi.DirectoryName |> ignore
+        use targetFile = File.OpenWrite item.TargetPath
+
+        let progress processedBytes = 
             subj.OnNext <| CopyProgress { 
                 CurrentFile = itemPath  
                 Total       = { 
@@ -313,20 +328,25 @@ let copyItems id sourcePath move conflictsExcluded=
                     }
                 Current     = { 
                         Total = item.Size
-                        Current = item.Size *  i / 10L
+                        Current = processedBytes
                     }
             }
-            System.Threading.Thread.Sleep 100
 
-        [|0L..10L|]
-        |> Array.iter progress
-        total + 9L
+        let rec copy (bytesCopied: int64) = 
+            let read = file.Read (buffer, 0, buffer.Length)
+            if read > 0 then
+                targetFile.Write (buffer, 0, read)
+                let processedBytes = bytesCopied + int64(read)
+                progress processedBytes
+                copy processedBytes
+            else
+                bytesCopied
+        copy 0
 
     let copyItems () = 
+    // TODO Copy Attributes    
     // TODO send progresses several files with total progress, use fold
-    // TODO conflictsExcluded
     // TODO Cancel copy
-    // TODO copy file
     // TODO move
         copyItemArray
         |> Array.fold (copyItem sourcePath 456L) 0L
