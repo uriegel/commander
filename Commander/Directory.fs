@@ -303,36 +303,33 @@ let copyItems id sourcePath move conflictsExcluded=
     let copyItem sourcePath totalSize (item: CopyItem) =
 
         let itemPath = item.Path |> String.substring ((sourcePath |> String.length) + 1)
-        subj.OnNext <| CopyProgress { 
-            CurrentFile = itemPath  
-            Total       = { 
-                    Total = totalSize
-                    Current = 333
-                }
-            Current     = { 
-                    Total = totalSize
-                    Current = 33
-                }
-        }
-        
-        System.Threading.Thread.Sleep 3000
-        subj.OnNext <| CopyProgress { 
-            CurrentFile = itemPath
-            Total       = { 
-                    Total = totalSize
-                    Current = 333
-                }
-            Current     = { 
-                    Total = totalSize
-                    Current = 33
-                }
-        }
+
+        let progress i = 
+            subj.OnNext <| CopyProgress { 
+                CurrentFile = itemPath  
+                Total       = { 
+                        Total = totalSize
+                        Current = 333
+                    }
+                Current     = { 
+                        Total = item.Size
+                        Current = item.Size *  i / 10L
+                    }
+            }
+            System.Threading.Thread.Sleep 100
+
+        [|0L..10L|]
+        |> Array.iter progress
         ()
 
     let copyItems () = 
+    // TODO send progress one file and display it in progress bar
+    // TODO send progresses several files, use iter
+    // TODO send progresses several files, use fold
+    // TODO send progresses several files with total progress, use fold
     // TODO conflictsExcluded
-    // TODO send progress
     // TODO Cancel copy
+    // TODO copy file
     // TODO move
         copyItemArray
         |> Array.iter (copyItem sourcePath 456L)
