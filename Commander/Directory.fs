@@ -317,34 +317,46 @@ let copyItems id sourcePath move conflictsExcluded=
         let fi = FileInfo item.TargetPath
         if not (Directory.existsDirectory fi.DirectoryName) then
             Directory.CreateDirectory fi.DirectoryName |> ignore
-        use targetFile = File.OpenWrite item.TargetPath
 
-        let progress processedBytes = 
-            subj.OnNext <| CopyProgress { 
-                CurrentFile = itemPath  
-                Total       = { 
+        let copy () = 
+            use targetFile = File.OpenWrite item.TargetPath
+
+            let progress processedBytes = 
+                subj.OnNext <| CopyProgress { 
+                    CurrentFile = itemPath  
+                    Total = { 
                         Total = totalSize
                         Current = 333
                     }
-                Current     = { 
+                    Current = { 
                         Total = item.Size
                         Current = processedBytes
                     }
-            }
+                }
 
-        let rec copy (bytesCopied: int64) = 
-            let read = file.Read (buffer, 0, buffer.Length)
-            if read > 0 then
-                targetFile.Write (buffer, 0, read)
-                let processedBytes = bytesCopied + int64(read)
-                progress processedBytes
-                copy processedBytes
-            else
-                bytesCopied
-        copy 0
+            let rec copy (bytesCopied: int64) = 
+                let read = file.Read (buffer, 0, buffer.Length)
+                if read > 0 then
+                    targetFile.Write (buffer, 0, read)
+                    let processedBytes = bytesCopied + int64(read)
+                    progress processedBytes
+                    copy processedBytes
+                else
+                    bytesCopied
+            copy 0 
+        
+        let size = copy ()
+
+        let ct = File.GetCreationTime item.Path
+        File.SetCreationTime (item.TargetPath, ct)
+        let lwt = File.GetLastWriteTime item.Path
+        File.SetLastWriteTime (item.TargetPath, lwt)
+        let attributes = File.GetAttributes item.Path
+        File.SetAttributes (item.TargetPath, attributes)
+        
+        size
 
     let copyItems () = 
-    // TODO Copy Attributes    
     // TODO send progresses several files with total progress, use fold
     // TODO Cancel copy
     // TODO move

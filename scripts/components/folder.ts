@@ -670,6 +670,7 @@ export class Folder extends HTMLElement {
             sourceEngineType: this.engine,
             targetEngineType: other.engine,
         })
+        other.reloadItems()
     }
 
     // TODO Copy/Move Show Copy Dialog with overall and current progress /Sleep instead of copy:
