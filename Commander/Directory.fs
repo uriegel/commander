@@ -357,6 +357,7 @@ let copyItems id sourcePath move conflictsExcluded=
         size
 
     let copyItems () = 
+    // TODO Möchtest du die folgenden Dateien  ü b e r s c h r e i b e n ?
     // TODO progress control width
     // TODO Cancel copy, esc
     // TODO move (Delete files and Directories)
