@@ -15,3 +15,11 @@ let getSafeFilesFromInfo (dirInfo: DirectoryInfo) = getSafeArray dirInfo.GetFile
 
 let getSafeDirectories = InfoFromPath >> getSafeDirectoriesFromInfo
 let getSafeFiles = InfoFromPath >> getSafeFilesFromInfo
+
+let createFile ignoreReadonly path = 
+    try 
+        File.Create path
+    with
+    | :? System.UnauthorizedAccessException when ignoreReadonly -> 
+        File.SetAttributes (path, FileAttributes.Normal)
+        File.Create path

@@ -209,7 +209,7 @@ let renameItem =
         exceptionToResult move
 
     let rename param =
-        let combinePath = Directory.combine2Pathes param.Path
+        let combinePath = combine2Pathes param.Path
     
         move (combinePath param.Name, combinePath param.NewName)
 
@@ -250,7 +250,7 @@ let prepareCopy items sourcePath targetPath =
         }
 
     let getFileInfo path name = 
-        let file = Directory.combine2Pathes path name
+        let file = combine2Pathes path name
         if File.Exists file then
             seq { FileInfo file }
         else
@@ -315,11 +315,11 @@ let copyItems id sourcePath move conflictsExcluded=
         // Functional with Result
         use file = File.OpenRead item.Path
         let fi = FileInfo item.TargetPath
-        if not (Directory.existsDirectory fi.DirectoryName) then
+        if not (existsDirectory fi.DirectoryName) then
             Directory.CreateDirectory fi.DirectoryName |> ignore
 
         let copy () = 
-            use targetFile = File.OpenWrite item.TargetPath
+            use targetFile = createFile true item.TargetPath
 
             let progress processedBytes = 
                 subj.OnNext <| CopyProgress { 
