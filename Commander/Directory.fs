@@ -335,7 +335,6 @@ let copyItems id sourcePath move conflictsExcluded=
 
             let rec copy (bytesCopied: int64) = 
                 let read = file.Read (buffer, 0, buffer.Length)
-                System.Threading.Thread.Sleep 1000
                 if read > 0 then
                     targetFile.Write (buffer, 0, read)
                     let processedBytes = bytesCopied + int64(read)
@@ -357,7 +356,6 @@ let copyItems id sourcePath move conflictsExcluded=
         size
 
     let copyItems () = 
-    // TODO Möchtest du die folgenden Dateien  ü b e r s c h r e i b e n ?
     // TODO progress control width
     // TODO Cancel copy, esc
     // TODO move (Delete files and Directories)

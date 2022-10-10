@@ -125,6 +125,7 @@ type GetActionsTextsType = {
     type:             ActionType
     dirs:             number
     files:            number
+    conflicts?:       boolean
 }
 
 export enum ItemType {

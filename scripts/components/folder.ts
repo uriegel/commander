@@ -590,7 +590,8 @@ export class Folder extends HTMLElement {
             otherEngineType: other.engine,
             type: move ? ActionType.Move : ActionType.Copy,
             dirs,
-            files
+            files,
+            conflicts: conflicts.length > 0
         })
         if (!texts.result) {
             await request<Nothing>('postcopyitems', {
@@ -658,7 +659,7 @@ export class Folder extends HTMLElement {
             
             async function showProgress() {
                 await dialog.show({
-                    text: "Kopierfortschritt",
+                    text: move ? "Fortschritt beim Verschieben" : "Fortschritt beim Kopieren",
                     slide: fromLeft,
                     slideReverse: !fromLeft,
                     extended: "copy-progress",

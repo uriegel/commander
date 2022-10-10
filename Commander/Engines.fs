@@ -91,27 +91,29 @@ let getFilePath (param: GetFile) body =
 let getActionsTexts (param: GetActionsTexts) = 
 
     let getFilesOrDirs () = 
-        match param.Dirs, param.files with
+        match param.Dirs, param.Files with
         | dirs, 0 when dirs = 1   -> "das Verzeichnis" 
         | dirs, 0                 -> "die Verzeichnisse" 
         | 0, files when files = 1 -> "die Datei" 
         | 0, files                -> "die Dateien" 
-        | _                       -> "die Einträge" 
+        | _                             -> "die Einträge" 
 
     let getRemotes () = 
         match param.Dirs with
         | 1 -> "den entfernten Rechner" 
         | _ -> "die entfernte Rechner" 
 
-    match param.EngineType, param.OtherEngineType, param.Type with
-    | EngineType.Directory, _, ActionType.CreateFolder                  -> Some "Neuen Ordner anlegen"
-    | EngineType.Directory, _, ActionType.Delete                        -> Some (sprintf "Möchtest Du %s löschen?"    <| getFilesOrDirs ())
-    | EngineType.Directory, Some(EngineType.Directory), ActionType.Copy -> Some (sprintf "Möchtest Du %s kopieren?"   <| getFilesOrDirs ())
-    | EngineType.Directory, Some(EngineType.Directory), ActionType.Move -> Some (sprintf "Möchtest Du %s verschieben?"<| getFilesOrDirs ())
-    | EngineType.Directory, _, ActionType.Rename                        -> Some (sprintf "Möchtest Du %s umbenennen?" <| getFilesOrDirs ())
-    | EngineType.Remotes, _, ActionType.Delete                          -> Some (sprintf "Möchtest Du %s löschen?"    <| getRemotes ())
-    | EngineType.Android, _, ActionType.Delete                          -> Some (sprintf "Möchtest Du %s löschen?"    <| getFilesOrDirs ())
-    | _                                                                 -> None
+    match param.EngineType, param.OtherEngineType, param.Type, param.Conflicts with
+    | EngineType.Directory, _, ActionType.CreateFolder, _                          -> Some "Neuen Ordner anlegen"
+    | EngineType.Directory, _, ActionType.Delete, _                                -> Some (sprintf "Möchtest Du %s löschen?"    <| getFilesOrDirs ())
+    | EngineType.Directory, Some(EngineType.Directory), ActionType.Copy, Some true -> Some (sprintf "Einträge überschreiben beim Kopieren?")
+    | EngineType.Directory, Some(EngineType.Directory), ActionType.Copy, _         -> Some (sprintf "Möchtest Du %s kopieren?"   <| getFilesOrDirs ())
+    | EngineType.Directory, Some(EngineType.Directory), ActionType.Move, Some true -> Some (sprintf "Einträge überschreiben beim Verschieben?")
+    | EngineType.Directory, Some(EngineType.Directory), ActionType.Move, _         -> Some (sprintf "Möchtest Du %s verschieben?"<| getFilesOrDirs ())
+    | EngineType.Directory, _, ActionType.Rename, _                                -> Some (sprintf "Möchtest Du %s umbenennen?" <| getFilesOrDirs ())
+    | EngineType.Remotes, _, ActionType.Delete, _                                  -> Some (sprintf "Möchtest Du %s löschen?"    <| getRemotes ())
+    | EngineType.Android, _, ActionType.Delete, _                                  -> Some (sprintf "Möchtest Du %s löschen?"    <| getFilesOrDirs ())
+    | _                                                                            -> None
     
 
 let createfolder (param: CreateFolderParam) =

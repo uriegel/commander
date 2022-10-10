@@ -33,7 +33,8 @@ type GetActionsTexts = {
     OtherEngineType: EngineType option
     Type:            ActionType
     Dirs:            int
-    files:           int
+    Files:           int
+    Conflicts:       bool option
 }
 
 type GetFile = {
