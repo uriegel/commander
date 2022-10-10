@@ -357,8 +357,9 @@ let copyItems id sourcePath move conflictsExcluded=
         size
 
     let copyItems () = 
+    // TODO excludeConflicts
     // TODO Cancel copy
-    // TODO move
+    // TODO move (Delete files and Directories)
         let totalSize = 
             copyItemArray
             |> Array.fold (fun acc item -> item.Size + acc) 0L
