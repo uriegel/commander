@@ -306,7 +306,6 @@ let copyItems id sourcePath move conflictsExcluded=
     let subj = getEventSubject id               
 
     let copyItem sourcePath totalSize total item =
-
         let itemPath = 
             item.Path 
             |> String.substring ((sourcePath |> String.length) + 1)
@@ -336,6 +335,7 @@ let copyItems id sourcePath move conflictsExcluded=
 
             let rec copy (bytesCopied: int64) = 
                 let read = file.Read (buffer, 0, buffer.Length)
+                System.Threading.Thread.Sleep 1000
                 if read > 0 then
                     targetFile.Write (buffer, 0, read)
                     let processedBytes = bytesCopied + int64(read)
@@ -357,14 +357,22 @@ let copyItems id sourcePath move conflictsExcluded=
         size
 
     let copyItems () = 
-    // TODO excludeConflicts
-    // TODO Cancel copy
+    // TODO progress control width
+    // TODO Cancel copy, esc
     // TODO move (Delete files and Directories)
+
+        let itemsToCopy = 
+            if conflictsExcluded then 
+                copyItemArray
+                |> Array.filter (fun n -> n.Conflict.IsNone)
+            else
+                copyItemArray
+
         let totalSize = 
-            copyItemArray
+            itemsToCopy
             |> Array.fold (fun acc item -> item.Size + acc) 0L
 
-        copyItemArray
+        itemsToCopy
         |> Array.fold (copyItem sourcePath totalSize) 0L
         |> ignore
     
