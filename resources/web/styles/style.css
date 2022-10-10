@@ -188,3 +188,7 @@ body {
 .copy-progress-root {
     min-width: 300px;
 }
+
+.copy-progress-root progress {
+    width: 100%;
+}
