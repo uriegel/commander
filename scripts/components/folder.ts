@@ -671,23 +671,10 @@ export class Folder extends HTMLElement {
             sourceEngineType: this.engine,
             targetEngineType: other.engine,
         })
+        this.setFocus()
         other.reloadItems()
     }
 
-    // TODO Copy/Move Show Copy Dialog with overall and current progress /Sleep instead of copy:
-
-    // TODO Dialog with List of files yet to copy
-    // TODO above the List Progress Bar
-    // TODO when finished one File remove it from the list
-
-    // TODO Show Dialog with files to copy
-    // TODO Send SSE with progress, file name 
-
-    // TODO Copy/Move Copy Dialog Cancel
-    // TODO Copy/Move Copy files with progress
-    // TODO Copy/Move Compare copied
-    // TODO Copy/Move Conflicts: default yes or no
-    // TODO Copy/Move with admin commander: admincommander requests (post) progress to commander
     // TODO Copy/Move Conflicts: Version
 
     private checkResult(error: IOError) {

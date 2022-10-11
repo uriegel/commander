@@ -27,18 +27,6 @@ export class CopyProgressDialog extends HTMLElement {
         this.totalProgress = this.getElementsByClassName("totalProgress")[0] as HTMLProgressElement
     }
 
-    createdCallback() {
-        this.tabIndex = 0
-    }
-
-    // override focus() { 
-    //     this.tabIndex = 0
-    // }
-
-    // override blur() { 
-    //     this.tabIndex = 0
-    // }
-
     setValue(value: CopyProgress) {
         this.fileNameSpan.innerText = value.currentFile
         this.currentProgress.max = value.current.total

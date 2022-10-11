@@ -357,7 +357,9 @@ let copyItems id sourcePath move conflictsExcluded=
         size
 
     let copyItems () = 
-    // TODO Cancel copy, esc
+    // TODO Cancel copy, delete already copied content
+    // TODO Drag n drop
+    // TODO Copy paste?
     // TODO move (Delete files and Directories)
 
         let itemsToCopy = 
