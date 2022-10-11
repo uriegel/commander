@@ -1,15 +1,15 @@
 import 'virtual-table-component'
 import './copyconflicts'
 import './copyprogress'
+import { copyItems } from '../copy'
 import { TableItem, VirtualTable } from 'virtual-table-component'
 import { compose } from '../functional'
 import {
-    ActionType, Column, ColumnsType, ConflictItem, EngineType, GetActionTextResult, GetFilePathResult,
-    GetItemResult, IOError, IOErrorResult, ItemType, Nothing, request
+    ActionType, Column, ColumnsType, EngineType, GetActionTextResult, GetFilePathResult,
+    GetItemResult, IOError, IOErrorResult, ItemType, request
 } from '../requests'
 import { addRemotes, initRemotes } from '../remotes'
 import { DialogBox, Result } from 'web-dialog-box'
-import { CopyConflicts } from './copyconflicts'
 import { CopyProgress, CopyProgressDialog } from './copyprogress'
 
 var latestRequest = 0
@@ -122,6 +122,13 @@ export function formatSize(size: number) {
     return sizeStr    
 }
 
+export function getSelectedItemsOverview(items: FolderItem[]) {
+    const dirs = items.filter(n => n.isDirectory).length
+    const files = items.filter(n => !n.isDirectory).length
+    return [dirs, files]
+}
+
+
 export class Folder extends HTMLElement {
     constructor() {
         super()
@@ -142,6 +149,7 @@ export class Folder extends HTMLElement {
         if (sbr)
             this.table.setAttribute("scrollbar-right", sbr)
         this.pathInput = this.getElementsByTagName("INPUT")[0]! as HTMLInputElement
+        this.copyProgress = document.getElementById('copy-progress') as CopyProgressDialog
         initRemotes(this.folderId)
 
         this.table.renderRow = (item, tr) => {
@@ -473,7 +481,7 @@ export class Folder extends HTMLElement {
 
     async deleteSelectedItems() {
         var items = this.getSelectedItems()
-        const [dirs, files] = this.getSelectedItemsOverview(items)
+        const [dirs, files] = getSelectedItemsOverview(items)
         let texts = await request<GetActionTextResult>("getactionstexts", {
             engineType: this.engine,
             type:       ActionType.Delete,
@@ -501,7 +509,7 @@ export class Folder extends HTMLElement {
 
     async onRename() {
         var items = this.getSelectedItems()
-        const [dirs, files] = this.getSelectedItemsOverview(items)
+        const [dirs, files] = getSelectedItemsOverview(items)
         if (dirs + files != 1)
             return
         let texts = await request<GetActionTextResult>("getactionstexts", {
@@ -543,7 +551,7 @@ export class Folder extends HTMLElement {
     
     async createFolder() {
         var items = this.getSelectedItems()
-        const [dirs, files] = this.getSelectedItemsOverview(items)
+        const [dirs, files] = getSelectedItemsOverview(items)
         let texts = await request<GetActionTextResult>("getactionstexts", {
             engineType: this.engine,
             type:       ActionType.CreateFolder,
@@ -573,105 +581,16 @@ export class Folder extends HTMLElement {
     async copy(other: Folder, fromLeft: boolean, move?: boolean) {
         // TODO ROP
         var items = this.getSelectedItems()
-        const [dirs, files] = this.getSelectedItemsOverview(items)
-        if (dirs + files == 0)
-            return
 
-        let conflicts = await request<ConflictItem[]>("preparecopy", {
-            folderId:         this.id,
-            sourceEngineType: this.engine,
-            sourcePath:       this.path,
-            targetEngineType: other.engine,
-            targetPath:       other.path,
-            items:            items.map(n => n.name)
-        })
+        await copyItems(this.id, e => this.checkResult(e), move ?? false,
+            fromLeft,
+            this.engine,
+            other.engine,
+            this.path,
+            other.path,
+            items
+        )
 
-        let texts = await request<GetActionTextResult>("getactionstexts", {
-            engineType:      this.engine,
-            otherEngineType: other.engine,
-            type: move ? ActionType.Move : ActionType.Copy,
-            dirs,
-            files,
-            conflicts: conflicts.length > 0
-        })
-        if (!texts.result) {
-            await request<Nothing>('postcopyitems', {
-                sourceEngineType: this.engine,
-                targetEngineType: other.engine,
-            })
-            return
-        }
-
-        const settings = conflicts.length == 0
-            ? {
-                text: texts.result,
-                slide: fromLeft,
-                slideReverse: !fromLeft,
-                btnCancel: true,
-                btnOk: true,
-                defBtnOk: true
-            }
-            : {
-                text: texts.result,
-                slide: fromLeft,
-                slideReverse: !fromLeft,
-                btnCancel: true,
-                extended: "copy-conflicts",
-                btnYes: true,
-                btnNo: true,
-                fullscreen: true,
-                defBtnNo: true
-            }
-        
-        if (conflicts.length > 0) {
-            const copyConflicts = document.getElementById('copy-conflicts') as CopyConflicts
-            copyConflicts.setItems(conflicts)
-        }
-       
-        const res = await dialog.show(settings)
-        this.setFocus()
-        if (res.result == Result.No) {
-            items = items.filter(n => conflicts.find(e => e.conflict == n.name) == undefined)
-            if (items.length == 0) {
-                await request<Nothing>('postcopyitems', {
-                    sourceEngineType: this.engine,
-                    targetEngineType: other.engine,
-                })
-                return
-            }
-        }
-        if (res.result == Result.Ok || res.result == Result.No || res.result == Result.Yes) {
-            showProgress()
-
-            this.copyProgress = document.getElementById('copy-progress') as CopyProgressDialog
-
-            const ioResult = await request<IOErrorResult>("copyitems", {
-                folderId:         this.id,
-                sourcePath:       this.path,
-                sourceEngineType: this.engine,
-                targetEngineType: other.engine,
-                move,
-                conflictsExcluded: res.result == Result.No
-            })
-
-            dialog.closeDialog(Result.Ok)
-
-            this.checkResult(ioResult.error) 
-            
-            async function showProgress() {
-                await dialog.show({
-                    text: move ? "Fortschritt beim Verschieben" : "Fortschritt beim Kopieren",
-                    slide: fromLeft,
-                    slideReverse: !fromLeft,
-                    extended: "copy-progress",
-                    btnCancel: true
-                })
-            }
-        }
-        await request<Nothing>('postcopyitems', {
-            sourceEngineType: this.engine,
-            targetEngineType: other.engine,
-        })
         this.setFocus()
         other.reloadItems()
     }
@@ -811,17 +730,11 @@ export class Folder extends HTMLElement {
             : versionLeft.build - versionRight.build
     }
 
-    private getSelectedItemsOverview(items: FolderItem[]) {
-        const dirs = items.filter(n => n.isDirectory).length
-        const files = items.filter(n => !n.isDirectory).length
-        return [dirs, files]
-    }
-
     private source: EventSource
     private table: VirtualTable<FolderItem>
     private folderRoot: HTMLElement
     private folderId = ""
-    private copyProgress: CopyProgressDialog | null = null
+    private copyProgress: CopyProgressDialog
     private items: FolderItem[] = []
     private backtrack: string[] = []
     private backPosition = -1
