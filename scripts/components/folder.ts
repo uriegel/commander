@@ -464,6 +464,7 @@ export class Folder extends HTMLElement {
             evt.preventDefault()
             this.dispatchEvent(new CustomEvent('dragAndDrop', { detail: this.dropEffect == "move" }))
         }
+        console.log("dropped", evt.dataTransfer?.files)
         this.folderRoot.classList.remove("isDragging")
     }
 
