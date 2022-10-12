@@ -358,7 +358,7 @@ let copyItems id sourcePath move conflictsExcluded=
 
     let copyItems () = 
     // TODO Cancel copy, delete already copied content
-    // TODO Drag n drop: get FileItem[] from server and basePath, get other folder, replace this.path  with basePath
+    // TODO Drag n drop: get FileItem[] from server and basePath (parent directory of file or directory), get other folder, replace this.path  with basePath
     // TODO Drag n drop: enterDrag
     // TODO Copy paste?
     // TODO move (Delete files and Directories)
