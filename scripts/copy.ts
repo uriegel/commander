@@ -1,4 +1,5 @@
 import { DialogBox, Result } from 'web-dialog-box'
+import { forceClosing } from './commander'
 import { CopyConflicts } from './components/copyconflicts'
 import { FolderItem, getSelectedItemsOverview } from './components/folder'
 import { ActionType, ConflictItem, EngineType, GetActionTextResult, IOError, IOErrorResult, Nothing, request } from './requests'
@@ -85,13 +86,7 @@ export async function copyItems(
     }
 
     if (res.result == Result.Ok || res.result == Result.No || res.result == Result.Yes) {
-        showProgress().then(res => {
-            if (res.result == Result.Cancel)
-                request<Nothing>('cancelcopy', {
-                    sourceEngineType,
-                    targetEngineType
-                })
-        })
+        showProgress()
 
         const ioResult = await request<IOErrorResult>("copyitems", {
             folderId,
@@ -104,16 +99,32 @@ export async function copyItems(
 
         dialog.closeDialog(Result.Ok)
 
+        if (closeApp) {
+            forceClosing()
+            window.close()
+        }
+
         checkResult(ioResult.error) 
         
-        function showProgress() {
-            return dialog.show({
+        async function showProgress() {
+            isCopying = true
+            let res = await dialog.show({
                 text: move ? "Fortschritt beim Verschieben" : "Fortschritt beim Kopieren",
-                slide: fromLeft,
                 slideReverse: !fromLeft,
                 extended: "copy-progress",
                 btnCancel: true
             })
+            if (res.result == Result.Cancel) {
+                request<Nothing>('cancelcopy', {
+                    sourceEngineType,
+                    targetEngineType
+                })
+                await dialog.show({
+                    text: "Vorgang wird abgebrochen...",
+                    slideReverse: !fromLeft
+                })
+            }         
+            isCopying = false
         }
     
         await request<Nothing>('postcopyitems', {
@@ -123,3 +134,14 @@ export async function copyItems(
     }
 }
 
+export function wantClose() {
+    closeApp = true
+    if (isCopying) {
+        dialog.closeDialog(Result.Cancel)
+        return false
+    } else
+        return true
+}
+
+var isCopying = false
+var closeApp = false

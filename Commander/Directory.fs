@@ -325,37 +325,37 @@ let copyItems id sourcePath move conflictsExcluded=
     let subj = getEventSubject id               
 
     let copyItem sourcePath totalSize total item =
-        let itemPath = 
-            item.Path 
-            |> String.substring ((sourcePath |> String.length) + 1)
+        if copyItemArray.Length = 0 then
+            0L
+        else
+            let itemPath = 
+                item.Path 
+                |> String.substring ((sourcePath |> String.length) + 1)
 
-        let buffer: byte array = Array.zeroCreate 8192
-        // Functional with Result
-        use file = File.OpenRead item.Path
-        let fi = FileInfo item.TargetPath
-        if not (existsDirectory fi.DirectoryName) then
-            Directory.CreateDirectory fi.DirectoryName |> ignore
+            let buffer: byte array = Array.zeroCreate 8192
+            // Functional with Result
+            use file = File.OpenRead item.Path
+            let fi = FileInfo item.TargetPath
+            if not (existsDirectory fi.DirectoryName) then
+                Directory.CreateDirectory fi.DirectoryName |> ignore
 
-        let copy () = 
-            use targetFile = createFile true item.TargetPath
+            let copy () = 
+                use targetFile = createFile true item.TargetPath
 
-            let progress processedBytes = 
-                subj.OnNext <| CopyProgress { 
-                    CurrentFile = itemPath  
-                    Total = { 
-                        Total = totalSize
-                        Current = total + processedBytes
+                let progress processedBytes = 
+                    subj.OnNext <| CopyProgress { 
+                        CurrentFile = itemPath  
+                        Total = { 
+                            Total = totalSize
+                            Current = total + processedBytes
+                        }
+                        Current = { 
+                            Total = item.Size
+                            Current = processedBytes
+                        }
                     }
-                    Current = { 
-                        Total = item.Size
-                        Current = processedBytes
-                    }
-                }
 
-            let rec copy (bytesCopied: int64) = 
-                if copyItemArray.Length = 0 then
-                    0L
-                else
+                let rec copy (bytesCopied: int64) = 
                     let read = file.Read (buffer, 0, buffer.Length)
                     System.Threading.Thread.Sleep 100
                     if read > 0 then
@@ -365,23 +365,22 @@ let copyItems id sourcePath move conflictsExcluded=
                         copy processedBytes
                     else 
                         bytesCopied + total
-            copy 0 
+                copy 0 
         
-        let size = copy ()
+            let size = copy ()
 
-        let ct = File.GetCreationTime item.Path
-        File.SetCreationTime (item.TargetPath, ct)
-        let lwt = File.GetLastWriteTime item.Path
-        File.SetLastWriteTime (item.TargetPath, lwt)
-        let attributes = File.GetAttributes item.Path
-        File.SetAttributes (item.TargetPath, attributes)
-        
-        size
+            let ct = File.GetCreationTime item.Path
+            File.SetCreationTime (item.TargetPath, ct)
+            let lwt = File.GetLastWriteTime item.Path
+            File.SetLastWriteTime (item.TargetPath, lwt)
+            let attributes = File.GetAttributes item.Path
+            File.SetAttributes (item.TargetPath, attributes)
+            
+            size
 
     let copyItems () = 
-    // TODO Cancel copy, finish recent file copy, let Dialog open
     // TODO move (Delete files and Directories)
-    // TODO Drag n drop: dopy or move
+    // TODO Drag n drop: copy or move
     // TODO Drag n drop: drag to external copy/move
     // TODO Copy paste?
 

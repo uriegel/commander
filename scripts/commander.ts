@@ -12,6 +12,7 @@ import { request,  } from "./requests"
 import { refreshViewer, showViewer as viewer } from './viewer'
 import { ElectronTitlebar } from 'web-electron-titlebar'
 import { DialogBox, Result } from 'web-dialog-box'
+import { wantClose } from './copy'
 
 export function activateClass(element: HTMLElement, cls: string, activate: boolean) {
     if (activate != false)
@@ -19,6 +20,17 @@ export function activateClass(element: HTMLElement, cls: string, activate: boole
     else
         element.classList.remove(cls)
 }
+
+export function forceClosing() {  
+    forceClose = true
+}
+window.addEventListener('beforeunload', evt => {
+    if (!forceClose && !wantClose()) {
+        evt.preventDefault()
+        evt.returnValue = ""
+    }
+})
+var forceClose = false
 
 const dialog = document.querySelector('dialog-box') as DialogBox    
 
