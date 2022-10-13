@@ -135,6 +135,9 @@ let deleteItems (param: DeleteItemsParam) =
     | EngineType.Directory -> deleteItems <| getItems ()
     | _                    -> ""
 
+let prepareFileCopy (files: string[]) =
+    prepareFileCopy files
+
 let prepareCopy (param: PrepareCopyItemsParam) =
     match param.SourceEngineType, param.TargetEngineType with
     | EngineType.Directory, EngineType.Directory -> prepareCopy param.Items param.SourcePath param.TargetPath

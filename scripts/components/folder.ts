@@ -472,8 +472,22 @@ export class Folder extends HTMLElement {
             evt.preventDefault()
             this.dispatchEvent(new CustomEvent('dragAndDrop', { detail: this.dropEffect == "move" }))
         }
-        console.log("dropped", evt.dataTransfer?.files)
+
         this.folderRoot.classList.remove("isDragging")
+
+        console.log("evt.dataTransfer", evt.dataTransfer, evt.dataTransfer?.files)
+
+        let onDrop = async () => {
+            function *getItems() {
+                if (evt.dataTransfer?.files)
+                    for (let i = 0; i < evt.dataTransfer.files.length; i++)
+                        yield evt.dataTransfer!.files.item(i)!
+            }
+            let input = [...getItems()].map(n => (n as any).path)
+            await request<GetActionTextResult>("preparefilecopy", input)
+        }
+        
+        onDrop()
     }
 
     async extendedRename() {

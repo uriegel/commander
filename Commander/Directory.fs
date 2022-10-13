@@ -238,6 +238,9 @@ type CopyItem = {
 
 let mutable copyItemArray: CopyItem[] = Array.empty<CopyItem>
 
+let prepareFileCopy items =
+    ""
+
 let prepareCopy items sourcePath targetPath =
 
     let rec getFileInfoFromDir path =

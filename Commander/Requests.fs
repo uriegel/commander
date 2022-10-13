@@ -154,6 +154,15 @@ let deleteItems  () =
             return! Json.text result next ctx
         }              
 
+let prepareFileCopy () = 
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+            let! body = ctx.ReadBodyFromRequestAsync ()
+            let files = JsonSerializer.Deserialize<string[]>(body, getJsonOptions ())
+            let result = prepareFileCopy files
+            return! Json.text result next ctx
+        }              
+
 let prepareCopy () = 
     fun (next : HttpFunc) (ctx : HttpContext) ->
         task {

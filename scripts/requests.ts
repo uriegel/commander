@@ -16,6 +16,7 @@ type GetActionsTexts =    "getactionstexts"
 type CreateFolder =       "createfolder"
 type DeleteItems =        "deleteitems"
 type RenameItem =         "renameitem"
+type PrepareFileCopy =    "preparefilecopy"
 type PrepareCopy =        "preparecopy"
 type CopyItems =          "copyitems"
 type PostCopyItems =      "postcopyitems"
@@ -34,6 +35,7 @@ export type RequestType =
     | CreateFolder
     | DeleteItems
     | RenameItem
+    | PrepareFileCopy
     | PrepareCopy
     | CopyItems
     | PostCopyItems
@@ -237,6 +239,7 @@ export type RequestInput =
     | PrepareCopyItemsType
     | CopyItemsType
     | PostCopyItemsType
+    | string[]
 
 async function checkAdmin() {
     try {
