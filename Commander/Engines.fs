@@ -152,3 +152,8 @@ let postCopyItems (param: PostCopyItemsParam) =
     match param.SourceEngineType, param.TargetEngineType with
     | EngineType.Directory, EngineType.Directory -> postCopyItems ()
     | _ -> ""
+
+let cancelCopy (param: PostCopyItemsParam) = 
+    match param.SourceEngineType, param.TargetEngineType with
+    | EngineType.Directory, EngineType.Directory -> cancelCopy ()
+    | _ -> ""

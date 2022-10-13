@@ -190,6 +190,15 @@ let postCopyItems () =
             return! Json.text result next ctx
         }              
 
+let cancelCopy () =
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+            let! body = ctx.ReadBodyFromRequestAsync ()
+            let param = JsonSerializer.Deserialize<PostCopyItemsParam>(body, getJsonOptions ())
+            let result = cancelCopy param
+            return! Json.text result next ctx
+        }              
+
 let getImage (fileRequest: FileRequest) = 
     streamFile false fileRequest.Path None None
 

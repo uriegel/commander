@@ -20,6 +20,7 @@ type PrepareFileCopy =    "preparefilecopy"
 type PrepareCopy =        "preparecopy"
 type CopyItems =          "copyitems"
 type PostCopyItems =      "postcopyitems"
+type CancelCopy =         "cancelcopy"
 
 export type RequestType = 
     | ShowDevToolsType 
@@ -39,6 +40,7 @@ export type RequestType =
     | PrepareCopy
     | CopyItems
     | PostCopyItems
+    | CancelCopy 
 
 type Empty = {
     empty?: string

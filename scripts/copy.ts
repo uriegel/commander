@@ -73,7 +73,6 @@ export async function copyItems(
     }
 
     const res = await dialog.show(settings)
-    //this.setFocus()
     if (res.result == Result.No) {
         items = items.filter(n => conflicts.find(e => e.conflict == n.name) == undefined)
         if (items.length == 0) {
@@ -86,7 +85,13 @@ export async function copyItems(
     }
 
     if (res.result == Result.Ok || res.result == Result.No || res.result == Result.Yes) {
-        showProgress()
+        showProgress().then(res => {
+            if (res.result == Result.Cancel)
+                request<Nothing>('cancelcopy', {
+                    sourceEngineType,
+                    targetEngineType
+                })
+        })
 
         const ioResult = await request<IOErrorResult>("copyitems", {
             folderId,
@@ -101,8 +106,8 @@ export async function copyItems(
 
         checkResult(ioResult.error) 
         
-        async function showProgress() {
-            await dialog.show({
+        function showProgress() {
+            return dialog.show({
                 text: move ? "Fortschritt beim Verschieben" : "Fortschritt beim Kopieren",
                 slide: fromLeft,
                 slideReverse: !fromLeft,
@@ -110,7 +115,7 @@ export async function copyItems(
                 btnCancel: true
             })
         }
-
+    
         await request<Nothing>('postcopyitems', {
             sourceEngineType,
             targetEngineType

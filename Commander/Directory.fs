@@ -198,7 +198,6 @@ type TwoFilePath = {
 }
 
 open Result 
-open FSharpTools
 
 let renameItem = 
     
@@ -354,15 +353,18 @@ let copyItems id sourcePath move conflictsExcluded=
                 }
 
             let rec copy (bytesCopied: int64) = 
-                let read = file.Read (buffer, 0, buffer.Length)
-                System.Threading.Thread.Sleep 100
-                if read > 0 then
-                    targetFile.Write (buffer, 0, read)
-                    let processedBytes = bytesCopied + int64(read)
-                    progress processedBytes
-                    copy processedBytes
+                if copyItemArray.Length = 0 then
+                    0L
                 else
-                    bytesCopied + total
+                    let read = file.Read (buffer, 0, buffer.Length)
+                    System.Threading.Thread.Sleep 100
+                    if read > 0 then
+                        targetFile.Write (buffer, 0, read)
+                        let processedBytes = bytesCopied + int64(read)
+                        progress processedBytes
+                        copy processedBytes
+                    else 
+                        bytesCopied + total
             copy 0 
         
         let size = copy ()
@@ -377,7 +379,7 @@ let copyItems id sourcePath move conflictsExcluded=
         size
 
     let copyItems () = 
-    // TODO Cancel copy, delete already copied content
+    // TODO Cancel copy, finish recent file copy, let Dialog open
     // TODO move (Delete files and Directories)
     // TODO Drag n drop: dopy or move
     // TODO Drag n drop: drag to external copy/move
@@ -408,3 +410,7 @@ let copyItems id sourcePath move conflictsExcluded=
 let postCopyItems () = 
     copyItemArray <- Array.empty<_>
     "{}"
+
+let cancelCopy () = 
+    copyItemArray <- Array.empty<_>
+    "{Hugo  }"
