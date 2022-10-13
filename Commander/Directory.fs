@@ -398,6 +398,8 @@ let copyItems id sourcePath move conflictsExcluded=
         itemsToCopy
         |> Array.fold (copyItem sourcePath totalSize) 0L
         |> ignore
+
+        ()
     
     let a () = exceptionToResult copyItems
     a
@@ -412,4 +414,4 @@ let postCopyItems () =
 
 let cancelCopy () = 
     copyItemArray <- Array.empty<_>
-    "{Hugo  }"
+    "{}"
