@@ -156,6 +156,9 @@ export class Folder extends HTMLElement {
             tr.onmousedown = evt => {
                 if (evt.ctrlKey) 
                     setTimeout(() => {
+                        const pos = this.table.getPosition()
+                        this.table.items[pos].isSelected = !this.table.items[pos].isSelected
+                        this.table.refresh()
                     })
             }
             switch (this.engine) {
@@ -477,8 +480,7 @@ export class Folder extends HTMLElement {
             }
             let input = [...getItems()].map(n => (n as any).path)
             let copyFiles = await request<CopyFiles>("preparefilecopy", input)
-            
-        
+                    
             await copyItems(this.id, e => this.checkResult(e), false,
                 this.id != "folderLeft",
                 EngineType.Directory,
@@ -495,7 +497,10 @@ export class Folder extends HTMLElement {
         this.folderRoot.classList.remove("isDragging")
         if (evt.dataTransfer?.getData("internalCopy") == "true") {
             evt.preventDefault()
-            this.dispatchEvent(new CustomEvent('dragAndDrop', { detail: this.dropEffect == "move" }))
+            if (this.dropEffect == "move")
+                this.dispatchEvent(new CustomEvent('dragAndDropMove'))
+            else
+                this.dispatchEvent(new CustomEvent('dragAndDropCopy'))
         }
         else 
             onDrop()

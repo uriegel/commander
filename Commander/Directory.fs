@@ -380,7 +380,6 @@ let copyItems id sourcePath move conflictsExcluded=
 
     let copyItems () = 
     // TODO move (Delete files and Directories)
-    // TODO Drag n drop: copy or move
     // TODO Drag n drop: drag to external copy/move
     // TODO Copy paste?
 
