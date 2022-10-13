@@ -5,6 +5,8 @@ import { ActionType, ConflictItem, EngineType, GetActionTextResult, IOError, IOE
 
 const dialog = document.querySelector('dialog-box') as DialogBox    
 
+// TODO Copy/Move Conflicts: Version
+
 export async function copyItems(
     folderId: string,
     checkResult: (error: IOError) => any,

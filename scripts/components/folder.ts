@@ -5,7 +5,7 @@ import { copyItems } from '../copy'
 import { TableItem, VirtualTable } from 'virtual-table-component'
 import { compose } from '../functional'
 import {
-    ActionType, Column, ColumnsType, EngineType, GetActionTextResult, GetFilePathResult,
+    ActionType, Column, ColumnsType, CopyFiles, EngineType, GetActionTextResult, GetFilePathResult,
     GetItemResult, IOError, IOErrorResult, ItemType, request
 } from '../requests'
 import { addRemotes, initRemotes } from '../remotes'
@@ -472,10 +472,7 @@ export class Folder extends HTMLElement {
             evt.preventDefault()
             this.dispatchEvent(new CustomEvent('dragAndDrop', { detail: this.dropEffect == "move" }))
         }
-
         this.folderRoot.classList.remove("isDragging")
-
-        console.log("evt.dataTransfer", evt.dataTransfer, evt.dataTransfer?.files)
 
         let onDrop = async () => {
             function *getItems() {
@@ -484,7 +481,20 @@ export class Folder extends HTMLElement {
                         yield evt.dataTransfer!.files.item(i)!
             }
             let input = [...getItems()].map(n => (n as any).path)
-            await request<GetActionTextResult>("preparefilecopy", input)
+            let copyFiles = await request<CopyFiles>("preparefilecopy", input)
+            
+        
+            await copyItems(this.id, e => this.checkResult(e), false,
+                this.id != "folderLeft",
+                EngineType.Directory,
+                this.engine,
+                copyFiles.basePath,
+                this.path,
+                copyFiles.items
+            )
+
+            this.setFocus()
+            this.reloadItems()
         }
         
         onDrop()
@@ -593,7 +603,6 @@ export class Folder extends HTMLElement {
     }
 
     async copy(other: Folder, fromLeft: boolean, move?: boolean) {
-        // TODO ROP
         var items = this.getSelectedItems()
 
         await copyItems(this.id, e => this.checkResult(e), move ?? false,
@@ -608,8 +617,6 @@ export class Folder extends HTMLElement {
         this.setFocus()
         other.reloadItems()
     }
-
-    // TODO Copy/Move Conflicts: Version
 
     private checkResult(error: IOError) {
         if (!error) 

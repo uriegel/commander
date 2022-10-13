@@ -32,34 +32,33 @@ let getRequestId folderId value =
         rightRequestId.Id <- value
         rightRequestId
 
+let getDirItem (dirInfo: DirectoryInfo) = {
+    Index =       0
+    Name =        dirInfo.Name
+    Size =        0
+    ItemType =    ItemType.Directory
+    Selectable =  true
+    IsDirectory = true
+    IconPath    = None
+    IsHidden    = dirInfo.Attributes &&& FileAttributes.Hidden = FileAttributes.Hidden
+    Time        = dirInfo.LastWriteTime
+}
+
+let getFileItem (fileInfo: FileInfo) = {
+    Index =       0
+    Name =        fileInfo.Name
+    Size =        fileInfo.Length
+    ItemType =    ItemType.File
+    Selectable =  true
+    IsDirectory = false
+    IconPath    = Some <| getIconPath fileInfo
+    IsHidden    = fileInfo.Attributes &&& FileAttributes.Hidden = FileAttributes.Hidden
+    Time        = fileInfo.LastWriteTime
+}
+
 let getItems path (param: GetItems) = async {
     
     let requestId = getRequestId param.FolderId param.RequestId
-
-    let getDirItem (dirInfo: DirectoryInfo) = {
-        Index =       0
-        Name =        dirInfo.Name
-        Size =        0
-        ItemType =    ItemType.Directory
-        Selectable =  true
-        IsDirectory = true
-        IconPath    = None
-        IsHidden    = dirInfo.Attributes &&& FileAttributes.Hidden = FileAttributes.Hidden
-        Time        = dirInfo.LastWriteTime
-    }
-
-    let getFileItem (fileInfo: FileInfo) = {
-        Index =       0
-        Name =        fileInfo.Name
-        Size =        fileInfo.Length
-        ItemType =    ItemType.File
-        Selectable =  true
-        IsDirectory = false
-        IconPath    = Some <| getIconPath fileInfo
-        IsHidden    = fileInfo.Attributes &&& FileAttributes.Hidden = FileAttributes.Hidden
-        Time        = fileInfo.LastWriteTime
-    }
-
     let sortByName item = item.Name |> String.toLower 
 
     let dirInfo = DirectoryInfo(path)
@@ -236,10 +235,28 @@ type CopyItem = {
     Conflict:   ConflictItem option
 }
 
+type FileCopy = {
+    Items: DirectoryItem[]
+    BasePath:  string
+}
+
 let mutable copyItemArray: CopyItem[] = Array.empty<CopyItem>
 
-let prepareFileCopy items =
-    ""
+let prepareFileCopy (items: string[]) =
+    let getDirectoryItem file = 
+        if Directory.Exists file then
+            getDirItem <| DirectoryInfo file
+        else
+            getFileItem <| FileInfo file
+    let path = 
+        if Directory.Exists items[0] then
+            (DirectoryInfo items[0]).Parent.FullName
+        else
+            (FileInfo items[0]).DirectoryName
+    {
+        BasePath = path
+        Items  = items |> Array.map getDirectoryItem
+    } |> serializeToJson        
 
 let prepareCopy items sourcePath targetPath =
 
@@ -360,10 +377,9 @@ let copyItems id sourcePath move conflictsExcluded=
         size
 
     let copyItems () = 
-    // TODO Cancel copy, delete already copied content
-    // TODO Drag n drop: get FileItem[] from server and basePath (parent directory of file or directory), get other folder, replace this.path  with basePath
     // TODO Drag n drop: enterDrag
     // TODO Copy paste?
+    // TODO Cancel copy, delete already copied content
     // TODO move (Delete files and Directories)
 
         let itemsToCopy = 

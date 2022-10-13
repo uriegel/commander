@@ -130,6 +130,12 @@ type GetActionsTextsType = {
     conflicts?:       boolean
 }
 
+export type CopyFiles = {
+    items:     FolderItem[]
+    basePath:  string
+}
+
+
 export enum ItemType {
     Parent        = 1,
     File          = 2,
@@ -226,6 +232,7 @@ type Result =
     | GetActionTextResult
     | IOErrorResult
     | ConflictItem[]
+    | CopyFiles
 
 export type RequestInput = 
     | Empty  
