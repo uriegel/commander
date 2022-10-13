@@ -188,5 +188,7 @@ folderLeft.addEventListener("pathChanged", onPathChanged)
 folderRight.addEventListener("pathChanged", onPathChanged)
 folderLeft.addEventListener("tab", () => folderRight.setFocus())
 folderRight.addEventListener("tab", () => folderLeft.setFocus())
+folderLeft.addEventListener("dragAndDrop", onCopy)
+folderRight.addEventListener("dragAndDrop", onCopy)
 
 folderLeft.setFocus()

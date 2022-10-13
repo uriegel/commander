@@ -164,6 +164,7 @@ export class Folder extends HTMLElement {
                         tr.style.opacity = "0.5"
                     break
                 case EngineType.Directory:
+                    tr.draggable = true
                     tr.ondragstart = evt => this.onDragStart(evt)
                     tr.ondrag = evt => this.onDrag(evt)
                     tr.ondragend = () => this.onDragEnd()
@@ -422,13 +423,13 @@ export class Folder extends HTMLElement {
     }
 
     onDragStart(evt: DragEvent) { 
-        // if (this.getSelectedItems()
-        //         .map(n => n.name)
-        //         .includes(this.table.items[this.table.getPosition()].name)) {
-        //     evt.dataTransfer?.setData("internalCopy", "true")
-        //     this.folderRoot.classList.add("onDragStarted")
-        // } else
-        //     evt.preventDefault()
+        if (this.getSelectedItems()
+                .map(n => n.name)
+                .includes(this.table.items[this.table.getPosition()].name)) {
+            evt.dataTransfer?.setData("internalCopy", "true")
+            this.folderRoot.classList.add("onDragStarted")
+        } else
+            evt.preventDefault()
     }
     onDrag(evt: DragEvent) { 
     }
@@ -468,12 +469,6 @@ export class Folder extends HTMLElement {
     }
 
     onDrop(evt: DragEvent) {
-        if (evt.dataTransfer?.getData("internalCopy") == "true") {
-            evt.preventDefault()
-            this.dispatchEvent(new CustomEvent('dragAndDrop', { detail: this.dropEffect == "move" }))
-        }
-        this.folderRoot.classList.remove("isDragging")
-
         let onDrop = async () => {
             function *getItems() {
                 if (evt.dataTransfer?.files)
@@ -496,8 +491,14 @@ export class Folder extends HTMLElement {
             this.setFocus()
             this.reloadItems()
         }
-        
-        onDrop()
+
+        this.folderRoot.classList.remove("isDragging")
+        if (evt.dataTransfer?.getData("internalCopy") == "true") {
+            evt.preventDefault()
+            this.dispatchEvent(new CustomEvent('dragAndDrop', { detail: this.dropEffect == "move" }))
+        }
+        else 
+            onDrop()
     }
 
     async extendedRename() {

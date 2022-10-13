@@ -377,10 +377,11 @@ let copyItems id sourcePath move conflictsExcluded=
         size
 
     let copyItems () = 
-    // TODO Drag n drop: enterDrag
-    // TODO Copy paste?
     // TODO Cancel copy, delete already copied content
     // TODO move (Delete files and Directories)
+    // TODO Drag n drop: dopy or move
+    // TODO Drag n drop: drag to external copy/move
+    // TODO Copy paste?
 
         let itemsToCopy = 
             if conflictsExcluded then 
