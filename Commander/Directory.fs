@@ -380,6 +380,7 @@ let copyItems id sourcePath move conflictsExcluded=
 
     let copyItems () = 
     // TODO move (Delete files and Directories)
+    // TODO copy/move android
     // TODO Drag n drop: drag to external copy/move
     // TODO Copy paste?
 
