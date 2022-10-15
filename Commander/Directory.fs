@@ -338,10 +338,15 @@ let prepareCopy items sourcePath targetPath =
 let copyItems id sourcePath move conflictsExcluded=
 
     let deleteEmptyFolders directories =
-        let deleteEmptyFolder path =
-            if existsDirectory path then
-                ()
-        ()
+        let rec deleteEmptyFolder path =
+            getSafeDirectories path
+            |> Array.map (fun n -> n.FullName) 
+            |> Array.iter deleteEmptyFolder
+
+            Process.runCmd "rmdir" path |> ignore
+        
+        directories
+        |> Array.iter deleteEmptyFolder
 
     let subj = getEventSubject id               
 
@@ -401,6 +406,7 @@ let copyItems id sourcePath move conflictsExcluded=
 
     let copyItems () = 
     // TODO move (Delete files and Directories)
+    // TODO move with conflicts: only yes no
     // TODO copy/move android
     // TODO Drag n drop: drag to external copy/move
     // TODO Copy paste?
@@ -423,8 +429,8 @@ let copyItems id sourcePath move conflictsExcluded=
         | _ -> ()
         
         match move, copyItemCache with
-        | Some true, Some copyItems ->
-            ()
+        | Some true, Some copyItems 
+               -> deleteEmptyFolders copyItems.Directories
         | _, _ -> ()
 
 
