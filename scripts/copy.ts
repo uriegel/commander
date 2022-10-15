@@ -63,9 +63,10 @@ export async function copyItems(
         btnCancel: true,
         extended: "copy-conflicts",
         btnYes: true,
-        btnNo: true,
+        btnNo: move != true,
         fullscreen: true,
-        defBtnNo: true
+        defBtnNo: move ? false : true,
+        defBtnCancel: move ? true : false
     }
 
     if (conflicts.length > 0) {
