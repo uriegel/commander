@@ -374,7 +374,6 @@ let copyItems id sourcePath move conflictsExcluded=
 
                 let rec copy (bytesCopied: int64) = 
                     let read = file.Read (buffer, 0, buffer.Length)
-                    System.Threading.Thread.Sleep 100
                     if read > 0 then
                         targetFile.Write (buffer, 0, read)
                         let processedBytes = bytesCopied + int64(read)
@@ -399,8 +398,6 @@ let copyItems id sourcePath move conflictsExcluded=
             0L
 
     let copyItems () = 
-    // TODO Cancel copy: you cannot close Commander anymore -> Cancel copy -> closes
-    // TODO Remove System.Threading.Thread.Sleep 100 
     // TODO move with conflicts: only yes no
     // TODO Display android items
     // TODO copy/move android
