@@ -31,7 +31,7 @@
   <ItemGroup>
     <PackageReference Include="FSharp.Control.Reactive" Version="5.0.2" />
     <PackageReference Include="FSharpRailway" Version="0.3.2" />
-    <PackageReference Include="FSharpTools" Version="6.3.2" />
+    <PackageReference Include="FSharpTools" Version="7.0.0" />
     <PackageReference Include="Giraffe" Version="6.0.0-alpha-2" />
     <PackageReference Include="GiraffeTools" Version="0.1.0-beta-1" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />

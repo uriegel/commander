@@ -1,5 +1,5 @@
 module Model
-open System.Text.Json
+open FSharpTools
 open Configuration
 
 type ItemType =
@@ -65,9 +65,7 @@ type FolderEvent =
     | GetItemsFinished
     | CopyProgress of CopyProgress
 
-// TODO FSharpTools JSON with options
-let serializeToJson obj = 
-    JsonSerializer.Serialize (obj, getJsonOptions ())    
+let serialize obj = TextJson.serialize (getJsonOptions ()) obj
 
 type FileSystemType = 
     | None = 0

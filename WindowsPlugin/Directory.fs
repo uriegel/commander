@@ -117,4 +117,4 @@ let deleteItems items =
     | 0x78  -> Some AccessDenied
     | _     -> Some (Exception "Löschen fehlgeschlagen")
     |> getError
-    |> serializeToJson
+    |> serialize

@@ -15,6 +15,7 @@ open FolderEvents
 open IO
 open Model
 open Directory
+open Result 
 
 let getEngineAndPathFrom path item = 
     match path, item with
@@ -175,7 +176,7 @@ let getItems path (param: GetItems) = async {
             subj.OnNext <| GetItemsFinished
     } |> Async.StartAsTask |> ignore
 
-    return result |> serializeToJson
+    return result |> serialize
 }
 
 let getFile (body: string) = async {
@@ -189,7 +190,7 @@ let createFolder =
     >> Result.mapError mapIOError
     >> mapOnlyError
     >> getError
-    >> serializeToJson
+    >> serialize
 
 type TwoFilePath = {
     Path   : string
@@ -197,15 +198,7 @@ type TwoFilePath = {
     NewName: string
 }
 
-open Result 
-
 let renameItem = 
-    
-    // TODO FSharpTools
-    let move (sourcePath: string, targetPath: string) = 
-        let move () = Directory.Move (sourcePath, targetPath)
-        exceptionToResult move
-
     let rename param =
         let combinePath = combine2Pathes param.Path
     
@@ -215,7 +208,7 @@ let renameItem =
     >> Result.mapError mapIOError
     >> mapOnlyError
     >> getError
-    >> serializeToJson
+    >> serialize
 
 type ConflictItem = {
     Conflict:    string
@@ -260,7 +253,7 @@ let prepareFileCopy (items: string[]) =
     {
         BasePath = path
         Items  = items |> Array.map getDirectoryItem
-    } |> serializeToJson        
+    } |> serialize
 
 let prepareCopy items sourcePath targetPath =
 
@@ -333,7 +326,7 @@ let prepareCopy items sourcePath targetPath =
     itemsToCopy
     |> Array.choose (fun n -> n.Conflict)
     |> Array.sortBy sortConflicts
-    |> serializeToJson        
+    |> serialize
 
 let copyItems id sourcePath move conflictsExcluded=
 
@@ -343,7 +336,7 @@ let copyItems id sourcePath move conflictsExcluded=
             |> Array.map (fun n -> n.FullName) 
             |> Array.iter deleteEmptyFolder
 
-            Process.runCmd "rmdir" path |> ignore
+            Process.runCmd "rmdir" (sprintf "\"%s\"" path) |> ignore
         
         directories
         |> Array.iter deleteEmptyFolder
@@ -399,14 +392,17 @@ let copyItems id sourcePath move conflictsExcluded=
             File.SetLastWriteTime (item.TargetPath, lwt)
             let attributes = File.GetAttributes item.Path
             File.SetAttributes (item.TargetPath, attributes)
-            
+            if move |> Option.defaultValue false then 
+                File.Delete item.Path                 
             size
         else
             0L
 
     let copyItems () = 
-    // TODO move (Delete files and Directories)
+    // TODO Cancel copy: you cannot close Commander anymore -> Cancel copy -> closes
+    // TODO Remove System.Threading.Thread.Sleep 100 
     // TODO move with conflicts: only yes no
+    // TODO Display android items
     // TODO copy/move android
     // TODO Drag n drop: drag to external copy/move
     // TODO Copy paste?
@@ -439,7 +435,7 @@ let copyItems id sourcePath move conflictsExcluded=
     >> Result.mapError mapIOError
     >> mapOnlyError
     >> getError
-    >> serializeToJson
+    >> serialize
     
 let postCopyItems () = 
     copyItemCache <- None

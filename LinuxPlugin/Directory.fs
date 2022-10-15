@@ -9,6 +9,7 @@ open Directory
 open Gtk
 open Model
 open FileSystem
+open Process
 
 let extendColumns columns = columns
 
@@ -46,7 +47,7 @@ let getIcon ext = async {
                             -> "/usr/share/icons/breeze/mimetypes/16/application-x-jar.svg"
             | s     -> s
 
-        let! mimeType = Process.runCmd "python3" (sprintf "%s *%s" (getIconScript ()) ext)
+        let! mimeType = asyncRunCmd "python3" (sprintf "%s *%s" (getIconScript ()) ext)
 
         let icon = 
             sprintf "/usr/share/icons/breeze/mimetypes/16/%s.svg" (mimeType |> getMime |> defaultValue "application-x-zerosize")
@@ -68,5 +69,5 @@ let deleteItems =
     deleteItems
     >> mapOnlyError
     >> getError
-    >> serializeToJson
+    >> serialize
 

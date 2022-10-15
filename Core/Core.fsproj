@@ -14,7 +14,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FSharpRailway" Version="0.3.2" />
-    <PackageReference Include="FSharpTools" Version="6.3.2" />
+    <PackageReference Include="FSharpTools" Version="7.0.0" />
     <PackageReference Include="FSharp.SystemTextJson" Version="0.17.4" />
   </ItemGroup>
 </Project>
