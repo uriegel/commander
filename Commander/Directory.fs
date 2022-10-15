@@ -234,12 +234,17 @@ type CopyItem = {
     Conflict:   ConflictItem option
 }
 
+type ItemsToCopy = {
+    Items: CopyItem array
+    Directories: string[]
+}
+
 type FileCopy = {
     Items: DirectoryItem[]
     BasePath:  string
 }
 
-let mutable copyItemArray: CopyItem[] = Array.empty<CopyItem>
+let mutable copyItemCache: ItemsToCopy option = None
 
 let prepareFileCopy (items: string[]) =
     let getDirectoryItem file = 
@@ -304,11 +309,20 @@ let prepareCopy items sourcePath targetPath =
                     None        
         }
 
-    copyItemArray <- 
+    let itemsToCopy = 
         items 
         |> Seq.collect (getFileInfo sourcePath)
         |> Seq.map getCopyItem
         |> Seq.toArray
+
+    copyItemCache <- Some {
+        Items = itemsToCopy
+        Directories = 
+            items
+            |> Seq.map (combine2Pathes sourcePath)
+            |> Seq.filter existsDirectory
+            |> Seq.toArray
+    }
     
     let sortConflicts (item: ConflictItem) =
         item.Conflict.ToCharArray()
@@ -316,18 +330,23 @@ let prepareCopy items sourcePath targetPath =
         |> Array.length
         , item.Conflict
 
-    copyItemArray
+    itemsToCopy
     |> Array.choose (fun n -> n.Conflict)
     |> Array.sortBy sortConflicts
     |> serializeToJson        
 
 let copyItems id sourcePath move conflictsExcluded=
+
+    let deleteEmptyFolders directories =
+        let deleteEmptyFolder path =
+            if existsDirectory path then
+                ()
+        ()
+
     let subj = getEventSubject id               
 
     let copyItem sourcePath totalSize total item =
-        if copyItemArray.Length = 0 then
-            0L
-        else
+        if copyItemCache.IsSome then
             let itemPath = 
                 item.Path 
                 |> String.substring ((sourcePath |> String.length) + 1)
@@ -377,30 +396,38 @@ let copyItems id sourcePath move conflictsExcluded=
             File.SetAttributes (item.TargetPath, attributes)
             
             size
+        else
+            0L
 
     let copyItems () = 
     // TODO move (Delete files and Directories)
     // TODO copy/move android
     // TODO Drag n drop: drag to external copy/move
     // TODO Copy paste?
+        match copyItemCache with
+        | Some copyItems ->
+            let itemsToCopy = 
+                if conflictsExcluded then 
+                    copyItems.Items
+                    |> Array.filter (fun n -> n.Conflict.IsNone)
+                else
+                    copyItems.Items
 
-        let itemsToCopy = 
-            if conflictsExcluded then 
-                copyItemArray
-                |> Array.filter (fun n -> n.Conflict.IsNone)
-            else
-                copyItemArray
+            let totalSize = 
+                itemsToCopy
+                |> Array.fold (fun acc item -> item.Size + acc) 0L
 
-        let totalSize = 
             itemsToCopy
-            |> Array.fold (fun acc item -> item.Size + acc) 0L
+            |> Array.fold (copyItem sourcePath totalSize) 0L
+            |> ignore
+        | _ -> ()
+        
+        match move, copyItemCache with
+        | Some true, Some copyItems ->
+            ()
+        | _, _ -> ()
 
-        itemsToCopy
-        |> Array.fold (copyItem sourcePath totalSize) 0L
-        |> ignore
 
-        ()
-    
     let a () = exceptionToResult copyItems
     a
     >> Result.mapError mapIOError
@@ -409,9 +436,9 @@ let copyItems id sourcePath move conflictsExcluded=
     >> serializeToJson
     
 let postCopyItems () = 
-    copyItemArray <- Array.empty<_>
+    copyItemCache <- None
     "{}"
 
 let cancelCopy () = 
-    copyItemArray <- Array.empty<_>
+    copyItemCache <- None
     "{}"
