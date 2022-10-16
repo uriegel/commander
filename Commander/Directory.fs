@@ -398,10 +398,6 @@ let copyItems id sourcePath move conflictsExcluded=
             0L
 
     let copyItems () = 
-    // TODO Display android items
-    // TODO copy/move android
-    // TODO Drag n drop: drag to external copy/move
-    // TODO Copy paste?
         match copyItemCache with
         | Some copyItems ->
             let itemsToCopy = 

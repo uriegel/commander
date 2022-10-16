@@ -370,7 +370,12 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
+        // TODO copy/move android
+        // TODO Drag n drop: drag to external copy/move
+        // TODO Copy paste?
         // TODO delete remotes
+        // TODO rename remotes
+        // TODO Copy/Move Conflicts: Version
         // TODO Windows Title Icon is blurry
         // TODO Adapt Yaru theme
         // TODO when Time sorting, then sort after exif or disable time sort

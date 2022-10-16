@@ -25,20 +25,33 @@ type AndroidItem = {
     Time:        int64
 }
 
+type RequestParam = {
+    BaseUrl:  string
+    FilePath: string
+}
+
 let getSlashCount = String.getCharCount '/'
 
-let getIpAndFilePath path = 
-    let getIndex () = 
+let getRequestParam path = 
+    let getUrl = sprintf "http://%s:8080"
+    match 
         path 
         |> String.indexOfStart "/" 8 
-    match getIndex () with
-    | Some pos -> 
-        path
-        |> String.substring2 8 (pos - 8),
-        path
-        |> String.substring pos
-    | None     ->
-        path |> String.substring 8, "/"
+    with
+    | Some pos -> {
+            BaseUrl = 
+                path
+                |> String.substring2 8 (pos - 8)
+                |> getUrl
+            FilePath = path |> String.substring pos
+        }
+    | None -> {
+            BaseUrl = 
+                path 
+                |> String.substring 8
+                |> getUrl
+            FilePath = "/"
+        }
 
 let getFilePath path = 
     let getIndex () = 
@@ -75,9 +88,9 @@ let getEngineAndPathFrom _ (body: string) =
     | _                                                  -> EngineType.Root, RootID
 
 let getItems (engine: EngineType) path latestPath = async {
-    let ip, filePath = path |> getIpAndFilePath
-    let uri = sprintf "http://%s:8080/getfiles" ip
-    let! items = HttpRequests.post<AndroidItem array> uri { Path = filePath } |> Async.AwaitTask
+    let param = path |> getRequestParam
+    let client = HttpRequests.getClient param.BaseUrl
+    let! items = HttpRequests.post<AndroidItem array> client "getfiles" { Path = param.FilePath } |> Async.AwaitTask
     
     let isDir item = item.IsDirectory
     let isFile item = not item.IsDirectory
