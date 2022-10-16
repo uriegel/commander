@@ -10,6 +10,9 @@ open FSharpTools.Directory
 open FSharpRailway.Result
 open FileSystem
 open FSharpRailway.Option
+open HttpRequests
+open FSharpTools.String
+open FSharpRailway
 
 type GetItems = {
     Path:        string option
@@ -188,20 +191,43 @@ let getItems (engine: EngineType) path latestPath = async {
     return JsonSerializer.Serialize (result, getJsonOptions ())
 }
 
-let mutable copyItemCache: string[] = [||]
+type ItemsToCopy = {
+    Items:        string[]
+    RequestParam: RequestParam
+}
 
+let mutable copyItemCache: ItemsToCopy option = None
 let prepareCopy items sourcePath targetPath =
 
+    let getPath item =
+        let path = combine2Pathes sourcePath item
+        let pos = path |> String.indexOfCharStart '/' 8 |> Option.defaultValue 0
+        path |> String.substring pos
+
     // TODO conflicts
-    copyItemCache <-  
-        items 
-        |> Seq.map (combine2Pathes sourcePath)
-        |> Seq.toArray
+    copyItemCache <- Some {
+        Items = 
+            items 
+            |> Seq.map getPath
+            |> Seq.toArray
+        RequestParam = sourcePath |> getRequestParam   
+    } 
 
     "[]"
 
 let copyItems id sourcePath move conflictsExcluded=
-    let copyItems () = ()
+    let copyItem request item =
+        saveFile (getClient request.BaseUrl) "getfile" {
+            Path = item  
+        }
+    
+    let copyItems () =
+        match copyItemCache with
+        | Some value ->
+            value.Items
+            |> Array.iter (copyItem value.RequestParam)
+            ()
+        | None -> ()
 
     let a () = exceptionToResult copyItems
     a
@@ -212,9 +238,9 @@ let copyItems id sourcePath move conflictsExcluded=
     
 
 let postCopyItems () = 
-    copyItemCache <- [||]
+    copyItemCache <- None
     "{}"
 
 let cancelCopy () = 
-    copyItemCache <- [||]
+    copyItemCache <- None
     "{}"
