@@ -4,7 +4,6 @@ open FSharpTools
 open System.Text.Json
 
 open Configuration
-open Directory
 open Engine
 open Model
 
@@ -108,8 +107,10 @@ let getActionsTexts (param: GetActionsTexts) =
     | EngineType.Directory, _, ActionType.Delete, _                                -> Some (sprintf "Möchtest Du %s löschen?"    <| getFilesOrDirs ())
     | EngineType.Directory, Some(EngineType.Directory), ActionType.Copy, Some true -> Some (sprintf "Einträge überschreiben beim Kopieren?")
     | EngineType.Directory, Some(EngineType.Directory), ActionType.Copy, _         -> Some (sprintf "Möchtest Du %s kopieren?"   <| getFilesOrDirs ())
+    | EngineType.Android,   Some(EngineType.Directory), ActionType.Copy, _         -> Some (sprintf "Möchtest Du %s kopieren?"   <| getFilesOrDirs ())
     | EngineType.Directory, Some(EngineType.Directory), ActionType.Move, Some true -> Some (sprintf "Einträge überschreiben beim Verschieben?")
     | EngineType.Directory, Some(EngineType.Directory), ActionType.Move, _         -> Some (sprintf "Möchtest Du %s verschieben?"<| getFilesOrDirs ())
+    | EngineType.Android,   Some(EngineType.Directory), ActionType.Move, _         -> Some (sprintf "Möchtest Du %s verschieben?"<| getFilesOrDirs ())
     | EngineType.Directory, _, ActionType.Rename, _                                -> Some (sprintf "Möchtest Du %s umbenennen?" <| getFilesOrDirs ())
     | EngineType.Remotes, _, ActionType.Delete, _                                  -> Some (sprintf "Möchtest Du %s löschen?"    <| getRemotes ())
     | EngineType.Android, _, ActionType.Delete, _                                  -> Some (sprintf "Möchtest Du %s löschen?"    <| getFilesOrDirs ())
@@ -118,42 +119,46 @@ let getActionsTexts (param: GetActionsTexts) =
 
 let createfolder (param: CreateFolderParam) =
     match param.Engine with
-    | EngineType.Directory -> [| param.Path; param.Name|] |> createFolder
+    | EngineType.Directory -> [| param.Path; param.Name|] |> Directory.createFolder
     | _                    -> ""
 
 let renameItem (param: RenameItemParam) =
     match param.Engine with
-    | EngineType.Directory -> renameItem {Path = param.Path; Name = param.Name; NewName = param.NewName}
+    | EngineType.Directory -> Directory.renameItem {Path = param.Path; Name = param.Name; NewName = param.NewName}
     | _                    -> ""
 
 let deleteItems (param: DeleteItemsParam) =
     let getItems () = 
         param.Items
-        |> Array.map (combine2Pathes param.Path)
+        |> Array.map (Directory.combine2Pathes param.Path)
     
     match param.Engine with
-    | EngineType.Directory -> deleteItems <| getItems ()
+    | EngineType.Directory -> Directory.deleteItems <| getItems ()
     | _                    -> ""
 
 let prepareFileCopy (files: string[]) =
-    prepareFileCopy files
+    Directory.prepareFileCopy files
 
 let prepareCopy (param: PrepareCopyItemsParam) =
     match param.SourceEngineType, param.TargetEngineType with
-    | EngineType.Directory, EngineType.Directory -> prepareCopy param.Items param.SourcePath param.TargetPath
+    | EngineType.Directory, EngineType.Directory -> Directory.prepareCopy param.Items param.SourcePath param.TargetPath
+    | EngineType.Android, EngineType.Directory -> Android.prepareCopy param.Items param.SourcePath param.TargetPath
     | _ -> ""
 
 let copyItems (param: CopyItemsParam) =
     match param.SourceEngineType, param.TargetEngineType with
-    | EngineType.Directory, EngineType.Directory -> copyItems param.FolderId param.SourcePath param.Move param.ConflictsExcluded ()
+    | EngineType.Directory, EngineType.Directory -> Directory.copyItems param.FolderId param.SourcePath param.Move param.ConflictsExcluded ()
+    | EngineType.Android, EngineType.Directory   -> Android.copyItems param.FolderId param.SourcePath param.Move param.ConflictsExcluded ()
     | _ -> ""
 
 let postCopyItems (param: PostCopyItemsParam) = 
     match param.SourceEngineType, param.TargetEngineType with
-    | EngineType.Directory, EngineType.Directory -> postCopyItems ()
+    | EngineType.Directory, EngineType.Directory -> Directory.postCopyItems ()
+    | EngineType.Android, EngineType.Directory -> Android.postCopyItems ()
     | _ -> ""
 
 let cancelCopy (param: PostCopyItemsParam) = 
     match param.SourceEngineType, param.TargetEngineType with
-    | EngineType.Directory, EngineType.Directory -> cancelCopy ()
+    | EngineType.Directory, EngineType.Directory -> Directory.cancelCopy ()
+    | EngineType.Android, EngineType.Directory -> Android.cancelCopy ()
     | _ -> ""

@@ -6,6 +6,10 @@ open System.Text.Json
 open Configuration
 open Engine
 open Model
+open FSharpTools.Directory
+open FSharpRailway.Result
+open FileSystem
+open FSharpRailway.Option
 
 type GetItems = {
     Path:        string option
@@ -105,7 +109,7 @@ let getItems (engine: EngineType) path latestPath = async {
         Name =        item.Name
         Size =        item.Size
         ItemType =    ItemType.Directory
-        Selectable =  true
+        Selectable =  false
         IconPath =    None
         IsHidden =    item.IsHidden
         IsDirectory = true
@@ -183,3 +187,34 @@ let getItems (engine: EngineType) path latestPath = async {
 
     return JsonSerializer.Serialize (result, getJsonOptions ())
 }
+
+let mutable copyItemCache: string[] = [||]
+
+let prepareCopy items sourcePath targetPath =
+
+    // TODO conflicts
+    copyItemCache <-  
+        items 
+        |> Seq.map (combine2Pathes sourcePath)
+        |> Seq.toArray
+
+    "[]"
+
+let copyItems id sourcePath move conflictsExcluded=
+    let copyItems () = ()
+
+    let a () = exceptionToResult copyItems
+    a
+    >> Result.mapError mapIOError
+    >> mapOnlyError
+    >> getError
+    >> serialize
+    
+
+let postCopyItems () = 
+    copyItemCache <- [||]
+    "{}"
+
+let cancelCopy () = 
+    copyItemCache <- [||]
+    "{}"
