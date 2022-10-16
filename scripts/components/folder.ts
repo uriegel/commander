@@ -371,7 +371,7 @@ export class Folder extends HTMLElement {
         this.onPathChanged(result.path, fromBacklog)
 
         // TODO copy/move android
-        // TODO exifTime is not defined!!!
+        // TODO exifTime "EnhancedInfo" too early, this.items not yet set, getEnhancedInfo with requestId, when too early, save it and set it when items are set
         // TODO copy DateTime from android file
         // TODO Drag n drop: drag to external copy/move
         // TODO Copy paste?

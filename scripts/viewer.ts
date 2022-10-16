@@ -38,7 +38,7 @@ const refresh = (path: string) => {
             viewerPdf.classList.add("hidden")
             viewerVideo.classList.add("hidden")
             viewerImg.classList.remove("hidden")
-            viewerImg.src = `commander/image?path=${path}` 
+            viewerImg.src = `commander/image?path=${path}&nochache=${nocache++}` 
             viewerVideo.src = ""
             break
         case "pdf":
@@ -68,4 +68,4 @@ const refresh = (path: string) => {
 
 var viewerActive = false
 var viewerRefresher = 0
-
+var nocache = 0
