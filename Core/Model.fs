@@ -44,9 +44,14 @@ type FileVersion = {
 }
 
 type EnhancedItem = {
-    Index:    int
-    ExifTime: System.DateTime option
-    Version:  FileVersion option
+    Index:     int
+    ExifTime:  System.DateTime option
+    Version:   FileVersion option
+}
+
+type EnhancedInfo = {
+    RequestId: int
+    EnhancedItems: EnhancedItem[]
 }
 
 type CopyProgressInfo = {
@@ -61,7 +66,7 @@ type CopyProgress = {
 }
 
 type FolderEvent = 
-    | EnhancedInfo of EnhancedItem[]
+    | EnhancedInfo of EnhancedInfo
     | GetItemsFinished
     | CopyProgress of CopyProgress
 

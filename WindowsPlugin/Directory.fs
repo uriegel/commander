@@ -87,7 +87,10 @@ let appendPlatformInfo (subj: Subject<FolderEvent>) requestId id (path: string) 
         |> Seq.toArray
     
     if requestId.Id = id && versionItems.Length > 0 then
-        subj.OnNext <| EnhancedInfo versionItems
+        subj.OnNext <| EnhancedInfo {
+            RequestId = requestId.Id
+            EnhancedItems = versionItems
+        }
 
 let deleteItems items = 
 

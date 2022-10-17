@@ -166,7 +166,10 @@ let getItems path (param: GetItems) = async {
 
         if requestId.Id = param.RequestId && exifItems.Length > 0 then
             let subj = getEventSubject param.FolderId
-            subj.OnNext <| EnhancedInfo exifItems
+            subj.OnNext <| EnhancedInfo {
+                EnhancedItems = exifItems
+                RequestId = requestId.Id
+            }
 
     async { 
         items |> appendExifTime result.Path |>ignore

@@ -11,7 +11,7 @@ import {
 import { addRemotes, initRemotes } from '../remotes'
 import { DialogBox, Result } from 'web-dialog-box'
 import { CopyProgress, CopyProgressDialog } from './copyprogress'
-import { filter, fromEvent, map } from 'rxjs'
+import { combineLatest, filter, fromEvent, map, Subject } from 'rxjs'
 
 var latestRequest = 0
 
@@ -35,9 +35,14 @@ export interface FolderItem extends TableItem {
     version?:     Version
 }
 
+type EnhancedInfoType = {
+    requestId:     number
+    enhancedItems: FolderItem[]
+}
+
 type EnhancedInfo = {
-    Case: "EnhancedInfo",
-    Fields: Array<FolderItem[]>
+    Case:  "EnhancedInfo",
+    Fields: Array<EnhancedInfoType>
 }
 
 type GetItemsFinished = {
@@ -45,7 +50,7 @@ type GetItemsFinished = {
 }
 
 type CopyProgressType = {
-    Case: "CopyProgress",
+    Case:   "CopyProgress",
     Fields: Array<CopyProgress>
 }
 
@@ -129,7 +134,6 @@ export function getSelectedItemsOverview(items: FolderItem[]) {
     return [dirs, files]
 }
 
-
 export class Folder extends HTMLElement {
     constructor() {
         super()
@@ -155,7 +159,7 @@ export class Folder extends HTMLElement {
 
         this.table.renderRow = (item, tr) => {
             tr.onmousedown = evt => {
-                if (evt.ctrlKey) 
+                if (evt.ctrlKey)
                     setTimeout(() => {
                         const pos = this.table.getPosition()
                         this.table.items[pos].isSelected = !this.table.items[pos].isSelected
@@ -186,22 +190,30 @@ export class Folder extends HTMLElement {
         let folderEvents = fromEvent<MessageEvent>(this.source, 'message')
             .pipe(map(toFolderEvent))
                 
-        let getItemsFinishedEvents = folderEvents.pipe(filter(n => n.Case == "GetItemsFinished"))
-        let enhancedInfoEvents = folderEvents.pipe(filter(n => n.Case == "EnhancedInfo"))
-        let copyProgressEvents = folderEvents.pipe(filter(n => n.Case == "CopyProgress"))
+        let getItemsFinishedEvents = folderEvents
+            .pipe(filter(n => n.Case == "GetItemsFinished"))
+        let enhancedInfoEvents = folderEvents
+            .pipe(filter(n => n.Case == "EnhancedInfo"))
+            .pipe(map(n => (n as EnhancedInfo).Fields[0]))
+        let copyProgressEvents = folderEvents
+            .pipe(filter(n => n.Case == "CopyProgress"))
+            .pipe(map(n => (n as CopyProgressType).Fields[0]))
 
         getItemsFinishedEvents.subscribe(() => this.disableSorting(false))
-        enhancedInfoEvents.subscribe(evt => {
-            (evt as EnhancedInfo).Fields[0].forEach(n => {
-                if (n.exifTime) 
-                    this.items[n.index!].exifTime = n.exifTime
-                    //this.table.items[n.index!].exifTime = n.exifTime
-                if (n.version) 
-                    this.items[n.index!].version = n.version
-            })            
-            this.table.refresh()
-        })
-        copyProgressEvents.subscribe(evt => this.copyProgress?.setValue((evt as CopyProgressType).Fields[0]))
+        copyProgressEvents.subscribe(this.copyProgress?.setValue)
+
+        combineLatest([enhancedInfoEvents, this.itemsChanged])
+            .pipe(filter(([info, requestId]) => info.requestId == requestId && requestId == this.requestId))
+            .pipe(map(([info, ]) => info))
+            .subscribe(evt => {
+                evt.enhancedItems.forEach(n => {
+                    if (n.exifTime) 
+                        this.items[n.index!].exifTime = n.exifTime
+                    if (n.version) 
+                        this.items[n.index!].version = n.version
+                })            
+                this.table.refresh()
+            })
 
         this.changePath() 
         const lastPath = localStorage.getItem(`${this.folderId}-lastPath`)
@@ -256,7 +268,6 @@ export class Folder extends HTMLElement {
                     if (evt.shiftKey) {
                         const pos = this.table.getPosition()
                         this.table.items.forEach((item, i) => item.isSelected = item.selectable && i >= pos)                     
-            //            this.engine.beforeRefresh(this.table.items)
                         this.table.refresh()
                     }
                     break
@@ -264,14 +275,12 @@ export class Folder extends HTMLElement {
                     if (evt.shiftKey) {
                         const pos = this.table.getPosition()
                         this.table.items.forEach((item, i) => item.isSelected = item.selectable && i <= pos)                     
-                        // this.engine.beforeRefresh(this.table.items)
                         this.table.refresh()
                     }
                     break
                 case 45: { // Ins
                     const pos = this.table.getPosition()
                      this.table.items[pos].isSelected = this.table.items[pos].selectable && !this.table.items[pos].isSelected 
-                    // this.engine.beforeRefresh(this.table.items)
                     this.table.setPosition(pos + 1)
                     break
                 }
@@ -369,6 +378,8 @@ export class Folder extends HTMLElement {
             this.disableSorting(false)
 
         this.items = result.items
+        this.itemsChanged.next(requestId)
+
         const dirs = result.items.filter(n => n.isDirectory)
         const files = result.items.filter(n => !n.isDirectory)
         this.dirsCount = dirs.length
@@ -391,7 +402,6 @@ export class Folder extends HTMLElement {
         this.onPathChanged(result.path, fromBacklog)
 
         // TODO copy/move android
-        // TODO exifTime "EnhancedInfo" too early, this.items not yet set, getEnhancedInfo with requestId, when too early, save it and set it when items are set
         // TODO copy DateTime from android file
         // TODO Drag n drop: drag to external copy/move
         // TODO Copy paste?
@@ -403,7 +413,6 @@ export class Folder extends HTMLElement {
         // TODO when Time sorting, then sort after exif or disable time sort
         // TODO remote engine
         // TODO GetFileItems native faster with pinvoke
-        // TODO Race condition getItems/sendEnhancedInfo
         // TODO Remote engine: parent select last folder    
         // TODO Strings always from F# as Resource strings (Culture)    
         // TODO qmlnet    
@@ -767,6 +776,7 @@ export class Folder extends HTMLElement {
     private table: VirtualTable<FolderItem>
     private folderRoot: HTMLElement
     private folderId = ""
+    private itemsChanged = new Subject<number>()
     private copyProgress: CopyProgressDialog
     private items: FolderItem[] = []
     private backtrack: string[] = []
