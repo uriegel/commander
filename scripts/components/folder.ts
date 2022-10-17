@@ -11,6 +11,7 @@ import {
 import { addRemotes, initRemotes } from '../remotes'
 import { DialogBox, Result } from 'web-dialog-box'
 import { CopyProgress, CopyProgressDialog } from './copyprogress'
+import { filter, fromEvent, map } from 'rxjs'
 
 var latestRequest = 0
 
@@ -177,11 +178,30 @@ export class Folder extends HTMLElement {
             }
         }
 
+        const toFolderEvent = (event: MessageEvent) => {
+            return JSON.parse(event.data) as FolderEvent
+        }
+
         this.source = new EventSource(this.id == "folderLeft" ? "commander/sseLeft" : "commander/sseRight")
-        this.source.addEventListener("message", event => {
-            const folderEvent: FolderEvent = JSON.parse(event.data)
-            this.onEvent(folderEvent)
+        let folderEvents = fromEvent<MessageEvent>(this.source, 'message')
+            .pipe(map(toFolderEvent))
+                
+        let getItemsFinishedEvents = folderEvents.pipe(filter(n => n.Case == "GetItemsFinished"))
+        let enhancedInfoEvents = folderEvents.pipe(filter(n => n.Case == "EnhancedInfo"))
+        let copyProgressEvents = folderEvents.pipe(filter(n => n.Case == "CopyProgress"))
+
+        getItemsFinishedEvents.subscribe(() => this.disableSorting(false))
+        enhancedInfoEvents.subscribe(evt => {
+            (evt as EnhancedInfo).Fields[0].forEach(n => {
+                if (n.exifTime) 
+                    this.items[n.index!].exifTime = n.exifTime
+                    //this.table.items[n.index!].exifTime = n.exifTime
+                if (n.version) 
+                    this.items[n.index!].version = n.version
+            })            
+            this.table.refresh()
         })
+        copyProgressEvents.subscribe(evt => this.copyProgress?.setValue((evt as CopyProgressType).Fields[0]))
 
         this.changePath() 
         const lastPath = localStorage.getItem(`${this.folderId}-lastPath`)
@@ -662,27 +682,6 @@ export class Folder extends HTMLElement {
             this.backtrack.length = this.backPosition
             if (this.backPosition == 0 || this.backtrack[this.backPosition - 1] != this.path)
                 this.backtrack.push(this.path)
-        }
-    }
-
-    private onEvent(evt: FolderEvent) {
-        switch (evt.Case) {
-            case "EnhancedInfo": 
-                evt.Fields[0].forEach(n => {
-                    if (n.exifTime) 
-                        this.items[n.index!].exifTime = n.exifTime
-                        //this.table.items[n.index!].exifTime = n.exifTime
-                    if (n.version) 
-                        this.items[n.index!].version = n.version
-                })            
-                this.table.refresh()
-                break
-            case "GetItemsFinished":
-                this.disableSorting(false)
-                break
-            case "CopyProgress":
-                this.copyProgress?.setValue(evt.Fields[0])
-                break
         }
     }
 
