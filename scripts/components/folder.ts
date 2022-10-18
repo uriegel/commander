@@ -401,17 +401,18 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO copy/move android
         // TODO copy DateTime from android file
-        // TODO Drag n drop: drag to external copy/move
-        // TODO Copy paste?
+        // TODO copy Android Send Progress
+        // TODO copy Android Send Progress
+        // TODO copy Android rename target
         // TODO delete remotes
         // TODO rename remotes
+        // TODO Drag n drop: drag to external copy/move
+        // TODO Copy paste?
         // TODO Copy/Move Conflicts: Version
         // TODO Windows Title Icon is blurry
         // TODO Adapt Yaru theme
         // TODO when Time sorting, then sort after exif or disable time sort
-        // TODO remote engine
         // TODO GetFileItems native faster with pinvoke
         // TODO Remote engine: parent select last folder    
         // TODO Strings always from F# as Resource strings (Culture)    
