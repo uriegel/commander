@@ -401,7 +401,6 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO copy Android rename target
         // TODO copy Android Send Progress
         // TODO copy Android Conflicts
         // TODO delete remotes

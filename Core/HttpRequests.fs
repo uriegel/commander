@@ -10,6 +10,7 @@ open FSharpTools.Functional
 open System.IO
 open System.Net
 open FSharpRailway.Option
+open FSharpTools.Directory
 
 type RequestClient = {
     Client: HttpClient
@@ -52,18 +53,19 @@ let getLastWriteTime =
     getFileDateValue >=> tryParse >=> (fun n -> Some (getTime n))
 
 
-let saveFile<'a> requestClient url data = 
+let saveFile<'a> requestClient item targetPath url data = 
     use requestMessage = new HttpRequestMessage(HttpMethod.Post, requestClient.GetUri(url))
     requestMessage.Content <- JsonContent.Create(data, data.GetType (), null, getJsonOptions ()) 
     use responseMessage = requestClient.Client.Send requestMessage 
     let stream = responseMessage.Content.ReadAsStream() 
 
-    use target = File.Create "/home/uwe/test/test.jpg"
+    let file = combine2Pathes targetPath (FileInfo item).Name
+    use target = File.Create file
     stream.CopyTo target
 
     let setLastWriteTime path time = File.SetLastWriteTime (path, time)
     getLastWriteTime responseMessage
-    |> Option.iter (setLastWriteTime "/home/uwe/test/test.jpg")
+    |> Option.iter (setLastWriteTime file)
 
         
 

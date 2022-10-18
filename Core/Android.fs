@@ -193,6 +193,7 @@ let getItems (engine: EngineType) path latestPath = async {
 
 type ItemsToCopy = {
     Items:        string[]
+    TargetPath:   string
     RequestParam: RequestParam
 }
 
@@ -210,14 +211,15 @@ let prepareCopy items sourcePath targetPath =
             items 
             |> Seq.map getPath
             |> Seq.toArray
+        TargetPath = targetPath
         RequestParam = sourcePath |> getRequestParam   
     } 
 
     "[]"
 
 let copyItems id sourcePath move conflictsExcluded=
-    let copyItem request item =
-        saveFile (getClient request.BaseUrl) "getfile" {
+    let copyItem request targetPath item =
+        saveFile (getClient request.BaseUrl) item targetPath "getfile" {
             Path = item  
         }
     
@@ -225,7 +227,7 @@ let copyItems id sourcePath move conflictsExcluded=
         match copyItemCache with
         | Some value ->
             value.Items
-            |> Array.iter (copyItem value.RequestParam)
+            |> Array.iter (copyItem value.RequestParam value.TargetPath) 
             ()
         | None -> ()
 
