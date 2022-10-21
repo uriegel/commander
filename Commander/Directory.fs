@@ -258,7 +258,7 @@ let prepareFileCopy (items: string[]) =
         Items  = items |> Array.map getDirectoryItem
     } |> serialize
 
-let prepareCopy items sourcePath targetPath =
+let prepareCopy items sourcePath targetPath = async {
 
     let rec getFileInfoFromDir path =
         Seq.concat <| seq {
@@ -326,10 +326,11 @@ let prepareCopy items sourcePath targetPath =
         |> Array.length
         , item.Conflict
 
-    itemsToCopy
-    |> Array.choose (fun n -> n.Conflict)
-    |> Array.sortBy sortConflicts
-    |> serialize
+    return itemsToCopy
+        |> Array.choose (fun n -> n.Conflict)
+        |> Array.sortBy sortConflicts
+        |> serialize
+}
 
 let copyItems id sourcePath move conflictsExcluded=
 

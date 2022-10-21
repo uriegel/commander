@@ -139,11 +139,11 @@ let deleteItems (param: DeleteItemsParam) =
 let prepareFileCopy (files: string[]) =
     Directory.prepareFileCopy files
 
-let prepareCopy (param: PrepareCopyItemsParam) =
+let prepareCopy (param: PrepareCopyItemsParam) = 
     match param.SourceEngineType, param.TargetEngineType with
     | EngineType.Directory, EngineType.Directory -> Directory.prepareCopy param.Items param.SourcePath param.TargetPath
     | EngineType.Android, EngineType.Directory -> Android.prepareCopy param.Items param.SourcePath param.TargetPath
-    | _ -> ""
+    | _ -> async { return ""}
 
 let copyItems (param: CopyItemsParam) =
     match param.SourceEngineType, param.TargetEngineType with

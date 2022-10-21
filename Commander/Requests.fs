@@ -167,8 +167,8 @@ let prepareCopy () =
     fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
             let! body = ctx.ReadBodyFromRequestAsync ()
-            let param = JsonSerializer.Deserialize<PrepareCopyItemsParam>(body, getJsonOptions ())
-            let result = prepareCopy param
+            let param: PrepareCopyItemsParam = JsonSerializer.Deserialize<PrepareCopyItemsParam>(body, getJsonOptions ())
+            let! result = prepareCopy param
             return! Json.text result next ctx
         }              
 
