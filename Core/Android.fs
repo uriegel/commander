@@ -15,8 +15,6 @@ open FSharpRailway
 open FolderEvents
 open System.IO
 open System
-open FileSystem
-open System.Text.Json.Serialization.Skippable
 
 type GetItems = {
     Path:        string option

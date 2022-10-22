@@ -24,12 +24,9 @@ type GetItems = {
     CurrentItem: RemoteItem
 }
 
-let mutable remotesMap: Map<string, Remote[]> = [] |> Map.ofList
+let mutable remotes: Remote[] = [||]
 
-let getRemotes folderId =
-    remotesMap.TryFind folderId |> Option.defaultValue [||]
-
-let getRemoteItems folderId = 
+let getRemoteItems () = 
     let mapRemote remote = 
         {
             Name        = remote.Name
@@ -39,7 +36,7 @@ let getRemoteItems folderId =
             ItemType    = if remote.IsAndroid then ItemType.AndroidRemote else ItemType.Remote
         }     
 
-    getRemotes folderId 
+    remotes
     |> Array.map mapRemote
 
 let getEngineAndPathFrom (item: InputItem) (body: string) = 
@@ -50,7 +47,16 @@ let getEngineAndPathFrom (item: InputItem) (body: string) =
     | _                      -> EngineType.None, ""
     
 
-let getItems engine folderId latestPath = async {
+let getItems engine latestPath = async {
+
+    let makeRemoteItem remote = {
+        Name =        remote.Name
+        Ip =          remote.Ip
+        Selectable =  true
+        IsDirectory = true
+        ItemType =    if remote.IsAndroid then ItemType.AndroidRemote else ItemType.Remote
+    }
+
     let items = Array.concat [ 
         [| { 
             Name        = ".."
@@ -59,7 +65,9 @@ let getItems engine folderId latestPath = async {
             IsDirectory = true
             ItemType    = ItemType.Parent
         } |]
-        getRemoteItems <| folderId
+        remotes 
+        |> Array.map makeRemoteItem
+        |> Array.sort
         [| { 
             Name        = "Hinzufügen..."
             Ip          = ""
@@ -93,17 +101,5 @@ let getItems engine folderId latestPath = async {
     |}
     return JsonSerializer.Serialize (result, getJsonOptions ())}
 
-let private monitor = new obj()
-
-let put folderId (remotes: Remote[]) = 
-    let recentRemotes = getRemotes folderId
-    let newRemotes = Array.concat [ 
-        recentRemotes
-        remotes 
-    ]
-
-    let update () = remotesMap <- remotesMap |> Map.add folderId newRemotes
-
-    lock monitor update
-
-    
+let put (newRemotes: Remote[]) = 
+    remotes <- newRemotes

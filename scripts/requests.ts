@@ -79,10 +79,11 @@ type CreateFolderType = {
 }
 
 type RenameItemType = {
-    engine:     EngineType
-    path:       string
-    name:       string
-    newName:    string
+    engine:   EngineType
+    folderId: string
+    path:     string
+    name:     string
+    newName:  string
 }
 
 type DeleteItemsType = {

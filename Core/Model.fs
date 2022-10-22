@@ -67,10 +67,16 @@ type CopyProgress = {
     Current:     CopyProgressInfo
 }
 
+type RenameRemote = {
+    Name:    string
+    NewName: string
+}
+
 type FolderEvent = 
     | EnhancedInfo of EnhancedInfo
     | GetItemsFinished
     | CopyProgress of CopyProgress
+    | RenameRemote of RenameRemote
 
 let serialize obj = TextJson.serialize (getJsonOptions ()) obj
 

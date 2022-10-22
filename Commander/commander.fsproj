@@ -20,6 +20,7 @@
     <Compile Include="IO.fs" />
     <Compile Include="Directory.fs" />
     <Compile Include="WindowBounds.fs" />
+    <Compile Include="Remotes.fs" />
     <Compile Include="Engines.fs" />
     <Compile Include="Requests.fs" />
     <Compile Include="Electron.fs" />

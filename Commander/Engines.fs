@@ -20,10 +20,11 @@ type DeleteItemsParam = {
 }
 
 type RenameItemParam = {
-    Engine:  EngineType
-    Path:    string
-    Name:    string
-    NewName: string
+    Engine:   EngineType
+    FolderId: string
+    Path:     string
+    Name:     string
+    NewName:  string
 }
 
 type PrepareCopyItemsParam = {
@@ -73,7 +74,7 @@ let getEngineAndPath (getItems: GetItems) body =
 let getItems (param: GetItems) body = 
     match getEngineAndPath param body with
     | EngineType.Root, _       -> Root.getItems param.Engine param.Path
-    | EngineType.Remotes, _    -> Remotes.getItems param.Engine param.FolderId param.Path 
+    | EngineType.Remotes, _    -> Remotes.getItems param.Engine param.Path 
     | EngineType.Android, path -> Android.getItems param.Engine path param.Path
     | _, path                  -> Directory.getItems path param
 
@@ -112,6 +113,7 @@ let getActionsTexts (param: GetActionsTexts) =
     | EngineType.Directory, Some(EngineType.Directory), ActionType.Move, _         -> Some (sprintf "Möchtest Du %s verschieben?"<| getFilesOrDirs ())
     | EngineType.Android,   Some(EngineType.Directory), ActionType.Move, _         -> Some (sprintf "Möchtest Du %s verschieben?"<| getFilesOrDirs ())
     | EngineType.Directory, _, ActionType.Rename, _                                -> Some (sprintf "Möchtest Du %s umbenennen?" <| getFilesOrDirs ())
+    | EngineType.Remotes,   _, ActionType.Rename, _                                -> Some "Möchtest Du den Eintrag umbenennen?" 
     | EngineType.Remotes, _, ActionType.Delete, _                                  -> Some (sprintf "Möchtest Du %s löschen?"    <| getRemotes ())
     | EngineType.Android, _, ActionType.Delete, _                                  -> Some (sprintf "Möchtest Du %s löschen?"    <| getFilesOrDirs ())
     | _                                                                            -> None
@@ -125,6 +127,7 @@ let createfolder (param: CreateFolderParam) =
 let renameItem (param: RenameItemParam) =
     match param.Engine with
     | EngineType.Directory -> Directory.renameItem {Path = param.Path; Name = param.Name; NewName = param.NewName}
+    | EngineType.Remotes   -> Remotes.renameItem param.FolderId param.Name param.NewName
     | _                    -> ""
 
 let deleteItems (param: DeleteItemsParam) =

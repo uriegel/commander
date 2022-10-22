@@ -7,6 +7,11 @@ export type RemoteItem = {
     isAndroid: boolean
 }
 
+export type RenameRemote = {
+    name:    string
+    newName: string
+}
+
 class AddRemotes extends HTMLElement {
     constructor() {
         super()
@@ -50,9 +55,25 @@ export async function addRemotes(folderId: string) {
             ip: adderIp.value,
             isAndroid: adderType.checked
         }
-        await request<Nothing>("putremotes", { folderId, remotes: [ item ] })        
 
         remotes = remotes.concat([item])
         localStorage.setItem("remotes", JSON.stringify(remotes))
+        await initRemotes(folderId)        
     }
+}
+
+export async function renameRemote(folderId: string, param: RenameRemote) {
+    function renameRemote(remoteItem: RemoteItem) {
+        return remoteItem.name == param.name
+            ? {
+                name: param.newName,
+                ip: remoteItem.ip,
+                isAndroid: remoteItem.isAndroid
+            }
+            : remoteItem
+    }
+
+    remotes = remotes.map(renameRemote)
+    localStorage.setItem("remotes", JSON.stringify(remotes))
+    await initRemotes(folderId)        
 }

@@ -209,6 +209,6 @@ let getFile (fileRequest: FileRequest) =
     streamFile false fileRequest.Path None None
 
 let putRemotes (remotes: Remotes) = 
-    Remotes.put remotes.FolderId remotes.Remotes
+    Remotes.put remotes.Remotes
     text "{}"
 

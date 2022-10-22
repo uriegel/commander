@@ -57,7 +57,7 @@ let getIcon ext = async {
 
 let appendPlatformInfo (subj: Subject<FolderEvent>) requestId id (path: string) (items: DirectoryItem seq) = 
 
-    let filterEnhanced item = 
+    let filterEnhanced (item: DirectoryItem) = 
         (  item.Name |> String.endsWithComparison "exe" StringComparison.OrdinalIgnoreCase
         || item.Name |> String.endsWithComparison "dll" StringComparison.OrdinalIgnoreCase)
         && requestId.Id = id

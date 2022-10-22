@@ -60,7 +60,7 @@ let getFileItem (fileInfo: FileInfo) = {
 let getItems path (param: GetItems) = async {
     
     let requestId = getRequestId param.FolderId param.RequestId
-    let sortByName item = item.Name |> String.toLower 
+    let sortByName (item: DirectoryItem) = item.Name |> String.toLower 
 
     let dirInfo = DirectoryInfo(path)
     let dirs = 
@@ -154,7 +154,7 @@ let getItems path (param: GetItems) = async {
                     Version = None
                 }
 
-        let filterEnhanced item = 
+        let filterEnhanced (item: DirectoryItem) = 
             item.Name |> String.endsWithComparison "jpg" System.StringComparison.OrdinalIgnoreCase
             && requestId.Id = param.RequestId
 
