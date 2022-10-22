@@ -213,15 +213,6 @@ let renameItem =
     >> getError
     >> serialize
 
-type ConflictItem = {
-    Conflict:    string
-    IconPath:    string option
-    SourceTime:  DateTime
-    TargetTime:  DateTime
-    SourceSize:  int64
-    TargetSize:  int64
-}
-
 type CopyItem = {
     Path:       string
     TargetPath: string
@@ -320,12 +311,6 @@ let prepareCopy items sourcePath targetPath = async {
             |> Seq.toArray
     }
     
-    let sortConflicts (item: ConflictItem) =
-        item.Conflict.ToCharArray()
-        |> Array.filter (fun n -> n = Path.DirectorySeparatorChar)
-        |> Array.length
-        , item.Conflict
-
     return itemsToCopy
         |> Array.choose (fun n -> n.Conflict)
         |> Array.sortBy sortConflicts

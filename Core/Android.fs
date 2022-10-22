@@ -14,7 +14,9 @@ open HttpRequests
 open FSharpRailway
 open FolderEvents
 open System.IO
-open System.Diagnostics
+open System
+open FileSystem
+open System.Text.Json.Serialization.Skippable
 
 type GetItems = {
     Path:        string option
@@ -96,6 +98,11 @@ let getEngineAndPathFrom _ (body: string) =
     | ItemType.Directory, Some path                      -> EngineType.Android, linuxPathCombine path androidItem.CurrentItem.Name
     | _                                                  -> EngineType.Root, RootID
 
+let getExtension fileName = 
+    match fileName |> String.indexOfChar '.' with
+    | Some pos -> Some (fileName |> String.substring pos)
+    | None     -> None 
+
 let getItems (engine: EngineType) path latestPath = async {
     let param = path |> getRequestParam
     let client = HttpRequests.getClient param.BaseUrl
@@ -103,11 +110,6 @@ let getItems (engine: EngineType) path latestPath = async {
     
     let isDir item = item.IsDirectory
     let isFile item = not item.IsDirectory
-
-    let getExtension item = 
-        match item.Name |> String.indexOfChar '.' with
-        | Some pos -> Some (item.Name |> String.substring pos)
-        | None     -> None 
 
     let getDirItem item = {
         Index =       0
@@ -127,7 +129,7 @@ let getItems (engine: EngineType) path latestPath = async {
         Size =        item.Size
         ItemType =    ItemType.File
         Selectable =  true
-        IconPath =    item |> getExtension 
+        IconPath =    item.Name |> getExtension 
         IsHidden =    item.IsHidden
         IsDirectory = false
         Time =        item.Time |> DateTime.fromUnixTime
@@ -193,10 +195,17 @@ let getItems (engine: EngineType) path latestPath = async {
     return JsonSerializer.Serialize (result, getJsonOptions ())
 }
 
-type FileInfo = {
+type RawFileInfo = {
     File: string
     Size: int64
- //   time: Long
+    Time: int64
+}
+
+type FileInfo = {
+    File:     string
+    Size:     int64
+    Time:     DateTime
+    Conflict: ConflictItem option
 }
 
 type GetFilesInfosInput = { Files: string[]}
@@ -207,7 +216,6 @@ type ItemsToCopy = {
     RequestParam: RequestParam
 }
 
-//TODO getfilesinfos
 let mutable copyItemCache: ItemsToCopy option = None
 
 let prepareCopy items sourcePath targetPath = async {
@@ -224,17 +232,56 @@ let prepareCopy items sourcePath targetPath = async {
             |> Seq.map getPath
             |> Seq.toArray
 
-    let! itemInfos = 
-        HttpRequests.post<FileInfo array> (getClient requestParam.BaseUrl) "getfilesinfos" { Files = fileNames } |> Async.AwaitTask
+    let getFileInfo (item: RawFileInfo) = 
+        let targetSubPath = 
+            item.File 
+            |> String.substring ((requestParam.FilePath |> String.length) + 1) 
 
-    // TODO conflicts
-    copyItemCache <- Some {
-        Items = itemInfos 
+        let targetItem = 
+            targetSubPath 
+            |> combine2Pathes targetPath
+    
+        let getIconPath (fileInfo: IO.FileInfo) = 
+            match fileInfo.Extension with
+            | ext when ext |> String.length > 0 
+                -> ext
+            | _  -> ".noextension"
+
+        {
+            File =     item.File
+            Size =     item.Size
+            Time =     item.Time |> DateTime.fromUnixTime
+            Conflict = 
+                if File.Exists targetItem then
+                    let targetInfo = FileInfo targetItem
+                    Some {
+                        Conflict   =  targetSubPath
+                        IconPath   =  Some <| getIconPath targetInfo
+                        SourceTime =  item.Time |> DateTime.fromUnixTime
+                        SourceSize =  item.Size
+                        TargetTime =  targetInfo.LastWriteTime
+                        TargetSize =  targetInfo.Length
+                    }
+                else
+                    None        
+        }
+
+    let! itemInfos = 
+        post<RawFileInfo array> (getClient requestParam.BaseUrl) "getfilesinfos" { Files = fileNames } 
+        |> Async.AwaitTask
+
+    let copyItems = {
+        Items = itemInfos |> Array.map getFileInfo
         TargetPath = targetPath
         RequestParam = requestParam   
     } 
 
-    return "[]"
+    copyItemCache <- Some copyItems
+
+    return copyItems.Items
+        |> Array.choose (fun n -> n.Conflict)
+        |> Array.sortBy sortConflicts
+        |> serialize
 }
 
 let copyItems id sourcePath move conflictsExcluded=

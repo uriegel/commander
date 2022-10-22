@@ -1,6 +1,8 @@
 module Model
 open FSharpTools
 open Configuration
+open System
+open System.IO
 
 type ItemType =
 | Parent        = 1
@@ -76,3 +78,19 @@ type FileSystemType =
     | None = 0
     | File = 1
     | Directory = 2
+
+type ConflictItem = {
+    Conflict:    string
+    IconPath:    string option
+    SourceTime:  DateTime
+    TargetTime:  DateTime
+    SourceSize:  int64
+    TargetSize:  int64
+}
+
+let sortConflicts (item: ConflictItem) =
+    item.Conflict.ToCharArray()
+    |> Array.filter (fun n -> n = Path.DirectorySeparatorChar)
+    |> Array.length
+    , item.Conflict
+

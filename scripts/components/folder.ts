@@ -401,7 +401,7 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO copy Android Conflicts
+        // TODO copy Android exclude Conflicts 
         // TODO delete remotes
         // TODO rename remotes
         // TODO Drag n drop: drag to external copy/move
