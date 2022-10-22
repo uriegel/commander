@@ -12,6 +12,7 @@ open Engines
 open FolderEvents
 open System.Reactive.Subjects
 open System.Text.Json
+open Model
 
 type MainEvent = 
     | ShowDevTools 
@@ -21,15 +22,7 @@ type MainEvent =
     | Restore
     | Close
 
-type RendererEvent = 
-    | ThemeChanged of string
-    | ElectronMaximize 
-    | ElectronUnmaximize 
-    | Fullscreen of bool
-    | Nothing
-
 type Remotes = {
-    FolderId: string
     Remotes: Remotes.Remote[]
 }
 
@@ -38,7 +31,6 @@ type GetActionsTextsResult = {
 }
 
 let mainReplaySubject = new Subject<MainEvent>()
-let rendererReplaySubject = new Subject<RendererEvent>()
 
 let startThemeDetection () = 
     let onChanged theme = rendererReplaySubject.OnNext (ThemeChanged theme)

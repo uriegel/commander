@@ -21,7 +21,6 @@ type DeleteItemsParam = {
 
 type RenameItemParam = {
     Engine:   EngineType
-    FolderId: string
     Path:     string
     Name:     string
     NewName:  string
@@ -127,7 +126,7 @@ let createfolder (param: CreateFolderParam) =
 let renameItem (param: RenameItemParam) =
     match param.Engine with
     | EngineType.Directory -> Directory.renameItem {Path = param.Path; Name = param.Name; NewName = param.NewName}
-    | EngineType.Remotes   -> Remotes.renameItem param.FolderId param.Name param.NewName
+    | EngineType.Remotes   -> Remotes.renameItem param.Name param.NewName
     | _                    -> ""
 
 let deleteItems (param: DeleteItemsParam) =
@@ -137,6 +136,7 @@ let deleteItems (param: DeleteItemsParam) =
     
     match param.Engine with
     | EngineType.Directory -> Directory.deleteItems <| getItems ()
+    | EngineType.Remotes   -> Remotes.deleteItems   <| getItems ()
     | _                    -> ""
 
 let prepareFileCopy (files: string[]) =

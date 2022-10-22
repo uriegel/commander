@@ -68,7 +68,6 @@ type GetFilePathType = {
 }
 
 type PutRemotesType = {
-    folderId: string,
     remotes: RemoteItem[]
 }
 
@@ -80,7 +79,6 @@ type CreateFolderType = {
 
 type RenameItemType = {
     engine:   EngineType
-    folderId: string
     path:     string
     name:     string
     newName:  string

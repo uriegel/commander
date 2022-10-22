@@ -1,4 +1,5 @@
 import { DialogBox, Result } from "web-dialog-box"
+import { getActiveFolder } from "./commander"
 import { Nothing, request } from "./requests"
 
 export type RemoteItem = {
@@ -30,8 +31,8 @@ customElements.define('add-remotes', AddRemotes)
 
 var remotes = JSON.parse(localStorage.getItem("remotes") || "[]") as RemoteItem[]
 
-export async function initRemotes(folderId: string) {
-    await request<Nothing>("putremotes", { folderId, remotes })        
+export async function initRemotes() {
+    await request<Nothing>("putremotes", { remotes })        
 }
 
 export async function addRemotes(folderId: string) {
@@ -58,11 +59,11 @@ export async function addRemotes(folderId: string) {
 
         remotes = remotes.concat([item])
         localStorage.setItem("remotes", JSON.stringify(remotes))
-        await initRemotes(folderId)        
+        await initRemotes()        
     }
 }
 
-export async function renameRemote(folderId: string, param: RenameRemote) {
+export async function renameRemote(param: RenameRemote) {
     function renameRemote(remoteItem: RemoteItem) {
         return remoteItem.name == param.name
             ? {
@@ -75,5 +76,7 @@ export async function renameRemote(folderId: string, param: RenameRemote) {
 
     remotes = remotes.map(renameRemote)
     localStorage.setItem("remotes", JSON.stringify(remotes))
-    await initRemotes(folderId)        
+    await initRemotes()  
+    getActiveFolder().reloadItems()
 }
+

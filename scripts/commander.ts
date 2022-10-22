@@ -13,6 +13,8 @@ import { refreshViewer, showViewer as viewer } from './viewer'
 import { ElectronTitlebar } from 'web-electron-titlebar'
 import { DialogBox, Result } from 'web-dialog-box'
 import { wantClose } from './copy'
+import { initRemotes, renameRemote, RenameRemote } from './remotes'
+import { filter, fromEvent, map } from 'rxjs'
 
 export function activateClass(element: HTMLElement, cls: string, activate: boolean) {
     if (activate != false)
@@ -87,32 +89,50 @@ type EventFullScreen = {
     Fields: boolean[]
 }
 
+type RenameRemoteType = {
+    Case:   "RenameRemote",
+    Fields: Array<RenameRemote>
+}
+
 type CommanderEvent = 
     | EventNothing
     | EventThemeChanged
     | EventMaximize
     | EventUnmaximize
     | EventFullScreen
+    | RenameRemoteType
 
 var currentPath = ""
+
+const toCommanderEvent = (event: MessageEvent) => {
+    return JSON.parse(event.data) as CommanderEvent
+}
+
 const source = new EventSource("commander/sse")
-source.addEventListener("message", function (event) {
-    const evt: CommanderEvent = JSON.parse(event.data)
-    switch (evt.Case) {
-        case "ThemeChanged":
-            setTheme(evt.Fields[0])    
-            break
-        case "ElectronMaximize":
-            titlebar.setMaximized(true)
-            break
-        case "ElectronUnmaximize":
-            titlebar.setMaximized(false)
-            break
-        case "Fullscreen":
-            titlebar.showTitlebar(!evt.Fields[0])
-            break
-        }
-})
+let commanderEvents = fromEvent<MessageEvent>(source, 'message')
+    .pipe(map(toCommanderEvent))
+
+const themeChangedEvents = commanderEvents
+    .pipe(filter(n => n.Case == "ThemeChanged"))
+    .pipe(map(n => (n as EventThemeChanged).Fields[0]))
+const electronMaximizeEvents = commanderEvents
+    .pipe(filter(n => n.Case == "ElectronMaximize"))
+const electronUnmaximizeEvents = commanderEvents
+    .pipe(filter(n => n.Case == "ElectronUnmaximize"))
+const fullscreenEvents = commanderEvents
+    .pipe(filter(n => n.Case == "Fullscreen"))
+    .pipe(map(n => (n as EventFullScreen).Fields[0]))
+const renameRemoteEvents = commanderEvents
+    .pipe(filter(n => n.Case == "RenameRemote"))
+    .pipe(map(n => (n as RenameRemoteType).Fields[0]))
+
+themeChangedEvents.subscribe(setTheme)
+electronMaximizeEvents.subscribe(() => titlebar.setMaximized(true))
+electronUnmaximizeEvents.subscribe(() => titlebar.setMaximized(false))
+fullscreenEvents.subscribe(titlebar.showTitlebar)
+renameRemoteEvents.subscribe(renameRemote)
+
+initRemotes()        
 
 function setTheme(theme: string) {
     activateClass(document.body, "adwaitaDark", false) 
@@ -124,6 +144,7 @@ function setTheme(theme: string) {
     activateClass(document.body, theme, true) 
 }
 
+export function getActiveFolder() { return activeFolder == folderLeft ? folderLeft : folderRight }
 function getInactiveFolder() { return activeFolder == folderLeft ? folderRight : folderLeft }
 
 export function onCopy() {

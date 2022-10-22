@@ -3,6 +3,7 @@ open FSharpTools
 open Configuration
 open System
 open System.IO
+open System.Reactive.Subjects
 
 type ItemType =
 | Parent        = 1
@@ -67,16 +68,10 @@ type CopyProgress = {
     Current:     CopyProgressInfo
 }
 
-type RenameRemote = {
-    Name:    string
-    NewName: string
-}
-
 type FolderEvent = 
     | EnhancedInfo of EnhancedInfo
     | GetItemsFinished
     | CopyProgress of CopyProgress
-    | RenameRemote of RenameRemote
 
 let serialize obj = TextJson.serialize (getJsonOptions ()) obj
 
@@ -100,3 +95,17 @@ let sortConflicts (item: ConflictItem) =
     |> Array.length
     , item.Conflict
 
+type RenameRemote = {
+    Name:    string
+    NewName: string
+}
+
+type RendererEvent = 
+    | ThemeChanged of string
+    | ElectronMaximize 
+    | ElectronUnmaximize 
+    | Fullscreen of bool
+    | RenameRemote of RenameRemote
+    | Nothing
+
+let rendererReplaySubject: Subject<RendererEvent> = new Subject<RendererEvent>()

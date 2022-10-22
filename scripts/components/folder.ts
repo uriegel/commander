@@ -8,7 +8,7 @@ import {
     ActionType, Column, ColumnsType, CopyFiles, EngineType, GetActionTextResult, GetFilePathResult,
     GetItemResult, IOError, IOErrorResult, ItemType, request
 } from '../requests'
-import { addRemotes, initRemotes, renameRemote, RenameRemote } from '../remotes'
+import { addRemotes } from '../remotes'
 import { DialogBox, Result } from 'web-dialog-box'
 import { CopyProgress, CopyProgressDialog } from './copyprogress'
 import { combineLatest, filter, fromEvent, map, Subject } from 'rxjs'
@@ -54,16 +54,10 @@ type CopyProgressType = {
     Fields: Array<CopyProgress>
 }
 
-type RenameRemoteType = {
-    Case:   "RenameRemote",
-    Fields: Array<RenameRemote>
-}
-
 type FolderEvent = 
     | EnhancedInfo
     | GetItemsFinished
     | CopyProgressType
-    | RenameRemoteType
 
 const dialog = document.querySelector('dialog-box') as DialogBox    
 
@@ -161,7 +155,6 @@ export class Folder extends HTMLElement {
             this.table.setAttribute("scrollbar-right", sbr)
         this.pathInput = this.getElementsByTagName("INPUT")[0]! as HTMLInputElement
         this.copyProgress = document.getElementById('copy-progress') as CopyProgressDialog
-        initRemotes(this.folderId)
 
         this.table.renderRow = (item, tr) => {
             tr.onmousedown = evt => {
@@ -204,13 +197,9 @@ export class Folder extends HTMLElement {
         let copyProgressEvents = folderEvents
             .pipe(filter(n => n.Case == "CopyProgress"))
             .pipe(map(n => (n as CopyProgressType).Fields[0]))
-        let renameRemoteEvents = folderEvents
-            .pipe(filter(n => n.Case == "RenameRemote"))
-            .pipe(map(n => (n as RenameRemoteType).Fields[0]))
 
         getItemsFinishedEvents.subscribe(() => this.disableSorting(false))
         copyProgressEvents.subscribe(this.copyProgress?.setValue.bind(this.copyProgress))
-        renameRemoteEvents.subscribe(remotes => renameRemote(this.folderId, remotes))
 
         combineLatest([enhancedInfoEvents, this.itemsChanged])
             .pipe(filter(([info, requestId]) => info.requestId == requestId && requestId == this.requestId))
@@ -614,7 +603,6 @@ export class Folder extends HTMLElement {
         if (res.result == Result.Ok && res.input) {
             const ioResult = await request<IOErrorResult>("renameitem", {
                 engine:   this.engine,
-                folderId: this.folderId,
                 path:     this.getCurrentPath(),
                 name:     item.name,
                 newName:  res.input
