@@ -296,8 +296,16 @@ let copyItems id sourcePath move conflictsExcluded=
                     current + item.Size
 
                 match copyItemCache with
-                | Some value -> value.Items |> Array.fold add 0L
+                | Some value -> 
+                    if conflictsExcluded then 
+                        value.Items
+                        |> Array.filter (fun n -> n.Conflict.IsNone)
+                        |> Array.fold add 0L
+                    else
+                        value.Items 
+                        |> Array.fold add 0L
                 | None                     -> 0L
+    
 
             let copyFile (source: Stream) target length =
                 use target = File.Create target
@@ -349,9 +357,26 @@ let copyItems id sourcePath move conflictsExcluded=
             0L
 
     let copyItems () =
+        subj.OnNext <| CopyProgress { 
+            CurrentFile = ""
+            Total = { 
+                Total = 0
+                Current = 0
+            }
+            Current = { 
+                Total = 0
+                Current = 0
+            }
+        }
+
+
         match copyItemCache with
-        | Some value ->
-            value.Items
+        | Some (value: ItemsToCopy) ->
+            if conflictsExcluded then 
+                value.Items
+                |> Array.filter (fun n -> n.Conflict.IsNone)
+            else
+                value.Items        
             |> Array.fold (copyItem value.RequestParam value.TargetPath) 0L 
             |> ignore
         | None -> ()
