@@ -401,7 +401,7 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Remotes to fs but where to save remotes (localstorage)
+        // TODO Remotes to fs but where to save remotes? event to save to localstorage
         // TODO delete remotes
         // TODO rename remotes
         // TODO Extended Rename
