@@ -7,12 +7,14 @@
     <Compile Include="FileSystem.fs" />
     <Compile Include="Configuration.fs" />
     <Compile Include="Model.fs" />
+    <Compile Include="FolderEvents.fs" />
     <Compile Include="Engine.fs" />
     <Compile Include="HttpRequests.fs" />
     <Compile Include="Android.fs" />
     <Compile Include="Remotes.fs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="FSharp.Control.Reactive" Version="5.0.2" />
     <PackageReference Include="FSharpRailway" Version="0.3.3" />
     <PackageReference Include="FSharpTools" Version="7.0.0" />
     <PackageReference Include="FSharp.SystemTextJson" Version="0.17.4" />

@@ -10,6 +10,7 @@ open FSharpTools.Functional
 open System.IO
 open FSharpRailway.Option
 open FSharpTools.Directory
+open FSharpTools
 
 type RequestClient = {
     Client: HttpClient
@@ -52,39 +53,14 @@ let getLastWriteTime =
     getFileDateValue >=> tryParse >=> (fun n -> Some (getTime n))
 
 
-let saveFile<'a> requestClient item targetPath url data = 
-
-
-    let copyFile (length: int64) (source: Stream) (target: Stream) =
-        let buffer: byte array = Array.zeroCreate 8192
-        
-        let rec copy alreadyRead = 
-            let read = source.Read(buffer, 0, buffer.Length) 
-            match read, (int64 read) + alreadyRead with
-            | 0, _ -> alreadyRead
-            | read, alreadyRead when alreadyRead < length -> 
-                target.Write (buffer, 0, read)
-                copy alreadyRead
-            | _, alreadyRead when alreadyRead = length -> 
-                target.Write (buffer, 0, read)
-                alreadyRead
-            | _, _ -> alreadyRead
-
-        copy 0
-
+let getStream<'a> requestClient url data (processStream: Stream -> int64 -> Option<DateTime> -> Unit) = 
     use requestMessage = new HttpRequestMessage(HttpMethod.Post, requestClient.GetUri(url))
     requestMessage.Content <- JsonContent.Create(data, data.GetType (), null, getJsonOptions ()) 
     use responseMessage = requestClient.Client.Send (requestMessage, HttpCompletionOption.ResponseHeadersRead) 
-    let contentLength = responseMessage.Content.Headers.ContentLength.GetValueOrDefault()
-    use stream = responseMessage.Content.ReadAsStream() 
-    let file = combine2Pathes targetPath (FileInfo item).Name
-    use target = File.Create file
-    copyFile contentLength stream target |> ignore // TODO incomplete copy
-    
-    let setLastWriteTime path time = File.SetLastWriteTime (path, time)
-    getLastWriteTime responseMessage
-    |> Option.iter (setLastWriteTime file)
-
-        
+    use stream = responseMessage.Content.ReadAsStream()
+    let length = responseMessage.Content.Headers.ContentLength.GetValueOrDefault()
+    let lastWriteTime = getLastWriteTime responseMessage
+    processStream stream length lastWriteTime
+      
 
 

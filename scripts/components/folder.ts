@@ -200,7 +200,7 @@ export class Folder extends HTMLElement {
             .pipe(map(n => (n as CopyProgressType).Fields[0]))
 
         getItemsFinishedEvents.subscribe(() => this.disableSorting(false))
-        copyProgressEvents.subscribe(this.copyProgress?.setValue)
+        copyProgressEvents.subscribe(this.copyProgress?.setValue.bind(this.copyProgress))
 
         combineLatest([enhancedInfoEvents, this.itemsChanged])
             .pipe(filter(([info, requestId]) => info.requestId == requestId && requestId == this.requestId))
@@ -401,7 +401,6 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO copy Android Send Progress
         // TODO copy Android Conflicts
         // TODO delete remotes
         // TODO rename remotes

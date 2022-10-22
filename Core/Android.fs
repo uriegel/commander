@@ -12,6 +12,9 @@ open FileSystem
 open FSharpRailway.Option
 open HttpRequests
 open FSharpRailway
+open FolderEvents
+open System.IO
+open System.Diagnostics
 
 type GetItems = {
     Path:        string option
@@ -235,17 +238,75 @@ let prepareCopy items sourcePath targetPath = async {
 }
 
 let copyItems id sourcePath move conflictsExcluded=
-    let copyItem request targetPath item =
-        saveFile (getClient request.BaseUrl) item.File targetPath "getfile" {
-            Path = item.File  
-        }
+    let subj = getEventSubject id   
     
+    let copyItem (request: RequestParam) (targetPath: string) currentTotalcopied item =
+        if copyItemCache.IsSome then
+            let fileInfo = FileInfo item.File
+            let totalSize = 
+
+                let add current item = 
+                    current + item.Size
+
+                match copyItemCache with
+                | Some value -> value.Items |> Array.fold add 0L
+                | None                     -> 0L
+
+            let copyFile (source: Stream) target length =
+                use target = File.Create target
+                let buffer: byte array = Array.zeroCreate 8192
+                
+                let rec copy alreadyRead = 
+                    let read = source.Read(buffer, 0, buffer.Length) 
+
+                    let currentRead = (int64 read) + alreadyRead
+
+                    subj.OnNext <| CopyProgress { 
+                        CurrentFile = fileInfo.Name
+                        Total = { 
+                            Total = totalSize
+                            Current = currentTotalcopied + currentRead
+                        }
+                        Current = { 
+                            Total = length
+                            Current = currentRead
+                        }
+                    }
+
+                    match read, currentRead with
+                    | 0, _ -> alreadyRead
+                    | read, alreadyRead when alreadyRead < length -> 
+                        target.Write (buffer, 0, read)
+                        copy alreadyRead
+                    | _, alreadyRead when alreadyRead = length -> 
+                        target.Write (buffer, 0, read)
+                        alreadyRead
+                    | _, _ -> alreadyRead
+
+                copy 0
+
+            let processStream stream length lastWriteTime =
+                let file = combine2Pathes targetPath fileInfo.Name
+                copyFile stream file length |> ignore
+            
+                let setLastWriteTime path time = File.SetLastWriteTime (path, time)
+                lastWriteTime
+                |> Option.iter (setLastWriteTime file)
+
+
+            getStream (getClient request.BaseUrl) "getfile" {
+                Path = item.File  
+            } processStream
+            currentTotalcopied + item.Size
+        else
+            0L
+
     let copyItems () =
         match copyItemCache with
         | Some value ->
             value.Items
-            |> Array.iter (copyItem value.RequestParam value.TargetPath) 
-            ()
+            |> Array.fold (copyItem value.RequestParam value.TargetPath) 0L 
+            |> ignore
         | None -> ()
 
     let a () = exceptionToResult copyItems
