@@ -401,11 +401,12 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
+        // TODO Remotes to fs but where to save remotes (localstorage)
         // TODO delete remotes
         // TODO rename remotes
         // TODO Extended Rename
         // TODO Drag n drop: drag to external copy/move
-        // TODO Copy paste?
+        // TODO Copy paste? 
         // TODO Copy/Move Conflicts: Version
         // TODO Windows Title Icon is blurry
         // TODO Adapt Yaru theme
