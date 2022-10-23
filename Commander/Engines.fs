@@ -26,6 +26,10 @@ type RenameItemParam = {
     NewName:  string
 }
 
+type CheckExtendedRenameParam = {
+    EngineType:   EngineType
+}
+
 type PrepareCopyItemsParam = {
     FolderId:         string
     SourceEngineType: EngineType
@@ -128,6 +132,11 @@ let renameItem (param: RenameItemParam) =
     | EngineType.Directory -> Directory.renameItem {Path = param.Path; Name = param.Name; NewName = param.NewName}
     | EngineType.Remotes   -> Remotes.renameItem param.Name param.NewName
     | _                    -> ""
+
+let checkExtendedRename (param: CheckExtendedRenameParam) =
+    match param.EngineType with
+    | EngineType.Directory -> true
+    | _                    -> false
 
 let deleteItems (param: DeleteItemsParam) =
     let getItems () = 

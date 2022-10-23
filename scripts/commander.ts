@@ -169,6 +169,10 @@ export function onRename() {
     activeFolder.onRename()
 }
 
+export function onExtendedRename() {
+    activeFolder.extendedRename()
+}
+
 export function onCreateFolder() {
     activeFolder.createFolder()
 }

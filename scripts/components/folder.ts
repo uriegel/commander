@@ -5,7 +5,7 @@ import { copyItems } from '../copy'
 import { TableItem, VirtualTable } from 'virtual-table-component'
 import { compose } from '../functional'
 import {
-    ActionType, Column, ColumnsType, CopyFiles, EngineType, GetActionTextResult, GetFilePathResult,
+    ActionType, CheckExtendedRenameResult, Column, ColumnsType, CopyFiles, EngineType, GetActionTextResult, GetFilePathResult,
     GetItemResult, IOError, IOErrorResult, ItemType, request
 } from '../requests'
 import { addRemotes } from '../remotes'
@@ -538,6 +538,10 @@ export class Folder extends HTMLElement {
     }
 
     async extendedRename() {
+        let result = await request<CheckExtendedRenameResult>("checkextendedrename", {
+            engineType: this.engine
+        }) 
+        console.log("Check extended Result", result)
     }
 
     async deleteSelectedItems() {

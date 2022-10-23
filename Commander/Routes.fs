@@ -42,6 +42,7 @@ let configure (app : IApplicationBuilder) =
             route  "/commander/deleteitems"        >=> warbler (fun _ -> deleteItems ())
             route  "/commander/createfolder"       >=> warbler (fun _ -> createFolder ())
             route  "/commander/renameitem"         >=> warbler (fun _ -> renameItem ())
+            route  "/commander/checkextendedrename">=> warbler (fun _ -> checkExtendedRename ())
             route  "/commander/preparecopy"        >=> warbler (fun _ -> prepareCopy ())
             route  "/commander/copyitems"          >=> warbler (fun _ -> copyItems ())
             route  "/commander/postcopyitems"      >=> warbler (fun _ -> postCopyItems ())

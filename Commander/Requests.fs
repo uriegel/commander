@@ -30,6 +30,10 @@ type GetActionsTextsResult = {
     Result: string option
 }
 
+type CheckExtendedRenameResult = {
+    Result: bool
+}
+
 let mainReplaySubject = new Subject<MainEvent>()
 
 let startThemeDetection () = 
@@ -106,7 +110,7 @@ let getActionTexts () =
         task {
             let! body = ctx.ReadBodyFromRequestAsync ()
             let param = JsonSerializer.Deserialize<GetActionsTexts>(body, getJsonOptions ())
-            let result = { Result = getActionsTexts param }
+            let result: GetActionsTextsResult = { Result = getActionsTexts param }
             return! json result next ctx
         }
 
@@ -137,7 +141,17 @@ let renameItem () =
             return! Json.text result next ctx
         }        
 
-let deleteItems  () =
+let checkExtendedRename () = 
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+            let! body = ctx.ReadBodyFromRequestAsync ()
+            let param = JsonSerializer.Deserialize<CheckExtendedRenameParam>(body, getJsonOptions ())
+            let isSupported = checkExtendedRename param
+            let result: CheckExtendedRenameResult = { Result = isSupported }
+            return! json result next ctx
+        }        
+
+let deleteItems () =
     fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
             let! body = ctx.ReadBodyFromRequestAsync ()

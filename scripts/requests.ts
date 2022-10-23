@@ -13,6 +13,7 @@ type GetItems =           "getitems"
 type GetFilePath =        "getfilepath"
 type PutRemotes =         "putremotes"
 type GetActionsTexts =    "getactionstexts"
+type CheckExtendedRename ="checkextendedrename"
 type CreateFolder =       "createfolder"
 type DeleteItems =        "deleteitems"
 type RenameItem =         "renameitem"
@@ -33,6 +34,7 @@ export type RequestType =
     | GetFilePath 
     | PutRemotes 
     | GetActionsTexts 
+    | CheckExtendedRename
     | CreateFolder
     | DeleteItems
     | RenameItem
@@ -131,6 +133,10 @@ type GetActionsTextsType = {
     conflicts?:       boolean
 }
 
+type CheckExtendedRenameType = {
+    engineType:       EngineType
+}
+
 export type CopyFiles = {
     items:     FolderItem[]
     basePath:  string
@@ -192,7 +198,9 @@ type Exception = {
 
 export type Nothing = { }
 
-export type GetActionTextResult = { result: string| null}
+export type GetActionTextResult = { result: string | null }
+
+export type CheckExtendedRenameResult = { result: boolean }
 
 type AccessDenied = {
     Case: "AccessDenied"
@@ -231,6 +239,7 @@ type Result =
     | GetFilePathResult 
     | Nothing 
     | GetActionTextResult
+    | CheckExtendedRenameResult
     | IOErrorResult
     | ConflictItem[]
     | CopyFiles
@@ -241,6 +250,7 @@ export type RequestInput =
     | GetFilePathType 
     | PutRemotesType 
     | GetActionsTextsType 
+    | CheckExtendedRenameType
     | CreateFolderType
     | RenameItemType
     | DeleteItemsType
