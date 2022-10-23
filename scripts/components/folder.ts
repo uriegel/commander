@@ -1,6 +1,7 @@
 import 'virtual-table-component'
 import './copyconflicts'
 import './copyprogress'
+import './extendedrename'
 import { copyItems } from '../copy'
 import { TableItem, VirtualTable } from 'virtual-table-component'
 import { compose } from '../functional'
@@ -12,6 +13,7 @@ import { addRemotes } from '../remotes'
 import { DialogBox, Result } from 'web-dialog-box'
 import { CopyProgress, CopyProgressDialog } from './copyprogress'
 import { combineLatest, filter, fromEvent, map, Subject } from 'rxjs'
+import { ExtendedRename } from './extendedrename'
 
 var latestRequest = 0
 
@@ -541,7 +543,21 @@ export class Folder extends HTMLElement {
         let result = await request<CheckExtendedRenameResult>("checkextendedrename", {
             engineType: this.engine
         }) 
-        console.log("Check extended Result", result)
+        if (result.result) {
+            const extendedRename = document.getElementById("extended-rename") as ExtendedRename
+            extendedRename.initialize()
+            const res = await dialog.show({
+                extended: "extended-rename",
+                btnOk: true,
+                btnCancel: true,
+                defBtnOk: true
+            })    
+            this.setFocus()
+            if (res.result == Result.Ok) {
+                extendedRename.save()
+//                this.changePath(this.engine.currentPath, false, extendedRename.getExtendedInfos())
+            }
+        }
     }
 
     async deleteSelectedItems() {
