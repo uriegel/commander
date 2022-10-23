@@ -80,3 +80,9 @@ export async function renameRemote(param: RenameRemote) {
     getActiveFolder().reloadItems()
 }
 
+export async function deleteRemotes(items: string[]) {
+    remotes = remotes.filter(x => !items.includes(x.name))
+    localStorage.setItem("remotes", JSON.stringify(remotes))
+    await initRemotes()  
+    getActiveFolder().reloadItems()
+}

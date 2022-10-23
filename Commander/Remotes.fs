@@ -9,5 +9,6 @@ let renameItem name newName =
     "{}"
 
 let deleteItems items =
+    rendererReplaySubject.OnNext <| DeleteRemotes items
     "{}"
     

@@ -13,7 +13,7 @@ import { refreshViewer, showViewer as viewer } from './viewer'
 import { ElectronTitlebar } from 'web-electron-titlebar'
 import { DialogBox, Result } from 'web-dialog-box'
 import { wantClose } from './copy'
-import { initRemotes, renameRemote, RenameRemote } from './remotes'
+import { deleteRemotes, initRemotes, renameRemote, RenameRemote } from './remotes'
 import { filter, fromEvent, map } from 'rxjs'
 
 export function activateClass(element: HTMLElement, cls: string, activate: boolean) {
@@ -94,6 +94,11 @@ type RenameRemoteType = {
     Fields: Array<RenameRemote>
 }
 
+type DeleteRemotesType = {
+    Case:   "DeleteRemotes",
+    Fields: Array<string[]>
+}
+
 type CommanderEvent = 
     | EventNothing
     | EventThemeChanged
@@ -101,6 +106,7 @@ type CommanderEvent =
     | EventUnmaximize
     | EventFullScreen
     | RenameRemoteType
+    | DeleteRemotesType
 
 var currentPath = ""
 
@@ -125,12 +131,16 @@ const fullscreenEvents = commanderEvents
 const renameRemoteEvents = commanderEvents
     .pipe(filter(n => n.Case == "RenameRemote"))
     .pipe(map(n => (n as RenameRemoteType).Fields[0]))
+const deleteRemotesEvents = commanderEvents
+    .pipe(filter(n => n.Case == "DeleteRemotes"))
+    .pipe(map(n => (n as DeleteRemotesType).Fields[0]))
 
 themeChangedEvents.subscribe(setTheme)
 electronMaximizeEvents.subscribe(() => titlebar.setMaximized(true))
 electronUnmaximizeEvents.subscribe(() => titlebar.setMaximized(false))
 fullscreenEvents.subscribe(titlebar.showTitlebar)
 renameRemoteEvents.subscribe(renameRemote)
+deleteRemotesEvents.subscribe(deleteRemotes)
 
 initRemotes()        
 

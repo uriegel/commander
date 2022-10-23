@@ -106,6 +106,7 @@ type RendererEvent =
     | ElectronUnmaximize 
     | Fullscreen of bool
     | RenameRemote of RenameRemote
+    | DeleteRemotes of string[]
     | Nothing
 
 let rendererReplaySubject: Subject<RendererEvent> = new Subject<RendererEvent>()
