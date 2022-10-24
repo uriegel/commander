@@ -161,7 +161,8 @@ export enum ColumnsType {
     NameExtension = 3,
     Size          = 4,  
     Time          = 5,
-    Version       = 6
+    Version       = 6,
+    NewName       = 7
 }
 
 export type Column = {

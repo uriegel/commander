@@ -4,7 +4,7 @@ import './copyprogress'
 import './extendedrename'
 import { copyItems } from '../copy'
 import { TableItem, VirtualTable } from 'virtual-table-component'
-import { compose } from '../functional'
+import { compose, insertArrayItem } from '../functional'
 import {
     ActionType, CheckExtendedRenameResult, Column, ColumnsType, CopyFiles, EngineType, GetActionTextResult, GetFilePathResult,
     GetItemResult, IOError, IOErrorResult, ItemType, request
@@ -35,6 +35,7 @@ export interface FolderItem extends TableItem {
     iconPath?:    string
     exifTime?:    string
     version?:     Version
+    newName?:     string
 }
 
 type EnhancedInfoType = {
@@ -555,7 +556,21 @@ export class Folder extends HTMLElement {
             this.setFocus()
             if (res.result == Result.Ok) {
                 extendedRename.save()
-//                this.changePath(this.engine.currentPath, false, extendedRename.getExtendedInfos())
+                const columns = this.table.getColumns() 
+                const newcolumns = insertArrayItem(columns, 1, {
+                    name: "Neuer Name",
+                    render(td, item) {
+                        td.innerHTML = item.newName ?? ""
+                    }
+                })
+                console.log("newcolumns", newcolumns)
+                this.table.setColumns(newcolumns, `${this.folderId}-extendedrename`) 
+                this.table.items[3].newName = "NeuerName"
+                this.table.refresh()
+                // TODO: add newname column only when not set
+                // TODO: remove newname column when removing checked
+                // TODO: sort index is broken after rename
+                // TODO: extendedrename module, controlled by Selection changed, is either null or set with functions ?.set...
             }
         }
     }
