@@ -4,16 +4,16 @@ import './copyprogress'
 import './extendedrename'
 import { copyItems } from '../copy'
 import { TableItem, VirtualTable } from 'virtual-table-component'
-import { compose, insertArrayItem } from '../functional'
+import { ExtendedRename, initExtendedRename } from '../extendedrename'
+import { compose } from '../functional'
 import {
-    ActionType, CheckExtendedRenameResult, Column, ColumnsType, CopyFiles, EngineType, GetActionTextResult, GetFilePathResult,
+    ActionType, Column, ColumnsType, CopyFiles, EngineType, GetActionTextResult, GetFilePathResult,
     GetItemResult, IOError, IOErrorResult, ItemType, request
 } from '../requests'
 import { addRemotes } from '../remotes'
 import { DialogBox, Result } from 'web-dialog-box'
 import { CopyProgress, CopyProgressDialog } from './copyprogress'
 import { combineLatest, filter, fromEvent, map, Subject } from 'rxjs'
-import { ExtendedRename } from './extendedrename'
 
 var latestRequest = 0
 
@@ -141,6 +141,8 @@ export class Folder extends HTMLElement {
     constructor() {
         super()
         this.folderId = this.getAttribute("id")!
+
+        this.extendedRename = initExtendedRename()
 
         const additionalStyle = ".exif {color: var(--exif-color);} .isSelected .exif {color: var(--selected-exif-color); }"
         this.innerHTML = `
@@ -540,39 +542,8 @@ export class Folder extends HTMLElement {
             onDrop()
     }
 
-    async extendedRename() {
-        let result = await request<CheckExtendedRenameResult>("checkextendedrename", {
-            engineType: this.engine
-        }) 
-        if (result.result) {
-            const extendedRename = document.getElementById("extended-rename") as ExtendedRename
-            extendedRename.initialize()
-            const res = await dialog.show({
-                extended: "extended-rename",
-                btnOk: true,
-                btnCancel: true,
-                defBtnOk: true
-            })    
-            this.setFocus()
-            if (res.result == Result.Ok) {
-                extendedRename.save()
-                const columns = this.table.getColumns() 
-                const newcolumns = insertArrayItem(columns, 1, {
-                    name: "Neuer Name",
-                    render(td, item) {
-                        td.innerHTML = item.newName ?? ""
-                    }
-                })
-                console.log("newcolumns", newcolumns)
-                this.table.setColumns(newcolumns, `${this.folderId}-extendedrename`) 
-                this.table.items[3].newName = "NeuerName"
-                this.table.refresh()
-                // TODO: add newname column only when not set
-                // TODO: remove newname column when removing checked
-                // TODO: sort index is broken after rename
-                // TODO: extendedrename module, controlled by Selection changed, is either null or set with functions ?.set...
-            }
-        }
+    switchExtendedRename() {
+        this.extendedRename.switch(this.folderId, this.engine, this.table, () => this.setFocus())
     }
 
     async deleteSelectedItems() {
@@ -804,6 +775,7 @@ export class Folder extends HTMLElement {
 
     private source: EventSource
     private table: VirtualTable<FolderItem>
+    private extendedRename: ExtendedRename
     private folderRoot: HTMLElement
     private folderId = ""
     private itemsChanged = new Subject<number>()

@@ -4,7 +4,7 @@ export type ExtendedInfo = {
     start: number
 } | null
 
-export class ExtendedRename extends HTMLElement {
+export class ExtendedRenameDialog extends HTMLElement {
     constructor() {
         super()
         this.innerHTML = `
@@ -97,5 +97,5 @@ export class ExtendedRename extends HTMLElement {
     private start: HTMLInputElement
 }
 
-customElements.define('extended-rename', ExtendedRename)
+customElements.define('extended-rename', ExtendedRenameDialog)
 

@@ -170,7 +170,7 @@ export function onRename() {
 }
 
 export function onExtendedRename() {
-    activeFolder.extendedRename()
+    activeFolder.switchExtendedRename()
 }
 
 export function onCreateFolder() {
