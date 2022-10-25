@@ -169,6 +169,7 @@ export class Folder extends HTMLElement {
                     setTimeout(() => {
                         const pos = this.table.getPosition()
                         this.table.items[pos].isSelected = !this.table.items[pos].isSelected
+                        this.extendedRename?.selectionChanged(this.table.items) 
                         this.table.refresh()
                     })
             }
@@ -419,9 +420,9 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Extended Rename Mouse Selection
-        // TODO Extended Rename digits
-        // TODO Extended Rename 
+        // TODO Extended RENAME engine: renameItems in f#
+        // TODO Extended Rename items: ___RENAME___... all then rename 
+        // TODO Extended Rename check pre renamed items
         // TODO Drag n drop: drag to external copy/move
         // TODO Copy paste? 
         // TODO Copy/Move Conflicts: Version

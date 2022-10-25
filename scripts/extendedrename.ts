@@ -19,11 +19,11 @@ function init() {
 }
 
 function selectionChanged(items: FolderItem[]) {
-    const info = extendedRenameDialog.getExtendedInfos()
+    const info = extendedRenameDialog.getExtendedInfos()!
     items.reduce((p, n, i) => {
-        n.newName = n.isSelected && !n.isDirectory ? `${info!.prefix}${p}` : ""
+        n.newName = n.isSelected && !n.isDirectory ? `${info.prefix}${p.toString().padStart(info.digits, '0')}` : ""
         return p + (n.isSelected && !n.isDirectory ? 1 : 0)
-    }, info!.start ?? 0)
+    }, info.start ?? 0)
 }
 
 export async function extendedRename(current: ExtendedRename | null, folderId: string, engineType: EngineType, table: VirtualTable<FolderItem>, setFocus: ()=>void) {
