@@ -57,7 +57,6 @@ export async function extendedRename(current: ExtendedRename | null, folderId: s
             }    
             table.refresh()
             
-            // TODO: sort index is broken after rename
             // TODO: extendedrename module, controlled by Selection changed, is either null or set with functions ?.set...
         }
     }

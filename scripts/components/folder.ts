@@ -3,11 +3,11 @@ import './copyconflicts'
 import './copyprogress'
 import './extendedrename'
 import { copyItems } from '../copy'
-import { TableItem, VirtualTable } from 'virtual-table-component'
+import { TableItem, VirtualTable, Column as TableColumn } from 'virtual-table-component'
 import { ExtendedRename, extendedRename } from '../extendedrename'
 import { compose } from '../functional'
 import {
-    ActionType, Column, ColumnsType, CopyFiles, EngineType, GetActionTextResult, GetFilePathResult,
+    ActionType, ColumnsType, CopyFiles, EngineType, GetActionTextResult, GetFilePathResult,
     GetItemResult, IOError, IOErrorResult, ItemType, request
 } from '../requests'
 import { addRemotes } from '../remotes'
@@ -22,6 +22,11 @@ export type Version = {
     minor: number
     patch: number
     build: number
+}
+
+interface FolderColumn extends TableColumn<FolderItem> {
+    column: string
+    type: ColumnsType
 }
 
 export interface FolderItem extends TableItem {
@@ -224,7 +229,7 @@ export class Folder extends HTMLElement {
     connectedCallback() {
         this.table.addEventListener("columnclick", evt => {
             const detail = (evt as CustomEvent).detail
-            const sortfn = this.getSortFunction(this.columns[detail.column].column, this.columns[detail.column].type, detail.subItem)
+            const sortfn = this.getSortFunction(detail.column, detail.subItem)
             if (!sortfn)
                 return
             const ascDesc = (sortResult: number) => detail.descending ? -sortResult : sortResult
@@ -339,41 +344,48 @@ export class Folder extends HTMLElement {
         if (result.columns) {
             this.extendedRename = null
             this.engine = result.engine
-            this.columns = result.columns
             this.sortFunction = null
             this.enhancedIndexes = []
-            this.table.setColumns(result.columns!.map((n, i) => {
+            this.table.setColumns(result.columns!.map((m, i) => {
+                const n = m as any as FolderColumn 
                 switch (n.type) {
                     case ColumnsType.Name:
                     case ColumnsType.NameExtension:
-                        return { 
-                            name: n.name, 
-                            isSortable: true, 
-                            subItem: n.type == ColumnsType.NameExtension
-                                ? { name: "Ext." }
-                                : undefined,
-                            render: renderIcon
-                        }
+                        n.isSortable = true
+                        n.subItem = n.type == ColumnsType.NameExtension
+                            ? { name: "Ext." }
+                            : undefined
+                            n.render = renderIcon
+                        break
                     case ColumnsType.Size:
-                        return { name: n.name, isRightAligned: true, isSortable: true, render: (td, item) => {
+                        n.isRightAligned = true
+                        n.isSortable = true
+                        n.render = (td, item) => {
                             td.innerHTML = formatSize((item as any)[n.column])
                             td.classList.add("rightAligned")
-                        }}
+                        }
+                        break
                     case ColumnsType.Time:
                         this.enhancedIndexes = this.enhancedIndexes.concat([i])
-                        return { name: n.name, isSortable: true, render: (td, item) =>  {
-                                td.innerHTML = formatDateTime(item.exifTime || (item as any)[n.column]) 
-                                if (item.exifTime)
-                                    td.classList.add("exif")
-                            }}
+                        n.isSortable = true
+                        n.render = (td, item) => {
+                            td.innerHTML = formatDateTime(item.exifTime || (item as any)[n.column]) 
+                            if (item.exifTime)
+                                td.classList.add("exif")
+                        }
+                        break
                     case ColumnsType.Version:
                         this.enhancedIndexes = this.enhancedIndexes.concat([i])
-                        return { name: n.name, isSortable: true, render: (td, item) =>  td.innerHTML = this.formatVersion(item.version) }
+                        n.isSortable = true
+                        n.render = (td, item) => td.innerHTML = this.formatVersion(item.version) 
+                        break
                     default:
-                        return { name: n.name, render: (td, item) => td.innerHTML= (item as any)[n.column]}
+                        n.render = (td, item) => td.innerHTML= (item as any)[n.column]
+                        break
                 }
+                return n
             }), `${this.folderId}-${result.engine}`)
-            this.sortFunction = this.getSortFunction(this.columns[0].column, this.columns[0].type, false)
+            this.sortFunction = this.getSortFunction(0, false)
         }
 
         if (!result.withEnhanced)
@@ -730,8 +742,10 @@ export class Folder extends HTMLElement {
         return version ? `${version.major}.${version.minor}.${version.build}.${version.patch}` : ""
     }
 
-    private getSortFunction(column: string, columnType: ColumnsType, isSubItem: boolean): (([a, b]: FolderItem[]) => number) | null {
-        switch (columnType) {
+    private getSortFunction(index: number, isSubItem: boolean): (([a, b]: FolderItem[]) => number) | null {
+        const columns = this.table.getColumns() as FolderColumn[]
+        const column = columns[index].column
+        switch (columns[index].type) {
             case ColumnsType.Name:
                 return ([a, b]: FolderItem[]) => a.name.localeCompare(b.name) 
             case ColumnsType.NameExtension:
@@ -788,7 +802,6 @@ export class Folder extends HTMLElement {
     private showHiddenItems = false
     private requestId = 0
     private requestStatusId = 0
-    private columns: Column[] = []
     private sortFunction: ((row: [a: FolderItem, b: FolderItem]) => number) | null = null
     private enhancedIndexes: number[] = []
     private dirsCount = 0
