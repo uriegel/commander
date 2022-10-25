@@ -5,3 +5,9 @@ export function insertArrayItem<T> (arr: Array<T>, pos: number, t: T) {
     let lastArray = arr.slice(pos, arr.length)
     return firstArray.concat([t], lastArray)
 }
+
+export function removeArrayItem<T> (arr: Array<T>, pos: number) {
+    let firstArray = arr.slice(0, pos)
+    let lastArray = arr.slice(pos + 1, arr.length)
+    return firstArray.concat(lastArray)
+}

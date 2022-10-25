@@ -4,7 +4,7 @@ import './copyprogress'
 import './extendedrename'
 import { copyItems } from '../copy'
 import { TableItem, VirtualTable } from 'virtual-table-component'
-import { ExtendedRename, initExtendedRename } from '../extendedrename'
+import { ExtendedRename, extendedRename } from '../extendedrename'
 import { compose } from '../functional'
 import {
     ActionType, Column, ColumnsType, CopyFiles, EngineType, GetActionTextResult, GetFilePathResult,
@@ -141,9 +141,6 @@ export class Folder extends HTMLElement {
     constructor() {
         super()
         this.folderId = this.getAttribute("id")!
-
-        this.extendedRename = initExtendedRename()
-
         const additionalStyle = ".exif {color: var(--exif-color);} .isSelected .exif {color: var(--selected-exif-color); }"
         this.innerHTML = `
             <div class=folder>
@@ -340,6 +337,7 @@ export class Folder extends HTMLElement {
         if (requestId < this.requestId) 
             return 
         if (result.columns) {
+            this.extendedRename = null
             this.engine = result.engine
             this.columns = result.columns
             this.sortFunction = null
@@ -542,8 +540,8 @@ export class Folder extends HTMLElement {
             onDrop()
     }
 
-    switchExtendedRename() {
-        this.extendedRename.switch(this.folderId, this.engine, this.table, () => this.setFocus())
+    async switchExtendedRename() {
+        this.extendedRename = await extendedRename(this.extendedRename, this.folderId, this.engine, this.table, () => this.setFocus())
     }
 
     async deleteSelectedItems() {
@@ -775,7 +773,7 @@ export class Folder extends HTMLElement {
 
     private source: EventSource
     private table: VirtualTable<FolderItem>
-    private extendedRename: ExtendedRename
+    private extendedRename: ExtendedRename | null = null
     private folderRoot: HTMLElement
     private folderId = ""
     private itemsChanged = new Subject<number>()

@@ -2,26 +2,27 @@ import { VirtualTable } from "virtual-table-component"
 import { DialogBox, Result } from "web-dialog-box"
 import { ExtendedRenameDialog } from "./components/extendedrename"
 import { FolderItem } from "./components/folder"
-import { insertArrayItem } from "./functional"
+import { insertArrayItem, removeArrayItem } from "./functional"
 import { CheckExtendedRenameResult, EngineType, request } from "./requests"
 
 const dialog = document.querySelector('dialog-box') as DialogBox    
 
 export type ExtendedRename = {
-    switch: (folderId: string, engineType: EngineType, table: VirtualTable<FolderItem>, setFocus: ()=>void)=>Promise<void>
+    dummy: ()=>void
 }
 
-export function initExtendedRename() {
-    return switchOff()
-}
-
-function switchOff() {
+function init() {
     return {
-        switch: extendedRename
-    }                   
-}   
+        dummy
+    }
+}
 
-async function extendedRename(folderId: string, engineType: EngineType, table: VirtualTable<FolderItem>, setFocus: ()=>void) {
+function dummy() {
+
+}
+
+export async function extendedRename(current: ExtendedRename | null, folderId: string, engineType: EngineType, table: VirtualTable<FolderItem>, setFocus: ()=>void) {
+    let rename = current
     let result = await request<CheckExtendedRenameResult>("checkextendedrename", { engineType }) 
     if (result.result) {
         const extendedRename = document.getElementById("extended-rename") as ExtendedRenameDialog
@@ -35,6 +36,7 @@ async function extendedRename(folderId: string, engineType: EngineType, table: V
         setFocus()
         if (res.result == Result.Ok) {
             extendedRename.save()
+            if (current == null && extendedRename.isActivated) {
                 const columns = table.getColumns()
                 const newcolumns = insertArrayItem(columns, 1, {
                     name: "Neuer Name",
@@ -42,15 +44,23 @@ async function extendedRename(folderId: string, engineType: EngineType, table: V
                         td.innerHTML = item.newName ?? ""
                     }
                 })
-                console.log("newcolumns", newcolumns)
                 table.setColumns(newcolumns, `${folderId}-extendedrename`)
                 table.items[3].newName = "NeuerName"
-                table.refresh()
-            // TODO: In Result flag if to switch
-            // TODO: remove newname column when removing checked
+                rename = init()
+            }
+            if (current != null && !extendedRename.isActivated) {
+                rename = null
+                const columns = table.getColumns()
+                const newcolumns = removeArrayItem(columns, 1)
+                table.setColumns(newcolumns, `${folderId}-${EngineType.Directory}`)
+
+            }    
+            table.refresh()
+            
             // TODO: sort index is broken after rename
             // TODO: extendedrename module, controlled by Selection changed, is either null or set with functions ?.set...
         }
     }
+    return rename
 }
 
