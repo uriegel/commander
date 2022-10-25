@@ -268,12 +268,14 @@ export class Folder extends HTMLElement {
                     evt.stopPropagation()
                     break
                 case 27: // Escape
+                    this.extendedRename?.selectionChanged(this.table.items)
                     this.selectNone()
                     break
                 case 35: // end
                     if (evt.shiftKey) {
                         const pos = this.table.getPosition()
                         this.table.items.forEach((item, i) => item.isSelected = item.selectable && i >= pos)                     
+                        this.extendedRename?.selectionChanged(this.table.items)
                         this.table.refresh()
                     }
                     break
@@ -281,12 +283,14 @@ export class Folder extends HTMLElement {
                     if (evt.shiftKey) {
                         const pos = this.table.getPosition()
                         this.table.items.forEach((item, i) => item.isSelected = item.selectable && i <= pos)                     
+                        this.extendedRename?.selectionChanged(this.table.items)
                         this.table.refresh()
                     }
                     break
                 case 45: { // Ins
                     const pos = this.table.getPosition()
-                     this.table.items[pos].isSelected = this.table.items[pos].selectable && !this.table.items[pos].isSelected 
+                    this.table.items[pos].isSelected = this.table.items[pos].selectable && !this.table.items[pos].isSelected 
+                    this.extendedRename?.selectionChanged(this.table.items)
                     this.table.setPosition(pos + 1)
                     break
                 }
@@ -461,13 +465,13 @@ export class Folder extends HTMLElement {
 
     selectAll() {
         this.table.items.forEach(n => n.isSelected = n.selectable)
-        //this.engine.beforeRefresh(this.table.items)
+        this.extendedRename?.selectionChanged(this.table.items)
         this.table.refresh()
     }
 
     selectNone() {
         this.table.items.forEach(n => n.isSelected = false)
-//        this.engine.beforeRefresh(this.table.items)
+        this.extendedRename?.selectionChanged(this.table.items)
         this.table.refresh()
     }
 

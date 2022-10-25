@@ -8,17 +8,20 @@ import { CheckExtendedRenameResult, EngineType, request } from "./requests"
 const dialog = document.querySelector('dialog-box') as DialogBox    
 
 export type ExtendedRename = {
-    dummy: ()=>void
+    selectionChanged: (items: FolderItem[])=>void
 }
 
 function init() {
     return {
-        dummy
+        selectionChanged
     }
 }
 
-function dummy() {
-
+function selectionChanged(items: FolderItem[]) {
+    items.reduce((p, n, i) => {
+        n.newName = n.isSelected && !n.isDirectory ? `Selected ${p}` : ""
+        return p + (n.isSelected && !n.isDirectory ? 1 : 0)
+    }, 0)
 }
 
 export async function extendedRename(current: ExtendedRename | null, folderId: string, engineType: EngineType, table: VirtualTable<FolderItem>, setFocus: ()=>void) {
@@ -45,7 +48,6 @@ export async function extendedRename(current: ExtendedRename | null, folderId: s
                     }
                 })
                 table.setColumns(newcolumns, `${folderId}-extendedrename`)
-                table.items[3].newName = "NeuerName"
                 rename = init()
             }
             if (current != null && !extendedRename.isActivated) {
@@ -56,8 +58,6 @@ export async function extendedRename(current: ExtendedRename | null, folderId: s
 
             }    
             table.refresh()
-            
-            // TODO: extendedrename module, controlled by Selection changed, is either null or set with functions ?.set...
         }
     }
     return rename
