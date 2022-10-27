@@ -3,18 +3,20 @@ import { DialogBox, Result } from "web-dialog-box"
 import { ExtendedRenameDialog } from "./components/extendedrename"
 import { FolderItem } from "./components/folder"
 import { insertArrayItem, removeArrayItem } from "./functional"
-import { CheckExtendedRenameResult, EngineType, request } from "./requests"
+import { CheckExtendedRenameResult, EngineType, Nothing, request } from "./requests"
 
 const dialog = document.querySelector('dialog-box') as DialogBox    
 const extendedRenameDialog = document.getElementById("extended-rename") as ExtendedRenameDialog
 
 export type ExtendedRename = {
-    selectionChanged: (items: FolderItem[])=>void
+    selectionChanged: (items: FolderItem[]) => void
+    rename: (table: VirtualTable<FolderItem>, path: string) => Promise<boolean>
 }
 
 function init() {
     return {
-        selectionChanged
+        selectionChanged,
+        rename
     }
 }
 
@@ -26,8 +28,24 @@ function selectionChanged(items: FolderItem[]) {
     }, info.start ?? 0)
 }
 
+async function rename(table: VirtualTable<FolderItem>, path: string) {
+    const items = table.items.filter(n => n.isSelected)
+    if (items.length > 0) {
+        await request<Nothing>("renameitems", {
+            path,
+            items: items.map(n => ({
+                name: n.name,
+                newName: n.newName!
+            }))
+        })
+        return true
+    }
+    else 
+        return false
+}
+
 export async function extendedRename(current: ExtendedRename | null, folderId: string, engineType: EngineType, table: VirtualTable<FolderItem>, setFocus: ()=>void) {
-    let rename = current
+    let renameObject = current
     let result = await request<CheckExtendedRenameResult>("checkextendedrename", { engineType }) 
     if (result.result) {
         extendedRenameDialog.initialize()
@@ -49,10 +67,10 @@ export async function extendedRename(current: ExtendedRename | null, folderId: s
                     }
                 })
                 table.setColumns(newcolumns, `${folderId}-extendedrename`)
-                rename = init()
+                renameObject = init()
             }
             if (current != null && !extendedRenameDialog.isActivated) {
-                rename = null
+                renameObject = null
                 const columns = table.getColumns()
                 const newcolumns = removeArrayItem(columns, 1)
                 table.setColumns(newcolumns, `${folderId}-${EngineType.Directory}`)
@@ -62,7 +80,7 @@ export async function extendedRename(current: ExtendedRename | null, folderId: s
             table.refresh()
         }
     }
-    return rename
+    return renameObject
 }
 
 

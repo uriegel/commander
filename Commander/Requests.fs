@@ -9,6 +9,7 @@ open WindowBounds
 open Configuration
 open Engine
 open Engines
+open ExtendedRename
 open FolderEvents
 open System.Reactive.Subjects
 open System.Text.Json
@@ -202,6 +203,15 @@ let cancelCopy () =
             let! body = ctx.ReadBodyFromRequestAsync ()
             let param = JsonSerializer.Deserialize<PostCopyItemsParam>(body, getJsonOptions ())
             let result = cancelCopy param
+            return! Json.text result next ctx
+        }              
+
+let renameItems () = 
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+            let! body = ctx.ReadBodyFromRequestAsync ()
+            let param = JsonSerializer.Deserialize<RenameItemsParam>(body, getJsonOptions ())
+            let result = renameItems param
             return! Json.text result next ctx
         }              
 

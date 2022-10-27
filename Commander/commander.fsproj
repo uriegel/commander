@@ -22,6 +22,7 @@
     <Compile Include="WindowBounds.fs" />
     <Compile Include="Remotes.fs" />
     <Compile Include="Engines.fs" />
+    <Compile Include="ExtendedRename.fs" />
     <Compile Include="Requests.fs" />
     <Compile Include="Electron.fs" />
     <Compile Include="Routes.fs" />

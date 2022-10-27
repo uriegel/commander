@@ -306,17 +306,19 @@ export class Folder extends HTMLElement {
             }
             else if (currentItem.isDirectory) 
                 await this.changePath(this.path, currentItem)            
-            // const { path, recentFolder } = await this.engine.getPath(, () => this.reloadItems())
-            // if (path) {
-            //     await this.changePath(path)
-            //     if (recentFolder) {
-            //         const index = this.table.items.findIndex(n => n.name == recentFolder)
-            //         this.table.setPosition(index)
-            //     }
-            // } else {
-            //     this.engine.onEnter(this.table.items[(evt as CustomEvent).detail.currentItem].name)
-            //     this.setFocus()
-            // }
+            else if (!await this.extendedRename?.rename(this.table, this.getCurrentPath())) {
+                // const { path, recentFolder } = await this.engine.getPath(, () => this.reloadItems())
+                // if (path) {
+                //     await this.changePath(path)
+                //     if (recentFolder) {
+                //         const index = this.table.items.findIndex(n => n.name == recentFolder)
+                //         this.table.setPosition(index)
+                //     }
+                // } else {
+                //     this.engine.onEnter(this.table.items[(evt as CustomEvent).detail.currentItem].name)
+                //     this.setFocus()
+                // }
+            }
         })
         this.folderRoot.addEventListener("dragenter", () => this.onDragEnter())
         this.folderRoot.addEventListener("dragleave", () => this.onDragLeave())

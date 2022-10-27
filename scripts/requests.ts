@@ -22,6 +22,7 @@ type PrepareCopy =        "preparecopy"
 type CopyItems =          "copyitems"
 type PostCopyItems =      "postcopyitems"
 type CancelCopy =         "cancelcopy"
+type RenameItems =        "renameitems"
 
 export type RequestType = 
     | ShowDevToolsType 
@@ -43,6 +44,7 @@ export type RequestType =
     | CopyItems
     | PostCopyItems
     | CancelCopy 
+    | RenameItems
 
 type Empty = {
     empty?: string
@@ -114,6 +116,16 @@ type CopyItemsType = {
 type PostCopyItemsType = {
     sourceEngineType: EngineType
     targetEngineType: EngineType
+}
+
+type RenamePair = {
+    name:    string
+    newName: string
+}
+
+type RenameItemsType = {
+    items: RenamePair[]
+    path:  string
 }
 
 export enum ActionType {
@@ -259,6 +271,7 @@ export type RequestInput =
     | CopyItemsType
     | PostCopyItemsType
     | string[]
+    | RenameItemsType
 
 async function checkAdmin() {
     try {
