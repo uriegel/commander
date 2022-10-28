@@ -62,7 +62,7 @@ let getItems path (param: GetItems) = async {
     let requestId = getRequestId param.FolderId param.RequestId
     let sortByName (item: DirectoryItem) = item.Name |> String.toLower 
 
-    let dirInfo = DirectoryInfo(path)
+    let dirInfo = DirectoryInfo path
     let dirs = 
         dirInfo 
         |> getSafeDirectoriesFromInfo

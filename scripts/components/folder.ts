@@ -306,7 +306,7 @@ export class Folder extends HTMLElement {
             }
             else if (currentItem.isDirectory) 
                 await this.changePath(this.path, currentItem)            
-            else if (!await this.extendedRename?.rename(this.table, this.getCurrentPath())) {
+            else if (!await this.extendedRename?.rename(this.table, this.getCurrentPath(), () => this.setFocus())) {
                 // const { path, recentFolder } = await this.engine.getPath(, () => this.reloadItems())
                 // if (path) {
                 //     await this.changePath(path)
@@ -424,7 +424,6 @@ export class Folder extends HTMLElement {
 
         // TODO Extended RENAME engine: renameItems in f#
         // TODO Extended Rename items: ___RENAME___... all then rename 
-        // TODO Extended Rename check pre renamed items
         // TODO Drag n drop: drag to external copy/move
         // TODO Copy paste? 
         // TODO Copy/Move Conflicts: Version
