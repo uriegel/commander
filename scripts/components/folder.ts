@@ -298,26 +298,32 @@ export class Folder extends HTMLElement {
             }
         })
         this.table.addEventListener("enter", async evt => {
-            let currentItem = this.table.items[(evt as CustomEvent).detail.currentItem]
-            if (currentItem.itemType == ItemType.AddRemote) {
-                await addRemotes(this.folderId)
-                this.reloadItems()
-                this.table.setFocus()
-            }
-            else if (currentItem.isDirectory) 
-                await this.changePath(this.path, currentItem)            
-            else if (!await this.extendedRename?.rename(this.table, this.getCurrentPath(), () => this.setFocus())) {
-                // const { path, recentFolder } = await this.engine.getPath(, () => this.reloadItems())
-                // if (path) {
-                //     await this.changePath(path)
-                //     if (recentFolder) {
-                //         const index = this.table.items.findIndex(n => n.name == recentFolder)
-                //         this.table.setPosition(index)
-                //     }
-                // } else {
-                //     this.engine.onEnter(this.table.items[(evt as CustomEvent).detail.currentItem].name)
-                //     this.setFocus()
-                // }
+            try {
+                let currentItem = this.table.items[(evt as CustomEvent).detail.currentItem]
+                if (currentItem.itemType == ItemType.AddRemote) {
+                    await addRemotes(this.folderId)
+                    this.reloadItems()
+                    this.table.setFocus()
+                }
+                else if (currentItem.isDirectory)
+                    await this.changePath(this.path, currentItem)
+                else if (await this.extendedRename?.rename(this.table, this.getCurrentPath(), () => this.setFocus(), e => this.checkResult(e)))
+                    this.reloadItems()
+                else {
+                    // const { path, recentFolder } = await this.engine.getPath(, () => this.reloadItems())
+                    // if (path) {
+                    //     await this.changePath(path)
+                    //     if (recentFolder) {
+                    //         const index = this.table.items.findIndex(n => n.name == recentFolder)
+                    //         this.table.setPosition(index)
+                    //     }
+                    // } else {
+                    //     this.engine.onEnter(this.table.items[(evt as CustomEvent).detail.currentItem].name)
+                    //     this.setFocus()
+                    // }
+                }
+            } catch (exn) {
+                console.log("exn", exn)
             }
         })
         this.folderRoot.addEventListener("dragenter", () => this.onDragEnter())
@@ -422,8 +428,6 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Extended RENAME engine: renameItems in f#
-        // TODO Extended Rename items: ___RENAME___... all then rename 
         // TODO Drag n drop: drag to external copy/move
         // TODO Copy paste? 
         // TODO Copy/Move Conflicts: Version

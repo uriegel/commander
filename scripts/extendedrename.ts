@@ -3,14 +3,14 @@ import { DialogBox, Result } from "web-dialog-box"
 import { ExtendedRenameDialog } from "./components/extendedrename"
 import { FolderItem } from "./components/folder"
 import { insertArrayItem, removeArrayItem } from "./functional"
-import { CheckExtendedRenameResult, EngineType, Nothing, request } from "./requests"
+import { CheckExtendedRenameResult, EngineType, IOError, IOErrorResult, request } from "./requests"
 
 const dialog = document.querySelector('dialog-box') as DialogBox    
 const extendedRenameDialog = document.getElementById("extended-rename") as ExtendedRenameDialog
 
 export type ExtendedRename = {
     selectionChanged: (items: FolderItem[]) => void
-    rename: (table: VirtualTable<FolderItem>, path: string, setFocus: ()=>void) => Promise<boolean>
+    rename: (table: VirtualTable<FolderItem>, path: string, setFocus: ()=>void, checkResult: (error: IOError)=>void) => Promise<boolean>
 }
 
 function init() {
@@ -30,7 +30,7 @@ function selectionChanged(items: FolderItem[]) {
     }, info.start ?? 0)
 }
 
-async function rename(table: VirtualTable<FolderItem>, path: string, setFocus: ()=>void) {
+async function rename(table: VirtualTable<FolderItem>, path: string, setFocus: ()=>void, checkResult: (error: IOError)=>void) {
     const items = table.items.filter(n => n.isSelected)
     if (items.length > 0) {
 
@@ -38,22 +38,22 @@ async function rename(table: VirtualTable<FolderItem>, path: string, setFocus: (
             .filter(n => !n.isDirectory)
             .map(n => n.isSelected ? n.newName?.toLowerCase()! : n.name.toLowerCase())
         if (new Set(testItems).size == testItems.length) {
-            await request<Nothing>("renameitems", {
+            let result = await request<IOErrorResult>("renameitems", {
                 path,
                 items: items.map(n => ({
                     name: n.name,
                     newName: n.newName!
                 }))
             })
-            return true
+            checkResult(result.error)
         } else {
             await dialog.show({
                 text: "Dateinamen nicht eindeutig",
                 btnOk: true
             })
             setFocus()
-            return false
         }
+        return true
     }
     else 
         return false
