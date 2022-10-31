@@ -15,6 +15,8 @@ Asp.NET is using FileSystemWatcher, in Debugger you have to increase
 
 ## Build
 
+run mpm scripts `tsc` and `build`
+
 `dotnet publish -c Release`
 
 either with .NET included or not: `SelfContained` = true or false in `commander.fsproj`

@@ -48,12 +48,11 @@ let getElectronFile file =
         "electron"
         file
     |] |> Directory.combinePathes 
-    
+
 let copyStream (target: IO.Stream, source: IO.Stream) = 
     source.CopyTo target
     source.Flush ()
     target.Close ()
-    Threading.Thread.Sleep 2000
 
 let getResource resourcePath = 
     let assembly = Reflection.Assembly.GetEntryAssembly ()
