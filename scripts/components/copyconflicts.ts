@@ -25,7 +25,7 @@ export class CopyConflicts extends HTMLElement {
             overflow: hidden;
         }
         .equal {
-            color: gray;    
+            opacity: 0.2;
         }
         .hidden {
             display: none;
