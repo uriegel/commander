@@ -91,7 +91,8 @@ export async function extendedRename(current: ExtendedRename | null, folderId: s
                 table.setColumns(newcolumns, `${folderId}-${EngineType.Directory}`)
 
             }    
-            selectionChanged(table.items)
+            if (renameObject)
+                selectionChanged(table.items)
             table.refresh()
         }
     }

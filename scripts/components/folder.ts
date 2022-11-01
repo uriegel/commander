@@ -428,8 +428,6 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO switch on extended rename, switch off, OK! switch on again, now it is broken
-        // TODO extended rename select number
         // TODO mark size differences in conflicts yellow
         // TODO when newer in conflicts and green marked, select yes
         // TODO Drag n drop: drag to external copy/move

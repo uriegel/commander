@@ -44,6 +44,9 @@ export class ExtendedRenameDialog extends HTMLElement {
         this.prefixInput = this.querySelector('#prefix')!            
         this.digits = this.querySelector('#digits')!            
         this.start = this.querySelector('#start')!            
+
+        this.prefixInput.addEventListener("focus", function () { this.select() })
+        this.start.addEventListener("focus", function () { this.select() })
     }
 
     connectedCallback() {
