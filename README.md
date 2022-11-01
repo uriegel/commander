@@ -2,11 +2,13 @@
 A Norton Commander clone based on Electron (globally installed), F#, Typescript and Web Components
 
 ## Setup
-`npm i -g electron`
+`sudo npm i -g electron`
 
 ### on Linux
 `sudo apt install libgtk-3-dev` (Gnome)
+
 `sudo apt install gtk3-devel` (Fedora Gnome)
+
 `sudo apt install trash-cli`
 
 Asp.NET is using FileSystemWatcher, in Debugger you have to increase
@@ -15,7 +17,7 @@ Asp.NET is using FileSystemWatcher, in Debugger you have to increase
 
 ## Build
 
-run mpm scripts `tsc` and `build`
+run npm scripts `tsc` and `build`
 
 `dotnet publish -c Release`
 
