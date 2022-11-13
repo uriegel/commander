@@ -319,17 +319,6 @@ let prepareCopy items sourcePath targetPath = async {
 
 let copyItems id sourcePath move conflictsExcluded=
 
-    let deleteEmptyFolders directories =
-        let rec deleteEmptyFolder path =
-            getSafeDirectories path
-            |> Array.map (fun n -> n.FullName) 
-            |> Array.iter deleteEmptyFolder
-
-            Process.runCmd "rmdir" (sprintf "\"%s\"" path) |> ignore
-        
-        directories
-        |> Array.iter deleteEmptyFolder
-
     let subj = getEventSubject id               
 
     let copyItem sourcePath totalSize total item =
@@ -386,32 +375,74 @@ let copyItems id sourcePath move conflictsExcluded=
         else
             0L
 
-    let copyItems () = 
-        match copyItemCache with
-        | Some copyItems ->
-            let itemsToCopy = 
-                if conflictsExcluded then 
-                    copyItems.Items
-                    |> Array.filter (fun n -> n.Conflict.IsNone)
-                else
-                    copyItems.Items
+    let moveItem sourcePath totalSize total item =
+        if copyItemCache.IsSome then
+            let itemPath = 
+                item.Path 
+                |> String.substring ((sourcePath |> String.length) + 1)
 
-            let totalSize = 
-                itemsToCopy
-                |> Array.fold (fun acc item -> item.Size + acc) 0L
+            let fi = FileInfo item.TargetPath
+            if not (existsDirectory fi.DirectoryName) then
+                Directory.CreateDirectory fi.DirectoryName |> ignore
 
+            File.Move(item.Path, item.TargetPath, true)
+            let progress processedBytes = 
+                subj.OnNext <| CopyProgress { 
+                    CurrentFile = itemPath  
+                    Total = { 
+                        Total = totalSize
+                        Current = total + processedBytes
+                    }
+                    Current = { 
+                        Total = item.Size
+                        Current = processedBytes
+                    }
+                }
+            progress item.Size
+
+            item.Size
+        else
+            0L
+
+    let copyItems (copyItems: ItemsToCopy) () = 
+        let itemsToCopy = 
+            if conflictsExcluded then 
+                copyItems.Items
+                |> Array.filter (fun n -> n.Conflict.IsNone)
+            else
+                copyItems.Items
+
+        let totalSize = 
             itemsToCopy
-            |> Array.fold (copyItem sourcePath totalSize) 0L
-            |> ignore
-        | _ -> ()
-        
-        match move, copyItemCache with
-        | Some true, Some copyItems 
-               -> deleteEmptyFolders copyItems.Directories
-        | _, _ -> ()
+            |> Array.fold (fun acc item -> item.Size + acc) 0L
 
+        itemsToCopy
+        |> Array.fold (copyItem sourcePath totalSize) 0L
+        |> ignore
 
-    let a () = exceptionToResult copyItems
+    let moveItems (copyItems: ItemsToCopy) () = 
+        let itemsToCopy = 
+            if conflictsExcluded then 
+                copyItems.Items
+                |> Array.filter (fun n -> n.Conflict.IsNone)
+            else
+                copyItems.Items
+
+        let totalSize = 
+            itemsToCopy
+            |> Array.fold (fun acc item -> item.Size + acc) 0L
+
+        itemsToCopy
+        |> Array.fold (moveItem sourcePath totalSize) 0L
+        |> ignore
+
+    let a () = 
+        exceptionToResult 
+        <| match move, copyItemCache with
+            | Some true, Some items -> moveItems items
+            | _,         Some items -> copyItems items
+            | _                                   -> fun () -> ()
+
     a
     >> Result.mapError mapIOError
     >> mapOnlyError
