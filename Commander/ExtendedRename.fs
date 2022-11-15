@@ -2,8 +2,8 @@ module ExtendedRename
 
 open FileSystem
 open FSharpTools.Directory
-open FSharpRailway
-open FSharpRailway.Option
+open FSharpTools
+open FSharpTools.Option
 open Model
 
 type RenameItem = {

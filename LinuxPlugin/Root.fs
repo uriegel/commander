@@ -73,7 +73,7 @@ let getItems engine latestPath = async {
         {
             Name        = getString 1 2 |> trimName
             Description = getString 2 3
-            Size        = getString 0 1 |> String.parseInt64Def 0
+            Size        = getString 0 1 |> String.parseInt64 |> Option.defaultValue 0
             MountPoint  = mountPoint
             Selectable  = false
             ItemType    = ItemType.Harddrive

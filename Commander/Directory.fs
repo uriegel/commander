@@ -1,9 +1,8 @@
 module Directory
 
-open FSharpRailway
 open FSharpTools
 open FSharpTools.ExifReader
-open FSharpRailway.Option
+open FSharpTools.Option
 open System
 open System.IO
 open System.Text.Json

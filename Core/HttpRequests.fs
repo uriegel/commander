@@ -8,9 +8,8 @@ open Configuration
 open System.Threading
 open FSharpTools.Functional
 open System.IO
-open FSharpRailway.Option
-open FSharpTools.Directory
 open FSharpTools
+open Option
 
 type RequestClient = {
     Client: HttpClient

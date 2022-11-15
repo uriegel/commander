@@ -13,10 +13,10 @@
     <Compile Include="Plugin.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FSharpTools" Version="7.0.0" />
+    <PackageReference Include="FSharpTools" Version="8.0.0" />
     <PackageReference Include="GtkDotNet" Version="5.6.3" />
     <PackageReference Include="FSharp.Control.Reactive" Version="5.0.2" />
-    <PackageReference Include="Giraffe" Version="6.0.0-alpha-2" />
+    <PackageReference Include="Giraffe" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.fsproj" />

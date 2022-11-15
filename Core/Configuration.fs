@@ -1,7 +1,5 @@
 module Configuration
 
-open FSharpRailway
-open Railway
 open FSharpTools
 open FSharpTools.Functional
 open System
@@ -63,6 +61,6 @@ let getFileAndResourceStreams (getFileStream: string->IO.Stream) (getResourceStr
 
 let saveResource = 
     let saveResource = 
-        tee (getFileAndResourceStreams securedCreateStream getResource >> copyStream) >> takeFirstTupleElem
+        sideEffect (getFileAndResourceStreams securedCreateStream getResource >> copyStream) >> takeFirstTupleElem
     memoize saveResource 
 
