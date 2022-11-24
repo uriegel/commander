@@ -7,9 +7,10 @@ Server.start port
 if uiMode then
     Requests.startThemeDetection ()
 
-    async {
-        do! Electron.start <| saveResource (getElectronFile "main.js", "electron/main.js")
-    } |> Async.RunSynchronously
+    (getElectronFile "main.js", "electron/main.js")
+    |> saveResource
+    |> Electron.start
+    |> Async.RunSynchronously
 else
     Plugin.run ()
 

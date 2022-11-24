@@ -434,6 +434,7 @@ export class Folder extends HTMLElement {
         // TODO Windows Title Icon is blurry
         // TODO Adapt Yaru theme
         // TODO when Time sorting, then sort after exif or disable time sort
+        // TODO Propertes, Start File
         // TODO GetFileItems native faster with pinvoke
         // TODO Remote engine: parent select last folder    
         // TODO Strings always from F# as Resource strings (Culture)    
