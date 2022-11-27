@@ -300,15 +300,15 @@ export class Folder extends HTMLElement {
         this.table.addEventListener("enter", async evt => {
             try {
                 let currentItem = this.table.items[(evt as CustomEvent).detail.currentItem]
-                if (currentItem.itemType == ItemType.AddRemote) {
+                if (await this.extendedRename?.rename(this.table, this.getCurrentPath(), () => this.setFocus(), e => this.checkResult(e)))
+                    this.reloadItems()
+                else if (currentItem.itemType == ItemType.AddRemote) {
                     await addRemotes(this.folderId)
                     this.reloadItems()
                     this.table.setFocus()
                 }
                 else if (currentItem.isDirectory)
                     await this.changePath(this.path, currentItem)
-                else if (await this.extendedRename?.rename(this.table, this.getCurrentPath(), () => this.setFocus(), e => this.checkResult(e)))
-                    this.reloadItems()
                 else {
                     // const { path, recentFolder } = await this.engine.getPath(, () => this.reloadItems())
                     // if (path) {
@@ -428,7 +428,6 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Extended rename: rename on parent, don't switch to parent
         // TODO Extended rename: on Ctrl-F2 focus last selected
         // TODO Drag n drop: drag to external copy/move
         // TODO Copy paste?
