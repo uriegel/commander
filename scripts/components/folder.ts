@@ -428,6 +428,8 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
+        // TODO Extended rename: rename on parent, don't switch to parent
+        // TODO Extended rename: on Ctrl-F2 focus last selected
         // TODO Drag n drop: drag to external copy/move
         // TODO Copy paste?
         // TODO Copy/Move Conflicts: Version
