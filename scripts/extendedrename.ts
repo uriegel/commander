@@ -73,7 +73,7 @@ export async function extendedRename(current: ExtendedRename | null, folderId: s
         setFocus()
         if (res.result == Result.Ok) {
             extendedRenameDialog.save()
-            if (current == null && extendedRenameDialog.isActivated) {
+            if (current == null) {
                 const columns = table.getColumns()
                 const newcolumns = insertArrayItem(columns, 1, {
                     name: "Neuer Name",
@@ -84,17 +84,17 @@ export async function extendedRename(current: ExtendedRename | null, folderId: s
                 table.setColumns(newcolumns, `${folderId}-extendedrename`)
                 renameObject = init()
             }
-            if (current != null && !extendedRenameDialog.isActivated) {
+            if (renameObject)
+                selectionChanged(table.items)
+        } else if (res.result == Result.Cancel) {
+            if (current != null) {
                 renameObject = null
                 const columns = table.getColumns()
                 const newcolumns = removeArrayItem(columns, 1)
                 table.setColumns(newcolumns, `${folderId}-${EngineType.Directory}`)
-
             }    
-            if (renameObject)
-                selectionChanged(table.items)
-            table.refresh()
         }
+        table.refresh()
     }
     return renameObject
 }
