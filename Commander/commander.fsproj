@@ -22,7 +22,6 @@
     <Compile Include="IO.fs" />
     <Compile Include="Directory.fs" />
     <Compile Include="WindowBounds.fs" />
-    <Compile Include="Images.fs" />
     <Compile Include="Remotes.fs" />
     <Compile Include="Engines.fs" />
     <Compile Include="ExtendedRename.fs" />
@@ -38,7 +37,6 @@
     <PackageReference Include="Giraffe" Version="6.0.0" />
     <PackageReference Include="GiraffeTools" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
-    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="../resources/electron/main.js">
