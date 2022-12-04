@@ -11,6 +11,8 @@ A Norton Commander clone based on Electron (globally installed), F#, Typescript 
 
 `sudo apt install trash-cli`
 
+`sudo apt-get -f install libgdiplus`
+
 Asp.NET is using FileSystemWatcher, in Debugger you have to increase
 
 `echo fs.inotify.max_user_instances=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p`
