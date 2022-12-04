@@ -428,13 +428,45 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
+        // TODO Propertes, Start File xdg-open
+        // TODO Rotate images https://learn.microsoft.com/en-us/windows/win32/gdiplus/-gdiplus-transforming-a-jpeg-image-without-loss-of-information-use
+
+        // public static void Rotate90(string fileName)
+        // { 
+        //     Image Pic; 
+        //     string FileNameTemp; 
+        //     Encoder Enc = Encoder.Transformation; 
+        //     EncoderParameters EncParms = new EncoderParameters(1); 
+        //     EncoderParameter EncParm; 
+        //     ImageCodecInfo CodecInfo = GetEncoderInfo("image/jpeg"); 
+         
+        //     // load the image to change 
+        //     Pic = Image.FromFile(fileName); 
+         
+        //     // we cannot store in the same image, so use a temporary image instead 
+        //     FileNameTemp = fileName + ".temp"; 
+        
+        //     // for rewriting without recompression we must rotate the image 90 degrees
+        //     EncParm = new EncoderParameter(Enc,(long)EncoderValue.TransformRotate90); 
+        //     EncParms.Param[0] = EncParm; 
+        
+        //     // now write the rotated image with new description 
+        //     Pic.Save(FileNameTemp,CodecInfo,EncParms); 
+        //     Pic.Dispose(); 
+        //     Pic = null; 
+        
+        //     // delete the original file, will be replaced later 
+        //     System.IO.File.Delete(fileName); 
+        //     System.IO.File.Move(FileNameTemp, fileName); 
+        // }
+
+        // TODO Mount/unmount drives : udisksctl mount -b /dev/sdb7
         // TODO Drag n drop: drag to external copy/move
         // TODO Copy paste?
         // TODO Copy/Move Conflicts: Version
         // TODO Windows Title Icon is blurry
         // TODO Adapt Yaru theme
         // TODO when Time sorting, then sort after exif or disable time sort
-        // TODO Propertes, Start File
         // TODO GetFileItems native faster with pinvoke
         // TODO Remote engine: parent select last folder    
         // TODO Strings always from F# as Resource strings (Culture)    
