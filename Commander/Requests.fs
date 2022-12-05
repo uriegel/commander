@@ -235,6 +235,16 @@ let startDrag () =
             return! Json.text "{}" next ctx
         }              
 
+let run () = 
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+            let! body = ctx.ReadBodyFromRequestAsync ()
+            let param = JsonSerializer.Deserialize<RunType>(body, getJsonOptions ())
+            combine2Pathes param.Path param.Item
+            |> Requests.openItem
+            return! Json.text "{}" next ctx
+        }              
+
 let getImage (fileRequest: FileRequest) = 
     streamFile false fileRequest.Path None None
 

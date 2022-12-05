@@ -110,3 +110,8 @@ type RendererEvent =
     | Nothing
 
 let rendererReplaySubject: Subject<RendererEvent> = new Subject<RendererEvent>()
+
+type RunType = {
+    Item: string
+    Path: string
+}

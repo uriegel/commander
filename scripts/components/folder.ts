@@ -8,7 +8,7 @@ import { ExtendedRename, extendedRename } from '../extendedrename'
 import { compose } from '../functional'
 import {
     ActionType, ColumnsType, CopyFiles, EngineType, GetActionTextResult, GetFilePathResult,
-    GetItemResult, IOError, IOErrorResult, ItemType, request
+    GetItemResult, IOError, IOErrorResult, ItemType, OpenType, request
 } from '../requests'
 import { addRemotes } from '../remotes'
 import { DialogBox, Result } from 'web-dialog-box'
@@ -318,9 +318,16 @@ export class Folder extends HTMLElement {
                     //         this.table.setPosition(index)
                     //     }
                     // } else {
-                    //     this.engine.onEnter(this.table.items[(evt as CustomEvent).detail.currentItem].name)
-                    //     this.setFocus()
-                    // }
+                    await request("run", {
+                        item:     this.table.items[(evt as CustomEvent).detail.currentItem].name,
+                        path:     this.path,
+                        openType: (evt as CustomEvent).detail.altKey 
+                                    ? OpenType.Properties
+                                    : (evt as CustomEvent).detail.ctrlKey
+                                    ? OpenType.OpenAs
+                                    : OpenType.Run 
+                    })
+                    this.setFocus()
                 }
             } catch (exn) {
                 console.log("exn", exn)
