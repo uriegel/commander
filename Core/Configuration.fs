@@ -56,10 +56,19 @@ let getResource resourcePath =
     let assembly = Reflection.Assembly.GetEntryAssembly ()
     assembly.GetManifestResourceStream resourcePath
 
-let getFileAndResourceStreams (getFileStream: string->IO.Stream) (getResourceStream: string->IO.Stream) (filePath, resourcePath) =
-    (getFileStream filePath, getResourceStream resourcePath)
-
+/// Retrieving a resource file from resource
+/// 
+/// **Arguments**
+/// * (targetPath * resourcePath) Tuple containg target file path where to save the resource and the respource path
+/// 
+/// **RETURNS** 
+/// 
+/// the target path, first tuple parameter
+/// 
 let saveResource = 
+    let getFileAndResourceStreams (getFileStream: string->IO.Stream) (getResourceStream: string->IO.Stream) (filePath, resourcePath) =
+        (getFileStream filePath, getResourceStream resourcePath)
+
     let saveResource = 
         sideEffect (getFileAndResourceStreams securedCreateStream getResource >> copyStream) >> takeFirstTupleElem
     memoize saveResource 

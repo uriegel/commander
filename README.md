@@ -22,3 +22,7 @@ run npm scripts `tsc` and `build`
 `dotnet publish -c Release`
 
 either with .NET included or not: `SelfContained` = true or false in `commander.fsproj`
+
+## Install as launcher on Linux:
+
+`sudo desktop-file-install commander.desktop`

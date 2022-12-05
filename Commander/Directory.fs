@@ -318,6 +318,18 @@ let prepareCopy items sourcePath targetPath = async {
 
 let copyItems id sourcePath move conflictsExcluded=
 
+    
+    let deleteEmptyFolders directories =
+        let rec deleteEmptyFolder path =
+            getSafeDirectories path
+            |> Array.map (fun n -> n.FullName) 
+            |> Array.iter deleteEmptyFolder
+
+            Process.runCmd "rmdir" (sprintf "\"%s\"" path) |> ignore
+        
+        directories
+        |> Array.iter deleteEmptyFolder
+
     let subj = getEventSubject id               
 
     let copyItem sourcePath totalSize total item =
@@ -434,6 +446,8 @@ let copyItems id sourcePath move conflictsExcluded=
         itemsToCopy
         |> Array.fold (moveItem sourcePath totalSize) 0L
         |> ignore
+
+        deleteEmptyFolders copyItems.Directories
 
     let a () = 
         exceptionToResult 
