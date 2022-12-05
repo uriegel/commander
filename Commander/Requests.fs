@@ -35,6 +35,11 @@ type CheckExtendedRenameResult = {
     Result: bool
 }
 
+type StartDragParam = {
+    Items: string[]
+    Path:  string
+}
+
 let mainReplaySubject = new Subject<MainEvent>()
 
 let startThemeDetection () = 
@@ -213,6 +218,16 @@ let renameItems () =
             let param = JsonSerializer.Deserialize<RenameItemsParam>(body, getJsonOptions ())
             let result = renameItems param
             return! Json.text result next ctx
+        }              
+
+let startDrag () = 
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+            let! body = ctx.ReadBodyFromRequestAsync ()
+            let param = JsonSerializer.Deserialize<StartDragParam>(body, getJsonOptions ())
+            let affe = param.Path
+//            let result = renameItems param
+            return! Json.text "{}" next ctx
         }              
 
 let getImage (fileRequest: FileRequest) = 

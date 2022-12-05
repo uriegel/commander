@@ -23,6 +23,7 @@ type CopyItems =          "copyitems"
 type PostCopyItems =      "postcopyitems"
 type CancelCopy =         "cancelcopy"
 type RenameItems =        "renameitems"
+type StartDrag =          "startdrag"  
 
 export type RequestType = 
     | ShowDevToolsType 
@@ -45,6 +46,7 @@ export type RequestType =
     | PostCopyItems
     | CancelCopy 
     | RenameItems
+    | StartDrag
 
 type Empty = {
     empty?: string
@@ -154,6 +156,10 @@ export type CopyFiles = {
     basePath:  string
 }
 
+export type StartDragType = {
+    items: string[]
+    path:  string
+}
 
 export enum ItemType {
     Parent        = 1,
@@ -272,6 +278,7 @@ export type RequestInput =
     | PostCopyItemsType
     | string[]
     | RenameItemsType
+    | StartDragType
 
 async function checkAdmin() {
     try {

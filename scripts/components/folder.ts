@@ -492,7 +492,19 @@ export class Folder extends HTMLElement {
         } else
             evt.preventDefault()
     }
-    onDrag(evt: DragEvent) { 
+    async onDrag(evt: DragEvent) { 
+        if (evt.screenX == 0 && evt.screenY == 0) {
+            this.folderRoot.classList.remove("onDragStarted")    
+            var items = 
+                this
+                    .getSelectedItems()    
+                    .map(n => n.name)
+            await request("startdrag", {
+                items,
+                path: this.path
+            })
+            evt.preventDefault()
+        }
     }
     onDragEnd() { 
         this.folderRoot.classList.remove("onDragStarted")
