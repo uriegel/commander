@@ -11,6 +11,7 @@
     <OutputType>WinExe</OutputType>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <ApplicationIcon>..\resources\web\images\Kirk.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(IsLinux)'=='true'">
     <OutputType>Exe</OutputType>
