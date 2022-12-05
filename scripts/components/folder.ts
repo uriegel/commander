@@ -435,7 +435,6 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Propertes, Start File xdg-open
         // TODO Mount/unmount drives : udisksctl mount -b /dev/sdb7
         // TODO Copy/Move Conflicts: Version
         // TODO Windows Title Icon is blurry

@@ -5,6 +5,7 @@ open Microsoft.AspNetCore.Http
 
 open Engine
 open Directory
+open FSharpTools
 
 let getIcon: FileRequest -> HttpHandler = 
     fun param (next : HttpFunc) (ctx : HttpContext) ->
@@ -14,3 +15,9 @@ let getIcon: FileRequest -> HttpHandler =
             let sendIcon = (setContentType <| mimeType) >=> (streamFile false iconPath None <| Some startTime)
             return! sendIcon next ctx
         }    
+
+let openItem fileName = 
+    fileName
+    |> sprintf "\"%s\""
+    |> Process.runCmd "xdg-open"
+    |> ignore
