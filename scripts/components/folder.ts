@@ -430,8 +430,6 @@ export class Folder extends HTMLElement {
 
         // TODO Propertes, Start File xdg-open
         // TODO Mount/unmount drives : udisksctl mount -b /dev/sdb7
-        // TODO Drag n drop: drag to external copy/move
-        // TODO Copy paste?
         // TODO Copy/Move Conflicts: Version
         // TODO Windows Title Icon is blurry
         // TODO Adapt Yaru theme

@@ -14,6 +14,12 @@ open FolderEvents
 open System.Reactive.Subjects
 open System.Text.Json
 open Model
+open FSharpTools.Directory
+
+type StartDragParam = {
+    Items: string[]
+    Path:  string
+}
 
 type MainEvent = 
     | ShowDevTools 
@@ -22,6 +28,7 @@ type MainEvent =
     | Minimize
     | Restore
     | Close
+    | StartDrag of string[]
 
 type Remotes = {
     Remotes: Remotes.Remote[]
@@ -33,11 +40,6 @@ type GetActionsTextsResult = {
 
 type CheckExtendedRenameResult = {
     Result: bool
-}
-
-type StartDragParam = {
-    Items: string[]
-    Path:  string
 }
 
 let mainReplaySubject = new Subject<MainEvent>()
@@ -225,8 +227,11 @@ let startDrag () =
         task {
             let! body = ctx.ReadBodyFromRequestAsync ()
             let param = JsonSerializer.Deserialize<StartDragParam>(body, getJsonOptions ())
-            let affe = param.Path
-//            let result = renameItems param
+            let pathAppend = combine2Pathes param.Path
+            let param2 = 
+                param.Items
+                |> Array.map pathAppend
+            mainReplaySubject.OnNext <| StartDrag param2
             return! Json.text "{}" next ctx
         }              
 

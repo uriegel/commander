@@ -1,11 +1,13 @@
 import { app, BrowserWindow, BrowserWindowConstructorOptions } from "electron"
+import { nativeImage } from "electron/common"
 import http from "http"
 
 type Events = {
-    Case: "ShowDevTools" | "ShowFullscreen" | "Maximize" | "Minimize" | "Restore" | "Close"
+    Case: "ShowDevTools" | "ShowFullscreen" | "Maximize" | "Minimize" | "Restore" | "Close" | "StartDrag"
+    Fields: string[][]
 }
 
-type Methods = "sendbounds" | "getevents" | "electronmaximize" | "electronunmaximize" | "fullscreen" | "fullscreenoff"
+type Methods = "sendbounds" | "getevents" | "electronmaximize" | "electronunmaximize" | "fullscreen" | "fullscreenoff" 
 type Bounds = {
     x:            number | undefined
     y:            number | undefined
@@ -81,7 +83,7 @@ const createWindow = async () => {
             }, (response: any) => {
                 response.setEncoding('utf8')
                 response.on('data', (chunk: any) => responseData += chunk)
-                response.on('end', () => {
+                response.on('end', async () => {
                     const evt = JSON.parse(responseData) as Events
                     switch (evt.Case) {
                         case "ShowDevTools":
@@ -106,6 +108,14 @@ const createWindow = async () => {
                         case "Close":
                             win.close()
                             break
+                        case "StartDrag":
+                            console.log("startDrag", evt.Fields[0])
+                            win.webContents.startDrag({ 
+                                files: evt.Fields[0], 
+                                file: "", 
+                                icon: nativeImage.createFromBuffer(await requestBuffer("geticon?path=.exe"))
+                            })
+                            break
                     }
                     resolve()
                 })
@@ -115,6 +125,30 @@ const createWindow = async () => {
                 reject(e)
             })
             req.write(payload)
+            req.end()        
+        }) 
+    }    
+
+    async function requestBuffer(method: string): Promise<Buffer> {
+        return new Promise((resolve, reject) => {
+            let chunks: any[] = []
+            const req = http.request({
+                hostname: "localhost",
+                port: 20000,
+                path: `/commander/${method}`,
+                timeout: 40000,
+                method: 'GET'
+            }, (response: any) => {
+                response.setEncoding('binary');
+                response.on('data', (chunk: any) => chunks.push(Buffer.from(chunk, 'binary')))
+                response.on('end', () => {
+                    resolve(Buffer.concat(chunks))
+                })
+            })        
+            
+            req.on('error', (e: any) => {
+                reject(e)
+            })
             req.end()        
         }) 
     }    
