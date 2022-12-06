@@ -111,7 +111,14 @@ type RendererEvent =
 
 let rendererReplaySubject: Subject<RendererEvent> = new Subject<RendererEvent>()
 
+type OpenType =
+| Run = 0
+| OpenAs = 1
+| Properties = 3
+
 type RunType = {
-    Item: string
-    Path: string
+    Item:     string
+    Path:     string
+    OpenType: OpenType
 }
+

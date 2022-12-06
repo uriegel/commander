@@ -1,11 +1,13 @@
 module Requests
 
+open ClrWinApi
 open Giraffe
 open Microsoft.AspNetCore.Http
 open System
 
 open Engine
 open Directory
+open Model
 
 let getIcon: FileRequest -> HttpHandler = 
     fun param (next : HttpFunc) (ctx : HttpContext) ->
@@ -15,10 +17,16 @@ let getIcon: FileRequest -> HttpHandler =
             return! (streamData false iconStream None <| Some startTime) next ctx
         }    
    
-let openItem fileName = 
-    use proc = new Diagnostics.Process() 
-    proc.StartInfo <- Diagnostics.ProcessStartInfo()
-    proc.StartInfo.FileName <- fileName
-    proc.StartInfo.Verb <- "open"
-    proc.StartInfo.UseShellExecute <- true
-    proc.Start() |> ignore
+let openItem openType fileName = 
+
+    let mutable execInfo = ShellExecuteInfo()
+    execInfo.File <- fileName
+    execInfo.Show <- ShowWindowFlag.Show
+    execInfo.Mask <- ShellExecuteFlag.InvokeIDList
+    execInfo.Size <- sizeof<ShellExecuteInfo>
+    execInfo.Verb <- 
+        match openType with
+        | OpenType.Properties -> "properties" 
+        | OpenType.OpenAs     -> "openas" 
+        | _                   -> "open"
+    ShellExecuteEx &execInfo |> ignore

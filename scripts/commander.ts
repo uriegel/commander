@@ -8,7 +8,7 @@ import './remotes'
 import { initializeMenu } from './menu'
 import { Folder } from './components/folder'
 import { Menubar } from 'web-menu-bar'
-import { request,  } from "./requests"
+import { OpenType, request,  } from "./requests"
 import { refreshViewer, showViewer as viewer } from './viewer'
 import { ElectronTitlebar } from 'web-electron-titlebar'
 import { DialogBox, Result } from 'web-dialog-box'
@@ -171,6 +171,14 @@ export function onRename() {
 
 export function onExtendedRename() {
     activeFolder.switchExtendedRename()
+}
+
+export function onProperties() {
+    activeFolder.open(OpenType.Properties)
+}
+
+export function onOpenAs() {
+    activeFolder.open(OpenType.OpenAs)
 }
 
 export function onCreateFolder() {

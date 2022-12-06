@@ -241,7 +241,7 @@ let run () =
             let! body = ctx.ReadBodyFromRequestAsync ()
             let param = JsonSerializer.Deserialize<RunType>(body, getJsonOptions ())
             combine2Pathes param.Path param.Item
-            |> Requests.openItem
+            |> Requests.openItem param.OpenType
             return! Json.text "{}" next ctx
         }              
 

@@ -2,7 +2,7 @@ import { DialogBox, Result } from "web-dialog-box"
 import { Menubar, MenuItem } from "web-menu-bar"
 import {
     activeFolderSetFocus, onAdaptPath, onCreateFolder, onDelete, onRefresh, onSelectAll,
-    onSelectNone, onSetHidden, onViewer, onRename, onCopy, onMove, onExtendedRename
+    onSelectNone, onSetHidden, onViewer, onRename, onCopy, onMove, onExtendedRename, onProperties, onOpenAs
 } from "./commander"
 import { request } from "./requests"
 export function initializeMenu() {}
@@ -19,6 +19,8 @@ itemHideMenu.isChecked = automode
 document.getElementById("onCopy")?.addEventListener("menubar-action",          () => onCopy())
 document.getElementById("onMove")?.addEventListener("menubar-action",          () => onMove())
 document.getElementById("onRename")?.addEventListener("menubar-action",        () => onRename())
+document.getElementById("showProperties")?.addEventListener("menubar-action",  () => onProperties())
+document.getElementById("openAs")?.addEventListener("menubar-action",          () => onOpenAs())
 document.getElementById("onExtendedRename")?.addEventListener("menubar-action",() => onExtendedRename())
 document.getElementById("onCreateFolder")?.addEventListener("menubar-action",  () => onCreateFolder())
 document.getElementById("onDelete")?.addEventListener("menubar-action",        () => onDelete())
