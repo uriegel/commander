@@ -16,7 +16,7 @@ let getIcon: FileRequest -> HttpHandler =
             return! sendIcon next ctx
         }    
 
-let openItem fileName = 
+let openItem _ fileName = 
     fileName
     |> sprintf "\"%s\""
     |> Process.runCmd "xdg-open"
