@@ -310,23 +310,7 @@ export class Folder extends HTMLElement {
                 else if (currentItem.isDirectory)
                     await this.changePath(this.path, currentItem)
                 else {
-                    // const { path, recentFolder } = await this.engine.getPath(, () => this.reloadItems())
-                    // if (path) {
-                    //     await this.changePath(path)
-                    //     if (recentFolder) {
-                    //         const index = this.table.items.findIndex(n => n.name == recentFolder)
-                    //         this.table.setPosition(index)
-                    //     }
-                    // } else {
-                    await request("run", {
-                        item:     this.table.items[(evt as CustomEvent).detail.currentItem].name,
-                        path:     this.path,
-                        openType: (evt as CustomEvent).detail.altKey 
-                                    ? OpenType.Properties
-                                    : (evt as CustomEvent).detail.ctrlKey
-                                    ? OpenType.OpenAs
-                                    : OpenType.Run 
-                    })
+                    this.open(OpenType.Run)
                     this.setFocus()
                 }
             } catch (exn) {
@@ -435,7 +419,6 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Propertes, Start File xdg-open
         // TODO Mount/unmount drives : udisksctl mount -b /dev/sdb7
         // TODO Copy/Move Conflicts: Version
         // TODO Windows Title Icon is blurry
@@ -657,6 +640,18 @@ export class Folder extends HTMLElement {
         }
     }
     
+    async open(openType: OpenType) {
+        const items = this.getSelectedItems()
+        if (items.length == 1) {
+            await request("run", {
+                item:     items[0].name,
+                path:     this.path,
+                openType: openType
+            })
+            this.setFocus()
+        }
+    }
+        
     async createFolder() {
         var items = this.getSelectedItems()
         const [dirs, files] = getSelectedItemsOverview(items)
