@@ -284,6 +284,7 @@ let prepareCopy items sourcePath targetPath = async {
 
 let reversePrepareCopy items sourcePath targetPath = async {
 
+    // TODO getInfo from Android, but discard the not found files, then compare with directory files
     let requestParam = targetPath |> getRequestParam   
 
     let getPath item =
