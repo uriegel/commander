@@ -155,18 +155,21 @@ let prepareCopy (param: PrepareCopyItemsParam) =
     match param.SourceEngineType, param.TargetEngineType with
     | EngineType.Directory, EngineType.Directory -> Directory.prepareCopy param.Items param.SourcePath param.TargetPath
     | EngineType.Android, EngineType.Directory -> Android.prepareCopy param.Items param.SourcePath param.TargetPath
+    | EngineType.Directory, EngineType.Android -> Android.reversePrepareCopy param.Items param.SourcePath param.TargetPath
     | _ -> async { return ""}
 
 let copyItems (param: CopyItemsParam) =
     match param.SourceEngineType, param.TargetEngineType with
     | EngineType.Directory, EngineType.Directory -> Directory.copyItems param.FolderId param.SourcePath param.Move param.ConflictsExcluded ()
     | EngineType.Android, EngineType.Directory   -> Android.copyItems param.FolderId param.SourcePath param.Move param.ConflictsExcluded ()
+    | EngineType.Directory, EngineType.Android   -> Android.reverseCopyItems param.FolderId param.SourcePath param.Move param.ConflictsExcluded ()
     | _ -> ""
 
 let postCopyItems (param: PostCopyItemsParam) = 
     match param.SourceEngineType, param.TargetEngineType with
     | EngineType.Directory, EngineType.Directory -> Directory.postCopyItems ()
     | EngineType.Android, EngineType.Directory -> Android.postCopyItems ()
+    | EngineType.Directory, EngineType.Android -> Android.postCopyItems ()
     | _ -> ""
 
 let cancelCopy (param: PostCopyItemsParam) = 

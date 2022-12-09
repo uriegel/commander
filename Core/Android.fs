@@ -14,6 +14,7 @@ open HttpRequests
 open FolderEvents
 open System.IO
 open System
+open FSharpTools.AsyncResult
 
 type GetItems = {
     Path:        string option
@@ -281,6 +282,64 @@ let prepareCopy items sourcePath targetPath = async {
         |> serialize
 }
 
+let reversePrepareCopy items sourcePath targetPath = async {
+
+    let requestParam = targetPath |> getRequestParam   
+
+    let getPath item =
+        combine2Pathes sourcePath item
+
+    let fileNames = 
+            items 
+            |> Seq.map getPath
+            |> Seq.toArray
+
+    let getFileInfo item = 
+
+        let getIconPath (fileInfo: IO.FileInfo) = 
+            match fileInfo.Extension with
+            | ext when ext |> String.length > 0 
+                -> ext
+            | _  -> ".noextension"
+
+        {
+            File =     item.File
+            Size =     item.Size
+            Time =     item.Time |> DateTime.fromUnixTime
+            Conflict = 
+                if File.Exists targetItem then
+                    let targetInfo = FileInfo targetItem
+                    Some {
+                        Conflict   =  targetSubPath
+                        IconPath   =  Some <| getIconPath targetInfo
+                        SourceTime =  item.Time |> DateTime.fromUnixTime
+                        SourceSize =  item.Size
+                        TargetTime =  targetInfo.LastWriteTime
+                        TargetSize =  targetInfo.Length
+                    }
+                else
+                    None        
+        }
+
+    let itemInfos = 
+        fileNames 
+        |> Array.map getFileInfo
+        
+
+    let copyItems = {
+        Items = itemInfos |> Array.map getFileInfo
+        TargetPath = targetPath
+        RequestParam = requestParam   
+    } 
+
+    copyItemCache <- Some copyItems
+
+    return copyItems.Items
+        |> Array.choose (fun n -> n.Conflict)
+        |> Array.sortBy sortConflicts
+        |> serialize
+}
+
 let copyItems id sourcePath move conflictsExcluded=
     let subj = getEventSubject id   
     
@@ -366,7 +425,6 @@ let copyItems id sourcePath move conflictsExcluded=
             }
         }
 
-
         match copyItemCache with
         | Some (value: ItemsToCopy) ->
             if conflictsExcluded then 
@@ -375,6 +433,24 @@ let copyItems id sourcePath move conflictsExcluded=
             else
                 value.Items        
             |> Array.fold (copyItem value.RequestParam value.TargetPath) 0L 
+            |> ignore
+        | None -> ()
+
+    let a () = exceptionToResult copyItems
+    a
+    >> Result.mapError mapIOError
+    >> mapOnlyError
+    >> getError
+    >> serialize
+    
+
+let reverseCopyItems id sourcePath move conflictsExcluded=
+    let subj = getEventSubject id   
+
+    let copyItems () =
+        match copyItemCache with
+        | Some (value: ItemsToCopy) ->
+            postStream (getClient value.RequestParam.BaseUrl) "postfile" 
             |> ignore
         | None -> ()
 

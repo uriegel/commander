@@ -61,5 +61,9 @@ let getStream<'a> requestClient url data (processStream: Stream -> int64 -> Opti
     let lastWriteTime = getLastWriteTime responseMessage
     processStream stream length lastWriteTime
       
-
-
+let postStream requestClient url = 
+    use requestMessage = new HttpRequestMessage(HttpMethod.Post, requestClient.GetUri(url + "?path=/DCIM/äffenkopf/test 56.jpg"))
+    requestMessage.Headers.Add("x-file-date", "123487898907987894321")
+    requestMessage.Content <- new StreamContent(File.OpenRead("/home/uwe/test/test.jpg"), 8100)
+    use responseMessage = requestClient.Client.Send (requestMessage, HttpCompletionOption.ResponseHeadersRead) 
+    ()
