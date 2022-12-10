@@ -419,19 +419,19 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Android View img mp4 mp3
         // TODO Android Delete items
         // TODO Mount/unmount drives : udisksctl mount -b /dev/sdb7
         // TODO Copy/Move Conflicts: Version
         // TODO Windows Title Icon is blurry
-        // TODO Adapt Yaru theme
         // TODO when Time sorting, then sort after exif or disable time sort
-        // TODO GetFileItems native faster with pinvoke
-        // TODO Remote engine: parent select last folder    
-        // TODO Strings always from F# as Resource strings (Culture)    
-        // TODO qmlnet    
+        // TODO Remote engine: parent select last folder
+        // TODO Remote engine: when no connection goto root
+        // TODO Strings always from F# as Resource strings (Culture)
+        // TODO qmlnet
         // TODO Fullscreen: Windows hide menu
         // TODO Windows: no hide menu item
+        // TODO Android View img mp4 mp3
+        // TODO GetFileItems native faster with pinvoke
     }
 
     setFocus() { this.table.setFocus() }

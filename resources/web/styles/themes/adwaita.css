@@ -2,7 +2,7 @@
     background-color: var(--light-background-color);
     --light-background-color: white;
     --drag-highlight: aqua;
-    --electron-titlebar-background-color: #ddd9d6;
+    --electron-titlebar-background-color: #ebebeb;
     
     --exif-color: darkblue;
     --selected-exif-color: yellow;
@@ -10,7 +10,7 @@
     --vtc-background-color: transparent;
     --vtc-restriction-background-color: white;
     --vtc-caption-color: #737373;
-    --vtc-caption-background-color: #eff0f1;
+    --vtc-caption-background-color: #ebebeb;
     --vtc-caption-background-hover-color: #e2e2e2;
     --vtc-caption-separator-color: #737373;
     --vtc-selected-background-color: #3584e4;
