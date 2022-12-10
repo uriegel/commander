@@ -413,12 +413,13 @@ export class Folder extends HTMLElement {
                 this.table.setPosition(index)
         }
         this.table.setRestriction((items, restrictValue) => 
-            items.filter(n => n.name.toLowerCase()
+            items.filter(n => n.name.toLowerCase()  
                 .startsWith(restrictValue.toLowerCase())
         ))
 
         this.onPathChanged(result.path, fromBacklog)
 
+        // TODO Android move to Commander
         // TODO Android copy progress
         // TODO Android Delete items
         // TODO Mount/unmount drives : udisksctl mount -b /dev/sdb7

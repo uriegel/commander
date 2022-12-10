@@ -474,7 +474,7 @@ let reverseCopyItems id sourcePath move conflictsExcluded=
             }
         }
 
-        postFile (getClient request.BaseUrl) "postfile" localFile remotePath
+        postFile (getClient request.BaseUrl) "postfile" localFile remotePath (DateTimeOffset item.Time)
         currentTotalcopied + item.Size
 
     let copyItems () =

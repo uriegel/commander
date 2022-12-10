@@ -10,6 +10,7 @@ open FSharpTools.Functional
 open System.IO
 open FSharpTools
 open Option
+open FolderEvents
 
 type RequestClient = {
     Client: HttpClient
@@ -61,9 +62,14 @@ let getStream<'a> requestClient url data (processStream: Stream -> int64 -> Opti
     let lastWriteTime = getLastWriteTime responseMessage
     processStream stream length lastWriteTime
       
-let postFile requestClient url localFile remotePath = 
+let postFile requestClient url localFile remotePath filetime = 
     use requestMessage = new HttpRequestMessage(HttpMethod.Post, requestClient.GetUri(url + "?path=" + remotePath))
-    requestMessage.Headers.Add("x-file-date", "123487898907987894321")
+
+    let fromUnixTime (dt: DateTime) = (DateTimeOffset dt).ToUnixTimeMilliseconds ()
+    let toUtcTime (dt: DateTimeOffset) = dt.UtcDateTime
+    let unixTime = toUtcTime >> fromUnixTime
+
+    requestMessage.Headers.Add("x-file-date", (unixTime filetime) |> sprintf "%d")
     requestMessage.Content <- new StreamContent(File.OpenRead(localFile), 8100)
     use responseMessage = requestClient.Client.Send (requestMessage, HttpCompletionOption.ResponseHeadersRead) 
     ()
