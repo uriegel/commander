@@ -211,25 +211,32 @@ type GetFilesInfosInput = { Files: string[]}
 
 type ItemsToCopy = {
     Items:        FileInfo[]
-    TargetPath:   string
+    LocalPath:   string
     RequestParam: RequestParam
 }
 
 let mutable copyItemCache: ItemsToCopy option = None
 
-let prepareCopy items sourcePath targetPath = async {
-
-    let requestParam = sourcePath            |> getRequestParam   
+let getAndroidFileNames sourcePath items = 
 
     let getPath item =
         let path = combine2Pathes sourcePath item
         let pos = path |> String.indexOfCharStart '/' 8 |> Option.defaultValue 0
         path |> String.substring pos
 
-    let fileNames = 
-            items 
-            |> Seq.map getPath
-            |> Seq.toArray
+    items 
+        |> Seq.map getPath
+        |> Seq.toArray
+
+let prepareCopy items sourcePath targetPath = async {
+
+    let requestParam = sourcePath |> getRequestParam
+
+    let fileNames = getAndroidFileNames sourcePath items
+
+    let! itemInfos = 
+        post<RawFileInfo array> (getClient requestParam.BaseUrl) "getfilesinfos" { Files = fileNames } 
+        |> Async.AwaitTask
 
     let getFileInfo (item: RawFileInfo) = 
         let targetSubPath = 
@@ -239,7 +246,7 @@ let prepareCopy items sourcePath targetPath = async {
         let targetItem = 
             targetSubPath 
             |> combine2Pathes targetPath
-    
+
         let getIconPath (fileInfo: IO.FileInfo) = 
             match fileInfo.Extension with
             | ext when ext |> String.length > 0 
@@ -265,15 +272,76 @@ let prepareCopy items sourcePath targetPath = async {
                     None        
         }
 
+    let copyItems = {
+            Items = itemInfos |> Array.map getFileInfo
+            LocalPath = targetPath
+            RequestParam = requestParam   
+        } 
+
+    copyItemCache <- Some copyItems                 
+
+    return copyItems.Items
+        |> Array.choose (fun n -> n.Conflict)
+        |> Array.sortBy sortConflicts
+        |> serialize
+}
+
+let reversePrepareCopy items sourcePath targetPath = async {
+
+    let requestParam = targetPath |> getRequestParam
+
+    let getPath item = combine2Pathes sourcePath item
+    
+    let fileNames = 
+            items 
+            |> Seq.map getPath
+            |> Seq.toArray
+
     let! itemInfos = 
-        post<RawFileInfo array> (getClient requestParam.BaseUrl) "getfilesinfos" { Files = fileNames } 
+        post<RawFileInfo array> (getClient requestParam.BaseUrl) "getfilesinfos" { 
+                Files = getAndroidFileNames targetPath items 
+            } 
         |> Async.AwaitTask
 
+    let getFileInfo (item: RawFileInfo) = 
+        let sourceSubPath = 
+            item.File 
+            |> String.substring ((requestParam.FilePath |> String.length) + 1) 
+
+        let sourceItem = 
+            sourceSubPath 
+            |> combine2Pathes sourcePath
+
+        let getIconPath (fileInfo: IO.FileInfo) = 
+            match fileInfo.Extension with
+            | ext when ext |> String.length > 0 
+                -> ext
+            | _  -> ".noextension"
+
+        let sourceInfo = FileInfo sourceItem
+        {
+            File =     sourceInfo.Name
+            Size =     sourceInfo.Length
+            Time =     sourceInfo.LastWriteTime
+            Conflict = 
+                if item.Exists then
+                    Some {
+                        Conflict   =  sourceInfo.Name
+                        IconPath   =  Some <| getIconPath sourceInfo
+                        SourceTime =  item.Time |> DateTime.fromUnixTime
+                        SourceSize =  item.Size
+                        TargetTime =  sourceInfo.LastWriteTime
+                        TargetSize =  sourceInfo.Length
+                    }
+                else
+                    None        
+        }
+
     let copyItems = {
-        Items = itemInfos |> Array.map getFileInfo
-        TargetPath = targetPath
-        RequestParam = requestParam   
-    } 
+            Items = itemInfos |> Array.map getFileInfo
+            LocalPath = sourcePath
+            RequestParam = requestParam   
+        } 
 
     copyItemCache <- Some copyItems
 
@@ -375,7 +443,7 @@ let copyItems id sourcePath move conflictsExcluded=
                 |> Array.filter (fun n -> n.Conflict.IsNone)
             else
                 value.Items        
-            |> Array.fold (copyItem value.RequestParam value.TargetPath) 0L 
+            |> Array.fold (copyItem value.RequestParam value.LocalPath) 0L 
             |> ignore
         | None -> ()
 
@@ -390,10 +458,46 @@ let copyItems id sourcePath move conflictsExcluded=
 let reverseCopyItems id sourcePath move conflictsExcluded=
     let subj = getEventSubject id   
 
+    let copyItem (request: RequestParam) (localPath: string) currentTotalcopied item = 
+        let localFile = combine2Pathes localPath item.File
+        let remotePath = combine2Pathes request.FilePath item.File
+
+        subj.OnNext <| CopyProgress { 
+            CurrentFile = localFile
+            Total = { 
+                Total = currentTotalcopied
+                Current = currentTotalcopied + 0L
+            }
+            Current = { 
+                Total = 23
+                Current = 0L
+            }
+        }
+
+        postFile (getClient request.BaseUrl) "postfile" localFile remotePath
+        currentTotalcopied + item.Size
+
     let copyItems () =
+        subj.OnNext <| CopyProgress { 
+            CurrentFile = ""
+            Total = { 
+                Total = 0
+                Current = 0
+            }
+            Current = { 
+                Total = 0
+                Current = 0
+            }
+        }
+
         match copyItemCache with
         | Some (value: ItemsToCopy) ->
-            postStream (getClient value.RequestParam.BaseUrl) "postfile" 
+            if conflictsExcluded then 
+                value.Items
+                |> Array.filter (fun n -> n.Conflict.IsNone)
+            else
+                value.Items        
+            |> Array.fold (copyItem value.RequestParam value.LocalPath) 0L 
             |> ignore
         | None -> ()
 

@@ -157,7 +157,7 @@ let prepareCopy (param: PrepareCopyItemsParam) =
     match param.SourceEngineType, param.TargetEngineType with
     | EngineType.Directory, EngineType.Directory -> Directory.prepareCopy param.Items param.SourcePath param.TargetPath
     | EngineType.Android, EngineType.Directory -> Android.prepareCopy param.Items param.SourcePath param.TargetPath
-    | EngineType.Directory, EngineType.Android -> Android.prepareCopy param.Items param.TargetPath param.SourcePath
+    | EngineType.Directory, EngineType.Android -> Android.reversePrepareCopy param.Items param.SourcePath param.TargetPath
     | _ -> async { return ""}
 
 let copyItems (param: CopyItemsParam) =
