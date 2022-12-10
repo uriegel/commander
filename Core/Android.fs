@@ -194,9 +194,10 @@ let getItems (engine: EngineType) path latestPath = async {
 }
 
 type RawFileInfo = {
-    File: string
-    Size: int64
-    Time: int64
+    Exists: bool
+    File:   string
+    Size:   int64
+    Time:   int64
 }
 
 type FileInfo = {
@@ -218,7 +219,7 @@ let mutable copyItemCache: ItemsToCopy option = None
 
 let prepareCopy items sourcePath targetPath = async {
 
-    let requestParam = sourcePath |> getRequestParam   
+    let requestParam = sourcePath            |> getRequestParam   
 
     let getPath item =
         let path = combine2Pathes sourcePath item
@@ -250,7 +251,7 @@ let prepareCopy items sourcePath targetPath = async {
             Size =     item.Size
             Time =     item.Time |> DateTime.fromUnixTime
             Conflict = 
-                if File.Exists targetItem then
+                if File.Exists targetItem && item.Exists then
                     let targetInfo = FileInfo targetItem
                     Some {
                         Conflict   =  targetSubPath
@@ -267,65 +268,6 @@ let prepareCopy items sourcePath targetPath = async {
     let! itemInfos = 
         post<RawFileInfo array> (getClient requestParam.BaseUrl) "getfilesinfos" { Files = fileNames } 
         |> Async.AwaitTask
-
-    let copyItems = {
-        Items = itemInfos |> Array.map getFileInfo
-        TargetPath = targetPath
-        RequestParam = requestParam   
-    } 
-
-    copyItemCache <- Some copyItems
-
-    return copyItems.Items
-        |> Array.choose (fun n -> n.Conflict)
-        |> Array.sortBy sortConflicts
-        |> serialize
-}
-
-let reversePrepareCopy items sourcePath targetPath = async {
-
-    // TODO getInfo from Android, but discard the not found files, then compare with directory files
-    let requestParam = targetPath |> getRequestParam   
-
-    let getPath item =
-        combine2Pathes sourcePath item
-
-    let fileNames = 
-            items 
-            |> Seq.map getPath
-            |> Seq.toArray
-
-    let getFileInfo item = 
-
-        let getIconPath (fileInfo: IO.FileInfo) = 
-            match fileInfo.Extension with
-            | ext when ext |> String.length > 0 
-                -> ext
-            | _  -> ".noextension"
-
-        {
-            File =     item.File
-            Size =     item.Size
-            Time =     item.Time |> DateTime.fromUnixTime
-            Conflict = 
-                if File.Exists targetItem then
-                    let targetInfo = FileInfo targetItem
-                    Some {
-                        Conflict   =  targetSubPath
-                        IconPath   =  Some <| getIconPath targetInfo
-                        SourceTime =  item.Time |> DateTime.fromUnixTime
-                        SourceSize =  item.Size
-                        TargetTime =  targetInfo.LastWriteTime
-                        TargetSize =  targetInfo.Length
-                    }
-                else
-                    None        
-        }
-
-    let itemInfos = 
-        fileNames 
-        |> Array.map getFileInfo
-        
 
     let copyItems = {
         Items = itemInfos |> Array.map getFileInfo

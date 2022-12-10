@@ -112,9 +112,11 @@ let getActionsTexts (param: GetActionsTexts) =
     | EngineType.Directory, Some(EngineType.Directory), ActionType.Copy, Some true -> Some (sprintf "Einträge überschreiben beim Kopieren?")
     | EngineType.Directory, Some(EngineType.Directory), ActionType.Copy, _         -> Some (sprintf "Möchtest Du %s kopieren?"   <| getFilesOrDirs ())
     | EngineType.Android,   Some(EngineType.Directory), ActionType.Copy, _         -> Some (sprintf "Möchtest Du %s kopieren?"   <| getFilesOrDirs ())
+    | EngineType.Directory, Some(EngineType.Android), ActionType.Copy, _           -> Some (sprintf "Möchtest Du %s kopieren?"   <| getFilesOrDirs ())
     | EngineType.Directory, Some(EngineType.Directory), ActionType.Move, Some true -> Some (sprintf "Einträge überschreiben beim Verschieben?")
     | EngineType.Directory, Some(EngineType.Directory), ActionType.Move, _         -> Some (sprintf "Möchtest Du %s verschieben?"<| getFilesOrDirs ())
     | EngineType.Android,   Some(EngineType.Directory), ActionType.Move, _         -> Some (sprintf "Möchtest Du %s verschieben?"<| getFilesOrDirs ())
+    | EngineType.Directory, Some(EngineType.Android), ActionType.Move, _           -> Some (sprintf "Möchtest Du %s verschieben?"<| getFilesOrDirs ())
     | EngineType.Directory, _, ActionType.Rename, _                                -> Some (sprintf "Möchtest Du %s umbenennen?" <| getFilesOrDirs ())
     | EngineType.Remotes,   _, ActionType.Rename, _                                -> Some "Möchtest Du den Eintrag umbenennen?" 
     | EngineType.Remotes, _, ActionType.Delete, _                                  -> Some (sprintf "Möchtest Du %s löschen?"    <| getRemotes ())
@@ -155,7 +157,7 @@ let prepareCopy (param: PrepareCopyItemsParam) =
     match param.SourceEngineType, param.TargetEngineType with
     | EngineType.Directory, EngineType.Directory -> Directory.prepareCopy param.Items param.SourcePath param.TargetPath
     | EngineType.Android, EngineType.Directory -> Android.prepareCopy param.Items param.SourcePath param.TargetPath
-    | EngineType.Directory, EngineType.Android -> Android.reversePrepareCopy param.Items param.SourcePath param.TargetPath
+    | EngineType.Directory, EngineType.Android -> Android.prepareCopy param.Items param.TargetPath param.SourcePath
     | _ -> async { return ""}
 
 let copyItems (param: CopyItemsParam) =
