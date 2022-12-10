@@ -419,8 +419,8 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO move Android Delete items
-        // TODO move Android Engion to Commander: 
+        // TODO Android copy progress
+        // TODO Android Delete items
         // TODO Mount/unmount drives : udisksctl mount -b /dev/sdb7
         // TODO Copy/Move Conflicts: Version
         // TODO Windows Title Icon is blurry
