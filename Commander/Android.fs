@@ -351,28 +351,29 @@ let reversePrepareCopy items sourcePath targetPath = async {
         |> serialize
 }
 
+let getTotalSize conflictsExcluded = 
+
+    let add current item = 
+        current + item.Size
+
+    match copyItemCache with
+    | Some value -> 
+        if conflictsExcluded then 
+            value.Items
+            |> Array.filter (fun n -> n.Conflict.IsNone)
+            |> Array.fold add 0L
+        else
+            value.Items 
+            |> Array.fold add 0L
+    | None                     -> 0L
+
 let copyItems id sourcePath move conflictsExcluded=
     let subj = getEventSubject id   
     
     let copyItem (request: RequestParam) (targetPath: string) currentTotalcopied item =
         if copyItemCache.IsSome then
             let fileInfo = FileInfo item.File
-            let totalSize = 
-
-                let add current item = 
-                    current + item.Size
-
-                match copyItemCache with
-                | Some value -> 
-                    if conflictsExcluded then 
-                        value.Items
-                        |> Array.filter (fun n -> n.Conflict.IsNone)
-                        |> Array.fold add 0L
-                    else
-                        value.Items 
-                        |> Array.fold add 0L
-                | None                     -> 0L
-    
+            let totalSize = getTotalSize conflictsExcluded
 
             let copyFile (source: Stream) target length =
                 use target = File.Create target
@@ -459,23 +460,40 @@ let reverseCopyItems id sourcePath move conflictsExcluded=
     let subj = getEventSubject id   
 
     let copyItem (request: RequestParam) (localPath: string) currentTotalcopied item = 
-        let localFile = combine2Pathes localPath item.File
-        let remotePath = combine2Pathes request.FilePath item.File
+        if copyItemCache.IsSome then
+            let localFile = combine2Pathes localPath item.File
+            let remotePath = combine2Pathes request.FilePath item.File
+            let totalSize = getTotalSize conflictsExcluded
 
-        subj.OnNext <| CopyProgress { 
-            CurrentFile = localFile
-            Total = { 
-                Total = currentTotalcopied
-                Current = currentTotalcopied + 0L
+            subj.OnNext <| CopyProgress { 
+                CurrentFile = localFile
+                Total = { 
+                    Total = currentTotalcopied
+                    Current = currentTotalcopied + 0L
+                }
+                Current = { 
+                    Total = 23
+                    Current = 0L
+                }
             }
-            Current = { 
-                Total = 23
-                Current = 0L
-            }
-        }
 
-        postFile (getClient request.BaseUrl) "postfile" localFile remotePath (DateTimeOffset item.Time)
-        currentTotalcopied + item.Size
+            let progress p = 
+                subj.OnNext <| CopyProgress { 
+                    CurrentFile = localFile
+                    Total = { 
+                        Total = totalSize
+                        Current = currentTotalcopied + p
+                    }
+                    Current = { 
+                        Total = item.Size
+                        Current = p
+                    }
+                }
+
+            postFile (getClient request.BaseUrl) "postfile" localFile remotePath (DateTimeOffset item.Time) progress
+            currentTotalcopied + item.Size
+        else
+            0L
 
     let copyItems () =
         subj.OnNext <| CopyProgress { 
