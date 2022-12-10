@@ -24,6 +24,8 @@
     <Compile Include="Directory.fs" />
     <Compile Include="WindowBounds.fs" />
     <Compile Include="Remotes.fs" />
+    <Compile Include="HttpRequests.fs" />
+    <Compile Include="Android.fs" />
     <Compile Include="Engines.fs" />
     <Compile Include="ExtendedRename.fs" />
     <Compile Include="Requests.fs" />

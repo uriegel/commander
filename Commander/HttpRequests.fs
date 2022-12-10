@@ -10,7 +10,6 @@ open FSharpTools.Functional
 open System.IO
 open FSharpTools
 open Option
-open FolderEvents
 
 type RequestClient = {
     Client: HttpClient

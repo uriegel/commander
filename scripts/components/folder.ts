@@ -419,7 +419,6 @@ export class Folder extends HTMLElement {
 
         this.onPathChanged(result.path, fromBacklog)
 
-        // TODO Android move to Commander
         // TODO Android copy progress
         // TODO Android Delete items
         // TODO Mount/unmount drives : udisksctl mount -b /dev/sdb7
