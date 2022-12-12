@@ -101,6 +101,11 @@ let getExtension fileName =
     | Some pos -> Some (fileName |> String.substring pos)
     | None     -> None 
 
+let getFile (body: string) = async {
+    let item = JsonSerializer.Deserialize<GetFile> (body, getJsonOptions ())
+    return JsonSerializer.Serialize({ Path = Path.Combine (item.Path, item.CurrentItem.Name) }, getJsonOptions ()) 
+}
+
 let getItems (engine: EngineType) path latestPath = async {
     let param = path |> getRequestParam
     let client = HttpRequests.getClient param.BaseUrl

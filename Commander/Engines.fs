@@ -89,6 +89,7 @@ let getFilePath (param: GetFile) body =
     match param.Engine with
     | EngineType.Root      -> Root.getFile body
     | EngineType.Directory -> Directory.getFile body
+    | EngineType.Android   -> Android.getFile body
     | _                    -> getEmptyPath 
 
 let getActionsTexts (param: GetActionsTexts) = 

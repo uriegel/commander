@@ -245,6 +245,12 @@ let run () =
             return! Json.text "{}" next ctx
         }              
 
+let streamFile enableRangeProcessing (filePath: string) = 
+    match filePath with
+    | p when p.StartsWith("android") ->
+        streamFile enableRangeProcessing filePath 
+    | _ -> streamFile enableRangeProcessing filePath 
+
 let getImage (fileRequest: FileRequest) = 
     streamFile false fileRequest.Path None None
 
