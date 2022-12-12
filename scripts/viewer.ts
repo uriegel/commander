@@ -38,14 +38,14 @@ const refresh = (path: string) => {
             viewerPdf.classList.add("hidden")
             viewerVideo.classList.add("hidden")
             viewerImg.classList.remove("hidden")
-            viewerImg.src = `commander/image?path=${path}&nochache=${nocache++}` 
+            viewerImg.src = `commander/${path.startsWith("android") ? "androidimage" : "image"}?path=${path}&nochache=${nocache++}` 
             viewerVideo.src = ""
             break
         case "pdf":
             viewerImg.classList.add("hidden")
             viewerVideo.classList.add("hidden")
             viewerPdf.classList.remove("hidden")
-            viewerPdf.load(`commander/file?path=${path}`) 
+            viewerPdf.load(`commander/${path.startsWith("android") ? "androidfile" : "file"}?path=${path}`) 
             viewerVideo.src = ""
             break
         case "mp3":
@@ -55,7 +55,7 @@ const refresh = (path: string) => {
             viewerPdf.classList.add("hidden")
             viewerImg.classList.add("hidden")
             viewerVideo.classList.remove("hidden")
-            viewerVideo.src = `commander/movie?path=${path}` 
+            viewerVideo.src = `commander/${path.startsWith("android") ? "androidmovie" : "movie"}?path=${path}` 
             break
         default:
             viewerVideo.classList.add("hidden")
