@@ -44,5 +44,6 @@ const FolderView = () => {
 
 export default FolderView
 
+// TODO sorting when subColumn: no hovering
 // TODO System windows or linux in location
 // TODO css themes windows windows dark, adwaita and adwaita dark
