@@ -12,6 +12,8 @@ export interface FolderItem extends TableRowItem {
     isHidden:    boolean
     isDirectory: boolean
     iconPath:    string
+    size:        number
+    time:        Date
 }
 
 export type GetItemResult = {
