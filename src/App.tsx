@@ -49,3 +49,6 @@ const App = () => {
 }
 
 export default App
+// TODO relaese build: include scripts.js and style.css to resource
+// TODO relasee run: serve index.html, scripts.js and style.scc
+// TODO relasee run: electron request localhost:20000/web => 3 files

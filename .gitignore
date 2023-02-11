@@ -12,3 +12,5 @@ WindowsPlugin/bin
 WindowsPlugin/obj
 Core/bin
 Core/obj
+resources/script.js
+resources/style.css
