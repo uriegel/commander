@@ -7,6 +7,10 @@
             "type": "npm",
             "script": "electron",
         }, {
+            "label": "buildReact",
+            "type": "npm",
+            "script": "build",
+        }, {
             "label": "buildF",
             "command": "dotnet",
             "type": "shell",
@@ -40,7 +44,7 @@
             "label": "buildRelease",
             "group": "build",
             "dependsOrder": "sequence",
-            "dependsOn": ["tsc electron", "webpack-prod", "buildFRelease"]
+            "dependsOn": ["prepare", "buildReact", "buildFRelease"]
         }, {
             "label": "build",
             "group": "build",

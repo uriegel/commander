@@ -12,6 +12,10 @@ Start npm script `start react-scripts start`
 
 Press F5 (`Debug` oder `Debug Windows`)
 
+## Build
+
+Press `StartCtrl+Shift+B` and run `buildRelease`. `Commander/bin/Release/net6.0/linux-x64/publish/Commander` is a single file executable containing all but `electron` and `.NET runtime 6.0`.
+
 ## Legacy
 
 ### on Linux
