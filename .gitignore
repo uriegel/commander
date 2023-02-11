@@ -5,7 +5,7 @@ Commander/bin
 node_modules
 resources/electron
 package-lock.json
-resources/web/scripts/index.js
+resources/web
 LinuxPlugin/bin
 LinuxPlugin/obj
 WindowsPlugin/bin

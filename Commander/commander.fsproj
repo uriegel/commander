@@ -32,7 +32,7 @@
     <Compile Include="ExtendedRename.fs" />
     <Compile Include="Requests.fs" />
     <Compile Include="Electron.fs" />
-    <Compile Include="Routes.fs" />
+        <Compile Include="Routes.fs" />
     <Compile Include="Server.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
@@ -47,7 +47,7 @@
     <EmbeddedResource Include="../resources/electron/main.js">
       <LogicalName>electron/main.js</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="../resources/web/index.html">
+    <!-- <EmbeddedResource Include="../resources/web/index.html">
       <LogicalName>web/index.html</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="../resources/web/styles/style.css">
@@ -82,7 +82,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="../resources/web/images/kirk.png">
       <LogicalName>web/images/kirk.png</LogicalName>
-    </EmbeddedResource>
+    </EmbeddedResource>-->
   </ItemGroup>
   <ItemGroup Condition="'$(IsWindows)'=='true'">
     <EmbeddedResource Include="../resources/web/images/kirk.ico">
