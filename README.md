@@ -6,6 +6,12 @@ A Norton Commander clone based on Electron (globally installed), F#, Typescript 
 
 `npm i`
 
+## Debug
+
+Start npm script `start react-scripts start`
+
+Press F5 (`Debug` oder `Debug Windows`)
+
 ## Legacy
 
 ### on Linux

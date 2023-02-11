@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": ".NET Core Launch (Linux)",
+            "name": "Debug",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -15,10 +15,30 @@
             "stopAtEntry": false,
             "console": "integratedTerminal"
         }, {
-            "name": ".NET Core Launch (Windows)",
+            "name": "Debug Windows",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
+            "program": "${workspaceFolder}/Commander/bin/Debug/net6.0/win-x64/commander.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "integratedTerminal"
+        },        {
+            "name": "Linux",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "buildRelease",
+            "program": "${workspaceFolder}/Commander/bin/Debug/net6.0/linux-x64/commander.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "integratedTerminal"
+        }, {
+            "name": "Windows",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "buildRelease",
             "program": "${workspaceFolder}/Commander/bin/Debug/net6.0/win-x64/commander.dll",
             "args": [],
             "cwd": "${workspaceFolder}",

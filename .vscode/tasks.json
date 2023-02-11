@@ -3,17 +3,9 @@
     // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [{
-            "label": "tsc electron",
+            "label": "prepare",
             "type": "npm",
-            "script": "tsc",
-        }, {
-            "label": "webpack",
-            "type": "npm",
-            "script": "builddev",
-        }, {
-            "label": "webpack-prod",
-            "type": "npm",
-            "script": "build",
+            "script": "prepare",
         }, {
             "label": "buildF",
             "command": "dotnet",
@@ -53,7 +45,7 @@
             "label": "build",
             "group": "build",
             "dependsOrder": "sequence",
-            "dependsOn": ["tsc electron", "webpack", "buildF"]
+            "dependsOn": ["electron"]
         }            
     ]
 }

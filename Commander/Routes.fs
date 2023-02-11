@@ -12,15 +12,17 @@ open FileSystem
 open GiraffeTools
 open Requests
 
-let configureCors (builder: Infrastructure.CorsPolicyBuilder) =
-    let SetIsOriginAllowed (origin: string) =
-        origin = "http://localhost:20000"
+// let configureCors (builder: Infrastructure.CorsPolicyBuilder) =
+//     let SetIsOriginAllowed (origin: string) =
+//         origin = "http://localhost:3000/"
 
-    builder.SetIsOriginAllowed SetIsOriginAllowed |> ignore
-    builder.AllowAnyHeader () |> ignore
+//     builder.SetIsOriginAllowed SetIsOriginAllowed |> ignore
+//     builder.AllowAnyHeader () |> ignore
+
+let configureCors (builder: Infrastructure.CorsPolicyBuilder) =
+    builder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader() |> ignore
 
 let configure (app : IApplicationBuilder) = 
-
     let getMimeType path = 
         match getExtension path with
         | Some ".js"  -> "text/javascript"
