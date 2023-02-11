@@ -47,13 +47,7 @@
     <EmbeddedResource Include="../resources/electron/main.js">
       <LogicalName>electron/main.js</LogicalName>
     </EmbeddedResource>
-    <!-- <EmbeddedResource Include="../resources/web/index.html">
-      <LogicalName>web/index.html</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="../resources/web/styles/style.css">
-      <LogicalName>web/styles/style.css</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="../resources/web/styles/themes/adwaita.css">
+    <!-- <EmbeddedResource Include="../resources/web/styles/themes/adwaita.css">
       <LogicalName>web/styles/themes/adwaita.css</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="../resources/web/styles/themes/adwaitaDark.css">
@@ -84,6 +78,20 @@
       <LogicalName>web/images/kirk.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
+  
+  <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <EmbeddedResource Include="../resources/web/index.html">
+      <LogicalName>web/index.html</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../resources/style.css">
+      <LogicalName>web/styles/style.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../resources/script.js">
+      <LogicalName>web/scripts/script.js</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+
   <ItemGroup Condition="'$(IsWindows)'=='true'">
     <EmbeddedResource Include="../resources/icons/kirk.ico">
       <LogicalName>web/images/appicon</LogicalName>

@@ -5,7 +5,7 @@
     "tasks": [{
             "label": "prepare",
             "type": "npm",
-            "script": "prepare",
+            "script": "electron",
         }, {
             "label": "buildF",
             "command": "dotnet",
@@ -45,7 +45,7 @@
             "label": "build",
             "group": "build",
             "dependsOrder": "sequence",
-            "dependsOn": ["electron"]
+            "dependsOn": ["prepare", "buildF"]
         }            
     ]
 }

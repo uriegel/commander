@@ -12,13 +12,6 @@ open FileSystem
 open GiraffeTools
 open Requests
 
-// let configureCors (builder: Infrastructure.CorsPolicyBuilder) =
-//     let SetIsOriginAllowed (origin: string) =
-//         origin = "http://localhost:3000/"
-
-//     builder.SetIsOriginAllowed SetIsOriginAllowed |> ignore
-//     builder.AllowAnyHeader () |> ignore
-
 let configureCors (builder: Infrastructure.CorsPolicyBuilder) =
     builder
         .WithOrigins("http://localhost:3000")
@@ -35,7 +28,7 @@ let configure (app : IApplicationBuilder) =
         
     let getResourceFile path = 
         setContentType <| getMimeType path     >=> streamData false (getResource <| sprintf "web/%s" path) None None
-    
+
     let routes =
         choose [  
             route  "/commander/getitems"           >=> warbler (fun _ -> getItems ())
@@ -77,6 +70,8 @@ let configure (app : IApplicationBuilder) =
             route  "/commander/renameitems"        >=> warbler (fun _ -> renameItems ())
             route  "/commander/startdrag"          >=> warbler (fun _ -> startDrag ())
             route  "/commander/run"                >=> warbler (fun _ -> run ())
+            routef "/static/js/%s"                 (fun _ -> httpHandlerParam getResourceFile "scripts/script.js")
+            routef "/static/css/%s"                (fun _ -> httpHandlerParam getResourceFile "styles/style.css")
             route  "/"                             >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)
             routePathes () <| httpHandlerParam getResourceFile 
         ]       

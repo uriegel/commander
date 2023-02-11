@@ -23,7 +23,11 @@ let start args =
             proc.StartInfo.FileName <- if isLinux then "electron" else "electron.cmd"
             proc.StartInfo.CreateNoWindow <- true
             proc.StartInfo.Environment.Add("Bounds", JsonSerializer.Serialize (getBounds <| getTheme (), getJsonOptions ()))
+#if DEBUG
+            proc.StartInfo.Arguments <- args + " -debug"
+#else
             proc.StartInfo.Arguments <- args
+#endif            
             proc.EnableRaisingEvents <- true
             proc.OutputDataReceived.Add(fun data -> printfn "%s" data.Data)
             proc.ErrorDataReceived.Add(fun data -> eprintfn "%s" data.Data)

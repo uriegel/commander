@@ -2,6 +2,8 @@ import { app, BrowserWindow, BrowserWindowConstructorOptions } from "electron"
 import { nativeImage } from "electron/common"
 import http from "http"
 
+const isDebug = process.argv[2] == "-debug"
+
 type Events = {
     Case: "ShowDevTools" | "ShowFullscreen" | "Maximize" | "Minimize" | "Restore" | "Close" | "StartDrag"
     Fields: string[][]
@@ -28,7 +30,7 @@ const createWindow = async () => {
     const win = new BrowserWindow(bounds)
     if ((bounds as Bounds).isMaximized)
         win.maximize()
-    win.removeMenu()
+//    win.removeMenu()
 
     win.once('ready-to-show', win.show)
     win.on('maximize', async () => {
@@ -53,7 +55,9 @@ const createWindow = async () => {
     })   
 
     //win.loadURL(`http://localhost:20000?theme=${(bounds as Bounds).theme}&frame=${(bounds as Bounds).frame}`)
-    win.loadURL(`http://localhost:3000`)
+    win.loadURL(isDebug
+        ? `http://localhost:3000`
+        : `http://localhost:20000`)
 
     async function getEvents() {
         await request("getevents", {})
