@@ -4,6 +4,10 @@ A Norton Commander clone based on Electron (globally installed), F#, Typescript 
 ## Setup
 `sudo npm i -g electron`
 
+`npm i`
+
+## Legacy
+
 ### on Linux
 `sudo apt install libgtk-3-dev` (Gnome)
 

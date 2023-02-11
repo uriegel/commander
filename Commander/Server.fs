@@ -40,8 +40,6 @@ let configureLogging (builder : ILoggingBuilder) =
 
 let webHostBuilder (webHostBuilder: IWebHostBuilder) = 
     webHostBuilder
-        .UseContentRoot("/home/uwe/commander-test")
-        .UseWebRoot("build")
         .ConfigureKestrel(configureKestrel)
         .Configure(Routes.configure)
         .ConfigureServices(configureServices)

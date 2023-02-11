@@ -9,7 +9,7 @@ open System
 open Configuration
 open Engine
 open FileSystem
-//open GiraffeTools
+open GiraffeTools
 open Requests
 
 let configureCors (builder: Infrastructure.CorsPolicyBuilder) =
@@ -71,13 +71,11 @@ let configure (app : IApplicationBuilder) =
             route  "/commander/renameitems"        >=> warbler (fun _ -> renameItems ())
             route  "/commander/startdrag"          >=> warbler (fun _ -> startDrag ())
             route  "/commander/run"                >=> warbler (fun _ -> run ())
-            // //route  "/"                             >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)
-            // //route  "/"                             >=> warbler (fun _ -> streamData false (serveFile "index.html") None None)
-            // routePathes () <| httpHandlerParam getResourceFile 
+            route  "/"                             >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)
+            routePathes () <| httpHandlerParam getResourceFile 
         ]       
     app
         .UseResponseCompression()
         .UseCors(configureCors)
-        .UseStaticFiles()
         .UseGiraffe routes      
      
