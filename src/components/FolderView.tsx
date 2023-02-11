@@ -43,6 +43,11 @@ const FolderView = () => {
 
 export default FolderView
 
-// TODO sorting when subColumn: no hovering
+// TODO rendering size
+// TODO rendering date
+// TODO rendering icons and name
+// TODO sorting
+// TODO changing path with enter
 // TODO System windows or linux in location
+// TODO exif and version
 // TODO css themes windows windows dark, adwaita and adwaita dark
