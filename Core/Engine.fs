@@ -12,6 +12,12 @@ type InputItem = { Name: string }
 [<CLIMutable>]
 type FileRequest = { Path: string }
 
+type GetFiles = {
+    Path:            string
+//    CurrentItem:     InputItem option
+    ShowHiddenItems: bool
+}
+
 type GetItems = {
     FolderId:        string
     RequestId:       int

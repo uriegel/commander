@@ -16,22 +16,6 @@ open Model
 open Directory
 open Result 
 
-let getEngineAndPathFrom path item = 
-    match path, item with
-    | Root.IsRoot -> EngineType.Root, RootID
-    | _, _        -> EngineType.Directory, Path.Combine (path, item)
-
-let private leftRequestId = { Id = 0}
-let private rightRequestId = { Id = 0}
-let getRequestId folderId value = 
-    match folderId with
-    | "folderLeft"  -> 
-        leftRequestId.Id <- value
-        leftRequestId
-    | _             -> 
-        rightRequestId.Id <- value
-        rightRequestId
-
 let getDirItem (dirInfo: DirectoryInfo) = {
     Index =       0
     Name =        dirInfo.Name
@@ -56,12 +40,11 @@ let getFileItem (fileInfo: FileInfo) = {
     Time        = fileInfo.LastWriteTime
 }
 
-let getItems path (param: GetItems) = async {
+let getItems (param: GetFiles) = async {
     
-    let requestId = getRequestId param.FolderId param.RequestId
     let sortByName (item: DirectoryItem) = item.Name |> String.toLower 
 
-    let dirInfo = DirectoryInfo path
+    let dirInfo = DirectoryInfo param.Path
     let dirs = 
         dirInfo 
         |> getSafeDirectoriesFromInfo
@@ -100,86 +83,95 @@ let getItems path (param: GetItems) = async {
         | _    -> items |> Seq.filter filterHidden
         |> Seq.mapi getItemI
 
-    let selectFolder = 
-        match param.Path with
-        | Some latestPath when path |> String.endsWith ".." ->
-            let di = DirectoryInfo latestPath
-            Some di.Name
-        | _                                                 -> 
-            None
+    // let selectFolder = 
+    //     match param.Path with
+    //     | Some latestPath when path |> String.endsWith ".." ->
+    //         let di = DirectoryInfo latestPath
+    //         Some di.Name
+    //     | _                                                 -> 
+    //         None
 
     let result = {|
         Items =        items
         Path =         dirInfo.FullName
-        Engine =       EngineType.Directory
-        LatestPath =   selectFolder
-        WithEnhanced = true
-        Columns = 
-            if param.Engine <> EngineType.Directory then Some (extendColumns [| 
-                { Name = "Name";  Column = "name"; Type = ColumnsType.NameExtension }
-                { Name = "Datum"; Column = "time"; Type = ColumnsType.Time }
-                { Name = "Größe"; Column = "size"; Type = ColumnsType.Size }
-            |]) else 
-                None
     |}
 
-    let appendExifTime path (items: DirectoryItem seq) = 
+//     // let appendExifTime path (items: DirectoryItem seq) = 
 
-        let getExifDate (file: string) = 
-            let getExifDate reader =
-                reader 
-                |> getDateValue ExifTag.DateTimeOriginal
-                |> Option.orElseWith (fun () -> reader |> getDateValue ExifTag.DateTime) 
-            let reader = getExif file
-            let result = 
-                reader 
-                |> Option.map getExifDate 
-                |> Option.flatten
-            reader |> Option.map (fun reader -> (reader :> IDisposable).Dispose ()) |> ignore
-            result
+//     //     let getExifDate (file: string) = 
+//     //         let getExifDate reader =
+//     //             reader 
+//     //             |> getDateValue ExifTag.DateTimeOriginal
+//     //             |> Option.orElseWith (fun () -> reader |> getDateValue ExifTag.DateTime) 
+//     //         let reader = getExif file
+//     //         let result = 
+//     //             reader 
+//     //             |> Option.map getExifDate 
+//     //             |> Option.flatten
+//     //         reader |> Option.map (fun reader -> (reader :> IDisposable).Dispose ()) |> ignore
+//     //         result
 
-        let addExifDate (item: DirectoryItem) = 
-            if requestId.Id = param.RequestId then
-                let file = Path.Combine(path, item.Name)
-                { 
-                    Index = item.Index
-                    ExifTime = file |> getExifDate
-                    Version = None
-                }
-            else
-                { 
-                    Index = -1
-                    ExifTime = None
-                    Version = None
-                }
+//     //     // let addExifDate (item: DirectoryItem) = 
+//     //     //     if requestId.Id = param.RequestId then
+//     //     //         let file = Path.Combine(path, item.Name)
+//     //     //         { 
+//     //     //             Index = item.Index
+//     //     //             ExifTime = file |> getExifDate
+//     //     //             Version = None
+//     //     //         }
+//     //     //     else
+//     //     //         { 
+//     //     //             Index = -1
+//     //     //             ExifTime = None
+//     //     //             Version = None
+//     //     //         }
 
-        let filterEnhanced (item: DirectoryItem) = 
-            item.Name |> String.endsWithComparison "jpg" System.StringComparison.OrdinalIgnoreCase
-            && requestId.Id = param.RequestId
+//     //     // let filterEnhanced (item: DirectoryItem) = 
+//     //     //     item.Name |> String.endsWithComparison "jpg" System.StringComparison.OrdinalIgnoreCase
+//     //     //     && requestId.Id = param.RequestId
 
-        let exifItems = 
-            items 
-            |> Seq.filter filterEnhanced
-            |> Seq.map addExifDate
-            |> Seq.toArray
+//     //     // let exifItems = 
+//     //     //     items 
+//     //     //     |> Seq.filter filterEnhanced
+//     //     //     |> Seq.map addExifDate
+//     //     //     |> Seq.toArray
 
-        if requestId.Id = param.RequestId && exifItems.Length > 0 then
-            let subj = getEventSubject param.FolderId
-            subj.OnNext <| EnhancedInfo {
-                EnhancedItems = exifItems
-                RequestId = requestId.Id
-            }
+//     //     // if requestId.Id = param.RequestId && exifItems.Length > 0 then
+//     //     //     let subj = getEventSubject param.FolderId
+//     //     //     subj.OnNext <| EnhancedInfo {
+//     //     //         EnhancedItems = exifItems
+//     //     //         RequestId = requestId.Id
+//     //     //     }
 
-    async { 
-        items |> appendExifTime result.Path |>ignore
-        items |> appendPlatformInfo (getEventSubject param.FolderId) requestId param.RequestId result.Path |>ignore
-        if requestId.Id = param.RequestId then
-            let subj = getEventSubject param.FolderId
-            subj.OnNext <| GetItemsFinished
-    } |> Async.StartAsTask |> ignore
+//     async { 
+//         items |> appendExifTime result.Path |>ignore
+//         items |> appendPlatformInfo (getEventSubject param.FolderId) requestId param.RequestId result.Path |>ignore
+//         if requestId.Id = param.RequestId then
+//             let subj = getEventSubject param.FolderId
+//             subj.OnNext <| GetItemsFinished
+//     } |> Async.StartAsTask |> ignore
 
     return result |> serialize
 }
+
+//===================================
+
+
+let getEngineAndPathFrom path item = 
+    match path, item with
+    | Root.IsRoot -> EngineType.Root, RootID
+    | _, _        -> EngineType.Directory, Path.Combine (path, item)
+
+let private leftRequestId = { Id = 0}
+let private rightRequestId = { Id = 0}
+let getRequestId folderId value = 
+    match folderId with
+    | "folderLeft"  -> 
+        leftRequestId.Id <- value
+        leftRequestId
+    | _             -> 
+        rightRequestId.Id <- value
+        rightRequestId
 
 let getFile (body: string) = async {
     let item = JsonSerializer.Deserialize<GetFile> (body, getJsonOptions ())
@@ -469,3 +461,11 @@ let postCopyItems () =
 let cancelCopy () = 
     copyItemCache <- None
     "{}"
+
+
+// TODO Columns
+        // Columns = [| 
+        //         { Name = "Name";  Column = "name"; Type = ColumnsType.NameExtension }
+        //         { Name = "Datum"; Column = "time"; Type = ColumnsType.Time }
+        //         { Name = "Größe"; Column = "size"; Type = ColumnsType.Size }
+        //     |] 

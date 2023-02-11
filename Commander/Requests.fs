@@ -104,12 +104,12 @@ let sse () = Sse.create rendererReplaySubject <| getJsonOptions ()
 let sseLeftFolder () = Sse.create leftFolderReplaySubject <| getJsonOptions ()
 let sseRightFolder () = Sse.create rightFolderReplaySubject <| getJsonOptions ()
 
-let getItems () =
+let getFiles () =
     fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
             let! body = ctx.ReadBodyFromRequestAsync ()
-            let param = JsonSerializer.Deserialize<GetItems>(body, getJsonOptions ())
-            let! result = getItems param body
+            let param = JsonSerializer.Deserialize<GetFiles>(body, getJsonOptions ())
+            let! result = Directory.getItems param
             return! Json.text result next ctx
         }
 
