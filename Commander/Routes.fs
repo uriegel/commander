@@ -20,7 +20,11 @@ open Requests
 //     builder.AllowAnyHeader () |> ignore
 
 let configureCors (builder: Infrastructure.CorsPolicyBuilder) =
-    builder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader() |> ignore
+    builder
+        .WithOrigins("http://localhost:3000")
+        .AllowAnyHeader()
+        .AllowAnyMethod() 
+        |> ignore
 
 let configure (app : IApplicationBuilder) = 
     let getMimeType path = 
