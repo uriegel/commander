@@ -15,7 +15,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "BUILD_PATH='./resources/web' GENERATE_SOURCEMAP='false' react-scripts build",
     "electron": "tsc -p electron/typescript"
   },
   "eslintConfig": {

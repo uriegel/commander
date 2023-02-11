@@ -80,12 +80,12 @@
     <EmbeddedResource Include="../resources/web/pdf/worker.js">
       <LogicalName>web/worker.js</LogicalName>
     </EmbeddedResource>-->
-    <EmbeddedResource Include="../resources/web/images/kirk.png">
+    <EmbeddedResource Include="../resources/icons/kirk.png">
       <LogicalName>web/images/kirk.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup Condition="'$(IsWindows)'=='true'">
-    <EmbeddedResource Include="../resources/web/images/kirk.ico">
+    <EmbeddedResource Include="../resources/icons/kirk.ico">
       <LogicalName>web/images/appicon</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
