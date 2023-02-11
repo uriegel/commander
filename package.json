@@ -12,7 +12,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "virtual-table-react": "^0.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -21,6 +22,10 @@
     "copy": "cp resources/web/static/js/*.js resources/script.js && cp resources/web/static/css/*.css resources/style.css"
   },
   "eslintConfig": {
+    "rules": {
+      "eqeqeq": "off",
+      "no-mixed-operators": "off"
+    },    
     "extends": [
       "react-app",
       "react-app/jest"

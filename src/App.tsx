@@ -1,5 +1,5 @@
-import React from 'react'
 import './App.css'
+import FolderView from './components/FolderView'
 
 export type Nothing = {}
 
@@ -48,24 +48,21 @@ export async function request<T extends Result>(method: RequestType, input?: Req
     }
 }
 
-
 const App = () => {
 
-	const onClick = async () => {
-		//await request<Close>("close")
-		await request<GetFiles>("getfiles", {
-			path: "/",
-			showHiddenItems: true
-		})
-	}
+	// const onClick = async () => {
+	// 	//await request<Close>("close")
+	// 	await request<GetFiles>("getfiles", {
+	// 		path: "/",
+	// 		showHiddenItems: true
+	// 	})
+	// }
 
 	return (
 		<div className="App">
-			<h1>Hello Commander</h1>
-			<button onClick={onClick}>Close Electron</button>
+			<FolderView/>
 		</div>
 	)
 }
 
 export default App
-// TODO test release build: 
