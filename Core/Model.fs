@@ -23,26 +23,13 @@ let RemotesID = "remotes"
 [<Literal>]
 let AndroidID = "android"
 
-type FileItem = {
+type DirectoryItem = {
     Name:        string
     Size:        int64
-    Selectable:  bool
     IsDirectory: bool
     IconPath:    string option
     IsHidden:    bool
     Time:        DateTime
-}
-
-type DirectoryItem = {
-    Index:       int
-    Name:        string
-    Size:        int64
-    Selectable:  bool
-    ItemType:    ItemType
-    IsDirectory: bool
-    IconPath:    string option
-    IsHidden:    bool
-    Time:        System.DateTime
 }
 
 type RequestId = {

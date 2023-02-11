@@ -113,154 +113,154 @@ let getFiles () =
             return! Json.text result next ctx
         }
 
-let getActionTexts () = 
-    fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-            let! body = ctx.ReadBodyFromRequestAsync ()
-            let param = JsonSerializer.Deserialize<GetActionsTexts>(body, getJsonOptions ())
-            let result: GetActionsTextsResult = { Result = getActionsTexts param }
-            return! json result next ctx
-        }
+// let getActionTexts () = 
+//     fun (next : HttpFunc) (ctx : HttpContext) ->
+//         task {
+//             let! body = ctx.ReadBodyFromRequestAsync ()
+//             let param = JsonSerializer.Deserialize<GetActionsTexts>(body, getJsonOptions ())
+//             let result: GetActionsTextsResult = { Result = getActionsTexts param }
+//             return! json result next ctx
+//         }
 
-let getFilePath () =
-    fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-            let! body = ctx.ReadBodyFromRequestAsync ()
-            let param = JsonSerializer.Deserialize<GetFile>(body, getJsonOptions ())
-            let! result = getFilePath param body
-            return! Json.text result next ctx
-        }
+// let getFilePath () =
+//     fun (next : HttpFunc) (ctx : HttpContext) ->
+//         task {
+//             let! body = ctx.ReadBodyFromRequestAsync ()
+//             let param = JsonSerializer.Deserialize<GetFile>(body, getJsonOptions ())
+//             let! result = getFilePath param body
+//             return! Json.text result next ctx
+//         }
 
-let createFolder () =
-    fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-            let! body = ctx.ReadBodyFromRequestAsync ()
-            let param = JsonSerializer.Deserialize<CreateFolderParam>(body, getJsonOptions ())
-            let result = createfolder param
-            return! Json.text result next ctx
-        }        
+// let createFolder () =
+//     fun (next : HttpFunc) (ctx : HttpContext) ->
+//         task {
+//             let! body = ctx.ReadBodyFromRequestAsync ()
+//             let param = JsonSerializer.Deserialize<CreateFolderParam>(body, getJsonOptions ())
+//             let result = createfolder param
+//             return! Json.text result next ctx
+//         }        
 
-let renameItem () = 
-    fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-            let! body = ctx.ReadBodyFromRequestAsync ()
-            let param = JsonSerializer.Deserialize<RenameItemParam>(body, getJsonOptions ())
-            let result = renameItem param
-            return! Json.text result next ctx
-        }        
+// let renameItem () = 
+//     fun (next : HttpFunc) (ctx : HttpContext) ->
+//         task {
+//             let! body = ctx.ReadBodyFromRequestAsync ()
+//             let param = JsonSerializer.Deserialize<RenameItemParam>(body, getJsonOptions ())
+//             let result = renameItem param
+//             return! Json.text result next ctx
+//         }        
 
-let checkExtendedRename () = 
-    fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-            let! body = ctx.ReadBodyFromRequestAsync ()
-            let param = JsonSerializer.Deserialize<CheckExtendedRenameParam>(body, getJsonOptions ())
-            let isSupported = checkExtendedRename param
-            let result: CheckExtendedRenameResult = { Result = isSupported }
-            return! json result next ctx
-        }        
+// let checkExtendedRename () = 
+//     fun (next : HttpFunc) (ctx : HttpContext) ->
+//         task {
+//             let! body = ctx.ReadBodyFromRequestAsync ()
+//             let param = JsonSerializer.Deserialize<CheckExtendedRenameParam>(body, getJsonOptions ())
+//             let isSupported = checkExtendedRename param
+//             let result: CheckExtendedRenameResult = { Result = isSupported }
+//             return! json result next ctx
+//         }        
 
-let deleteItems () =
-    fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-            let! body = ctx.ReadBodyFromRequestAsync ()
-            let param = JsonSerializer.Deserialize<DeleteItemsParam>(body, getJsonOptions ())
-            let result = deleteItems param
-            return! Json.text result next ctx
-        }              
+// let deleteItems () =
+//     fun (next : HttpFunc) (ctx : HttpContext) ->
+//         task {
+//             let! body = ctx.ReadBodyFromRequestAsync ()
+//             let param = JsonSerializer.Deserialize<DeleteItemsParam>(body, getJsonOptions ())
+//             let result = deleteItems param
+//             return! Json.text result next ctx
+//         }              
 
-let prepareFileCopy () = 
-    fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-            let! body = ctx.ReadBodyFromRequestAsync ()
-            let files = JsonSerializer.Deserialize<string[]>(body, getJsonOptions ())
-            let result = prepareFileCopy files
-            return! Json.text result next ctx
-        }              
+// let prepareFileCopy () = 
+//     fun (next : HttpFunc) (ctx : HttpContext) ->
+//         task {
+//             let! body = ctx.ReadBodyFromRequestAsync ()
+//             let files = JsonSerializer.Deserialize<string[]>(body, getJsonOptions ())
+//             let result = prepareFileCopy files
+//             return! Json.text result next ctx
+//         }              
 
-let prepareCopy () = 
-    fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-            let! body = ctx.ReadBodyFromRequestAsync ()
-            let param: PrepareCopyItemsParam = JsonSerializer.Deserialize<PrepareCopyItemsParam>(body, getJsonOptions ())
-            let! result = prepareCopy param
-            return! Json.text result next ctx
-        }              
+// let prepareCopy () = 
+//     fun (next : HttpFunc) (ctx : HttpContext) ->
+//         task {
+//             let! body = ctx.ReadBodyFromRequestAsync ()
+//             let param: PrepareCopyItemsParam = JsonSerializer.Deserialize<PrepareCopyItemsParam>(body, getJsonOptions ())
+//             let! result = prepareCopy param
+//             return! Json.text result next ctx
+//         }              
 
-let copyItems () = 
-    fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-            let! body = ctx.ReadBodyFromRequestAsync ()
-            let param = JsonSerializer.Deserialize<CopyItemsParam>(body, getJsonOptions ())
-            let result = copyItems param
-            return! Json.text result next ctx
-        }              
+// let copyItems () = 
+//     fun (next : HttpFunc) (ctx : HttpContext) ->
+//         task {
+//             let! body = ctx.ReadBodyFromRequestAsync ()
+//             let param = JsonSerializer.Deserialize<CopyItemsParam>(body, getJsonOptions ())
+//             let result = copyItems param
+//             return! Json.text result next ctx
+//         }              
 
-let postCopyItems () =
-    fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-            let! body = ctx.ReadBodyFromRequestAsync ()
-            let param = JsonSerializer.Deserialize<PostCopyItemsParam>(body, getJsonOptions ())
-            let result = postCopyItems param
-            return! Json.text result next ctx
-        }              
+// let postCopyItems () =
+//     fun (next : HttpFunc) (ctx : HttpContext) ->
+//         task {
+//             let! body = ctx.ReadBodyFromRequestAsync ()
+//             let param = JsonSerializer.Deserialize<PostCopyItemsParam>(body, getJsonOptions ())
+//             let result = postCopyItems param
+//             return! Json.text result next ctx
+//         }              
 
-let cancelCopy () =
-    fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-            let! body = ctx.ReadBodyFromRequestAsync ()
-            let param = JsonSerializer.Deserialize<PostCopyItemsParam>(body, getJsonOptions ())
-            let result = cancelCopy param
-            return! Json.text result next ctx
-        }              
+// let cancelCopy () =
+//     fun (next : HttpFunc) (ctx : HttpContext) ->
+//         task {
+//             let! body = ctx.ReadBodyFromRequestAsync ()
+//             let param = JsonSerializer.Deserialize<PostCopyItemsParam>(body, getJsonOptions ())
+//             let result = cancelCopy param
+//             return! Json.text result next ctx
+//         }              
 
-let renameItems () = 
-    fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-            let! body = ctx.ReadBodyFromRequestAsync ()
-            let param = JsonSerializer.Deserialize<RenameItemsParam>(body, getJsonOptions ())
-            let result = renameItems param
-            return! Json.text result next ctx
-        }              
+// let renameItems () = 
+//     fun (next : HttpFunc) (ctx : HttpContext) ->
+//         task {
+//             let! body = ctx.ReadBodyFromRequestAsync ()
+//             let param = JsonSerializer.Deserialize<RenameItemsParam>(body, getJsonOptions ())
+//             let result = renameItems param
+//             return! Json.text result next ctx
+//         }              
 
-let startDrag () = 
-    fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-            let! body = ctx.ReadBodyFromRequestAsync ()
-            let param = JsonSerializer.Deserialize<StartDragParam>(body, getJsonOptions ())
-            let pathAppend = combine2Pathes param.Path
-            let param2 = 
-                param.Items
-                |> Array.map pathAppend
-            mainReplaySubject.OnNext <| StartDrag param2
-            return! Json.text "{}" next ctx
-        }              
+// let startDrag () = 
+//     fun (next : HttpFunc) (ctx : HttpContext) ->
+//         task {
+//             let! body = ctx.ReadBodyFromRequestAsync ()
+//             let param = JsonSerializer.Deserialize<StartDragParam>(body, getJsonOptions ())
+//             let pathAppend = combine2Pathes param.Path
+//             let param2 = 
+//                 param.Items
+//                 |> Array.map pathAppend
+//             mainReplaySubject.OnNext <| StartDrag param2
+//             return! Json.text "{}" next ctx
+//         }              
 
-let run () = 
-    fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-            let! body = ctx.ReadBodyFromRequestAsync ()
-            let param = JsonSerializer.Deserialize<RunType>(body, getJsonOptions ())
-            combine2Pathes param.Path param.Item
-            |> Requests.openItem param.OpenType
-            return! Json.text "{}" next ctx
-        }              
+// let run () = 
+//     fun (next : HttpFunc) (ctx : HttpContext) ->
+//         task {
+//             let! body = ctx.ReadBodyFromRequestAsync ()
+//             let param = JsonSerializer.Deserialize<RunType>(body, getJsonOptions ())
+//             combine2Pathes param.Path param.Item
+//             |> Requests.openItem param.OpenType
+//             return! Json.text "{}" next ctx
+//         }              
 
-let streamFile enableRangeProcessing (filePath: string) = 
-    match filePath with
-    | p when p.StartsWith("android") ->
-        streamFile enableRangeProcessing filePath 
-    | _ -> streamFile enableRangeProcessing filePath 
+// let streamFile enableRangeProcessing (filePath: string) = 
+//     match filePath with
+//     | p when p.StartsWith("android") ->
+//         streamFile enableRangeProcessing filePath 
+//     | _ -> streamFile enableRangeProcessing filePath 
 
-let getImage (fileRequest: FileRequest) = 
-    streamFile false fileRequest.Path None None
+// let getImage (fileRequest: FileRequest) = 
+//     streamFile false fileRequest.Path None None
 
-let getMovie (fileRequest: FileRequest) = 
-    streamFile true fileRequest.Path None None
+// let getMovie (fileRequest: FileRequest) = 
+//     streamFile true fileRequest.Path None None
 
-let getFile (fileRequest: FileRequest) = 
-    streamFile false fileRequest.Path None None
+// let getFile (fileRequest: FileRequest) = 
+//     streamFile false fileRequest.Path None None
 
-let putRemotes (remotes: Remotes) = 
-    Remotes.put remotes.Remotes
-    text "{}"
+// let putRemotes (remotes: Remotes) = 
+//     Remotes.put remotes.Remotes
+//     text "{}"
 

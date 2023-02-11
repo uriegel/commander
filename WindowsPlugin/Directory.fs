@@ -55,42 +55,41 @@ let getIcon ext = async {
     return ms
 }
 
-let appendPlatformInfo (subj: Subject<FolderEvent>) requestId id (path: string) (items: DirectoryItem seq) = 
+// let appendPlatformInfo (subj: Subject<FolderEvent>) requestId id (path: string) (items: DirectoryItem seq) = 
 
-    let filterEnhanced (item: DirectoryItem) = 
-        (  item.Name |> String.endsWithComparison "exe" StringComparison.OrdinalIgnoreCase
-        || item.Name |> String.endsWithComparison "dll" StringComparison.OrdinalIgnoreCase)
-        && requestId.Id = id
+//     let filterEnhanced (item: DirectoryItem) = 
+//         (  item.Name |> String.endsWithComparison "exe" StringComparison.OrdinalIgnoreCase
+//         || item.Name |> String.endsWithComparison "dll" StringComparison.OrdinalIgnoreCase)
+//         && requestId.Id = id
 
-    let addVersion (item: DirectoryItem) = 
+//     let addVersion (item: DirectoryItem) = 
 
-        let mapVersion (info: FileVersionInfo) = { 
-            Index = item.Index
-            ExifTime = None 
-            Version = Some {
-                Major = info.FileMajorPart
-                Minor = info.FileMinorPart
-                Patch = info.FilePrivatePart
-                Build = info.FileBuildPart
-        }}
+//         let mapVersion (info: FileVersionInfo) = { 
+//             ExifTime = None 
+//             Version = Some {
+//                 Major = info.FileMajorPart
+//                 Minor = info.FileMinorPart
+//                 Patch = info.FilePrivatePart
+//                 Build = info.FileBuildPart
+//         }}
 
-        if requestId.Id = id then
-            Option.ofObj (FileVersionInfo.GetVersionInfo <| Path.Combine(path, item.Name))
-            |> Option.map(mapVersion)
-        else 
-            None
+//         if requestId.Id = id then
+//             Option.ofObj (FileVersionInfo.GetVersionInfo <| Path.Combine(path, item.Name))
+//             |> Option.map(mapVersion)
+//         else 
+//             None
 
-    let versionItems = 
-        items
-        |> Seq.filter filterEnhanced
-        |> Seq.choose addVersion
-        |> Seq.toArray
+//     let versionItems = 
+//         items
+//         |> Seq.filter filterEnhanced
+//         |> Seq.choose addVersion
+//         |> Seq.toArray
     
-    if requestId.Id = id && versionItems.Length > 0 then
-        subj.OnNext <| EnhancedInfo {
-            RequestId = requestId.Id
-            EnhancedItems = versionItems
-        }
+//     if requestId.Id = id && versionItems.Length > 0 then
+//         subj.OnNext <| EnhancedInfo {
+//             RequestId = requestId.Id
+//             EnhancedItems = versionItems
+//         }
 
 let deleteItems items = 
 

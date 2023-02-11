@@ -17,11 +17,8 @@ open Directory
 open Result 
 
 let getDirItem (dirInfo: DirectoryInfo) = {
-    Index =       0
     Name =        dirInfo.Name
     Size =        0
-    ItemType =    ItemType.Directory
-    Selectable =  true
     IsDirectory = true
     IconPath    = None
     IsHidden    = dirInfo.Attributes &&& FileAttributes.Hidden = FileAttributes.Hidden
@@ -29,11 +26,8 @@ let getDirItem (dirInfo: DirectoryInfo) = {
 }
 
 let getFileItem (fileInfo: FileInfo) = {
-    Index =       0
     Name =        fileInfo.Name
     Size =        fileInfo.Length
-    ItemType =    ItemType.File
-    Selectable =  true
     IsDirectory = false
     IconPath    = Some <| getIconPath fileInfo
     IsHidden    = fileInfo.Attributes &&& FileAttributes.Hidden = FileAttributes.Hidden
@@ -55,33 +49,20 @@ let getItems (param: GetFiles) = async {
         |> getSafeFilesFromInfo
         |> Seq.map getFileItem 
 
-    let parent = seq {{ 
-        Index =       0
-        Name =        ".."
-        Size =        0
-        ItemType =    ItemType.Parent
-        Selectable =  false
-        IconPath =    None
-        IsHidden =    false
-        IsDirectory = true
-        Time =        System.DateTime.MinValue
-    }}
-
     let items = Seq.concat [
-        parent
         dirs
         files
     ]
 
     let filterHidden item = not item.IsHidden
 
-    let getItemI i (n: DirectoryItem) = { n with Index = i }
+    //let getItemI i (n: DirectoryItem) = { n with Index = i }
 
-    let items: DirectoryItem seq = 
-        match param.ShowHiddenItems with
-        | true -> items 
-        | _    -> items |> Seq.filter filterHidden
-        |> Seq.mapi getItemI
+    // let items: DirectoryItem seq = 
+    //     match param.ShowHiddenItems with
+    //     | true -> items 
+    //     | _    -> items |> Seq.filter filterHidden
+    //     |> Seq.mapi getItemI
 
     // let selectFolder = 
     //     match param.Path with
@@ -224,21 +205,21 @@ type FileCopy = {
 
 let mutable copyItemCache: ItemsToCopy option = None
 
-let prepareFileCopy (items: string[]) =
-    let getDirectoryItem file = 
-        if Directory.Exists file then
-            getDirItem <| DirectoryInfo file
-        else
-            getFileItem <| FileInfo file
-    let path = 
-        if Directory.Exists items[0] then
-            (DirectoryInfo items[0]).Parent.FullName
-        else
-            (FileInfo items[0]).DirectoryName
-    {
-        BasePath = path
-        Items  = items |> Array.map getDirectoryItem
-    } |> serialize
+// let prepareFileCopy (items: string[]) =
+//     let getDirectoryItem file = 
+//         if Directory.Exists file then
+//             getDirItem <| DirectoryInfo file
+//         else
+//             getFileItem <| FileInfo file
+//     let path = 
+//         if Directory.Exists items[0] then
+//             (DirectoryInfo items[0]).Parent.FullName
+//         else
+//             (FileInfo items[0]).DirectoryName
+//     {
+//         BasePath = path
+//         Items  = items |> Array.map getDirectoryItem
+//     } |> serialize
 
 let prepareCopy items sourcePath targetPath = async {
 

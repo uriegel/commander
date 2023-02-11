@@ -7,16 +7,31 @@ type Result =
 	| Nothing 
 	| Exception
 
-type CloseType =          "close"
+type Close = "close"
+type GetFiles = "getfiles"
 
 type RequestType = 
-	| CloseType
+	| Close
+	| GetFiles
 	
 type Exception = {
 	exception: string
 }	
 
-export async function request<T extends Result>(method: RequestType, input?: string) {
+type GetFilesType = {
+    path:           string,
+    showHiddenItems: boolean
+}
+
+type Empty = {
+    empty?: string
+}
+
+export type RequestInput = 
+    | Empty  
+	| GetFilesType 
+	
+export async function request<T extends Result>(method: RequestType, input?: RequestInput) {
 
     const msg = {
         method: 'POST',
@@ -37,7 +52,11 @@ export async function request<T extends Result>(method: RequestType, input?: str
 const App = () => {
 
 	const onClick = async () => {
-		await request<CloseType>("close")
+		//await request<Close>("close")
+		await request<GetFiles>("getfiles", {
+			path: "/",
+			showHiddenItems: true
+		})
 	}
 
 	return (
