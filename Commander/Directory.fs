@@ -173,7 +173,7 @@ let getIconRequest: IconRequest -> HttpHandler =
     fun param (next : HttpFunc) (ctx : HttpContext) ->
         task {
             let startTime = Configuration.getStartDateTime ()
-            let! (iconPath, mimeType) = getIconRequest param.Path
+            let! (iconPath, mimeType) = getIcon param.Path
             let sendIcon = (setContentType <| mimeType) >=> (streamFile false iconPath None <| Some startTime)
             return! sendIcon next ctx
         }    
