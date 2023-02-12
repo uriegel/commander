@@ -51,3 +51,4 @@ export default FolderView
 // TODO SSE for theme detection?
 // TODO exif and version
 // TODO css themes windows windows dark, adwaita and adwaita dark
+// TODO Bug in scrolllbar: scrollbar grip has maximum size, when 1 item is not really shown

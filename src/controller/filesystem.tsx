@@ -3,21 +3,23 @@ import IconName from "../components/IconName"
 import { ControllerType, formatDateTime, formatSize } from "./controller"
 import { FolderItem, GetItemResult, request } from "./requests"
 
+const renderRow = (props: TableRowItem) => {
+	var item = props as FolderItem
+	return [
+		(<IconName namePart={item.name} />),
+		formatDateTime(item.time),
+		formatSize(item.size)
+	]
+}
+
 const getColumns = () => ({
 	columns: [
 		{ name: "Name", isSortable: true, subColumn: "Erw." },
 		{ name: "Datum" },
 		{ name: "Größe", isRightAligned: true }
 	],
-	renderRow: (props: TableRowItem) => {
-		var item = props as FolderItem
-		return [
-			(<IconName namePart={item.name} />),
-			formatDateTime(item.time),
-			formatSize(item.size)
-		]
-	},
-	measureRow: () => `Measure`
+	renderRow,
+	measureRow: () => (<IconName namePart="Measure g" />),
 })
 
 export const createFileSystemController = () => ({ type: ControllerType.FileSystem, getColumns })
