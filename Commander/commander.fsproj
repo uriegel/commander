@@ -11,7 +11,7 @@
     <OutputType>WinExe</OutputType>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <ApplicationIcon>..\resources\web\images\Kirk.ico</ApplicationIcon>
+    <ApplicationIcon>..\resources\icons\Kirk.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(IsLinux)'=='true'">
     <OutputType>Exe</OutputType>
@@ -59,6 +59,10 @@
   </ItemGroup>
   <ItemGroup Condition="'$(IsLinux)'=='true'">
     <PackageReference Include="GtkDotNet" Version="5.6.3" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(IsWindows)'=='true'">
+    <PackageReference Include="ClrWinApi" Version="1.1.1" />
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="../resources/electron/main.js">

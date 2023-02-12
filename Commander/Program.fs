@@ -1,8 +1,18 @@
 ﻿open Configuration
+open System.Diagnostics
+open System.Runtime.InteropServices
+open System
+open System.Reflection
+open System.Net.Http
+open System.Net
+
+#if Linux 
 
 let init () = (20000, true)
 
 let run () = ()
+
+#endif
 
 #if Windows 
 
@@ -43,9 +53,7 @@ let init () =
         (20000, true)
 #endif
 
-#if Linux
 let (port, uiMode) = init ()
-#endif
 
 Server.start port
 

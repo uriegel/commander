@@ -6,6 +6,7 @@ open FSharpTools
 open System
 open System.IO
 open System.Text.Json
+open System.Runtime.InteropServices
 
 open Configuration
 open IO
@@ -16,6 +17,13 @@ open CommanderCore
 open Gtk
 open FSharpTools.Process
 open System.Threading.Tasks
+#endif
+
+#if Windows
+open System.Drawing
+open System.Drawing.Imaging
+
+open ClrWinApi
 #endif
 
 type DirectoryItem = {
@@ -161,13 +169,57 @@ let getIcon ext = async {
         | _            -> async { return getIcon ext, "image/png" }
 }
 
+let getIconRequest: IconRequest -> HttpHandler = 
+    fun param (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+            let startTime = Configuration.getStartDateTime ()
+            let! (iconPath, mimeType) = getIconRequest param.Path
+            let sendIcon = (setContentType <| mimeType) >=> (streamFile false iconPath None <| Some startTime)
+            return! sendIcon next ctx
+        }    
+
 #endif
+
+#if Windows
+
+let getIcon ext = async {
+    let rec getIconHandle callCount = async {
+        if ext |> String.contains "\\" then
+            return Icon.ExtractAssociatedIcon(ext).Handle
+        else
+            let mutable shinfo = ShFileInfo()
+            SHGetFileInfo(ext, FileAttributeNormal, &shinfo, Marshal.SizeOf shinfo,
+                SHGetFileInfoConstants.ICON
+                ||| SHGetFileInfoConstants.SMALLICON
+                ||| SHGetFileInfoConstants.USEFILEATTRIBUTES
+                ||| SHGetFileInfoConstants.TYPENAME) |> ignore
+
+            if shinfo.IconHandle <> IntPtr.Zero then
+                return shinfo.IconHandle
+            elif callCount < 3 then
+                do! Async.Sleep 29
+                return! getIconHandle <| callCount + 1
+            else
+                return Icon.ExtractAssociatedIcon(@"C:\Windows\system32\SHELL32.dll").Handle
+    }
+
+    let! iconHandle = getIconHandle 0
+    use icon = Icon.FromHandle iconHandle
+    use bitmap = icon.ToBitmap()
+    let ms = new MemoryStream()
+    bitmap.Save(ms, ImageFormat.Png)
+    ms.Position <- 0L
+    DestroyIcon iconHandle |> ignore
+    return ms
+}
 
 let getIconRequest: IconRequest -> HttpHandler = 
     fun param (next : HttpFunc) (ctx : HttpContext) ->
         task {
             let startTime = Configuration.getStartDateTime ()
-            let! (iconPath, mimeType) = getIcon param.Path
-            let sendIcon = (setContentType <| mimeType) >=> (streamFile false iconPath None <| Some startTime)
-            return! sendIcon next ctx
+            let! iconStream = getIcon param.Path
+            return! (streamData false iconStream None <| Some startTime) next ctx
         }    
+
+#endif
+
