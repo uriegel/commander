@@ -5,8 +5,8 @@ import { FolderItem, GetItemResult, request } from "./requests"
 
 const getColumns = () => ({
 	columns: [
-		{ name: "Name", isSortable: true, subColumn: "Ext." },
-		{ name: "Date" },
+		{ name: "Name", isSortable: true, subColumn: "Erw." },
+		{ name: "Datum" },
 		{ name: "Größe", isRightAligned: true }
 	],
 	renderRow: (props: TableRowItem) => {
