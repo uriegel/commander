@@ -1,14 +1,22 @@
 module WindowBounds
 
+open CommanderCore
 open Configuration
 open FileSystem
 open System
 open System.Text.Json
-open System.Text.Json.Serialization
 
 let saveBounds (bounds: WindowBounds) = 
     use stream = securedCreateStream <| getElectronFile "bounds.json"
     JsonSerializer.Serialize (stream, bounds, getJsonOptions ())
+
+#if Linux
+let appicon = "web/images/kirk.png"
+#endif
+
+#if Windows
+let appicon = "web/images/appicon"    
+#endif
 
 let getBounds theme = 
     let filename = getElectronFile "bounds.json"

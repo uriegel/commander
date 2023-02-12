@@ -1,16 +1,15 @@
 module Routes 
 
 open Giraffe
+open GiraffeTools
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Cors
 open Microsoft.Extensions.Logging
 open System
 
 open Configuration
-open Engine
 open FileSystem
-open GiraffeTools
-open Requests
+open Directory
 
 let configureCors (builder: Infrastructure.CorsPolicyBuilder) =
     builder

@@ -5,9 +5,11 @@ open System
 open System.Text.Json
 open System.Threading
 
+open CommanderCore
 open Configuration
 open Theme
 open WindowBounds
+
 
 let isLinux = Environment.OSVersion.VersionString |> String.startsWith "Unix" 
 

@@ -19,26 +19,36 @@
     <PublishSingleFile Condition="'$(Configuration)' == 'Release'">true</PublishSingleFile>
     <SelfContained>false</SelfContained>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(IsWindows)'=='true'">
+    <DefineConstants>Windows</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(IsLinux)'=='true'">
+    <DefineConstants>Linux</DefineConstants>
+  </PropertyGroup>  
   <ItemGroup>
+    <Compile Include="CommanderCore.fs" />
+    <Compile Include="FileSystem.fs" />
+    <Compile Include="Configuration.fs" />
     <Compile Include="IO.fs" />
-    <Compile Include="Directory.fs" />
+    <Compile Include="Theme.fs" />
     <Compile Include="WindowBounds.fs" />
     <Compile Include="Remotes.fs" />
     <Compile Include="ProgressStream.fs" />
     <Compile Include="HttpRequests.fs" />
+    <Compile Include="Directory.fs" />
     <Compile Include="Android.fs" />
     <Compile Include="AndroidProxy.fs" />
     <Compile Include="Engines.fs" />
     <Compile Include="ExtendedRename.fs" />
-    <Compile Include="Requests.fs" />
     <Compile Include="Electron.fs" />
-        <Compile Include="Routes.fs" />
+    <Compile Include="Routes.fs" />
     <Compile Include="Server.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FSharp.Control.Reactive" Version="5.0.2" />
     <PackageReference Include="FSharpTools" Version="9.4.1" />
+    <PackageReference Include="FSharp.SystemTextJson" Version="0.17.4" />
     <PackageReference Include="Giraffe" Version="6.0.0" />
     <PackageReference Include="GiraffeTools" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
@@ -78,7 +88,6 @@
       <LogicalName>web/images/kirk.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
-  
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <EmbeddedResource Include="../resources/web/index.html">
       <LogicalName>web/index.html</LogicalName>
@@ -90,8 +99,6 @@
       <LogicalName>web/scripts/script.js</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
-
-
   <ItemGroup Condition="'$(IsWindows)'=='true'">
     <EmbeddedResource Include="../resources/icons/kirk.ico">
       <LogicalName>web/images/appicon</LogicalName>
@@ -102,7 +109,7 @@
       <LogicalName>python/geticon.py</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup Condition="'$(IsLinux)'=='true'">
+  <!-- <ItemGroup Condition="'$(IsLinux)'=='true'">
     <ProjectReference Include="..\LinuxPlugin\LinuxPlugin.fsproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(IsWindows)'=='true'">
@@ -110,5 +117,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.fsproj" />
-  </ItemGroup>
+  </ItemGroup> -->
 </Project>

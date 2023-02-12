@@ -1,14 +1,16 @@
-module Configuration
+module CommanderCore
 
-open FSharpTools 
+open FSharpTools
+open FSharpTools.Functional
+open System
 
-open Functional
 
 type Platform =
     | Kde     = 0
     | Gnome   = 1
     | Windows = 2
 
+#if Linux 
 let getPlatform = 
     let getPlatform () = 
         let session =         
@@ -22,7 +24,10 @@ let getPlatform =
         | _               -> Platform.Gnome
 
     getPlatform |> memoizeSingle
+#endif
 
+#if Windows 
 
-let appicon = "web/images/kirk.png"
+let getPlatform () = Platform.Windows
 
+#endif
