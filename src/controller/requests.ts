@@ -14,6 +14,7 @@ export interface FolderItem extends TableRowItem {
     iconPath:    string
     size:        number
     time:        string
+    isParent?:   boolean
 }
 
 export type GetItemResult = {

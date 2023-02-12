@@ -39,7 +39,7 @@ export const createEmptyController = (): Controller => ({
 
 export const makeTableViewItems = (items: TableRowItem[], withParent = true) => 
     (withParent
-        ? [{ name: "..", index: 0 } as TableRowItem]
+        ? [{ name: "..", index: 0, isParent: true } as TableRowItem]
         : [] as TableRowItem[])
         .concat(items)
         .map((n, i) => ({ ...n, index: i }))
