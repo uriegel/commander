@@ -5,7 +5,7 @@ const App = () => {
 
 	return (
 		<div className="App">
-			<FolderView/>
+			<FolderView />
 		</div>
 	)
 }

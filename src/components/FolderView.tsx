@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import VirtualTable, { createEmptyHandle, OnSort, TableRowItem, VirtualTableHandle } from 'virtual-table-react'
 import { checkController, Controller, createEmptyController, makeTableViewItems } from '../controller/controller'
 import { getItems } from '../controller/filesystem'
@@ -43,8 +43,8 @@ const FolderView = () => {
 
 export default FolderView
 
-// TODO VirtualTable (JSX.Element|string)[]
-// TODO rendering icons and name
+// TODO measure icons and name
+// TODO get svgs and icons
 // TODO sorting
 // TODO changing path with enter
 // TODO System windows or linux in location

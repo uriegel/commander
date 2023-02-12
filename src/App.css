@@ -1,3 +1,7 @@
+:root {
+    --svg-image-path-color: black;
+}
+
 .App {
     height: 100vh;
     display: flex;
