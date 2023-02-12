@@ -13,7 +13,7 @@ export interface FolderItem extends TableRowItem {
     isDirectory: boolean
     iconPath:    string
     size:        number
-    time:        Date
+    time:        string
 }
 
 export type GetItemResult = {

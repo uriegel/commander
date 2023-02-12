@@ -1,5 +1,5 @@
 import { TableRowItem } from "virtual-table-react"
-import { ControllerType } from "./controller"
+import { ControllerType, formatDateTime, formatSize } from "./controller"
 import { FolderItem, GetItemResult, request } from "./requests"
 
 const getColumns = () => ({
@@ -12,8 +12,8 @@ const getColumns = () => ({
 		var items = props as FolderItem
 		return [
 			items.name,
-			`${items.time}`,
-			`${items.size}`
+			formatDateTime(items.time),
+			formatSize(items.size)
 		]
 	},
 	measureRow: () => `Measure`

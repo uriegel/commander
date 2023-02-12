@@ -43,11 +43,11 @@ const FolderView = () => {
 
 export default FolderView
 
-// TODO rendering size
-// TODO rendering date
+// TODO VirtualTable (JSX.Element|string)[]
 // TODO rendering icons and name
 // TODO sorting
 // TODO changing path with enter
 // TODO System windows or linux in location
+// TODO SSE for theme detection?
 // TODO exif and version
 // TODO css themes windows windows dark, adwaita and adwaita dark
