@@ -30,10 +30,11 @@ let configure (app : IApplicationBuilder) =
 
     let routes =
         choose [  
-            route  "/commander/getfiles"       >=> warbler (fun _ -> getFiles ())
-            routef "/static/js/%s"                 (fun _ -> httpHandlerParam getResourceFile "scripts/script.js")
-            routef "/static/css/%s"                (fun _ -> httpHandlerParam getResourceFile "styles/style.css")
-            route  "/"                             >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)
+            route  "/commander/getfiles" >=> warbler (fun _ -> getFiles ())
+            route  "/commander/geticon"  >=> bindQuery<IconRequest> None getIconRequest
+            routef "/static/js/%s"     (fun _ -> httpHandlerParam getResourceFile "scripts/script.js")
+            routef "/static/css/%s"    (fun _ -> httpHandlerParam getResourceFile "styles/style.css")
+            route  "/"                   >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)
             routePathes () <| httpHandlerParam getResourceFile 
         ]       
     app

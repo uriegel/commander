@@ -6,7 +6,7 @@ import { FolderItem, GetItemResult, request } from "./requests"
 const renderRow = (props: TableRowItem) => {
 	var item = props as FolderItem
 	return [
-		(<IconName namePart={item.name} type={item.isParent ? IconNameType.Parent : IconNameType.Folder} />),
+		(<IconName namePart={item.name} type={item.isParent ? IconNameType.Parent : item.isDirectory ? IconNameType.Folder : IconNameType.File } iconPath={item.iconPath} />),
 		formatDateTime(item.time),
 		formatSize(item.size)
 	]

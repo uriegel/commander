@@ -24,13 +24,18 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(IsLinux)'=='true'">
     <DefineConstants>Linux</DefineConstants>
-  </PropertyGroup>  
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="CommanderCore.fs" />
     <Compile Include="FileSystem.fs" />
     <Compile Include="Configuration.fs" />
     <Compile Include="IO.fs" />
     <Compile Include="Theme.fs" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(IsLinux)'=='true'">
+    <Compile Include="Gtk.fs" />
+  </ItemGroup>      
+  <ItemGroup>
     <Compile Include="WindowBounds.fs" />
     <Compile Include="Remotes.fs" />
     <Compile Include="ProgressStream.fs" />
@@ -51,6 +56,9 @@
     <PackageReference Include="Giraffe" Version="6.0.0" />
     <PackageReference Include="GiraffeTools" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(IsLinux)'=='true'">
+    <PackageReference Include="GtkDotNet" Version="5.6.3" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="../resources/electron/main.js">

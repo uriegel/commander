@@ -43,7 +43,6 @@ const FolderView = () => {
 
 export default FolderView
 
-// TODO get file icons
 // TODO sorting
 // TODO changing path with enter
 // TODO System windows or linux in location
