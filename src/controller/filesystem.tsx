@@ -1,6 +1,6 @@
 import { TableRowItem } from "virtual-table-react"
 import IconName, { IconNameType } from "../components/IconName"
-import { Controller, ControllerResult, ControllerType, formatDateTime, formatSize } from "./controller"
+import { Controller, ControllerResult, ControllerType, formatDateTime, formatSize, makeTableViewItems } from "./controller"
 import { FolderItem, GetItemResult, request } from "./requests"
 
 const renderRow = (props: TableRowItem) => {
@@ -32,8 +32,9 @@ export const getFileSystemController = (controller: Controller|null): Controller
 	}})
 
 const getItems = async (path?: string) => {
-	return (await request<GetItemResult>("getfiles", {
+	const res = await request<GetItemResult>("getfiles", {
 		path: path ?? "",
 		showHiddenItems: true
-	})).items as TableRowItem[]
+	})
+	return { ...res, items: makeTableViewItems(res.items)}
 }

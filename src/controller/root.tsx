@@ -1,7 +1,7 @@
 import { TableRowItem } from "virtual-table-react"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
-import { Controller, ControllerResult, ControllerType, formatSize } from "./controller"
+import { Controller, ControllerResult, ControllerType, formatSize, makeTableViewItems } from "./controller"
 import { GetRootResult, request, RootItem } from "./requests"
 
 export const ROOT = "root"
@@ -35,7 +35,11 @@ const getWindowsColumns = () => ({
 })
 
 const getItems = async () => {
-	return (await request<GetRootResult>("getroot")) as TableRowItem[]
+	const result = await request<GetRootResult>("getroot")
+    return {
+        path: ROOT,
+        items: makeTableViewItems(result, false)
+    }
 }
 
 const getLinuxColumns = getWindowsColumns

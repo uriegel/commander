@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import './FolderView.css'
 import VirtualTable, { createEmptyHandle, OnSort, TableRowItem, VirtualTableHandle } from 'virtual-table-react'
-import { checkController, Controller, createEmptyController, makeTableViewItems } from '../controller/controller'
+import { checkController, Controller, createEmptyController } from '../controller/controller'
 import { ROOT } from '../controller/root'
 
 const FolderView = () => {
@@ -20,6 +20,8 @@ const FolderView = () => {
 			localStorage.setItem("widths", JSON.stringify(widths))
 	} 
 
+    useEffect(() => virtualTable.current.setFocus(), [])
+
     useEffect(() => {
         changePath(ROOT)
     }, [setItems])
@@ -32,9 +34,8 @@ const FolderView = () => {
         }
 
         const items = await controller.current.getItems(path)
-        // TODO path from F#
-        setPath(path)
-        setItems(makeTableViewItems(items))
+        setPath(items.path)
+        setItems(items.items)
     }
     
     return (

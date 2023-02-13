@@ -13,6 +13,11 @@ const timeFormat = Intl.DateTimeFormat("de-DE", {
     minute: "2-digit"
 })
 
+export interface GetItemResult {
+    path: string
+    items: TableRowItem[]
+}
+
 export enum ControllerType {
     Empty,
     Root,
@@ -22,7 +27,7 @@ export enum ControllerType {
 export interface Controller {
     type: ControllerType
     getColumns: ()=>TableColumns
-    getItems: (path?: string)=>Promise<TableRowItem[]>
+    getItems: (path?: string)=>Promise<GetItemResult>
 }
 
 export interface ControllerResult {
@@ -42,7 +47,7 @@ export const createEmptyController = (): Controller => ({
         renderRow: p => [],
         measureRow: () => ""
     }),
-    getItems: async ()=>[]
+    getItems: async ()=>({items: [], path: ""})
 
 } )
 
