@@ -26,7 +26,9 @@ let bounds: BrowserWindowConstructorOptions = JSON.parse(process.env['Bounds']!)
 
 const createWindow = async () => {  
     bounds.show = false
-    
+
+    bounds.frame = true
+        
     const win = new BrowserWindow(bounds)
     if ((bounds as Bounds).isMaximized)
         win.maximize()
@@ -43,16 +45,16 @@ const createWindow = async () => {
         await request("electronunmaximize", {})
     })
 
-    let doClose = false
-    win.on("close", async (evt: Event) => {
-        if (!doClose &&!win.isMaximized()) {
-            evt.preventDefault()
-            doClose = true
-            const bounds: Bounds = win.getBounds()
-            await request("sendbounds", bounds)
-            win.close()
-        }
-    })   
+    // let doClose = false
+    // win.on("close", async (evt: Event) => {
+    //     if (!doClose &&!win.isMaximized()) {
+    //         evt.preventDefault()
+    //         doClose = true
+    //         const bounds: Bounds = win.getBounds()
+    //         await request("sendbounds", bounds)
+    //         win.close()
+    //     }
+    // })   
 
     //win.loadURL(`http://localhost:20000?theme=${(bounds as Bounds).theme}&frame=${(bounds as Bounds).frame}`)
     win.loadURL(isDebug

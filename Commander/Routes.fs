@@ -4,12 +4,15 @@ open Giraffe
 open GiraffeTools
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Cors
+open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.Logging
 open System
+open System.Text.Json
 
 open Configuration
 open FileSystem
 open Directory
+open Root
 
 let configureCors (builder: Infrastructure.CorsPolicyBuilder) =
     builder
@@ -28,9 +31,19 @@ let configure (app : IApplicationBuilder) =
     let getResourceFile path = 
         setContentType <| getMimeType path     >=> streamData false (getResource <| sprintf "web/%s" path) None None
 
+    let getRoot () =
+        fun (next : HttpFunc) (ctx : HttpContext) ->
+            task {
+                let! body = ctx.ReadBodyFromRequestAsync ()
+                let! result = getRoot ()
+                return! Json.text result next ctx
+            }
+
+
     let routes =
         choose [  
             route  "/commander/getfiles" >=> warbler (fun _ -> getFiles ())
+            route  "/commander/getroot"  >=> warbler (fun _ -> getRoot ())
             route  "/commander/geticon"  >=> bindQuery<IconRequest> None getIconRequest
             routef "/static/js/%s"     (fun _ -> httpHandlerParam getResourceFile "scripts/script.js")
             routef "/static/css/%s"    (fun _ -> httpHandlerParam getResourceFile "styles/style.css")
