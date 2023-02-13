@@ -25,6 +25,7 @@ let start args =
             proc.StartInfo.FileName <- if isLinux then "electron" else "electron.cmd"
             proc.StartInfo.CreateNoWindow <- true
             proc.StartInfo.Environment.Add("Bounds", JsonSerializer.Serialize (getBounds <| getTheme (), getJsonOptions ()))
+            proc.StartInfo.Environment.Add("Platform", if isLinux then "Linux" else "Windows")
 #if DEBUG
             proc.StartInfo.Arguments <- args + " -debug"
 #else

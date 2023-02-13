@@ -44,6 +44,9 @@
   <ItemGroup Condition="'$(IsWindows)'=='true'">
     <Compile Include="WindowsRoot.fs" />
   </ItemGroup>
+  <ItemGroup Condition="'$(IsLinux)'=='true'">
+    <Compile Include="LinuxRoot.fs" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="Directory.fs" />
     <Compile Include="Android.fs" />

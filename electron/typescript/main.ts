@@ -23,6 +23,8 @@ type Empty = {}
 type InputData = Bounds | Empty
 
 let bounds: BrowserWindowConstructorOptions = JSON.parse(process.env['Bounds']!)
+let isWindows = process.env['Platform'] == "Windows"
+console.log("isWindows", isWindows)
 
 const createWindow = async () => {  
     bounds.show = false
@@ -56,10 +58,9 @@ const createWindow = async () => {
     //     }
     // })   
 
-    //win.loadURL(`http://localhost:20000?theme=${(bounds as Bounds).theme}&frame=${(bounds as Bounds).frame}`)
     win.loadURL(isDebug
-        ? `http://localhost:3000`
-        : `http://localhost:20000`)
+        ? `http://localhost:3000?platform=${isWindows ? "windows" : "linux"}`
+        : `http://localhost:20000?theme=${(bounds as Bounds).theme}&frame=${(bounds as Bounds).frame}`)
 
     async function getEvents() {
         await request("getevents", {})
