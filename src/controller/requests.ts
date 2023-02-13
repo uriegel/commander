@@ -5,7 +5,14 @@ export type Nothing = {}
 type Result = 
 	| Nothing 
     | Exception
+    | GetRootResult 
     | GetItemResult 
+
+export interface RootItem extends TableRowItem {
+    name:        string
+    description: string
+    size:        number
+}
 
 export interface FolderItem extends TableRowItem {
     name:        string
@@ -22,12 +29,16 @@ export type GetItemResult = {
     path:  string
 }
 
+export type GetRootResult = RootItem[]
+
 type Close = "close"
+export type GetRoot = "getroot"
 export type GetFiles = "getfiles"
 
 type RequestType = 
 	| Close
-	| GetFiles
+	| GetRoot
+    | GetFiles
 	
 type Exception = {
 	exception: string

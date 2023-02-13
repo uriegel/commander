@@ -1,6 +1,6 @@
 import { TableRowItem } from "virtual-table-react"
 import IconName, { IconNameType } from "../components/IconName"
-import { ControllerType, formatDateTime, formatSize } from "./controller"
+import { Controller, ControllerResult, ControllerType, formatDateTime, formatSize } from "./controller"
 import { FolderItem, GetItemResult, request } from "./requests"
 
 const renderRow = (props: TableRowItem) => {
@@ -22,11 +22,18 @@ const getColumns = () => ({
 	measureRow: () => (<IconName namePart="Measure g" type={IconNameType.Folder} />),
 })
 
-export const createFileSystemController = () => ({ type: ControllerType.FileSystem, getColumns })
+export const getFileSystemController = (controller: Controller|null): ControllerResult =>
+    controller?.type == ControllerType.FileSystem
+    ? ({ changed: false, controller })
+    : ({ changed: true, controller: { 
+		type: ControllerType.FileSystem, 
+		getColumns, 
+		getItems 
+	}})
 
-export const getItems = async (path: string) => {
-	return await request<GetItemResult>("getfiles", {
-		path,
+const getItems = async (path?: string) => {
+	return (await request<GetItemResult>("getfiles", {
+		path: path ?? "",
 		showHiddenItems: true
-	})
+	})).items as TableRowItem[]
 }

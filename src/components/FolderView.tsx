@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import VirtualTable, { createEmptyHandle, OnSort, TableRowItem, VirtualTableHandle } from 'virtual-table-react'
 import { checkController, Controller, createEmptyController, makeTableViewItems } from '../controller/controller'
-import { getItems } from '../controller/filesystem'
+import { ROOT } from '../controller/root'
 
 const FolderView = () => {
 
@@ -10,7 +10,7 @@ const FolderView = () => {
     const [items, setItems] = useState([] as TableRowItem[])
 
     const controller = useRef<Controller>(createEmptyController())
-    const currentPath = useRef<string>("/")
+    const currentPath = useRef<string>(ROOT)
 
     const onSort = (sort: OnSort) => console.log("onSort", sort)
 
@@ -24,14 +24,14 @@ const FolderView = () => {
     }, [setItems])
 
     const changePath = async (path: string) => {
-        const [changed, newController] = checkController(currentPath.current, controller.current)
-        if (changed) {
-            controller.current = newController
+        const result = checkController(currentPath.current, controller.current)
+        if (result.changed) {
+            controller.current = result.controller
             virtualTable.current.setColumns(controller.current.getColumns())
         }
 
-        const items = await getItems(currentPath.current)
-        setItems(makeTableViewItems(items.items))
+        const items = await controller.current.getItems(currentPath.current)
+        setItems(makeTableViewItems(items))
     }
     
     return (

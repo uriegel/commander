@@ -1,5 +1,6 @@
 import { TableColumns, TableRowItem } from "virtual-table-react";
-import { createFileSystemController } from "./filesystem";
+import { getFileSystemController } from "./filesystem";
+import { getRootController, ROOT } from "./root";
 
 const dateFormat = Intl.DateTimeFormat("de-DE", {
     year: "numeric",
@@ -14,19 +15,25 @@ const timeFormat = Intl.DateTimeFormat("de-DE", {
 
 export enum ControllerType {
     Empty,
+    Root,
     FileSystem
 }
 
 export interface Controller {
     type: ControllerType
     getColumns: ()=>TableColumns
+    getItems: (path?: string)=>Promise<TableRowItem[]>
 }
 
-export const checkController = (path: string, controller: Controller|null):[boolean, Controller] => {
-    return controller?.type == ControllerType.FileSystem
-        ? [false, controller]
-        : [true, createFileSystemController()]
+export interface ControllerResult {
+    changed: boolean
+    controller: Controller
 }
+
+export const checkController = (path: string, controller: Controller|null):ControllerResult => 
+    path == ROOT
+    ? getRootController(controller)
+    : getFileSystemController(controller)
 
 export const createEmptyController = (): Controller => ({
     type: ControllerType.Empty,
@@ -34,7 +41,9 @@ export const createEmptyController = (): Controller => ({
         columns: [],
         renderRow: p => [],
         measureRow: () => ""
-    })
+    }),
+    getItems: async ()=>[]
+
 } )
 
 export const makeTableViewItems = (items: TableRowItem[], withParent = true) => 
