@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import './FolderView.css'
-import VirtualTable, { createEmptyHandle, OnSort, TableRowItem, VirtualTableHandle } from 'virtual-table-react'
+import VirtualTable, { createEmptyHandle, OnSort, SpecialKeys, TableRowItem, VirtualTableHandle } from 'virtual-table-react'
 import { checkController, Controller, createEmptyController } from '../controller/controller'
 import { ROOT } from '../controller/root'
 
@@ -37,12 +37,21 @@ const FolderView = () => {
         setPath(items.path)
         setItems(items.items)
     }
+
+    const onEnter = (item: TableRowItem, keys: SpecialKeys) => {
+        const result = controller.current.onEnter(path, item, keys)
+        if (!result.processed && result.pathToSet) 
+            changePath(result.pathToSet)
+    }
+        
+    
     
     return (
         <>
             <input className="pathInput" value={path} />
             <div className="tableContainer">
-                <VirtualTable ref={virtualTable} items={items} onSort={onSort} onColumnWidths={onColumnWidths} />
+                <VirtualTable ref={virtualTable} items={items} onSort={onSort}
+                    onColumnWidths={onColumnWidths} onEnter={onEnter} />
             </div>
         </>
     )
@@ -50,8 +59,8 @@ const FolderView = () => {
 
 export default FolderView
 
-// TODO changing path with enter
-// TODO isHidden, isMounted: setRowClass in table-view-react
+// TODO onEnter in fileSystemController
+// TODO isHidden
 // TODO sorting
 // TODO SSE for theme detection?
 // TODO exif and version

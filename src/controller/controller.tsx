@@ -1,4 +1,4 @@
-import { TableColumns, TableRowItem } from "virtual-table-react"
+import { SpecialKeys, TableColumns, TableRowItem } from "virtual-table-react"
 import IconName, { IconNameType } from "../components/IconName"
 import { getFileSystemController } from "./filesystem";
 import { getRootController, ROOT } from "./root";
@@ -25,10 +25,16 @@ export enum ControllerType {
     FileSystem
 }
 
+export interface onEnterResult {
+    processed: boolean
+    pathToSet?: string
+}
+
 export interface Controller {
     type: ControllerType
     getColumns: ()=>TableColumns
-    getItems: (path?: string)=>Promise<GetItemResult>
+    getItems: (path?: string) => Promise<GetItemResult>
+    onEnter: (path: string, item: TableRowItem, keys: SpecialKeys)=>onEnterResult
 }
 
 export interface ControllerResult {
@@ -50,7 +56,8 @@ export const createEmptyController = (): Controller => ({
         renderRow: p => [],
         measureRow: () => ""
     }),
-    getItems: async ()=>({items: [], path: ""})
+    getItems: async () => ({ items: [], path: "" }),
+    onEnter: (i, k) => ({ processed: true})
 
 } )
 

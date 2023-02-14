@@ -28,7 +28,8 @@ export const getFileSystemController = (controller: Controller|null): Controller
     : ({ changed: true, controller: { 
 		type: ControllerType.FileSystem, 
 		getColumns, 
-		getItems 
+		getItems,
+		onEnter: (item, keys) => ({ processed: true})
 	}})
 
 const getItems = async (path?: string) => {

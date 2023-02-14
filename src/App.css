@@ -12,3 +12,7 @@
     flex-grow: 1;
     position: relative;
 }
+
+tr.notMounted {
+    Opacity: 0.5;
+}

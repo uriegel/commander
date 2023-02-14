@@ -1,7 +1,7 @@
 import { TableRowItem } from "virtual-table-react"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
-import { Controller, ControllerResult, ControllerType, formatSize, makeTableViewItems, measureRow } from "./controller"
+import { Controller, ControllerResult, ControllerType, formatSize, makeTableViewItems, measureRow} from "./controller"
 import { GetRootResult, request, RootItem } from "./requests"
 
 export const ROOT = "root"
@@ -12,7 +12,12 @@ export const getRootController = (controller: Controller|null): ControllerResult
     : ({ changed: true, controller: { 
         type: ControllerType.Root, 
         getColumns: () => getPlatform() == Platform.Windows ? getWindowsColumns() : getLinuxColumns(),
-        getItems 
+        getItems,
+        onEnter: (path, item, keys) => 
+            ({
+                processed: false, 
+                pathToSet: (item as RootItem).mountPoint
+            }) 
     }})
 
 const renderWindowsRow = (props: TableRowItem) => {
@@ -52,13 +57,19 @@ const getItems = async () => {
     }
 }
 
+const getRowClasses = (item: RootItem) => 
+    item.isMounted == false
+        ? ["notMounted"]
+        : []
+
 const getLinuxColumns = () => ({
 	columns: [
 		{ name: "Name", isSortable: true },
         { name: "Bezeichnung", isSortable: true },
         { name: "Mountpoint", isSortable: true },
 		{ name: "Größe", isRightAligned: true, isSortable: true }
-	],
+    ],
+    getRowClasses: getRowClasses,
 	renderRow: renderLinuxRow,
 	measureRow
 })
