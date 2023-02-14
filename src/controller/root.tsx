@@ -1,7 +1,7 @@
 import { TableRowItem } from "virtual-table-react"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
-import { Controller, ControllerResult, ControllerType, formatSize, makeTableViewItems } from "./controller"
+import { Controller, ControllerResult, ControllerType, formatSize, makeTableViewItems, measureRow } from "./controller"
 import { GetRootResult, request, RootItem } from "./requests"
 
 export const ROOT = "root"
@@ -24,6 +24,16 @@ const renderWindowsRow = (props: TableRowItem) => {
     ]
 }
 
+const renderLinuxRow = (props: TableRowItem) => {
+    var item = props as RootItem
+    return [
+        (<IconName namePart={item.name} type={IconNameType.Root } />),
+        item.description,
+        item.mountPoint ?? "",
+        formatSize(item.size)
+    ]
+}
+
 const getWindowsColumns = () => ({
 	columns: [
 		{ name: "Name", isSortable: true },
@@ -31,7 +41,7 @@ const getWindowsColumns = () => ({
 		{ name: "Größe", isRightAligned: true, isSortable: true }
 	],
 	renderRow: renderWindowsRow,
-	measureRow: () => (<IconName namePart="Measure g" type={IconNameType.Folder} />),
+	measureRow
 })
 
 const getItems = async () => {
@@ -42,4 +52,13 @@ const getItems = async () => {
     }
 }
 
-const getLinuxColumns = getWindowsColumns
+const getLinuxColumns = () => ({
+	columns: [
+		{ name: "Name", isSortable: true },
+        { name: "Bezeichnung", isSortable: true },
+        { name: "Mountpoint", isSortable: true },
+		{ name: "Größe", isRightAligned: true, isSortable: true }
+	],
+	renderRow: renderLinuxRow,
+	measureRow
+})

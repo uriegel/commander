@@ -12,6 +12,8 @@ export interface RootItem extends TableRowItem {
     name:        string
     description: string
     size:        number
+    isMounted?:  boolean
+    mountPoint?: string
 }
 
 export interface FolderItem extends TableRowItem {

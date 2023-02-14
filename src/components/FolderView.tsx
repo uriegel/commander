@@ -50,9 +50,9 @@ const FolderView = () => {
 
 export default FolderView
 
-// TODO sorting
 // TODO changing path with enter
-// TODO System windows or linux in location
+// TODO isHidden, isMounted: setRowClass in table-view-react
+// TODO sorting
 // TODO SSE for theme detection?
 // TODO exif and version
 // TODO css themes windows windows dark, adwaita and adwaita dark

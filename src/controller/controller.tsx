@@ -1,4 +1,5 @@
-import { TableColumns, TableRowItem } from "virtual-table-react";
+import { TableColumns, TableRowItem } from "virtual-table-react"
+import IconName, { IconNameType } from "../components/IconName"
 import { getFileSystemController } from "./filesystem";
 import { getRootController, ROOT } from "./root";
 
@@ -34,6 +35,8 @@ export interface ControllerResult {
     changed: boolean
     controller: Controller
 }
+
+export const measureRow = () => (<IconName namePart="Measure g" type={IconNameType.Folder} />)
 
 export const checkController = (path: string, controller: Controller|null):ControllerResult => 
     path == ROOT
