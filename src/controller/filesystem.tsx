@@ -2,6 +2,7 @@ import { TableRowItem } from "virtual-table-react"
 import IconName, { IconNameType } from "../components/IconName"
 import { Controller, ControllerResult, ControllerType, formatDateTime, formatSize, makeTableViewItems, measureRow } from "./controller"
 import { FolderItem, GetItemResult, request } from "./requests"
+import { ROOT } from "./root"
 
 const renderRow = (props: TableRowItem) => {
 	var item = props as FolderItem
@@ -29,7 +30,23 @@ export const getFileSystemController = (controller: Controller|null): Controller
 		type: ControllerType.FileSystem, 
 		getColumns, 
 		getItems,
-		onEnter: (item, keys) => ({ processed: true})
+		onEnter: (path, item, keys) => 
+			(item as FolderItem).isDirectory
+				? ({
+                	processed: false, 
+                	pathToSet: path + '/' + (item as FolderItem).name // TODO Windows: \?
+				}) 
+				: (item as FolderItem).isParent && path.length > 1 // TODO Windows 
+				?  ({
+                	processed: false, 
+                	pathToSet: path + '/' + (item as FolderItem).name
+				}) 
+				: (item as FolderItem).isParent && path.length == 1
+				? ({
+                	processed: false, 
+                	pathToSet: ROOT
+				}) 
+				: { processed: true }
 	}})
 
 const getItems = async (path?: string) => {

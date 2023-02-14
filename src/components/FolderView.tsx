@@ -33,6 +33,7 @@ const FolderView = () => {
             virtualTable.current.setColumns(controller.current.getColumns())
         }
 
+        virtualTable.current.setPosition(0)
         const items = await controller.current.getItems(path)
         setPath(items.path)
         setItems(items.items)
@@ -59,9 +60,11 @@ const FolderView = () => {
 
 export default FolderView
 
-// TODO onEnter in fileSystemController
+// TODO Windows 
+// TODO parent: select last folder
 // TODO isHidden
-// TODO sorting
-// TODO SSE for theme detection?
 // TODO exif and version
+// TODO sorting
+// TODO Restrict items
+// TODO SSE for theme detection?
 // TODO css themes windows windows dark, adwaita and adwaita dark
