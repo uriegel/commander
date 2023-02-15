@@ -141,8 +141,6 @@ let getFiles () =
             return! Json.text result next ctx
         }
 
-#if Linux
-
 let getExtendedItems (getExtended: GetExtendedItems) = async {
 
     let getExifDate (file: string) = 
@@ -180,6 +178,8 @@ let getExtendedItems (getExtended: GetExtendedItems) = async {
     
     return result |> serialize
 }
+
+#if Linux
 
 let getIcon ext = async {
     // TODO KDE
