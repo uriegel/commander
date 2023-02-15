@@ -37,7 +37,7 @@ const FolderView = () => {
         setPath(items.path)
         setItems(items.items)
         const pos = latestPath ? items.items.findIndex(n => (n as any).name == latestPath) : 0
-        setTimeout(() => virtualTable.current.setPosition(pos))
+        virtualTable.current.setInitialPosition(pos, items.items.length)
     }
 
     const onEnter = (item: TableRowItem, keys: SpecialKeys) => {
