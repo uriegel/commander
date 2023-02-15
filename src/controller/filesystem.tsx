@@ -78,12 +78,12 @@ const checkExtendedItems =
 		? checkExtendedItemsWindows
 		: checkExtendedItemsLinux
 
-const getExtendedItems = async (path: string, items: TableRowItem[]): Promise<TableRowItem[]> => 
+const getExtendedItems = async (path: string, items: TableRowItem[]): Promise<GetExtendedItemsResult> => 
 	checkExtendedItems(items as FolderItem[])
 		? request<GetExtendedItemsResult>("getextendeditems", {
 			items: (items as FolderItem[]).map(n => n.name),
 			path
 		})
-		: []
+		: { path: "", extendedItems: [] }
 
 

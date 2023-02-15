@@ -2,6 +2,7 @@ import { SpecialKeys, TableColumns, TableRowItem } from "virtual-table-react"
 import IconName, { IconNameType } from "../components/IconName"
 import { lastIndexOfAny } from "../globals";
 import { getFileSystemController } from "./filesystem";
+import { GetExtendedItemsResult } from "./requests";
 import { getRootController, ROOT } from "./root";
 
 const dateFormat = Intl.DateTimeFormat("de-DE", {
@@ -36,7 +37,7 @@ export interface Controller {
     type: ControllerType
     getColumns: ()=>TableColumns
     getItems: (path?: string) => Promise<GetItemResult>
-    getExtendedItems: (path: string, items: TableRowItem[])=> Promise<TableRowItem[]>
+    getExtendedItems: (path: string, items: TableRowItem[])=> Promise<GetExtendedItemsResult>
     onEnter: (path: string, item: TableRowItem, keys: SpecialKeys)=>onEnterResult
 }
 
@@ -60,7 +61,7 @@ export const createEmptyController = (): Controller => ({
         measureRow: () => ""
     }),
     getItems: async () => ({ items: [], path: "" }),
-    getExtendedItems: async () => [],
+    getExtendedItems: async () => ({path:"", extendedItems: []}),
     onEnter: (i, k) => ({ processed: true})
 } )
 

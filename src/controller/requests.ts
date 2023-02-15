@@ -32,7 +32,15 @@ export type GetItemResult = {
     path:  string
 }
 
-export type GetExtendedItemsResult = FolderItem[]
+export type ExtendedItem = {
+    date: string
+}
+
+export type GetExtendedItemsResult = {
+    extendedItems: ExtendedItem[]
+    path: string
+}
+
 export type GetRootResult = RootItem[]
 
 type Close = "close"

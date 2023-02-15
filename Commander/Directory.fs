@@ -54,8 +54,12 @@ type GetExtendedItems = {
 }
 
 type ExtendedItem = {
-    Item: string
     Date: DateTime option
+}
+
+type ExtendedItemResult = {
+    ExtendedItems: ExtendedItem seq
+    Path: string
 }
 
 [<CLIMutable>]
@@ -161,17 +165,18 @@ let getExtendedItems (getExtended: GetExtendedItems) = async {
             || file.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase) then
             {
                 Date = getExifDate file
-                Item = file
             }
         else
             {
                 Date = None
-                Item = file
             }
 
-    let result = 
-        getExtended.Items
-        |> Seq.map mapExifDate
+    let result = {
+        Path = getExtended.Path
+        ExtendedItems = 
+            getExtended.Items
+            |> Seq.map mapExifDate
+    }
     
     return result |> serialize
 }
