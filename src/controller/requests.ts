@@ -24,6 +24,7 @@ export interface FolderItem extends TableRowItem {
     iconPath:    string
     size:        number
     time:        string
+    exifDate?:   string
     isParent?:   boolean
 }
 

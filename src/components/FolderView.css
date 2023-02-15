@@ -12,3 +12,7 @@
     color: var(--vtr-color);
     background-color: var(--light-background-color);    
 }
+
+.exif {
+    color: yellowgreen;
+}

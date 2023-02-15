@@ -7,7 +7,7 @@ import { ROOT } from '../controller/root'
 const FolderView = () => {
 
     const virtualTable = useRef<VirtualTableHandle>(createEmptyHandle())
-    
+
     const [items, setItems] = useState([] as TableRowItem[])
     const [path, setPath] = useState("")
 
@@ -19,6 +19,8 @@ const FolderView = () => {
 		if (widths.length == 4)
 			localStorage.setItem("widths", JSON.stringify(widths))
 	} 
+
+    const refPath = useRef("")
 
     useEffect(() => virtualTable.current.setFocus(), [])
 
@@ -38,11 +40,11 @@ const FolderView = () => {
         setItems(items.items)
         const pos = latestPath ? items.items.findIndex(n => (n as any).name == latestPath) : 0
         virtualTable.current.setInitialPosition(pos, items.items.length)
+        refPath.current = items.path
         const extendedInfoItems = await controller.current.getExtendedItems(items.path, items.items)
-        if (extendedInfoItems.path == path) {
-            
-        } else
-            console.log("path changed")
+        if (extendedInfoItems.path == refPath.current) 
+            // TODO to controller
+            setItems(items.items.map((n, i) => extendedInfoItems.extendedItems[i].date ? {...n, exifDate: extendedInfoItems.extendedItems[i].date} : n))    
             
     }
 

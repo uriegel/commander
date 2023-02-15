@@ -12,7 +12,7 @@ const renderRow = (props: TableRowItem) => {
 	var item = props as FolderItem
 	return [
 		(<IconName namePart={item.name} type={item.isParent ? IconNameType.Parent : item.isDirectory ? IconNameType.Folder : IconNameType.File } iconPath={item.iconPath} />),
-		formatDateTime(item.time),
+		(<span className={item.exifDate ? "exif" : "" } >{formatDateTime(item.exifDate ?? item.time)}</span>),
 		formatSize(item.size)
 	]
 }
