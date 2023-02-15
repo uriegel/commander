@@ -65,16 +65,25 @@ const getItems = async (path?: string) => {
 	return { ...res, items: makeTableViewItems(res.items)}
 }
 
-const getExtendedWindowItems = async (items: TableRowItem[]): Promise<TableRowItem[]> => {
-	return []
-}
+const checkExtendedItemsWindows = (items: FolderItem[]) => 
+	items.find(n => {
+		const check = n.name.toLowerCase()
+		return check.endsWith(".jpg") || check.endsWith(".png")
+	})
 
-const getExtendedLinuxItems = async (items: TableRowItem[]): Promise<TableRowItem[]> => {
-	const itemsToGet = (items as FolderItem[])
-		.filter(n => n.name.toLowerCase().endsWith(".jpg") || n.name.toLowerCase().endsWith(".png"))
-	return itemsToGet.length > 0
-		? request<GetExtendedItemsResult>("getextendeditems", itemsToGet)
+const checkExtendedItemsLinux = checkExtendedItemsWindows
+
+const checkExtendedItems = 
+	platform == Platform.Windows
+		? checkExtendedItemsWindows
+		: checkExtendedItemsLinux
+
+const getExtendedItems = async (path: string, items: TableRowItem[]): Promise<TableRowItem[]> => 
+	checkExtendedItems(items as FolderItem[])
+		? request<GetExtendedItemsResult>("getextendeditems", {
+			items: (items as FolderItem[]).map(n => n.name),
+			path
+		})
 		: []
-}
 
-const getExtendedItems = platform == Platform.Windows ? getExtendedWindowItems : getExtendedLinuxItems
+

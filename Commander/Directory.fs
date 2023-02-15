@@ -3,20 +3,19 @@ module Directory
 open Microsoft.AspNetCore.Http
 open Giraffe
 open FSharpTools
+open FSharpTools.ExifReader
 open System
 open System.IO
 open System.Text.Json
-open System.Runtime.InteropServices
 
 open Configuration
 open IO
-open FSharpTools.Directory
 open CommanderCore
 
 #if Linux
 open Gtk
-open FSharpTools.Process
-open System.Threading.Tasks
+open Microsoft.AspNetCore.Http.Features
+open FSharpTools.Directory
 #endif
 
 #if Windows
@@ -27,8 +26,6 @@ open ClrWinApi
 #endif
 
 type DirectoryItem = {
-    IsSelected:  bool option
-    Index:       int32 option
     Name:        string
     Size:        int64
     IsDirectory: bool
@@ -38,8 +35,6 @@ type DirectoryItem = {
 }
 
 let getDirItem (dirInfo: DirectoryInfo) = {
-    IsSelected =  None
-    Index       = None
     Name =        dirInfo.Name
     Size =        0
     IsDirectory = true
@@ -51,6 +46,16 @@ let getDirItem (dirInfo: DirectoryInfo) = {
 type GetFiles = {
     Path:            string
     ShowHiddenItems: bool
+}
+
+type GetExtendedItems = {
+    Items: string[]
+    Path: string
+}
+
+type ExtendedItem = {
+    Item: string
+    Date: DateTime option
 }
 
 [<CLIMutable>]
@@ -67,8 +72,6 @@ let getIconPath (fileInfo: FileInfo) =
     | _                                       -> ".noextension"
 
 let getFileItem (fileInfo: FileInfo) = {
-    IsSelected =  None
-    Index       = None
     Name =        fileInfo.Name
     Size =        fileInfo.Length
     IsDirectory = false
@@ -135,8 +138,42 @@ let getFiles () =
         }
 
 #if Linux
-let getExtendedItems (items: DirectoryItem[]) = async {
-    return "Jetzt kommen sie"
+
+let getExtendedItems (getExtended: GetExtendedItems) = async {
+
+    let getExifDate (file: string) = 
+        let getExifDate reader =
+            reader 
+            |> getDateValue ExifTag.DateTimeOriginal
+            |> Option.orElseWith (fun () -> reader |> getDateValue ExifTag.DateTime) 
+        let reader = 
+            combine2Pathes getExtended.Path file
+            |> getExif
+        let result = 
+            reader 
+            |> Option.map getExifDate 
+            |> Option.flatten
+        reader |> Option.map (fun reader -> (reader :> IDisposable).Dispose ()) |> ignore
+        result    
+
+    let mapExifDate (file: string) = 
+        if file.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase) 
+            || file.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase) then
+            {
+                Date = getExifDate file
+                Item = file
+            }
+        else
+            {
+                Date = None
+                Item = file
+            }
+
+    let result = 
+        getExtended.Items
+        |> Seq.map mapExifDate
+    
+    return result |> serialize
 }
 
 let getIcon ext = async {

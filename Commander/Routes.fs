@@ -13,6 +13,7 @@ open Configuration
 open FileSystem
 open Directory
 open Root
+open Directory
 
 let configureCors (builder: Infrastructure.CorsPolicyBuilder) =
     builder
@@ -25,7 +26,7 @@ let getExtendedItems () =
     fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
             let! body = ctx.ReadBodyFromRequestAsync ()
-            let param = JsonSerializer.Deserialize<DirectoryItem[]>(body, getJsonOptions ())
+            let param = JsonSerializer.Deserialize<GetExtendedItems>(body, getJsonOptions ())
             let! result = Directory.getExtendedItems param
             return! Json.text result next ctx
         }

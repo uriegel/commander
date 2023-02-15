@@ -55,7 +55,10 @@ type GetFilesType = {
     showHiddenItems: boolean
 }
 
-type GetExtendedItemsType = FolderItem[]
+type GetExtendedItemsType = {
+    path: string,
+    items: string[]
+}
 
 type Empty = {
     empty?: string

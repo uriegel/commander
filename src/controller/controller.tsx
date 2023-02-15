@@ -36,7 +36,7 @@ export interface Controller {
     type: ControllerType
     getColumns: ()=>TableColumns
     getItems: (path?: string) => Promise<GetItemResult>
-    getExtendedItems: (items: TableRowItem[])=> Promise<TableRowItem[]>
+    getExtendedItems: (path: string, items: TableRowItem[])=> Promise<TableRowItem[]>
     onEnter: (path: string, item: TableRowItem, keys: SpecialKeys)=>onEnterResult
 }
 
