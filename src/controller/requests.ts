@@ -26,6 +26,7 @@ export interface FolderItem extends TableRowItem {
     time:        string
     exifDate?:   string
     isParent?:   boolean
+    version?:    Version
 }
 
 export type GetItemResult = {
@@ -33,8 +34,16 @@ export type GetItemResult = {
     path:  string
 }
 
+export type Version = {
+    major: number
+    minor: number
+    patch: number
+    build: number
+}
+
 export type ExtendedItem = {
-    date: string
+    date: string|null
+    version: Version|null
 }
 
 export type GetExtendedItemsResult = {

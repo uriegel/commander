@@ -2,7 +2,7 @@ import { SpecialKeys, TableColumns, TableRowItem } from "virtual-table-react"
 import IconName, { IconNameType } from "../components/IconName"
 import { lastIndexOfAny } from "../globals";
 import { getFileSystemController } from "./filesystem";
-import { ExtendedItem, GetExtendedItemsResult } from "./requests";
+import { ExtendedItem, GetExtendedItemsResult, Version } from "./requests";
 import { getRootController, ROOT } from "./root";
 
 const dateFormat = Intl.DateTimeFormat("de-DE", {
@@ -98,6 +98,10 @@ export function formatDateTime(dateStr: string) {
     const date = Date.parse(dateStr)
     return dateFormat.format(date) + " " + timeFormat.format(date)  
 }
+
+export const formatVersion = (version?: Version) => 
+    version ? `${version.major}.${version.minor}.${version.build}.${version.patch}` : ""
+
 
 export const extractSubPath = (path: string) => 
     path.substring(lastIndexOfAny(path, ["/", "\\"]))

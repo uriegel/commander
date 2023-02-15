@@ -1,7 +1,7 @@
 import { TableRowItem } from "virtual-table-react"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
-import { Controller, ControllerResult, ControllerType, extractSubPath, formatDateTime, formatSize, makeTableViewItems, measureRow } from "./controller"
+import { Controller, ControllerResult, ControllerType, extractSubPath, formatDateTime, formatSize, formatVersion, makeTableViewItems, measureRow } from "./controller"
 import { ExtendedItem, FolderItem, GetExtendedItemsResult, GetItemResult, request } from "./requests"
 import { ROOT } from "./root"
 
@@ -19,7 +19,7 @@ const renderBaseRow = (props: TableRowItem) => {
 
 const renderRow = (props: TableRowItem) => 
 	platform == Platform.Windows 
-	? renderBaseRow(props).concat(["version"])
+	? renderBaseRow(props).concat(formatVersion((props as FolderItem).version))
 	: renderBaseRow(props)
 
 const getWindowsColumns = () => ({
@@ -87,10 +87,17 @@ const getItems = async (path?: string) => {
 const checkExtendedItemsWindows = (items: FolderItem[]) => 
 	items.find(n => {
 		const check = n.name.toLowerCase()
-		return check.endsWith(".jpg") || check.endsWith(".png")
+		return check.endsWith(".jpg") 
+			|| check.endsWith(".png") 
+			|| check.endsWith(".exe") 
+			|| check.endsWith(".dll")
 	})
 
-const checkExtendedItemsLinux = checkExtendedItemsWindows
+const checkExtendedItemsLinux = (items: FolderItem[]) => 
+	items.find(n => {
+		const check = n.name.toLowerCase()
+		return check.endsWith(".jpg") || check.endsWith(".png")
+	})
 
 const checkExtendedItems = 
 	platform == Platform.Windows
@@ -106,4 +113,12 @@ const getExtendedItems = async (path: string, items: TableRowItem[]): Promise<Ge
 		: { path: "", extendedItems: [] }
 
 const setExtendedItems = (items: TableRowItem[], extendedItems: ExtendedItem[]) => 
-	items.map((n, i) => extendedItems[i].date ? {...n, exifDate: extendedItems[i].date} : n)
+	items.map((n, i) => !extendedItems[i].date && !extendedItems[i].version
+		? n
+		: extendedItems[i].date && !extendedItems[i].version
+		? {...n, exifDate: extendedItems[i].date} 
+		: !extendedItems[i].date && extendedItems[i].version
+		? {...n, version: extendedItems[i].version} 
+		: {...n, version: extendedItems[i].version, exifDate: extendedItems[i].date })
+		 
+

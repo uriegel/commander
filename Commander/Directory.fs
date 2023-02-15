@@ -23,6 +23,7 @@ open System.Drawing
 open System.Drawing.Imaging
 open System.Runtime.InteropServices
 open ClrWinApi
+open System.Diagnostics
 #endif
 
 type DirectoryItem = {
@@ -53,8 +54,21 @@ type GetExtendedItems = {
     Path: string
 }
 
+#if Windows 
+
+type FileVersion = {
+    Major: int
+    Minor: int
+    Patch: int
+    Build: int
+}
+#endif
+
 type ExtendedItem = {
     Date: DateTime option
+#if Windows
+    Version: FileVersion option
+#endif
 }
 
 type ExtendedItemResult = {
@@ -158,7 +172,44 @@ let getExtendedItems (getExtended: GetExtendedItems) = async {
         reader |> Option.map (fun reader -> (reader :> IDisposable).Dispose ()) |> ignore
         result    
 
-    let mapExifDate (file: string) = 
+#if Windows
+
+    let mapVersion (info: FileVersionInfo) =  
+        {
+            Major = info.FileMajorPart
+            Minor = info.FileMinorPart
+            Patch = info.FilePrivatePart
+            Build = info.FileBuildPart
+        }
+    
+    let getVersion (file: string) = 
+        combine2Pathes getExtended.Path file
+        |> FileVersionInfo.GetVersionInfo 
+        |> Option.ofObj
+        |> Option.map mapVersion
+
+    let mapExtended (file: string) = 
+        let exif = 
+            if file.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase) 
+                || file.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase) then
+                    getExifDate file
+                else
+                    None
+        let version = 
+            if file.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase) 
+                || file.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase) then
+                    getVersion file
+                else
+                    None
+        {
+            Date = exif
+            Version = version
+        }
+
+#endif
+
+#if Linux
+    let mapExtended (file: string) = 
         if file.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase) 
             || file.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase) then
             {
@@ -168,12 +219,13 @@ let getExtendedItems (getExtended: GetExtendedItems) = async {
             {
                 Date = None
             }
+#endif
 
     let result = {
         Path = getExtended.Path
         ExtendedItems = 
             getExtended.Items
-            |> Seq.map mapExifDate
+            |> Seq.map mapExtended
     }
     
     return result |> serialize
