@@ -1,24 +1,11 @@
-import { TableRowItem } from "virtual-table-react"
+import { SpecialKeys, TableRowItem } from "virtual-table-react"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, formatSize, makeTableViewItems, measureRow} from "./controller"
 import { GetRootResult, request, RootItem } from "./requests"
 
 export const ROOT = "root"
-
-export const getRootController = (controller: Controller|null): ControllerResult =>
-    controller?.type == ControllerType.Root
-    ? ({ changed: false, controller })
-    : ({ changed: true, controller: { 
-        type: ControllerType.Root, 
-        getColumns: () => getPlatform() == Platform.Windows ? getWindowsColumns() : getLinuxColumns(),
-        getItems,
-        onEnter: (path, item, keys) => 
-            ({
-                processed: false, 
-                pathToSet: (item as RootItem).mountPoint
-            }) 
-    }})
+const platform = getPlatform()
 
 const renderWindowsRow = (props: TableRowItem) => {
     var item = props as RootItem
@@ -49,6 +36,43 @@ const getWindowsColumns = () => ({
 	measureRow
 })
 
+const getLinuxColumns = () => ({
+	columns: [
+		{ name: "Name", isSortable: true },
+        { name: "Bezeichnung", isSortable: true },
+        { name: "Mountpoint", isSortable: true },
+		{ name: "Größe", isRightAligned: true, isSortable: true }
+    ],
+    getRowClasses: getRowClasses,
+	renderRow: renderLinuxRow,
+	measureRow
+})
+
+const onWindowsEnter = (_: string, item: TableRowItem, keys: SpecialKeys) => 
+({
+    processed: false, 
+    pathToSet: (item as RootItem).name
+}) 
+
+const onLinuxEnter = (_: string, item: TableRowItem, keys: SpecialKeys) => 
+({
+    processed: false, 
+    pathToSet: (item as RootItem).mountPoint
+}) 
+
+const getColumns = platform == Platform.Windows ? getWindowsColumns : getLinuxColumns
+const onEnter = platform == Platform.Windows ? onWindowsEnter : onLinuxEnter
+
+export const getRootController = (controller: Controller|null): ControllerResult => 
+    controller?.type == ControllerType.Root
+    ? ({ changed: false, controller })
+    : ({ changed: true, controller: { 
+        type: ControllerType.Root, 
+        getColumns,
+        getItems,
+        onEnter
+    }})
+
 const getItems = async () => {
 	const result = await request<GetRootResult>("getroot")
     return {
@@ -62,14 +86,3 @@ const getRowClasses = (item: RootItem) =>
         ? ["notMounted"]
         : []
 
-const getLinuxColumns = () => ({
-	columns: [
-		{ name: "Name", isSortable: true },
-        { name: "Bezeichnung", isSortable: true },
-        { name: "Mountpoint", isSortable: true },
-		{ name: "Größe", isRightAligned: true, isSortable: true }
-    ],
-    getRowClasses: getRowClasses,
-	renderRow: renderLinuxRow,
-	measureRow
-})

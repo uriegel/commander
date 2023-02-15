@@ -10,7 +10,7 @@ export const getPlatform = memoize(() => {
         : platform == "linux"
         ? Platform.Linux
         // HACK set platform in browser react test 
-        : Platform.Linux
+        : Platform.Windows
 })
     
 function memoize<T>(funcToMemoize: ()=>T) {
@@ -24,3 +24,14 @@ function memoize<T>(funcToMemoize: ()=>T) {
         return memoized
     }       
 }
+
+export const lastIndexOfAny = (str: string, chars: string[]): number => {
+    if (chars.length > 0) {
+        const res = str.lastIndexOf(chars[0])
+        return res != -1
+            ? res + 1
+            : lastIndexOfAny(str, chars.slice(1))
+    } else 
+        return -1
+}
+    

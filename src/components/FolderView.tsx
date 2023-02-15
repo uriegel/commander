@@ -26,27 +26,26 @@ const FolderView = () => {
         changePath(ROOT)
     }, [setItems])
 
-    const changePath = async (path: string) => {
+    const changePath = async (path: string, latestPath?: string) => {
         const result = checkController(path, controller.current)
         if (result.changed) {
             controller.current = result.controller
             virtualTable.current.setColumns(controller.current.getColumns())
         }
 
-        virtualTable.current.setPosition(0)
         const items = await controller.current.getItems(path)
         setPath(items.path)
         setItems(items.items)
+        const pos = latestPath ? items.items.findIndex(n => (n as any).name == latestPath) : 0
+        setTimeout(() => virtualTable.current.setPosition(pos))
     }
 
     const onEnter = (item: TableRowItem, keys: SpecialKeys) => {
         const result = controller.current.onEnter(path, item, keys)
         if (!result.processed && result.pathToSet) 
-            changePath(result.pathToSet)
+            changePath(result.pathToSet, result.latestPath)
     }
         
-    
-    
     return (
         <>
             <input className="pathInput" value={path} />
@@ -60,8 +59,6 @@ const FolderView = () => {
 
 export default FolderView
 
-// TODO parent: select last folder
-// TODO Windows 
 // TODO Error from getItems/tooltip from dialog-box-react
 // TODO isHidden
 // TODO exif and version
@@ -69,3 +66,4 @@ export default FolderView
 // TODO Restrict items
 // TODO SSE for theme detection?
 // TODO css themes windows windows dark, adwaita and adwaita dark
+// TODO setPosition (setCheckedPosition) not working when items are newly set

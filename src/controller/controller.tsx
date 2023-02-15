@@ -1,5 +1,6 @@
 import { SpecialKeys, TableColumns, TableRowItem } from "virtual-table-react"
 import IconName, { IconNameType } from "../components/IconName"
+import { lastIndexOfAny } from "../globals";
 import { getFileSystemController } from "./filesystem";
 import { getRootController, ROOT } from "./root";
 
@@ -28,6 +29,7 @@ export enum ControllerType {
 export interface onEnterResult {
     processed: boolean
     pathToSet?: string
+    latestPath?: string
 }
 
 export interface Controller {
@@ -92,4 +94,7 @@ export function formatDateTime(dateStr: string) {
     const date = Date.parse(dateStr)
     return dateFormat.format(date) + " " + timeFormat.format(date)  
 }
+
+export const extractSubPath = (path: string) => 
+    path.substring(lastIndexOfAny(path, ["/", "\\"]))
 

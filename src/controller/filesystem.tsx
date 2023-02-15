@@ -1,8 +1,12 @@
 import { TableRowItem } from "virtual-table-react"
 import IconName, { IconNameType } from "../components/IconName"
-import { Controller, ControllerResult, ControllerType, formatDateTime, formatSize, makeTableViewItems, measureRow } from "./controller"
+import { getPlatform, Platform } from "../globals"
+import { Controller, ControllerResult, ControllerType, extractSubPath, formatDateTime, formatSize, makeTableViewItems, measureRow } from "./controller"
 import { FolderItem, GetItemResult, request } from "./requests"
 import { ROOT } from "./root"
+
+const platform = getPlatform()
+const driveLength = platform == Platform.Windows ? 3: 1
 
 const renderRow = (props: TableRowItem) => {
 	var item = props as FolderItem
@@ -34,17 +38,20 @@ export const getFileSystemController = (controller: Controller|null): Controller
 			(item as FolderItem).isDirectory
 				? ({
                 	processed: false, 
-                	pathToSet: path + '/' + (item as FolderItem).name // TODO Windows: \?
+                	pathToSet: path + '/' + (item as FolderItem).name 
 				}) 
-				: (item as FolderItem).isParent && path.length > 1 // TODO Windows 
+				: (item as FolderItem).isParent && path.length > driveLength 
 				?  ({
                 	processed: false, 
-                	pathToSet: path + '/' + (item as FolderItem).name
+                	pathToSet: path + '/' + (item as FolderItem).name,
+					latestPath: extractSubPath(path)
+
 				}) 
-				: (item as FolderItem).isParent && path.length == 1
+				: (item as FolderItem).isParent && path.length == driveLength
 				? ({
                 	processed: false, 
-                	pathToSet: ROOT
+                	pathToSet: ROOT,
+					latestPath: path
 				}) 
 				: { processed: true }
 	}})
