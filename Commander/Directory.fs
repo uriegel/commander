@@ -4,24 +4,24 @@ open Microsoft.AspNetCore.Http
 open Giraffe
 open FSharpTools
 open FSharpTools.ExifReader
+open FSharpTools.Directory
 open System
 open System.IO
 open System.Text.Json
 
 open Configuration
 open IO
-open CommanderCore
 
 #if Linux
+open CommanderCore
 open Gtk
 open Microsoft.AspNetCore.Http.Features
-open FSharpTools.Directory
 #endif
 
 #if Windows
 open System.Drawing
 open System.Drawing.Imaging
-
+open System.Runtime.InteropServices
 open ClrWinApi
 #endif
 

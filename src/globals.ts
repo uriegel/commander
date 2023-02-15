@@ -10,7 +10,7 @@ export const getPlatform = memoize(() => {
         : platform == "linux"
         ? Platform.Linux
         // HACK set platform in browser react test 
-        : Platform.Linux
+        : Platform.Windows
 })
     
 function memoize<T>(funcToMemoize: ()=>T) {

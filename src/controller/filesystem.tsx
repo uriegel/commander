@@ -8,7 +8,7 @@ import { ROOT } from "./root"
 const platform = getPlatform()
 const driveLength = platform == Platform.Windows ? 3: 1
 
-const renderRow = (props: TableRowItem) => {
+const renderBaseRow = (props: TableRowItem) => {
 	var item = props as FolderItem
 	return [
 		(<IconName namePart={item.name} type={item.isParent ? IconNameType.Parent : item.isDirectory ? IconNameType.Folder : IconNameType.File } iconPath={item.iconPath} />),
@@ -17,15 +17,33 @@ const renderRow = (props: TableRowItem) => {
 	]
 }
 
-const getColumns = () => ({
+const renderRow = (props: TableRowItem) => 
+	platform == Platform.Windows 
+	? renderBaseRow(props).concat(["version"])
+	: renderBaseRow(props)
+
+const getWindowsColumns = () => ({
 	columns: [
 		{ name: "Name", isSortable: true, subColumn: "Erw." },
-		{ name: "Datum" },
-		{ name: "Größe", isRightAligned: true }
+		{ name: "Datum", isSortable: true },
+		{ name: "Größe", isSortable: true, isRightAligned: true },
+		{ name: "Version", isSortable: true}
 	],
 	renderRow,
 	measureRow
 })
+
+const getLinuxColumns = () => ({
+	columns: [
+		{ name: "Name", isSortable: true, subColumn: "Erw." },
+		{ name: "Datum", isSortable: true },
+		{ name: "Größe", isSortable: true, isRightAligned: true }
+	],
+	renderRow,
+	measureRow
+})
+
+const getColumns = platform == Platform.Windows ? getWindowsColumns : getLinuxColumns
 
 export const getFileSystemController = (controller: Controller|null): ControllerResult =>
     controller?.type == ControllerType.FileSystem
