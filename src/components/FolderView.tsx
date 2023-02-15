@@ -45,10 +45,27 @@ const FolderView = () => {
         if (!result.processed && result.pathToSet) 
             changePath(result.pathToSet, result.latestPath)
     }
+
+    const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) =>  {
+        console.log("e", e)
+        setPath(e.target.value)
+    }
+
+    const onInputKeyDown = (e: React.KeyboardEvent) => {
+        if (e.code == "Enter") {
+            changePath(path)
+            virtualTable.current.setFocus()
+            e.stopPropagation()
+            e.preventDefault()
+        }
+    }
+
+    const onInputFocus = (e: React.FocusEvent<HTMLInputElement>) => 
+        setTimeout(() => e.target.select())
         
     return (
         <>
-            <input className="pathInput" value={path} />
+            <input className="pathInput" value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
             <div className="tableContainer">
                 <VirtualTable ref={virtualTable} items={items} onSort={onSort}
                     onColumnWidths={onColumnWidths} onEnter={onEnter} />
@@ -59,11 +76,12 @@ const FolderView = () => {
 
 export default FolderView
 
-// TODO Error from getItems/tooltip from dialog-box-react
-// TODO isHidden
 // TODO exif and version
 // TODO sorting
 // TODO Restrict items
+// TODO Menubar
+// TODO isHidden
+// TODO Error from getItems/tooltip from dialog-box-react
 // TODO SSE for theme detection?
 // TODO css themes windows windows dark, adwaita and adwaita dark
 
