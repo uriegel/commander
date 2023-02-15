@@ -2,7 +2,7 @@ import { TableRowItem } from "virtual-table-react"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, extractSubPath, formatDateTime, formatSize, makeTableViewItems, measureRow } from "./controller"
-import { FolderItem, GetExtendedItemsResult, GetItemResult, request } from "./requests"
+import { ExtendedItem, FolderItem, GetExtendedItemsResult, GetItemResult, request } from "./requests"
 import { ROOT } from "./root"
 
 const platform = getPlatform()
@@ -34,6 +34,7 @@ export const getFileSystemController = (controller: Controller|null): Controller
 		type: ControllerType.FileSystem, 
 		getColumns, 
 		getExtendedItems,
+		setExtendedItems,
 		getItems,
 		onEnter: (path, item, keys) => 
 			(item as FolderItem).isDirectory
@@ -86,4 +87,5 @@ const getExtendedItems = async (path: string, items: TableRowItem[]): Promise<Ge
 		})
 		: { path: "", extendedItems: [] }
 
-
+const setExtendedItems = (items: TableRowItem[], extendedItems: ExtendedItem[]) => 
+	items.map((n, i) => extendedItems[i].date ? {...n, exifDate: extendedItems[i].date} : n)

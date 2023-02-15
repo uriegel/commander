@@ -43,9 +43,7 @@ const FolderView = () => {
         refPath.current = items.path
         const extendedInfoItems = await controller.current.getExtendedItems(items.path, items.items)
         if (extendedInfoItems.path == refPath.current) 
-            // TODO to controller
-            setItems(items.items.map((n, i) => extendedInfoItems.extendedItems[i].date ? {...n, exifDate: extendedInfoItems.extendedItems[i].date} : n))    
-            
+            setItems(controller.current.setExtendedItems(items.items, extendedInfoItems.extendedItems))    
     }
 
     const onEnter = (item: TableRowItem, keys: SpecialKeys) => {
