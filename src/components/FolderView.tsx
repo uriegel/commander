@@ -66,4 +66,4 @@ export default FolderView
 // TODO Restrict items
 // TODO SSE for theme detection?
 // TODO css themes windows windows dark, adwaita and adwaita dark
-// TODO setPosition (setCheckedPosition) not working when items are newly set
+
