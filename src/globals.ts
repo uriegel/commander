@@ -18,9 +18,6 @@ function memoize<T>(funcToMemoize: ()=>T) {
     return () => {
         if (!memoized)
             memoized = funcToMemoize()
-        
-        console.log("memoized", memoized)
-        
         return memoized
     }       
 }
