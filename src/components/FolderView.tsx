@@ -60,8 +60,9 @@ const FolderView = () => {
 
 export default FolderView
 
-// TODO Windows 
 // TODO parent: select last folder
+// TODO Windows 
+// TODO Error from getItems/tooltip from dialog-box-react
 // TODO isHidden
 // TODO exif and version
 // TODO sorting
