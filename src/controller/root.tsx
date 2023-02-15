@@ -70,6 +70,7 @@ export const getRootController = (controller: Controller|null): ControllerResult
         type: ControllerType.Root, 
         getColumns,
         getItems,
+        getExtendedItems: async () => [],
         onEnter
     }})
 

@@ -38,6 +38,8 @@ const FolderView = () => {
         setItems(items.items)
         const pos = latestPath ? items.items.findIndex(n => (n as any).name == latestPath) : 0
         virtualTable.current.setInitialPosition(pos, items.items.length)
+        const extendedInfoItems = await controller.current.getExtendedItems(items.items)
+        console.log("extendedInfoItems", extendedInfoItems)
     }
 
     const onEnter = (item: TableRowItem, keys: SpecialKeys) => {

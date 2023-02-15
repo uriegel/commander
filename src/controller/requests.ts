@@ -7,6 +7,7 @@ type Result =
     | Exception
     | GetRootResult 
     | GetItemResult 
+    | GetExtendedItemsResult
 
 export interface RootItem extends TableRowItem {
     name:        string
@@ -31,16 +32,19 @@ export type GetItemResult = {
     path:  string
 }
 
+export type GetExtendedItemsResult = FolderItem[]
 export type GetRootResult = RootItem[]
 
 type Close = "close"
 export type GetRoot = "getroot"
 export type GetFiles = "getfiles"
+export type GetExtendedItems = "getextendeditems"
 
 type RequestType = 
 	| Close
 	| GetRoot
     | GetFiles
+    | GetExtendedItems
 	
 type Exception = {
 	exception: string
@@ -51,13 +55,16 @@ type GetFilesType = {
     showHiddenItems: boolean
 }
 
+type GetExtendedItemsType = FolderItem[]
+
 type Empty = {
     empty?: string
 }
 
 export type RequestInput = 
     | Empty  
-	| GetFilesType 
+    | GetFilesType 
+    | GetExtendedItemsType
 	
 export async function request<T extends Result>(method: RequestType, input?: RequestInput) {
 

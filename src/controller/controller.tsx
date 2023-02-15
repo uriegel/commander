@@ -36,6 +36,7 @@ export interface Controller {
     type: ControllerType
     getColumns: ()=>TableColumns
     getItems: (path?: string) => Promise<GetItemResult>
+    getExtendedItems: (items: TableRowItem[])=> Promise<TableRowItem[]>
     onEnter: (path: string, item: TableRowItem, keys: SpecialKeys)=>onEnterResult
 }
 
@@ -59,8 +60,8 @@ export const createEmptyController = (): Controller => ({
         measureRow: () => ""
     }),
     getItems: async () => ({ items: [], path: "" }),
+    getExtendedItems: async () => [],
     onEnter: (i, k) => ({ processed: true})
-
 } )
 
 export const makeTableViewItems = (items: TableRowItem[], withParent = true) => 

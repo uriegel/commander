@@ -2,7 +2,7 @@ import { TableRowItem } from "virtual-table-react"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, extractSubPath, formatDateTime, formatSize, makeTableViewItems, measureRow } from "./controller"
-import { FolderItem, GetItemResult, request } from "./requests"
+import { FolderItem, GetExtendedItemsResult, GetItemResult, request } from "./requests"
 import { ROOT } from "./root"
 
 const platform = getPlatform()
@@ -33,6 +33,7 @@ export const getFileSystemController = (controller: Controller|null): Controller
     : ({ changed: true, controller: { 
 		type: ControllerType.FileSystem, 
 		getColumns, 
+		getExtendedItems,
 		getItems,
 		onEnter: (path, item, keys) => 
 			(item as FolderItem).isDirectory
@@ -63,3 +64,17 @@ const getItems = async (path?: string) => {
 	})
 	return { ...res, items: makeTableViewItems(res.items)}
 }
+
+const getExtendedWindowItems = async (items: TableRowItem[]): Promise<TableRowItem[]> => {
+	return []
+}
+
+const getExtendedLinuxItems = async (items: TableRowItem[]): Promise<TableRowItem[]> => {
+	const itemsToGet = (items as FolderItem[])
+		.filter(n => n.name.toLowerCase().endsWith(".jpg") || n.name.toLowerCase().endsWith(".png"))
+	return itemsToGet.length > 0
+		? request<GetExtendedItemsResult>("getextendeditems", itemsToGet)
+		: []
+}
+
+const getExtendedItems = platform == Platform.Windows ? getExtendedWindowItems : getExtendedLinuxItems

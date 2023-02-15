@@ -21,6 +21,15 @@ let configureCors (builder: Infrastructure.CorsPolicyBuilder) =
         .AllowAnyMethod() 
         |> ignore
 
+let getExtendedItems () =
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+            let! body = ctx.ReadBodyFromRequestAsync ()
+            let param = JsonSerializer.Deserialize<DirectoryItem[]>(body, getJsonOptions ())
+            let! result = Directory.getExtendedItems param
+            return! Json.text result next ctx
+        }
+
 let configure (app : IApplicationBuilder) = 
     let getMimeType path = 
         match getExtension path with
@@ -39,15 +48,15 @@ let configure (app : IApplicationBuilder) =
                 return! Json.text result next ctx
             }
 
-
     let routes =
         choose [  
-            route  "/commander/getfiles" >=> warbler (fun _ -> getFiles ())
-            route  "/commander/getroot"  >=> warbler (fun _ -> getRoot ())
-            route  "/commander/geticon"  >=> bindQuery<IconRequest> None getIconRequest
-            routef "/static/js/%s"     (fun _ -> httpHandlerParam getResourceFile "scripts/script.js")
-            routef "/static/css/%s"    (fun _ -> httpHandlerParam getResourceFile "styles/style.css")
-            route  "/"                   >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)
+            route  "/commander/getfiles"         >=> warbler (fun _ -> getFiles ())
+            route  "/commander/getroot"          >=> warbler (fun _ -> getRoot ())
+            route  "/commander/geticon"          >=> bindQuery<IconRequest> None getIconRequest
+            route  "/commander/getextendeditems" >=> warbler (fun _ -> getExtendedItems ())
+            routef "/static/js/%s" (fun _ -> httpHandlerParam getResourceFile "scripts/script.js")
+            routef "/static/css/%s" (fun _ -> httpHandlerParam getResourceFile "styles/style.css")
+            route  "/"                           >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)
             routePathes () <| httpHandlerParam getResourceFile 
         ]       
     app

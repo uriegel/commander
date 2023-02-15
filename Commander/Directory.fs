@@ -27,6 +27,8 @@ open ClrWinApi
 #endif
 
 type DirectoryItem = {
+    IsSelected:  bool option
+    Index:       int32 option
     Name:        string
     Size:        int64
     IsDirectory: bool
@@ -36,6 +38,8 @@ type DirectoryItem = {
 }
 
 let getDirItem (dirInfo: DirectoryInfo) = {
+    IsSelected =  None
+    Index       = None
     Name =        dirInfo.Name
     Size =        0
     IsDirectory = true
@@ -46,7 +50,6 @@ let getDirItem (dirInfo: DirectoryInfo) = {
 
 type GetFiles = {
     Path:            string
-//    CurrentItem:     InputItem option
     ShowHiddenItems: bool
 }
 
@@ -64,6 +67,8 @@ let getIconPath (fileInfo: FileInfo) =
     | _                                       -> ".noextension"
 
 let getFileItem (fileInfo: FileInfo) = {
+    IsSelected =  None
+    Index       = None
     Name =        fileInfo.Name
     Size =        fileInfo.Length
     IsDirectory = false
@@ -130,6 +135,9 @@ let getFiles () =
         }
 
 #if Linux
+let getExtendedItems (items: DirectoryItem[]) = async {
+    return "Jetzt kommen sie"
+}
 
 let getIcon ext = async {
     // TODO KDE
