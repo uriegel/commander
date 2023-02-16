@@ -79,7 +79,7 @@ const getItems = async () => {
 	const result = await request<GetRootResult>("getroot")
     return {
         path: ROOT,
-        items: makeTableViewItems(result, false)
+        items: makeTableViewItems(result, undefined, false)
     }
 }
 

@@ -2,7 +2,7 @@ import { SpecialKeys, TableColumns, TableRowItem } from "virtual-table-react"
 import IconName, { IconNameType } from "../components/IconName"
 import { lastIndexOfAny } from "../globals";
 import { getFileSystemController } from "./filesystem";
-import { ExtendedItem, GetExtendedItemsResult, Version } from "./requests";
+import { ExtendedItem, FolderItem, GetExtendedItemsResult, Version } from "./requests";
 import { getRootController, ROOT } from "./root";
 
 const dateFormat = Intl.DateTimeFormat("de-DE", {
@@ -27,6 +27,8 @@ export enum ControllerType {
     FileSystem
 }
 
+export type SortFunction = (a: TableRowItem, b: TableRowItem) => number
+
 export interface onEnterResult {
     processed: boolean
     pathToSet?: string
@@ -36,7 +38,7 @@ export interface onEnterResult {
 export interface Controller {
     type: ControllerType
     getColumns: ()=>TableColumns
-    getItems: (path?: string) => Promise<GetItemResult>
+    getItems: (path: string, sortIndex: number, sortDescending: boolean) => Promise<GetItemResult>
     getExtendedItems: (path: string, items: TableRowItem[]) => Promise<GetExtendedItemsResult>
     setExtendedItems: (items: TableRowItem[], extended: ExtendedItem[])=>TableRowItem[]
     onEnter: (path: string, item: TableRowItem, keys: SpecialKeys)=>onEnterResult
@@ -67,17 +69,17 @@ export const createEmptyController = (): Controller => ({
     onEnter: (i, k) => ({ processed: true})
 } )
 
-export const makeTableViewItems = (items: TableRowItem[], withParent = true) => 
+export const makeTableViewItems = (items: TableRowItem[], sortFunc: SortFunction|undefined = undefined, withParent = true) => 
     (withParent
         ? [{ name: "..", index: 0, isParent: true } as TableRowItem]
         : [] as TableRowItem[])
-        .concat(items)
+        .concat(sortItems(items as FolderItem[], sortFunc))
         .map((n, i) => ({ ...n, index: i }))
-
-export function formatSize(size: number) {
-    if (!size)
+       
+export const formatSize = (num: number|undefined) => {
+    if (!num)
         return ""
-    let sizeStr = size.toString()
+    let sizeStr = num.toString()
     const sep = '.'
     if (sizeStr.length > 3) {
         var sizePart = sizeStr
@@ -91,8 +93,8 @@ export function formatSize(size: number) {
     }
     return sizeStr    
 }
-
-export function formatDateTime(dateStr: string) {
+        
+export function formatDateTime(dateStr?: string) {
     if (!dateStr || dateStr.startsWith("0001"))
         return ''
     const date = Date.parse(dateStr)
@@ -106,3 +108,11 @@ export const formatVersion = (version?: Version) =>
 export const extractSubPath = (path: string) => 
     path.substring(lastIndexOfAny(path, ["/", "\\"]))
 
+const sortItems = (folderItemArray: FolderItem[], sortFunction: SortFunction|undefined) => {
+    const dirs = folderItemArray.filter(n => n.isDirectory || n.isParent)
+    let files = folderItemArray.filter(n => !n.isDirectory) 
+    files = sortFunction ? files.sort(sortFunction) : files
+    return dirs.concat(files)
+}
+            
+    

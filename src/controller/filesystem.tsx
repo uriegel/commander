@@ -12,7 +12,7 @@ const renderBaseRow = (props: TableRowItem) => {
 	var item = props as FolderItem
 	return [
 		(<IconName namePart={item.name} type={item.isParent ? IconNameType.Parent : item.isDirectory ? IconNameType.Folder : IconNameType.File } iconPath={item.iconPath} />),
-		(<span className={item.exifDate ? "exif" : "" } >{formatDateTime(item.exifDate ?? item.time)}</span>),
+		(<span className={item.exifDate ? "exif" : "" } >{formatDateTime(item?.exifDate ?? item?.time)}</span>),
 		formatSize(item.size)
 	]
 }
@@ -76,12 +76,12 @@ export const getFileSystemController = (controller: Controller|null): Controller
 				: { processed: true }
 	}})
 
-const getItems = async (path?: string) => {
+const getItems = async (path: string, sortIndex: number, sortDescending: boolean) => {
 	const res = await request<GetItemResult>("getfiles", {
-		path: path ?? "",
+		path,
 		showHiddenItems: true
 	})
-	return { ...res, items: makeTableViewItems(res.items)}
+	return { ...res, items: makeTableViewItems(res.items, getSortFunction(sortIndex)) }
 }
 
 const checkExtendedItemsWindows = (items: FolderItem[]) => 
@@ -121,4 +121,8 @@ const setExtendedItems = (items: TableRowItem[], extendedItems: ExtendedItem[]) 
 		? {...n, version: extendedItems[i].version} 
 		: {...n, version: extendedItems[i].version, exifDate: extendedItems[i].date })
 		 
-
+const getSortFunction = (index: number) =>  		
+	index == 0
+	? (a: TableRowItem, b: TableRowItem) => (a as FolderItem).name.localeCompare((b as FolderItem).name) 
+	: undefined
+	

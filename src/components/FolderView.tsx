@@ -7,11 +7,13 @@ import { ROOT } from '../controller/root'
 const FolderView = () => {
 
     const virtualTable = useRef<VirtualTableHandle>(createEmptyHandle())
+    const controller = useRef<Controller>(createEmptyController())
+    const sortIndex = useRef(0)
+    const sortDescending = useRef(false)
 
     const [items, setItems] = useState([] as TableRowItem[])
     const [path, setPath] = useState("")
 
-    const controller = useRef<Controller>(createEmptyController())
     
     const onSort = (sort: OnSort) => console.log("onSort", sort)
 
@@ -35,7 +37,7 @@ const FolderView = () => {
             virtualTable.current.setColumns(controller.current.getColumns())
         }
 
-        const items = await controller.current.getItems(path)
+        const items = await controller.current.getItems(path, sortIndex.current, sortDescending.current)
         setPath(items.path)
         setItems(items.items)
         const pos = latestPath ? items.items.findIndex(n => (n as any).name == latestPath) : 0

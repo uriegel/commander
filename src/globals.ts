@@ -31,4 +31,4 @@ export const lastIndexOfAny = (str: string, chars: string[]): number => {
     } else 
         return -1
 }
-    
+

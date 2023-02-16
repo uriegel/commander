@@ -21,9 +21,9 @@ export interface FolderItem extends TableRowItem {
     name:        string
     isHidden:    boolean
     isDirectory: boolean
-    iconPath:    string
-    size:        number
-    time:        string
+    iconPath?:   string
+    size?:       number
+    time?:       string
     exifDate?:   string
     isParent?:   boolean
     version?:    Version
