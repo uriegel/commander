@@ -3,6 +3,7 @@ import './FolderView.css'
 import VirtualTable, { createEmptyHandle, OnSort, SpecialKeys, TableRowItem, VirtualTableHandle } from 'virtual-table-react'
 import { checkController, Controller, createEmptyController } from '../controller/controller'
 import { ROOT } from '../controller/root'
+import { FolderItem } from '../controller/requests'
 
 const FolderView = () => {
 
@@ -15,7 +16,14 @@ const FolderView = () => {
     const [path, setPath] = useState("")
 
     
-    const onSort = (sort: OnSort) => console.log("onSort", sort)
+    const onSort = async (sort: OnSort) => {
+        sortIndex.current = sort.column
+        sortDescending.current = sort.isDescending
+        const newItems = controller.current.sort(items, sort.isSubColumn ? 10 : sortIndex.current, sortDescending.current)
+        setItems(newItems)
+        const name = (items[virtualTable.current.getPosition()] as FolderItem).name
+        virtualTable.current.setPosition(newItems.findIndex(n => (n as FolderItem).name == name))
+    }
 
     const onColumnWidths = (widths: number[]) => {
 		if (widths.length == 4)
@@ -84,10 +92,10 @@ const FolderView = () => {
 
 export default FolderView
 
-// TODO sorting
-// TODO Restrict items
+// TODO sorting version Windows
 // TODO Menubar
 // TODO isHidden
+// TODO Restrict items
 // TODO Error from getItems/tooltip from dialog-box-react
 // TODO SSE for theme detection?
 // TODO css themes windows windows dark, adwaita and adwaita dark

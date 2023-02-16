@@ -28,9 +28,9 @@ const renderLinuxRow = (props: TableRowItem) => {
 
 const getWindowsColumns = () => ({
 	columns: [
-		{ name: "Name", isSortable: true },
-		{ name: "Beschreibung", isSortable: true },
-		{ name: "Größe", isRightAligned: true, isSortable: true }
+		{ name: "Name" },
+		{ name: "Beschreibung" },
+		{ name: "Größe", isRightAligned: true }
 	],
 	renderRow: renderWindowsRow,
 	measureRow
@@ -38,10 +38,10 @@ const getWindowsColumns = () => ({
 
 const getLinuxColumns = () => ({
 	columns: [
-		{ name: "Name", isSortable: true },
-        { name: "Bezeichnung", isSortable: true },
-        { name: "Mountpoint", isSortable: true },
-		{ name: "Größe", isRightAligned: true, isSortable: true }
+		{ name: "Name" },
+        { name: "Bezeichnung" },
+        { name: "Mountpoint" },
+		{ name: "Größe", isRightAligned: true }
     ],
     getRowClasses: getRowClasses,
 	renderRow: renderLinuxRow,
@@ -72,7 +72,8 @@ export const getRootController = (controller: Controller|null): ControllerResult
         getItems,
         getExtendedItems: async () => ({ path: "", extendedItems: [] }),
         setExtendedItems: items=>items,
-        onEnter
+        onEnter,
+        sort: (items: TableRowItem[])=>items
     }})
 
 const getItems = async () => {

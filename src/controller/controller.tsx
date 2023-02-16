@@ -41,7 +41,8 @@ export interface Controller {
     getItems: (path: string, sortIndex: number, sortDescending: boolean) => Promise<GetItemResult>
     getExtendedItems: (path: string, items: TableRowItem[]) => Promise<GetExtendedItemsResult>
     setExtendedItems: (items: TableRowItem[], extended: ExtendedItem[])=>TableRowItem[]
-    onEnter: (path: string, item: TableRowItem, keys: SpecialKeys)=>onEnterResult
+    onEnter: (path: string, item: TableRowItem, keys: SpecialKeys) => onEnterResult
+    sort: (items: TableRowItem[], sortIndex: number, sortDescending: boolean)=>TableRowItem[]
 }
 
 export interface ControllerResult {
@@ -66,12 +67,13 @@ export const createEmptyController = (): Controller => ({
     getItems: async () => ({ items: [], path: "" }),
     getExtendedItems: async () => ({ path: "", extendedItems: [] }),
     setExtendedItems: items=>items,
-    onEnter: (i, k) => ({ processed: true})
+    onEnter: (i, k) => ({ processed: true }),
+    sort: (items: TableRowItem[])=>items
 } )
 
 export const makeTableViewItems = (items: TableRowItem[], sortFunc: SortFunction|undefined = undefined, withParent = true) => 
     (withParent
-        ? [{ name: "..", index: 0, isParent: true } as TableRowItem]
+        ? [{ name: "..", index: 0, isParent: true, isDirectory: true } as TableRowItem]
         : [] as TableRowItem[])
         .concat(sortItems(items as FolderItem[], sortFunc))
         .map((n, i) => ({ ...n, index: i }))
@@ -114,5 +116,10 @@ const sortItems = (folderItemArray: FolderItem[], sortFunction: SortFunction|und
     files = sortFunction ? files.sort(sortFunction) : files
     return dirs.concat(files)
 }
-            
+
+export const getExtension = (path: string) => {
+    let index = path.lastIndexOf(".")
+    return index > 0 ? path.substring(index) : ""
+}
+
     

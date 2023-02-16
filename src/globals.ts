@@ -12,7 +12,7 @@ export const getPlatform = memoize(() => {
         // HACK set platform in browser react test 
         : Platform.Linux
 })
-    
+
 function memoize<T>(funcToMemoize: ()=>T) {
     let memoized: T|null = null
     return () => {

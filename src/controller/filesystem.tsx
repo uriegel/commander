@@ -1,7 +1,7 @@
 import { TableRowItem } from "virtual-table-react"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
-import { Controller, ControllerResult, ControllerType, extractSubPath, formatDateTime, formatSize, formatVersion, makeTableViewItems, measureRow } from "./controller"
+import { Controller, ControllerResult, ControllerType, extractSubPath, formatDateTime, formatSize, formatVersion, getExtension, makeTableViewItems, measureRow } from "./controller"
 import { ExtendedItem, FolderItem, GetExtendedItemsResult, GetItemResult, request } from "./requests"
 import { ROOT } from "./root"
 
@@ -55,25 +55,27 @@ export const getFileSystemController = (controller: Controller|null): Controller
 		setExtendedItems,
 		getItems,
 		onEnter: (path, item, keys) => 
-			(item as FolderItem).isDirectory
-				? ({
-                	processed: false, 
-                	pathToSet: path + '/' + (item as FolderItem).name 
-				}) 
-				: (item as FolderItem).isParent && path.length > driveLength 
-				?  ({
-                	processed: false, 
-                	pathToSet: path + '/' + (item as FolderItem).name,
-					latestPath: extractSubPath(path)
+			(item as FolderItem).isParent && path.length > driveLength 
+			?  ({
+				processed: false, 
+				pathToSet: path + '/' + (item as FolderItem).name,
+				latestPath: extractSubPath(path)
 
-				}) 
-				: (item as FolderItem).isParent && path.length == driveLength
-				? ({
-                	processed: false, 
-                	pathToSet: ROOT,
-					latestPath: path
-				}) 
-				: { processed: true }
+			}) 
+			: (item as FolderItem).isParent && path.length == driveLength
+			? ({
+				processed: false, 
+				pathToSet: ROOT,
+				latestPath: path
+			}) 
+			: (item as FolderItem).isDirectory
+			? ({
+				processed: false, 
+				pathToSet: path + '/' + (item as FolderItem).name 
+			}) 
+					
+			: { processed: true },
+		sort
 	}})
 
 const getItems = async (path: string, sortIndex: number, sortDescending: boolean) => {
@@ -81,8 +83,12 @@ const getItems = async (path: string, sortIndex: number, sortDescending: boolean
 		path,
 		showHiddenItems: true
 	})
-	return { ...res, items: makeTableViewItems(res.items, getSortFunction(sortIndex)) }
+	return { ...res, items: makeTableViewItems(res.items, getSortFunction(sortIndex, sortDescending)) }
 }
+
+const sort = (items: TableRowItem[], sortIndex: number, sortDescending: boolean) => 
+	makeTableViewItems(items, getSortFunction(sortIndex, sortDescending), false) 
+
 
 const checkExtendedItemsWindows = (items: FolderItem[]) => 
 	items.find(n => {
@@ -121,8 +127,29 @@ const setExtendedItems = (items: TableRowItem[], extendedItems: ExtendedItem[]) 
 		? {...n, version: extendedItems[i].version} 
 		: {...n, version: extendedItems[i].version, exifDate: extendedItems[i].date })
 		 
-const getSortFunction = (index: number) =>  		
-	index == 0
-	? (a: TableRowItem, b: TableRowItem) => (a as FolderItem).name.localeCompare((b as FolderItem).name) 
-	: undefined
+const getSortFunction = (index: number, descending: boolean) => {
+	const ascDesc = (sortResult: number) => descending ? -sortResult : sortResult
+	const sf = index == 0
+		? (a: TableRowItem, b: TableRowItem) => (a as FolderItem).name.localeCompare((b as FolderItem).name) 
+		: index == 1
+			? (a: TableRowItem, b: TableRowItem) => {
+				let afi = a as FolderItem
+				let bfi = b as FolderItem
+				let aa = afi.exifDate ? afi.exifDate : afi.time || ""
+				let bb = bfi.exifDate ? bfi.exifDate : bfi.time || ""
+				return aa.localeCompare(bb) 
+			} 
+		: index == 2
+		? (a: TableRowItem, b: TableRowItem) => ((a as FolderItem).size || 0) - ((b as FolderItem).size || 0)
+		//: index == 3
+		//? (a: TableRowItem, b: TableRowItem) => this.compareVersion((a as any)[column], (b as any)[column])
+		: index == 10
+		? (a: TableRowItem, b: TableRowItem) => getExtension((a as FolderItem).name).localeCompare(getExtension((b as FolderItem).name)) 
+		: undefined
+	
+	return sf
+		? (a: TableRowItem, b: TableRowItem) => ascDesc(sf(a, b))
+		: undefined
+}
+
 	
