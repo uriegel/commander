@@ -92,7 +92,6 @@ const FolderView = () => {
 
 export default FolderView
 
-// TODO sorting version Windows
 // TODO Menubar
 // TODO isHidden
 // TODO Restrict items

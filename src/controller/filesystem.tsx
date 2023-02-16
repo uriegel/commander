@@ -2,7 +2,7 @@ import { TableRowItem } from "virtual-table-react"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, extractSubPath, formatDateTime, formatSize, formatVersion, getExtension, makeTableViewItems, measureRow } from "./controller"
-import { ExtendedItem, FolderItem, GetExtendedItemsResult, GetItemResult, request } from "./requests"
+import { ExtendedItem, FolderItem, GetExtendedItemsResult, GetItemResult, request, Version } from "./requests"
 import { ROOT } from "./root"
 
 const platform = getPlatform()
@@ -141,8 +141,8 @@ const getSortFunction = (index: number, descending: boolean) => {
 			} 
 		: index == 2
 		? (a: TableRowItem, b: TableRowItem) => ((a as FolderItem).size || 0) - ((b as FolderItem).size || 0)
-		//: index == 3
-		//? (a: TableRowItem, b: TableRowItem) => this.compareVersion((a as any)[column], (b as any)[column])
+		: index == 3
+		? (a: TableRowItem, b: TableRowItem) => compareVersion((a as FolderItem).version, (b as FolderItem).version)
 		: index == 10
 		? (a: TableRowItem, b: TableRowItem) => getExtension((a as FolderItem).name).localeCompare(getExtension((b as FolderItem).name)) 
 		: undefined
@@ -152,4 +152,17 @@ const getSortFunction = (index: number, descending: boolean) => {
 		: undefined
 }
 
-	
+const compareVersion = (versionLeft?: Version, versionRight?: Version) =>
+    !versionLeft
+	? -1
+	: !versionRight
+	? 1
+	: versionLeft.major != versionRight.major 
+	? versionLeft.major - versionRight.major
+	: versionLeft.minor != versionRight.minor
+	? versionLeft.minor - versionRight.minor
+	: versionLeft.patch != versionRight.patch
+	? versionLeft.patch - versionRight.patch
+	: versionLeft.build - versionRight.build
+
+

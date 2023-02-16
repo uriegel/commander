@@ -122,4 +122,3 @@ export const getExtension = (path: string) => {
     return index > 0 ? path.substring(index) : ""
 }
 
-    
