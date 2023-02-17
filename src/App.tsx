@@ -2,19 +2,30 @@ import './App.css'
 import { showDialog, Result } from 'web-dialog-react' 
 import FolderView from './components/FolderView'
 import Menubar, { MenuItemType } from 'menubar-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const App = () => {
 
 	const [autoMode, setAutoMode] = useState(false)
 	const [showHidden, setShowHidden] = useState(false)
 
+	console.log("AutoHeid", autoMode)
+
+	const setAndSaveAutoMode = (mode: boolean) => {
+		setAutoMode(mode)
+		localStorage.setItem("menuAutoHide", mode ? "true" : "false")
+	}
+
 	const setAutoModeDialog = async (autoMode: boolean) => 
-		setAutoMode(autoMode && ((await showDialog({
+		setAndSaveAutoMode(autoMode && ((await showDialog({
 				text: "Soll das Menü verborgen werden? Aktivieren mit Alt-Taste",
 				btnOk: true,
 				btnCancel: true
 			})).result == Result.Ok))
+	
+	useEffect(() => {
+		setAutoMode(localStorage.getItem("menuAutoHide") == "true")
+	}, [])
 
 	const onMenuAction = async (key: string) => {
 		

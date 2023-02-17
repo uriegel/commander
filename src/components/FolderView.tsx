@@ -92,7 +92,8 @@ const FolderView = () => {
 
 export default FolderView
 
-// TODO Menubar
+// TODO handleRef in App for FolderView
+// TODO Refresh
 // TODO isHidden
 // TODO Restrict items
 // TODO Error from getItems/tooltip from dialog-box-react
