@@ -1,10 +1,12 @@
 import './App.css'
 import { showDialog, Result } from 'web-dialog-react' 
-import FolderView from './components/FolderView'
+import FolderView, { createEmptyFolderHandle, FolderViewHandle } from './components/FolderView'
 import Menubar, { MenuItemType } from 'menubar-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const App = () => {
+
+	const folderLeft = useRef<FolderViewHandle>(createEmptyFolderHandle())
 
 	const [autoMode, setAutoMode] = useState(false)
 	const [showHidden, setShowHidden] = useState(false)
@@ -28,7 +30,8 @@ const App = () => {
 	}, [])
 
 	const onMenuAction = async (key: string) => {
-		
+		if (key == "REFRESH")
+			folderLeft.current.refresh()
 	}
 		
 	return (
@@ -115,7 +118,8 @@ const App = () => {
 				}, {
 					name: "_Aktualisieren",
 					type: MenuItemType.MenuItem,
-					shortcut: "Strg+R"
+					shortcut: "Strg+R",
+					key: "REFRESH"
 				}, {
 					type: MenuItemType.Separator
 				}, {
@@ -140,7 +144,7 @@ const App = () => {
 					type: MenuItemType.MenuItem
 				}]
 			}]} onAction={onMenuAction} />
-			<FolderView />
+			<FolderView ref={folderLeft} />
 		</div>
 	)
 }

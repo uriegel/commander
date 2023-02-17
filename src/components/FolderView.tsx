@@ -1,11 +1,28 @@
-import { useEffect, useRef, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import './FolderView.css'
 import VirtualTable, { createEmptyHandle, OnSort, SpecialKeys, TableRowItem, VirtualTableHandle } from 'virtual-table-react'
 import { checkController, Controller, createEmptyController } from '../controller/controller'
 import { ROOT } from '../controller/root'
 import { FolderItem } from '../controller/requests'
 
-const FolderView = () => {
+export type FolderViewHandle = {
+    setFocus: ()=>void
+    refresh: ()=>void
+}
+
+export const createEmptyFolderHandle = () => ({
+    setFocus: () => { },
+    refresh: () => {}
+})
+
+interface FolderViewProp {}
+
+const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({}, ref) => {
+
+    useImperativeHandle(ref, () => ({
+        setFocus() { virtualTable.current.setFocus() },
+        refresh() { changePath(path) }
+    }))
 
     const virtualTable = useRef<VirtualTableHandle>(createEmptyHandle())
     const controller = useRef<Controller>(createEmptyController())
@@ -14,7 +31,6 @@ const FolderView = () => {
 
     const [items, setItems] = useState([] as TableRowItem[])
     const [path, setPath] = useState("")
-
     
     const onSort = async (sort: OnSort) => {
         sortIndex.current = sort.column
@@ -88,13 +104,12 @@ const FolderView = () => {
             </div>
         </>
     )
-}
+})
 
 export default FolderView
 
-// TODO handleRef in App for FolderView
-// TODO Refresh
-// TODO isHidden
+// TODO show hidden
+// TODO isHidden hide 
 // TODO Restrict items
 // TODO Error from getItems/tooltip from dialog-box-react
 // TODO SSE for theme detection?
