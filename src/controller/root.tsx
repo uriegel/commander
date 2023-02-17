@@ -43,7 +43,7 @@ const getLinuxColumns = () => ({
         { name: "Mountpoint" },
 		{ name: "Größe", isRightAligned: true }
     ],
-    getRowClasses: getRowClasses,
+    getRowClasses,
 	renderRow: renderLinuxRow,
 	measureRow
 })

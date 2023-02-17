@@ -13,6 +13,10 @@
     background-color: var(--light-background-color);    
 }
 
-.exif {
+tr .exif {
     color: yellowgreen;
+}
+
+tr.notMounted, tr.hidden {
+    Opacity: 0.5;
 }

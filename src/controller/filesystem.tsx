@@ -29,8 +29,9 @@ const getWindowsColumns = () => ({
 		{ name: "Größe", isSortable: true, isRightAligned: true },
 		{ name: "Version", isSortable: true}
 	],
+	getRowClasses,
 	renderRow,
-	measureRow
+	measureRow,
 })
 
 const getLinuxColumns = () => ({
@@ -39,6 +40,7 @@ const getLinuxColumns = () => ({
 		{ name: "Datum", isSortable: true },
 		{ name: "Größe", isSortable: true, isRightAligned: true }
 	],
+	getRowClasses,
 	renderRow,
 	measureRow
 })
@@ -76,7 +78,14 @@ export const getFileSystemController = (controller: Controller|null): Controller
 					
 			: { processed: true },
 		sort
-	}})
+		}
+	})
+	
+const getRowClasses = (item: TableRowItem) => 
+	(item as FolderItem).isHidden
+		? ["hidden"]
+		: []
+	
 
 const getItems = async (path: string, sortIndex: number, sortDescending: boolean) => {
 	const res = await request<GetItemResult>("getfiles", {

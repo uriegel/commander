@@ -108,7 +108,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({}, ref) => {
 
 export default FolderView
 
-// TODO show hidden
 // TODO isHidden hide 
 // TODO Restrict items
 // TODO Error from getItems/tooltip from dialog-box-react
