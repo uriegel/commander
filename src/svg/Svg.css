@@ -8,3 +8,6 @@
 .svgImagePath {
     fill: var(--svg-image-path-color);
 }
+.isSelected .svgImagePath {
+    fill: var(--vtr-selected-color);
+}

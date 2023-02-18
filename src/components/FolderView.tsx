@@ -157,6 +157,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
+// TODO Selection: only when columns are selectable, not parent
 // TODO Selection (with restriction)
 // TODO Splitter, two folderviews
 // TODO Statusbar
