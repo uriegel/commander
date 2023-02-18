@@ -61,6 +61,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }, [setItems])
 
     const changePath = async (path: string, showHidden: boolean, latestPath?: string) => {
+        restrictionView.current?.reset()
         const result = checkController(path, controller.current)
         if (result.changed) {
             controller.current = result.controller
@@ -102,7 +103,12 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         setTimeout(() => e.target.select())
     
     const onKeyDown = (evt: React.KeyboardEvent) => {
-        restrictionView.current?.checkKey(evt.key)
+        const restrictedItems = restrictionView.current?.checkKey(evt.key)
+        if (restrictedItems) {
+            virtualTable.current.setPosition(0)            
+            setItems(restrictedItems)
+        }
+        
     }
         
     return (
@@ -119,7 +125,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO Restrict items
+// TODO Selection (with restriction)
+// TODO Splitter, two folderviews
 // TODO Error from getItems/tooltip from dialog-box-react
 // TODO SSE for theme detection?
 // TODO css themes windows windows dark, adwaita and adwaita dark
