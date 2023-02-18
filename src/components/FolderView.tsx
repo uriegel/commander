@@ -127,6 +127,8 @@ export default FolderView
 
 // TODO Selection (with restriction)
 // TODO Splitter, two folderviews
+// TODO Statusbar
+// TODO Viewer
 // TODO Error from getItems/tooltip from dialog-box-react
 // TODO SSE for theme detection?
 // TODO css themes windows windows dark, adwaita and adwaita dark
