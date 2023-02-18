@@ -48,14 +48,10 @@ const App = () => {
 	)
 
 	const FolderLeft = () => (
-		<div className='folder'>
 			<FolderView ref={folderLeft} showHidden={showHidden} />
-		</div>
 	)
 	const FolderRight = () => (
-		<div className='folder'>
 			<FolderView showHidden={showHidden} />
-		</div>
 	)
 
 	const ViewerView = () => (
