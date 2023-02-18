@@ -122,21 +122,10 @@ let getItems (param: GetFiles) = async {
 
     let filterHidden item = not item.IsHidden
 
-    //let getItemI i (n: DirectoryItem) = { n with Index = i }
-
-    // let items: DirectoryItem seq = 
-    //     match param.ShowHiddenItems with
-    //     | true -> items 
-    //     | _    -> items |> Seq.filter filterHidden
-    //     |> Seq.mapi getItemI
-
-    // let selectFolder = 
-    //     match param.Path with
-    //     | Some latestPath when path |> String.endsWith ".." ->
-    //         let di = DirectoryInfo latestPath
-    //         Some di.Name
-    //     | _                                                 -> 
-    //         None
+    let items: DirectoryItem seq = 
+        match param.ShowHiddenItems with
+        | true -> items 
+        | _    -> items |> Seq.filter filterHidden
 
     let result = {|
         Items =        items

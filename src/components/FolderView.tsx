@@ -7,7 +7,7 @@ import { FolderItem } from '../controller/requests'
 
 export type FolderViewHandle = {
     setFocus: ()=>void
-    refresh: ()=>void
+    refresh: (forceShowHidden?: boolean)=>void
 }
 
 export const createEmptyFolderHandle = () => ({
@@ -15,13 +15,16 @@ export const createEmptyFolderHandle = () => ({
     refresh: () => {}
 })
 
-interface FolderViewProp {}
+interface FolderViewProp {
+    showHidden: boolean
+}
 
-const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({}, ref) => {
+const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
+    { showHidden }, ref) => {
 
     useImperativeHandle(ref, () => ({
         setFocus() { virtualTable.current.setFocus() },
-        refresh() { changePath(path) }
+        refresh(forceShowHidden?: boolean) { changePath(path, forceShowHidden == undefined ? showHidden : forceShowHidden) }
     }))
 
     const virtualTable = useRef<VirtualTableHandle>(createEmptyHandle())
@@ -51,17 +54,17 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({}, ref) => {
     useEffect(() => virtualTable.current.setFocus(), [])
 
     useEffect(() => {
-        changePath(ROOT)
+        changePath(ROOT, false)
     }, [setItems])
 
-    const changePath = async (path: string, latestPath?: string) => {
+    const changePath = async (path: string, showHidden: boolean, latestPath?: string) => {
         const result = checkController(path, controller.current)
         if (result.changed) {
             controller.current = result.controller
             virtualTable.current.setColumns(controller.current.getColumns())
         }
 
-        const items = await controller.current.getItems(path, sortIndex.current, sortDescending.current)
+        const items = await controller.current.getItems(path, showHidden, sortIndex.current, sortDescending.current)
         setPath(items.path)
         setItems(items.items)
         const pos = latestPath ? items.items.findIndex(n => (n as any).name == latestPath) : 0
@@ -75,7 +78,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({}, ref) => {
     const onEnter = (item: TableRowItem, keys: SpecialKeys) => {
         const result = controller.current.onEnter(path, item, keys)
         if (!result.processed && result.pathToSet) 
-            changePath(result.pathToSet, result.latestPath)
+            changePath(result.pathToSet, showHidden, result.latestPath)
     }
 
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) =>  {
@@ -85,7 +88,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({}, ref) => {
 
     const onInputKeyDown = (e: React.KeyboardEvent) => {
         if (e.code == "Enter") {
-            changePath(path)
+            changePath(path, showHidden)
             virtualTable.current.setFocus()
             e.stopPropagation()
             e.preventDefault()
@@ -108,7 +111,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({}, ref) => {
 
 export default FolderView
 
-// TODO isHidden hide 
 // TODO Restrict items
 // TODO Error from getItems/tooltip from dialog-box-react
 // TODO SSE for theme detection?

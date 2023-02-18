@@ -11,8 +11,6 @@ const App = () => {
 	const [autoMode, setAutoMode] = useState(false)
 	const [showHidden, setShowHidden] = useState(false)
 
-	console.log("AutoHeid", autoMode)
-
 	const setAndSaveAutoMode = (mode: boolean) => {
 		setAutoMode(mode)
 		localStorage.setItem("menuAutoHide", mode ? "true" : "false")
@@ -24,6 +22,11 @@ const App = () => {
 				btnOk: true,
 				btnCancel: true
 			})).result == Result.Ok))
+	
+	const setShowHiddenAndRefresh = (show: boolean) => {
+		setShowHidden(show)
+		folderLeft.current.refresh(show)
+	}
 	
 	useEffect(() => {
 		setAutoMode(localStorage.getItem("menuAutoHide") == "true")
@@ -112,7 +115,7 @@ const App = () => {
 				items: [{
 					name: "_Versteckte Dateien",
 					checked: showHidden,
-					setChecked: setShowHidden,
+					setChecked: setShowHiddenAndRefresh,
 					type: MenuItemType.MenuCheckItem,
 					shortcut: "Strg+H"
 				}, {
@@ -144,7 +147,7 @@ const App = () => {
 					type: MenuItemType.MenuItem
 				}]
 			}]} onAction={onMenuAction} />
-			<FolderView ref={folderLeft} />
+			<FolderView ref={folderLeft} showHidden={showHidden} />
 		</div>
 	)
 }

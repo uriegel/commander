@@ -87,10 +87,10 @@ const getRowClasses = (item: TableRowItem) =>
 		: []
 	
 
-const getItems = async (path: string, sortIndex: number, sortDescending: boolean) => {
+const getItems = async (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean) => {
 	const res = await request<GetItemResult>("getfiles", {
 		path,
-		showHiddenItems: true
+		showHiddenItems: showHidden
 	})
 	return { ...res, items: makeTableViewItems(res.items, getSortFunction(sortIndex, sortDescending)) }
 }
