@@ -1,7 +1,7 @@
 import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
-import { Controller, ControllerResult, ControllerType, extractSubPath, formatDateTime, formatSize, formatVersion, getExtension, makeTableViewItems, measureRow } from "./controller"
+import { addParent, Controller, ControllerResult, ControllerType, extractSubPath, formatDateTime, formatSize, formatVersion, getExtension, measureRow, sortItems } from "./controller"
 import { ExtendedItem, GetExtendedItemsResult, GetItemResult, request, Version } from "./requests"
 import { ROOT } from "./root"
 
@@ -89,11 +89,11 @@ const getItems = async (path: string, showHidden: boolean, sortIndex: number, so
 		path,
 		showHiddenItems: showHidden
 	})
-	return { ...res, items: makeTableViewItems(res.items, getSortFunction(sortIndex, sortDescending)) }
+	return { ...res, items: addParent(sortItems(res.items, getSortFunction(sortIndex, sortDescending))) }
 }
 
 const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
-	makeTableViewItems(items, getSortFunction(sortIndex, sortDescending), false) 
+	sortItems(items, getSortFunction(sortIndex, sortDescending)) 
 
 const checkExtendedItemsWindows = (items: FolderViewItem[]) => 
 	items.find(n => {

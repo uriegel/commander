@@ -157,7 +157,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO eliminate makeTableRowItems, add parent after request
 // TODO Selection (with restriction)
 // TODO Splitter, two folderviews
 // TODO Statusbar

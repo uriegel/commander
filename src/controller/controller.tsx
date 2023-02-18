@@ -70,15 +70,12 @@ export const createEmptyController = (): Controller => ({
     setExtendedItems: items=>items,
     onEnter: (i, k) => ({ processed: true }),
     sort: (items: FolderViewItem[])=>items
-} )
+})
 
-// TODO ????
-export const makeTableViewItems = (items: FolderViewItem[], sortFunc: SortFunction|undefined = undefined, withParent = true) => 
-    (withParent
-    ? [{ name: "..", index: 0, isParent: true, isDirectory: true } as FolderViewItem]
-    : [] as FolderViewItem[])
-        .concat(sortItems(items, sortFunc))
-       
+export const addParent = (items: FolderViewItem[]) => 
+    [{ name: "..", index: 0, isParent: true, isDirectory: true } as FolderViewItem]
+        .concat(items)
+
 export const formatSize = (num: number|undefined) => {
     if (!num)
         return ""
@@ -111,7 +108,7 @@ export const formatVersion = (version?: Version) =>
 export const extractSubPath = (path: string) => 
     path.substring(lastIndexOfAny(path, ["/", "\\"]))
 
-const sortItems = (folderItemArray: FolderViewItem[], sortFunction: SortFunction|undefined) => {
+export const sortItems = (folderItemArray: FolderViewItem[], sortFunction: SortFunction|undefined) => {
     const dirs = folderItemArray.filter(n => n.isDirectory || n.isParent)
     let files = folderItemArray.filter(n => !n.isDirectory) 
     files = sortFunction ? files.sort(sortFunction) : files
