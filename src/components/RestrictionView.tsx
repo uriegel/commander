@@ -33,7 +33,7 @@ const RestrictionView = forwardRef<RestrictionViewHandle, RestrictionViewProps>(
                     if (refItems.current == null)
                         refItems.current = items
                     setRestriction(test)
-                    return restrictedItems.map((n, i) => ({ ...n, index: i }))!
+                    return restrictedItems
                 }
                 else
                     return null
