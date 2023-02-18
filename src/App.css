@@ -1,5 +1,6 @@
 :root {
     --svg-image-path-color: black;
+    --restriction-background-color: white;
 }
 
 .App {

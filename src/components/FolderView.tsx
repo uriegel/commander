@@ -4,6 +4,7 @@ import VirtualTable, { createEmptyHandle, OnSort, SpecialKeys, TableRowItem, Vir
 import { checkController, Controller, createEmptyController } from '../controller/controller'
 import { ROOT } from '../controller/root'
 import { FolderItem } from '../controller/requests'
+import RestrictionView from './RestrictionView'
 
 export type FolderViewHandle = {
     setFocus: ()=>void
@@ -105,6 +106,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 <VirtualTable ref={virtualTable} items={items} onSort={onSort}
                     onColumnWidths={onColumnWidths} onEnter={onEnter} />
             </div>
+            <RestrictionView />
         </>
     )
 })
@@ -115,4 +117,4 @@ export default FolderView
 // TODO Error from getItems/tooltip from dialog-box-react
 // TODO SSE for theme detection?
 // TODO css themes windows windows dark, adwaita and adwaita dark
-
+// TODO Strg+H not working in menubar
