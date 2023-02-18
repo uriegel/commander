@@ -1,8 +1,9 @@
-import './App.css'
+import { useEffect, useRef, useState } from 'react'
+import Menubar, { MenuItemType } from 'menubar-react'
+import ViewSplit from 'view-split-react'
 import { showDialog, Result } from 'web-dialog-react' 
 import FolderView, { FolderViewHandle } from './components/FolderView'
-import Menubar, { MenuItemType } from 'menubar-react'
-import { useEffect, useRef, useState } from 'react'
+import './App.css'
 
 const App = () => {
 
@@ -10,7 +11,8 @@ const App = () => {
 
 	const [autoMode, setAutoMode] = useState(false)
 	const [showHidden, setShowHidden] = useState(false)
-
+	const [showViewer, setShowViewer] = useState(false)
+	
 	const setAndSaveAutoMode = (mode: boolean) => {
 		setAutoMode(mode)
 		localStorage.setItem("menuAutoHide", mode ? "true" : "false")
@@ -40,6 +42,25 @@ const App = () => {
 		else if (key == "SEL_NONE")
 			folderLeft.current?.selectNone()
 	}
+
+	const VerticalSplitView = () => (
+		<ViewSplit firstView={FolderLeft} secondView={FolderRight}></ViewSplit>
+	)
+
+	const FolderLeft = () => (
+		<div className='folder'>
+			<FolderView ref={folderLeft} showHidden={showHidden} />
+		</div>
+	)
+	const FolderRight = () => (
+		<div className='folder'>
+			<FolderView showHidden={showHidden} />
+		</div>
+	)
+
+	const ViewerView = () => (
+		<div></div>
+	)
 		
 	return (
 		<div className="App">
@@ -133,7 +154,9 @@ const App = () => {
 					type: MenuItemType.Separator
 				}, {
 					name: "_Vorschau",
-					type: MenuItemType.MenuItem,
+					type: MenuItemType.MenuCheckItem,
+					checked: showViewer,
+					setChecked: setShowViewer,
 					shortcut: "F3"
 				}, {
 					type: MenuItemType.Separator
@@ -152,8 +175,8 @@ const App = () => {
 					name: "_Entwicklerwerkzeuge",
 					type: MenuItemType.MenuItem
 				}]
-			}]} onAction={onMenuAction} />
-			<FolderView ref={folderLeft} showHidden={showHidden} />
+				}]} onAction={onMenuAction} />
+			<ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
 		</div>
 	)
 }

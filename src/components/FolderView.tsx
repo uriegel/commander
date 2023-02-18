@@ -179,21 +179,20 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
         
     return (
-        <>
+        <div className='folder'>
             <input className="pathInput" value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
             <div className="tableContainer" onKeyDown={onKeyDown}>
                 <VirtualTable ref={virtualTable} items={items} onSort={onSort}
                     onColumnWidths={onColumnWidths} onEnter={onEnter} />
             </div>
             <RestrictionView items={items} ref={restrictionView} />
-        </>
+        </div>
     )
 })
 
 export default FolderView
 
 // TODO Selection Ctrl+Mouse click
-// TODO Splitter, two folderviews
 // TODO Statusbar
 // TODO Viewer
 // TODO Error from getItems/tooltip from dialog-box-react
