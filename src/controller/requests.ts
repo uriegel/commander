@@ -42,8 +42,8 @@ export type Version = {
 }
 
 export type ExtendedItem = {
-    date: string|null
-    version: Version|null
+    date?: string
+    version?: Version
 }
 
 export type GetExtendedItemsResult = {

@@ -1,30 +1,26 @@
-import { SpecialKeys, TableRowItem } from "virtual-table-react"
+import { SpecialKeys } from "virtual-table-react"
+import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, formatSize, makeTableViewItems, measureRow} from "./controller"
-import { GetRootResult, request, RootItem } from "./requests"
+import { GetRootResult, request } from "./requests"
 
 export const ROOT = "root"
 const platform = getPlatform()
 
-const renderWindowsRow = (props: TableRowItem) => {
-    var item = props as RootItem
-    return [
+const renderWindowsRow = (item: FolderViewItem) => [
         (<IconName namePart={item.name} type={IconNameType.Root } />),
-        item.description,
+        item.description ?? "",
         formatSize(item.size)
     ]
-}
 
-const renderLinuxRow = (props: TableRowItem) => {
-    var item = props as RootItem
-    return [
+
+const renderLinuxRow = (item: FolderViewItem) => [
         (<IconName namePart={item.name} type={IconNameType.Root } />),
-        item.description,
+        item.description ?? "",
         item.mountPoint ?? "",
         formatSize(item.size)
     ]
-}
 
 const getWindowsColumns = () => ({
 	columns: [
@@ -48,16 +44,16 @@ const getLinuxColumns = () => ({
 	measureRow
 })
 
-const onWindowsEnter = (_: string, item: TableRowItem, keys: SpecialKeys) => 
+const onWindowsEnter = (_: string, item: FolderViewItem, keys: SpecialKeys) => 
 ({
     processed: false, 
-    pathToSet: (item as RootItem).name
+    pathToSet: item.name
 }) 
 
-const onLinuxEnter = (_: string, item: TableRowItem, keys: SpecialKeys) => 
+const onLinuxEnter = (_: string, item: FolderViewItem, keys: SpecialKeys) => 
 ({
     processed: false, 
-    pathToSet: (item as RootItem).mountPoint
+    pathToSet: item.mountPoint ?? ""
 }) 
 
 const getColumns = platform == Platform.Windows ? getWindowsColumns : getLinuxColumns
@@ -73,7 +69,7 @@ export const getRootController = (controller: Controller|null): ControllerResult
         getExtendedItems: async () => ({ path: "", extendedItems: [] }),
         setExtendedItems: items=>items,
         onEnter,
-        sort: (items: TableRowItem[])=>items
+        sort: (items: FolderViewItem[])=>items
     }})
 
 const getItems = async () => {
@@ -84,7 +80,7 @@ const getItems = async () => {
     }
 }
 
-const getRowClasses = (item: RootItem) => 
+const getRowClasses = (item: FolderViewItem) => 
     item.isMounted == false
         ? ["notMounted"]
         : []

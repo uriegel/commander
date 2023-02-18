@@ -1,22 +1,21 @@
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
-import { TableRowItem } from 'virtual-table-react'
-import { FolderItem } from '../controller/requests'
+import { FolderViewItem } from './FolderView'
 import './RestrictionView.css'
 
 export type RestrictionViewHandle = {
-    checkKey: (code: string) => TableRowItem[] | null
+    checkKey: (code: string) => FolderViewItem[] | null
     reset: ()=>void
 }
 
 interface RestrictionViewProps {
-    items: TableRowItem[]
+    items: FolderViewItem[]
 }
 
 const RestrictionView = forwardRef<RestrictionViewHandle, RestrictionViewProps>((
     { items }, ref) => {
 
     const [restriction, setRestriction] = useState("")
-    const refItems = useRef<FolderItem[]|null>(null)
+    const refItems = useRef<FolderViewItem[]|null>(null)
 
     useImperativeHandle(ref, () => ({
         checkKey(code: string) {
@@ -28,11 +27,11 @@ const RestrictionView = forwardRef<RestrictionViewHandle, RestrictionViewProps>(
                         : restriction + code
 
             if (test.length > 0) {
-                const itemsToCheck = refItems.current ?? items as FolderItem[]
+                const itemsToCheck = refItems.current ?? items
                 const restrictedItems = itemsToCheck.filter(n => n.name.toLocaleLowerCase().startsWith(test))
                 if (restrictedItems.length > 0) {
                     if (refItems.current == null)
-                        refItems.current = items as FolderItem[]
+                        refItems.current = items
                     setRestriction(test)
                     return restrictedItems.map((n, i) => ({ ...n, index: i }))!
                 }

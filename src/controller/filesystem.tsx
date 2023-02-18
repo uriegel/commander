@@ -1,26 +1,23 @@
-import { TableRowItem } from "virtual-table-react"
+import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, extractSubPath, formatDateTime, formatSize, formatVersion, getExtension, makeTableViewItems, measureRow } from "./controller"
-import { ExtendedItem, FolderItem, GetExtendedItemsResult, GetItemResult, request, Version } from "./requests"
+import { ExtendedItem, GetExtendedItemsResult, GetItemResult, request, Version } from "./requests"
 import { ROOT } from "./root"
 
 const platform = getPlatform()
 const driveLength = platform == Platform.Windows ? 3: 1
 
-const renderBaseRow = (props: TableRowItem) => {
-	var item = props as FolderItem
-	return [
+const renderBaseRow = (item: FolderViewItem) => [
 		(<IconName namePart={item.name} type={item.isParent ? IconNameType.Parent : item.isDirectory ? IconNameType.Folder : IconNameType.File } iconPath={item.iconPath} />),
 		(<span className={item.exifDate ? "exif" : "" } >{formatDateTime(item?.exifDate ?? item?.time)}</span>),
 		formatSize(item.size)
 	]
-}
 
-const renderRow = (props: TableRowItem) => 
+const renderRow = (item: FolderViewItem) => 
 	platform == Platform.Windows 
-	? renderBaseRow(props).concat(formatVersion((props as FolderItem).version))
-	: renderBaseRow(props)
+	? renderBaseRow(item).concat(formatVersion(item.version))
+	: renderBaseRow(item)
 
 const getWindowsColumns = () => ({
 	columns: [
@@ -57,23 +54,23 @@ export const getFileSystemController = (controller: Controller|null): Controller
 		setExtendedItems,
 		getItems,
 		onEnter: (path, item, keys) => 
-			(item as FolderItem).isParent && path.length > driveLength 
+			item.isParent && path.length > driveLength 
 			?  ({
 				processed: false, 
-				pathToSet: path + '/' + (item as FolderItem).name,
+				pathToSet: path + '/' + item.name,
 				latestPath: extractSubPath(path)
 
 			}) 
-			: (item as FolderItem).isParent && path.length == driveLength
+			: item.isParent && path.length == driveLength
 			? ({
 				processed: false, 
 				pathToSet: ROOT,
 				latestPath: path
 			}) 
-			: (item as FolderItem).isDirectory
+			: item.isDirectory
 			? ({
 				processed: false, 
-				pathToSet: path + '/' + (item as FolderItem).name 
+				pathToSet: path + '/' + item.name 
 			}) 
 					
 			: { processed: true },
@@ -81,8 +78,8 @@ export const getFileSystemController = (controller: Controller|null): Controller
 		}
 	})
 	
-const getRowClasses = (item: TableRowItem) => 
-	(item as FolderItem).isHidden
+const getRowClasses = (item: FolderViewItem) => 
+	item.isHidden
 		? ["hidden"]
 		: []
 	
@@ -95,11 +92,10 @@ const getItems = async (path: string, showHidden: boolean, sortIndex: number, so
 	return { ...res, items: makeTableViewItems(res.items, getSortFunction(sortIndex, sortDescending)) }
 }
 
-const sort = (items: TableRowItem[], sortIndex: number, sortDescending: boolean) => 
+const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
 	makeTableViewItems(items, getSortFunction(sortIndex, sortDescending), false) 
 
-
-const checkExtendedItemsWindows = (items: FolderItem[]) => 
+const checkExtendedItemsWindows = (items: FolderViewItem[]) => 
 	items.find(n => {
 		const check = n.name.toLowerCase()
 		return check.endsWith(".jpg") 
@@ -108,7 +104,7 @@ const checkExtendedItemsWindows = (items: FolderItem[]) =>
 			|| check.endsWith(".dll")
 	})
 
-const checkExtendedItemsLinux = (items: FolderItem[]) => 
+const checkExtendedItemsLinux = (items: FolderViewItem[]) => 
 	items.find(n => {
 		const check = n.name.toLowerCase()
 		return check.endsWith(".jpg") || check.endsWith(".png")
@@ -119,15 +115,15 @@ const checkExtendedItems =
 		? checkExtendedItemsWindows
 		: checkExtendedItemsLinux
 
-const getExtendedItems = async (path: string, items: TableRowItem[]): Promise<GetExtendedItemsResult> => 
-	checkExtendedItems(items as FolderItem[])
+const getExtendedItems = async (path: string, items: FolderViewItem[]): Promise<GetExtendedItemsResult> => 
+	checkExtendedItems(items)
 		? request<GetExtendedItemsResult>("getextendeditems", {
-			items: (items as FolderItem[]).map(n => n.name),
+			items: (items as FolderViewItem[]).map(n => n.name),
 			path
 		})
 		: { path: "", extendedItems: [] }
 
-const setExtendedItems = (items: TableRowItem[], extendedItems: ExtendedItem[]) => 
+const setExtendedItems = (items: FolderViewItem[], extendedItems: ExtendedItem[]) => 
 	items.map((n, i) => !extendedItems[i].date && !extendedItems[i].version
 		? n
 		: extendedItems[i].date && !extendedItems[i].version
@@ -139,25 +135,23 @@ const setExtendedItems = (items: TableRowItem[], extendedItems: ExtendedItem[]) 
 const getSortFunction = (index: number, descending: boolean) => {
 	const ascDesc = (sortResult: number) => descending ? -sortResult : sortResult
 	const sf = index == 0
-		? (a: TableRowItem, b: TableRowItem) => (a as FolderItem).name.localeCompare((b as FolderItem).name) 
+		? (a: FolderViewItem, b: FolderViewItem) => a.name.localeCompare(b.name) 
 		: index == 1
-			? (a: TableRowItem, b: TableRowItem) => {
-				let afi = a as FolderItem
-				let bfi = b as FolderItem
-				let aa = afi.exifDate ? afi.exifDate : afi.time || ""
-				let bb = bfi.exifDate ? bfi.exifDate : bfi.time || ""
+			? (a: FolderViewItem, b: FolderViewItem) => {
+				let aa = a.exifDate ? a.exifDate : a.time || ""
+				let bb = b.exifDate ? b.exifDate : b.time || ""
 				return aa.localeCompare(bb) 
 			} 
 		: index == 2
-		? (a: TableRowItem, b: TableRowItem) => ((a as FolderItem).size || 0) - ((b as FolderItem).size || 0)
+		? (a: FolderViewItem, b: FolderViewItem) => (a.size || 0) - (b.size || 0)
 		: index == 3
-		? (a: TableRowItem, b: TableRowItem) => compareVersion((a as FolderItem).version, (b as FolderItem).version)
+		? (a: FolderViewItem, b: FolderViewItem) => compareVersion(a.version, b.version)
 		: index == 10
-		? (a: TableRowItem, b: TableRowItem) => getExtension((a as FolderItem).name).localeCompare(getExtension((b as FolderItem).name)) 
+		? (a: FolderViewItem, b: FolderViewItem) => getExtension(a.name).localeCompare(getExtension(b.name)) 
 		: undefined
 	
 	return sf
-		? (a: TableRowItem, b: TableRowItem) => ascDesc(sf(a, b))
+		? (a: FolderViewItem, b: FolderViewItem) => ascDesc(sf(a, b))
 		: undefined
 }
 

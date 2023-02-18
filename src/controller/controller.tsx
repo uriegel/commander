@@ -1,8 +1,9 @@
-import { SpecialKeys, TableColumns, TableRowItem } from "virtual-table-react"
+import { SpecialKeys, TableColumns } from "virtual-table-react"
+import { FolderViewItem } from "../components/FolderView";
 import IconName, { IconNameType } from "../components/IconName"
 import { lastIndexOfAny } from "../globals";
 import { getFileSystemController } from "./filesystem";
-import { ExtendedItem, FolderItem, GetExtendedItemsResult, Version } from "./requests";
+import { ExtendedItem, GetExtendedItemsResult, Version } from "./requests";
 import { getRootController, ROOT } from "./root";
 
 const dateFormat = Intl.DateTimeFormat("de-DE", {
@@ -18,7 +19,7 @@ const timeFormat = Intl.DateTimeFormat("de-DE", {
 
 export interface GetItemResult {
     path: string
-    items: TableRowItem[]
+    items: FolderViewItem[]
 }
 
 export enum ControllerType {
@@ -27,7 +28,7 @@ export enum ControllerType {
     FileSystem
 }
 
-export type SortFunction = (a: TableRowItem, b: TableRowItem) => number
+export type SortFunction = (a: FolderViewItem, b: FolderViewItem) => number
 
 export interface onEnterResult {
     processed: boolean
@@ -37,12 +38,12 @@ export interface onEnterResult {
 
 export interface Controller {
     type: ControllerType
-    getColumns: ()=>TableColumns
+    getColumns: ()=>TableColumns<FolderViewItem>
     getItems: (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean) => Promise<GetItemResult>
-    getExtendedItems: (path: string, items: TableRowItem[]) => Promise<GetExtendedItemsResult>
-    setExtendedItems: (items: TableRowItem[], extended: ExtendedItem[])=>TableRowItem[]
-    onEnter: (path: string, item: TableRowItem, keys: SpecialKeys) => onEnterResult
-    sort: (items: TableRowItem[], sortIndex: number, sortDescending: boolean)=>TableRowItem[]
+    getExtendedItems: (path: string, items: FolderViewItem[]) => Promise<GetExtendedItemsResult>
+    setExtendedItems: (items: FolderViewItem[], extended: ExtendedItem[])=>FolderViewItem[]
+    onEnter: (path: string, item: FolderViewItem, keys: SpecialKeys) => onEnterResult
+    sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean)=>FolderViewItem[]
 }
 
 export interface ControllerResult {
@@ -68,15 +69,15 @@ export const createEmptyController = (): Controller => ({
     getExtendedItems: async () => ({ path: "", extendedItems: [] }),
     setExtendedItems: items=>items,
     onEnter: (i, k) => ({ processed: true }),
-    sort: (items: TableRowItem[])=>items
+    sort: (items: FolderViewItem[])=>items
 } )
 
-export const makeTableViewItems = (items: TableRowItem[], sortFunc: SortFunction|undefined = undefined, withParent = true) => 
+// TODO ????
+export const makeTableViewItems = (items: FolderViewItem[], sortFunc: SortFunction|undefined = undefined, withParent = true) => 
     (withParent
-        ? [{ name: "..", index: 0, isParent: true, isDirectory: true } as TableRowItem]
-        : [] as TableRowItem[])
-        .concat(sortItems(items as FolderItem[], sortFunc))
-        .map((n, i) => ({ ...n, index: i }))
+    ? [{ name: "..", index: 0, isParent: true, isDirectory: true } as FolderViewItem]
+    : [] as FolderViewItem[])
+        .concat(sortItems(items, sortFunc))
        
 export const formatSize = (num: number|undefined) => {
     if (!num)
@@ -110,7 +111,7 @@ export const formatVersion = (version?: Version) =>
 export const extractSubPath = (path: string) => 
     path.substring(lastIndexOfAny(path, ["/", "\\"]))
 
-const sortItems = (folderItemArray: FolderItem[], sortFunction: SortFunction|undefined) => {
+const sortItems = (folderItemArray: FolderViewItem[], sortFunction: SortFunction|undefined) => {
     const dirs = folderItemArray.filter(n => n.isDirectory || n.isParent)
     let files = folderItemArray.filter(n => !n.isDirectory) 
     files = sortFunction ? files.sort(sortFunction) : files
