@@ -8,7 +8,9 @@ import { Version } from '../controller/requests'
 
 export type FolderViewHandle = {
     setFocus: ()=>void
-    refresh: (forceShowHidden?: boolean)=>void
+    refresh: (forceShowHidden?: boolean) => void
+    selectAll: () => void
+    selectNone: () => void
 }
 
 export interface FolderViewItem extends TableRowItem {
@@ -26,13 +28,7 @@ export interface FolderViewItem extends TableRowItem {
     exifDate?: string
     version?: Version
     isHidden?: boolean
-
 }
-
-export const createEmptyFolderHandle = () => ({
-    setFocus: () => { },
-    refresh: () => {}
-})
 
 interface FolderViewProp {
     showHidden: boolean
@@ -43,7 +39,15 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     useImperativeHandle(ref, () => ({
         setFocus() { virtualTable.current?.setFocus() },
-        refresh(forceShowHidden?: boolean) { changePath(path, forceShowHidden == undefined ? showHidden : forceShowHidden) }
+        refresh(forceShowHidden?: boolean) { changePath(path, forceShowHidden == undefined ? showHidden : forceShowHidden) },
+        selectAll() {
+            if (controller.current.itemsSelectable) 
+                setItems(items.map((n) => setSelection(n, true)))
+        },
+        selectNone() {
+            if (controller.current.itemsSelectable) 
+                setItems(items.map((n) => setSelection(n, false)))
+        }
     }))
 
     const restrictionView = useRef<RestrictionViewHandle>(null)
@@ -126,6 +130,12 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         return item
     }
         
+    const setSelection = (item: FolderViewItem, set: boolean) => {
+        if (!item.isParent)
+            item.isSelected = set
+        return item
+    }
+
     const onKeyDown = (evt: React.KeyboardEvent) => {
         switch (evt.code) {
             case "Insert":
@@ -135,6 +145,28 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     evt.preventDefault()
                     evt.stopPropagation()
                 }
+                break
+            case "Home":
+                if (controller.current.itemsSelectable) 
+                    setItems(items.map((n, i) => setSelection(n, i <= virtualTable.current?.getPosition()!)))
+                evt.preventDefault()
+                evt.stopPropagation()
+                break
+            case "End":
+                if (controller.current.itemsSelectable) 
+                    setItems(items.map((n, i) => setSelection(n, i >= virtualTable.current?.getPosition()!)))
+                evt.preventDefault()
+                evt.stopPropagation()
+                break
+            case "Space":
+                const ri = restrictionView.current?.checkKey(" ")
+                if (ri) {
+                    virtualTable.current?.setPosition(0)
+                    setItems(ri)
+                } else if (controller.current.itemsSelectable) 
+                    setItems(items.map((n, i) => i != virtualTable.current?.getPosition() ? n : toggleSelection(n)))
+                evt.preventDefault()
+                evt.stopPropagation()
                 break
             default:
                 const restrictedItems = restrictionView.current?.checkKey(evt.key)
@@ -160,7 +192,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO Selection
+// TODO Selection Ctrl+Mouse click
 // TODO Splitter, two folderviews
 // TODO Statusbar
 // TODO Viewer

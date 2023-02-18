@@ -1,12 +1,12 @@
 import './App.css'
 import { showDialog, Result } from 'web-dialog-react' 
-import FolderView, { createEmptyFolderHandle, FolderViewHandle } from './components/FolderView'
+import FolderView, { FolderViewHandle } from './components/FolderView'
 import Menubar, { MenuItemType } from 'menubar-react'
 import { useEffect, useRef, useState } from 'react'
 
 const App = () => {
 
-	const folderLeft = useRef<FolderViewHandle>(createEmptyFolderHandle())
+	const folderLeft = useRef<FolderViewHandle>(null)
 
 	const [autoMode, setAutoMode] = useState(false)
 	const [showHidden, setShowHidden] = useState(false)
@@ -25,7 +25,7 @@ const App = () => {
 	
 	const setShowHiddenAndRefresh = (show: boolean) => {
 		setShowHidden(show)
-		folderLeft.current.refresh(show)
+		folderLeft.current?.refresh(show)
 	}
 	
 	useEffect(() => {
@@ -34,7 +34,11 @@ const App = () => {
 
 	const onMenuAction = async (key: string) => {
 		if (key == "REFRESH")
-			folderLeft.current.refresh()
+			folderLeft.current?.refresh()
+		else if (key == "SEL_ALL")
+			folderLeft.current?.selectAll()
+		else if (key == "SEL_NONE")
+			folderLeft.current?.selectNone()
 	}
 		
 	return (
@@ -104,11 +108,13 @@ const App = () => {
 				items: [{
 					name: "_Alles",
 					type: MenuItemType.MenuItem,
-					shortcut: "Num+"
+					shortcut: "Num+",
+					key: "SEL_ALL"
 				}, {
 					name: "_Selektion entfernen",
 					type: MenuItemType.MenuItem,
-					shortcut: "Num-"
+					shortcut: "Num-",
+					key: "SEL_NONE"
 				}]
 			}, {
 				name: "_Ansicht",
