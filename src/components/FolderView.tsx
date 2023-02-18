@@ -4,7 +4,7 @@ import VirtualTable, { createEmptyHandle, OnSort, SpecialKeys, TableRowItem, Vir
 import { checkController, Controller, createEmptyController } from '../controller/controller'
 import { ROOT } from '../controller/root'
 import { FolderItem } from '../controller/requests'
-import RestrictionView from './RestrictionView'
+import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
 
 export type FolderViewHandle = {
     setFocus: ()=>void
@@ -27,6 +27,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         setFocus() { virtualTable.current.setFocus() },
         refresh(forceShowHidden?: boolean) { changePath(path, forceShowHidden == undefined ? showHidden : forceShowHidden) }
     }))
+
+    const restrictionView = useRef<RestrictionViewHandle>(null)
 
     const virtualTable = useRef<VirtualTableHandle>(createEmptyHandle())
     const controller = useRef<Controller>(createEmptyController())
@@ -98,15 +100,19 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const onInputFocus = (e: React.FocusEvent<HTMLInputElement>) => 
         setTimeout(() => e.target.select())
+    
+    const onKeyDown = (evt: React.KeyboardEvent) => {
+        restrictionView.current?.checkKey(evt.key)
+    }
         
     return (
         <>
             <input className="pathInput" value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
-            <div className="tableContainer">
+            <div className="tableContainer" onKeyDown={onKeyDown}>
                 <VirtualTable ref={virtualTable} items={items} onSort={onSort}
                     onColumnWidths={onColumnWidths} onEnter={onEnter} />
             </div>
-            <RestrictionView />
+            <RestrictionView items={items} ref={restrictionView} />
         </>
     )
 })
