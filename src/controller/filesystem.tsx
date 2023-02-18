@@ -74,9 +74,10 @@ export const getFileSystemController = (controller: Controller|null): Controller
 			}) 
 					
 			: { processed: true },
-		sort
-		}
-	})
+		sort,
+		itemsSelectable: true
+	}
+})
 	
 const getRowClasses = (item: FolderViewItem) => 
 	item.isHidden

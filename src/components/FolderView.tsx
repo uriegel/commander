@@ -121,17 +121,20 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         setTimeout(() => e.target.select())
     
     const toggleSelection = (item: FolderViewItem) => {
-        item.isSelected = !item.isSelected
+        if (!item.isParent)
+            item.isSelected = !item.isSelected
         return item
     }
         
     const onKeyDown = (evt: React.KeyboardEvent) => {
         switch (evt.code) {
             case "Insert":
-                setItems(items.map((n, i) => i != virtualTable.current?.getPosition() ? n : toggleSelection(n)))
-                virtualTable.current?.setPosition(virtualTable.current.getPosition() + 1)
-                evt.preventDefault()
-                evt.stopPropagation()
+                if (controller.current.itemsSelectable) {
+                    setItems(items.map((n, i) => i != virtualTable.current?.getPosition() ? n : toggleSelection(n)))
+                    virtualTable.current?.setPosition(virtualTable.current.getPosition() + 1)
+                    evt.preventDefault()
+                    evt.stopPropagation()
+                }
                 break
             default:
                 const restrictedItems = restrictionView.current?.checkKey(evt.key)
@@ -157,8 +160,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO Selection: only when columns are selectable, not parent
-// TODO Selection (with restriction)
+// TODO Selection
 // TODO Splitter, two folderviews
 // TODO Statusbar
 // TODO Viewer

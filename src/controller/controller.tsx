@@ -43,7 +43,8 @@ export interface Controller {
     getExtendedItems: (path: string, items: FolderViewItem[]) => Promise<GetExtendedItemsResult>
     setExtendedItems: (items: FolderViewItem[], extended: ExtendedItem[])=>FolderViewItem[]
     onEnter: (path: string, item: FolderViewItem, keys: SpecialKeys) => onEnterResult
-    sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean)=>FolderViewItem[]
+    sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => FolderViewItem[]
+    itemsSelectable: boolean
 }
 
 export interface ControllerResult {
@@ -69,7 +70,8 @@ export const createEmptyController = (): Controller => ({
     getExtendedItems: async () => ({ path: "", extendedItems: [] }),
     setExtendedItems: items=>items,
     onEnter: (i, k) => ({ processed: true }),
-    sort: (items: FolderViewItem[])=>items
+    sort: (items: FolderViewItem[]) => items,
+    itemsSelectable: false
 })
 
 export const addParent = (items: FolderViewItem[]) => 

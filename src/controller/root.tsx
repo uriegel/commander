@@ -69,7 +69,8 @@ export const getRootController = (controller: Controller|null): ControllerResult
         getExtendedItems: async () => ({ path: "", extendedItems: [] }),
         setExtendedItems: items=>items,
         onEnter,
-        sort: (items: FolderViewItem[])=>items
+        sort: (items: FolderViewItem[]) => items,
+        itemsSelectable: false
     }})
 
 const getItems = async () => {
