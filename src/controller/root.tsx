@@ -2,7 +2,7 @@ import { SpecialKeys } from "virtual-table-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
-import { Controller, ControllerResult, ControllerType, formatSize, makeTableViewItems, measureRow} from "./controller"
+import { Controller, ControllerResult, ControllerType, formatSize, measureRow} from "./controller"
 import { GetRootResult, request } from "./requests"
 
 export const ROOT = "root"
@@ -73,10 +73,10 @@ export const getRootController = (controller: Controller|null): ControllerResult
     }})
 
 const getItems = async () => {
-	const result = await request<GetRootResult>("getroot")
+	const items = await request<GetRootResult>("getroot")
     return {
         path: ROOT,
-        items: makeTableViewItems(result, undefined, false)
+        items
     }
 }
 
