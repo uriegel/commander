@@ -69,6 +69,7 @@ const Menu = ({ autoMode, setAutoMode, showHidden, setShowHidden, showViewer, se
         }, {
             name: "_Gleichen Ordner öffnen",
             type: MenuItemType.MenuItem,
+            key: "ADAPT_PATH",
             shortcut: "F9"
         }]
     }, {
@@ -115,6 +116,7 @@ const Menu = ({ autoMode, setAutoMode, showHidden, setShowHidden, showViewer, se
         }, {
             name: "_Vollbild",
             type: MenuItemType.MenuItem,
+            key: "SHOW_FULLSCREEN",
             shortcut: "F11"
         }, {
             type: MenuItemType.Separator

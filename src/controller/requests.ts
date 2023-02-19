@@ -58,6 +58,7 @@ export type GetRoot = "getroot"
 export type GetFiles = "getfiles"
 export type GetExtendedItems = "getextendeditems"
 export type ShowDevTools = "showdevtools"
+export type ShowFullScreen = "showfullscreen"
 
 type RequestType = 
 	| Close
@@ -65,6 +66,7 @@ type RequestType =
     | GetFiles
     | GetExtendedItems
     | ShowDevTools
+    | ShowFullScreen
 	
 type Exception = {
 	exception: string

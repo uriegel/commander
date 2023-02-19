@@ -69,6 +69,7 @@ let configure (app : IApplicationBuilder) =
             route  "/commander/movie"            >=> bindQuery<FileRequest> None getMovie
             route  "/commander/getextendeditems" >=> warbler (fun _ -> getExtendedItems ())
             route  "/commander/showdevtools"     >=> warbler (fun _ -> showDevTools ())
+            route  "/commander/showfullscreen"   >=> warbler (fun _ -> showFullscreen ())
             route  "/commander/getevents"        >=> warbler (fun _ -> getEvents ())
             route  "/commander/sendbounds"       >=> bindJson<WindowBounds> sendBounds
             routef "/static/js/%s" (fun _ -> httpHandlerParam getResourceFile "scripts/script.js")

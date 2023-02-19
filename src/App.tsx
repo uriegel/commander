@@ -78,6 +78,14 @@ const App = () => {
 			getActiveFolder()?.selectNone()
 		else if (key == "SHOW_DEV_TOOLS")
 			await request("showdevtools")
+		else if (key == "SHOW_FULLSCREEN")
+			await request("showfullscreen")
+		else if (key == "ADAPT_PATH") {
+			const path = getActiveFolder()?.getPath()
+			if (path)
+			getInactiveFolder()?.changePath(path)
+		}
+			
 	}
 
 	const VerticalSplitView = () => (

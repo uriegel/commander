@@ -19,6 +19,10 @@ let showDevTools () =
     mainReplaySubject.OnNext ShowDevTools
     text "{}"
 
+let showFullscreen () =
+    mainReplaySubject.OnNext ShowFullscreen
+    text "{}"
+
 let getEvents () = 
     fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
