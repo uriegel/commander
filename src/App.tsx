@@ -3,12 +3,15 @@ import ViewSplit from 'view-split-react'
 import { showDialog, Result } from 'web-dialog-react' 
 import FolderView, { FolderViewHandle } from './components/FolderView'
 import Menu from './components/Menu'
-import './App.css'
 import Statusbar from './components/Statusbar'
 import { getExtension } from './controller/controller'
 import PictureViewer from './components/PictureViewer'
 import MediaPlayer from './components/MediaPlayer'
 import { request } from './controller/requests'
+import './App.css'
+import './themes/adwaita.css'
+import './themes/adwaitaDark.css'
+import './themes/blue.css'
 
 const ID_LEFT = "left"
 const ID_RIGHT = "right"
@@ -23,6 +26,7 @@ const App = () => {
 	const folderLeft = useRef<FolderViewHandle>(null)
 	const folderRight = useRef<FolderViewHandle>(null)
 
+	const [theme, setTheme] = useState("themeAdwaitaDark")
 	const [autoMode, setAutoMode] = useState(false)
 	const [showHidden, setShowHidden] = useState(false)
 	const [showViewer, setShowViewer] = useState(false)
@@ -111,7 +115,7 @@ const App = () => {
 	}
 		
 	return (
-		<div className="App" onKeyDown={onKeyDown} >
+		<div className={`App ${theme}`} onKeyDown={onKeyDown} >
 			<Menu autoMode={autoMode} onMenuAction={onMenuAction} setAutoMode={setAutoModeDialog} showHidden={showHidden} setShowHidden={setShowHiddenAndRefresh}
 				showViewer={showViewer} setShowViewer={setShowViewer}  />
 			<ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
