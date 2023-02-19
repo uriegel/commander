@@ -111,10 +111,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             changePath(result.pathToSet, showHidden, result.latestPath)
     }
 
-    const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) =>  {
-        console.log("e", e)
-        setPath(e.target.value)
-    }
+    const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setPath(e.target.value)
 
     const onInputKeyDown = (e: React.KeyboardEvent) => {
         if (e.code == "Enter") {
@@ -196,7 +193,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO Starting commander, Strg+R no path
+// TODO SSE events for main.ts
+// TODO saving window bounds
 // TODO connecting Statusbar
 // TODO Viewer
 // TODO Shortcuts not preventing default: Strg+R activates restriction

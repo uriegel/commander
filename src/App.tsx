@@ -6,6 +6,9 @@ import Menu from './components/Menu'
 import './App.css'
 import Statusbar from './components/Statusbar'
 
+const ID_LEFT = "left"
+const ID_RIGHT = "right"
+
 const App = () => {
 
 	const folderLeft = useRef<FolderViewHandle>(null)
@@ -38,29 +41,27 @@ const App = () => {
 	}, [])
 
 	const FolderLeft = () => (
-		<FolderView ref={folderLeft} id="left" onFocus={onFocusLeft} showHidden={showHidden} />
+		<FolderView ref={folderLeft} id={ID_LEFT} onFocus={onFocusLeft} showHidden={showHidden} />
 	)
 	const FolderRight = () => (
-		<FolderView ref={folderRight} id="right" onFocus={onFocusRight} showHidden={showHidden} />
+		<FolderView ref={folderRight} id={ID_RIGHT} onFocus={onFocusRight} showHidden={showHidden} />
 	)
 
-	const activeFolder = useRef(folderLeft.current)
-	const getInactiveFolder = () => activeFolder.current?.id == folderLeft.current?.id ? folderRight.current : folderLeft.current
+	const activeFolderId = useRef("left")
+	const getActiveFolder = () => activeFolderId.current == ID_LEFT ? folderLeft.current : folderRight.current
+	const getInactiveFolder = () => activeFolderId.current == ID_LEFT ? folderRight.current : folderLeft.current
 
-	const onFocusLeft = () => activeFolder.current = folderLeft.current
-	const onFocusRight = () => activeFolder.current = folderRight.current
+	const onFocusLeft = () => activeFolderId.current = ID_LEFT
+	const onFocusRight = () => activeFolderId.current = ID_RIGHT
 
 	const onMenuAction = async (key: string) => {
 		if (key == "REFRESH") {
-
-			
-	//		folderLeft.current?.refresh()
-			activeFolder.current?.refresh()
+			getActiveFolder()?.refresh()
 		}
 		else if (key == "SEL_ALL")
-			activeFolder.current?.selectAll()
+			getActiveFolder()?.selectAll()
 		else if (key == "SEL_NONE")
-			activeFolder.current?.selectNone()
+			getActiveFolder()?.selectNone()
 	}
 
 	const VerticalSplitView = () => (
