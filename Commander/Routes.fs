@@ -13,7 +13,6 @@ open Configuration
 open FileSystem
 open Directory
 open Root
-open Directory
 
 let configureCors (builder: Infrastructure.CorsPolicyBuilder) =
     builder
@@ -53,7 +52,8 @@ let configure (app : IApplicationBuilder) =
         choose [  
             route  "/commander/getfiles"         >=> warbler (fun _ -> getFiles ())
             route  "/commander/getroot"          >=> warbler (fun _ -> getRoot ())
-            route  "/commander/geticon"          >=> bindQuery<IconRequest> None getIconRequest
+            route  "/commander/geticon"          >=> bindQuery<FileRequest> None getIconRequest
+            route  "/commander/image"            >=> bindQuery<FileRequest> None getImage
             route  "/commander/getextendeditems" >=> warbler (fun _ -> getExtendedItems ())
             routef "/static/js/%s" (fun _ -> httpHandlerParam getResourceFile "scripts/script.js")
             routef "/static/css/%s" (fun _ -> httpHandlerParam getResourceFile "styles/style.css")

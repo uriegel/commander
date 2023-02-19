@@ -5,6 +5,8 @@ import FolderView, { FolderViewHandle } from './components/FolderView'
 import Menu from './components/Menu'
 import './App.css'
 import Statusbar from './components/Statusbar'
+import { getExtension } from './controller/controller'
+import PictureViewer from './components/PictureViewer'
 
 const ID_LEFT = "left"
 const ID_RIGHT = "right"
@@ -76,9 +78,13 @@ const App = () => {
 		<ViewSplit firstView={FolderLeft} secondView={FolderRight}></ViewSplit>
 	)
 
-	const ViewerView = () => (
-		<div></div>
-	)
+	const ViewerView = () => {
+		const ext = getExtension(path.path).toLocaleLowerCase()
+		
+		return ext == ".jpg" || ext == ".png"
+			? (<PictureViewer path={path.path} />)
+			: (<div></div>)
+	}
 
     const onKeyDown = (evt: React.KeyboardEvent) => {
 		if (evt.code == "Tab" && !evt.shiftKey) {

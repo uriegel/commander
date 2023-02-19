@@ -210,7 +210,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO Viewer
+// TODO Viewer: VIDEO
+// TODO Viewer: PDf
 // TODO Statusbar files, dirs
 // TODO SSE events for main.ts
 // TODO saving window bounds
@@ -220,3 +221,4 @@ export default FolderView
 // TODO SSE for theme detection?
 // TODO css themes windows windows dark, adwaita and adwaita dark
 // TODO Strg+H not working in menubar
+// TODO Viewer: directory info

@@ -77,7 +77,7 @@ type ExtendedItemResult = {
 }
 
 [<CLIMutable>]
-type IconRequest = { Path: string }
+type FileRequest = { Path: string }
 
 let getIconPath (fileInfo: FileInfo) = 
     match fileInfo.Extension with
@@ -260,7 +260,7 @@ let getIcon ext = async {
         | _            -> async { return getIcon ext, "image/png" }
 }
 
-let getIconRequest: IconRequest -> HttpHandler = 
+let getIconRequest: FileRequest -> HttpHandler = 
     fun param (next : HttpFunc) (ctx : HttpContext) ->
         task {
             let startTime = Configuration.getStartDateTime ()
@@ -268,6 +268,9 @@ let getIconRequest: IconRequest -> HttpHandler =
             let sendIcon = (setContentType <| mimeType) >=> (streamFile false iconPath None <| Some startTime)
             return! sendIcon next ctx
         }    
+
+let getImage (fileRequest: FileRequest) = 
+    streamFile false fileRequest.Path None None
 
 #endif
 
