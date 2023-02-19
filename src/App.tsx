@@ -9,6 +9,11 @@ import Statusbar from './components/Statusbar'
 const ID_LEFT = "left"
 const ID_RIGHT = "right"
 
+interface PathProp {
+	path: string
+	isDirectory: boolean
+}
+
 const App = () => {
 
 	const folderLeft = useRef<FolderViewHandle>(null)
@@ -17,6 +22,7 @@ const App = () => {
 	const [autoMode, setAutoMode] = useState(false)
 	const [showHidden, setShowHidden] = useState(false)
 	const [showViewer, setShowViewer] = useState(false)
+	const [path, setPath] = useState<PathProp>({path: "", isDirectory: false})
 	
 	const setAndSaveAutoMode = (mode: boolean) => {
 		setAutoMode(mode)
@@ -40,11 +46,13 @@ const App = () => {
 		folderLeft.current?.setFocus()
 	}, [])
 
+	const onPathChanged = (path: string, isDirectory: boolean) => setPath({ path, isDirectory })
+
 	const FolderLeft = () => (
-		<FolderView ref={folderLeft} id={ID_LEFT} onFocus={onFocusLeft} showHidden={showHidden} />
+		<FolderView ref={folderLeft} id={ID_LEFT} onFocus={onFocusLeft} onPathChanged={onPathChanged} showHidden={showHidden} />
 	)
 	const FolderRight = () => (
-		<FolderView ref={folderRight} id={ID_RIGHT} onFocus={onFocusRight} showHidden={showHidden} />
+		<FolderView ref={folderRight} id={ID_RIGHT} onFocus={onFocusRight} onPathChanged={onPathChanged} showHidden={showHidden} />
 	)
 
 	const activeFolderId = useRef("left")
@@ -85,7 +93,7 @@ const App = () => {
 			<Menu autoMode={autoMode} onMenuAction={onMenuAction} setAutoMode={setAutoModeDialog} showHidden={showHidden} setShowHidden={setShowHiddenAndRefresh}
 				showViewer={showViewer} setShowViewer={setShowViewer}  />
 			<ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
-			<Statusbar path={""} dirCount={0} fileCount={0} />
+			<Statusbar path={path.path} dirCount={0} fileCount={0} />
 		</div>
 	)
 }

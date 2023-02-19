@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import './FolderView.css'
 import VirtualTable, { OnSort, SpecialKeys, TableRowItem, VirtualTableHandle } from 'virtual-table-react'
 import { checkController, Controller, createEmptyController } from '../controller/controller'
@@ -34,11 +34,12 @@ export interface FolderViewItem extends TableRowItem {
 interface FolderViewProp {
     id: string
     showHidden: boolean
-    onFocus: ()=>void
+    onFocus: () => void
+    onPathChanged: (path: string, isDir: boolean)=>void
 }
 
 const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
-    { id, showHidden, onFocus }, ref) => {
+    { id, showHidden, onFocus, onPathChanged }, ref) => {
 
     useImperativeHandle(ref, () => ({
         id,
@@ -137,6 +138,12 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         return item
     }
 
+    const onPositionChanged = useCallback(
+        (item: FolderViewItem, pos?: number) => onPathChanged(path + '/' + item.name, item.isDirectory == true),
+        // HACK onPathChanged
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [id, path])         
+
     const onKeyDown = (evt: React.KeyboardEvent) => {
         switch (evt.code) {
             case "Insert":
@@ -178,13 +185,23 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 break
         }
     }
+
+    const onFocusChanged = useCallback(() => {
+        onFocus()
+        const pos = virtualTable.current?.getPosition() ?? 0
+        const item = pos < items.length ? items[pos] : null 
+        if (item)
+            onPositionChanged(item)
+        // HACK onFocus, onPositionChanged
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [items]) 
         
     return (
-        <div className='folder' onFocus={onFocus}>
+        <div className='folder' onFocus={onFocusChanged}>
             <input className="pathInput" value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
             <div className="tableContainer" onKeyDown={onKeyDown} >
                 <VirtualTable ref={virtualTable} items={items} onSort={onSort}
-                    onColumnWidths={onColumnWidths} onEnter={onEnter} />
+                    onColumnWidths={onColumnWidths} onEnter={onEnter} onPosition={onPositionChanged} />
             </div>
             <RestrictionView items={items} ref={restrictionView} />
         </div>
@@ -193,10 +210,10 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
+// TODO Viewer
+// TODO Statusbar files, dirs
 // TODO SSE events for main.ts
 // TODO saving window bounds
-// TODO connecting Statusbar
-// TODO Viewer
 // TODO Shortcuts not preventing default: Strg+R activates restriction
 // TODO Selection Ctrl+Mouse click
 // TODO Error from getItems/tooltip from dialog-box-react
