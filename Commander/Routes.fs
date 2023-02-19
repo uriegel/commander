@@ -13,6 +13,9 @@ open Configuration
 open FileSystem
 open Directory
 open Root
+open System.Threading.Tasks
+open System.Reactive.Subjects
+open MainEvents
 
 let configureCors (builder: Infrastructure.CorsPolicyBuilder) =
     builder
@@ -56,6 +59,8 @@ let configure (app : IApplicationBuilder) =
             route  "/commander/image"            >=> bindQuery<FileRequest> None getImage
             route  "/commander/movie"            >=> bindQuery<FileRequest> None getMovie
             route  "/commander/getextendeditems" >=> warbler (fun _ -> getExtendedItems ())
+            route  "/commander/showdevtools"     >=> warbler (fun _ -> showDevTools ())
+            route  "/commander/getevents"        >=> warbler (fun _ -> getEvents ())
             routef "/static/js/%s" (fun _ -> httpHandlerParam getResourceFile "scripts/script.js")
             routef "/static/css/%s" (fun _ -> httpHandlerParam getResourceFile "styles/style.css")
             route  "/"                           >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)

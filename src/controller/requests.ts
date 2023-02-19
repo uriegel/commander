@@ -57,12 +57,14 @@ type Close = "close"
 export type GetRoot = "getroot"
 export type GetFiles = "getfiles"
 export type GetExtendedItems = "getextendeditems"
+export type ShowDevTools = "showdevtools"
 
 type RequestType = 
 	| Close
 	| GetRoot
     | GetFiles
     | GetExtendedItems
+    | ShowDevTools
 	
 type Exception = {
 	exception: string

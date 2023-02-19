@@ -8,6 +8,7 @@ import Statusbar from './components/Statusbar'
 import { getExtension } from './controller/controller'
 import PictureViewer from './components/PictureViewer'
 import MediaPlayer from './components/MediaPlayer'
+import { request } from './controller/requests'
 
 const ID_LEFT = "left"
 const ID_RIGHT = "right"
@@ -73,6 +74,8 @@ const App = () => {
 			getActiveFolder()?.selectAll()
 		else if (key == "SEL_NONE")
 			getActiveFolder()?.selectNone()
+		else if (key == "SHOW_DEV_TOOLS")
+			await request("showdevtools")
 	}
 
 	const VerticalSplitView = () => (

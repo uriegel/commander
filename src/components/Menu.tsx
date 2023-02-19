@@ -120,7 +120,9 @@ const Menu = ({ autoMode, setAutoMode, showHidden, setShowHidden, showViewer, se
             type: MenuItemType.Separator
         }, {
             name: "_Entwicklerwerkzeuge",
-            type: MenuItemType.MenuItem
+            type: MenuItemType.MenuItem,
+            key: "SHOW_DEV_TOOLS",
+            shortcut: "F12"
         }]
         }]} onAction={onMenuAction} />
 )
