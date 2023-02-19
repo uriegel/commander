@@ -272,6 +272,9 @@ let getIconRequest: FileRequest -> HttpHandler =
 let getImage (fileRequest: FileRequest) = 
     streamFile false fileRequest.Path None None
 
+let getMovie (fileRequest: FileRequest) = 
+    streamFile true fileRequest.Path None None
+
 #endif
 
 #if Windows

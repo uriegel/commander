@@ -54,6 +54,7 @@ let configure (app : IApplicationBuilder) =
             route  "/commander/getroot"          >=> warbler (fun _ -> getRoot ())
             route  "/commander/geticon"          >=> bindQuery<FileRequest> None getIconRequest
             route  "/commander/image"            >=> bindQuery<FileRequest> None getImage
+            route  "/commander/movie"            >=> bindQuery<FileRequest> None getMovie
             route  "/commander/getextendeditems" >=> warbler (fun _ -> getExtendedItems ())
             routef "/static/js/%s" (fun _ -> httpHandlerParam getResourceFile "scripts/script.js")
             routef "/static/css/%s" (fun _ -> httpHandlerParam getResourceFile "styles/style.css")

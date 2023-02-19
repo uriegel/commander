@@ -7,6 +7,7 @@ import './App.css'
 import Statusbar from './components/Statusbar'
 import { getExtension } from './controller/controller'
 import PictureViewer from './components/PictureViewer'
+import MediaPlayer from './components/MediaPlayer'
 
 const ID_LEFT = "left"
 const ID_RIGHT = "right"
@@ -83,6 +84,8 @@ const App = () => {
 		
 		return ext == ".jpg" || ext == ".png"
 			? (<PictureViewer path={path.path} />)
+			: ext == ".mp3" || ext == ".mp4" || ext == ".mkv" || ext == ".wav"
+			? (<MediaPlayer path={path.path} />)
 			: (<div></div>)
 	}
 
