@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
-import Menubar, { MenuItemType } from 'menubar-react'
 import ViewSplit from 'view-split-react'
 import { showDialog, Result } from 'web-dialog-react' 
 import FolderView, { FolderViewHandle } from './components/FolderView'
+import Menu from './components/Menu'
 import './App.css'
+import Statusbar from './components/Statusbar'
 
 const App = () => {
 
 	const folderLeft = useRef<FolderViewHandle>(null)
+	const folderRight = useRef<FolderViewHandle>(null)
 
 	const [autoMode, setAutoMode] = useState(false)
 	const [showHidden, setShowHidden] = useState(false)
@@ -32,147 +34,57 @@ const App = () => {
 	
 	useEffect(() => {
 		setAutoMode(localStorage.getItem("menuAutoHide") == "true")
+		folderLeft.current?.setFocus()
 	}, [])
 
+	const FolderLeft = () => (
+		<FolderView ref={folderLeft} id="left" onFocus={onFocusLeft} showHidden={showHidden} />
+	)
+	const FolderRight = () => (
+		<FolderView ref={folderRight} id="right" onFocus={onFocusRight} showHidden={showHidden} />
+	)
+
+	const activeFolder = useRef(folderLeft.current)
+	const getInactiveFolder = () => activeFolder.current?.id == folderLeft.current?.id ? folderRight.current : folderLeft.current
+
+	const onFocusLeft = () => activeFolder.current = folderLeft.current
+	const onFocusRight = () => activeFolder.current = folderRight.current
+
 	const onMenuAction = async (key: string) => {
-		if (key == "REFRESH")
-			folderLeft.current?.refresh()
+		if (key == "REFRESH") {
+
+			
+	//		folderLeft.current?.refresh()
+			activeFolder.current?.refresh()
+		}
 		else if (key == "SEL_ALL")
-			folderLeft.current?.selectAll()
+			activeFolder.current?.selectAll()
 		else if (key == "SEL_NONE")
-			folderLeft.current?.selectNone()
+			activeFolder.current?.selectNone()
 	}
 
 	const VerticalSplitView = () => (
 		<ViewSplit firstView={FolderLeft} secondView={FolderRight}></ViewSplit>
 	)
 
-	const FolderLeft = () => (
-			<FolderView ref={folderLeft} showHidden={showHidden} />
-	)
-	const FolderRight = () => (
-			<FolderView showHidden={showHidden} />
-	)
-
 	const ViewerView = () => (
 		<div></div>
 	)
+
+    const onKeyDown = (evt: React.KeyboardEvent) => {
+		if (evt.code == "Tab" && !evt.shiftKey) {
+			getInactiveFolder()?.setFocus()
+			evt.preventDefault()
+			evt.stopPropagation()
+		}
+	}
 		
 	return (
-		<div className="App">
-			<Menubar autoMode={autoMode} items={[{
-				name: "_Datei",
-				items: [{
-					name: "_Umbenennen",
-					type: MenuItemType.MenuItem,
-					shortcut: "F2"
-				}, {
-					name: "Er_weitertes Umbenennen",
-					type: MenuItemType.MenuItem,
-					shortcut: "Strg+F2"
-				}, {
-					type: MenuItemType.Separator
-				}, {
-					name: "_Kopieren",
-					type: MenuItemType.MenuItem,
-					shortcut: "F5",
-					key: "COPY"
-				}, {
-					name: "_Verschieden",
-					type: MenuItemType.MenuItem,
-					shortcut: "F6"
-				}, {
-					name: "_Löschen",
-					type: MenuItemType.MenuItem,
-					shortcut: "Ent"
-				}, {
-					type: MenuItemType.Separator
-				}, {
-					name: "_Ordner anlegen",
-					type: MenuItemType.MenuItem,
-					shortcut: "F7"
-				}, {
-					type: MenuItemType.Separator
-				}, {
-					name: "_Eigenschaften",
-					type: MenuItemType.MenuItem,
-					shortcut: "Strg+Enter"
-				}, {
-					name: "Öffnen _mit",
-					type: MenuItemType.MenuItem,
-					shortcut: "Alt+Enter"
-				}, {
-					type: MenuItemType.Separator
-				}, {
-					name: "_Beenden",
-					type: MenuItemType.MenuItem,
-					key: "END",
-					shortcut: "Alt+F4"
-				}]
-			}, {
-				name: "_Navigation",
-				items: [{
-					name: "_Favoriten",
-					type: MenuItemType.MenuItem,
-					shortcut: "F1"
-				}, {
-					name: "_Gleichen Ordner öffnen",
-					type: MenuItemType.MenuItem,
-					shortcut: "F9"
-				}]
-			}, {
-				name: "_Selektion",
-				items: [{
-					name: "_Alles",
-					type: MenuItemType.MenuItem,
-					shortcut: "Num+",
-					key: "SEL_ALL"
-				}, {
-					name: "_Selektion entfernen",
-					type: MenuItemType.MenuItem,
-					shortcut: "Num-",
-					key: "SEL_NONE"
-				}]
-			}, {
-				name: "_Ansicht",
-				items: [{
-					name: "_Versteckte Dateien",
-					checked: showHidden,
-					setChecked: setShowHiddenAndRefresh,
-					type: MenuItemType.MenuCheckItem,
-					shortcut: "Strg+H"
-				}, {
-					name: "_Aktualisieren",
-					type: MenuItemType.MenuItem,
-					shortcut: "Strg+R",
-					key: "REFRESH"
-				}, {
-					type: MenuItemType.Separator
-				}, {
-					name: "_Vorschau",
-					type: MenuItemType.MenuCheckItem,
-					checked: showViewer,
-					setChecked: setShowViewer,
-					shortcut: "F3"
-				}, {
-					type: MenuItemType.Separator
-				}, {
-					name: "_Menü verbergen",
-					checked: autoMode,
-					setChecked: setAutoModeDialog,
-					type: MenuItemType.MenuCheckItem,
-				}, {
-					name: "_Vollbild",
-					type: MenuItemType.MenuItem,
-					shortcut: "F11"
-				}, {
-					type: MenuItemType.Separator
-				}, {
-					name: "_Entwicklerwerkzeuge",
-					type: MenuItemType.MenuItem
-				}]
-				}]} onAction={onMenuAction} />
+		<div className="App" onKeyDown={onKeyDown} >
+			<Menu autoMode={autoMode} onMenuAction={onMenuAction} setAutoMode={setAutoModeDialog} showHidden={showHidden} setShowHidden={setShowHiddenAndRefresh}
+				showViewer={showViewer} setShowViewer={setShowViewer}  />
 			<ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
+			<Statusbar path={""} dirCount={0} fileCount={0} />
 		</div>
 	)
 }

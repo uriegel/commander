@@ -7,7 +7,8 @@ import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
 import { Version } from '../controller/requests'
 
 export type FolderViewHandle = {
-    setFocus: ()=>void
+    id: string
+    setFocus: () => void
     refresh: (forceShowHidden?: boolean) => void
     selectAll: () => void
     selectNone: () => void
@@ -31,13 +32,16 @@ export interface FolderViewItem extends TableRowItem {
 }
 
 interface FolderViewProp {
+    id: string
     showHidden: boolean
+    onFocus: ()=>void
 }
 
 const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
-    { showHidden }, ref) => {
+    { id, showHidden, onFocus }, ref) => {
 
     useImperativeHandle(ref, () => ({
+        id,
         setFocus() { virtualTable.current?.setFocus() },
         refresh(forceShowHidden?: boolean) { changePath(path, forceShowHidden == undefined ? showHidden : forceShowHidden) },
         selectAll() {
@@ -179,9 +183,9 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
         
     return (
-        <div className='folder'>
+        <div className='folder' onFocus={onFocus}>
             <input className="pathInput" value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
-            <div className="tableContainer" onKeyDown={onKeyDown}>
+            <div className="tableContainer" onKeyDown={onKeyDown} >
                 <VirtualTable ref={virtualTable} items={items} onSort={onSort}
                     onColumnWidths={onColumnWidths} onEnter={onEnter} />
             </div>
@@ -192,9 +196,11 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO Selection Ctrl+Mouse click
-// TODO Statusbar
+// TODO Starting commander, Strg+R no path
+// TODO connecting Statusbar
 // TODO Viewer
+// TODO Shortcuts not preventing default: Strg+R activates restriction
+// TODO Selection Ctrl+Mouse click
 // TODO Error from getItems/tooltip from dialog-box-react
 // TODO SSE for theme detection?
 // TODO css themes windows windows dark, adwaita and adwaita dark

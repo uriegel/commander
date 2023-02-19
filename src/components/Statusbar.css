@@ -1,0 +1,14 @@
+.statusbar {
+    padding: 3px;
+    color: var(--color);
+    background-color: var(--scaffolding-background-color);
+    display: flex;
+}
+
+.fill {
+    flex-grow: 1;
+}
+
+.lastStatus {
+    margin: 0 10px;
+}
