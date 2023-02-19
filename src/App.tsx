@@ -70,6 +70,8 @@ const App = () => {
 		if (key == "REFRESH") {
 			getActiveFolder()?.refresh()
 		}
+		else if (key == "END")
+			window.close()
 		else if (key == "SEL_ALL")
 			getActiveFolder()?.selectAll()
 		else if (key == "SEL_NONE")

@@ -51,6 +51,15 @@ let configure (app : IApplicationBuilder) =
                 return! Json.text result next ctx
             }
 
+    let sendBounds (windowBounds: WindowBounds) = 
+
+        let saveBounds (bounds: WindowBounds) = 
+            use stream = securedCreateStream <| getElectronFile "bounds.json"
+            JsonSerializer.Serialize (stream, bounds, getJsonOptions ())
+
+        saveBounds windowBounds
+        text "{}"
+
     let routes =
         choose [  
             route  "/commander/getfiles"         >=> warbler (fun _ -> getFiles ())
@@ -61,6 +70,7 @@ let configure (app : IApplicationBuilder) =
             route  "/commander/getextendeditems" >=> warbler (fun _ -> getExtendedItems ())
             route  "/commander/showdevtools"     >=> warbler (fun _ -> showDevTools ())
             route  "/commander/getevents"        >=> warbler (fun _ -> getEvents ())
+            route  "/commander/sendbounds"       >=> bindJson<WindowBounds> sendBounds
             routef "/static/js/%s" (fun _ -> httpHandlerParam getResourceFile "scripts/script.js")
             routef "/static/css/%s" (fun _ -> httpHandlerParam getResourceFile "styles/style.css")
             route  "/"                           >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)

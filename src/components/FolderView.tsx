@@ -210,9 +210,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
+// TODO F9 F11
 // TODO Statusbar files, dirs
-// TODO SSE events for main.ts
-// TODO saving window bounds
 // TODO Shortcuts not preventing default: Strg+R activates restriction
 // TODO Selection Ctrl+Mouse click
 // TODO Error from getItems/tooltip from dialog-box-react

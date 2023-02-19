@@ -47,16 +47,21 @@ const createWindow = async () => {
         await request("electronunmaximize", {})
     })
 
-    // let doClose = false
-    // win.on("close", async (evt: Event) => {
-    //     if (!doClose &&!win.isMaximized()) {
-    //         evt.preventDefault()
-    //         doClose = true
-    //         const bounds: Bounds = win.getBounds()
-    //         await request("sendbounds", bounds)
-    //         win.close()
-    //     }
-    // })   
+    let doClose = false
+    win.on("close", async (evt: Event) => {
+        if (!doClose &&!win.isMaximized()) {
+            evt.preventDefault()
+            doClose = true
+            const bounds: Bounds = win.getBounds()
+            try {
+                await request("sendbounds", bounds, 5000)
+                console.log("close after")
+            } catch {
+                console.log("close after fehler")
+            }
+            win.close()
+        }
+    })   
 
     win.loadURL(isDebug
         ? `http://localhost:3000?platform=${isWindows ? "windows" : "linux"}`
@@ -68,10 +73,10 @@ const createWindow = async () => {
     }
     getEvents()
 
-    async function request(method: Methods, inputData: InputData): Promise<void> {
+    async function request(method: Methods, inputData: InputData, timeout = 40000): Promise<void> {
         const keepAliveAgent = new http.Agent({
             keepAlive: true,
-            keepAliveMsecs: 40000
+            keepAliveMsecs: timeout
         })
 
         return new Promise((resolve, reject) => {
@@ -82,7 +87,7 @@ const createWindow = async () => {
                 port: 20000,
                 path: `/commander/${method}`,
                 agent: keepAliveAgent,
-                timeout: 40000,
+                timeout,
                 method: 'POST',
                 headers: {
 					'Content-Type': 'application/json; charset=UTF-8',
