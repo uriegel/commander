@@ -12,6 +12,7 @@ import './App.css'
 import './themes/adwaita.css'
 import './themes/adwaitaDark.css'
 import './themes/blue.css'
+import { getTheme } from './globals'
 
 const ID_LEFT = "left"
 const ID_RIGHT = "right"
@@ -26,7 +27,7 @@ const App = () => {
 	const folderLeft = useRef<FolderViewHandle>(null)
 	const folderRight = useRef<FolderViewHandle>(null)
 
-	const [theme, setTheme] = useState("themeAdwaitaDark")
+	const [theme, setTheme] = useState(getTheme())
 	const [autoMode, setAutoMode] = useState(false)
 	const [showHidden, setShowHidden] = useState(false)
 	const [showViewer, setShowViewer] = useState(false)
@@ -115,7 +116,7 @@ const App = () => {
 	}
 		
 	return (
-		<div className={`App ${theme}`} onKeyDown={onKeyDown} >
+		<div className={`App ${theme}Theme`} onKeyDown={onKeyDown} >
 			<Menu autoMode={autoMode} onMenuAction={onMenuAction} setAutoMode={setAutoModeDialog} showHidden={showHidden} setShowHidden={setShowHiddenAndRefresh}
 				showViewer={showViewer} setShowViewer={setShowViewer}  />
 			<ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />

@@ -64,7 +64,7 @@ const createWindow = async () => {
     })   
 
     win.loadURL(isDebug
-        ? `http://localhost:3000?platform=${isWindows ? "windows" : "linux"}`
+        ? `http://localhost:3000?theme=${(bounds as Bounds).theme}&platform=${isWindows ? "windows" : "linux"}`
         : `http://localhost:20000?theme=${(bounds as Bounds).theme}&frame=${(bounds as Bounds).frame}`)
 
     async function getEvents() {
