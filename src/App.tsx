@@ -14,6 +14,7 @@ import './themes/adwaitaDark.css'
 import './themes/windows.css'
 import './themes/windowsDark.css'
 import { getTheme } from './globals'
+import { themeChangedEvents } from './controller/events'
 
 const ID_LEFT = "left"
 const ID_RIGHT = "right"
@@ -53,6 +54,7 @@ const App = () => {
 	
 	useEffect(() => {
 		setAutoMode(localStorage.getItem("menuAutoHide") == "true")
+		themeChangedEvents.subscribe(setTheme)
 		folderLeft.current?.setFocus()
 	}, [])
 
@@ -115,7 +117,7 @@ const App = () => {
 			evt.stopPropagation()
 		}
 	}
-		
+
 	return (
 		<div className={`App ${theme}Theme`} onKeyDown={onKeyDown} >
 			<Menu autoMode={autoMode} onMenuAction={onMenuAction} setAutoMode={setAutoModeDialog} showHidden={showHidden} setShowHidden={setShowHiddenAndRefresh}
@@ -127,3 +129,4 @@ const App = () => {
 }
 
 export default App
+

@@ -33,6 +33,22 @@ let getExtendedItems () =
             return! Json.text result next ctx
         }
 
+type RendererEvent = 
+    | ThemeChanged of string
+    // | ElectronMaximize 
+    // | ElectronUnmaximize 
+    // | Fullscreen of bool
+    // | RenameRemote of RenameRemote
+    // | DeleteRemotes of string[]
+    | Nothing
+
+
+let rendererReplaySubject: Subject<RendererEvent> = new Subject<RendererEvent>()        
+
+let startThemeDetection () = 
+    let onChanged theme = rendererReplaySubject.OnNext (ThemeChanged theme)
+    Theme.startThemeDetection onChanged
+
 let configure (app : IApplicationBuilder) = 
     let getMimeType path = 
         match getExtension path with
@@ -60,6 +76,8 @@ let configure (app : IApplicationBuilder) =
         saveBounds windowBounds
         text "{}"
 
+    let sse () = Sse.create rendererReplaySubject <| getJsonOptions ()
+
     let routes =
         choose [  
             route  "/commander/getfiles"         >=> warbler (fun _ -> getFiles ())
@@ -71,6 +89,7 @@ let configure (app : IApplicationBuilder) =
             route  "/commander/showdevtools"     >=> warbler (fun _ -> showDevTools ())
             route  "/commander/showfullscreen"   >=> warbler (fun _ -> showFullscreen ())
             route  "/commander/getevents"        >=> warbler (fun _ -> getEvents ())
+            route  "/commander/sse"              >=> warbler (fun _ -> sse ())
             route  "/commander/sendbounds"       >=> bindJson<WindowBounds> sendBounds
             routef "/static/js/%s" (fun _ -> httpHandlerParam getResourceFile "scripts/script.js")
             routef "/static/css/%s" (fun _ -> httpHandlerParam getResourceFile "styles/style.css")

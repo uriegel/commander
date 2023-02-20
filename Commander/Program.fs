@@ -58,7 +58,7 @@ let (port, uiMode) = init ()
 Server.start port
 
 if uiMode then
-    //Requests.startThemeDetection ()
+    Routes.startThemeDetection ()
 
     (getElectronFile "main.js", "electron/main.js")
     |> saveResource
