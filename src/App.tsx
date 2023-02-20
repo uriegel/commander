@@ -26,7 +26,7 @@ const App = () => {
 	const folderLeft = useRef<FolderViewHandle>(null)
 	const folderRight = useRef<FolderViewHandle>(null)
 
-	const [theme, setTheme] = useState("themeAdwaita")
+	const [theme, setTheme] = useState("themeAdwaitaDark")
 	const [autoMode, setAutoMode] = useState(false)
 	const [showHidden, setShowHidden] = useState(false)
 	const [showViewer, setShowViewer] = useState(false)

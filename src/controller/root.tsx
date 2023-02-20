@@ -18,7 +18,6 @@ const renderWindowsRow = (item: FolderViewItem) => [
         formatSize(item.size)
 ]
 
-
 const renderLinuxRow = (item: FolderViewItem) => [
     (<IconName namePart={item.name} type={
         item.name == '~'
