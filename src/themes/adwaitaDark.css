@@ -40,13 +40,20 @@
     --wdb-button-margin: 20px 0px 0px 0px;
     --wdb-button-flexgrow: 1;
     --wdb-button-marginleft: 0px;
-    --wdb-button-focus-color: blue;
-    --wdb-button-outlinestyle: dotted;
     --wdb-button-cornerradius: 0px;
+    --wdb-button-focus-color: blue;
     --wdb-button-bordercolor: black;
+    --wdb-button-borderstyle: solid;
+    --wdb-button-borderwidth: 1px 0px 1px 1px;
+    --wdb-button-first-borderwidth: 0px;    
+    --wdb-button-buttomradius: 5px;
+    --wdb-button-padding: 10px 15px;
+    --wdb-button-outlinestyle: dotted;
+    --wdb-button-outlineoffset: -2px;
+    --wdb-input-selection-color: #3584e4;
 }
 
-.App.themeAdwaitaDark {
+.App.adwaitaDarkTheme {
     font-size: 85%;
 }
 

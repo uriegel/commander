@@ -32,6 +32,7 @@ const createWindow = async () => {
     bounds.frame = true
         
     const win = new BrowserWindow(bounds)
+    win.setBackgroundColor((bounds as Bounds).theme?.endsWith("Dark") ? "black" : "white")
     if ((bounds as Bounds).isMaximized)
         win.maximize()
     win.removeMenu()

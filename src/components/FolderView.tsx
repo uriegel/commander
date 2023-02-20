@@ -41,25 +41,26 @@ interface FolderViewProp {
 }
 
 const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
-    { id, showHidden, onFocus, onPathChanged }, ref) => {
+    { id, showHidden, onFocus, onPathChanged },
+    ref) => {
 
-    useImperativeHandle(ref, () => ({
-        id,
-        setFocus() { virtualTable.current?.setFocus() },
-        refresh(forceShowHidden?: boolean) { changePath(path, forceShowHidden == undefined ? showHidden : forceShowHidden) },
-        selectAll() {
-            if (controller.current.itemsSelectable) 
-                setItems(items.map((n) => setSelection(n, true)))
-        },
-        selectNone() {
-            if (controller.current.itemsSelectable) 
-                setItems(items.map((n) => setSelection(n, false)))
-        },
-        changePath(path: string) {
-            changePath(path, showHidden)
-        },
-        getPath() { return path }
-    }))
+        useImperativeHandle(ref, () => ({
+            id,
+            setFocus() { virtualTable.current?.setFocus() },
+            refresh(forceShowHidden?: boolean) { changePath(path, forceShowHidden == undefined ? showHidden : forceShowHidden) },
+            selectAll() {
+                if (controller.current.itemsSelectable) 
+                    setItems(items.map((n) => setSelection(n, true)))
+            },
+            selectNone() {
+                if (controller.current.itemsSelectable) 
+                    setItems(items.map((n) => setSelection(n, false)))
+            },
+            changePath(path: string) {
+                changePath(path, showHidden)
+            },
+            getPath() { return path }
+        }))
 
     const restrictionView = useRef<RestrictionViewHandle>(null)
 
