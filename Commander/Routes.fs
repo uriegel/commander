@@ -13,7 +13,6 @@ open Configuration
 open FileSystem
 open Directory
 open Root
-open System.Threading.Tasks
 open System.Reactive.Subjects
 open MainEvents
 
@@ -46,7 +45,9 @@ type RendererEvent =
 let rendererReplaySubject: Subject<RendererEvent> = new Subject<RendererEvent>()        
 
 let startThemeDetection () = 
-    let onChanged theme = rendererReplaySubject.OnNext (ThemeChanged theme)
+    let onChanged theme = 
+        rendererReplaySubject.OnNext <| ThemeChanged theme
+        mainReplaySubject.OnNext <| Theme theme
     Theme.startThemeDetection onChanged
 
 let configure (app : IApplicationBuilder) = 

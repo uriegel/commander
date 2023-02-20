@@ -11,6 +11,7 @@ type MainEvent =
     | Minimize
     | Restore
     | Close
+    | Theme of string
     | StartDrag of string[]
 
 let mainReplaySubject = new Subject<MainEvent>()            
@@ -21,6 +22,11 @@ let showDevTools () =
 
 let showFullscreen () =
     mainReplaySubject.OnNext ShowFullscreen
+    text "{}"
+
+let changeTheme theme = 
+    Theme theme
+    |> mainReplaySubject.OnNext 
     text "{}"
 
 let getEvents () = 

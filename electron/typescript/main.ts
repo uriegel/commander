@@ -5,8 +5,8 @@ import http from "http"
 const isDebug = process.argv[2] == "-debug"
 
 type Events = {
-    Case: "ShowDevTools" | "ShowFullscreen" | "Maximize" | "Minimize" | "Restore" | "Close" | "StartDrag"
-    Fields: string[][]
+    Case: "ShowDevTools" | "ShowFullscreen" | "Maximize" | "Minimize" | "Restore" | "Close" | "StartDrag" | "Theme"
+    Fields: string[][]|string[]
 }
 
 type Methods = "sendbounds" | "getevents" | "electronmaximize" | "electronunmaximize" | "fullscreen" | "fullscreenoff" 
@@ -24,7 +24,6 @@ type InputData = Bounds | Empty
 
 let bounds: BrowserWindowConstructorOptions = JSON.parse(process.env['Bounds']!)
 let isWindows = process.env['Platform'] == "Windows"
-console.log("isWindows", isWindows)
 
 const createWindow = async () => {  
     bounds.show = false
@@ -125,10 +124,13 @@ const createWindow = async () => {
                         case "StartDrag":
                             console.log("startDrag", evt.Fields[0])
                             win.webContents.startDrag({ 
-                                files: evt.Fields[0], 
+                                files: evt.Fields[0] as string[], 
                                 file: "", 
                                 icon: nativeImage.createFromBuffer(await requestBuffer("geticon?path=.exe"))
                             })
+                            break
+                        case "Theme":
+                            win.setBackgroundColor((evt.Fields[0] as string)?.endsWith("Dark") ? "black" : "white")
                             break
                     }
                     resolve()
