@@ -1,9 +1,9 @@
 :root .windowsDarkTheme {
     --color: white;
     background-color: #2f2f2f;
-    --scaffolding-background-color: black;
+    --scaffolding-background-color: #181818;
     --svg-image-path-color: var(--color);
-    --restriction-background-color: black;
+    --restriction-background-color: var(--scaffolding-background-color);
     --exif-color: darkblue;
     --selected-exif-color: yellow;
     
@@ -33,7 +33,7 @@
 
     --wdb-main-color: white;
     --wdb-main-background-color: #353535;
-    --wdb-button-background-color: #353535;
+    --wdb-button-background-color: #505050;
     --wdb-button-color: white;
     --wdb-button-hover-background-color: #4b4b4b;
     --wdb-button-active-background-color: #242424;

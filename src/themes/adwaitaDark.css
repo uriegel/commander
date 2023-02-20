@@ -3,7 +3,7 @@
     background-color: #2f2f2f;
     --scaffolding-background-color: #262626;
     --svg-image-path-color: var(--color);
-    --restriction-background-color: white;
+    --restriction-background-color: var(--scaffolding-background-color);
     --exif-color: rgb(255, 255, 173);
     --selected-exif-color: yellow;
     
