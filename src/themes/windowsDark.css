@@ -1,0 +1,48 @@
+:root .windowsDarkTheme {
+    --color: white;
+    background-color: #2f2f2f;
+    --scaffolding-background-color: black;
+    --svg-image-path-color: var(--color);
+    --restriction-background-color: black;
+    --exif-color: darkblue;
+    --selected-exif-color: yellow;
+    
+    --vtr-color: white;
+    --vtr-background-color: transparent;
+    --vtr-selected-background-color: blue;
+    --vtr-scrollbar-grip-active-color: var(--vtr-selected-background-color);
+    --vtr-caption-color: #ddd;
+    --vtr-caption-background-color: #353535;
+    --vtr-caption-background-hover-color: #464646;
+    --vtr-caption-separator-color: #737373;
+
+    --vsr-grip-color : var(--scaffolding-background-color);
+    --vsr-grip-hover-color : rgb(35, 35, 35);
+    --vsr-grip-active-color : rgb(65, 65, 65);    
+
+    --mbr-menubar-color: white;
+    --mbr-menubar-background-color: var(--scaffolding-background-color);
+    --mbr-menubar-submenu-background-color: var(--scaffolding-background-color);
+    --mbr-menubar-selected-background-color: var(--vtr-selected-background-color);
+    --mbr-menubar-hover-color: darkblue;
+    --mbr-menubar-border-color: rgb(70, 70, 70);
+    --mbr-menubar-shadow-color: rgba(148, 148, 148, 0.2);
+    --mbr-menubar-selected-color: white;
+    --mbr-menubar-selected-background-color: var(--vtr-selected-background-color);
+    --mbr-menubar-separator-color: rgb(70, 70, 70);
+
+    --wdb-main-color: white;
+    --wdb-main-background-color: #353535;
+    --wdb-button-background-color: #353535;
+    --wdb-button-color: white;
+    --wdb-button-hover-background-color: #4b4b4b;
+    --wdb-button-active-background-color: #242424;
+    --wdb-button-focus-color: blue;
+    --wdb-button-bordercolor: black;
+    --wdb-input-selection-color: #3584e4;
+}
+
+.App.windowsDarkTheme {
+    font-size: 75%;
+}
+
