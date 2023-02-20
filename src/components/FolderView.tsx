@@ -217,8 +217,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO css themes: windows dark dialog
-// TODO css themes: restriction dark
 // TODO windows: path in statusbar and viewer
 // TODO Statusbar files, dirs
 // TODO Shortcuts not preventing default: Strg+R activates restriction
