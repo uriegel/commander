@@ -216,9 +216,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO css themes Menubar background
 // TODO css themes windows windows dark, adwaita and adwaita dark
-// TODO SSE for theme detection?
+// TODO SSE for theme detection
 // TODO Statusbar files, dirs
 // TODO Shortcuts not preventing default: Strg+R activates restriction
 // TODO Selection Ctrl+Mouse click

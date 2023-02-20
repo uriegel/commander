@@ -15,6 +15,7 @@
     --vsr-grip-color : var(--scaffolding-background-color);
 
     --mbr-menubar-background-color: var(--scaffolding-background-color);
+    --mbr-menubar-submenu-background-color: var(--scaffolding-background-color);
     --mbr-menubar-selected-background-color: var(--vtr-selected-background-color);
 
     --wdb-main-background-color: #f6f5f4;
