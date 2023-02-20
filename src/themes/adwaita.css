@@ -3,6 +3,19 @@
     --scaffolding-background-color: #ebebeb;
     --svg-image-path-color: black;
     --restriction-background-color: white;
+    
+    --vtr-background-color: transparent;
+    --vtr-selected-background-color: #3584e4;
+    --vtr-scrollbar-grip-active-color: var(--vtr-selected-background-color);
+    --vtr-caption-color: #737373;
+    --vtr-caption-background-color: var(--scaffolding-background-color);
+    --vtr-caption-background-hover-color: #e2e2e2;
+    --vtr-caption-separator-color: var(--vtr-caption-color);
+
+    --vsr-grip-color : var(--scaffolding-background-color);
+
+    --mbr-menubar-background-color: var(--scaffolding-background-color);
+    --mbr-menubar-selected-background-color: var(--vtr-selected-background-color);
 
     --wdb-main-background-color: #f6f5f4;
     --wdb-button-background-color: #f6f5f4;
@@ -25,5 +38,7 @@
     --wdb-input-selection-color: #3584e4;
 }
 
-
+.App.themeAdwaita {
+    font-size: 85%;
+}
 

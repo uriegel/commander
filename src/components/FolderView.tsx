@@ -216,13 +216,14 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
+// TODO css themes Menubar background
 // TODO css themes windows windows dark, adwaita and adwaita dark
+// TODO SSE for theme detection?
 // TODO Statusbar files, dirs
-// TODO Statusbar nowrap text-overflow ellipses
 // TODO Shortcuts not preventing default: Strg+R activates restriction
 // TODO Selection Ctrl+Mouse click
 // TODO Error from getItems/tooltip from dialog-box-react
-// TODO SSE for theme detection?
 // TODO Strg+H not working in menubar
-// TODO Viewer: directory info
 // TODO Viewer: PDf
+// TODO Statusbar nowrap text-overflow ellipses
+// TODO Viewer: directory info
