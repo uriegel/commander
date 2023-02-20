@@ -9,18 +9,28 @@ export const ROOT = "root"
 const platform = getPlatform()
 
 const renderWindowsRow = (item: FolderViewItem) => [
-        (<IconName namePart={item.name} type={IconNameType.Root } />),
-        item.description ?? "",
+    (<IconName namePart={item.name} type={
+        item.name == 'remotes'
+        ? IconNameType.Remote
+        : IconNameType.Root
+    } />),
+    item.description ?? "",
         formatSize(item.size)
-    ]
+]
 
 
 const renderLinuxRow = (item: FolderViewItem) => [
-        (<IconName namePart={item.name} type={IconNameType.Root } />),
-        item.description ?? "",
-        item.mountPoint ?? "",
-        formatSize(item.size)
-    ]
+    (<IconName namePart={item.name} type={
+        item.name == '~'
+        ? IconNameType.Home
+        : item.name == 'remotes'
+        ? IconNameType.Remote
+        : IconNameType.Root
+    } />),
+    item.description ?? "",
+    item.mountPoint ?? "",
+    formatSize(item.size)
+]
 
 const getWindowsColumns = () => ({
 	columns: [

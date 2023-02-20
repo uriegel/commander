@@ -22,7 +22,11 @@
 }
 
 tr .exif {
-    color: yellowgreen;
+    color: var(--exif-color);
+}
+
+tr.isSelected .exif {
+    color: var(--selected-exif-color);
 }
 
 tr.notMounted, tr.hidden {
