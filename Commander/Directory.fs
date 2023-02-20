@@ -9,11 +9,11 @@ open System
 open System.IO
 open System.Text.Json
 
+open CommanderCore
 open Configuration
 open IO
 
 #if Linux
-open CommanderCore
 open Gtk
 open Microsoft.AspNetCore.Http.Features
 #endif
@@ -269,12 +269,6 @@ let getIconRequest: FileRequest -> HttpHandler =
             return! sendIcon next ctx
         }    
 
-let getImage (fileRequest: FileRequest) = 
-    streamFile false fileRequest.Path None None
-
-let getMovie (fileRequest: FileRequest) = 
-    streamFile true fileRequest.Path None None
-
 #endif
 
 #if Windows
@@ -310,7 +304,7 @@ let getIcon ext = async {
     return ms
 }
 
-let getIconRequest: IconRequest -> HttpHandler = 
+let getIconRequest: FileRequest -> HttpHandler = 
     fun param (next : HttpFunc) (ctx : HttpContext) ->
         task {
             let startTime = Configuration.getStartDateTime ()
@@ -320,3 +314,8 @@ let getIconRequest: IconRequest -> HttpHandler =
 
 #endif
 
+let getImage (fileRequest: FileRequest) = 
+    streamFile false fileRequest.Path None None
+
+let getMovie (fileRequest: FileRequest) = 
+    streamFile true fileRequest.Path None None

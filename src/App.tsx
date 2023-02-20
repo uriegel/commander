@@ -11,7 +11,8 @@ import { request } from './controller/requests'
 import './App.css'
 import './themes/adwaita.css'
 import './themes/adwaitaDark.css'
-import './themes/blue.css'
+import './themes/windows.css'
+import './themes/windowsDark.css'
 import { getTheme } from './globals'
 
 const ID_LEFT = "left"

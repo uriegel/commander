@@ -5,6 +5,10 @@ open System.Diagnostics
 
 open CommanderCore
 
+#if Windows
+open Microsoft.Win32
+#endif
+
 #if Linux
 
 let getTheme () =   
@@ -62,15 +66,15 @@ let getTheme () =
 
 #if Windows
 
-// let getThemeFromKey (key: RegistryKey) = 
-//     let value = key.GetValue "SystemUsesLightTheme"
-//     if value = null || value = 1 then
-//         "windows"
-//     else
-//         "windowsDark"   
+let getThemeFromKey (key: RegistryKey) = 
+    let value = key.GetValue "SystemUsesLightTheme"
+    if value = null || value = 1 then
+        "windows"
+    else
+        "windowsDark"   
 
-// let key = Registry.CurrentUser.OpenSubKey "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
+let key = Registry.CurrentUser.OpenSubKey "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
 
- let getTheme () = "getThemeFromKey key"
+let getTheme () = getThemeFromKey key
 
 #endif

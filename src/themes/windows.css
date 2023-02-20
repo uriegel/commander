@@ -1,0 +1,19 @@
+:root .windowsTheme {
+    --color: black;
+    --scaffolding-background-color: #eee;
+    --svg-image-path-color: black;
+    --restriction-background-color: white;
+    --exif-color: darkblue;
+    --selected-exif-color: yellow;
+
+    --vsr-grip-color : var(--scaffolding-background-color);
+
+    --mbr-menubar-background-color: var(--scaffolding-background-color);
+    --mbr-menubar-submenu-background-color: white;
+    --mbr-menubar-selected-background-color: var(--vtr-selected-background-color);
+}
+
+.App.windowsTheme {
+    font-size: 75%;
+}
+
