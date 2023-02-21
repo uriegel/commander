@@ -146,7 +146,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     const onPositionChanged = useCallback(
-        (item: FolderViewItem, pos?: number) => onPathChanged(path + '/' + item.name, item.isDirectory == true),
+        (item: FolderViewItem, pos?: number) => onPathChanged(controller.current.appendPath(path, item.name), item.isDirectory == true),
         // HACK onPathChanged
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [id, path])         
@@ -217,7 +217,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO windows: path in statusbar and viewer
 // TODO Statusbar files, dirs
 // TODO Shortcuts not preventing default: Strg+R activates restriction
 // TODO Selection Ctrl+Mouse click

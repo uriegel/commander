@@ -65,21 +65,19 @@ const onLinuxEnter = (_: string, item: FolderViewItem, keys: SpecialKeys) =>
     pathToSet: item.mountPoint ?? ""
 }) 
 
-const getColumns = platform == Platform.Windows ? getWindowsColumns : getLinuxColumns
-const onEnter = platform == Platform.Windows ? onWindowsEnter : onLinuxEnter
-
-export const getRootController = (controller: Controller|null): ControllerResult => 
+export const getRootController = (controller: Controller | null): ControllerResult => 
     controller?.type == ControllerType.Root
     ? ({ changed: false, controller })
     : ({ changed: true, controller: { 
         type: ControllerType.Root, 
-        getColumns,
+        getColumns: platform == Platform.Windows ? getWindowsColumns : getLinuxColumns,
         getItems,
         getExtendedItems: async () => ({ path: "", extendedItems: [] }),
         setExtendedItems: items=>items,
-        onEnter,
+        onEnter: platform == Platform.Windows ? onWindowsEnter : onLinuxEnter,
         sort: (items: FolderViewItem[]) => items,
-        itemsSelectable: false
+        itemsSelectable: false,
+        appendPath: (path: string, subPath: string) => subPath
     }})
 
 const getItems = async () => {

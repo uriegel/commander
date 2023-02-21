@@ -42,14 +42,16 @@ const getLinuxColumns = () => ({
 	measureRow
 })
 
-const getColumns = platform == Platform.Windows ? getWindowsColumns : getLinuxColumns
+const appendLinuxPath = (path: string, subPath: string) => `${path}/${subPath}`
+
+const appendWindowsPath = (path: string, subPath: string) => path.length == 3 ? `${path}${subPath}` : `${path}\\${subPath}`
 
 export const getFileSystemController = (controller: Controller|null): ControllerResult =>
     controller?.type == ControllerType.FileSystem
     ? ({ changed: false, controller })
     : ({ changed: true, controller: { 
 		type: ControllerType.FileSystem, 
-		getColumns, 
+		getColumns: platform == Platform.Windows ? getWindowsColumns : getLinuxColumns, 
 		getExtendedItems,
 		setExtendedItems,
 		getItems,
@@ -75,7 +77,8 @@ export const getFileSystemController = (controller: Controller|null): Controller
 					
 			: { processed: true },
 		sort,
-		itemsSelectable: true
+		itemsSelectable: true,
+		appendPath: platform == Platform.Windows ? appendWindowsPath : appendLinuxPath,
 	}
 })
 	

@@ -45,6 +45,7 @@ export interface Controller {
     onEnter: (path: string, item: FolderViewItem, keys: SpecialKeys) => onEnterResult
     sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => FolderViewItem[]
     itemsSelectable: boolean
+    appendPath: (path: string, subPath: string)=>string
 }
 
 export interface ControllerResult {
@@ -71,7 +72,8 @@ export const createEmptyController = (): Controller => ({
     setExtendedItems: items=>items,
     onEnter: (i, k) => ({ processed: true }),
     sort: (items: FolderViewItem[]) => items,
-    itemsSelectable: false
+    itemsSelectable: false,
+    appendPath: ()=>""
 })
 
 export const addParent = (items: FolderViewItem[]) => 
