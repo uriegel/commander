@@ -33,8 +33,9 @@ const App = () => {
 	const [autoMode, setAutoMode] = useState(false)
 	const [showHidden, setShowHidden] = useState(false)
 	const [showViewer, setShowViewer] = useState(false)
-	const [path, setPath] = useState<PathProp>({path: "", isDirectory: false})
-	
+	const [path, setPath] = useState<PathProp>({ path: "", isDirectory: false })
+	const [itemCount, setItemCount] = useState({dirCount: 0, fileCount: 0 })
+		
 	const setAndSaveAutoMode = (mode: boolean) => {
 		setAutoMode(mode)
 		localStorage.setItem("menuAutoHide", mode ? "true" : "false")
@@ -61,10 +62,10 @@ const App = () => {
 	const onPathChanged = (path: string, isDirectory: boolean) => setPath({ path, isDirectory })
 
 	const FolderLeft = () => (
-		<FolderView ref={folderLeft} id={ID_LEFT} onFocus={onFocusLeft} onPathChanged={onPathChanged} showHidden={showHidden} />
+		<FolderView ref={folderLeft} id={ID_LEFT} onFocus={onFocusLeft} onPathChanged={onPathChanged} showHidden={showHidden} onItemsChanged={setItemCount} />
 	)
 	const FolderRight = () => (
-		<FolderView ref={folderRight} id={ID_RIGHT} onFocus={onFocusRight} onPathChanged={onPathChanged} showHidden={showHidden} />
+		<FolderView ref={folderRight} id={ID_RIGHT} onFocus={onFocusRight} onPathChanged={onPathChanged} showHidden={showHidden} onItemsChanged={setItemCount} />
 	)
 
 	const activeFolderId = useRef("left")
@@ -123,7 +124,7 @@ const App = () => {
 			<Menu autoMode={autoMode} onMenuAction={onMenuAction} setAutoMode={setAutoModeDialog} showHidden={showHidden} setShowHidden={setShowHiddenAndRefresh}
 				showViewer={showViewer} setShowViewer={setShowViewer}  />
 			<ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
-			<Statusbar path={path.path} dirCount={0} fileCount={0} />
+			<Statusbar path={path.path} dirCount={itemCount.dirCount} fileCount={itemCount.fileCount} />
 		</div>
 	)
 }

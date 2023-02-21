@@ -1,4 +1,5 @@
 import { TableRowItem } from "virtual-table-react"
+import { FolderViewItem } from "../components/FolderView"
 
 export type Nothing = {}
 
@@ -17,20 +18,10 @@ export interface RootItem extends TableRowItem {
     mountPoint?: string
 }
 
-export interface FolderItem extends TableRowItem {
-    name:        string
-    isHidden:    boolean
-    isDirectory: boolean
-    iconPath?:   string
-    size?:       number
-    time?:       string
-    exifDate?:   string
-    isParent?:   boolean
-    version?:    Version
-}
-
 export type GetItemResult = {
-    items: FolderItem[]
+    items: FolderViewItem[]
+    dirCount: number
+    fileCount: number
     path:  string
 }
 

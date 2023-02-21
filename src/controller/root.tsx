@@ -84,6 +84,8 @@ const getItems = async () => {
 	const items = await request<GetRootResult>("getroot")
     return {
         path: ROOT,
+        dirCount: items.length,
+        fileCount: 0,
         items
     }
 }

@@ -3,7 +3,7 @@ import { FolderViewItem } from "../components/FolderView";
 import IconName, { IconNameType } from "../components/IconName"
 import { lastIndexOfAny } from "../globals";
 import { getFileSystemController } from "./filesystem";
-import { ExtendedItem, GetExtendedItemsResult, Version } from "./requests";
+import { ExtendedItem, GetExtendedItemsResult, GetItemResult, Version } from "./requests";
 import { getRootController, ROOT } from "./root";
 
 const dateFormat = Intl.DateTimeFormat("de-DE", {
@@ -16,11 +16,6 @@ const timeFormat = Intl.DateTimeFormat("de-DE", {
     hour: "2-digit",
     minute: "2-digit"
 })
-
-export interface GetItemResult {
-    path: string
-    items: FolderViewItem[]
-}
 
 export enum ControllerType {
     Empty,
@@ -67,7 +62,7 @@ export const createEmptyController = (): Controller => ({
         renderRow: p => [],
         measureRow: () => ""
     }),
-    getItems: async () => ({ items: [], path: "" }),
+    getItems: async () => ({ items: [], path: "", dirCount: 0, fileCount: 0 }),
     getExtendedItems: async () => ({ path: "", extendedItems: [] }),
     setExtendedItems: items=>items,
     onEnter: (i, k) => ({ processed: true }),

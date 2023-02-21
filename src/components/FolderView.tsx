@@ -16,6 +16,11 @@ export type FolderViewHandle = {
     getPath: ()=> string
 }
 
+interface ItemCount {
+    fileCount: number
+    dirCount: number
+}
+
 export interface FolderViewItem extends TableRowItem {
     name: string
     size?: number
@@ -37,11 +42,12 @@ interface FolderViewProp {
     id: string
     showHidden: boolean
     onFocus: () => void
-    onPathChanged: (path: string, isDir: boolean)=>void
+    onPathChanged: (path: string, isDir: boolean) => void
+    onItemsChanged: (count: ItemCount)=>void
 }
 
 const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
-    { id, showHidden, onFocus, onPathChanged },
+    { id, showHidden, onFocus, onPathChanged, onItemsChanged },
     ref) => {
 
         useImperativeHandle(ref, () => ({
@@ -68,6 +74,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const controller = useRef<Controller>(createEmptyController())
     const sortIndex = useRef(0)
     const sortDescending = useRef(false)
+    const itemCount = useRef({ fileCount: 0, dirCount: 0 })
 
     const [items, setItems] = useState([] as FolderViewItem[])
     const [path, setPath] = useState("")
@@ -92,7 +99,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     useEffect(() => {
         changePath(ROOT, false)
-    }, [setItems])
+    }, [])
 
     const changePath = async (path: string, showHidden: boolean, latestPath?: string) => {
         restrictionView.current?.reset()
@@ -105,6 +112,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         const items = await controller.current.getItems(path, showHidden, sortIndex.current, sortDescending.current)
         setPath(items.path)
         setItems(items.items)
+        itemCount.current = { dirCount: items.dirCount, fileCount: items.fileCount }
+        onItemsChanged(itemCount.current)
         const pos = latestPath ? items.items.findIndex(n => n.name == latestPath) : 0
         virtualTable.current?.setInitialPosition(pos, items.items.length)
         refPath.current = items.path
@@ -199,6 +208,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         const item = pos < items.length ? items[pos] : null 
         if (item)
             onPositionChanged(item)
+        onItemsChanged(itemCount.current)
         // HACK onFocus, onPositionChanged
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [items]) 
@@ -217,7 +227,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO Statusbar files, dirs
 // TODO Shortcuts not preventing default: Strg+R activates restriction
 // TODO Selection Ctrl+Mouse click
 // TODO Error from getItems/tooltip from dialog-box-react

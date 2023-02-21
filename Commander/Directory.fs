@@ -104,32 +104,34 @@ let getItems (param: GetFiles) = async {
     
     let sortByName (item: DirectoryItem) = item.Name |> String.toLower 
 
+    let filterHidden item = not item.IsHidden
+
+    let noFilter n =
+        n
+
     let dirInfo = DirectoryInfo param.Path
     let dirs = 
         dirInfo 
         |> getSafeDirectoriesFromInfo
         |> Seq.map getDirItem 
+        |> if param.ShowHiddenItems then Seq.filter filterHidden else noFilter
         |> Seq.sortBy sortByName
     let files = 
         dirInfo
         |> getSafeFilesFromInfo
         |> Seq.map getFileItem 
+        |> if param.ShowHiddenItems then Seq.filter filterHidden else noFilter
 
     let items = Seq.concat [
         dirs
         files
     ]
 
-    let filterHidden item = not item.IsHidden
-
-    let items: DirectoryItem seq = 
-        match param.ShowHiddenItems with
-        | true -> items 
-        | _    -> items |> Seq.filter filterHidden
-
     let result = {|
         Items =        items
         Path =         dirInfo.FullName
+        DirCount = dirs   |> Seq.length
+        FileCount = files |> Seq.length
     |}
 
     return result |> serialize
