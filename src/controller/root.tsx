@@ -77,7 +77,8 @@ export const getRootController = (controller: Controller | null): ControllerResu
         onEnter: platform == Platform.Windows ? onWindowsEnter : onLinuxEnter,
         sort: (items: FolderViewItem[]) => items,
         itemsSelectable: false,
-        appendPath: (path: string, subPath: string) => subPath
+        appendPath: (path: string, subPath: string) => subPath,
+        rename: async ()=>false
     }})
 
 const getItems = async () => {

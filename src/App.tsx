@@ -92,9 +92,9 @@ const App = () => {
 		else if (key == "ADAPT_PATH") {
 			const path = getActiveFolder()?.getPath()
 			if (path)
-			getInactiveFolder()?.changePath(path)
-		}
-			
+				getInactiveFolder()?.changePath(path)
+		} else if (key == "RENAME")
+			await getActiveFolder()?.rename()
 	}
 
 	const VerticalSplitView = () => (

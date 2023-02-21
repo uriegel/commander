@@ -16,7 +16,8 @@ const Menu = ({ autoMode, setAutoMode, showHidden, setShowHidden, showViewer, se
         items: [{
             name: "_Umbenennen",
             type: MenuItemType.MenuItem,
-            shortcut: "F2"
+            shortcut: "F2",
+            key: "RENAME"
         }, {
             name: "Er_weitertes Umbenennen",
             type: MenuItemType.MenuItem,

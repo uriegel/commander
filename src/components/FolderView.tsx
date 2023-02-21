@@ -13,7 +13,8 @@ export type FolderViewHandle = {
     selectAll: () => void
     selectNone: () => void
     changePath: (path: string) => void
-    getPath: ()=> string
+    getPath: () => string
+    rename: ()=>Promise<void>
 }
 
 interface ItemCount {
@@ -43,7 +44,7 @@ interface FolderViewProp {
     showHidden: boolean
     onFocus: () => void
     onPathChanged: (path: string, isDir: boolean) => void
-    onItemsChanged: (count: ItemCount)=>void
+    onItemsChanged: (count: ItemCount) => void
 }
 
 const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
@@ -65,7 +66,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             changePath(path: string) {
                 changePath(path, showHidden)
             },
-            getPath() { return path }
+            getPath() { return path },
+            rename
         }))
 
     const restrictionView = useRef<RestrictionViewHandle>(null)
@@ -78,6 +80,13 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const [items, setItems] = useState([] as FolderViewItem[])
     const [path, setPath] = useState("")
+
+    const getSelectedItems = () => {
+        const selected = items.filter(n => n.isSelected)
+        return selected.length > 0
+            ? selected
+            : [items[virtualTable.current?.getPosition() ?? 0]]
+    }
     
     const onSort = async (sort: OnSort) => {
         sortIndex.current = sort.column
@@ -212,6 +221,12 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         // HACK onFocus, onPositionChanged
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [items]) 
+
+    const rename = async () => {
+        const items = getSelectedItems()
+        if (items?.length == 1) 
+            await controller.current.rename(items[0])            
+    }
         
     return (
         <div className='folder' onFocus={onFocusChanged}>

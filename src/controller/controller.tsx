@@ -40,7 +40,8 @@ export interface Controller {
     onEnter: (path: string, item: FolderViewItem, keys: SpecialKeys) => onEnterResult
     sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => FolderViewItem[]
     itemsSelectable: boolean
-    appendPath: (path: string, subPath: string)=>string
+    appendPath: (path: string, subPath: string) => string,
+    rename: (item: FolderViewItem)=>Promise<boolean>
 }
 
 export interface ControllerResult {
@@ -68,7 +69,8 @@ export const createEmptyController = (): Controller => ({
     onEnter: (i, k) => ({ processed: true }),
     sort: (items: FolderViewItem[]) => items,
     itemsSelectable: false,
-    appendPath: ()=>""
+    appendPath: () => "",
+    rename: async ()=>false
 })
 
 export const addParent = (items: FolderViewItem[]) => 
@@ -102,7 +104,6 @@ export function formatDateTime(dateStr?: string) {
 
 export const formatVersion = (version?: Version) => 
     version ? `${version.major}.${version.minor}.${version.build}.${version.patch}` : ""
-
 
 export const extractSubPath = (path: string) => 
     path.substring(lastIndexOfAny(path, ["/", "\\"]))
