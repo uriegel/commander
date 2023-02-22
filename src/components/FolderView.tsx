@@ -252,7 +252,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         
     return (
         <div className='folder' onFocus={onFocusChanged}>
-            <input className="pathInput" value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
+            <input className="pathInput" spellCheck={false} value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
             <div className="tableContainer" onKeyDown={onKeyDown} >
                 <VirtualTable ref={virtualTable} items={items} onSort={onSort}
                     onColumnWidths={onColumnWidths} onEnter={onEnter} onPosition={onPositionChanged} />
@@ -264,7 +264,11 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO Remove syntax checking in input
+// TODO create Folder
+// TODO delete
+// TODO copy/move
+// TODO drag'n'drop
+// TODO remotes
 // TODO Shortcuts not preventing default: Strg+R activates restriction
 // TODO Selection Ctrl+Mouse click
 // TODO Error from getItems/tooltip from dialog-box-react
