@@ -36,7 +36,9 @@ const Menu = ({ autoMode, setAutoMode, showHidden, setShowHidden, showViewer, se
         }, {
             name: "_Löschen",
             type: MenuItemType.MenuItem,
-            shortcut: "Ent"
+            shortcut: "Entf",
+            key: "DELETE"
+
         }, {
             type: MenuItemType.Separator
         }, {

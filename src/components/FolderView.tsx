@@ -16,7 +16,8 @@ export type FolderViewHandle = {
     changePath: (path: string) => void
     getPath: () => string
     rename: () => Promise<void>
-    createFolder: ()=>Promise<void>
+    createFolder: () => Promise<void>
+    deleteItems: () => Promise<void>
 }
 
 interface ItemCount {
@@ -70,7 +71,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             },
             getPath() { return path },
             rename, 
-            createFolder
+            createFolder,
+            deleteItems
         }))
 
     const restrictionView = useRef<RestrictionViewHandle>(null)
@@ -243,7 +245,14 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             refresh() 
     }
 
-    const checkResult = async (error: IOError|null) => {
+    const deleteItems = async () => {
+        const items = getSelectedItems()
+        const result = await controller.current.deleteItems(path, items)
+        if (await checkResult(result))
+            refresh() 
+    }
+
+    const checkResult = async (error: IOError | null) => {
         if (error) {
             const text = error.Case == "AccessDenied" 
                         ? "Zugriff verweigert"
@@ -279,6 +288,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 export default FolderView
 
 // TODO delete
+// TODO Shortcut Entf not functioning
 // TODO copy/move
 // TODO drag'n'drop
 // TODO remotes

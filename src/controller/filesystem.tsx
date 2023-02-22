@@ -6,6 +6,14 @@ import { addParent, Controller, ControllerResult, ControllerType, extractSubPath
 import { ExtendedItem, GetExtendedItemsResult, GetItemResult, IOErrorResult, request, Version } from "./requests"
 import { ROOT } from "./root"
 
+enum ItemsType {
+	Directories,
+	Directory,
+	Files,
+	File,
+	All
+}
+
 const platform = getPlatform()
 const driveLength = platform == Platform.Windows ? 3: 1
 
@@ -81,7 +89,8 @@ export const getFileSystemController = (controller: Controller|null): Controller
 		itemsSelectable: true,
 		appendPath: platform == Platform.Windows ? appendWindowsPath : appendLinuxPath,
 		rename,
-		createFolder
+		createFolder,
+		deleteItems
 	}
 })
 	
@@ -202,6 +211,54 @@ const createFolder = async (path: string, item: FolderViewItem) => {
 				name: result.input ?? "",
 			})).error
 		: null
+}
+
+const getItemsType = (items: FolderViewItem[]): ItemsType => {
+	const dirs = items.filter(n => n.isDirectory)
+	const files = items.filter(n => !n.isDirectory)
+	return dirs.length == 0
+		? files.length > 1
+		? ItemsType.Files
+		: ItemsType.File
+		: dirs.length == 1
+		? files.length != 0
+		? ItemsType.All
+		: ItemsType.Directory
+		: dirs.length > 1
+		? files.length != 0
+		? ItemsType.All
+		: ItemsType.Directories
+		: ItemsType.All
+}
+
+const deleteItems = async (path: string, items: FolderViewItem[]) => {
+
+	const type = getItemsType(items)
+	console.log("affe", type)
+	const text = type == ItemsType.Directory
+		? "Möchtest Du das Verzeichnis löschen?"
+		: type == ItemsType.Directories
+		? "Möchtest Du die Verzeichnisse löschen?"
+		: type == ItemsType.File
+		? "Möchtest Du die Datei löschen?"
+		: type == ItemsType.Files
+		? "Möchtest Du die Dateien löschen?"		
+		: "Möchtest Du die Verzeichnisse und Dateien löschen?"		
+	
+	const result = await showDialog({
+		text,
+		btnOk: true,
+		btnCancel: true,
+		defBtnOk: true
+	})
+	return null
+	// return result.result == Result.Ok
+	// 	? (await request<IOErrorResult>("renameitem", {
+	// 			path,
+	// 			name: item.name,
+	// 			newName:  result.input ?? ""
+	// 		})).error
+	// 	: null
 }
 
 const compareVersion = (versionLeft?: Version, versionRight?: Version) =>

@@ -43,6 +43,7 @@ export interface Controller {
     appendPath: (path: string, subPath: string) => string,
     rename: (path: string, item: FolderViewItem) => Promise<IOError | null>
     createFolder: (path: string, item: FolderViewItem) => Promise<IOError | null>
+    deleteItems: (path: string, items: FolderViewItem[]) => Promise<IOError | null>
 }
 
 export interface ControllerResult {
@@ -72,7 +73,8 @@ export const createEmptyController = (): Controller => ({
     itemsSelectable: false,
     appendPath: () => "",
     rename: async () => null,
-    createFolder: async ()=>null,
+    createFolder: async () => null,
+    deleteItems: async () => null,
 })
 
 export const addParent = (items: FolderViewItem[]) => 

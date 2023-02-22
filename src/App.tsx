@@ -97,6 +97,8 @@ const App = () => {
 			await getActiveFolder()?.rename()
 		else if (key == "CREATE_FOLDER")
 			await getActiveFolder()?.createFolder()
+		else if (key == "DELETE")
+			await getActiveFolder()?.deleteItems()
 	}
 
 	const VerticalSplitView = () => (
