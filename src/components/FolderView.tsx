@@ -54,8 +54,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
         useImperativeHandle(ref, () => ({
             id,
-            setFocus() { virtualTable.current?.setFocus() },
-            refresh(forceShowHidden?: boolean) { changePath(path, forceShowHidden == undefined ? showHidden : forceShowHidden) },
+            setFocus() { virtualTable.current?.setFocus() },    
+            refresh,
             selectAll() {
                 if (controller.current.itemsSelectable) 
                     setItems(items.map((n) => setSelection(n, true)))
@@ -223,11 +223,16 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [items]) 
 
+    const refresh = async (forceShowHidden?: boolean) =>
+        changePath(path, forceShowHidden == undefined ? showHidden : forceShowHidden)
+
+
     const rename = async () => {
         const items = getSelectedItems()
         if (items?.length == 1) {
             const result = await controller.current.rename(path, items[0])
-            await checkResult(result)
+            if (await checkResult(result))
+               refresh() 
         }
     }
 
@@ -247,7 +252,9 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 btnOk: true
             })
             virtualTable.current?.setFocus()
-        }
+            return false
+        } else
+            return true
     }
         
     return (
