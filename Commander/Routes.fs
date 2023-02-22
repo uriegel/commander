@@ -15,7 +15,6 @@ open Directory
 open Root
 open System.Reactive.Subjects
 open MainEvents
-open Directory
 
 let configureCors (builder: Infrastructure.CorsPolicyBuilder) =
     builder
@@ -87,6 +86,15 @@ let configure (app : IApplicationBuilder) =
                 return! Json.text result next ctx
             }        
 
+    let createFolder () = 
+        fun (next : HttpFunc) (ctx : HttpContext) ->
+            task {
+                let! body = ctx.ReadBodyFromRequestAsync ()
+                let param = JsonSerializer.Deserialize<CreateFolderParam>(body, getJsonOptions ())
+                let result = createFolder [|param.Path; param.Name|]
+                return! Json.text result next ctx
+            }        
+
     let sse () = Sse.create rendererReplaySubject <| getJsonOptions ()
 
     let routes =
@@ -103,6 +111,7 @@ let configure (app : IApplicationBuilder) =
             route  "/commander/sse"              >=> warbler (fun _ -> sse ())
             route  "/commander/sendbounds"       >=> bindJson<WindowBounds> sendBounds
             route  "/commander/renameitem"       >=> warbler (fun _ -> renameItem ())
+            route  "/commander/createfolder"     >=> warbler (fun _ -> createFolder ())
             routef "/static/js/%s" (fun _ -> httpHandlerParam getResourceFile "scripts/script.js")
             routef "/static/css/%s" (fun _ -> httpHandlerParam getResourceFile "styles/style.css")
             route  "/"                           >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)

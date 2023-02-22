@@ -60,6 +60,11 @@ type RenameItemParam = {
     NewName:  string
 }
 
+type CreateFolderParam = {
+    Path:     string
+    Name:     string
+}
+
 #if Windows 
 
 type FileVersion = {
@@ -269,6 +274,13 @@ let renameItem =
     >> getError
     >> serialize
 
+let createFolder = 
+    Path.Combine 
+    >> Directory.create
+    >> Result.mapError mapIOError
+    >> FSharpTools.AsyncOption.mapOnlyError
+    >> getError
+    >> serialize
 
 #if Linux
 

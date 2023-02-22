@@ -191,12 +191,17 @@ const rename = async (path: string, item: FolderViewItem) => {
 const createFolder = async (path: string, item: FolderViewItem) => {
 	const result = await showDialog({
 		text: "Neuen Ordner anlegen",
-		inputText: !item.isParent ? item.name : undefined,
+		inputText: !item.isParent ? item.name : "",
 		btnOk: true,
 		btnCancel: true,
 		defBtnOk: true
 	})
-	return null
+	return result.result == Result.Ok
+		? (await request<IOErrorResult>("createfolder", {
+				path,
+				name: result.input ?? "",
+			})).error
+		: null
 }
 
 const compareVersion = (versionLeft?: Version, versionRight?: Version) =>

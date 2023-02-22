@@ -239,6 +239,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const createFolder = async () => {
         const result = await controller.current.createFolder(path, items[virtualTable.current?.getPosition() ?? 0])
+        if (await checkResult(result))
+            refresh() 
     }
 
     const checkResult = async (error: IOError|null) => {
@@ -276,11 +278,11 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO create Folder
 // TODO delete
 // TODO copy/move
 // TODO drag'n'drop
 // TODO remotes
+// TODO Admin mode Windows
 // TODO Shortcuts not preventing default: Strg+R activates restriction
 // TODO Selection Ctrl+Mouse click
 // TODO Error from getItems/tooltip from dialog-box-react

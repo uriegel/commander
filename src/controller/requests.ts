@@ -77,12 +77,13 @@ export type IOErrorResult = {
 export type GetRootResult = RootItem[]
 
 type Close = "close"
-export type GetRoot = "getroot"
-export type GetFiles = "getfiles"
-export type GetExtendedItems = "getextendeditems"
-export type ShowDevTools = "showdevtools"
-export type ShowFullScreen = "showfullscreen"
-export type RenameItem = "renameitem"
+type GetRoot = "getroot"
+type GetFiles = "getfiles"
+type GetExtendedItems = "getextendeditems"
+type ShowDevTools = "showdevtools"
+type ShowFullScreen = "showfullscreen"
+type RenameItem = "renameitem"
+type CreateFolder = "createfolder"
 
 type RequestType = 
 	| Close
@@ -92,7 +93,8 @@ type RequestType =
     | ShowDevTools
     | ShowFullScreen
     | RenameItem
-	
+    | CreateFolder
+    
 type Exception = {
 	exception: string
 }	
@@ -113,6 +115,11 @@ type RenameItemType = {
     newName:  string
 }
 
+type CreateFolderType = {
+    path:       string
+    name:       string
+}
+
 type Empty = {
     empty?: string
 }
@@ -122,6 +129,7 @@ export type RequestInput =
     | GetFilesType 
     | GetExtendedItemsType
     | RenameItemType
+    | CreateFolderType
 	
 export async function request<T extends Result>(method: RequestType, input?: RequestInput) {
 
