@@ -246,6 +246,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 text,
                 btnOk: true
             })
+            virtualTable.current?.setFocus()
         }
     }
         
