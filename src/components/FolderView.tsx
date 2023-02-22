@@ -226,6 +226,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const refresh = async (forceShowHidden?: boolean) =>
         changePath(path, forceShowHidden == undefined ? showHidden : forceShowHidden)
 
+    const anothertest = () => "another test"
 
     const rename = async () => {
         const items = getSelectedItems()
