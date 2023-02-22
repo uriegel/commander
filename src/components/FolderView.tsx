@@ -212,6 +212,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         }
     }
 
+    const einTest = () => "ist das gut?"
+
     const onFocusChanged = useCallback(() => {
         onFocus()
         const pos = virtualTable.current?.getPosition() ?? 0
