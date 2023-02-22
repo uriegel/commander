@@ -3,7 +3,7 @@ import { FolderViewItem } from "../components/FolderView";
 import IconName, { IconNameType } from "../components/IconName"
 import { lastIndexOfAny } from "../globals";
 import { getFileSystemController } from "./filesystem";
-import { ExtendedItem, GetExtendedItemsResult, GetItemResult, Version } from "./requests";
+import { ExtendedItem, GetExtendedItemsResult, GetItemResult, IOError, Version } from "./requests";
 import { getRootController, ROOT } from "./root";
 
 const dateFormat = Intl.DateTimeFormat("de-DE", {
@@ -41,7 +41,7 @@ export interface Controller {
     sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => FolderViewItem[]
     itemsSelectable: boolean
     appendPath: (path: string, subPath: string) => string,
-    rename: (item: FolderViewItem)=>Promise<boolean>
+    rename: (path: string, item: FolderViewItem)=>Promise<IOError|null>
 }
 
 export interface ControllerResult {
@@ -70,7 +70,7 @@ export const createEmptyController = (): Controller => ({
     sort: (items: FolderViewItem[]) => items,
     itemsSelectable: false,
     appendPath: () => "",
-    rename: async ()=>false
+    rename: async ()=>null
 })
 
 export const addParent = (items: FolderViewItem[]) => 

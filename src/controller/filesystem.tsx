@@ -3,7 +3,7 @@ import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { addParent, Controller, ControllerResult, ControllerType, extractSubPath, formatDateTime, formatSize, formatVersion, getExtension, measureRow, sortItems } from "./controller"
-import { ExtendedItem, GetExtendedItemsResult, GetItemResult, request, Version } from "./requests"
+import { ExtendedItem, GetExtendedItemsResult, GetItemResult, IOErrorResult, request, Version } from "./requests"
 import { ROOT } from "./root"
 
 const platform = getPlatform()
@@ -80,29 +80,7 @@ export const getFileSystemController = (controller: Controller|null): Controller
 		sort,
 		itemsSelectable: true,
 		appendPath: platform == Platform.Windows ? appendWindowsPath : appendLinuxPath,
-		rename: async (item: FolderViewItem) => {
-
-			const getInputRange = () => {
-				const pos = item.name.lastIndexOf(".")
-				return (pos == -1)
-					? [0, item.name.length]
-					: [0, pos]
-			}
-	
-			const isDir = item.isDirectory
-			if ((await showDialog({
-				text: isDir ? "Möchtest Du das Verzeichnis umbenennen?" : "Möchtest Du die Datei umbenennen?",
-				inputText: item.name,
-				inputSelectRange: getInputRange(),
-				btnOk: true,
-				btnCancel: true
-			})).result == Result.Ok) {
-				
-				return true
-			}
-			else
-				return false
-		}
+		rename
 	}
 })
 	
@@ -181,6 +159,32 @@ const getSortFunction = (index: number, descending: boolean) => {
 	return sf
 		? (a: FolderViewItem, b: FolderViewItem) => ascDesc(sf(a, b))
 		: undefined
+}
+
+const rename = async (path: string, item: FolderViewItem) => {
+	const getInputRange = () => {
+		const pos = item.name.lastIndexOf(".")
+		return (pos == -1)
+			? [0, item.name.length]
+			: [0, pos]
+	}
+
+	const isDir = item.isDirectory
+	const result = await showDialog({
+		text: isDir ? "Möchtest Du das Verzeichnis umbenennen?" : "Möchtest Du die Datei umbenennen?",
+		inputText: item.name,
+		inputSelectRange: getInputRange(),
+		btnOk: true,
+		btnCancel: true,
+		defBtnOk: true
+	})
+	return result.result == Result.Ok
+		? (await request<IOErrorResult>("renameitem", {
+				path,
+				name: item.name,
+				newName:  result.input ?? ""
+			})).error
+		: null
 }
 
 const compareVersion = (versionLeft?: Version, versionRight?: Version) =>

@@ -9,6 +9,7 @@ type Result =
     | GetRootResult 
     | GetItemResult 
     | GetExtendedItemsResult
+    | IOErrorResult
 
 export interface RootItem extends TableRowItem {
     name:        string
@@ -42,6 +43,37 @@ export type GetExtendedItemsResult = {
     path: string
 }
 
+type AccessDenied = {
+    Case: "AccessDenied"
+}
+
+type AlreadyExists = {
+    Case: "AlreadyExists"
+}
+
+type FileNotFound = {
+    Case: "FileNotFound"
+}
+
+type DeleteToTrashNotPossible = {
+    Case: "DeleteToTrashNotPossible"
+}
+
+type Exn = {
+    Case: "Exception"
+}
+
+export type IOError =
+    | AccessDenied
+    | AlreadyExists
+    | FileNotFound
+    | DeleteToTrashNotPossible
+    | Exn 
+
+export type IOErrorResult = {
+    error: IOError
+}
+
 export type GetRootResult = RootItem[]
 
 type Close = "close"
@@ -50,6 +82,7 @@ export type GetFiles = "getfiles"
 export type GetExtendedItems = "getextendeditems"
 export type ShowDevTools = "showdevtools"
 export type ShowFullScreen = "showfullscreen"
+export type RenameItem = "renameitem"
 
 type RequestType = 
 	| Close
@@ -58,6 +91,7 @@ type RequestType =
     | GetExtendedItems
     | ShowDevTools
     | ShowFullScreen
+    | RenameItem
 	
 type Exception = {
 	exception: string
@@ -73,6 +107,12 @@ type GetExtendedItemsType = {
     items: string[]
 }
 
+type RenameItemType = {
+    path:     string
+    name:     string
+    newName:  string
+}
+
 type Empty = {
     empty?: string
 }
@@ -81,6 +121,7 @@ export type RequestInput =
     | Empty  
     | GetFilesType 
     | GetExtendedItemsType
+    | RenameItemType
 	
 export async function request<T extends Result>(method: RequestType, input?: RequestInput) {
 
@@ -98,3 +139,4 @@ export async function request<T extends Result>(method: RequestType, input?: Req
         return res
     }
 }
+

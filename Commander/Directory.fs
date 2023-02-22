@@ -54,6 +54,12 @@ type GetExtendedItems = {
     Path: string
 }
 
+type RenameItemParam = {
+    Path:     string
+    Name:     string
+    NewName:  string
+}
+
 #if Windows 
 
 type FileVersion = {
@@ -76,6 +82,17 @@ type ExtendedItemResult = {
     Path: string
 }
 
+type IOError = 
+| AccessDenied
+| AlreadyExists
+| FileNotFound
+| DeleteToTrashNotPossible
+| Exception of string
+
+type Error = {
+    Error: IOError option
+}
+
 [<CLIMutable>]
 type FileRequest = { Path: string }
 
@@ -88,6 +105,18 @@ let getIconPath (fileInfo: FileInfo) =
     | ext when ext |> String.length > 0       -> ext
 #endif    
     | _                                       -> ".noextension"
+
+let getError err = {
+    Error = err
+}
+
+let mapIOError (e: exn) = 
+    match e with
+    | :? UnauthorizedAccessException -> AccessDenied
+    | e when e.HResult = 13          -> AccessDenied
+    | e when e.HResult = -2147024891 -> AccessDenied
+    | e when e.HResult = -2146232800 -> AlreadyExists
+    | e                              -> Exception e.Message
 
 let getFileItem (fileInfo: FileInfo) = {
     Name =        fileInfo.Name
@@ -114,13 +143,13 @@ let getItems (param: GetFiles) = async {
         dirInfo 
         |> getSafeDirectoriesFromInfo
         |> Seq.map getDirItem 
-        |> if param.ShowHiddenItems then Seq.filter filterHidden else noFilter
+        |> if param.ShowHiddenItems then noFilter else Seq.filter filterHidden 
         |> Seq.sortBy sortByName
     let files = 
         dirInfo
         |> getSafeFilesFromInfo
         |> Seq.map getFileItem 
-        |> if param.ShowHiddenItems then Seq.filter filterHidden else noFilter
+        |> if param.ShowHiddenItems then noFilter else Seq.filter filterHidden 
 
     let items = Seq.concat [
         dirs
@@ -222,6 +251,25 @@ let getExtendedItems (getExtended: GetExtendedItems) = async {
     return result |> serialize
 }
 
+let getImage (fileRequest: FileRequest) = 
+    streamFile false fileRequest.Path None None
+
+let getMovie (fileRequest: FileRequest) = 
+    streamFile true fileRequest.Path None None
+
+let renameItem = 
+    let rename (param: RenameItemParam) =
+        let combinePath = combine2Pathes param.Path
+    
+        move (combinePath param.Name, combinePath param.NewName)
+
+    rename
+    >> Result.mapError mapIOError
+    >> FSharpTools.AsyncOption.mapOnlyError
+    >> getError
+    >> serialize
+
+
 #if Linux
 
 let getIcon ext = async {
@@ -316,8 +364,3 @@ let getIconRequest: FileRequest -> HttpHandler =
 
 #endif
 
-let getImage (fileRequest: FileRequest) = 
-    streamFile false fileRequest.Path None None
-
-let getMovie (fileRequest: FileRequest) = 
-    streamFile true fileRequest.Path None None

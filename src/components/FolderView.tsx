@@ -4,7 +4,8 @@ import VirtualTable, { OnSort, SpecialKeys, TableRowItem, VirtualTableHandle } f
 import { checkController, Controller, createEmptyController } from '../controller/controller'
 import { ROOT } from '../controller/root'
 import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
-import { Version } from '../controller/requests'
+import { IOError, Version } from '../controller/requests'
+import { showDialog } from 'web-dialog-react'
 
 export type FolderViewHandle = {
     id: string
@@ -224,8 +225,28 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const rename = async () => {
         const items = getSelectedItems()
-        if (items?.length == 1) 
-            await controller.current.rename(items[0])            
+        if (items?.length == 1) {
+            const result = await controller.current.rename(path, items[0])
+            await checkResult(result)
+        }
+    }
+
+    const checkResult = async (error: IOError|null) => {
+        if (error) {
+            const text = error.Case == "AccessDenied" 
+                        ? "Zugriff verweigert"
+                        : error.Case == "DeleteToTrashNotPossible"
+                        ? "Löschen nicht möglich"
+                        : error.Case == "AlreadyExists"
+                        ? "Das Element existiert bereits"
+                        : error.Case == "FileNotFound"
+                        ? "Das Element ist nicht vorhanden"
+                        : "Die Aktion konnte nicht ausgeführt werden"
+            await showDialog({
+                text,
+                btnOk: true
+            })
+        }
     }
         
     return (
@@ -242,6 +263,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
+// TODO Remove syntax checking in input
 // TODO Shortcuts not preventing default: Strg+R activates restriction
 // TODO Selection Ctrl+Mouse click
 // TODO Error from getItems/tooltip from dialog-box-react
