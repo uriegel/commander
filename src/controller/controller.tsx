@@ -41,7 +41,8 @@ export interface Controller {
     sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => FolderViewItem[]
     itemsSelectable: boolean
     appendPath: (path: string, subPath: string) => string,
-    rename: (path: string, item: FolderViewItem)=>Promise<IOError|null>
+    rename: (path: string, item: FolderViewItem) => Promise<IOError | null>
+    createFolder: (path: string, item: FolderViewItem) => Promise<IOError | null>
 }
 
 export interface ControllerResult {
@@ -70,7 +71,8 @@ export const createEmptyController = (): Controller => ({
     sort: (items: FolderViewItem[]) => items,
     itemsSelectable: false,
     appendPath: () => "",
-    rename: async ()=>null
+    rename: async () => null,
+    createFolder: async ()=>null,
 })
 
 export const addParent = (items: FolderViewItem[]) => 

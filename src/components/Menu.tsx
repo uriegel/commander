@@ -42,7 +42,8 @@ const Menu = ({ autoMode, setAutoMode, showHidden, setShowHidden, showViewer, se
         }, {
             name: "_Ordner anlegen",
             type: MenuItemType.MenuItem,
-            shortcut: "F7"
+            shortcut: "F7",
+            key: "CREATE_FOLDER"
         }, {
             type: MenuItemType.Separator
         }, {

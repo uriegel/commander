@@ -95,6 +95,8 @@ const App = () => {
 				getInactiveFolder()?.changePath(path)
 		} else if (key == "RENAME")
 			await getActiveFolder()?.rename()
+		else if (key == "CREATE_FOLDER")
+			await getActiveFolder()?.createFolder()
 	}
 
 	const VerticalSplitView = () => (

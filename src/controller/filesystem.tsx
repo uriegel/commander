@@ -80,7 +80,8 @@ export const getFileSystemController = (controller: Controller|null): Controller
 		sort,
 		itemsSelectable: true,
 		appendPath: platform == Platform.Windows ? appendWindowsPath : appendLinuxPath,
-		rename
+		rename,
+		createFolder
 	}
 })
 	
@@ -187,6 +188,17 @@ const rename = async (path: string, item: FolderViewItem) => {
 		: null
 }
 
+const createFolder = async (path: string, item: FolderViewItem) => {
+	const result = await showDialog({
+		text: "Neuen Ordner anlegen",
+		inputText: !item.isParent ? item.name : undefined,
+		btnOk: true,
+		btnCancel: true,
+		defBtnOk: true
+	})
+	return null
+}
+
 const compareVersion = (versionLeft?: Version, versionRight?: Version) =>
     !versionLeft
 	? -1
@@ -199,5 +211,3 @@ const compareVersion = (versionLeft?: Version, versionRight?: Version) =>
 	: versionLeft.patch != versionRight.patch
 	? versionLeft.patch - versionRight.patch
 	: versionLeft.build - versionRight.build
-
-

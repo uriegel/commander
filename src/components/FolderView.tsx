@@ -15,7 +15,8 @@ export type FolderViewHandle = {
     selectNone: () => void
     changePath: (path: string) => void
     getPath: () => string
-    rename: ()=>Promise<void>
+    rename: () => Promise<void>
+    createFolder: ()=>Promise<void>
 }
 
 interface ItemCount {
@@ -68,7 +69,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 changePath(path, showHidden)
             },
             getPath() { return path },
-            rename
+            rename, 
+            createFolder
         }))
 
     const restrictionView = useRef<RestrictionViewHandle>(null)
@@ -233,6 +235,10 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             if (await checkResult(result))
                refresh() 
         }
+    }
+
+    const createFolder = async () => {
+        const result = await controller.current.createFolder(path, items[virtualTable.current?.getPosition() ?? 0])
     }
 
     const checkResult = async (error: IOError|null) => {
