@@ -1,10 +1,10 @@
 import { SpecialKeys, TableColumns } from "virtual-table-react"
-import { FolderViewItem } from "../components/FolderView";
+import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
-import { lastIndexOfAny } from "../globals";
-import { getFileSystemController } from "./filesystem";
-import { ExtendedItem, GetExtendedItemsResult, GetItemResult, IOError, Version } from "./requests";
-import { getRootController, ROOT } from "./root";
+import { lastIndexOfAny } from "../globals"
+import { getFileSystemController } from "./filesystem"
+import { ExtendedItem, GetExtendedItemsResult, GetItemResult, IOError, Version } from "./requests"
+import { getRootController, ROOT } from "./root"
 
 const dateFormat = Intl.DateTimeFormat("de-DE", {
     year: "numeric",
@@ -123,4 +123,5 @@ export const getExtension = (path: string) => {
     let index = path.lastIndexOf(".")
     return index > 0 ? path.substring(index) : ""
 }
+
 

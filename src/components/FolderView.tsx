@@ -7,24 +7,6 @@ import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
 import { IOError, Version } from '../controller/requests'
 import { showDialog } from 'web-dialog-react'
 
-export type FolderViewHandle = {
-    id: string
-    setFocus: () => void
-    refresh: (forceShowHidden?: boolean) => void
-    selectAll: () => void
-    selectNone: () => void
-    changePath: (path: string) => void
-    getPath: () => string
-    rename: () => Promise<void>
-    createFolder: () => Promise<void>
-    deleteItems: () => Promise<void>
-}
-
-interface ItemCount {
-    fileCount: number
-    dirCount: number
-}
-
 export interface FolderViewItem extends TableRowItem {
     name: string
     size?: number
@@ -40,6 +22,26 @@ export interface FolderViewItem extends TableRowItem {
     exifDate?: string
     version?: Version
     isHidden?: boolean
+}
+
+export type FolderViewHandle = {
+    id: string
+    setFocus: () => void
+    refresh: (forceShowHidden?: boolean) => void
+    selectAll: () => void
+    selectNone: () => void
+    changePath: (path: string) => void
+    getPath: () => string
+    rename: () => Promise<void>
+    createFolder: () => Promise<void>
+    deleteItems: () => Promise<void>
+    getController: () => Controller
+    getSelectedItems: ()=> FolderViewItem[]
+}
+
+interface ItemCount {
+    fileCount: number
+    dirCount: number
 }
 
 interface FolderViewProp {
@@ -72,7 +74,9 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             getPath() { return path },
             rename, 
             createFolder,
-            deleteItems
+            deleteItems,
+            getController: () => controller.current,
+            getSelectedItems
         }))
 
     const restrictionView = useRef<RestrictionViewHandle>(null)
@@ -112,7 +116,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     useEffect(() => virtualTable.current?.setFocus(), [])
 
     useEffect(() => {
-        changePath(ROOT, false)
+        changePath(localStorage.getItem(`${id}-lastPath`) ?? ROOT, false)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -129,6 +133,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         setItems(items.items)
         itemCount.current = { dirCount: items.dirCount, fileCount: items.fileCount }
         onItemsChanged(itemCount.current)
+        localStorage.setItem(`${id}-lastPath`, items.path)
         const pos = latestPath ? items.items.findIndex(n => n.name == latestPath) : 0
         virtualTable.current?.setInitialPosition(pos, items.items.length)
         refPath.current = items.path
@@ -294,11 +299,12 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO copy/move
+// TODO copy/move show conflicts
 // TODO drag'n'drop
 // TODO remotes
 // TODO extended rename
 // TODO Admin mode Windows
+// TODO asve/restore column widths
 // TODO Shortcuts not preventing default: Strg+R activates restriction
 // TODO Selection Ctrl+Mouse click
 // TODO Error from getItems/tooltip from dialog-box-react

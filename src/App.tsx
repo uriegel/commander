@@ -15,6 +15,7 @@ import './themes/windows.css'
 import './themes/windowsDark.css'
 import { getTheme } from './globals'
 import { themeChangedEvents } from './controller/events'
+import { getCopyController } from './controller/copyController'
 
 const ID_LEFT = "left"
 const ID_RIGHT = "right"
@@ -99,6 +100,8 @@ const App = () => {
 			await getActiveFolder()?.createFolder()
 		else if (key == "DELETE")
 			await getActiveFolder()?.deleteItems()
+		else if (key == "COPY")			
+			await copyItems()
 	}
 
 	const VerticalSplitView = () => (
@@ -121,6 +124,13 @@ const App = () => {
 			evt.preventDefault()
 			evt.stopPropagation()
 		}
+	}
+	
+	const copyItems = async () => {
+		const active = getActiveFolder()
+		const inActive = getInactiveFolder()
+		const controller = getCopyController(active?.getController(), inActive?.getController(),
+			active?.getPath(), inActive?.getPath(), active?.getSelectedItems())
 	}
 
 	return (

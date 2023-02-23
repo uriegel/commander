@@ -234,7 +234,6 @@ const getItemsType = (items: FolderViewItem[]): ItemsType => {
 const deleteItems = async (path: string, items: FolderViewItem[]) => {
 
 	const type = getItemsType(items)
-	console.log("affe", type)
 	const text = type == ItemsType.Directory
 		? "Möchtest Du das Verzeichnis löschen?"
 		: type == ItemsType.Directories
