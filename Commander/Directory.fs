@@ -16,6 +16,7 @@ open IO
 #if Linux
 open Gtk
 open Microsoft.AspNetCore.Http.Features
+open FileSystem
 #endif
 
 #if Windows
@@ -65,6 +66,12 @@ type CreateFolderParam = {
     Name:     string
 }
 
+type DeleteItemsParam = {
+    Path:     string
+    Names:    string[]
+}
+
+
 #if Windows 
 
 type FileVersion = {
@@ -86,13 +93,6 @@ type ExtendedItemResult = {
     ExtendedItems: ExtendedItem seq
     Path: string
 }
-
-type IOError = 
-| AccessDenied
-| AlreadyExists
-| FileNotFound
-| DeleteToTrashNotPossible
-| Exception of string
 
 type Error = {
     Error: IOError option
@@ -282,6 +282,12 @@ let createFolder =
     >> getError
     >> serialize
 
+let deleteItems = 
+    deleteItems
+    >> FSharpTools.AsyncOption.mapOnlyError
+    >> getError
+    >> serialize
+    
 #if Linux
 
 let getIcon ext = async {

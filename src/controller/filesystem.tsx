@@ -251,14 +251,12 @@ const deleteItems = async (path: string, items: FolderViewItem[]) => {
 		btnCancel: true,
 		defBtnOk: true
 	})
-	return null
-	// return result.result == Result.Ok
-	// 	? (await request<IOErrorResult>("renameitem", {
-	// 			path,
-	// 			name: item.name,
-	// 			newName:  result.input ?? ""
-	// 		})).error
-	// 	: null
+	return result.result == Result.Ok
+	 	? (await request<IOErrorResult>("deleteitems", {
+	 			path,
+	 			names: items.map(n => n.name),
+	 		})).error
+	 	: null
 }
 
 const compareVersion = (versionLeft?: Version, versionRight?: Version) =>

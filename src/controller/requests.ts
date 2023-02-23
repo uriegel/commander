@@ -84,6 +84,7 @@ type ShowDevTools = "showdevtools"
 type ShowFullScreen = "showfullscreen"
 type RenameItem = "renameitem"
 type CreateFolder = "createfolder"
+type DeleteItems = "deleteitems"
 
 type RequestType = 
 	| Close
@@ -94,6 +95,7 @@ type RequestType =
     | ShowFullScreen
     | RenameItem
     | CreateFolder
+    | DeleteItems
     
 type Exception = {
 	exception: string
@@ -120,6 +122,11 @@ type CreateFolderType = {
     name:       string
 }
 
+type DeleteItemsType = {
+    path:       string
+    names:      string[]
+}
+
 type Empty = {
     empty?: string
 }
@@ -130,6 +137,7 @@ export type RequestInput =
     | GetExtendedItemsType
     | RenameItemType
     | CreateFolderType
+    | DeleteItemsType
 	
 export async function request<T extends Result>(method: RequestType, input?: RequestInput) {
 

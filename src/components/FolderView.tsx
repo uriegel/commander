@@ -287,7 +287,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO delete
+// TODO delete Windows
+// TODO after delete: focus is set on wrong element
 // TODO Shortcut Entf not functioning
 // TODO copy/move
 // TODO drag'n'drop

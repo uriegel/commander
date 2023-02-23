@@ -15,6 +15,7 @@ open Directory
 open Root
 open System.Reactive.Subjects
 open MainEvents
+open FSharpTools.Directory
 
 let configureCors (builder: Infrastructure.CorsPolicyBuilder) =
     builder
@@ -95,11 +96,23 @@ let configure (app : IApplicationBuilder) =
                 return! Json.text result next ctx
             }        
 
+    let deleteItems () = 
+        fun (next : HttpFunc) (ctx : HttpContext) ->
+            task {
+                let! body = ctx.ReadBodyFromRequestAsync ()
+                let param = JsonSerializer.Deserialize<DeleteItemsParam>(body, getJsonOptions ())
+                let result = 
+                    param.Names
+                    |> Array.map (fun n -> combine2Pathes param.Path n)
+                    |> deleteItems
+                return! Json.text result next ctx
+            }        
+
     let sse () = Sse.create rendererReplaySubject <| getJsonOptions ()
 
     let routes =
         choose [  
-            route  "/commander/getfiles"         >=> warbler (fun _ -> getFiles ())
+            route  "/commander/getfiles"         >=> warbler (fun _ -> Directory.getFiles ())
             route  "/commander/getroot"          >=> warbler (fun _ -> getRoot ())
             route  "/commander/geticon"          >=> bindQuery<FileRequest> None getIconRequest
             route  "/commander/image"            >=> bindQuery<FileRequest> None getImage
@@ -112,6 +125,7 @@ let configure (app : IApplicationBuilder) =
             route  "/commander/sendbounds"       >=> bindJson<WindowBounds> sendBounds
             route  "/commander/renameitem"       >=> warbler (fun _ -> renameItem ())
             route  "/commander/createfolder"     >=> warbler (fun _ -> createFolder ())
+            route  "/commander/deleteitems"      >=> warbler (fun _ -> deleteItems ())
             routef "/static/js/%s" (fun _ -> httpHandlerParam getResourceFile "scripts/script.js")
             routef "/static/css/%s" (fun _ -> httpHandlerParam getResourceFile "styles/style.css")
             route  "/"                           >=> warbler (fun _ -> streamData false (getResource "web/index.html") None None)
