@@ -132,7 +132,7 @@ const App = () => {
 		const active = getActiveFolder()
 		const inActive = getInactiveFolder()
 		const controller = getCopyController(move, active?.getController(), inActive?.getController(),
-			active?.getPath(), inActive?.getPath(), active?.getSelectedItems())
+			active?.getPath(), inActive?.getPath(), active?.getSelectedItems(), inActive?.getItems())
 		const result = await controller?.copy()
 	}
 

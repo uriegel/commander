@@ -1,3 +1,4 @@
+import * as R from "ramda"
 import { showDialog } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import { Controller, ControllerType } from "./controller"
@@ -9,27 +10,36 @@ export interface CopyController {
 }
 
 export const getCopyController = (move: boolean, fromController?: Controller, toController?: Controller,
-    sourcePath?: string, targetPath?: string, items?: FolderViewItem[]): CopyController|null => {
+    sourcePath?: string, targetPath?: string, items?: FolderViewItem[], targetItems?: FolderViewItem[]): CopyController|null => {
     if (fromController?.type == ControllerType.FileSystem && toController?.type == ControllerType.FileSystem)
-        return getFileSystemCopyController(move, fromController, toController, sourcePath, targetPath, items)
+        return getFileSystemCopyController(move, fromController, toController, sourcePath, targetPath, items, targetItems)
     else
         return null
 }
 
 const getFileSystemCopyController = (move: boolean, fromController?: Controller, toController?: Controller,
-    sourcePath?: string, targetPath?: string, items?: FolderViewItem[]): CopyController | null => ({
+    sourcePath?: string, targetPath?: string, items?: FolderViewItem[], targetItems?: FolderViewItem[]): CopyController | null => ({
         copy: async () => {
-            const copyText = move ? "verschieben" : "kopieren"
+            const diff = R.innerJoin((a, b) => a.name == b.name,
+                items ?? [], targetItems ?? [])    
+            
+            
+            
+            const copyText = diff.length > 0
+                ? move ? "Verschieben" : "Kopieren"
+                : move ? "verschieben" : "kopieren"
             const type = getItemsType(items ?? [])
-            const text = type == ItemsType.Directory
-            ? `Möchtest Du das Verzeichnis ${copyText}?`
-            : type == ItemsType.Directories
-            ? `Möchtest Du die Verzeichnisse ${copyText}?`
-            : type == ItemsType.File
-            ? `Möchtest Du die Datei ${copyText}?`
-            : type == ItemsType.Files
-            ? `Möchtest Du die Dateien ${copyText}?`
-            : `Möchtest Du die Verzeichnisse und Dateien ${copyText}?`
+            const text = diff.length > 0 
+                ? `Einträge überschreiben beim ${copyText}?`
+                : type == ItemsType.Directory
+                ? `Möchtest Du das Verzeichnis ${copyText}?`
+                : type == ItemsType.Directories
+                ? `Möchtest Du die Verzeichnisse ${copyText}?`
+                : type == ItemsType.File
+                ? `Möchtest Du die Datei ${copyText}?`
+                : type == ItemsType.Files
+                ? `Möchtest Du die Dateien ${copyText}?`
+                : `Möchtest Du die Verzeichnisse und Dateien ${copyText}?`
             const result = await showDialog({
                 text,
                 btnOk: true,
