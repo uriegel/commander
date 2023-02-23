@@ -113,6 +113,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     useEffect(() => {
         changePath(ROOT, false)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const changePath = async (path: string, showHidden: boolean, latestPath?: string) => {
