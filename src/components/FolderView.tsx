@@ -174,7 +174,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [id, path])         
 
-    const onKeyDown = (evt: React.KeyboardEvent) => {
+    const onKeyDown = async (evt: React.KeyboardEvent) => {
         switch (evt.code) {
             case "Insert":
                 if (controller.current.itemsSelectable) {
@@ -205,6 +205,9 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     setItems(items.map((n, i) => i != virtualTable.current?.getPosition() ? n : toggleSelection(n)))
                 evt.preventDefault()
                 evt.stopPropagation()
+                break
+            case "Delete":
+                await deleteItems()
                 break
             default:
                 const restrictedItems = restrictionView.current?.checkKey(evt.key)
@@ -287,7 +290,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO delete Windows
 // TODO after delete: focus is set on wrong element
 // TODO Shortcut Entf not functioning
 // TODO copy/move
