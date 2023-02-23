@@ -293,8 +293,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO Delete windows
-// TODO Shortcut Entf not functioning
 // TODO copy/move
 // TODO drag'n'drop
 // TODO remotes

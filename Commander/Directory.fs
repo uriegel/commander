@@ -12,11 +12,11 @@ open System.Text.Json
 open CommanderCore
 open Configuration
 open IO
+open FileSystem
 
 #if Linux
 open Gtk
 open Microsoft.AspNetCore.Http.Features
-open FileSystem
 #endif
 
 #if Windows
@@ -316,13 +316,13 @@ let createFolder =
     >> getError
     >> serialize
 
+#if Linux
+
 let deleteItems = 
     deleteItems
     >> FSharpTools.AsyncOption.mapOnlyError
     >> getError
     >> serialize
-    
-#if Linux
 
 let getIcon ext = async {
     // TODO KDE
