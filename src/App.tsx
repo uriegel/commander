@@ -101,7 +101,9 @@ const App = () => {
 		else if (key == "DELETE")
 			await getActiveFolder()?.deleteItems()
 		else if (key == "COPY")			
-			await copyItems()
+			await copyItems(false)
+		else if (key == "MOVE")			
+			await copyItems(true)
 	}
 
 	const VerticalSplitView = () => (
@@ -126,11 +128,12 @@ const App = () => {
 		}
 	}
 	
-	const copyItems = async () => {
+	const copyItems = async (move: boolean) => {
 		const active = getActiveFolder()
 		const inActive = getInactiveFolder()
-		const controller = getCopyController(active?.getController(), inActive?.getController(),
+		const controller = getCopyController(move, active?.getController(), inActive?.getController(),
 			active?.getPath(), inActive?.getPath(), active?.getSelectedItems())
+		const result = await controller?.copy()
 	}
 
 	return (

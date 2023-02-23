@@ -6,7 +6,7 @@ import { addParent, Controller, ControllerResult, ControllerType, extractSubPath
 import { ExtendedItem, GetExtendedItemsResult, GetItemResult, IOErrorResult, request, Version } from "./requests"
 import { ROOT } from "./root"
 
-enum ItemsType {
+export enum ItemsType {
 	Directories,
 	Directory,
 	Files,
@@ -213,7 +213,7 @@ const createFolder = async (path: string, item: FolderViewItem) => {
 		: null
 }
 
-const getItemsType = (items: FolderViewItem[]): ItemsType => {
+export const getItemsType = (items: FolderViewItem[]): ItemsType => {
 	const dirs = items.filter(n => n.isDirectory)
 	const files = items.filter(n => !n.isDirectory)
 	return dirs.length == 0

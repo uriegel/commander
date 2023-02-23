@@ -32,7 +32,8 @@ const Menu = ({ autoMode, setAutoMode, showHidden, setShowHidden, showViewer, se
         }, {
             name: "_Verschieden",
             type: MenuItemType.MenuItem,
-            shortcut: "F6"
+            shortcut: "F6",
+            key: "MOVE"
         }, {
             name: "_Löschen",
             type: MenuItemType.MenuItem,

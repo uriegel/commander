@@ -299,7 +299,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO copy/move one file, multiple files, one dir, multiple dirs, mixed, conflicts
+// TODO copy/move conflicts text
 // TODO copy/move show conflict items
 // TODO copy/move 
 // TODO drag'n'drop
