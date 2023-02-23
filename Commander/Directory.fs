@@ -25,6 +25,7 @@ open System.Drawing.Imaging
 open System.Runtime.InteropServices
 open ClrWinApi
 open System.Diagnostics
+
 #endif
 
 type DirectoryItem = {
@@ -70,7 +71,6 @@ type DeleteItemsParam = {
     Path:     string
     Names:    string[]
 }
-
 
 #if Windows 
 
@@ -261,6 +261,40 @@ let getImage (fileRequest: FileRequest) =
 
 let getMovie (fileRequest: FileRequest) = 
     streamFile true fileRequest.Path None None
+
+#if Windows
+
+let deleteItems items = 
+
+    let append toAppend str =  str + toAppend
+
+    let input = 
+         items 
+        |> String.joinStr "\U00000000"
+        |> append "\U00000000\U00000000"
+
+    let flags = 
+        FileOpFlags.NOCONFIRMATION 
+        ||| FileOpFlags.NOERRORUI
+        ||| FileOpFlags.NOCONFIRMMKDIR
+        ||| FileOpFlags.SILENT
+        ||| FileOpFlags.ALLOWUNDO
+
+    let mutable fileOperation = SHFILEOPSTRUCT() 
+    fileOperation.Func                  <- FileFuncFlags.DELETE
+    fileOperation.From                  <- input
+    fileOperation.Flags                 <- flags
+    
+    let res = SHFileOperation fileOperation 
+    match res with
+    | 0     -> None
+    | 2     -> Some FileNotFound
+    | 0x78  -> Some AccessDenied
+    | _     -> Some (Exception "Löschen fehlgeschlagen")
+    |> getError
+    |> serialize
+
+#endif
 
 let renameItem = 
     let rename (param: RenameItemParam) =
