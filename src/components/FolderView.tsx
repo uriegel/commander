@@ -234,6 +234,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         changePath(path, forceShowHidden == undefined ? showHidden : forceShowHidden)
 
     const rename = async () => {
+        virtualTable.current?.setFocus()
         const items = getSelectedItems()
         if (items?.length == 1) {
             const result = await controller.current.rename(path, items[0])
@@ -243,12 +244,14 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     const createFolder = async () => {
+        virtualTable.current?.setFocus()
         const result = await controller.current.createFolder(path, items[virtualTable.current?.getPosition() ?? 0])
         if (await checkResult(result))
             refresh() 
     }
 
     const deleteItems = async () => {
+        virtualTable.current?.setFocus()
         const items = getSelectedItems()
         const result = await controller.current.deleteItems(path, items)
         if (await checkResult(result))
@@ -291,7 +294,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 export default FolderView
 
 // TODO Delete windows
-// TODO after delete: focus is set on wrong element
 // TODO Shortcut Entf not functioning
 // TODO copy/move
 // TODO drag'n'drop
