@@ -297,6 +297,7 @@ export default FolderView
 // TODO copy/move
 // TODO drag'n'drop
 // TODO remotes
+// TODO extended rename
 // TODO Admin mode Windows
 // TODO Shortcuts not preventing default: Strg+R activates restriction
 // TODO Selection Ctrl+Mouse click
