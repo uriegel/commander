@@ -36,6 +36,7 @@ export type FolderViewHandle = {
     createFolder: () => Promise<void>
     deleteItems: () => Promise<void>
     getController: () => Controller
+    getItems: ()=> FolderViewItem[]
     getSelectedItems: ()=> FolderViewItem[]
 }
 
@@ -76,6 +77,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             createFolder,
             deleteItems,
             getController: () => controller.current,
+            getItems: () => items,
             getSelectedItems
         }))
 
@@ -299,8 +301,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO copy/move conflicts text
-// TODO copy/move show conflict items
+// TODO copy/move show conflict items if conflicts less than xxx
 // TODO copy/move 
 // TODO drag'n'drop
 // TODO remotes
