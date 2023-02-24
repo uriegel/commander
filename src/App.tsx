@@ -106,6 +106,22 @@ const App = () => {
 			await copyItems(true)
 	}
 
+    const onKeyDown = (evt: React.KeyboardEvent) => {
+		if (evt.code == "Tab" && !evt.shiftKey) {
+			getInactiveFolder()?.setFocus()
+			evt.preventDefault()
+			evt.stopPropagation()
+		}
+	}
+	
+	const copyItems = async (move: boolean) => {
+		const active = getActiveFolder()
+		const inActive = getInactiveFolder()
+		const controller = getCopyController(move, active?.id == ID_LEFT, active?.getController(), inActive?.getController(),
+			active?.getPath(), inActive?.getPath(), active?.getSelectedItems(), inActive?.getItems())
+		const result = await controller?.copy()
+	}
+
 	const VerticalSplitView = () => (
 		<ViewSplit firstView={FolderLeft} secondView={FolderRight}></ViewSplit>
 	)
@@ -118,22 +134,6 @@ const App = () => {
 			: ext == ".mp3" || ext == ".mp4" || ext == ".mkv" || ext == ".wav"
 			? (<MediaPlayer path={path.path} />)
 			: (<div></div>)
-	}
-
-    const onKeyDown = (evt: React.KeyboardEvent) => {
-		if (evt.code == "Tab" && !evt.shiftKey) {
-			getInactiveFolder()?.setFocus()
-			evt.preventDefault()
-			evt.stopPropagation()
-		}
-	}
-	
-	const copyItems = async (move: boolean) => {
-		const active = getActiveFolder()
-		const inActive = getInactiveFolder()
-		const controller = getCopyController(move, active?.getController(), inActive?.getController(),
-			active?.getPath(), inActive?.getPath(), active?.getSelectedItems(), inActive?.getItems())
-		const result = await controller?.copy()
 	}
 
 	return (

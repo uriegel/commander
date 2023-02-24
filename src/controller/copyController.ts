@@ -1,5 +1,6 @@
 import * as R from "ramda"
 import { showDialog } from "web-dialog-react"
+import Conflicts from "../components/Conflicts"
 import { FolderViewItem } from "../components/FolderView"
 import { Controller, ControllerType } from "./controller"
 import { getItemsType, ItemsType } from "./filesystem"
@@ -9,15 +10,15 @@ export interface CopyController {
     copy: ()=>Promise<IOError|null>
 }
 
-export const getCopyController = (move: boolean, fromController?: Controller, toController?: Controller,
+export const getCopyController = (move: boolean, fromLeft: boolean, fromController?: Controller, toController?: Controller,
     sourcePath?: string, targetPath?: string, items?: FolderViewItem[], targetItems?: FolderViewItem[]): CopyController|null => {
     if (fromController?.type == ControllerType.FileSystem && toController?.type == ControllerType.FileSystem)
-        return getFileSystemCopyController(move, fromController, toController, sourcePath, targetPath, items, targetItems)
+        return getFileSystemCopyController(move, fromLeft, fromController, toController, sourcePath, targetPath, items, targetItems)
     else
         return null
 }
 
-const getFileSystemCopyController = (move: boolean, fromController?: Controller, toController?: Controller,
+const getFileSystemCopyController = (move: boolean, fromLeft: boolean, fromController?: Controller, toController?: Controller,
     sourcePath?: string, targetPath?: string, items?: FolderViewItem[], targetItems?: FolderViewItem[]): CopyController | null => ({
         copy: async () => {
             const diff = R.innerJoin((a, b) => a.name == b.name,
@@ -42,6 +43,9 @@ const getFileSystemCopyController = (move: boolean, fromController?: Controller,
                 : `Möchtest Du die Verzeichnisse und Dateien ${copyText}?`
             const result = await showDialog({
                 text,
+                slide: fromLeft,
+                slideReverse: !fromLeft,
+                //extended: diff.length ? Conflicts() : undefined,
                 btnOk: true,
                 btnCancel: true,
                 defBtnOk: true
