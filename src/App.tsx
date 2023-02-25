@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import ViewSplit from 'view-split-react'
-import { showDialog, Result } from 'web-dialog-react' 
+import Dialog, { DialogHandle, Result } from 'web-dialog-react' 
 import FolderView, { FolderViewHandle } from './components/FolderView'
 import Menu from './components/Menu'
 import Statusbar from './components/Statusbar'
@@ -36,18 +36,20 @@ const App = () => {
 	const [showViewer, setShowViewer] = useState(false)
 	const [path, setPath] = useState<PathProp>({ path: "", isDirectory: false })
 	const [itemCount, setItemCount] = useState({dirCount: 0, fileCount: 0 })
-		
+	
+	const dialog = useRef<DialogHandle>(null)
+	
 	const setAndSaveAutoMode = (mode: boolean) => {
 		setAutoMode(mode)
 		localStorage.setItem("menuAutoHide", mode ? "true" : "false")
 	}
 
 	const setAutoModeDialog = async (autoMode: boolean) => 
-		setAndSaveAutoMode(autoMode && ((await showDialog({
+		setAndSaveAutoMode(autoMode && ((await dialog.current?.show({
 				text: "Soll das Menü verborgen werden? Aktivieren mit Alt-Taste",
 				btnOk: true,
 				btnCancel: true
-			})).result == Result.Ok))
+			}))?.result == Result.Ok))
 	
 	const setShowHiddenAndRefresh = (show: boolean) => {
 		setShowHidden(show)
@@ -63,10 +65,12 @@ const App = () => {
 	const onPathChanged = (path: string, isDirectory: boolean) => setPath({ path, isDirectory })
 
 	const FolderLeft = () => (
-		<FolderView ref={folderLeft} id={ID_LEFT} onFocus={onFocusLeft} onPathChanged={onPathChanged} showHidden={showHidden} onItemsChanged={setItemCount} />
+		<FolderView ref={folderLeft} id={ID_LEFT} dialog={dialog.current} onFocus={onFocusLeft}
+			onPathChanged={onPathChanged} showHidden={showHidden} onItemsChanged={setItemCount} />
 	)
 	const FolderRight = () => (
-		<FolderView ref={folderRight} id={ID_RIGHT} onFocus={onFocusRight} onPathChanged={onPathChanged} showHidden={showHidden} onItemsChanged={setItemCount} />
+		<FolderView ref={folderRight} id={ID_RIGHT} dialog={dialog.current} onFocus={onFocusRight}
+			onPathChanged={onPathChanged} showHidden={showHidden} onItemsChanged={setItemCount} />
 	)
 
 	const activeFolderId = useRef("left")
@@ -117,7 +121,7 @@ const App = () => {
 	const copyItems = async (move: boolean) => {
 		const active = getActiveFolder()
 		const inActive = getInactiveFolder()
-		const controller = getCopyController(move, active?.id == ID_LEFT, active?.getController(), inActive?.getController(),
+		const controller = getCopyController(move, dialog.current, active?.id == ID_LEFT, active?.getController(), inActive?.getController(),
 			active?.getPath(), inActive?.getPath(), active?.getSelectedItems(), inActive?.getItems())
 		const result = await controller?.copy()
 	}
@@ -137,12 +141,15 @@ const App = () => {
 	}
 
 	return (
-		<div className={`App ${theme}Theme`} onKeyDown={onKeyDown} >
-			<Menu autoMode={autoMode} onMenuAction={onMenuAction} setAutoMode={setAutoModeDialog} showHidden={showHidden} setShowHidden={setShowHiddenAndRefresh}
-				showViewer={showViewer} setShowViewer={setShowViewer}  />
-			<ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
-			<Statusbar path={path.path} dirCount={itemCount.dirCount} fileCount={itemCount.fileCount} />
-		</div>
+		<>
+			<div className={`App ${theme}Theme`} onKeyDown={onKeyDown} >
+				<Menu autoMode={autoMode} onMenuAction={onMenuAction} setAutoMode={setAutoModeDialog} showHidden={showHidden} setShowHidden={setShowHiddenAndRefresh}
+					showViewer={showViewer} setShowViewer={setShowViewer}  />
+				<ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
+				<Statusbar path={path.path} dirCount={itemCount.dirCount} fileCount={itemCount.fileCount} />
+			</div>
+			<Dialog ref={dialog} />
+		</>
 	)
 }
 

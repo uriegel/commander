@@ -5,7 +5,7 @@ import { checkController, Controller, createEmptyController } from '../controlle
 import { ROOT } from '../controller/root'
 import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
 import { IOError, Version } from '../controller/requests'
-import { showDialog } from 'web-dialog-react'
+import { DialogHandle } from 'web-dialog-react'
 
 export interface FolderViewItem extends TableRowItem {
     name: string
@@ -48,13 +48,14 @@ interface ItemCount {
 interface FolderViewProp {
     id: string
     showHidden: boolean
+    dialog: DialogHandle|null,
     onFocus: () => void
     onPathChanged: (path: string, isDir: boolean) => void
     onItemsChanged: (count: ItemCount) => void
 }
 
 const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
-    { id, showHidden, onFocus, onPathChanged, onItemsChanged },
+    { id, dialog, showHidden, onFocus, onPathChanged, onItemsChanged },
     ref) => {
 
         useImperativeHandle(ref, () => ({
@@ -245,7 +246,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         virtualTable.current?.setFocus()
         const items = getSelectedItems()
         if (items?.length == 1) {
-            const result = await controller.current.rename(path, items[0])
+            const result = await controller.current.rename(path, items[0], dialog)
             if (await checkResult(result))
                refresh() 
         }
@@ -253,7 +254,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const createFolder = async () => {
         virtualTable.current?.setFocus()
-        const result = await controller.current.createFolder(path, items[virtualTable.current?.getPosition() ?? 0])
+        const result = await controller.current.createFolder(path, items[virtualTable.current?.getPosition() ?? 0], dialog)
         if (await checkResult(result))
             refresh() 
     }
@@ -261,7 +262,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const deleteItems = async () => {
         virtualTable.current?.setFocus()
         const items = getSelectedItems()
-        const result = await controller.current.deleteItems(path, items)
+        const result = await controller.current.deleteItems(path, items, dialog)
         if (await checkResult(result))
             refresh() 
     }
@@ -277,7 +278,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                         : error.Case == "FileNotFound"
                         ? "Das Element ist nicht vorhanden"
                         : "Die Aktion konnte nicht ausgeführt werden"
-            await showDialog({
+            await dialog?.show({
                 text,
                 btnOk: true
             })

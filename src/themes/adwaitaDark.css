@@ -31,26 +31,30 @@
     --mbr-menubar-selected-background-color: var(--vtr-selected-background-color);
     --mbr-menubar-separator-color: rgb(70, 70, 70);
 
-    --wdb-main-color: white;
-    --wdb-main-background-color: #353535;
-    --wdb-button-background-color: #353535;
-    --wdb-button-color: white;
-    --wdb-button-hover-background-color: #4b4b4b;
-    --wdb-button-active-background-color: #242424;
-    --wdb-button-margin: 20px 0px 0px 0px;
-    --wdb-button-flexgrow: 1;
-    --wdb-button-marginleft: 0px;
-    --wdb-button-cornerradius: 0px;
-    --wdb-button-focus-color: blue;
-    --wdb-button-bordercolor: black;
-    --wdb-button-borderstyle: solid;
-    --wdb-button-borderwidth: 1px 0px 1px 1px;
-    --wdb-button-first-borderwidth: 0px;    
-    --wdb-button-buttomradius: 5px;
-    --wdb-button-padding: 10px 15px;
-    --wdb-button-outlinestyle: dotted;
-    --wdb-button-outlineoffset: -2px;
-    --wdb-input-selection-color: #3584e4;
+    --wdr-main-color: white;
+    --wdr-main-background-color: #353535;
+    --wdr-buttons-gap: 0px;
+    --wdr-buttons-float: none;
+    --wdr-button-background-color: #353535;
+    --wdr-button-color: white;
+    --wdr-button-hover-background-color: #4b4b4b;
+    --wdr-button-active-background-color: #242424;   
+    --wdr-button-margin: 20px 0px 0px 0px;
+    --wdr-button-flexgrow: 1;
+    --wdr-button-marginleft: 0px;
+    --wdr-button-focus-color: rgb(126, 126, 126);    
+    --wdr-button-cornerradius: 0px;
+    --wdr-button-left-cornerradius: var(--wdr-button-buttomradius);
+    --wdr-button-right-cornerradius: var(--wdr-button-buttomradius);
+    --wdr-button-bordercolor: black;
+    --wdr-button-borderstyle: solid;
+    --wdr-button-borderwidth: 1px 0px 1px 1px;
+    --wdr-button-first-borderwidth: 0px;
+    --wdr-button-buttomradius: 5px;
+    --wdr-button-padding: 10px 50px;
+    --wdr-button-outlinestyle: dotted;
+    --wdr-button-outlineoffset: -2px;
+    --wdr-input-selection-color: var(--vtr-selected-background-color);
 }
 
 .App.adwaitaDarkTheme {

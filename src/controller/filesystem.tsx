@@ -1,4 +1,4 @@
-import { Result, showDialog } from "web-dialog-react"
+import { DialogHandle, Result } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
@@ -171,7 +171,7 @@ const getSortFunction = (index: number, descending: boolean) => {
 		: undefined
 }
 
-const rename = async (path: string, item: FolderViewItem) => {
+const rename = async (path: string, item: FolderViewItem, dialog: DialogHandle|null) => {
 	const getInputRange = () => {
 		const pos = item.name.lastIndexOf(".")
 		return (pos == -1)
@@ -180,7 +180,7 @@ const rename = async (path: string, item: FolderViewItem) => {
 	}
 
 	const isDir = item.isDirectory
-	const result = await showDialog({
+	const result = await dialog?.show({
 		text: isDir ? "Möchtest Du das Verzeichnis umbenennen?" : "Möchtest Du die Datei umbenennen?",
 		inputText: item.name,
 		inputSelectRange: getInputRange(),
@@ -188,7 +188,7 @@ const rename = async (path: string, item: FolderViewItem) => {
 		btnCancel: true,
 		defBtnOk: true
 	})
-	return result.result == Result.Ok
+	return result?.result == Result.Ok
 		? (await request<IOErrorResult>("renameitem", {
 				path,
 				name: item.name,
@@ -197,15 +197,15 @@ const rename = async (path: string, item: FolderViewItem) => {
 		: null
 }
 
-const createFolder = async (path: string, item: FolderViewItem) => {
-	const result = await showDialog({
+const createFolder = async (path: string, item: FolderViewItem, dialog: DialogHandle|null) => {
+	const result = await dialog?.show({
 		text: "Neuen Ordner anlegen",
 		inputText: !item.isParent ? item.name : "",
 		btnOk: true,
 		btnCancel: true,
 		defBtnOk: true
 	})
-	return result.result == Result.Ok
+	return result?.result == Result.Ok
 		? (await request<IOErrorResult>("createfolder", {
 				path,
 				name: result.input ?? "",
@@ -231,7 +231,7 @@ export const getItemsType = (items: FolderViewItem[]): ItemsType => {
 		: ItemsType.All
 }
 
-const deleteItems = async (path: string, items: FolderViewItem[]) => {
+const deleteItems = async (path: string, items: FolderViewItem[], dialog: DialogHandle|null) => {
 
 	const type = getItemsType(items)
 	const text = type == ItemsType.Directory
@@ -244,13 +244,13 @@ const deleteItems = async (path: string, items: FolderViewItem[]) => {
 		? "Möchtest Du die Dateien löschen?"		
 		: "Möchtest Du die Verzeichnisse und Dateien löschen?"		
 	
-	const result = await showDialog({
+	const result = await dialog?.show({
 		text,
 		btnOk: true,
 		btnCancel: true,
 		defBtnOk: true
 	})
-	return result.result == Result.Ok
+	return result?.result == Result.Ok
 	 	? (await request<IOErrorResult>("deleteitems", {
 	 			path,
 	 			names: items.map(n => n.name),

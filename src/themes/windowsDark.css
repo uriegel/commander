@@ -31,15 +31,15 @@
     --mbr-menubar-selected-background-color: var(--vtr-selected-background-color);
     --mbr-menubar-separator-color: rgb(70, 70, 70);
 
-    --wdb-main-color: white;
-    --wdb-main-background-color: #353535;
-    --wdb-button-background-color: #505050;
-    --wdb-button-color: white;
-    --wdb-button-hover-background-color: #4b4b4b;
-    --wdb-button-active-background-color: #242424;
-    --wdb-button-focus-color: blue;
-    --wdb-button-bordercolor: black;
-    --wdb-input-selection-color: #3584e4;
+    --wdr-main-color: white;
+    --wdr-main-background-color: #353535;
+    --wdr-button-background-color: #505050;
+    --wdr-button-color: white;
+    --wdr-button-hover-background-color: #4b4b4b;
+    --wdr-button-active-background-color: #242424;
+    --wdr-button-focus-color: blue;
+    --wdr-button-bordercolor: black;
+    --wdr-input-selection-color: #3584e4;
 }
 
 .App.windowsDarkTheme {

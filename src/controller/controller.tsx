@@ -1,4 +1,5 @@
 import { SpecialKeys, TableColumns } from "virtual-table-react"
+import { DialogHandle } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import { lastIndexOfAny } from "../globals"
@@ -41,9 +42,9 @@ export interface Controller {
     sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => FolderViewItem[]
     itemsSelectable: boolean
     appendPath: (path: string, subPath: string) => string,
-    rename: (path: string, item: FolderViewItem) => Promise<IOError | null>
-    createFolder: (path: string, item: FolderViewItem) => Promise<IOError | null>
-    deleteItems: (path: string, items: FolderViewItem[]) => Promise<IOError | null>
+    rename: (path: string, item: FolderViewItem, dialog: DialogHandle|null) => Promise<IOError | null>
+    createFolder: (path: string, item: FolderViewItem, dialog: DialogHandle|null) => Promise<IOError | null>
+    deleteItems: (path: string, items: FolderViewItem[], dialog: DialogHandle|null) => Promise<IOError | null>
 }
 
 export interface ControllerResult {
