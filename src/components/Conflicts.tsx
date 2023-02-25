@@ -34,7 +34,7 @@ const Conflicts = ({ props }: ExtensionProps) => {
     
     return (
         <div className="tableContainer">
-			<VirtualTable ref={virtualTable} items={items} />
+			<VirtualTable className='wdr-focusable' ref={virtualTable} items={items} />
         </div>
     )
 }
