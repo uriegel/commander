@@ -44,7 +44,9 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
             const result = await dialog?.show({
                 text,
                 slide: fromLeft ? Slide.Left : Slide.Right,
-                //extended: diff.length ? Conflicts() : undefined,
+                extension: diff.length ? Conflicts : undefined,
+                extensionProps: diff, 
+                fullscreen: true,
                 btnOk: true,
                 btnCancel: true,
                 defBtnOk: true

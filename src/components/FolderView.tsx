@@ -302,6 +302,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
+// TODO localstorage not persistent any more
 // TODO copy/move show conflict items if conflicts less than xxx
 // TODO copy/move 
 // TODO drag'n'drop
