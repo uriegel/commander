@@ -57,11 +57,16 @@ const createWindow = async () => {
                 await request("sendbounds", bounds, 5000)
                 console.log("close after")
             } catch {
-                console.log("close after fehler")
+                console.log("close after error")
             }
             win.close()
         }
     })   
+    app.on("window-all-closed", () => {
+        console.log("Closing")
+        if (process.platform !== "darwin") 
+            app.quit()
+    })
 
     win.loadURL(isDebug
         ? `http://localhost:3000?theme=${(bounds as Bounds).theme}&platform=${isWindows ? "windows" : "linux"}`
