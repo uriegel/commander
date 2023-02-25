@@ -141,15 +141,13 @@ const App = () => {
 	}
 
 	return (
-		<>
-			<div className={`App ${theme}Theme`} onKeyDown={onKeyDown} >
-				<Menu autoMode={autoMode} onMenuAction={onMenuAction} setAutoMode={setAutoModeDialog} showHidden={showHidden} setShowHidden={setShowHiddenAndRefresh}
-					showViewer={showViewer} setShowViewer={setShowViewer}  />
-				<ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
-				<Statusbar path={path.path} dirCount={itemCount.dirCount} fileCount={itemCount.fileCount} />
-			</div>
+		<div className={`App ${theme}Theme`} onKeyDown={onKeyDown} >
+			<Menu autoMode={autoMode} onMenuAction={onMenuAction} setAutoMode={setAutoModeDialog} showHidden={showHidden} setShowHidden={setShowHiddenAndRefresh}
+				showViewer={showViewer} setShowViewer={setShowViewer}  />
+			<ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
+			<Statusbar path={path.path} dirCount={itemCount.dirCount} fileCount={itemCount.fileCount} />
 			<Dialog ref={dialog} />
-		</>
+		</div>
 	)
 }
 
