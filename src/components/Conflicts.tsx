@@ -30,17 +30,22 @@ const Conflicts = ({ props }: ExtensionProps) => {
 				{ name: "Größe", isRightAligned: true }
 			],
 			renderRow: ({ name, time, exifDate, targetExifDate, targetTime, size, targetSize }: ConflictItem) => [
-				name,
-				(<div>
-					<div>{formatDateTime(exifDate ?? time)}</div>
-					<div>{formatDateTime(targetExifDate ?? targetTime)}</div>
-				</div>),
-				(<div>
-					<div>{formatSize(size)}</div>
-					<div>{formatSize(targetSize)}</div>
-				</div>)
-			],
-			measureRow: () => `Measure`
+					name,
+					(<div>
+						<div>{formatDateTime(exifDate ?? time)}</div>
+						<div>{formatDateTime(targetExifDate ?? targetTime)}</div>
+					</div>),
+					(<div>
+						<div>{formatSize(size)}</div>
+						<div>{formatSize(targetSize)}</div>
+					</div>)
+				],
+			measureRow: () => (
+				<div>
+					<div>time</div>
+					<div>date</div>
+				</div>
+			),
 		})
 
 		const items = props as ConflictItem[]
