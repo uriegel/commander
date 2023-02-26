@@ -3,9 +3,12 @@ import VirtualTable, { TableRowItem, VirtualTableHandle } from 'virtual-table-re
 import { ExtensionProps } from 'web-dialog-react'
 import { formatDateTime, formatSize } from '../controller/controller'
 import { Version } from '../controller/requests'
+import './CopyConflicts.css'
+import IconName, { IconNameType } from './IconName'
 
 export interface ConflictItem extends TableRowItem {
 	name: string
+	iconPath: string
     size?: number
     time?: string
     exifDate?: string
@@ -16,7 +19,7 @@ export interface ConflictItem extends TableRowItem {
     targetVersion?: Version
 }
 
-const Conflicts = ({ props }: ExtensionProps) => {
+const CopyConflicts = ({ props }: ExtensionProps) => {
 
     const virtualTable = useRef<VirtualTableHandle<ConflictItem>>(null)
 
@@ -29,13 +32,20 @@ const Conflicts = ({ props }: ExtensionProps) => {
 				{ name: "Datum" },
 				{ name: "Größe", isRightAligned: true }
 			],
-			renderRow: ({ name, time, exifDate, targetExifDate, targetTime, size, targetSize }: ConflictItem) => [
-					name,
-					(<div>
+			renderRow: ({ name, iconPath, time, exifDate, targetExifDate, targetTime, size, targetSize }: ConflictItem) => [
+					(<IconName namePart={name} type={IconNameType.File } iconPath={iconPath} />),
+					(<div className=
+						{
+							(exifDate ?? time ?? "") > (targetExifDate ?? targetTime ?? "")
+							? "overwrite"
+							: (exifDate ?? time ?? "") < (targetExifDate ?? targetTime ?? "")
+							? "notOverwrite"
+							: ""
+						}>
 						<div>{formatDateTime(exifDate ?? time)}</div>
 						<div>{formatDateTime(targetExifDate ?? targetTime)}</div>
 					</div>),
-					(<div>
+					(<div className={targetSize == size ? "equal" : ""}>
 						<div>{formatSize(size)}</div>
 						<div>{formatSize(targetSize)}</div>
 					</div>)
@@ -53,4 +63,4 @@ const Conflicts = ({ props }: ExtensionProps) => {
     )
 }
 
-export default Conflicts
+export default CopyConflicts

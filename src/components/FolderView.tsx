@@ -308,8 +308,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 export default FolderView
 
 // TODO copy/move conflicts: defButton yes if ok else no
-// TODO copy/move conflicts: visualize changes
-// TODO copy/move conflicts: icons
+// TODO copy/move conflicts: visualize version change on Windows
 // TODO copy/move 
 // TODO drag'n'drop
 // TODO remotes

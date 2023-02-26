@@ -1,7 +1,7 @@
 import { time } from "console"
 import * as R from "ramda"
 import { DialogHandle, Slide } from "web-dialog-react"
-import Conflicts, { ConflictItem } from "../components/Conflicts"
+import CopyConflicts, { ConflictItem } from "../components/CopyConflicts"
 import { FolderViewItem } from "../components/FolderView"
 import { Controller, ControllerType } from "./controller"
 import { getItemsType, ItemsType } from "./filesystem"
@@ -31,6 +31,7 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                 return check
                 ? {
                     name: n.name,
+                    iconPath: n.iconPath,
                     size: n.size,
                     time: n.time,
                     exifDate: n.exifDate,
@@ -39,7 +40,7 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                     targetTime: check.time,
                     targetExifDate: check.exifDate,
                     targetVersion: check.version
-                }
+                } as ConflictItem
                 : undefined                
             }).filter(n => n != undefined) as ConflictItem[]
 
@@ -61,7 +62,7 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
             const result = await dialog?.show({
                 text,
                 slide: fromLeft ? Slide.Left : Slide.Right,
-                extension: conflictItems.length ? Conflicts : undefined,
+                extension: conflictItems.length ? CopyConflicts : undefined,
                 extensionProps: conflictItems, 
                 fullscreen: conflictItems.length > 0,
                 btnYes: true,
