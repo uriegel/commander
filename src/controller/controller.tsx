@@ -1,7 +1,6 @@
 import { SpecialKeys, TableColumns } from "virtual-table-react"
 import { DialogHandle } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
-import IconName, { IconNameType } from "../components/IconName"
 import { lastIndexOfAny } from "../globals"
 import { getFileSystemController } from "./filesystem"
 import { ExtendedItem, GetExtendedItemsResult, GetItemResult, IOError, Version } from "./requests"
@@ -52,8 +51,6 @@ export interface ControllerResult {
     controller: Controller
 }
 
-export const measureRow = () => (<IconName namePart="Measure g" type={IconNameType.Folder} />)
-
 export const checkController = (path: string, controller: Controller|null):ControllerResult => 
     path == ROOT
     ? getRootController(controller)
@@ -63,8 +60,7 @@ export const createEmptyController = (): Controller => ({
     type: ControllerType.Empty,
     getColumns: () => ({
         columns: [],
-        renderRow: p => [],
-        measureRow: () => ""
+        renderRow: p => []
     }),
     getItems: async () => ({ items: [], path: "", dirCount: 0, fileCount: 0 }),
     getExtendedItems: async () => ({ path: "", extendedItems: [] }),

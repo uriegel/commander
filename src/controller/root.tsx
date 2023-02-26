@@ -2,7 +2,7 @@ import { SpecialKeys } from "virtual-table-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
-import { Controller, ControllerResult, ControllerType, formatSize, measureRow} from "./controller"
+import { Controller, ControllerResult, ControllerType, formatSize} from "./controller"
 import { GetRootResult, request } from "./requests"
 
 export const ROOT = "root"
@@ -37,8 +37,7 @@ const getWindowsColumns = () => ({
 		{ name: "Beschreibung" },
 		{ name: "Größe", isRightAligned: true }
 	],
-	renderRow: renderWindowsRow,
-	measureRow
+	renderRow: renderWindowsRow
 })
 
 const getLinuxColumns = () => ({
@@ -49,8 +48,7 @@ const getLinuxColumns = () => ({
 		{ name: "Größe", isRightAligned: true }
     ],
     getRowClasses,
-	renderRow: renderLinuxRow,
-	measureRow
+	renderRow: renderLinuxRow
 })
 
 const onWindowsEnter = (_: string, item: FolderViewItem, keys: SpecialKeys) => 

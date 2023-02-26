@@ -39,13 +39,7 @@ const Conflicts = ({ props }: ExtensionProps) => {
 						<div>{formatSize(size)}</div>
 						<div>{formatSize(targetSize)}</div>
 					</div>)
-				],
-			measureRow: () => (
-				<div>
-					<div>time</div>
-					<div>date</div>
-				</div>
-			),
+				]
 		})
 
 		const items = props as ConflictItem[]

@@ -2,7 +2,7 @@ import { DialogHandle, Result } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
-import { addParent, Controller, ControllerResult, ControllerType, extractSubPath, formatDateTime, formatSize, formatVersion, getExtension, measureRow, sortItems } from "./controller"
+import { addParent, Controller, ControllerResult, ControllerType, extractSubPath, formatDateTime, formatSize, formatVersion, getExtension, sortItems } from "./controller"
 import { ExtendedItem, GetExtendedItemsResult, GetItemResult, IOErrorResult, request, Version } from "./requests"
 import { ROOT } from "./root"
 
@@ -36,8 +36,7 @@ const getWindowsColumns = () => ({
 		{ name: "Version", isSortable: true}
 	],
 	getRowClasses,
-	renderRow,
-	measureRow,
+	renderRow
 })
 
 const getLinuxColumns = () => ({
@@ -47,8 +46,7 @@ const getLinuxColumns = () => ({
 		{ name: "Größe", isSortable: true, isRightAligned: true }
 	],
 	getRowClasses,
-	renderRow,
-	measureRow
+	renderRow
 })
 
 const appendLinuxPath = (path: string, subPath: string) => `${path}/${subPath}`
