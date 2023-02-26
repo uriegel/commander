@@ -1,11 +1,20 @@
 import { useEffect, useRef, useState } from 'react'
 import VirtualTable, { TableRowItem, VirtualTableHandle } from 'virtual-table-react'
 import { ExtensionProps } from 'web-dialog-react'
+import { formatDateTime, formatSize } from '../controller/controller'
+import { Version } from '../controller/requests'
 
-interface ConflictItem extends TableRowItem {
+export interface ConflictItem extends TableRowItem {
 	name: string
+    size?: number
+    time?: string
+    exifDate?: string
+    version?: Version
+    targetSize?: number
+    targetTime?: string
+    targetExifDate?: string
+    targetVersion?: Version
 }
-
 
 const Conflicts = ({ props }: ExtensionProps) => {
 
@@ -16,14 +25,20 @@ const Conflicts = ({ props }: ExtensionProps) => {
     useEffect(() => {
 		virtualTable.current?.setColumns({
 			columns: [
-				{ name: "Name", isSortable: true, subColumn: "Ext." },
-				{ name: "Date" },
-				{ name: "Details", isRightAligned: true }
+				{ name: "Name"  },
+				{ name: "Datum" },
+				{ name: "Größe", isRightAligned: true }
 			],
-			renderRow: ({ name }: ConflictItem) => [
+			renderRow: ({ name, time, exifDate, targetExifDate, targetTime, size, targetSize }: ConflictItem) => [
 				name,
-				``,
-				``
+				(<div>
+					<div>{formatDateTime(exifDate ?? time)}</div>
+					<div>{formatDateTime(targetExifDate ?? targetTime)}</div>
+				</div>),
+				(<div>
+					<div>{formatSize(size)}</div>
+					<div>{formatSize(targetSize)}</div>
+				</div>)
 			],
 			measureRow: () => `Measure`
 		})

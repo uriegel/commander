@@ -82,7 +82,7 @@ export const addParent = (items: FolderViewItem[]) =>
     [{ name: "..", index: 0, isParent: true, isDirectory: true } as FolderViewItem]
         .concat(items)
 
-export const formatSize = (num: number|undefined) => {
+export const formatSize = (num: number | undefined) => {
     if (!num)
         return ""
     let sizeStr = num.toString()
@@ -125,4 +125,6 @@ export const getExtension = (path: string) => {
     return index > 0 ? path.substring(index) : ""
 }
 
+export const excludeParent = (items: FolderViewItem[]) => 
+    items.filter(n => !n.isParent)
 

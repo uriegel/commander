@@ -55,15 +55,12 @@ const createWindow = async () => {
             const bounds: Bounds = win.getBounds()
             try {
                 await request("sendbounds", bounds, 5000)
-                console.log("close after")
             } catch {
-                console.log("close after error")
             }
             win.close()
         }
     })   
     app.on("window-all-closed", () => {
-        console.log("Closing")
         if (process.platform !== "darwin") 
             app.quit()
     })

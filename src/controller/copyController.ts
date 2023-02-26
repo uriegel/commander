@@ -1,6 +1,7 @@
+import { time } from "console"
 import * as R from "ramda"
 import { DialogHandle, Slide } from "web-dialog-react"
-import Conflicts from "../components/Conflicts"
+import Conflicts, { ConflictItem } from "../components/Conflicts"
 import { FolderViewItem } from "../components/FolderView"
 import { Controller, ControllerType } from "./controller"
 import { getItemsType, ItemsType } from "./filesystem"
@@ -21,16 +22,32 @@ export const getCopyController = (move: boolean, dialog: DialogHandle|null, from
 const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, fromLeft: boolean, fromController?: Controller, toController?: Controller,
     sourcePath?: string, targetPath?: string, items?: FolderViewItem[], targetItems?: FolderViewItem[]): CopyController | null => ({
         copy: async () => {
-            const diff = R.innerJoin((a, b) => a.name == b.name,
-                items ?? [], targetItems ?? [])    
+            if (!items || !targetItems || items.length == 0)
+                return null
             
-            
-            
-            const copyText = diff.length > 0
+            const targetItemsMap = R.mergeAll(targetItems.map(ti => ({ [ti.name]: ti })))
+            const conflictItems = items.map(n => {
+                const check = targetItemsMap[n.name]
+                return check
+                ? {
+                    name: n.name,
+                    size: n.size,
+                    time: n.time,
+                    exifDate: n.exifDate,
+                    version: n.version,
+                    targetSize: check.size,
+                    targetTime: check.time,
+                    targetExifDate: check.exifDate,
+                    targetVersion: check.version
+                }
+                : undefined                
+            }).filter(n => n != undefined) as ConflictItem[]
+
+            const copyText = conflictItems.length > 0
                 ? move ? "Verschieben" : "Kopieren"
                 : move ? "verschieben" : "kopieren"
-            const type = getItemsType(items ?? [])
-            const text = diff.length > 0 
+            const type = getItemsType(items)
+            const text = conflictItems.length > 0 
                 ? `Einträge überschreiben beim ${copyText}?`
                 : type == ItemsType.Directory
                 ? `Möchtest Du das Verzeichnis ${copyText}?`
@@ -44,12 +61,13 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
             const result = await dialog?.show({
                 text,
                 slide: fromLeft ? Slide.Left : Slide.Right,
-                extension: diff.length ? Conflicts : undefined,
-                extensionProps: diff, 
-                fullscreen: true,
-                btnOk: true,
+                extension: conflictItems.length ? Conflicts : undefined,
+                extensionProps: conflictItems, 
+                fullscreen: conflictItems.length > 0,
+                btnYes: true,
+                btnNo: true,
                 btnCancel: true,
-                defBtnOk: true
+                defBtnYes: true
             })
                     
             return null

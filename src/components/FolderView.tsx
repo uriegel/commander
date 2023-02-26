@@ -94,10 +94,13 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const [path, setPath] = useState("")
 
     const getSelectedItems = () => {
+
+        const checkParent = (item: FolderViewItem) => !item.isParent ? item : null
+
         const selected = items.filter(n => n.isSelected)
         return selected.length > 0
             ? selected
-            : [items[virtualTable.current?.getPosition() ?? 0]]
+            : [checkParent(items[virtualTable.current?.getPosition() ?? 0])].filter(n => n != null) as FolderViewItem[]
     }
     
     const onSort = async (sort: OnSort) => {
@@ -262,6 +265,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const deleteItems = async () => {
         virtualTable.current?.setFocus()
         const items = getSelectedItems()
+        if (items.length == 0)
+            return
         const result = await controller.current.deleteItems(path, items, dialog)
         if (await checkResult(result))
             refresh() 
@@ -302,7 +307,11 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO copy/move show conflict items if conflicts less than xxx
+// TODO tableview always renders all rows!
+// TODO copy/move conflicts: defButton has to have control over extension
+// TODO copy/move conflicts: defButton yes if ok else no
+// TODO copy/move conflicts: visualize changes
+// TODO copy/move conflicts: icons
 // TODO copy/move 
 // TODO drag'n'drop
 // TODO remotes
