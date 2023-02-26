@@ -59,6 +59,16 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                 : type == ItemsType.Files
                 ? `Möchtest Du die Dateien ${copyText}?`
                 : `Möchtest Du die Verzeichnisse und Dateien ${copyText}?`
+            
+            const filterNoOverwrite = (item: ConflictItem) =>
+                (item.exifDate ?? item.time ?? "") < (item.targetExifDate ?? item.targetTime ?? "")
+            
+            const defNo = conflictItems.length > 0
+                && conflictItems
+                    .filter(filterNoOverwrite)
+                    .length > 0
+
+                                
             const result = await dialog?.show({
                 text,
                 slide: fromLeft ? Slide.Left : Slide.Right,
@@ -68,7 +78,8 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                 btnYes: true,
                 btnNo: true,
                 btnCancel: true,
-                defBtnYes: true
+                defBtnYes: !defNo,
+                defBtnNo: defNo
             })
                     
             return null
