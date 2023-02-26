@@ -307,7 +307,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO tableview always renders all rows, perhaps measeure is to small!
 // TODO copy/move conflicts: defButton yes if ok else no
 // TODO copy/move conflicts: visualize changes
 // TODO copy/move conflicts: icons
