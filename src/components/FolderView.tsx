@@ -309,7 +309,8 @@ export default FolderView
 
 // TODO copy/move 
 // TODO drag'n'drop
-// TODO Check qt webview: drag'n'drop mp4 pdf
+// TODO Check windows webview: drop file/files/folder/folders
+// TODO Check qt webview: drag'n'drop, mp4, pdf
 // TODO remotes
 // TODO extended rename
 // TODO Admin mode Windows
