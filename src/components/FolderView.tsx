@@ -310,6 +310,7 @@ export default FolderView
 // TODO copy/move 
 // TODO drag'n'drop
 // TODO Check windows webview: drop file/files/folder/folders
+// TODO Check gtk webview: drop file/files/folder/folders sudo apt install libwebkit2gtk-4.0-dev
 // TODO Check qt webview: drag'n'drop, mp4, pdf
 // TODO remotes
 // TODO extended rename
