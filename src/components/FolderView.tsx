@@ -92,6 +92,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const [items, setItems] = useState([] as FolderViewItem[])
     const [path, setPath] = useState("")
+    const [dragStarted, setDragStarted] = useState(false)
 
     const getSelectedItems = () => {
 
@@ -292,12 +293,23 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         } else
             return true
     }
+
+    const onDragStart = (evt: React.DragEvent) => {
+        if (getSelectedItems().length > 0) {
+            evt.dataTransfer.setData("internalCopy", "true")
+            setDragStarted(true)
+        } else
+            evt.preventDefault()
+            
+	}
+
+    const onDragEnd = (evt: React.DragEvent) => setDragStarted(false)
         
     return (
         <div className='folder' onFocus={onFocusChanged}>
             <input className="pathInput" spellCheck={false} value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
-            <div className="tableContainer" onKeyDown={onKeyDown} >
-                <VirtualTable ref={virtualTable} items={items} onSort={onSort}
+            <div className={`tableContainer${dragStarted ? " dragStarted" : ""}`} onKeyDown={onKeyDown} >
+                <VirtualTable ref={virtualTable} items={items} onSort={onSort} onDragStart={onDragStart} onDragEnd={onDragEnd}
                     onColumnWidths={onColumnWidths} onEnter={onEnter} onPosition={onPositionChanged} />
             </div>
             <RestrictionView items={items} ref={restrictionView} />

@@ -1,3 +1,4 @@
+import { TableColumns } from "virtual-table-react"
 import { DialogHandle, Result } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
@@ -36,7 +37,8 @@ const getWindowsColumns = () => ({
 		{ name: "Version", isSortable: true}
 	],
 	getRowClasses,
-	renderRow
+	renderRow,
+	draggable: true
 })
 
 const getLinuxColumns = () => ({
@@ -46,8 +48,9 @@ const getLinuxColumns = () => ({
 		{ name: "Größe", isSortable: true, isRightAligned: true }
 	],
 	getRowClasses,
-	renderRow
-})
+	renderRow,
+	draggable: true
+} as TableColumns<FolderViewItem>)
 
 const appendLinuxPath = (path: string, subPath: string) => `${path}/${subPath}`
 

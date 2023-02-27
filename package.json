@@ -17,7 +17,7 @@
     "rxjs": "^7.8.0",
     "typescript": "^4.9.5",
     "view-split-react": "^1.0.0",
-    "virtual-table-react": "^10.0.6",
+    "virtual-table-react": "^10.1.1",
     "web-dialog-react": "^2.1.0"
   },
   "scripts": {

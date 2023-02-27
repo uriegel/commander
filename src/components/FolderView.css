@@ -11,6 +11,10 @@
     position: relative;
 }
 
+.dragStarted {
+    filter: blur(2px);
+}
+
 .pathInput {
     margin-right: 3px;
     border-style: none;
