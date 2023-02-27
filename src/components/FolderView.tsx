@@ -319,11 +319,11 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO copy/move 
 // TODO drag'n'drop
 // TODO Check windows webview: drop file/files/folder/folders
 // TODO Check gtk webview: drop file/files/folder/folders sudo apt install libwebkit2gtk-4.0-dev
-// TODO Check qt webview: drag'n'drop, mp4, pdf
+// TODO https://stackoverflow.com/questions/71581401/drag-a-file-from-my-gtk-app-to-another-app-not-the-other-way-around
+// TODO copy/move 
 // TODO remotes
 // TODO extended rename
 // TODO Admin mode Windows
