@@ -124,3 +124,23 @@ export const getExtension = (path: string) => {
 export const excludeParent = (items: FolderViewItem[]) => 
     items.filter(n => !n.isParent)
 
+// export const compareVersion = (a?: Version, b?: Version) =>
+//     a && b
+//     ? (a.major > b.major
+//     ? 1
+//     : a.major < b.major
+//     ? -1
+//     : a.minor > b.minor
+//     ? 1
+//     : a.minor < b.minor
+//     ? -1    
+//     : a.patch > b.patch
+//     ? 1
+//     : a.patch < b.patch
+//     ? -1        
+//     : a.build > b.build
+//     ? 1
+//     : a.build < b.build
+//     ? -1            
+//     : 0)
+//     : 0

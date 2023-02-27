@@ -4,7 +4,7 @@ import { DialogHandle, Slide } from "web-dialog-react"
 import CopyConflicts, { ConflictItem } from "../components/CopyConflicts"
 import { FolderViewItem } from "../components/FolderView"
 import { Controller, ControllerType } from "./controller"
-import { getItemsType, ItemsType } from "./filesystem"
+import { compareVersion, getItemsType, ItemsType } from "./filesystem"
 import { IOError } from "./requests"
 
 export interface CopyController {
@@ -62,6 +62,7 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
             
             const filterNoOverwrite = (item: ConflictItem) =>
                 (item.exifDate ?? item.time ?? "") < (item.targetExifDate ?? item.targetTime ?? "")
+                && compareVersion(item.version, item.targetVersion) < 0
             
             const defNo = conflictItems.length > 0
                 && conflictItems

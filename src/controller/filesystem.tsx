@@ -256,7 +256,7 @@ const deleteItems = async (path: string, items: FolderViewItem[], dialog: Dialog
 	 	: null
 }
 
-const compareVersion = (versionLeft?: Version, versionRight?: Version) =>
+export const compareVersion = (versionLeft?: Version, versionRight?: Version) =>
     !versionLeft
 	? -1
 	: !versionRight
