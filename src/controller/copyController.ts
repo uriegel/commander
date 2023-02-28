@@ -1,4 +1,3 @@
-import { time } from "console"
 import * as R from "ramda"
 import { DialogHandle, Slide } from "web-dialog-react"
 import CopyConflicts, { ConflictItem } from "../components/CopyConflicts"

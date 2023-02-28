@@ -1,6 +1,7 @@
 :root .windowsDarkTheme {
     --color: white;
     background-color: #2f2f2f;
+    --drag-highlight: darkgreen;
     --scaffolding-background-color: #181818;
     --svg-image-path-color: var(--color);
     --restriction-background-color: var(--scaffolding-background-color);

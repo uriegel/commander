@@ -1,9 +1,14 @@
+body {
+    --drag-highlight: rgb(185, 255, 255);
+}
+
 .folder {
     position: relative;
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
+    transition: background-color 0.3s;
 }
 
 .tableContainer {
@@ -12,7 +17,11 @@
 }
 
 .dragStarted {
-    filter: blur(2px);
+    filter: blur(1px);
+}
+
+.dragging {
+    background-color: var(--drag-highlight);
 }
 
 .pathInput {

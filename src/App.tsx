@@ -38,7 +38,7 @@ const App = () => {
 	const [itemCount, setItemCount] = useState({dirCount: 0, fileCount: 0 })
 	
 	const dialog = useRef<DialogHandle>(null)
-	
+		
 	const setAndSaveAutoMode = (mode: boolean) => {
 		setAutoMode(mode)
 		localStorage.setItem("menuAutoHide", mode ? "true" : "false")
@@ -65,11 +65,11 @@ const App = () => {
 	const onPathChanged = (path: string, isDirectory: boolean) => setPath({ path, isDirectory })
 
 	const FolderLeft = () => (
-		<FolderView ref={folderLeft} id={ID_LEFT} dialog={dialog.current} onFocus={onFocusLeft}
+		<FolderView ref={folderLeft} id={ID_LEFT} dialog={dialog.current} onFocus={onFocusLeft} onCopy={copyItems}
 			onPathChanged={onPathChanged} showHidden={showHidden} onItemsChanged={setItemCount} />
 	)
 	const FolderRight = () => (
-		<FolderView ref={folderRight} id={ID_RIGHT} dialog={dialog.current} onFocus={onFocusRight}
+		<FolderView ref={folderRight} id={ID_RIGHT} dialog={dialog.current} onFocus={onFocusRight} onCopy={copyItems}
 			onPathChanged={onPathChanged} showHidden={showHidden} onItemsChanged={setItemCount} />
 	)
 

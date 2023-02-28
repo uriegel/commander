@@ -52,10 +52,11 @@ interface FolderViewProp {
     onFocus: () => void
     onPathChanged: (path: string, isDir: boolean) => void
     onItemsChanged: (count: ItemCount) => void
+    onCopy: (move: boolean) => void
 }
 
 const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
-    { id, dialog, showHidden, onFocus, onPathChanged, onItemsChanged },
+    { id, dialog, showHidden, onFocus, onPathChanged, onItemsChanged, onCopy },
     ref) => {
 
         useImperativeHandle(ref, () => ({
@@ -93,6 +94,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const [items, setItems] = useState([] as FolderViewItem[])
     const [path, setPath] = useState("")
     const [dragStarted, setDragStarted] = useState(false)
+    const [dragging, setDragging] = useState(false)
 
     const getSelectedItems = () => {
 
@@ -300,13 +302,87 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             setDragStarted(true)
         } else
             evt.preventDefault()
-            
 	}
 
     const onDragEnd = (evt: React.DragEvent) => setDragStarted(false)
-        
+
+    const dropTarget = useRef<HTMLElement|null>(null)
+    
+    const onDragEnter = (evt: React.DragEvent) => {
+        // var WV_File = (window as any).chrome.webview.hostObjects.WV_File
+        // WV_File.DragDropFile()
+        if (!dragStarted) {
+            setDragging(true)
+            dropTarget.current = evt.nativeEvent.target as HTMLElement
+        }
+    }
+
+    const onDragLeave = (evt: React.DragEvent) => {
+        if (dropTarget.current == evt.nativeEvent.target as HTMLElement) {
+            dropTarget.current = null
+            setDragging(false)
+        }
+    }        
+
+    const dropEffect = useRef<"move"|"copy"|"none">("none")
+
+    const onDragOver = (evt: React.DragEvent) => {
+        if (!dragStarted) {
+            evt.dataTransfer.dropEffect = 
+                evt.dataTransfer.effectAllowed == "move" 
+                || evt.dataTransfer.effectAllowed == "copyMove"
+                || evt.dataTransfer.effectAllowed == "linkMove"
+                || evt.dataTransfer.effectAllowed == "all"
+                ? "move" 
+                : (evt.dataTransfer.effectAllowed == "copy" 
+                || evt.dataTransfer.effectAllowed == "copyLink"
+                ? "copy"
+                : "none")
+            if (evt.ctrlKey && evt.dataTransfer?.dropEffect == "move" && (evt.dataTransfer.effectAllowed == "copy" 
+                || evt.dataTransfer.effectAllowed == "copyMove"
+                || evt.dataTransfer.effectAllowed == "copyLink"
+                || evt.dataTransfer.effectAllowed == "all"))
+                evt.dataTransfer.dropEffect = "copy"
+            dropEffect.current = evt.dataTransfer.dropEffect
+            evt.preventDefault() // Necessary. Allows us to drop.
+        }
+    }
+
+    const onDrop = (evt: React.DragEvent) => {
+        setDragging(false)
+        if (evt.dataTransfer.getData("internalCopy") == "true") {
+            evt.preventDefault()
+            onCopy(dropEffect.current == "move")
+        } else {
+            let onDrop = async () => {
+                function *getItems() {
+                    if (evt.dataTransfer?.files)
+                        for (let i = 0; i < evt.dataTransfer.files.length; i++)
+                            yield evt.dataTransfer!.files.item(i)!
+                }
+                let input = [...getItems()].map(n => (n as any).path)
+                console.log("input", input, evt)
+                // let copyFiles = await request<CopyFiles>("preparefilecopy", input)
+                        
+                // await copyItems(this.id, e => this.checkResult(e), false,
+                //     this.id != "folderLeft",
+                //     EngineType.Directory,
+                //     this.engine,
+                //     copyFiles.basePath,
+                //     this.path,
+                //     copyFiles.items
+                // )
+    
+                // this.setFocus()
+                // this.reloadItems()
+            }         
+            onDrop()   
+        }
+    }
+
     return (
-        <div className='folder' onFocus={onFocusChanged}>
+        <div className={`folder${dragging ? " dragging": ""}`} onFocus={onFocusChanged} 
+                onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop}>
             <input className="pathInput" spellCheck={false} value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
             <div className={`tableContainer${dragStarted ? " dragStarted" : ""}`} onKeyDown={onKeyDown} >
                 <VirtualTable ref={virtualTable} items={items} onSort={onSort} onDragStart={onDragStart} onDragEnd={onDragEnd}
@@ -321,6 +397,7 @@ export default FolderView
 
 // TODO drag'n'drop
 // TODO Check windows webview: drop file/files/folder/folders
+// TODO https://github.com/MicrosoftEdge/WebView2Feedback/issues/2313
 // TODO Check gtk webview: drop file/files/folder/folders sudo apt install libwebkit2gtk-4.0-dev
 // TODO https://stackoverflow.com/questions/71581401/drag-a-file-from-my-gtk-app-to-another-app-not-the-other-way-around
 // TODO copy/move 
