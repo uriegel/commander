@@ -116,6 +116,7 @@ let configure (app : IApplicationBuilder) =
             route  "/commander/getroot"          >=> warbler (fun _ -> getRoot ())
             route  "/commander/geticon"          >=> bindQuery<FileRequest> None getIconRequest
             route  "/commander/image"            >=> bindQuery<FileRequest> None getImage
+            route  "/commander/file"            >=> bindQuery<FileRequest> None getFile
             route  "/commander/movie"            >=> bindQuery<FileRequest> None getMovie
             route  "/commander/getextendeditems" >=> warbler (fun _ -> getExtendedItems ())
             route  "/commander/showdevtools"     >=> warbler (fun _ -> showDevTools ())

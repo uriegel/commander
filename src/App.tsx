@@ -16,6 +16,7 @@ import './themes/windowsDark.css'
 import { getTheme } from './globals'
 import { themeChangedEvents } from './controller/events'
 import { getCopyController } from './controller/copyController'
+import FileViewer from './components/FileViewer'
 
 const ID_LEFT = "left"
 const ID_RIGHT = "right"
@@ -137,6 +138,8 @@ const App = () => {
 			? (<PictureViewer path={path.path} />)
 			: ext == ".mp3" || ext == ".mp4" || ext == ".mkv" || ext == ".wav"
 			? (<MediaPlayer path={path.path} />)
+			: ext == ".pdf"
+			? (<FileViewer path={path.path} />)
 			: (<div></div>)
 	}
 
