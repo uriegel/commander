@@ -1,13 +1,13 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import './FolderView.css'
-import VirtualTable, { OnSort, SpecialKeys, TableRowItem, VirtualTableHandle } from 'virtual-table-react'
+import VirtualTable, { OnSort, SelectableItem, SpecialKeys, VirtualTableHandle } from 'virtual-table-react'
 import { checkController, Controller, createEmptyController } from '../controller/controller'
 import { ROOT } from '../controller/root'
 import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
 import { IOError, Version } from '../controller/requests'
 import { DialogHandle } from 'web-dialog-react'
 
-export interface FolderViewItem extends TableRowItem {
+export interface FolderViewItem extends SelectableItem {
     name: string
     size?: number
     isParent?: boolean
@@ -395,6 +395,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
+// TODO PDF viewer: resizing not possible when sizong intp pdf
+// TODO implementing SSE in c# program, then getfiles, then getextendeditmes...
 // TODO drag'n'drop
 // TODO Check windows webview: drop file/files/folder/folders
 // TODO https://github.com/MicrosoftEdge/WebView2Feedback/issues/2313

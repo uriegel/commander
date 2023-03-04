@@ -1,4 +1,3 @@
-import { TableRowItem } from "virtual-table-react"
 import { FolderViewItem } from "../components/FolderView"
 
 export type Nothing = {}
@@ -11,7 +10,7 @@ type Result =
     | GetExtendedItemsResult
     | IOErrorResult
 
-export interface RootItem extends TableRowItem {
+export interface RootItem {
     name:        string
     description: string
     size:        number
