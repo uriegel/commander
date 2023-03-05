@@ -395,7 +395,9 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO implementing SSE in c# program, then getfiles, then getextendeditmes...
+// TODO Theme Detection Windows
+// TODO GetPlatform and memoize
+// TODO getfiles, then getextendeditmes...
 // TODO drag'n'drop
 // TODO Check windows webview: drop file/files/folder/folders
 // TODO https://github.com/MicrosoftEdge/WebView2Feedback/issues/2313
