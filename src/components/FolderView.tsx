@@ -395,7 +395,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO PDF viewer: resizing not possible when sizong intp pdf
 // TODO implementing SSE in c# program, then getfiles, then getextendeditmes...
 // TODO drag'n'drop
 // TODO Check windows webview: drop file/files/folder/folders
