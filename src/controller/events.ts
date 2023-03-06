@@ -1,22 +1,8 @@
 import { filter, fromEvent, map } from 'rxjs'
 
-type EventThemeChanged = {
-    Case: "ThemeChanged",
-    Fields: string[1]
+type CommanderEvent = {
+    theme?: string
 }
-
-type EventNothing = {
-    Case: "Nothing"
-}
-
-type CommanderEvent = 
-| EventNothing
-| EventThemeChanged
-// | EventMaximize
-// | EventUnmaximize
-// | EventFullScreen
-// | RenameRemoteType
-// | DeleteRemotesType
 
 const toCommanderEvent = (event: MessageEvent) => 
 JSON.parse(event.data) as CommanderEvent
@@ -27,6 +13,6 @@ let commanderEvents = fromEvent<MessageEvent>(source, 'message')
     .pipe(map(toCommanderEvent))
 
 export const themeChangedEvents = commanderEvents
-    .pipe(filter(n => n.Case == "ThemeChanged"))
-    .pipe(map(n => (n as EventThemeChanged).Fields[0]))
+    .pipe(filter(n => n.theme != undefined))
+    .pipe(map(n => n.theme!))
 
