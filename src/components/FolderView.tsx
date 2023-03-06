@@ -395,8 +395,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO Theme Detection Windows
-// TODO GetPlatform and memoize
 // TODO getfiles, then getextendeditmes...
 // TODO drag'n'drop
 // TODO Check windows webview: drop file/files/folder/folders
