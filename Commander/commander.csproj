@@ -17,4 +17,8 @@
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>  
 
+  <ItemGroup>
+    <PackageReference Include="GtkDotNet" Version="5.7.0" />
+  </ItemGroup>  
+
 </Project>
