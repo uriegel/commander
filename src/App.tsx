@@ -18,6 +18,9 @@ import { themeChangedEvents } from './controller/events'
 import { getCopyController } from './controller/copyController'
 import FileViewer from './components/FileViewer'
 
+// TODO in webview.d.ts
+declare const webViewShowDevTools: ()=>void
+
 const ID_LEFT = "left"
 const ID_RIGHT = "right"
 
@@ -92,7 +95,7 @@ const App = () => {
 		else if (key == "SEL_NONE")
 			getActiveFolder()?.selectNone()
 		else if (key == "SHOW_DEV_TOOLS")
-			await request("showdevtools")
+			webViewShowDevTools()
 		else if (key == "SHOW_FULLSCREEN")
 			await request("showfullscreen")
 		else if (key == "ADAPT_PATH") {

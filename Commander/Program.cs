@@ -2,8 +2,19 @@
     .Create()
     .InitialBounds(600, 800)
     .Title("Commander")
-    .Url($"file://{Directory.GetCurrentDirectory()}/public/index.html")
-    .ShowDevTools()
+    .SaveBounds()
+    .Url("http://localhost:3000")
+    //.DebugUrl("http://localhost:3000")
+//    .ConfigureHttp(http => http
+    //     .ResourceWebroot("webroot", "/web")
+//        .UseSse()
+//        .UseJsonPost<Object, Object>("commander/showdevtools", )
+//        .Build())
+#if DEBUG            
+    .DebuggingEnabled()
+#endif       
     .Build()
     .Run("de.uriegel.Commander");
+
+// TODO commander showdevtools
 
