@@ -12,20 +12,15 @@ enum PlatformType
 
 static class Platform
 {
+    public static string QueryString { get; }
+
 #if Windows 
 
-    public static PlatformType Value { get; } = PlatformType.Windows;
-    // TODO windows dark
-    public static string QueryString { get; } = "?platform=windows&theme=windows";
+    public static PlatformType Value { get; } 
 
 #elif Linux
 
     public static PlatformType Value { get => getPlatform(); }
-
-    // TODO
-    public static string QueryString { get; } = "?platform=linux&theme=adwaita";
-
-    static Func<PlatformType> getPlatform = Memoize(GetPlatform);
 
     static PlatformType GetPlatform()
         =>  "DESKTOP_SESSION"
@@ -37,5 +32,19 @@ static class Platform
                 _ => PlatformType.Gnome
             };
 
+    static Func<PlatformType> getPlatform;
+
 #endif
+
+    static Platform()
+    {
+#if Windows        
+        Value = PlatformType.Windows;
+#elif Linux        
+        getPlatform = Memoize(GetPlatform);
+#endif
+        QueryString = $"?platform={(Value == PlatformType.Windows ? "windows" : "linux")}&theme={Theme.Get()}";
+    }
+        
+
 }
