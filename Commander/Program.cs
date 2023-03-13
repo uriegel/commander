@@ -1,9 +1,12 @@
-﻿WebView
+﻿using WebWindowNetCore;
+
+WebView
     .Create()
     .InitialBounds(600, 800)
     .Title("Commander")
+    .ResourceIcon("icon")
     .SaveBounds()
-    .Url("http://localhost:3000")
+    .Url("http://localhost:3000{Platform.QueryString}")
     //.DebugUrl("http://localhost:3000")
 //    .ConfigureHttp(http => http
     //     .ResourceWebroot("webroot", "/web")
