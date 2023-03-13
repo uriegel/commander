@@ -6,7 +6,7 @@ WebView
     .Title("Commander")
     .ResourceIcon("icon")
     .SaveBounds()
-    .Url("http://localhost:3000{Platform.QueryString}")
+    .Url($"http://localhost:3000{Platform.QueryString}")
     //.DebugUrl("http://localhost:3000")
 //    .ConfigureHttp(http => http
     //     .ResourceWebroot("webroot", "/web")
@@ -19,5 +19,6 @@ WebView
     .Build()
     .Run("de.uriegel.Commander");
 
-// TODO commander showdevtools
+// TODO SSE theme changed
+
 

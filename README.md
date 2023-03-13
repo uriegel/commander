@@ -1,9 +1,7 @@
 # Commander
-A Norton Commander clone based on Electron (globally installed), F#, Typescript and Web Components
+A Norton Commander clone based on Electron (globally installed), C# and React
 
 ## Setup
-`sudo npm i -g electron`
-
 `npm i`
 
 ## Debug
@@ -11,6 +9,10 @@ A Norton Commander clone based on Electron (globally installed), F#, Typescript 
 Start npm script `start react-scripts start`
 
 Press F5 (`Debug` oder `Debug Windows`)
+
+```npm install -g react-devtools```
+
+Start devtools
 
 ## Build
 
