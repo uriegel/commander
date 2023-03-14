@@ -7,9 +7,6 @@ export const getPlatform = memoize(() => {
     const platform = new URLSearchParams(window.location.search).get("platform")
     return platform == "windows"
         ? Platform.Windows
-        : platform == "linux"
-        ? Platform.Linux
-        // HACK set platform in browser react test 
         : Platform.Linux
 })
 

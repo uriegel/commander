@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-static class ClrWinApi
+static class ClrWinApi3
 {
 
     [DllImport("Advapi32.dll", SetLastError = true)]

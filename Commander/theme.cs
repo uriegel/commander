@@ -2,13 +2,11 @@
 using System.Diagnostics;
 #endif
 
-
 #if Windows
 using Microsoft.Win32;
 using System.Runtime.Versioning;
-using System.Runtime.InteropServices;
-
 [SupportedOSPlatform("windows")]
+
 #endif
 
 static class Theme
@@ -175,7 +173,7 @@ static class Theme
         {
             while (key != null)
             {
-                var status = RegNotifyChangeKeyValue(key.Handle.DangerousGetHandle(), false, 4, IntPtr.Zero, false);
+                var status = ClrWinApi3.RegNotifyChangeKeyValue(key.Handle.DangerousGetHandle(), false, 4, IntPtr.Zero, false);
                 if (status != 0)
                     break;
 
