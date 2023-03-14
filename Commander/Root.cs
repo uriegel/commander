@@ -1,3 +1,5 @@
+using CsTools.Extensions;
+using LinqTools;
 #if Linux
 
 record RootItem(
@@ -16,8 +18,41 @@ static class Root
 #if Linux
     public static async Task<RootItem[]> Get(Empty _)
     {
-        var result = await CsTools.Process.RunAsync("lsblk", "--bytes --output SIZE,NAME,LABEL,MOUNTPOINT,FSTYPE");
-        return Array.Empty<RootItem>(); 
+        var driveLines = (await CsTools.Process.RunCmdAsync("lsblk", "--bytes --output SIZE,NAME,LABEL,MOUNTPOINT,FSTYPE"))
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries);
+        var titles = driveLines[0];
+
+        var positions = new[]
+            {
+                0,
+                GetPart(titles, "NAME"),
+                GetPart(titles, "LABEL"),
+                GetPart(titles, "MOUNT"),
+                GetPart(titles, "FSTYPE")
+            };
+
+        return driveLines
+                .Skip(1)
+                .Select(CreateRootItem)
+                .ToArray();
+
+        RootItem CreateRootItem(string driveString)
+        {
+            string GetString(int pos1, int pos2)
+                => driveString[positions[pos1]..positions[pos2]].Trim();
+            var mountPoint = GetString(3, 4);
+            return new(
+                GetString(1, 2),
+                GetString(2, 3),
+                GetString(0, 1).ParseLong().GetOrDefault(0),
+                mountPoint,
+                mountPoint.Length > 0,
+                driveString[(positions[4])..].Trim()
+            );
+        }
+
+        int GetPart(string title, string key)
+            => title.IndexOf(key);
     }
     
 

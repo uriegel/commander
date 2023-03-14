@@ -1,4 +1,5 @@
 using LinqTools;
+using LinqTools.Async;
 using static Core;
 
 namespace CsTools;
@@ -37,4 +38,8 @@ public static class Process
                     null);
             }
         , e => new Result(null, null, null, e));
+
+    public static Task<string> RunCmdAsync(string fileName, string args)
+        => from n in RunAsync(fileName, args)
+           select n.Output.GetOrDefault("");
 }
