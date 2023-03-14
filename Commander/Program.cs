@@ -18,7 +18,7 @@ WebView
 #if DEBUG        
         .CorsOrigin("http://localhost:3000")
 #endif        
-//        .UseJsonPost<Object, Object>("commander/showdevtools", )
+        .UseJsonPost<Empty, RootItem[]>("commander/getroot", Root.Get)
         .Build())
 #if DEBUG            
     .DebuggingEnabled()
@@ -26,4 +26,4 @@ WebView
     .Build()
     .Run("de.uriegel.Commander");
 
-
+record Empty();
