@@ -34,28 +34,46 @@ static class Root
                 }
                 select (from n in driveLines
                                     .Skip(1)
+                                    .Append("home")
+                                    .Append("remotes")
                         where n.FilterDrives(columnPositions)
                         let item = CreateRootItem(n, columnPositions)
                         orderby item.IsMounted descending, item.Name
-                        select item)
+                        select item.Select(n => n.Name == "zzz" ? n with { Name = "remotes" }: n))
                     .ToArray())
             .GetOrThrow();
 
         RootItem CreateRootItem(string driveString, int[] columnPositions)
         {
-            var mountPoint = GetString(3, 4);
+            var mountPoint = driveString != "home" && driveString != "remotes" ? GetString(3, 4) : "";
 
-            return new(
-                GetString(1, 2).TrimName(),
-                GetString(2, 3),
-                GetString(0, 1)
-                    .ParseLong()
-                    .GetOrDefault(0),
-                mountPoint,
-                mountPoint.Length > 0,
-                driveString[(columnPositions[4])..]
-                    .Trim()
-            );
+            return driveString == "home"
+                ? new(
+                    "~", 
+                    "home",
+                    0,
+                    "home dir",
+                    true,
+                    "")
+                : driveString == "remotes"
+                ? new(
+                    "zzz", 
+                    "Zugriff auf entfernte Geräte",
+                    0,
+                    "",
+                    true,
+                    "")
+                : new(
+                    GetString(1, 2).TrimName(),
+                    GetString(2, 3),
+                    GetString(0, 1)
+                        .ParseLong()
+                        .GetOrDefault(0),
+                    mountPoint,
+                    mountPoint.Length > 0,
+                    driveString[(columnPositions[4])..]
+                        .Trim()
+                );
 
             string GetString(int pos1, int pos2)
                 => driveString[columnPositions[pos1]..columnPositions[pos2]].Trim();
@@ -67,7 +85,10 @@ static class Root
         ? name[2..]
         : name;
 
-    static bool FilterDrives(this string str, int[] columnPositions) => str[columnPositions[1]] > '~';
+    static bool FilterDrives(this string driveString, int[] columnPositions) => 
+        driveString != "home" && driveString != "remotes" 
+        ? driveString[columnPositions[1]] > '~'
+        : true;
 
 #endif
 }
