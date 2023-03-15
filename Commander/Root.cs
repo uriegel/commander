@@ -38,17 +38,21 @@ static class Root
 
         RootItem CreateRootItem(string driveString)
         {
-            string GetString(int pos1, int pos2)
-                => driveString[positions[pos1]..positions[pos2]].Trim();
             var mountPoint = GetString(3, 4);
             return new(
                 GetString(1, 2),
                 GetString(2, 3),
-                GetString(0, 1).ParseLong().GetOrDefault(0),
+                GetString(0, 1)
+                    .ParseLong()
+                    .GetOrDefault(0),
                 mountPoint,
                 mountPoint.Length > 0,
-                driveString[(positions[4])..].Trim()
+                driveString[(positions[4])..]
+                    .Trim()
             );
+
+            string GetString(int pos1, int pos2)
+                => driveString[positions[pos1]..positions[pos2]].Trim();
         }
 
         int GetPart(string title, string key)
