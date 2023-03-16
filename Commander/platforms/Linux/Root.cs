@@ -1,8 +1,7 @@
-using CsTools;
+#if Linux
 using CsTools.Extensions;
 using LinqTools;
 
-#if Linux
 using static CsTools.ProcessCmd;
 
 record RootItem(
@@ -14,11 +13,8 @@ record RootItem(
     string DriveType
 );
 
-#endif
-
 static class Root
 {
-#if Linux
     public static async Task<RootItem[]> Get(Empty _)
     {
         return (from n in await RunAsync("lsblk", "--bytes --output SIZE,NAME,LABEL,MOUNTPOINT,FSTYPE")
@@ -89,6 +85,6 @@ static class Root
         driveString != "home" && driveString != "remotes" 
         ? driveString[columnPositions[1]] > '~'
         : true;
+}
 
 #endif
-}
