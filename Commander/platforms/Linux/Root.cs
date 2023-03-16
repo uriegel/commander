@@ -48,7 +48,7 @@ static class Root
                     "~", 
                     "home",
                     0,
-                    "home dir",
+                    Directory.GetHomeDir(),
                     true,
                     "")
                 : driveString == "remotes"
