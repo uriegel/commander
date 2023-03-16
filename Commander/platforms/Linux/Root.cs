@@ -48,7 +48,7 @@ static class Root
                     "~", 
                     "home",
                     0,
-                    Directory.GetHomeDir(),
+                    CsTools.Directory.GetHomeDir(),
                     true,
                     "")
                 : driveString == "remotes"

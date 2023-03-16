@@ -1,5 +1,6 @@
 using static CsTools.Functional.Memoization;
 
+namespace CsTools;
 public static class Directory
 {
     public static Func<string> GetHomeDir { get; }

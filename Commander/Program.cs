@@ -18,6 +18,7 @@ WebView
 #if DEBUG        
         .CorsOrigin("http://localhost:3000")
 #endif        
+        .UseJsonPost<GetFiles, DirectoryItem[]>("commander/getfiles", Directory.GetFiles)
         .UseJsonPost<Empty, RootItem[]>("commander/getroot", Root.Get)
         .Build())
 #if DEBUG            
