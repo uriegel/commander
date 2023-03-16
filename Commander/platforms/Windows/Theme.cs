@@ -41,7 +41,9 @@ static class Theme
                     onChanged(theme);
                 }
             }
-        }).Start();
+        }){
+            IsBackground = true
+        }.Start();
     } 
 }
 #endif

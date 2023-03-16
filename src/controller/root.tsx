@@ -37,6 +37,7 @@ const getWindowsColumns = () => ({
 		{ name: "Beschreibung" },
 		{ name: "Größe", isRightAligned: true }
 	],
+    getRowClasses,
 	renderRow: renderWindowsRow
 })
 
