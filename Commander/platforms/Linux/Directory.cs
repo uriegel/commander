@@ -1,9 +1,10 @@
 #if Linux
 
-using GtkDotNet;
-using CsTools;
 using Microsoft.AspNetCore.Http;
+
 using AspNetExtensions;
+using CsTools.Extensions;
+using GtkDotNet;
 
 using static CsTools.Core;
 
@@ -19,9 +20,11 @@ static partial class Directory
                     using var iconInfo = IconInfo.Choose(iconHint, 16, IconLookup.ForceSvg);
                     var iconFile = iconInfo.GetFileName();
                     using var stream = iconFile?.OpenFile();
-                    await context.SendStream(stream!, null);
+                    await context.SendStream(stream!, startTime, iconFile);
                 }, 100), 
             1);
+
+    static readonly DateTime startTime = DateTime.Now;
 }
 
 #endif
