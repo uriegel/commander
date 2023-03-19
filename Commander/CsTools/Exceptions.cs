@@ -3,7 +3,7 @@ namespace CsTools;
 // TODO to CsTools
 public static partial class Core
 {
-    public static T RepeatOnException<T>(Func<T> func, int repeatCount, TimeSpan? delay = null) 
+    public static T RepeatOnException<T>(Func<T> func, int repeatCount) 
     {
         try
         {
@@ -13,9 +13,23 @@ public static partial class Core
         {
             if (repeatCount == 0)
                 throw;
+            return RepeatOnException(func, repeatCount--);
+        }
+    }
+
+    public static async Task<T> RepeatOnException<T>(Func<Task<T>> func, int repeatCount, TimeSpan? delay = null) 
+    {
+        try
+        {
+            return await func();
+        }
+        catch 
+        {
+            if (repeatCount == 0)
+                throw;
             if (delay.HasValue)
-                Task.Delay(delay.Value);
-            return RepeatOnException(func, repeatCount--, delay);
+                await Task.Delay(delay.Value);
+            return await RepeatOnException(func, repeatCount--, delay);
         }
     }
 }

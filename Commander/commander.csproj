@@ -23,12 +23,8 @@
       <DefineConstants>Linux</DefineConstants>
   </PropertyGroup>
 
-  <ItemGroup> 
-    <PackageReference Include="WebWindowNetCore" Version="4.3.0" />
-  </ItemGroup> 
-
   <ItemGroup Condition="'$(IsWindows)'=='true'">
-    <PackageReference Include="WebWindowNetCore.Windows" Version="1.0.1" />
+    <PackageReference Include="WebWindowNetCore.Windows" Version="1.1.0" />
     <EmbeddedResource Include="./kirk.ico">
       <LogicalName>icon</LogicalName>
     </EmbeddedResource>

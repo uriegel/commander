@@ -1,4 +1,6 @@
 #if Windows
+
+using ClrWinApi;
 using Microsoft.Win32;
 using System.Runtime.Versioning;
 [SupportedOSPlatform("windows")]
@@ -31,7 +33,7 @@ static class Theme
         {
             while (key != null)
             {
-                var status = ClrWinApi3.RegNotifyChangeKeyValue(key.Handle.DangerousGetHandle(), false, 4, IntPtr.Zero, false);
+                var status = Api.RegNotifyChangeKeyValue(key.Handle.DangerousGetHandle(), false, 4, IntPtr.Zero, false);
                 if (status != 0)
                     break;
 

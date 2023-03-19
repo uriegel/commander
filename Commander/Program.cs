@@ -31,6 +31,5 @@ WebView
 record Empty();
 
 
-// TODO Window Icons
 // TODO serve preview files
 // TODO serve release version from resource
