@@ -1,19 +1,16 @@
 #if Windows
 
-using ClrWinApi;
-using AspNetExtensions;
-
 using Microsoft.AspNetCore.Http;
 using System.Drawing;
-
+using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+
+using AspNetExtensions;
+using ClrWinApi;
 using LinqTools;
 
-using static CsTools.Core;
 using static ClrWinApi.Api;
-// TODO wrong no namespace in CsTools
-using static Core;
-using System.Drawing.Imaging;
+using static CsTools.Core;
 
 static partial class Directory
 {
@@ -26,7 +23,7 @@ static partial class Directory
     public static async Task ProcessIcon(HttpContext context, string iconHint)
     {
         var stream = await GetIconStream(iconHint);
-        await context.SendStream(stream!, null);
+        await context.SendStream(stream!, startTime, "icon.png");
     }
 
     static async Task<Stream> GetIconStream(string iconHint)
@@ -55,6 +52,8 @@ static partial class Directory
 
     // TODO
     const int FileAttributeNormal = 0x80;
+
+    static readonly DateTime startTime = DateTime.Now;
 }
 
 #endif
