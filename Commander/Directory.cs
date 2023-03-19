@@ -1,4 +1,7 @@
+using AspNetExtensions;
+using CsTools.Extensions;
 using LinqTools;
+using Microsoft.AspNetCore.Http;
 
 record DirectoryItem(
     string Name,
@@ -69,5 +72,14 @@ static partial class Directory
         bool FilterHidden(DirectoryItem item)
             => getFiles.ShowHiddenItems || !item.IsHidden;
     }
+
+    public static async Task ProcessFile(HttpContext context, string path)
+    {
+        using var stream = path.OpenFile();
+        await context.SendStream(stream, null, path);
+    }
+
+    public static async Task ProcessMovie(HttpContext context, string path)
+        => context.StreamRangeFile(path);
 }
 
