@@ -395,7 +395,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO getfiles, then getextendeditmes...
+// TODO getextendeditems
 // TODO drag'n'drop
 // TODO Check windows webview: drop file/files/folder/folders
 // TODO https://github.com/MicrosoftEdge/WebView2Feedback/issues/2313

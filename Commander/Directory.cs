@@ -21,6 +21,8 @@ record GetFilesResult(
     int FileCount
 );
 
+record FileRequest(string Path);
+
 static partial class Directory
 {
     public static Task<GetFilesResult> GetFiles(GetFiles getFiles)

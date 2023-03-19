@@ -18,8 +18,9 @@ WebView
 #if DEBUG        
         .CorsOrigin("http://localhost:3000")
 #endif        
-        .UseJsonPost<GetFiles, GetFilesResult>("commander/getfiles", Directory.GetFiles)
-        .UseJsonPost<Empty, RootItem[]>("commander/getroot", Root.Get)
+        .MapGet("commander/getIcon", context =>  Directory.ProcessIcon(context, context.Request.Query["path"].ToString()))
+        .JsonPost<GetFiles, GetFilesResult>("commander/getfiles", Directory.GetFiles)
+        .JsonPost<Empty, RootItem[]>("commander/getroot", Root.Get)
         .Build())
 #if DEBUG            
     .DebuggingEnabled()
@@ -28,3 +29,8 @@ WebView
     .Run("de.uriegel.Commander");
 
 record Empty();
+
+
+// TODO Window Icons
+// TODO serve preview files
+// TODO serve release version from resource
