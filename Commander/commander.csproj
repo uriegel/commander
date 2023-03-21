@@ -25,6 +25,18 @@
       <DefineConstants>Linux</DefineConstants>
   </PropertyGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="../resources/web/static/js/main.fc549684.js">
+      <LogicalName>webroot/js/main.fc549684.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../resources/web/static/css/main.f9551ba2.css">
+      <LogicalName>webroot/css/main.f9551ba2.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../resources/web/index.html">
+      <LogicalName>webroot/index.html</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup> 
+
   <ItemGroup Condition="'$(IsWindows)'=='true'">
     <PackageReference Include="WebWindowNetCore.Windows" Version="1.1.1 " />
     <EmbeddedResource Include="./kirk.ico">
@@ -33,7 +45,7 @@
   </ItemGroup> 
 
   <ItemGroup Condition="'$(IsLinux)'=='true'">
-    <PackageReference Include="WebWindowNetCore.Linux" Version="1.2.2" />
+    <PackageReference Include="WebWindowNetCore.Linux" Version="1.2.3" />
     <EmbeddedResource Include="./kirk.png">
       <LogicalName>icon</LogicalName>
     </EmbeddedResource>

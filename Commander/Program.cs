@@ -7,12 +7,11 @@ WebView
     .Title("Commander")
     .ResourceIcon("icon")
     .SaveBounds()
-    .Url($"http://localhost:3000{Platform.QueryString}")
 #if DEBUG        
-    //.DebugUrl("http://localhost:3000")
+    .DebugUrl($"http://localhost:3000{Platform.QueryString}")
 #endif            
     .ConfigureHttp(http => http
-    //     .ResourceWebroot("webroot", "/web")
+        .ResourceWebroot("webroot", "/static")
         .UseSse("commander/sse", Events.Source)
         .SideEffect(_ => Events.StartEvents())
 #if DEBUG        
@@ -33,7 +32,6 @@ WebView
 
 record Empty();
 
-// TODO serve release version from resource
 // TODO ExtendedInfos
 // TODO Rename
 // TODO CreateFolder

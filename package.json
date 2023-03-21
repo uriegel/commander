@@ -23,7 +23,6 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "BUILD_PATH='./resources/web' GENERATE_SOURCEMAP='false' react-scripts build && npm run copy",
-    "electron": "tsc -p electron/typescript",
     "copy": "cp resources/web/static/js/*.js resources/script.js && cp resources/web/static/css/*.css resources/style.css"
   },
   "eslintConfig": {
