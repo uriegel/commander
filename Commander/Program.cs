@@ -33,6 +33,8 @@ WebView
 
 record Empty();
 
-
-// TODO serve preview files
 // TODO serve release version from resource
+// TODO ExtendedInfos
+// TODO Rename
+// TODO CreateFolder
+// TODO Delete items

@@ -25,10 +25,6 @@
       <DefineConstants>Linux</DefineConstants>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="CsTools" Version="2.1.0" />
-  </ItemGroup>
-
   <ItemGroup Condition="'$(IsWindows)'=='true'">
     <PackageReference Include="WebWindowNetCore.Windows" Version="1.1.1 " />
     <EmbeddedResource Include="./kirk.ico">
@@ -37,7 +33,7 @@
   </ItemGroup> 
 
   <ItemGroup Condition="'$(IsLinux)'=='true'">
-    <PackageReference Include="WebWindowNetCore.Linux" Version="1.2.1" />
+    <PackageReference Include="WebWindowNetCore.Linux" Version="1.2.2" />
     <EmbeddedResource Include="./kirk.png">
       <LogicalName>icon</LogicalName>
     </EmbeddedResource>

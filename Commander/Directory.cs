@@ -79,7 +79,7 @@ static partial class Directory
         await context.SendStream(stream, null, path);
     }
 
-    public static async Task ProcessMovie(HttpContext context, string path)
+    public static Task ProcessMovie(HttpContext context, string path)
         => context.StreamRangeFile(path);
 }
 
