@@ -10,7 +10,7 @@ WebView
     .DebugUrl($"http://localhost:3000")
     .QueryString(Platform.QueryString)
     .ConfigureHttp(http => http
-        .ResourceWebroot("webroot", "/static")
+        .ResourceWebroot("webroot", "/static")        
         .UseSse("commander/sse", Events.Source)
         .SideEffect(_ => Events.StartEvents())
 #if DEBUG        
@@ -31,6 +31,7 @@ WebView
 
 record Empty();
 
+// TODO Icon in Release in Linux
 // TODO ExtendedInfos
 // TODO Rename
 // TODO CreateFolder
