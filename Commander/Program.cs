@@ -7,9 +7,7 @@ WebView
     .Title("Commander")
     .ResourceIcon("icon")
     .SaveBounds()
-#if DEBUG        
     .DebugUrl($"http://localhost:3000{Platform.QueryString}")
-#endif            
     .ConfigureHttp(http => http
         .ResourceWebroot("webroot", "/static")
         .UseSse("commander/sse", Events.Source)
@@ -31,6 +29,9 @@ WebView
     .Run("de.uriegel.Commander");
 
 record Empty();
+
+// TODO Linux Icon from Stream
+// TODO IsDebugger Attached
 
 // TODO ExtendedInfos
 // TODO Rename

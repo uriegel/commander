@@ -25,14 +25,14 @@
       <DefineConstants>Linux</DefineConstants>
   </PropertyGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="../resources/web/static/js/main.fc549684.js">
-      <LogicalName>webroot/js/main.fc549684.js</LogicalName>
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <EmbeddedResource Include="../resources/script.js">
+      <LogicalName>webroot/script.js</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="../resources/web/static/css/main.f9551ba2.css">
-      <LogicalName>webroot/css/main.f9551ba2.css</LogicalName>
+    <EmbeddedResource Include="../resources/style.css">
+      <LogicalName>webroot/style.css</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="../resources/web/index.html">
+    <EmbeddedResource Include="../resources/index.html">
       <LogicalName>webroot/index.html</LogicalName>
     </EmbeddedResource>
   </ItemGroup> 
