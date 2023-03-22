@@ -31,7 +31,6 @@ WebView
 
 record Empty();
 
-// TODO Icon in Release in Linux
 // TODO ExtendedInfos
 // TODO Rename
 // TODO CreateFolder
