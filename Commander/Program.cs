@@ -35,5 +35,4 @@ record Empty();
 // TODO Rename
 // TODO CreateFolder
 // TODO Delete items
-// TODO React generate source maps = false Windows
-// TODO npm cp Windows
+// TODO Windows exe file Icon

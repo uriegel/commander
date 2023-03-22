@@ -23,8 +23,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "GENERATE_SOURCEMAP='false' react-scripts build && npm run copy",
-    "build Windows": "react-scripts build && npm run copy",
-    "copy": "cp resources/web/static/js/*.js resources/script.js && cp resources/web/static/css/*.css resources/style.css"
+    "build Windows": "set \"GENERATE_SOURCEMAP=false\" && react-scripts build && npm run wincopy",
+    "copy": "cp build/static/js/*.js resources/script.js && cp build/static/css/*.css resources/style.css",
+    "wincopy": "xcopy .\\build\\static\\js\\*.js .\\resources\\script.js /y &&  copy .\\build\\static\\css\\*.css .\\resources\\style.css /y"
   },
   "eslintConfig": {
     "rules": {
