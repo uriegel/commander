@@ -45,6 +45,8 @@
   </ItemGroup> 
 
   <ItemGroup Condition="'$(IsLinux)'=='true'">
+    <PackageReference Include="CsTools" Version="2.3.0" />
+    <PackageReference Include="MetadataExtractor" Version="2.7.2" />
     <PackageReference Include="WebWindowNetCore.Linux" Version="1.3.0" />
     <EmbeddedResource Include="./kirk.png">
       <LogicalName>icon</LogicalName>

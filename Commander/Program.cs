@@ -1,5 +1,18 @@
-﻿using LinqTools;
+﻿using CsTools.Extensions;
+using LinqTools;
+using MetadataExtractor;
+using MetadataExtractor.Formats.Exif;
 using WebWindowNetCore;
+
+
+var directories = ImageMetadataReader.ReadMetadata("/media/uwe/Home/Bilder/Fotos/2022/Uwes Handy/IMG_20210909_161122.jpg");
+foreach (var directory in directories)
+    foreach (var tag in directory.Tags)
+        Console.WriteLine($"{directory.Name} - {tag.Name} = {tag.Description}");
+
+var subIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
+var dateTime = subIfdDirectory?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal).ToDateTime("yyyy:MM:dd HH:mm:ss");
+
 
 WebView
     .Create()
