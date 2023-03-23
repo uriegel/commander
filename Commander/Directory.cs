@@ -14,6 +14,7 @@ static partial class Directory
                 .GetDirectories()
                 .Select(CreateDirItem)
                 .Where(FilterHidden)
+                .OrderBy(n => n.Name)
                 .ToArray();                
         
         var files = 

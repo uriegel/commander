@@ -33,7 +33,6 @@ WebView
 record Empty();
 
 // TODO ExtendedInfos Windows Version
-// TODO Directory order from server
 // TODO Rename
 // TODO CreateFolder
 // TODO Delete items
