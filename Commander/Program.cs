@@ -1,18 +1,5 @@
-﻿using CsTools.Extensions;
-using LinqTools;
-using MetadataExtractor;
-using MetadataExtractor.Formats.Exif;
+﻿using LinqTools;
 using WebWindowNetCore;
-
-
-var directories = ImageMetadataReader.ReadMetadata("/media/uwe/Home/Bilder/Fotos/2022/Uwes Handy/IMG_20210909_161122.jpg");
-foreach (var directory in directories)
-    foreach (var tag in directory.Tags)
-        Console.WriteLine($"{directory.Name} - {tag.Name} = {tag.Description}");
-
-var subIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
-var dateTime = subIfdDirectory?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal).ToDateTime("yyyy:MM:dd HH:mm:ss");
-
 
 WebView
     .Create()
@@ -35,6 +22,7 @@ WebView
         .MapGet("commander/movie", context =>  Directory.ProcessMovie(context, context.Request.Query["path"].ToString()))
         .JsonPost<GetFiles, GetFilesResult>("commander/getfiles", Directory.GetFiles)
         .JsonPost<Empty, RootItem[]>("commander/getroot", Root.Get)
+        .JsonPost<GetExtendedItems, GetExtendedItemsResult>("commander/getextendeditems", Directory.GetExtendedItems)
         .Build())
 #if DEBUG            
     .DebuggingEnabled()
@@ -44,7 +32,8 @@ WebView
 
 record Empty();
 
-// TODO ExtendedInfos
+// TODO ExtendedInfos Windows Version
+// TODO Directory order from server
 // TODO Rename
 // TODO CreateFolder
 // TODO Delete items

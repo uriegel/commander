@@ -4,7 +4,7 @@ import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { addParent, Controller, ControllerResult, ControllerType, extractSubPath, formatDateTime, formatSize, formatVersion, getExtension, sortItems } from "./controller"
-import { ExtendedItem, GetExtendedItemsResult, GetItemResult, IOErrorResult, request, Version } from "./requests"
+import { GetExtendedItemsResult, GetItemResult, IOErrorResult, request, Version } from "./requests"
 import { ROOT } from "./root"
 
 export enum ItemsType {
@@ -138,23 +138,23 @@ const getExtendedItems = async (path: string, items: FolderViewItem[]): Promise<
 			items: (items as FolderViewItem[]).map(n => n.name),
 			path
 		})
-		: { path: "", extendedItems: [] }
+		: { path: "", versions: [], exifTimes: [] }
 
-const setExtendedItems = (items: FolderViewItem[], extendedItems: ExtendedItem[]) => 
-	items.map((n, i) => !extendedItems[i].date && !extendedItems[i].version
+const setExtendedItems = (items: FolderViewItem[], extended: GetExtendedItemsResult):FolderViewItem[] => 
+	items.map((n, i) => !extended.exifTimes[i] && (extended.versions && !extended.versions[i])
 		? n
-		: extendedItems[i].date && !extendedItems[i].version
-		? {...n, exifDate: extendedItems[i].date} 
-		: !extendedItems[i].date && extendedItems[i].version
-		? {...n, version: extendedItems[i].version} 
-		: {...n, version: extendedItems[i].version, exifDate: extendedItems[i].date })
+		: extended.exifTimes[i] && (extended.versions && !extended.versions[i])
+		? {...n, exifDate: extended.exifTimes[i] || undefined } 
+		: !extended.exifTimes[i] && (extended.versions && extended.versions[i])
+		? {...n, version: extended.versions[i] || undefined } 
+		: {...n, version: (extended.versions && extended.versions[i] || undefined), exifDate: extended.exifTimes[i] || undefined })
 		 
 const getSortFunction = (index: number, descending: boolean) => {
 	const ascDesc = (sortResult: number) => descending ? -sortResult : sortResult
 	const sf = index == 0
 		? (a: FolderViewItem, b: FolderViewItem) => a.name.localeCompare(b.name) 
 		: index == 1
-			? (a: FolderViewItem, b: FolderViewItem) => {
+			? (a: FolderViewItem, b: FolderViewItem) => {	
 				let aa = a.exifDate ? a.exifDate : a.time || ""
 				let bb = b.exifDate ? b.exifDate : b.time || ""
 				return aa.localeCompare(bb) 

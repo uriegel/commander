@@ -32,13 +32,9 @@ export type Version = {
     build: number
 }
 
-export type ExtendedItem = {
-    date?: string
-    version?: Version
-}
-
 export type GetExtendedItemsResult = {
-    extendedItems: ExtendedItem[]
+    exifTimes: (string | null)[]
+    versions?: (Version | null)[]
     path: string
 }
 

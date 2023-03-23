@@ -71,7 +71,7 @@ export const getRootController = (controller: Controller | null): ControllerResu
         type: ControllerType.Root, 
         getColumns: platform == Platform.Windows ? getWindowsColumns : getLinuxColumns,
         getItems,
-        getExtendedItems: async () => ({ path: "", extendedItems: [] }),
+        getExtendedItems: async () => ({ path: "", exifTimes: [], versions: [] }),
         setExtendedItems: items=>items,
         onEnter: platform == Platform.Windows ? onWindowsEnter : onLinuxEnter,
         sort: (items: FolderViewItem[]) => items,

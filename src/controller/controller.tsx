@@ -3,7 +3,7 @@ import { DialogHandle } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import { lastIndexOfAny } from "../globals"
 import { getFileSystemController } from "./filesystem"
-import { ExtendedItem, GetExtendedItemsResult, GetItemResult, IOError, Version } from "./requests"
+import { GetExtendedItemsResult, GetItemResult, IOError, Version } from "./requests"
 import { getRootController, ROOT } from "./root"
 
 const dateFormat = Intl.DateTimeFormat("de-DE", {
@@ -36,7 +36,7 @@ export interface Controller {
     getColumns: ()=>TableColumns<FolderViewItem>
     getItems: (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean) => Promise<GetItemResult>
     getExtendedItems: (path: string, items: FolderViewItem[]) => Promise<GetExtendedItemsResult>
-    setExtendedItems: (items: FolderViewItem[], extended: ExtendedItem[])=>FolderViewItem[]
+    setExtendedItems: (items: FolderViewItem[], extended: GetExtendedItemsResult)=>FolderViewItem[]
     onEnter: (path: string, item: FolderViewItem, keys: SpecialKeys) => onEnterResult
     sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => FolderViewItem[]
     itemsSelectable: boolean
@@ -63,7 +63,7 @@ export const createEmptyController = (): Controller => ({
         renderRow: p => []
     }),
     getItems: async () => ({ items: [], path: "", dirCount: 0, fileCount: 0 }),
-    getExtendedItems: async () => ({ path: "", extendedItems: [] }),
+    getExtendedItems: async () => ({ path: "", exifTimes: [], versions: []}),
     setExtendedItems: items=>items,
     onEnter: (i, k) => ({ processed: true }),
     sort: (items: FolderViewItem[]) => items,

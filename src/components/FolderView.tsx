@@ -148,7 +148,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         refPath.current = items.path
         const extendedInfoItems = await controller.current.getExtendedItems(items.path, items.items)
         if (extendedInfoItems.path == refPath.current) 
-            setItems(controller.current.setExtendedItems(items.items, extendedInfoItems.extendedItems))    
+            setItems(controller.current.setExtendedItems(items.items, extendedInfoItems))    
     }
 
     const onEnter = (item: FolderViewItem, keys: SpecialKeys) => {
