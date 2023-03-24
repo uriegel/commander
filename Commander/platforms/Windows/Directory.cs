@@ -50,10 +50,20 @@ static partial class Directory
         return ms;
     }
 
+        public static Task<GetExtendedItemsResult> GetExtendedItems(GetExtendedItems getExtendedItems)
+        => GetExtendedItems(getExtendedItems.Path, getExtendedItems.Items)
+            .ToAsync();
+
+
     // TODO
     const int FileAttributeNormal = 0x80;
 
     static readonly DateTime startTime = DateTime.Now;
 }
+
+record GetExtendedItemsResult(
+    DateTime?[] ExifTimes,
+    string Path
+);
 
 #endif

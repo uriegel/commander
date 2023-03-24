@@ -7,6 +7,7 @@ using CsTools.Extensions;
 using GtkDotNet;
 
 using static CsTools.Core;
+using LinqTools;
 
 static partial class Directory
 {
@@ -24,8 +25,17 @@ static partial class Directory
                 }, 100), 
             1);
 
+    public static Task<GetExtendedItemsResult> GetExtendedItems(GetExtendedItems getExtendedItems)
+        => GetExtendedItems(getExtendedItems.Path, getExtendedItems.Items)
+            .ToAsync();
+
     static readonly DateTime startTime = DateTime.Now;
 }
+
+record GetExtendedItemsResult(
+    DateTime?[] ExifTimes,
+    string Path
+);
 
 #endif
 

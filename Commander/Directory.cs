@@ -52,11 +52,11 @@ static partial class Directory
             => getFiles.ShowHiddenItems || !item.IsHidden;
     }
 
-    public static Task<GetExtendedItemsResult> GetExtendedItems(GetExtendedItems getExtendedItems)
+    public static GetExtendedItemsResult GetExtendedItems(string path, string[] items)
     {
-        DateTime? GetExifDate(string path)
+        DateTime? GetExifDate(string file)
         {
-            var directories = ImageMetadataReader.ReadMetadata(getExtendedItems.Path.AppendPath(path));
+            var directories = ImageMetadataReader.ReadMetadata(path.AppendPath(file));
             var subIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
             return subIfdDirectory
                     ?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal)
@@ -71,8 +71,7 @@ static partial class Directory
                 ? GetExifDate(item)
                 : null;
 
-        return (new GetExtendedItemsResult(getExtendedItems.Items.Select(CheckGetExifDate).ToArray(), getExtendedItems.Path))
-                    .ToAsync();
+        return new GetExtendedItemsResult(items.Select(CheckGetExifDate).ToArray(), path);
     }
 
     public static async Task ProcessFile(HttpContext context, string path)
@@ -108,11 +107,6 @@ record GetFilesResult(
 
 record GetExtendedItems(
     string[] Items,
-    string Path
-);
-
-record GetExtendedItemsResult(
-    DateTime?[] ExifTimes,
     string Path
 );
 
