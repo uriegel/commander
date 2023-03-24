@@ -11,6 +11,8 @@ using LinqTools;
 
 using static ClrWinApi.Api;
 using static CsTools.Core;
+using System.Diagnostics;
+using CsTools.Extensions;
 
 static partial class Directory
 {
@@ -50,10 +52,29 @@ static partial class Directory
         return ms;
     }
 
-        public static Task<GetExtendedItemsResult> GetExtendedItems(GetExtendedItems getExtendedItems)
-        => GetExtendedItems(getExtendedItems.Path, getExtendedItems.Items)
-            .ToAsync();
+    public static Task<GetExtendedItemsResult> GetExtendedItems(GetExtendedItems getExtendedItems)
+    {
+        Version? GetVersion(string file)
+            => FileVersionInfo
+                .GetVersionInfo(getExtendedItems
+                                    .Path
+                                    .AppendPath(file))
+                .MapVersion();
 
+        Version? CheckGetVersion(string item)
+            => item.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase) || item.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase)
+                ? GetVersion(item)
+                : null;
+
+        return (GetExtendedItems(getExtendedItems.Path, getExtendedItems.Items) with 
+        {
+            Versions = getExtendedItems
+                        .Items
+                        .Select(CheckGetVersion)
+                        .ToArray()
+        })
+            .ToAsync();
+    }
 
     // TODO
     const int FileAttributeNormal = 0x80;
@@ -61,9 +82,28 @@ static partial class Directory
     static readonly DateTime startTime = DateTime.Now;
 }
 
+record Version(
+    int Major,
+    int Minor,
+    int Patch,
+    int Build
+);
+
 record GetExtendedItemsResult(
     DateTime?[] ExifTimes,
+    Version?[]? Versions,
     string Path
-);
+) {
+    public static GetExtendedItemsResult New(DateTime?[] exifTimes, string path)
+        => new(exifTimes, null, path);
+};
+
+static class VersionExtensions
+{
+    public static Version? MapVersion(this FileVersionInfo? info)
+        => info != null
+            ? new(info.FileMajorPart, info.FileMinorPart, info.FilePrivatePart, info.FileBuildPart)
+            : null;
+}    
 
 #endif

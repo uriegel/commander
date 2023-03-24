@@ -32,8 +32,7 @@ WebView
 
 record Empty();
 
-// TODO ExtendedInfos Windows Version
 // TODO Rename
 // TODO CreateFolder
 // TODO Delete items
-// TODO Windows exe file Icon
+
