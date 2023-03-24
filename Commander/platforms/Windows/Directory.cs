@@ -94,7 +94,7 @@ record GetExtendedItemsResult(
     Version?[]? Versions,
     string Path
 ) {
-    public static GetExtendedItemsResult New(DateTime?[] exifTimes, string path)
+    public GetExtendedItemsResult(DateTime?[] exifTimes, string path)
         => new(exifTimes, null, path);
 };
 

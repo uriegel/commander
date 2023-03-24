@@ -71,7 +71,7 @@ static partial class Directory
                 ? GetExifDate(item)
                 : null;
 
-        return GetExtendedItemsResult.New(items.Select(CheckGetExifDate).ToArray(), path);
+        return new (items.Select(CheckGetExifDate).ToArray(), path);
     }
 
     public static async Task ProcessFile(HttpContext context, string path)
