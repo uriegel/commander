@@ -5,9 +5,10 @@ using Microsoft.AspNetCore.Http;
 using AspNetExtensions;
 using CsTools.Extensions;
 using GtkDotNet;
+using LinqTools;
 
 using static CsTools.Core;
-using LinqTools;
+using static Core;
 
 static partial class Directory
 {
@@ -15,8 +16,8 @@ static partial class Directory
         => info.Extension?.Length > 0 ? info.Extension : ".noextension";
 
     public static Task ProcessIcon(HttpContext context, string iconHint)
-        => RepeatOnException(() => 
-            WebWindowNetCore.WebView.GtkApplication!.Dispatch(async () =>
+        => RepeatOnException(async () => 
+            await WebWindowNetCore.WebView.GtkApplication!.Dispatch(async () =>
                 {
                     using var iconInfo = IconInfo.Choose(iconHint, 16, IconLookup.ForceSvg);
                     var iconFile = iconInfo.GetFileName();
@@ -28,6 +29,16 @@ static partial class Directory
     public static Task<GetExtendedItemsResult> GetExtendedItems(GetExtendedItems getExtendedItems)
         => GetExtendedItems(getExtendedItems.Path, getExtendedItems.Items)
             .ToAsync();
+
+    public static Task<IOResult> DeleteItems(DeleteItemsParam input)
+        => LinqTools.Core.TryAsync<Nothing, IOError>(
+            () => WebWindowNetCore.WebView.GtkApplication!.Dispatch(() =>
+                {
+                    input.Names.ForEach(n => GFile.Trash(input.Path.AppendPath(n)));
+                    return 0.ToNothing();
+                }, 100),
+            e => new IOError())
+            .ToIOResult();                    
 
     static readonly DateTime startTime = DateTime.Now;
 }

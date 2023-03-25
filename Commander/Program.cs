@@ -23,6 +23,8 @@ WebView
         .JsonPost<GetFiles, GetFilesResult>("commander/getfiles", Directory.GetFiles)
         .JsonPost<Empty, RootItem[]>("commander/getroot", Root.Get)
         .JsonPost<GetExtendedItems, GetExtendedItemsResult>("commander/getextendeditems", Directory.GetExtendedItems)
+        .JsonPost<CreateFolderParam, IOResult>("commander/createfolder", Directory.CreateFolder)
+        .JsonPost<DeleteItemsParam, IOResult>("commander/deleteitems", Directory.DeleteItems)
         .Build())
 #if DEBUG            
     .DebuggingEnabled()

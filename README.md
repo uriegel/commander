@@ -12,12 +12,21 @@ Press F5 (`Debug` oder `Debug Windows`)
 
 ```npm install -g react-devtools```
 
-Start devtools
+Start devtools:
+
+```react-devtools```
 
 ## Build
 
 Press `StartCtrl+Shift+B` and run `buildRelease`. `Commander/bin/Release/net6.0/linux-x64/publish/Commander` is a single file executable containing all but `electron` and `.NET runtime 6.0`.
 
+## Run as admin
+on Linux type
+```
+sudo -E ./commander
+```
+
+on Windows start with elevated rights
 ## Legacy
 
 ### on Linux

@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Http;
+
 using AspNetExtensions;
 using CsTools.Extensions;
 using LinqTools;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
-using Microsoft.AspNetCore.Http;
+
 static partial class Directory
 {
     public static Task<GetFilesResult> GetFiles(GetFiles getFiles)
@@ -82,6 +84,25 @@ static partial class Directory
 
     public static Task ProcessMovie(HttpContext context, string path)
         => context.StreamRangeFile(path);
+
+    public static Task<IOResult> CreateFolder(CreateFolderParam input)
+        => LinqTools.Core.Try(
+                () => System.IO.Directory.CreateDirectory(input.Path.AppendPath(input.Name)).ToNothing(),
+                e => new IOError())
+                .ToIOResult();
+
+    static Task<IOResult> ToIOResult(this Result<Nothing, IOError> result)
+        => result.Match(
+                _ => (IOError?)null,
+                e => e 
+            ).ToTask();
+
+    static async Task<IOResult> ToIOResult(this Task<Result<Nothing, IOError>> result)
+        => new IOResult(
+            await result.MatchAsync(
+                _ => (IOError?)null,
+                e => e
+            ));
 }
 
 record DirectoryItem(
@@ -112,3 +133,22 @@ record GetExtendedItems(
 
 record FileRequest(string Path);
 
+record CreateFolderParam(
+    string Path,
+    string Name
+);
+
+record DeleteItemsParam(
+    string Path,
+    string[] Names
+);
+
+record IOError();
+
+record IOResult(IOError? IOError);
+
+static class IOResultExtensions
+{
+    public static Task<IOResult> ToTask(this IOError? ioError)
+        => (new IOResult(ioError)).ToAsync();
+}

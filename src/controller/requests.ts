@@ -146,8 +146,7 @@ export async function request<T extends Result>(method: RequestType, input?: Req
     const res = await response.json() as T
     if ((res as Exception).exception)
         throw ((res as Exception).exception)
-    else {
+    else 
         return res
     }
-}
 
