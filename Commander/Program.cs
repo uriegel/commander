@@ -34,7 +34,8 @@ WebView
 
 record Empty();
 
+// TODO CreateFolder Exceptions
+// TODO Delete items Exceptions
+// TODO Delete items Windows
 // TODO Rename
-// TODO CreateFolder
-// TODO Delete items
-
+// TODO Copy
