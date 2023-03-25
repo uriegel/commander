@@ -195,7 +195,7 @@ const rename = async (path: string, item: FolderViewItem, dialog: DialogHandle|n
 				name: item.name,
 				newName:  result.input ?? ""
 			})).error
-		: null
+		: undefined
 }
 
 const createFolder = async (path: string, item: FolderViewItem, dialog: DialogHandle|null) => {
@@ -211,7 +211,7 @@ const createFolder = async (path: string, item: FolderViewItem, dialog: DialogHa
 				path,
 				name: result.input ?? "",
 			})).error
-		: null
+		: undefined
 }
 
 export const getItemsType = (items: FolderViewItem[]): ItemsType => {
@@ -256,7 +256,7 @@ const deleteItems = async (path: string, items: FolderViewItem[], dialog: Dialog
 	 			path,
 	 			names: items.map(n => n.name),
 	 		})).error
-	 	: null
+	 	: undefined
 }
 
 export const compareVersion = (versionLeft?: Version, versionRight?: Version) =>

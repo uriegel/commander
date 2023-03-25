@@ -275,15 +275,15 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             refresh() 
     }
 
-    const checkResult = async (error: IOError | null) => {
+    const checkResult = async (error: IOError | undefined) => {
         if (error) {
-            const text = error.Case == "AccessDenied" 
+            const text = error == IOError.AccessDenied
                         ? "Zugriff verweigert"
-                        : error.Case == "DeleteToTrashNotPossible"
+                        : error == IOError.DeleteToTrashNotPossible
                         ? "Löschen nicht möglich"
-                        : error.Case == "AlreadyExists"
+                        : error == IOError.AlreadyExists
                         ? "Das Element existiert bereits"
-                        : error.Case == "FileNotFound"
+                        : error == IOError.FileNotFound
                         ? "Das Element ist nicht vorhanden"
                         : "Die Aktion konnte nicht ausgeführt werden"
             await dialog?.show({

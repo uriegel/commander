@@ -87,8 +87,8 @@ static partial class Directory
 
     public static Task<IOResult> CreateFolder(CreateFolderParam input)
         => LinqTools.Core.Try(
-                () => System.IO.Directory.CreateDirectory(input.Path.AppendPath(input.Name)).ToNothing(),
-                e => new IOError())
+            () => System.IO.Directory.CreateDirectory(input.Path.AppendPath(input.Name)).ToNothing(),
+            MapExceptionToIOError)
                 .ToIOResult();
 
     static Task<IOResult> ToIOResult(this Result<Nothing, IOError> result)
@@ -103,6 +103,16 @@ static partial class Directory
                 _ => (IOError?)null,
                 e => e
             ));
+
+    static IOError MapExceptionToIOError(Exception e)
+        => e switch
+        {
+            UnauthorizedAccessException ue                     => IOError.AccessDenied,
+            GtkDotNet.GErrorException gee  when gee.Code ==  1 => IOError.FileNotFound, 
+            GtkDotNet.GErrorException gee  when gee.Code == 14 => IOError.DeleteToTrashNotPossible, // TODO or IOError.AccessDenied
+            _                                                  => IOError.Exn
+        };
+
 }
 
 record DirectoryItem(
@@ -143,9 +153,16 @@ record DeleteItemsParam(
     string[] Names
 );
 
-record IOError();
+enum IOError {
+    NoError,
+    AccessDenied,
+    AlreadyExists,
+    FileNotFound,
+    DeleteToTrashNotPossible,
+    Exn
+}
 
-record IOResult(IOError? IOError);
+record IOResult(IOError? Error);
 
 static class IOResultExtensions
 {

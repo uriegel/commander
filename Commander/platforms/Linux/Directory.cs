@@ -37,7 +37,7 @@ static partial class Directory
                     input.Names.ForEach(n => GFile.Trash(input.Path.AppendPath(n)));
                     return 0.ToNothing();
                 }, 100),
-            e => new IOError())
+            MapExceptionToIOError)
             .ToIOResult();                    
 
     static readonly DateTime startTime = DateTime.Now;

@@ -77,9 +77,9 @@ export const getRootController = (controller: Controller | null): ControllerResu
         sort: (items: FolderViewItem[]) => items,
         itemsSelectable: false,
         appendPath: (path: string, subPath: string) => subPath,
-        rename: async () => null,
-        createFolder: async () => null,
-        deleteItems: async () => null,
+        rename: async () => undefined,
+        createFolder: async () => undefined,
+        deleteItems: async () => undefined,
     }})
 
 const getItems = async () => {

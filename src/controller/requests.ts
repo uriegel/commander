@@ -38,35 +38,17 @@ export type GetExtendedItemsResult = {
     path: string
 }
 
-type AccessDenied = {
-    Case: "AccessDenied"
+export enum IOError {
+    NoError,
+    AccessDenied,
+    AlreadyExists,
+    FileNotFound,
+    DeleteToTrashNotPossible,
+    Exn
 }
-
-type AlreadyExists = {
-    Case: "AlreadyExists"
-}
-
-type FileNotFound = {
-    Case: "FileNotFound"
-}
-
-type DeleteToTrashNotPossible = {
-    Case: "DeleteToTrashNotPossible"
-}
-
-type Exn = {
-    Case: "Exception"
-}
-
-export type IOError =
-    | AccessDenied
-    | AlreadyExists
-    | FileNotFound
-    | DeleteToTrashNotPossible
-    | Exn 
 
 export type IOErrorResult = {
-    error: IOError
+    error?: IOError
 }
 
 export type GetRootResult = RootItem[]
