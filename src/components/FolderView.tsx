@@ -396,7 +396,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 export default FolderView
 
 // TODO copy refresh
-// TODO copy conflicts no: dialog to the right side
+// TODO copy copy attributes
 // TODO copy progress 
 // TODO copy folders
 // TODO move: delete all sources 
