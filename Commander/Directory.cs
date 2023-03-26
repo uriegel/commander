@@ -91,6 +91,12 @@ static partial class Directory
             MapExceptionToIOError)
                 .ToIOResult();
 
+    public static Task<IOResult> RenameItem(RenameItemParam input)
+        => LinqTools.Core.Try(
+            () => System.IO.Directory.Move(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName)),
+            MapExceptionToIOError)
+                .ToIOResult();
+
     static Task<IOResult> ToIOResult(this Result<Nothing, IOError> result)
         => result.Match(
                 _ => (IOError?)null,
@@ -136,6 +142,12 @@ record FileRequest(string Path);
 record CreateFolderParam(
     string Path,
     string Name
+);
+
+record RenameItemParam(
+    string Path,
+    string Name,
+    string NewName
 );
 
 record DeleteItemsParam(

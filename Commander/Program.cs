@@ -25,6 +25,7 @@ WebView
         .JsonPost<GetExtendedItems, GetExtendedItemsResult>("commander/getextendeditems", Directory.GetExtendedItems)
         .JsonPost<CreateFolderParam, IOResult>("commander/createfolder", Directory.CreateFolder)
         .JsonPost<DeleteItemsParam, IOResult>("commander/deleteitems", Directory.DeleteItems)
+        .JsonPost<RenameItemParam, IOResult>("commander/renameitem", Directory.RenameItem)
         .Build())
 #if DEBUG            
     .DebuggingEnabled()

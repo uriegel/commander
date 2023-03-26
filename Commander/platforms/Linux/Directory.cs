@@ -8,7 +8,6 @@ using GtkDotNet;
 using LinqTools;
 
 using static CsTools.Core;
-using static Core;
 
 static partial class Directory
 {
