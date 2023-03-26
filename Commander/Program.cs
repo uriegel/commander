@@ -26,6 +26,7 @@ WebView
         .JsonPost<CreateFolderParam, IOResult>("commander/createfolder", Directory.CreateFolder)
         .JsonPost<DeleteItemsParam, IOResult>("commander/deleteitems", Directory.DeleteItems)
         .JsonPost<RenameItemParam, IOResult>("commander/renameitem", Directory.RenameItem)
+        .JsonPost<CopyItemsParam, IOResult>("commander/copyitems", Directory.CopyItems)
         .Build())
 #if DEBUG            
     .DebuggingEnabled()

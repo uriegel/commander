@@ -1,10 +1,10 @@
 import * as R from "ramda"
-import { DialogHandle, Slide } from "web-dialog-react"
+import { DialogHandle, Slide, Result } from "web-dialog-react"
 import CopyConflicts, { ConflictItem } from "../components/CopyConflicts"
 import { FolderViewItem } from "../components/FolderView"
 import { Controller, ControllerType } from "./controller"
 import { compareVersion, getItemsType, ItemsType } from "./filesystem"
-import { IOError } from "./requests"
+import { IOError, IOErrorResult, request } from "./requests"
 
 export interface CopyController {
     copy: ()=>Promise<IOError|null>
@@ -70,7 +70,7 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
 
                                 
             const result = await dialog?.show({
-                text,
+                text,   
                 slide: fromLeft ? Slide.Left : Slide.Right,
                 extension: conflictItems.length ? CopyConflicts : undefined,
                 extensionProps: conflictItems, 
@@ -81,8 +81,20 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                 defBtnYes: !defNo,
                 defBtnNo: defNo
             })
-                    
-            return null
+            if (result?.result != Result.Cancel) {
+                const copyItems = result?.result == Result.Yes
+                    ? items.map(n => n.name)
+                    : R.without(conflictItems.map(n => n.name), items.map(n => n.name))
+                await request<IOErrorResult>("copyitems", {
+                    path: sourcePath!,
+                    targetPath: targetPath!,
+                    items: copyItems,
+                    move
+                })
+                return null
+            }
+            else
+               return null
         }
     })
 

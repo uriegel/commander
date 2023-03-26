@@ -11,20 +11,20 @@ static partial class Directory
     public static Task<GetFilesResult> GetFiles(GetFiles getFiles)
     {
         var dirInfo = new DirectoryInfo(getFiles.Path);
-        var dirs = 
+        var dirs =
             dirInfo
                 .GetDirectories()
                 .Select(CreateDirItem)
                 .Where(FilterHidden)
                 .OrderBy(n => n.Name)
-                .ToArray();                
-        
-        var files = 
+                .ToArray();
+
+        var files =
             dirInfo
                 .GetFiles()
                 .Select(CreateFileItem)
                 .Where(FilterHidden)
-                .ToArray();                
+                .ToArray();
 
         return new GetFilesResult(dirs.Concat(files).ToArray(),
             dirInfo.FullName,
@@ -73,7 +73,7 @@ static partial class Directory
                 ? GetExifDate(item)
                 : null;
 
-        return new (items.Select(CheckGetExifDate).ToArray(), path);
+        return new(items.Select(CheckGetExifDate).ToArray(), path);
     }
 
     public static async Task ProcessFile(HttpContext context, string path)
@@ -96,6 +96,14 @@ static partial class Directory
             () => System.IO.Directory.Move(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName)),
             MapExceptionToIOError)
                 .ToIOResult();
+
+    public static Task<IOResult> CopyItems(CopyItemsParam input)
+        => LinqTools.Core.Try(
+            () => { },
+            MapExceptionToIOError)
+                .ToIOResult();
+
+                
 
     static Task<IOResult> ToIOResult(this Result<Nothing, IOError> result)
         => result.Match(
@@ -153,6 +161,13 @@ record RenameItemParam(
 record DeleteItemsParam(
     string Path,
     string[] Names
+);
+
+record CopyItemsParam(
+    string Path,
+    string TargetPath,
+    string[] items,
+    bool Move
 );
 
 enum IOError {

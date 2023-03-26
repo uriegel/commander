@@ -62,6 +62,7 @@ type ShowFullScreen = "showfullscreen"
 type RenameItem = "renameitem"
 type CreateFolder = "createfolder"
 type DeleteItems = "deleteitems"
+type CopyItems = "copyitems"
 
 type RequestType = 
 	| Close
@@ -73,6 +74,7 @@ type RequestType =
     | RenameItem
     | CreateFolder
     | DeleteItems
+    | CopyItems
     
 type Exception = {
 	exception: string
@@ -104,6 +106,13 @@ type DeleteItemsType = {
     names:      string[]
 }
 
+type CopyItemsType = {
+    path:       string
+    targetPath: string
+    items:      string[]
+    move:       boolean
+}
+
 type Empty = {
     empty?: string
 }
@@ -115,6 +124,7 @@ export type RequestInput =
     | RenameItemType
     | CreateFolderType
     | DeleteItemsType
+    | CopyItemsType
 	
 export async function request<T extends Result>(method: RequestType, input?: RequestInput) {
 
