@@ -99,11 +99,16 @@ static partial class Directory
 
     public static Task<IOResult> CopyItems(CopyItemsParam input)
         => LinqTools.Core.Try(
-            () => { },
+            () => input.items.ForEach(n => CopyItem(n, input.Path, input.TargetPath, input.Move)),
             MapExceptionToIOError)
                 .ToIOResult();
 
-                
+    static void CopyItem(string name, string path, string targetPath,bool move)
+    {
+        using var sourceFile = System.IO.File.OpenRead(path.AppendPath(name));
+        using var targetFile = System.IO.File.Create(targetPath.AppendPath(name));
+        sourceFile.CopyTo(targetFile);
+    }
 
     static Task<IOResult> ToIOResult(this Result<Nothing, IOError> result)
         => result.Match(
