@@ -103,16 +103,6 @@ static partial class Directory
                 _ => (IOError?)null,
                 e => e
             ));
-
-    static IOError MapExceptionToIOError(Exception e)
-        => e switch
-        {
-            UnauthorizedAccessException ue                     => IOError.AccessDenied,
-            GtkDotNet.GErrorException gee  when gee.Code ==  1 => IOError.FileNotFound, 
-            GtkDotNet.GErrorException gee  when gee.Code == 14 => IOError.DeleteToTrashNotPossible, // TODO or IOError.AccessDenied
-            _                                                  => IOError.Exn
-        };
-
 }
 
 record DirectoryItem(

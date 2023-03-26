@@ -4,15 +4,16 @@ using Microsoft.AspNetCore.Http;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 using AspNetExtensions;
 using ClrWinApi;
 using LinqTools;
+using CsTools.Extensions;
 
 using static ClrWinApi.Api;
 using static CsTools.Core;
-using System.Diagnostics;
-using CsTools.Extensions;
+using static LinqTools.Core;
 
 static partial class Directory
 {
@@ -37,7 +38,7 @@ static partial class Directory
                     var shinfo = new ShFileInfo();
                     var handle = SHGetFileInfo(iconHint, FileAttributeNormal, ref shinfo, Marshal.SizeOf(shinfo),
                         SHGetFileInfoConstants.ICON | SHGetFileInfoConstants.SMALLICON | SHGetFileInfoConstants.USEFILEATTRIBUTES | SHGetFileInfoConstants.TYPENAME); 
-                    return shinfo.IconHandle != IntPtr.Zero
+                        return shinfo.IconHandle != IntPtr.Zero
                         ? shinfo.IconHandle.ToAsync()
                         : throw new Exception("Not found");
                 }, 3, TimeSpan.FromMilliseconds(40)),
@@ -76,6 +77,34 @@ static partial class Directory
             .ToAsync();
     }
 
+    public static Task<IOResult> DeleteItems(DeleteItemsParam input)
+        => (SHFileOperation(new ShFileOPStruct
+        {
+            Func = FileFuncFlags.DELETE,
+            From = string.Join( "\U00000000", input.Names.Select(n => input.Path.AppendPath(n))) 
+                        +  "\U00000000\U00000000",
+            Flags = FileOpFlags.NOCONFIRMATION
+                | FileOpFlags.NOERRORUI
+                | FileOpFlags.NOCONFIRMMKDIR
+                | FileOpFlags.SILENT
+                | FileOpFlags.ALLOWUNDO
+        }) switch
+        {
+            0    => (IOError?)null,
+            2    => IOError.FileNotFound,
+            0x78 => IOError.AccessDenied,
+            _    => IOError.Exn
+        })
+            .ToTask();
+
+  
+    static IOError MapExceptionToIOError(Exception e)
+        => e switch
+        {
+            UnauthorizedAccessException ue                     => IOError.AccessDenied,
+            _                                                  => IOError.Exn
+        };
+
     // TODO
     const int FileAttributeNormal = 0x80;
 
@@ -95,7 +124,7 @@ record GetExtendedItemsResult(
     string Path
 ) {
     public GetExtendedItemsResult(DateTime?[] exifTimes, string path)
-        => new(exifTimes, null, path);
+        : this(exifTimes, null, path) {}
 };
 
 static class VersionExtensions

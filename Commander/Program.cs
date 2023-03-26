@@ -34,6 +34,5 @@ WebView
 
 record Empty();
 
-// TODO Delete items Windows
 // TODO Rename
 // TODO Copy
