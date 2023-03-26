@@ -2,15 +2,15 @@ import Menubar, { MenuItemType } from 'menubar-react'
 
 export interface MenuProps {
     autoMode: boolean
-    setAutoMode: (set: boolean)=>void,
+    toggleAutoMode: ()=>void,
     showHidden: boolean,
-    setShowHidden: (set: boolean)=>void,
+    toggleShowHidden: ()=>void,
     showViewer: boolean,
-    setShowViewer: (set: boolean) => void,
+    toggleShowViewer: () => void,
     onMenuAction: (key: string)=>void
 }
 
-const Menu = ({ autoMode, setAutoMode, showHidden, setShowHidden, showViewer, setShowViewer, onMenuAction }: MenuProps) => (
+const Menu = ({ autoMode, toggleAutoMode, showHidden, toggleShowHidden, showViewer, toggleShowViewer, onMenuAction }: MenuProps) => (
     <Menubar autoMode={autoMode} items={[{
         name: "_Datei",
         items: [{
@@ -95,7 +95,7 @@ const Menu = ({ autoMode, setAutoMode, showHidden, setShowHidden, showViewer, se
         items: [{
             name: "_Versteckte Dateien",
             checked: showHidden,
-            setChecked: setShowHidden,
+            toggleChecked: toggleShowHidden,
             type: MenuItemType.MenuCheckItem,
             shortcut: "Strg+H"
         }, {
@@ -109,14 +109,14 @@ const Menu = ({ autoMode, setAutoMode, showHidden, setShowHidden, showViewer, se
             name: "_Vorschau",
             type: MenuItemType.MenuCheckItem,
             checked: showViewer,
-            setChecked: setShowViewer,
+            toggleChecked: toggleShowViewer,
             shortcut: "F3"
         }, {
             type: MenuItemType.Separator
         }, {
             name: "_Menü verbergen",
             checked: autoMode,
-            setChecked: setAutoMode,
+            toggleChecked: toggleAutoMode,
             type: MenuItemType.MenuCheckItem,
         }, {
             name: "_Vollbild",

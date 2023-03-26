@@ -35,5 +35,3 @@ WebView
 
 record Empty();
 
-// TODO Rename
-// TODO Copy

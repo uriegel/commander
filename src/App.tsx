@@ -38,6 +38,8 @@ const App = () => {
 	const [autoMode, setAutoMode] = useState(false)
 	const [showHidden, setShowHidden] = useState(false)
 	const [showViewer, setShowViewer] = useState(false)
+	const showHiddenRef = useRef(false)
+	const showViewerRef = useRef(false)
 	const [path, setPath] = useState<PathProp>({ path: "", isDirectory: false })
 	const [itemCount, setItemCount] = useState({dirCount: 0, fileCount: 0 })
 	
@@ -48,18 +50,25 @@ const App = () => {
 		localStorage.setItem("menuAutoHide", mode ? "true" : "false")
 	}
 
-	const setAutoModeDialog = async (autoMode: boolean) => 
-		setAndSaveAutoMode(autoMode && ((await dialog.current?.show({
+	const toggleAutoModeDialog = async () => 
+		setAndSaveAutoMode(autoMode == false && ((await dialog.current?.show({
 				text: "Soll das Menü verborgen werden? Aktivieren mit Alt-Taste",
 				btnOk: true,
 				btnCancel: true
 			}))?.result == Result.Ok))
 	
-	const setShowHiddenAndRefresh = (show: boolean) => {
-		setShowHidden(show)
-		folderLeft.current?.refresh(show)
+	const toggleShowHiddenAndRefresh = () => {
+		showHiddenRef.current = !showHiddenRef.current
+		setShowHidden(showHiddenRef.current)
+		folderLeft.current?.refresh(showHiddenRef.current)
+		folderRight.current?.refresh(showHiddenRef.current)
 	}
 	
+	const toggleShowViewer = () => {
+		showViewerRef.current = !showViewerRef.current
+		setShowViewer(showViewerRef.current)
+	}
+
 	useEffect(() => {
 		setAutoMode(localStorage.getItem("menuAutoHide") == "true")
 		themeChangedEvents.subscribe(setTheme)
@@ -148,8 +157,8 @@ const App = () => {
 
 	return (
 		<div className={`App ${theme}Theme`} onKeyDown={onKeyDown} >
-			<Menu autoMode={autoMode} onMenuAction={onMenuAction} setAutoMode={setAutoModeDialog} showHidden={showHidden} setShowHidden={setShowHiddenAndRefresh}
-				showViewer={showViewer} setShowViewer={setShowViewer}  />
+			<Menu autoMode={autoMode} onMenuAction={onMenuAction} toggleAutoMode={toggleAutoModeDialog} showHidden={showHidden} toggleShowHidden={toggleShowHiddenAndRefresh}
+				showViewer={showViewer} toggleShowViewer={toggleShowViewer}  />
 			<ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
 			<Statusbar path={path.path} dirCount={itemCount.dirCount} fileCount={itemCount.fileCount} />
 			<Dialog ref={dialog} />

@@ -395,20 +395,18 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO drag'n'drop
-// TODO Check windows webview: drop file/files/folder/folders
-// TODO https://github.com/MicrosoftEdge/WebView2Feedback/issues/2313
-// TODO Check gtk webview: drop file/files/folder/folders sudo apt install libwebkit2gtk-4.0-dev
-// TODO https://stackoverflow.com/questions/71581401/drag-a-file-from-my-gtk-app-to-another-app-not-the-other-way-around
 // TODO copy/move 
+// TODO save/restore column widths
 // TODO remotes
 // TODO extended rename
-// TODO Admin mode Windows
-// TODO asve/restore column widths
-// TODO Shortcuts not preventing default: Strg+R activates restriction
 // TODO Selection Ctrl+Mouse click
 // TODO Error from getItems/tooltip from dialog-box-react
 // TODO Strg+H not working in menubar
 // TODO Viewer: PDf
 // TODO Statusbar nowrap text-overflow ellipses
 // TODO Viewer: directory info
+// TODO drag'n'drop
+// TODO Check windows webview: drop file/files/folder/folders
+// TODO https://github.com/MicrosoftEdge/WebView2Feedback/issues/2313
+// TODO Check gtk webview: drop file/files/folder/folders sudo apt install libwebkit2gtk-4.0-dev
+// TODO https://stackoverflow.com/questions/71581401/drag-a-file-from-my-gtk-app-to-another-app-not-the-other-way-around
