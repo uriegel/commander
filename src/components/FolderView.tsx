@@ -395,11 +395,10 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO copy refresh
-// TODO copy copy attributes
-// TODO copy progress 
-// TODO copy folders
-// TODO move: delete all sources 
+// TODO copy Windows
+// TODO copy progress: 
+// TODO copy folders: unpack folders
+// TODO move: delete all empty directories
 // TODO save/restore column widths
 // TODO remotes
 // TODO extended rename

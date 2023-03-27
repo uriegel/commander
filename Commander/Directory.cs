@@ -103,13 +103,6 @@ static partial class Directory
             MapExceptionToIOError)
                 .ToIOResult();
 
-    static void CopyItem(string name, string path, string targetPath,bool move)
-    {
-        using var sourceFile = System.IO.File.OpenRead(path.AppendPath(name));
-        using var targetFile = System.IO.File.Create(targetPath.AppendPath(name));
-        sourceFile.CopyTo(targetFile);
-    }
-
     static Task<IOResult> ToIOResult(this Result<Nothing, IOError> result)
         => result.Match(
                 _ => (IOError?)null,

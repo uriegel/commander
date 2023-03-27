@@ -39,6 +39,18 @@ static partial class Directory
             MapExceptionToIOError)
             .ToIOResult();        
 
+    static void CopyItem(string name, string path, string targetPath, bool move)
+        => Copy(path.AppendPath(name), targetPath.AppendPath(name), FileCopyFlags.Overwrite,
+                (c, t) => Console.WriteLine($"CopyProgress {c}, {t}"), move);
+
+    static void Copy(string source, string target, FileCopyFlags flags, GFile.ProgressCallback cb, bool move)
+    {
+        if (move)
+            GtkDotNet.GFile.Move(source, target, flags, true, cb);
+        else
+            GtkDotNet.GFile.Copy(source, target, flags, true, cb);
+    }
+
     static IOError MapExceptionToIOError(Exception e)
         => e switch
         {
