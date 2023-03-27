@@ -39,9 +39,9 @@ static partial class Directory
             MapExceptionToIOError)
             .ToIOResult();        
 
-    static void CopyItem(string name, string path, string targetPath, bool move)
+    static void CopyItem(string name, string path, string targetPath, Action<long, long> progress, bool move)
         => Copy(path.AppendPath(name), targetPath.AppendPath(name), FileCopyFlags.Overwrite,
-                (c, t) => Console.WriteLine($"CopyProgress {c}, {t}"), move);
+                progress, move);
 
     static void Copy(string source, string target, FileCopyFlags flags, GFile.ProgressCallback cb, bool move)
     {

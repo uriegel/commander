@@ -13,7 +13,6 @@ using CsTools.Extensions;
 
 using static ClrWinApi.Api;
 using static CsTools.Core;
-using static LinqTools.Core;
 
 static partial class Directory
 {
@@ -97,6 +96,23 @@ static partial class Directory
         })
             .ToTask();
 
+    static void CopyItem(string name, string path, string targetPath, Action<long, long> progress, bool move)
+        => Copy(path.AppendPath(name), targetPath.AppendPath(name), progress, move);
+
+    static void Copy(string source, string target, Action<long, long> progress, bool move)
+    {
+        var cancel = 0;
+        if (move)
+            Api.MoveFileWithProgress(source, target, (total, current, c, d, e, f, g, h, i) => {
+                progress(current, total);
+                return CopyProgressResult.Continue;
+            }, IntPtr.Zero, MoveFileFlags.CopyAllowed);
+        else
+            Api.CopyFileEx(source, target, (total, current, c, d, e, f, g, h, i) => {
+                progress(current, total);
+                return CopyProgressResult.Continue;
+            }, IntPtr.Zero, ref cancel, (CopyFileFlags)0);
+    }
   
     static IOError MapExceptionToIOError(Exception e)
         => e switch

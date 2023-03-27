@@ -99,7 +99,7 @@ static partial class Directory
 
     public static Task<IOResult> CopyItems(CopyItemsParam input)
         => LinqTools.Core.Try(
-            () => input.items.ForEach(n => CopyItem(n, input.Path, input.TargetPath, input.Move)),
+            () => input.items.ForEach(n => CopyItem(n, input.Path, input.TargetPath, (c, t) => Console.WriteLine($"CopyProgress {c}, {t}"), input.Move)),
             MapExceptionToIOError)
                 .ToIOResult();
 
