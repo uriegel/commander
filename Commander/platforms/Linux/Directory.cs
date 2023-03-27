@@ -41,7 +41,7 @@ static partial class Directory
 
     static void CopyItem(string name, string path, string targetPath, Action<long, long> progress, bool move)
         => Copy(path.AppendPath(name), targetPath.AppendPath(name), FileCopyFlags.Overwrite,
-                progress, move);
+                (c, t) => progress(c, t), move);
 
     static void Copy(string source, string target, FileCopyFlags flags, GFile.ProgressCallback cb, bool move)
     {
