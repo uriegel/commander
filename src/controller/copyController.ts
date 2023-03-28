@@ -1,6 +1,7 @@
 import * as R from "ramda"
 import { DialogHandle, Slide, Result } from "web-dialog-react"
 import CopyConflicts, { ConflictItem } from "../components/CopyConflicts"
+import CopyProgress from "../components/CopyProgress"
 import { FolderViewItem } from "../components/FolderView"
 import { Controller, ControllerType } from "./controller"
 import { compareVersion, getItemsType, ItemsType } from "./filesystem"
@@ -75,10 +76,11 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                 extension: conflictItems.length ? CopyConflicts : undefined,
                 extensionProps: conflictItems, 
                 fullscreen: conflictItems.length > 0,
-                btnYes: true,
-                btnNo: true,
+                btnYes: conflictItems.length > 0,
+                btnNo: conflictItems.length > 0,
+                btnOk: conflictItems.length == 0,
                 btnCancel: true,
-                defBtnYes: !defNo,
+                defBtnYes: !defNo && conflictItems.length > 0,
                 defBtnNo: defNo
             })
             if (result?.result != Result.Cancel) {
@@ -86,6 +88,7 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                 const timeout = setTimeout(async () => await dialog?.show({
                     text: "Progress",   
                     slide: fromLeft ? Slide.Left : Slide.Right,
+                    extension: CopyProgress,
                     btnCancel: true
                 }), 1000)
                 const copyItems = result?.result == Result.Yes

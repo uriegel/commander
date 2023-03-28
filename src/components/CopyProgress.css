@@ -1,0 +1,7 @@
+.copyProgress {
+    min-width: 500px;
+}
+
+.copyProgress progress {
+    width: 100%;
+}
