@@ -82,6 +82,12 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                 defBtnNo: defNo
             })
             if (result?.result != Result.Cancel) {
+
+                const timeout = setTimeout(async () => await dialog?.show({
+                    text: "Progress",   
+                    slide: fromLeft ? Slide.Left : Slide.Right,
+                    btnCancel: true
+                }), 1000)
                 const copyItems = result?.result == Result.Yes
                     ? items.map(n => n.name)
                     : R.without(conflictItems.map(n => n.name), items.map(n => n.name))
@@ -91,6 +97,8 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                     items: copyItems,
                     move
                 })
+                clearTimeout(timeout)
+                dialog?.close()
                 return null
             }
             else
