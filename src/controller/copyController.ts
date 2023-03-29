@@ -86,7 +86,7 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
             if (result?.result != Result.Cancel) {
 
                 const timeout = setTimeout(async () => await dialog?.show({
-                    text: "Progress",   
+                    text: `Fortschritt beim ${move ? "Verschieben" : "Kopieren"}`,
                     slide: fromLeft ? Slide.Left : Slide.Right,
                     extension: CopyProgress,
                     btnCancel: true

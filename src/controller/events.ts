@@ -1,7 +1,14 @@
-import { filter, fromEvent, map } from 'rxjs'
+import { BehaviorSubject, filter, fromEvent, map } from 'rxjs'
+
+type CopyProgress = {
+    fileName: string
+    totalFileBytes: number
+    currentFileBytes: number
+}
 
 type CommanderEvent = {
-    theme?: string
+    theme?:        string
+    copyProgress?: CopyProgress
 }
 
 const toCommanderEvent = (event: MessageEvent) => 
@@ -15,3 +22,9 @@ export const themeChangedEvents = commanderEvents
     .pipe(filter(n => n.theme != undefined))
     .pipe(map(n => n.theme!))
 
+export const progressChangedEvents = new BehaviorSubject<CopyProgress>({fileName: "", totalFileBytes: 0, currentFileBytes: 0})
+
+commanderEvents
+    .pipe(filter(n => n.copyProgress != undefined))
+    .pipe(map(n => n.copyProgress!))
+    .subscribe(progressChangedEvents)
