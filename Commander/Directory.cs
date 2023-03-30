@@ -98,14 +98,24 @@ static partial class Directory
                 .ToIOResult();
 
     public static Task<IOResult> CopyItems(CopyItemsParam input)
-        => CopyItems(input.Items.Select(n => n.Size).Aggregate((a, b) => a + b), input);
+        => CopyItems(input.Items.Select(n => n.Size).Aggregate((a, b) => a + b), input, 
+            new CancellationTokenSource()
+                .SideEffect(n => cancellationTokenSource = n)
+                .Token);
 
-    static Task<IOResult> CopyItems(long totalSize, CopyItemsParam input)
+    public static Task<IOResult> CancelCopy(Empty _)
+        => Task.FromResult(new IOResult(null)
+                                .SideEffect(_ => cancellationTokenSource?.Cancel())
+                                .SideEffect(_ => cancellationTokenSource = null));
+
+    static Task<IOResult> CopyItems(long totalSize, CopyItemsParam input, CancellationToken cancellationToken)
         => LinqTools.Core.Try(
             () => input.Items.Aggregate(0L, (count, n) => {
+                if (cancellationToken.IsCancellationRequested)
+                    return 0;
                 CopyItem(n.Name, input.Path, input.TargetPath,
                     (c, t) => Events.CopyProgressChanged(new(n.Name, t, c, totalSize, count + c)),
-                    input.Move);
+                    input.Move, cancellationToken);
                 return count + n.Size;
             })
                 .ToVoid(),
@@ -124,6 +134,8 @@ static partial class Directory
                 _ => (IOError?)null,
                 e => e
             ));
+
+    static CancellationTokenSource? cancellationTokenSource;
 }
 
 record DirectoryItem(

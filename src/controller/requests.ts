@@ -63,6 +63,7 @@ type RenameItem = "renameitem"
 type CreateFolder = "createfolder"
 type DeleteItems = "deleteitems"
 type CopyItems = "copyitems"
+type CancelCopy = "cancelCopy"
 
 type RequestType = 
 	| Close
@@ -75,6 +76,7 @@ type RequestType =
     | CreateFolder
     | DeleteItems
     | CopyItems
+    | CancelCopy
     
 type Exception = {
 	exception: string

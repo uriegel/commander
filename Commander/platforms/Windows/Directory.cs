@@ -96,10 +96,10 @@ static partial class Directory
         })
             .ToTask();
 
-    static void CopyItem(string name, string path, string targetPath, Action<long, long> progress, bool move)
-        => Copy(path.AppendPath(name), targetPath.AppendPath(name), progress, move);
+    static void CopyItem(string name, string path, string targetPath, Action<long, long> progress, bool movecancellationToken)
+        => Copy(path.AppendPath(name), targetPath.AppendPath(name), progress, move, cancellationToken);
 
-    static void Copy(string source, string target, Action<long, long> progress, bool move)
+    static void Copy(string source, string target, Action<long, long> progress, bool move, CancellationToken cancellationToken)
     {
         var cancel = 0;
         if (move)

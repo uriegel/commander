@@ -85,12 +85,16 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
             })
             if (result?.result != Result.Cancel) {
 
-                const timeout = setTimeout(async () => await dialog?.show({
-                    text: `Fortschritt beim ${move ? "Verschieben" : "Kopieren"}`,
-                    slide: fromLeft ? Slide.Left : Slide.Right,
-                    extension: CopyProgress,
-                    btnCancel: true
-                }), 1000)
+                const timeout = setTimeout(async () => {
+                    const res = await dialog?.show({
+                        text: `Fortschritt beim ${move ? "Verschieben" : "Kopieren"}`,
+                        slide: fromLeft ? Slide.Left : Slide.Right,
+                        extension: CopyProgress,
+                        btnCancel: true
+                    })
+                    if (res?.result == Result.Cancel)
+                        await request("cancelCopy", {})        
+                }, 1000)
                 const copyItems = result?.result == Result.Yes
                     ? items.map(n => ({ name: n.name, size: n.size }))
                     : R.without(conflictItems.map(n => ({ name: n.name, size: n.size })), items.map(n => ({ name: n.name, size: n.size })))
