@@ -3,7 +3,9 @@ using AspNetExtensions;
 record CopyProgress(
     string FileName,
     long   TotalFileBytes,
-    long   CurrentFileBytes
+    long   CurrentFileBytes,
+    long   TotalBytes,
+    long   CurrentBytes
 );
 
 record Events(

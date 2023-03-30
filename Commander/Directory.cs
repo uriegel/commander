@@ -98,10 +98,17 @@ static partial class Directory
                 .ToIOResult();
 
     public static Task<IOResult> CopyItems(CopyItemsParam input)
+        => CopyItems(input.Items.Select(n => n.Size).Aggregate((a, b) => a + b), input);
+
+    static Task<IOResult> CopyItems(long totalSize, CopyItemsParam input)
         => LinqTools.Core.Try(
-            () => input.items.ForEach(n => CopyItem(n, input.Path, input.TargetPath, 
-                (c, t) => Events.CopyProgressChanged(new(n, t, c)), 
-                input.Move)),
+            () => input.Items.Aggregate(0L, (count, n) => {
+                CopyItem(n.Name, input.Path, input.TargetPath,
+                    (c, t) => Events.CopyProgressChanged(new(n.Name, t, c, totalSize, count + c)),
+                    input.Move);
+                return count + n.Size;
+            })
+                .ToVoid(),
             MapExceptionToIOError)
                 .ToIOResult();
 
@@ -163,10 +170,15 @@ record DeleteItemsParam(
     string[] Names
 );
 
+record CopyItem(
+    string Name,
+    long Size
+);
+
 record CopyItemsParam(
     string Path,
     string TargetPath,
-    string[] items,
+    CopyItem[] Items,
     bool Move
 );
 

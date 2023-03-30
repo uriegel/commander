@@ -4,6 +4,8 @@ type CopyProgress = {
     fileName: string
     totalFileBytes: number
     currentFileBytes: number
+    totalBytes: number
+    currentBytes: number
 }
 
 type CommanderEvent = {
@@ -22,7 +24,13 @@ export const themeChangedEvents = commanderEvents
     .pipe(filter(n => n.theme != undefined))
     .pipe(map(n => n.theme!))
 
-export const progressChangedEvents = new BehaviorSubject<CopyProgress>({fileName: "", totalFileBytes: 0, currentFileBytes: 0})
+export const progressChangedEvents = new BehaviorSubject<CopyProgress>({
+    fileName: "",
+    totalFileBytes: 0,
+    currentFileBytes: 0,
+    totalBytes: 0,
+    currentBytes: 0
+})
 
 commanderEvents
     .pipe(filter(n => n.copyProgress != undefined))

@@ -106,10 +106,15 @@ type DeleteItemsType = {
     names:      string[]
 }
 
+type CopyItem = {
+    name: string
+    size: number|undefined
+}
+
 type CopyItemsType = {
     path:       string
     targetPath: string
-    items:      string[]
+    items:      CopyItem[]
     move:       boolean
 }
 

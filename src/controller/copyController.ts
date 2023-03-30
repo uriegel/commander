@@ -92,8 +92,8 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                     btnCancel: true
                 }), 1000)
                 const copyItems = result?.result == Result.Yes
-                    ? items.map(n => n.name)
-                    : R.without(conflictItems.map(n => n.name), items.map(n => n.name))
+                    ? items.map(n => ({ name: n.name, size: n.size }))
+                    : R.without(conflictItems.map(n => ({ name: n.name, size: n.size })), items.map(n => ({ name: n.name, size: n.size })))
                 await request<IOErrorResult>("copyitems", {
                     path: sourcePath!,
                     targetPath: targetPath!,
