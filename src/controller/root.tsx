@@ -69,6 +69,7 @@ export const getRootController = (controller: Controller | null): ControllerResu
     ? ({ changed: false, controller })
     : ({ changed: true, controller: { 
         type: ControllerType.Root, 
+        id: "root",
         getColumns: platform == Platform.Windows ? getWindowsColumns : getLinuxColumns,
         getItems,
         getExtendedItems: async () => ({ path: "", exifTimes: [], versions: [] }),

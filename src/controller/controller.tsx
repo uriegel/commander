@@ -33,6 +33,7 @@ export interface onEnterResult {
 
 export interface Controller {
     type: ControllerType
+    id: string
     getColumns: ()=>TableColumns<FolderViewItem>
     getItems: (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean) => Promise<GetItemResult>
     getExtendedItems: (path: string, items: FolderViewItem[]) => Promise<GetExtendedItemsResult>
@@ -58,6 +59,7 @@ export const checkController = (path: string, controller: Controller|null):Contr
 
 export const createEmptyController = (): Controller => ({
     type: ControllerType.Empty,
+    id: "empty",
     getColumns: () => ({
         columns: [],
         renderRow: p => []

@@ -1,6 +1,6 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import './FolderView.css'
-import VirtualTable, { OnSort, SelectableItem, SpecialKeys, VirtualTableHandle } from 'virtual-table-react'
+import VirtualTable, { OnSort, SelectableItem, SpecialKeys, TableColumns, VirtualTableHandle } from 'virtual-table-react'
 import { checkController, Controller, createEmptyController } from '../controller/controller'
 import { ROOT } from '../controller/root'
 import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
@@ -115,9 +115,10 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         virtualTable.current?.setPosition(newItems.findIndex(n => n.name == name))
     }
 
+    const getWidthsId = () => `${id}-${controller.current.id}-widths`
+
     const onColumnWidths = (widths: number[]) => {
-		if (widths.length == 4)
-			localStorage.setItem("widths", JSON.stringify(widths))
+    	localStorage.setItem(getWidthsId(), JSON.stringify(widths))
 	} 
 
     const refPath = useRef("")
@@ -129,12 +130,22 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    const setWidths = (columns: TableColumns<FolderViewItem>) => {
+        let widthstr = localStorage.getItem(getWidthsId())
+        let widths = widthstr ? JSON.parse(widthstr) as number[] : null
+        return widths
+            ? {
+                ...columns, columns: columns.columns.map((n, i) => ({...n, width: widths![i]}))
+            }
+            : columns
+    }
+
     const changePath = async (path: string, showHidden: boolean, latestPath?: string) => {
         restrictionView.current?.reset()
         const result = checkController(path, controller.current)
         if (result.changed) {
             controller.current = result.controller
-            virtualTable.current?.setColumns(controller.current.getColumns())
+            virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
         }
 
         const items = await controller.current.getItems(path, showHidden, sortIndex.current, sortDescending.current)
@@ -395,7 +406,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO save/restore column widths
 // TODO remotes
 // TODO extended rename
 // TODO copy folders: unpack folders

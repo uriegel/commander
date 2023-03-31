@@ -57,10 +57,11 @@ const appendLinuxPath = (path: string, subPath: string) => `${path}/${subPath}`
 const appendWindowsPath = (path: string, subPath: string) => path.length == 3 ? `${path}${subPath}` : `${path}\\${subPath}`
 
 export const getFileSystemController = (controller: Controller|null): ControllerResult =>
-    controller?.type == ControllerType.FileSystem
-    ? ({ changed: false, controller })
+	controller?.type == ControllerType.FileSystem
+	? ({ changed: false, controller })
     : ({ changed: true, controller: { 
 		type: ControllerType.FileSystem, 
+		id: "file",
 		getColumns: platform == Platform.Windows ? getWindowsColumns : getLinuxColumns, 
 		getExtendedItems,
 		setExtendedItems,
