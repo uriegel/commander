@@ -395,11 +395,12 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO copy folders: unpack folders
-// TODO move: delete all empty directories
+// TODO copy folders: first step disable folders
 // TODO save/restore column widths
 // TODO remotes
 // TODO extended rename
+// TODO copy folders: unpack folders
+// TODO move: delete all empty directories
 // TODO Selection Ctrl+Mouse click
 // TODO Error from getItems/tooltip from dialog-box-react
 // TODO Strg+H not working in menubar
