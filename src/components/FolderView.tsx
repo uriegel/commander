@@ -403,11 +403,8 @@ export default FolderView
 // TODO move: delete all empty directories
 // TODO Selection Ctrl+Mouse click
 // TODO Error from getItems/tooltip from dialog-box-react
-// TODO Strg+H not working in menubar
-// TODO Viewer: PDf
 // TODO Statusbar nowrap text-overflow ellipses
 // TODO Viewer: directory info
-// TODO drag'n'drop
 // TODO Check windows webview: drop file/files/folder/folders
 // TODO https://github.com/MicrosoftEdge/WebView2Feedback/issues/2313
 // TODO Check gtk webview: drop file/files/folder/folders sudo apt install libwebkit2gtk-4.0-dev
