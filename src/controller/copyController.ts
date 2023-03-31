@@ -14,7 +14,8 @@ export interface CopyController {
 export const getCopyController = (move: boolean, dialog: DialogHandle|null, fromLeft: boolean, fromController?: Controller, toController?: Controller,
     sourcePath?: string, targetPath?: string, items?: FolderViewItem[], targetItems?: FolderViewItem[]): CopyController|null => {
     if (fromController?.type == ControllerType.FileSystem && toController?.type == ControllerType.FileSystem)
-        return getFileSystemCopyController(move, dialog, fromLeft, fromController, toController, sourcePath, targetPath, items, targetItems)
+        return getFileSystemCopyController(move, dialog, fromLeft, fromController, toController, sourcePath, targetPath,
+            items?.filter(n => !n.isDirectory), targetItems?.filter(n => !n.isDirectory))
     else
         return null
 }
