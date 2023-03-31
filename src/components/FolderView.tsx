@@ -406,9 +406,10 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO remotes
+// TODO remotes  
+// TODO remotes  F2 Show Dialog to change
 // TODO extended rename
-// TODO copy folders: unpack folders
+// TODO copy folders: unpack folders when entering on directory item in Conflicts
 // TODO move: delete all empty directories
 // TODO Selection Ctrl+Mouse click
 // TODO Error from getItems/tooltip from dialog-box-react
