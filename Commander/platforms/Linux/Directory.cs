@@ -47,9 +47,9 @@ static partial class Directory
         CancellationToken cancellationToken)
     {
         if (move)
-            GtkDotNet.GFile.Move(source, target, flags, true, cb);
+            GtkDotNet.GFile.Move(source, target, flags, true, cb, cancellationToken);
         else
-            GtkDotNet.GFile.Copy(source, target, flags, true, cb);
+            GtkDotNet.GFile.Copy(source, target, flags, true, cb, cancellationToken);
     }
 
     static IOError MapExceptionToIOError(Exception e)
