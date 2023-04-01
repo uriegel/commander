@@ -1,6 +1,6 @@
 import { SpecialKeys, TableColumns } from "virtual-table-react"
 import { DialogHandle } from "web-dialog-react"
-import { FolderViewHandle, FolderViewItem } from "../components/FolderView"
+import { FolderViewItem } from "../components/FolderView"
 import { lastIndexOfAny } from "../globals"
 import { getFileSystemController } from "./filesystem"
 import { getRemotesController, REMOTES } from "./remotes"

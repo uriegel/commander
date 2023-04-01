@@ -4,7 +4,7 @@ import VirtualTable, { OnSort, SelectableItem, SpecialKeys, TableColumns, Virtua
 import { checkController, checkResult, Controller, createEmptyController } from '../controller/controller'
 import { ROOT } from '../controller/root'
 import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
-import { IOError, Version } from '../requests/requests'
+import { Version } from '../requests/requests'
 import { DialogHandle } from 'web-dialog-react'
 
 export interface FolderViewItem extends SelectableItem {
