@@ -71,7 +71,10 @@ const showNew = (dialog: DialogHandle|null) => {
             defBtnOk: true
         })
         if (result?.result == Result.Ok) {
-            console.log("new remote", name, ip, isAndroid)
+            var itemsStr = localStorage.getItem(REMOTES)
+            var items = itemsStr ? JSON.parse(itemsStr) : []
+            items = items.concat([{ name, ip, isAndroid }])
+            localStorage.setItem("remotes", JSON.stringify(items))
         }
 
     }
