@@ -2,6 +2,7 @@ import { SpecialKeys } from "virtual-table-react"
 import { DialogHandle } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
+import NewRemote from "../components/NewRemote"
 import { addParent, Controller, ControllerResult, ControllerType } from "./controller"
 import { ROOT } from "./root"
 
@@ -56,6 +57,7 @@ const showNew = (dialog: DialogHandle|null) => {
     const showNewDialog = async () => {
         const result = await dialog?.show({
             text: "Entferntes Gerät hinzufügen",   
+            extension: NewRemote,
             btnOk: true,
             btnCancel: true,
             defBtnOk: true
@@ -97,7 +99,6 @@ export const getRemotesController = (controller: Controller | null): ControllerR
         deleteItems: async () => null,
     }})
 
-    // localStorage: remotes
 // Anzeigenamen festlegen
 // IP-Adresse des entfernten Gerätes
 // [] Android
