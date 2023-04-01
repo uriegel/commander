@@ -1,6 +1,6 @@
 import { SpecialKeys, TableColumns } from "virtual-table-react"
 import { DialogHandle } from "web-dialog-react"
-import { FolderViewItem } from "../components/FolderView"
+import { FolderViewHandle, FolderViewItem } from "../components/FolderView"
 import { lastIndexOfAny } from "../globals"
 import { getFileSystemController } from "./filesystem"
 import { getRemotesController, REMOTES } from "./remotes"
@@ -44,9 +44,9 @@ export interface Controller {
     sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => FolderViewItem[]
     itemsSelectable: boolean
     appendPath: (path: string, subPath: string) => string,
-    rename: (path: string, item: FolderViewItem, dialog: DialogHandle|null) => Promise<IOError | undefined>
-    createFolder: (path: string, item: FolderViewItem, dialog: DialogHandle|null) => Promise<IOError | undefined>
-    deleteItems: (path: string, items: FolderViewItem[], dialog: DialogHandle|null) => Promise<IOError | undefined>
+    rename: (path: string, item: FolderViewItem, dialog: DialogHandle|null) => Promise<IOError | null>
+    createFolder: (path: string, item: FolderViewItem, dialog: DialogHandle|null) => Promise<IOError | null>
+    deleteItems: (path: string, items: FolderViewItem[], dialog: DialogHandle|null) => Promise<IOError | null>
 }
 
 export interface ControllerResult {
@@ -75,9 +75,9 @@ export const createEmptyController = (): Controller => ({
     sort: (items: FolderViewItem[]) => items,
     itemsSelectable: false,
     appendPath: () => "",
-    rename: async () => undefined,
-    createFolder: async () => undefined,
-    deleteItems: async () => undefined,
+    rename: async () => null,
+    createFolder: async () => null,
+    deleteItems: async () => null,
 })
 
 export const addParent = (items: FolderViewItem[]) => 
@@ -130,3 +130,27 @@ export const getExtension = (path: string) => {
 export const excludeParent = (items: FolderViewItem[]) => 
     items.filter(n => !n.isParent)
 
+interface focusable {
+    setFocus: ()=>void
+}
+
+export const checkResult = async (dialog: DialogHandle|null, activeFolderView: focusable|null, error: IOError | null) => {
+    if (error) {
+        const text = error == IOError.AccessDenied
+                    ? "Zugriff verweigert"
+                    : error == IOError.DeleteToTrashNotPossible
+                    ? "Löschen nicht möglich"
+                    : error == IOError.AlreadyExists
+                    ? "Das Element existiert bereits"
+                    : error == IOError.FileNotFound
+                    ? "Das Element ist nicht vorhanden"
+                    : "Die Aktion konnte nicht ausgeführt werden"
+        await dialog?.show({
+            text,
+            btnOk: true
+        })
+        activeFolderView?.setFocus()
+        return false
+    } else
+        return true
+}

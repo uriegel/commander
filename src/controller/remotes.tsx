@@ -92,9 +92,9 @@ export const getRemotesController = (controller: Controller | null): ControllerR
         sort: (items: FolderViewItem[]) => items,
         itemsSelectable: false,
         appendPath: (path: string, subPath: string) => subPath,
-        rename: async () => undefined,
-        createFolder: async () => undefined,
-        deleteItems: async () => undefined,
+        rename: async () => null,
+        createFolder: async () => null,
+        deleteItems: async () => null,
     }})
 
     // localStorage: remotes

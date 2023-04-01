@@ -1,7 +1,7 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import './FolderView.css'
 import VirtualTable, { OnSort, SelectableItem, SpecialKeys, TableColumns, VirtualTableHandle } from 'virtual-table-react'
-import { checkController, Controller, createEmptyController } from '../controller/controller'
+import { checkController, checkResult, Controller, createEmptyController } from '../controller/controller'
 import { ROOT } from '../controller/root'
 import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
 import { IOError, Version } from '../requests/requests'
@@ -269,7 +269,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         const items = getSelectedItems()
         if (items?.length == 1) {
             const result = await controller.current.rename(path, items[0], dialog)
-            if (await checkResult(result))
+            if (await checkResult(dialog, virtualTable.current, result))
                refresh() 
         }
     }
@@ -277,7 +277,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const createFolder = async () => {
         virtualTable.current?.setFocus()
         const result = await controller.current.createFolder(path, items[virtualTable.current?.getPosition() ?? 0], dialog)
-        if (await checkResult(result))
+        if (await checkResult(dialog, virtualTable.current, result))
             refresh() 
     }
 
@@ -287,29 +287,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         if (items.length == 0)
             return
         const result = await controller.current.deleteItems(path, items, dialog)
-        if (await checkResult(result))
+        if (await checkResult(dialog, virtualTable.current, result))
             refresh() 
-    }
-
-    const checkResult = async (error: IOError | undefined) => {
-        if (error) {
-            const text = error == IOError.AccessDenied
-                        ? "Zugriff verweigert"
-                        : error == IOError.DeleteToTrashNotPossible
-                        ? "Löschen nicht möglich"
-                        : error == IOError.AlreadyExists
-                        ? "Das Element existiert bereits"
-                        : error == IOError.FileNotFound
-                        ? "Das Element ist nicht vorhanden"
-                        : "Die Aktion konnte nicht ausgeführt werden"
-            await dialog?.show({
-                text,
-                btnOk: true
-            })
-            virtualTable.current?.setFocus()
-            return false
-        } else
-            return true
     }
 
     const onDragStart = (evt: React.DragEvent) => {
@@ -413,7 +392,7 @@ export default FolderView
 
 // TODO remotes  
 // TODO remotes  F2 Show Dialog to change
-// TODO copy: error handling
+// TODO copy: access denied: Löschen nicht möglich (4)
 // TODO extended rename
 // TODO copy folders: unpack folders when entering on directory item in Conflicts
 // TODO move: delete all empty directories

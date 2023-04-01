@@ -4,7 +4,7 @@ import Dialog, { DialogHandle, Result } from 'web-dialog-react'
 import FolderView, { FolderViewHandle } from './components/FolderView'
 import Menu from './components/Menu'
 import Statusbar from './components/Statusbar'
-import { getExtension } from './controller/controller'
+import { checkResult, getExtension } from './controller/controller'
 import PictureViewer from './components/PictureViewer'
 import MediaPlayer from './components/MediaPlayer'
 import { request } from './requests/requests'
@@ -136,10 +136,12 @@ const App = () => {
 		const inActive = getInactiveFolder()
 		const controller = getCopyController(move, dialog.current, active?.id == ID_LEFT, active?.getController(), inActive?.getController(),
 			active?.getPath(), inActive?.getPath(), active?.getSelectedItems(), inActive?.getItems())
-		const result = await controller?.copy()
-		if (move)
-			active?.refresh()
-		inActive?.refresh()
+		const result = controller ? await controller.copy() : null
+		if (await checkResult(dialog.current, active, result)) {
+			if (move)
+				active?.refresh()
+			inActive?.refresh()
+		} 
 	}
 
 	const VerticalSplitView = () => (
@@ -170,4 +172,5 @@ const App = () => {
 }
 
 export default App
+
 
