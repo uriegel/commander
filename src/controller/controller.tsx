@@ -3,6 +3,7 @@ import { DialogHandle } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import { lastIndexOfAny } from "../globals"
 import { getFileSystemController } from "./filesystem"
+import { getRemotesController, REMOTES } from "./remotes"
 import { GetExtendedItemsResult, GetItemResult, IOError, Version } from "./requests"
 import { getRootController, ROOT } from "./root"
 
@@ -20,7 +21,8 @@ const timeFormat = Intl.DateTimeFormat("de-DE", {
 export enum ControllerType {
     Empty,
     Root,
-    FileSystem
+    FileSystem,
+    Remotes
 }
 
 export type SortFunction = (a: FolderViewItem, b: FolderViewItem) => number
@@ -55,6 +57,8 @@ export interface ControllerResult {
 export const checkController = (path: string, controller: Controller|null):ControllerResult => 
     path == ROOT
     ? getRootController(controller)
+    : path == REMOTES  
+    ? getRemotesController(controller)
     : getFileSystemController(controller)
 
 export const createEmptyController = (): Controller => ({
@@ -126,23 +130,3 @@ export const getExtension = (path: string) => {
 export const excludeParent = (items: FolderViewItem[]) => 
     items.filter(n => !n.isParent)
 
-// export const compareVersion = (a?: Version, b?: Version) =>
-//     a && b
-//     ? (a.major > b.major
-//     ? 1
-//     : a.major < b.major
-//     ? -1
-//     : a.minor > b.minor
-//     ? 1
-//     : a.minor < b.minor
-//     ? -1    
-//     : a.patch > b.patch
-//     ? 1
-//     : a.patch < b.patch
-//     ? -1        
-//     : a.build > b.build
-//     ? 1
-//     : a.build < b.build
-//     ? -1            
-//     : 0)
-//     : 0

@@ -8,20 +8,24 @@ import { IOError, Version } from '../controller/requests'
 import { DialogHandle } from 'web-dialog-react'
 
 export interface FolderViewItem extends SelectableItem {
-    name: string
-    size?: number
-    isParent?: boolean
+    name:         string
+    size?:        number
+    isParent?:    boolean
     isDirectory?: boolean
     // Root item
     description?: string
-    mountPoint?: string
-    isMounted?: boolean
+    mountPoint?:  string
+    isMounted?:   boolean
     // FileSystem item
-    iconPath?: string
-    time?: string
-    exifDate?: string
-    version?: Version
-    isHidden?: boolean
+    iconPath?:    string
+    time?:        string
+    exifDate?:    string
+    version?:     Version
+    isHidden?:    boolean
+    // Remotes item
+    ipAddress?:   string
+    isAndroid?:   boolean
+    isNew?:       boolean
 }
 
 export type FolderViewHandle = {
@@ -145,6 +149,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         const result = checkController(path, controller.current)
         if (result.changed) {
             controller.current = result.controller
+            setItems([])
             virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
         }
 

@@ -3,6 +3,7 @@ import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, formatSize} from "./controller"
+import { REMOTES } from "./remotes"
 import { GetRootResult, request } from "./requests"
 
 export const ROOT = "root"
@@ -10,7 +11,7 @@ const platform = getPlatform()
 
 const renderWindowsRow = (item: FolderViewItem) => [
     (<IconName namePart={item.name} type={
-        item.name == 'remotes'
+        item.name == REMOTES
         ? IconNameType.Remote
         : IconNameType.Root
     } />),
@@ -22,7 +23,7 @@ const renderLinuxRow = (item: FolderViewItem) => [
     (<IconName namePart={item.name} type={
         item.name == '~'
         ? IconNameType.Home
-        : item.name == 'remotes'
+        : item.name == REMOTES
         ? IconNameType.Remote
         : IconNameType.Root
     } />),
@@ -61,7 +62,7 @@ const onWindowsEnter = (_: string, item: FolderViewItem, keys: SpecialKeys) =>
 const onLinuxEnter = (_: string, item: FolderViewItem, keys: SpecialKeys) => 
 ({
     processed: false, 
-    pathToSet: item.mountPoint ?? ""
+    pathToSet: item.mountPoint || item.mountPoint!.length > 0 ? item.mountPoint : item.name
 }) 
 
 export const getRootController = (controller: Controller | null): ControllerResult => 
@@ -69,7 +70,7 @@ export const getRootController = (controller: Controller | null): ControllerResu
     ? ({ changed: false, controller })
     : ({ changed: true, controller: { 
         type: ControllerType.Root, 
-        id: "root",
+        id: ROOT,
         getColumns: platform == Platform.Windows ? getWindowsColumns : getLinuxColumns,
         getItems,
         getExtendedItems: async () => ({ path: "", exifTimes: [], versions: [] }),

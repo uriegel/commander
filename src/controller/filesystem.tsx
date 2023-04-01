@@ -19,10 +19,16 @@ const platform = getPlatform()
 const driveLength = platform == Platform.Windows ? 3: 1
 
 const renderBaseRow = (item: FolderViewItem) => [
-		(<IconName namePart={item.name} type={item.isParent ? IconNameType.Parent : item.isDirectory ? IconNameType.Folder : IconNameType.File } iconPath={item.iconPath} />),
-		(<span className={item.exifDate ? "exif" : "" } >{formatDateTime(item?.exifDate ?? item?.time)}</span>),
-		formatSize(item.size)
-	]
+	(<IconName namePart={item.name} type={
+			item.isParent
+			? IconNameType.Parent
+			: item.isDirectory
+			? IconNameType.Folder
+			: IconNameType.File}
+		iconPath={item.iconPath} />),
+	(<span className={item.exifDate ? "exif" : "" } >{formatDateTime(item?.exifDate ?? item?.time)}</span>),
+	formatSize(item.size)
+]
 
 const renderRow = (item: FolderViewItem) => 
 	platform == Platform.Windows 
