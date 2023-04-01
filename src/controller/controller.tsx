@@ -40,7 +40,7 @@ export interface Controller {
     getItems: (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean) => Promise<GetItemResult>
     getExtendedItems: (path: string, items: FolderViewItem[]) => Promise<GetExtendedItemsResult>
     setExtendedItems: (items: FolderViewItem[], extended: GetExtendedItemsResult)=>FolderViewItem[]
-    onEnter: (path: string, item: FolderViewItem, keys: SpecialKeys) => onEnterResult
+    onEnter: (path: string, item: FolderViewItem, keys: SpecialKeys, dialog: DialogHandle|null) => onEnterResult
     sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => FolderViewItem[]
     itemsSelectable: boolean
     appendPath: (path: string, subPath: string) => string,

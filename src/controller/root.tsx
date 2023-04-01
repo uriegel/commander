@@ -16,7 +16,7 @@ const renderWindowsRow = (item: FolderViewItem) => [
         : IconNameType.Root
     } />),
     item.description ?? "",
-        formatSize(item.size)
+    formatSize(item.size)
 ]
 
 const renderLinuxRow = (item: FolderViewItem) => [

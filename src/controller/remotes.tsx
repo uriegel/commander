@@ -1,7 +1,9 @@
 import { SpecialKeys } from "virtual-table-react"
+import { DialogHandle } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import { addParent, Controller, ControllerResult, ControllerType } from "./controller"
+import { ROOT } from "./root"
 
 export const REMOTES = "remotes"
 
@@ -12,10 +14,9 @@ const renderRow = (item: FolderViewItem) => [
         : item.isAndroid
         ? IconNameType.Android
         : item.isNew      
-        ? IconNameType.Remote
-        : IconNameType.New
+        ? IconNameType.New
+        : IconNameType.Remote
     } />),
-    item.name ?? "",
     item.ipAddress ?? ""
 ]
 
@@ -28,13 +29,18 @@ const getColumns = () => ({
 })
 
 const getItems = async () => {
-    const items = [] as RemotesItem[]
+    var itemsStr = localStorage.getItem(REMOTES)
+    var items = itemsStr ? JSON.parse(itemsStr) : []
 
     return {
         path: REMOTES,
         dirCount: items.length,
         fileCount: 0,
         items: addParent(items)
+                .concat({
+                    name: "Entferntes Gerät hinzufügen...",
+                    isNew: true
+                })
     }
 }
 
@@ -45,11 +51,32 @@ export interface RemotesItem {
     isNew?:     boolean
 }
 
-const onEnter = (_: string, item: FolderViewItem, keys: SpecialKeys) => 
-({
-    processed: false, 
-    pathToSet: item.mountPoint ?? ""
-}) 
+const showNew = (dialog: DialogHandle|null) => {
+
+    const showNewDialog = async () => {
+        const result = await dialog?.show({
+            text: "Entferntes Gerät hinzufügen",   
+            btnOk: true,
+            btnCancel: true,
+            defBtnOk: true
+        })
+
+    }
+    showNewDialog()
+
+    return {
+        processed: true, 
+        pathToSet: ROOT
+    } 
+}
+
+const onEnter = (_: string, item: FolderViewItem, keys: SpecialKeys, dialog: DialogHandle|null) => 
+    item.isNew
+        ? showNew(dialog)
+        : {
+            processed: false, 
+            pathToSet: ROOT
+        } 
 
 export const getRemotesController = (controller: Controller | null): ControllerResult => 
     controller?.type == ControllerType.Remotes

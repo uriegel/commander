@@ -168,7 +168,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     const onEnter = (item: FolderViewItem, keys: SpecialKeys) => {
-        const result = controller.current.onEnter(path, item, keys)
+        const result = controller.current.onEnter(path, item, keys, dialog)
         if (!result.processed && result.pathToSet) 
             changePath(result.pathToSet, showHidden, result.latestPath)
     }
