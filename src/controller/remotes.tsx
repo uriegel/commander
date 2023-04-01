@@ -1,7 +1,7 @@
 import { SpecialKeys } from "virtual-table-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
-import { Controller, ControllerResult, ControllerType } from "./controller"
+import { addParent, Controller, ControllerResult, ControllerType } from "./controller"
 
 export const REMOTES = "remotes"
 
@@ -28,12 +28,13 @@ const getColumns = () => ({
 })
 
 const getItems = async () => {
-	const items = [] as RemotesItem[]
+    const items = [] as RemotesItem[]
+
     return {
         path: REMOTES,
         dirCount: items.length,
         fileCount: 0,
-        items
+        items: addParent(items)
     }
 }
 

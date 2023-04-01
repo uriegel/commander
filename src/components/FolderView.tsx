@@ -4,7 +4,7 @@ import VirtualTable, { OnSort, SelectableItem, SpecialKeys, TableColumns, Virtua
 import { checkController, Controller, createEmptyController } from '../controller/controller'
 import { ROOT } from '../controller/root'
 import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
-import { IOError, Version } from '../controller/requests'
+import { IOError, Version } from '../requests/requests'
 import { DialogHandle } from 'web-dialog-react'
 
 export interface FolderViewItem extends SelectableItem {
@@ -413,6 +413,7 @@ export default FolderView
 
 // TODO remotes  
 // TODO remotes  F2 Show Dialog to change
+// TODO copy: error handling
 // TODO extended rename
 // TODO copy folders: unpack folders when entering on directory item in Conflicts
 // TODO move: delete all empty directories

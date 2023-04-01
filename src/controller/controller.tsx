@@ -4,7 +4,7 @@ import { FolderViewItem } from "../components/FolderView"
 import { lastIndexOfAny } from "../globals"
 import { getFileSystemController } from "./filesystem"
 import { getRemotesController, REMOTES } from "./remotes"
-import { GetExtendedItemsResult, GetItemResult, IOError, Version } from "./requests"
+import { GetExtendedItemsResult, GetItemResult, IOError, Version } from "../requests/requests"
 import { getRootController, ROOT } from "./root"
 
 const dateFormat = Intl.DateTimeFormat("de-DE", {

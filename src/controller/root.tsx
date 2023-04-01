@@ -4,7 +4,7 @@ import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, formatSize} from "./controller"
 import { REMOTES } from "./remotes"
-import { GetRootResult, request } from "./requests"
+import { GetRootResult, request } from "../requests/requests"
 
 export const ROOT = "root"
 const platform = getPlatform()

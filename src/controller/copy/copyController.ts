@@ -1,11 +1,11 @@
 import * as R from "ramda"
 import { DialogHandle, Slide, Result } from "web-dialog-react"
-import CopyConflicts, { ConflictItem } from "../components/CopyConflicts"
-import CopyProgress from "../components/CopyProgress"
-import { FolderViewItem } from "../components/FolderView"
-import { Controller, ControllerType } from "./controller"
-import { compareVersion, getItemsType, ItemsType } from "./filesystem"
-import { IOError, IOErrorResult, request } from "./requests"
+import CopyConflicts, { ConflictItem } from "../../components/CopyConflicts"
+import CopyProgress from "../../components/CopyProgress"
+import { FolderViewItem } from "../../components/FolderView"
+import { Controller, ControllerType } from "../controller"
+import { compareVersion, getItemsType, ItemsType } from "../filesystem"
+import { IOError, IOErrorResult, request } from "../../requests/requests"
 
 export interface CopyController {
     copy: ()=>Promise<IOError|null>

@@ -4,7 +4,7 @@ import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { addParent, Controller, ControllerResult, ControllerType, extractSubPath, formatDateTime, formatSize, formatVersion, getExtension, sortItems } from "./controller"
-import { GetExtendedItemsResult, GetItemResult, IOErrorResult, request, Version } from "./requests"
+import { GetExtendedItemsResult, GetItemResult, IOErrorResult, request, Version } from "../requests/requests"
 import { ROOT } from "./root"
 
 export enum ItemsType {
