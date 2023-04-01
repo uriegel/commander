@@ -392,7 +392,6 @@ export default FolderView
 
 // TODO remotes  
 // TODO remotes  F2 Show Dialog to change
-// TODO copy: access denied: Löschen nicht möglich (4)
 // TODO extended rename
 // TODO copy folders: unpack folders when entering on directory item in Conflicts
 // TODO move: delete all empty directories
