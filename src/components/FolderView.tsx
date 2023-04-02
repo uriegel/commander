@@ -390,7 +390,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO remotes  F2 Show Dialog to change
+// TODO remotes change: change item not create new
 // TODO remote items
 // TODO extended rename
 // TODO copy folders: unpack folders when entering on directory item in Conflicts

@@ -1,13 +1,13 @@
-.newRemote {
+.remoteDialog {
     display: flex;
     flex-direction: column;
 }
 
-.newRemote input[type='text'] {
+.remoteDialog input[type='text'] {
     width: 100%;
 }
 
-.newRemote input {
+.remoteDialog input {
     margin-bottom: 5px;
     background-color: var(--wdr-main-background-color);
     color: var(--wdr-main-color);
@@ -16,7 +16,7 @@
     border-width: 1px;    
 }
 
-.newRemote input:focus {
+.remoteDialog input:focus {
     outline-color: var(--wdr-input-selection-color);
     border-color: transparent;
     outline-width: 1px;

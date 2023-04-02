@@ -2,7 +2,7 @@ import { SpecialKeys } from "virtual-table-react"
 import { DialogHandle, Result } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
-import NewRemote from "../components/NewRemote"
+import RemoteDialog from "../components/RemoteDialog"
 import { addParent, Controller, ControllerResult, ControllerType } from "./controller"
 import { ROOT } from "./root"
 
@@ -49,44 +49,52 @@ const getItems = async () => {
     }
 }
 
-const showNew = (dialog: DialogHandle|null, refresh?: ()=>void) => {
+const showRemote = async (dialog: DialogHandle|null, item?: FolderViewItem) => {
 
-    var name = ""
-    var ipAddress: string | undefined
-    var isAndroid = false
-    const showNewDialog = async () => {
-        const result = await dialog?.show({
-            text: "Entferntes Gerät hinzufügen",   
-            extension: NewRemote,
-            onExtensionChanged: (e: FolderViewItem) => {
-                name = e.name
-                ipAddress = e.ipAddress 
-                isAndroid = e.isAndroid ?? false
-            },
-            btnOk: true,
-            btnCancel: true,
-            defBtnOk: true
-        })
-        if (result?.result == Result.Ok) {
-            var itemsStr = localStorage.getItem(REMOTES)
-            var items = itemsStr ? JSON.parse(itemsStr) : []
-            items = items.concat([{ name, ipAddress, isAndroid }])
-            localStorage.setItem("remotes", JSON.stringify(items))
-            if (refresh)
-                refresh()
-        }
+    var name = item?.name
+    var ipAddress = item?.ipAddress
+    var isAndroid = item?.isAndroid ?? true
+    const result = await dialog?.show({
+        text: "Entferntes Gerät hinzufügen",   
+        extension: RemoteDialog,
+        extensionProps: { name, ipAddress, isAndroid },
+        onExtensionChanged: (e: FolderViewItem) => {
+            name = e.name
+            ipAddress = e.ipAddress 
+            isAndroid = e.isAndroid ?? false
+        },
+        btnOk: true,
+        btnCancel: true,
+        defBtnOk: true
+    })
+    if (result?.result == Result.Ok) {
+        var itemsStr = localStorage.getItem(REMOTES)
+        var items = itemsStr ? JSON.parse(itemsStr) : []
+        items = items.concat([{ name, ipAddress, isAndroid }])
+        localStorage.setItem("remotes", JSON.stringify(items))
+        return true
     }
-    showNewDialog()
+    else
+        return false
+}
+
+const startShowRemote = (dialog: DialogHandle|null, refresh?: ()=>void) => {
+
+    const show = async () => {
+        if (refresh && await showRemote(dialog))
+            refresh()
+    }
+    show()
 
     return {
-        processed: true, 
-        pathToSet: ROOT,
+        processed: false, 
+        pathToSet: ROOT
     } 
 }
 
 const onEnter = (_: string, item: FolderViewItem, keys: SpecialKeys, dialog: DialogHandle|null, refresh?: ()=>void) => 
     item.isNew
-        ? showNew(dialog, refresh)
+        ? startShowRemote(dialog, refresh)
         : {
             processed: false, 
             pathToSet: ROOT
@@ -99,6 +107,7 @@ const deleteItems = async (_: string, items: FolderViewItem[], dialog: DialogHan
 }
 
 const rename = async (path: string, item: FolderViewItem, dialog: DialogHandle | null) => {
+    await showRemote(dialog, item)
     return null
 }
 
