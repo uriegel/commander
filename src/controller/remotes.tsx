@@ -54,6 +54,7 @@ const showRemote = async (dialog: DialogHandle|null, item?: FolderViewItem) => {
     var name = item?.name
     var ipAddress = item?.ipAddress
     var isAndroid = item?.isAndroid ?? true
+    var items = getRemoteItems().filter(n => n.name != item?.name)
     const result = await dialog?.show({
         text: "Entferntes Gerät hinzufügen",   
         extension: RemoteDialog,
@@ -67,9 +68,7 @@ const showRemote = async (dialog: DialogHandle|null, item?: FolderViewItem) => {
         btnCancel: true,
         defBtnOk: true
     })
-    if (result?.result == Result.Ok) {
-        var itemsStr = localStorage.getItem(REMOTES)
-        var items = itemsStr ? JSON.parse(itemsStr) : []
+    if (name && result?.result == Result.Ok) {
         items = items.concat([{ name, ipAddress, isAndroid }])
         localStorage.setItem("remotes", JSON.stringify(items))
         return true
