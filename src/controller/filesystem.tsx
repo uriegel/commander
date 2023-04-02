@@ -156,7 +156,7 @@ const setExtendedItems = (items: FolderViewItem[], extended: GetExtendedItemsRes
 		? {...n, version: extended.versions[i] || undefined } 
 		: {...n, version: (extended.versions && extended.versions[i] || undefined), exifDate: extended.exifTimes[i] || undefined })
 		 
-const getSortFunction = (index: number, descending: boolean) => {
+export const getSortFunction = (index: number, descending: boolean) => {
 	const ascDesc = (sortResult: number) => descending ? -sortResult : sortResult
 	const sf = index == 0
 		? (a: FolderViewItem, b: FolderViewItem) => a.name.localeCompare(b.name) 

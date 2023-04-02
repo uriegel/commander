@@ -6,6 +6,7 @@ import { getFileSystemController } from "./filesystem"
 import { getRemotesController, REMOTES } from "./remotes"
 import { GetExtendedItemsResult, GetItemResult, IOError, Version } from "../requests/requests"
 import { getRootController, ROOT } from "./root"
+import { getRemoteController } from "./remote"
 
 const dateFormat = Intl.DateTimeFormat("de-DE", {
     year: "numeric",
@@ -22,7 +23,8 @@ export enum ControllerType {
     Empty,
     Root,
     FileSystem,
-    Remotes
+    Remotes,
+    Remote
 }
 
 export type SortFunction = (a: FolderViewItem, b: FolderViewItem) => number
@@ -59,6 +61,8 @@ export const checkController = (path: string, controller: Controller|null):Contr
     ? getRootController(controller)
     : path == REMOTES  
     ? getRemotesController(controller)
+    : path.startsWith("remote/")        
+    ? getRemoteController(controller)
     : getFileSystemController(controller)
 
 export const createEmptyController = (): Controller => ({

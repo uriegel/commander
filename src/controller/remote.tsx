@@ -1,0 +1,84 @@
+import { TableColumns } from "virtual-table-react"
+import { FolderViewItem } from "../components/FolderView"
+import IconName, { IconNameType } from "../components/IconName"
+import { GetItemResult, request } from "../requests/requests"
+import { addParent, Controller, ControllerResult, ControllerType, extractSubPath, formatDateTime, formatSize, sortItems } from "./controller"
+import { getSortFunction } from "./filesystem"
+import { ROOT } from "./root"
+
+export const REMOTE = "remote"
+
+const renderRow = (item: FolderViewItem) => [
+	(<IconName namePart={item.name} type={
+        item.isParent
+        ? IconNameType.Parent
+        : item.isDirectory
+        ? IconNameType.Folder
+        : IconNameType.File}
+        iconPath={item.iconPath} />),
+    formatDateTime(item?.time),
+    formatSize(item.size)
+]
+
+const getRowClasses = (item: FolderViewItem) => 
+	item.isHidden
+		? ["hidden"]
+		: []
+
+const getColumns = () => ({
+	columns: [
+		{ name: "Name", isSortable: true, subColumn: "Erw." },
+		{ name: "Datum", isSortable: true },
+		{ name: "Größe", isSortable: true, isRightAligned: true }
+	],
+	getRowClasses,
+	renderRow,
+	draggable: true
+} as TableColumns<FolderViewItem>)
+
+const getItems = async (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean) => {
+	const res = await request<GetItemResult>("getremotefiles", {
+		path,
+		showHiddenItems: showHidden
+	})
+	return { ...res, items: addParent(sortItems(res.items, getSortFunction(sortIndex, sortDescending))) }
+}
+
+export const getRemoteController = (controller: Controller | null): ControllerResult => 
+    controller?.type == ControllerType.Remote
+    ? ({ changed: false, controller })
+    : ({ changed: true, controller: { 
+        type: ControllerType.Remote, 
+        id: REMOTE,
+        getColumns,
+        getItems,
+        getExtendedItems: async () => ({ path: "", exifTimes: [], versions: [] }),
+        setExtendedItems: items=>items,
+		onEnter: (path, item, keys) => 
+			item.isParent && path != REMOTE
+			?  ({
+				processed: false, 
+				pathToSet: path + '/' + item.name,
+				latestPath: extractSubPath(path)
+
+			}) 
+			: item.isParent && path == REMOTE
+			? ({
+				processed: false, 
+				pathToSet: ROOT,
+				latestPath: path
+			}) 
+			: item.isDirectory
+			? ({
+				processed: false, 
+				pathToSet: path + '/' + item.name 
+			}) 
+			: { processed: true },
+        sort: (items: FolderViewItem[]) => items,
+        itemsSelectable: true,
+        appendPath: (path: string, subPath: string) => subPath,
+        rename: async () => null,
+        createFolder: async () => null,
+        deleteItems: async () => null,
+    }})
+

@@ -64,6 +64,7 @@ type CreateFolder = "createfolder"
 type DeleteItems = "deleteitems"
 type CopyItems = "copyitems"
 type CancelCopy = "cancelCopy"
+type GetRemoteFiles = "getremotefiles"
 
 type RequestType = 
 	| Close
@@ -77,6 +78,7 @@ type RequestType =
     | DeleteItems
     | CopyItems
     | CancelCopy
+    | GetRemoteFiles
     
 type Exception = {
 	exception: string

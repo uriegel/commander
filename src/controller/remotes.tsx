@@ -86,7 +86,7 @@ const startShowRemote = (dialog: DialogHandle|null, refresh?: ()=>void) => {
     show()
 
     return {
-        processed: false, 
+        processed: true, 
         pathToSet: ROOT
     } 
 }
@@ -96,12 +96,20 @@ const onEnter = (_: string, item: FolderViewItem, keys: SpecialKeys, dialog: Dia
         ? startShowRemote(dialog, refresh)
         : {
             processed: false, 
-            pathToSet: ROOT
+            pathToSet: item.isParent ? ROOT : `remote/${item.ipAddress}/`
         } 
 
 const deleteItems = async (_: string, items: FolderViewItem[], dialog: DialogHandle | null) => {
-    const remotes = getRemoteItems().filter(x => !items.find(n => n.name == x.name))
-    localStorage.setItem("remotes", JSON.stringify(remotes))
+	const result = await dialog?.show({
+		text: `Möchtest Du ${items.length > 1 ? "die Einträge" : "den Eintrag"} löschen?`,
+		btnOk: true,
+		btnCancel: true,
+		defBtnOk: true
+	})
+    if (result?.result == Result.Ok) {
+        const remotes = getRemoteItems().filter(x => !items.find(n => n.name == x.name))
+        localStorage.setItem("remotes", JSON.stringify(remotes))
+    }
     return null
 }
 
