@@ -1,6 +1,6 @@
 import { SpecialKeys, TableColumns } from "virtual-table-react"
 import { DialogHandle } from "web-dialog-react"
-import { FolderViewItem } from "../components/FolderView"
+import { FolderViewHandle, FolderViewItem } from "../components/FolderView"
 import { lastIndexOfAny } from "../globals"
 import { getFileSystemController } from "./filesystem"
 import { getRemotesController, REMOTES } from "./remotes"
@@ -40,7 +40,7 @@ export interface Controller {
     getItems: (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean) => Promise<GetItemResult>
     getExtendedItems: (path: string, items: FolderViewItem[]) => Promise<GetExtendedItemsResult>
     setExtendedItems: (items: FolderViewItem[], extended: GetExtendedItemsResult)=>FolderViewItem[]
-    onEnter: (path: string, item: FolderViewItem, keys: SpecialKeys, dialog: DialogHandle|null) => onEnterResult
+    onEnter: (path: string, item: FolderViewItem, keys: SpecialKeys, dialog: DialogHandle|null, refresh?: ()=>void) => onEnterResult
     sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => FolderViewItem[]
     itemsSelectable: boolean
     appendPath: (path: string, subPath: string) => string,

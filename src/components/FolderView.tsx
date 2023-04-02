@@ -168,7 +168,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     const onEnter = (item: FolderViewItem, keys: SpecialKeys) => {
-        const result = controller.current.onEnter(path, item, keys, dialog)
+        const result = controller.current.onEnter(path, item, keys, dialog, () => refresh())
         if (!result.processed && result.pathToSet) 
             changePath(result.pathToSet, showHidden, result.latestPath)
     }
@@ -390,13 +390,13 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO remotes refresh after create
-// TODO remotes  Delete
 // TODO remotes  F2 Show Dialog to change
+// TODO remote items
 // TODO extended rename
 // TODO copy folders: unpack folders when entering on directory item in Conflicts
 // TODO move: delete all empty directories
 // TODO Selection Ctrl+Mouse click
+// TODO AddNew not selectable
 // TODO Error from getItems/tooltip from dialog-box-react
 // TODO Statusbar nowrap text-overflow ellipses
 // TODO Viewer: directory info

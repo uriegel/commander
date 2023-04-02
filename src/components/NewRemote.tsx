@@ -5,14 +5,14 @@ import './NewRemote.css'
 const NewRemote = ({onChange}: ExtensionProps) => {
 
     const [name, setName] = useState("")
-    const [ip, setIp] = useState("")
+    const [ipAddress, setIpAddress] = useState("")
     const [isAndroid, setIsAndroid] = useState(true)
     
     const onNameChange = (e: React.ChangeEvent<HTMLInputElement>) => 
         setName(e.target.value)
     
     const onIpChange = (e: React.ChangeEvent<HTMLInputElement>) => 
-        setIp(e.target.value)
+        setIpAddress(e.target.value)
     
     const onIsAndroid = (e: React.ChangeEvent<HTMLInputElement>) => 
         setIsAndroid(e.target.checked)
@@ -21,7 +21,7 @@ const NewRemote = ({onChange}: ExtensionProps) => {
         if (onChange)
             onChange({
                 name,
-                ip,
+                ipAddress,
                 isAndroid
             })
     })
@@ -29,7 +29,7 @@ const NewRemote = ({onChange}: ExtensionProps) => {
     return (
         <div className='newRemote' >
             <input type="text" className='wdr-focusable' placeholder="Anzeigenamen festlegen" value={name} onChange={onNameChange} />
-            <input type="text" className='wdr-focusable' placeholder="IP-Adresse des externen Gerätes" value={ip} onChange={onIpChange}/>
+            <input type="text" className='wdr-focusable' placeholder="IP-Adresse des externen Gerätes" value={ipAddress} onChange={onIpChange}/>
             <div>
                 <input id="adderType" type="checkbox" className='wdr-focusable' checked={isAndroid} onChange={onIsAndroid} />
                 <label htmlFor="adderType">Android</label>
