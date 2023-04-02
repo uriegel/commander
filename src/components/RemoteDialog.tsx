@@ -5,9 +5,6 @@ import { FolderViewItem } from './FolderView'
 
 const RemoteDialog = ({onChange, props }: ExtensionProps) => {
 
-    console.log("props", props)
-    console.log("onChange", onChange)
-
     const [name, setName] = useState((props as FolderViewItem)?.name)
     const [ipAddress, setIpAddress] = useState((props as FolderViewItem)?.ipAddress)
     const [isAndroid, setIsAndroid] = useState((props as FolderViewItem)?.isAndroid)
