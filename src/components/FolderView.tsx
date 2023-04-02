@@ -188,13 +188,13 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         setTimeout(() => e.target.select())
     
     const toggleSelection = (item: FolderViewItem) => {
-        if (!item.isParent)
+        if (!item.isParent && !item.isNew)
             item.isSelected = !item.isSelected
         return item
     }
         
     const setSelection = (item: FolderViewItem, set: boolean) => {
-        if (!item.isParent)
+        if (!item.isParent && !item.isNew)
             item.isSelected = set
         return item
     }
@@ -396,7 +396,6 @@ export default FolderView
 // TODO copy folders: unpack folders when entering on directory item in Conflicts
 // TODO move: delete all empty directories
 // TODO Selection Ctrl+Mouse click
-// TODO AddNew not selectable
 // TODO Error from getItems/tooltip from dialog-box-react
 // TODO Statusbar nowrap text-overflow ellipses
 // TODO Viewer: directory info
