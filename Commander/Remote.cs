@@ -1,7 +1,9 @@
 using CsTools.Extensions;
+using LinqTools;
+
 static partial class Remote
 {
-    public static async Task<GetFilesResult> GetFiles(GetFiles getFiles)
+    public static Task<GetFilesResult> GetFiles(GetFiles getFiles)
     {
         var test = getFiles.Path;
         var ip = getFiles.Path.StringBetween('/', '/');
@@ -10,6 +12,6 @@ static partial class Remote
             Array.Empty<DirectoryItem>(),
             getFiles.Path,
             0,
-            0);
+            0).ToAsync();
     }
 }
