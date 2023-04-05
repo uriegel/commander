@@ -2,8 +2,8 @@ using System.Net;
 using System.Net.Sockets;
 using LinqTools;
 
-using static CsTools.HttpRequest.Core;
 using static LinqTools.Core;
+using static CsTools.HttpRequest.Core;
 
 namespace CsTools.HttpRequest;
 
@@ -57,32 +57,19 @@ public static class Request
         => from n in RunAsync(settings)
             select n.Content.ReadAsStringAsync();
             
-    static async Task<Result<T, Error>> TryRunAsync<T>(this Task<Result<T, Error>> t)
-        where T: notnull
-    {
-        try 
-        {
-            return await t;
-        }
-        catch (InvalidOperationException ioe)
-        {
-            return Error<T, Error>(NullError with { InvalidOperation = ioe.Message });
-        }
-        catch (TaskCanceledException)
-        {
-            return Error<T, Error>(NullError with { Timeout = true });
-        }
-        catch (HttpRequestException hre) when (hre.InnerException is SocketException se && se.SocketErrorCode == SocketError.HostNotFound)
-        {
-            return Error<T, Error>(NullError with { HostNotFound = hre.Message });
-        }
-        catch (HttpRequestException hre) when (hre.InnerException is SocketException se)
-        {
-            return Error<T, Error>(NullError with { SocketError = se.Message });
-        }
-        catch (Exception e)
-        {
-            return Error<T, Error>(NullError with { Exception = e });
-        }
-    }
+    static Task<Result<T, Error>> TryRunAsync<T>(this Task<Result<T, Error>> t)
+            where T : notnull
+        => t.Catch(ex => ex switch
+            {
+                InvalidOperationException ioe 
+                    => Error<T, Error>(NullError with { InvalidOperation = ioe.Message }),
+                TaskCanceledException 
+                    => Error<T, Error>(NullError with { Timeout = true }),
+                HttpRequestException hre when hre.InnerException is SocketException se && se.SocketErrorCode == SocketError.HostNotFound 
+                    => Error<T, Error>(NullError with { HostNotFound = hre.Message }),
+                HttpRequestException hre when hre.InnerException is SocketException se
+                    => Error<T, Error>(NullError with { SocketError = se.Message }),
+                Exception e                
+                    => Error<T, Error>(NullError with { Exception = e })
+            });
 }

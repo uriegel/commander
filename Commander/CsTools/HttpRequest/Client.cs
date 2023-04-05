@@ -18,7 +18,7 @@ public static class Client
     static int maxConnections = 8;
 }
 
-public static partial class Core1
+public static partial class Core
 {
     public static Settings DefaultSettings { get; } = new(HttpMethod.Get, null, "", new(2, 0), null, null);
 }
