@@ -4,7 +4,7 @@ import Dialog, { DialogHandle, Result } from 'web-dialog-react'
 import FolderView, { FolderViewHandle } from './components/FolderView'
 import Menu from './components/Menu'
 import Statusbar from './components/Statusbar'
-import { checkResult, getExtension } from './controller/controller'
+import { checkResult } from './controller/controller'
 import PictureViewer from './components/PictureViewer'
 import MediaPlayer from './components/MediaPlayer'
 import { request } from './requests/requests'
@@ -17,6 +17,8 @@ import { getTheme } from './globals'
 import { themeChangedEvents } from './requests/events'
 import { getCopyController } from './controller/copy/copyController'
 import FileViewer from './components/FileViewer'
+import "functional-extensions"
+import "./extensions/extensions"
 
 // TODO in webview.d.ts
 declare const webViewShowDevTools: ()=>void
@@ -149,7 +151,10 @@ const App = () => {
 	)
 
 	const ViewerView = () => {
-		const ext = getExtension(path.path).toLocaleLowerCase()
+		const ext = path
+					.path
+					.getExtension()
+					.toLocaleLowerCase()
 		
 		return ext == ".jpg" || ext == ".png"
 			? (<PictureViewer path={path.path} />)

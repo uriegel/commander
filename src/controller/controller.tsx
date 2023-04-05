@@ -1,7 +1,6 @@
 import { SpecialKeys, TableColumns } from "virtual-table-react"
 import { DialogHandle } from "web-dialog-react"
-import { FolderViewHandle, FolderViewItem } from "../components/FolderView"
-import { lastIndexOfAny } from "../globals"
+import { FolderViewItem } from "../components/FolderView"
 import { getFileSystemController } from "./filesystem"
 import { getRemotesController, REMOTES } from "./remotes"
 import { GetExtendedItemsResult, GetItemResult, IOError, Version } from "../requests/requests"
@@ -88,7 +87,7 @@ export const addParent = (items: FolderViewItem[]) =>
     [{ name: "..", index: 0, isParent: true, isDirectory: true } as FolderViewItem]
         .concat(items)
 
-export const formatSize = (num: number | undefined) => {
+export const formatSize = (num?: number) => {
     if (!num)
         return ""
     let sizeStr = num.toString()
@@ -116,19 +115,11 @@ export function formatDateTime(dateStr?: string) {
 export const formatVersion = (version?: Version) => 
     version ? `${version.major}.${version.minor}.${version.build}.${version.patch}` : ""
 
-export const extractSubPath = (path: string) => 
-    path.substring(lastIndexOfAny(path, ["/", "\\"]))
-
 export const sortItems = (folderItemArray: FolderViewItem[], sortFunction: SortFunction|undefined) => {
     const dirs = folderItemArray.filter(n => n.isDirectory || n.isParent)
     let files = folderItemArray.filter(n => !n.isDirectory) 
     files = sortFunction ? files.sort(sortFunction) : files
     return dirs.concat(files)
-}
-
-export const getExtension = (path: string) => {
-    let index = path.lastIndexOf(".")
-    return index > 0 ? path.substring(index) : ""
 }
 
 export const excludeParent = (items: FolderViewItem[]) => 

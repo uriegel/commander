@@ -3,7 +3,7 @@ import { DialogHandle, Result } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
-import { addParent, Controller, ControllerResult, ControllerType, extractSubPath, formatDateTime, formatSize, formatVersion, getExtension, sortItems } from "./controller"
+import { addParent, Controller, ControllerResult, ControllerType, formatDateTime, formatSize, formatVersion, sortItems } from "./controller"
 import { GetExtendedItemsResult, GetItemResult, IOErrorResult, request, Version } from "../requests/requests"
 import { ROOT } from "./root"
 
@@ -77,7 +77,7 @@ export const getFileSystemController = (controller: Controller|null): Controller
 			?  ({
 				processed: false, 
 				pathToSet: path + '/' + item.name,
-				latestPath: extractSubPath(path)
+				latestPath: path.extractSubPath()
 
 			}) 
 			: item.isParent && path.length == driveLength
@@ -171,7 +171,7 @@ export const getSortFunction = (index: number, descending: boolean) => {
 		: index == 3
 		? (a: FolderViewItem, b: FolderViewItem) => compareVersion(a.version, b.version)
 		: index == 10
-		? (a: FolderViewItem, b: FolderViewItem) => getExtension(a.name).localeCompare(getExtension(b.name)) 
+		? (a: FolderViewItem, b: FolderViewItem) => a.name.getExtension().localeCompare(b.name.getExtension()) 
 		: undefined
 	
 	return sf

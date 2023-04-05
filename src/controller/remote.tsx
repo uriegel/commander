@@ -2,7 +2,7 @@ import { TableColumns } from "virtual-table-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import { GetItemResult, request } from "../requests/requests"
-import { addParent, Controller, ControllerResult, ControllerType, extractSubPath, formatDateTime, formatSize, sortItems } from "./controller"
+import { addParent, Controller, ControllerResult, ControllerType, formatDateTime, formatSize, sortItems } from "./controller"
 import { getSortFunction } from "./filesystem"
 import { ROOT } from "./root"
 
@@ -55,23 +55,22 @@ export const getRemoteController = (controller: Controller | null): ControllerRe
         getExtendedItems: async () => ({ path: "", exifTimes: [], versions: [] }),
         setExtendedItems: items=>items,
 		onEnter: (path, item, keys) => 
-			item.isParent && path != REMOTE
+			item.isParent && path.split("/").length - 1 == 2
 			?  ({
-				processed: false, 
-				pathToSet: path + '/' + item.name,
-				latestPath: extractSubPath(path)
-
-			}) 
-			: item.isParent && path == REMOTE
-			? ({
 				processed: false, 
 				pathToSet: ROOT,
 				latestPath: path
 			}) 
+			: item.isParent
+			? ({
+				processed: false, 
+				pathToSet: path.appendPath(item.name),
+				latestPath: path.extractSubPath()
+			}) 
 			: item.isDirectory
 			? ({
 				processed: false, 
-				pathToSet: path + '/' + item.name 
+				pathToSet: path.appendPath(item.name)
 			}) 
 			: { processed: true },
         sort: (items: FolderViewItem[]) => items,

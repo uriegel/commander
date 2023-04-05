@@ -22,7 +22,6 @@ static class Theme
         } 
     }
 
-
     public static void StartThemeDetection(Action<string> onChanged)
     {
         var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
