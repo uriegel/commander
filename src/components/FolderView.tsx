@@ -390,7 +390,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO remote icons
 // TODO remote file view
 // TODO remote copy...
 // TODO extended rename

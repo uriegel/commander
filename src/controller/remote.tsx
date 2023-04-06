@@ -15,7 +15,7 @@ const renderRow = (item: FolderViewItem) => [
         : item.isDirectory
         ? IconNameType.Folder
         : IconNameType.File}
-        iconPath={item.iconPath} />),
+        iconPath={item.name} />),
     formatDateTime(item?.time),
     formatSize(item.size)
 ]

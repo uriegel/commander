@@ -78,7 +78,6 @@ export const getFileSystemController = (controller: Controller|null): Controller
 				processed: false, 
 				pathToSet: path + '/' + item.name,
 				latestPath: path.extractSubPath()
-
 			}) 
 			: item.isParent && path.length == driveLength
 			? ({

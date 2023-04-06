@@ -31,7 +31,6 @@ static partial class Remote
                     .Select(ToDirectoryItem)).Select(n => n.ToArray().ToFilesResult(getFiles.Path))
                     .GetOrDefaultAsync(new GetFilesResult(Array.Empty<DirectoryItem>(), getFiles.Path, 1, 2));
 
-    // TODO: icon ext
     // TODO: Sort order directories
     // TODO: Filter hidden
     // TODO: Column Sorting
