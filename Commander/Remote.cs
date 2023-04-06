@@ -28,11 +28,11 @@ static partial class Remote
             select JsonSerializer
                     .Deserialize<RemoteItem[]>(n, JsonWebDefaults)
                     .GetOrDefault(Array.Empty<RemoteItem>())
-                    .Select(ToDirectoryItem)).Select(n => n.ToArray().ToFilesResult(getFiles.Path))
+                    .Select(ToDirectoryItem))
+                        .Select(n => n.Where(n => getFiles.ShowHiddenItems ? true : !n.IsHidden).ToArray()
+                        .ToFilesResult(getFiles.Path))
                     .GetOrDefaultAsync(new GetFilesResult(Array.Empty<DirectoryItem>(), getFiles.Path, 1, 2));
 
-    // TODO: Sort order directories
-    // TODO: Filter hidden
     static DirectoryItem ToDirectoryItem(this RemoteItem item)
         => new(item.Name, item.Size, item.IsDirectory, null, item.IsHidden, 
             DateTimeOffset.FromUnixTimeMilliseconds(item.Time).LocalDateTime);

@@ -115,8 +115,9 @@ export function formatDateTime(dateStr?: string) {
 export const formatVersion = (version?: Version) => 
     version ? `${version.major}.${version.minor}.${version.build}.${version.patch}` : ""
 
-export const sortItems = (folderItemArray: FolderViewItem[], sortFunction: SortFunction|undefined) => {
-    const dirs = folderItemArray.filter(n => n.isDirectory || n.isParent)
+export const sortItems = (folderItemArray: FolderViewItem[], sortFunction?: SortFunction, sortDirs?: boolean) => {
+    const unsortedDirs = folderItemArray.filter(n => n.isDirectory || n.isParent)
+    const dirs = sortDirs ? unsortedDirs.sort((a, b) => a.name.localeCompare(b.name)) : unsortedDirs
     let files = folderItemArray.filter(n => !n.isDirectory) 
     files = sortFunction ? files.sort(sortFunction) : files
     return dirs.concat(files)

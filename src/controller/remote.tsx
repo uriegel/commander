@@ -15,7 +15,7 @@ const renderRow = (item: FolderViewItem) => [
         : item.isDirectory
         ? IconNameType.Folder
         : IconNameType.File}
-        iconPath={item.name} />),
+        iconPath={item.name.getExtension()} />),
     formatDateTime(item?.time),
     formatSize(item.size)
 ]
@@ -41,11 +41,11 @@ const getItems = async (path: string, showHidden: boolean, sortIndex: number, so
 		path,
 		showHiddenItems: showHidden
 	})
-	return { ...res, items: addParent(sortItems(res.items, getSortFunction(sortIndex, sortDescending))) }
+	return { ...res, items: addParent(sort(res.items, sortIndex, sortDescending)) }
 }
 
 const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
-	sortItems(items, getSortFunction(sortIndex, sortDescending)) 
+	sortItems(items, getSortFunction(sortIndex, sortDescending), true) 
 
 export const getRemoteController = (controller: Controller | null): ControllerResult => 
     controller?.type == ControllerType.Remote
