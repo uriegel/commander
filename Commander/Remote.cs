@@ -33,7 +33,6 @@ static partial class Remote
 
     // TODO: Sort order directories
     // TODO: Filter hidden
-    // TODO: Column Sorting
     static DirectoryItem ToDirectoryItem(this RemoteItem item)
         => new(item.Name, item.Size, item.IsDirectory, null, item.IsHidden, 
             DateTimeOffset.FromUnixTimeMilliseconds(item.Time).LocalDateTime);

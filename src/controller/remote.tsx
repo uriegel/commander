@@ -44,6 +44,9 @@ const getItems = async (path: string, showHidden: boolean, sortIndex: number, so
 	return { ...res, items: addParent(sortItems(res.items, getSortFunction(sortIndex, sortDescending))) }
 }
 
+const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
+	sortItems(items, getSortFunction(sortIndex, sortDescending)) 
+
 export const getRemoteController = (controller: Controller | null): ControllerResult => 
     controller?.type == ControllerType.Remote
     ? ({ changed: false, controller })
@@ -73,7 +76,7 @@ export const getRemoteController = (controller: Controller | null): ControllerRe
 				pathToSet: path.appendPath(item.name)
 			}) 
 			: { processed: true },
-        sort: (items: FolderViewItem[]) => items,
+        sort,
         itemsSelectable: true,
         appendPath: (path: string, subPath: string) => subPath,
         rename: async () => null,
