@@ -4,7 +4,7 @@ import IconName, { IconNameType } from "../components/IconName"
 import { GetItemResult, request } from "../requests/requests"
 import { addParent, Controller, ControllerResult, ControllerType, formatDateTime, formatSize, sortItems } from "./controller"
 import { getSortFunction } from "./filesystem"
-import { ROOT } from "./root"
+import { REMOTES } from "./remotes"
 
 export const REMOTE = "remote"
 
@@ -55,16 +55,16 @@ export const getRemoteController = (controller: Controller | null): ControllerRe
         getExtendedItems: async () => ({ path: "", exifTimes: [], versions: [] }),
         setExtendedItems: items=>items,
 		onEnter: (path, item, keys) => 
-			item.isParent && path.split("/").length - 1 == 2
+			item.isParent && path.split("/").filter(n => n.length > 0).sideEffectForEach(n => console.log("Eintrag", n)).length - 1 == 1
 			?  ({
 				processed: false, 
-				pathToSet: ROOT,
+				pathToSet: REMOTES,
 				latestPath: path
 			}) 
 			: item.isParent
 			? ({
 				processed: false, 
-				pathToSet: path.appendPath(item.name),
+				pathToSet: path.getParentPath(),
 				latestPath: path.extractSubPath()
 			}) 
 			: item.isDirectory

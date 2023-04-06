@@ -23,10 +23,10 @@ static partial class Remote
         => (from n in Request.GetStringAsync(GetFiles(getFiles.Path.StringBetween('/', '/'),
                 () => JsonContent.Create(new
                 {
-                    Path = getFiles.Path.SubstringAfter('/').SubstringAfter('/') + '/'
-                }.SideEffect(n => Console.WriteLine($"Hallo1 {n}")), null, JsonWebDefaults)))
+                    Path = "/" + getFiles.Path.SubstringAfter('/').SubstringAfter('/')
+                })))
             select JsonSerializer
-                    .Deserialize<RemoteItem[]>(n.SideEffect(n => Console.WriteLine($"Hallo {n}")), JsonWebDefaults)
+                    .Deserialize<RemoteItem[]>(n, JsonWebDefaults)
                     .GetOrDefault(Array.Empty<RemoteItem>())
                     .Select(ToDirectoryItem)).Select(n => n.ToFilesResult(getFiles.Path))
                     .GetOrDefaultAsync(new GetFilesResult(Array.Empty<DirectoryItem>(), getFiles.Path, 1, 2));
@@ -36,7 +36,6 @@ static partial class Remote
     static DirectoryItem ToDirectoryItem(this RemoteItem item)
         => new(item.Name, item.Size, item.IsDirectory, null, item.IsHidden, DateTime.Now);
     // TODO: dir count? file count? 
-    // TODO: ..: eliminate
     static GetFilesResult ToFilesResult(this IEnumerable<DirectoryItem> items, string path)
         => new GetFilesResult(items.ToArray(), path, 9, 8);
 }
