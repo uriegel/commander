@@ -31,10 +31,12 @@ static partial class Remote
                     .Select(ToDirectoryItem)).Select(n => n.ToArray().ToFilesResult(getFiles.Path))
                     .GetOrDefaultAsync(new GetFilesResult(Array.Empty<DirectoryItem>(), getFiles.Path, 1, 2));
 
-    // TODO: file time UnixTime
     // TODO: icon ext
+    // TODO: Sort order directories
+    // TODO: Column Sorting
     static DirectoryItem ToDirectoryItem(this RemoteItem item)
-        => new(item.Name, item.Size, item.IsDirectory, null, item.IsHidden, DateTime.Now);
+        => new(item.Name, item.Size, item.IsDirectory, null, item.IsHidden, 
+            DateTimeOffset.FromUnixTimeMilliseconds(item.Time).LocalDateTime);
     static GetFilesResult ToFilesResult(this DirectoryItem[] items, string path)
         => new GetFilesResult(items, path, items.Where(n => n.IsDirectory).Count(), items.Where(n => !n.IsDirectory).Count());
 }
