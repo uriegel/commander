@@ -28,18 +28,17 @@ static partial class Remote
             select JsonSerializer
                     .Deserialize<RemoteItem[]>(n, JsonWebDefaults)
                     .GetOrDefault(Array.Empty<RemoteItem>())
-                    .Select(ToDirectoryItem)).Select(n => n.ToFilesResult(getFiles.Path))
+                    .Select(ToDirectoryItem)).Select(n => n.ToArray().ToFilesResult(getFiles.Path))
                     .GetOrDefaultAsync(new GetFilesResult(Array.Empty<DirectoryItem>(), getFiles.Path, 1, 2));
 
     // TODO: file time UnixTime
     // TODO: icon ext
     static DirectoryItem ToDirectoryItem(this RemoteItem item)
         => new(item.Name, item.Size, item.IsDirectory, null, item.IsHidden, DateTime.Now);
-    // TODO: dir count? file count? 
-    static GetFilesResult ToFilesResult(this IEnumerable<DirectoryItem> items, string path)
-        => new GetFilesResult(items.ToArray(), path, 9, 8);
+    static GetFilesResult ToFilesResult(this DirectoryItem[] items, string path)
+        => new GetFilesResult(items, path, items.Where(n => n.IsDirectory).Count(), items.Where(n => !n.IsDirectory).Count());
 }
-//getFiles.Path, 3, 4);
+
 record RemoteItem(
     string Name,
     long Size,
