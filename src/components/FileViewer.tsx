@@ -1,3 +1,4 @@
+import { getViewerPath } from '../controller/controller'
 import './FileViewer.css'
 
 interface FileViewerProps {
@@ -7,7 +8,7 @@ interface FileViewerProps {
 const FileViewer = ({ path }: FileViewerProps) => (
     <div className='viewer'>
         <iframe frameBorder={0} className="fileViewer"
-            src={`http://localhost:20000/commander/${path.startsWith("android") ? "androidfile" : "file"}?path=${path}`} />
+            src={getViewerPath(path)} />
     </div>
 )
 

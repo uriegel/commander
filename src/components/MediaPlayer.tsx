@@ -1,3 +1,4 @@
+import { getViewerPath } from '../controller/controller'
 import './MediaPlayer.css'
 
 interface MediaPlayerProps {
@@ -7,7 +8,7 @@ interface MediaPlayerProps {
 const MediaPlayer = ({ path }: MediaPlayerProps) => (
     <div className='viewer'>
         <video className='mediaPlayer' controls autoPlay
-            src={`http://localhost:20000/commander/${path.startsWith("android") ? "androidmovie" : "movie"}?path=${path}`} />        
+            src={getViewerPath(path)} />        
     </div>
 )
 

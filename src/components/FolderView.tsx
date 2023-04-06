@@ -390,7 +390,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO remote file view: http://192.168.178.74:8080/DCIM/Camera/20230210_170241.mp4 instead of remote/192.168.178.74/DCIM/Camera/...
 // TODO remote copy...
 // TODO extended rename
 // TODO copy folders: unpack folders when entering on directory item in Conflicts

@@ -55,6 +55,11 @@ export interface ControllerResult {
     controller: Controller
 }
 
+export const getViewerPath = (path: string) => 
+    path.startsWith("remote")
+    ? `http://${path.stringBetween("/", "/")}:8080/${path.substringAfter("/").substringAfter("/")}`
+    : `http://localhost:20000/commander/file?path=${path}`
+
 export const checkController = (path: string, controller: Controller|null):ControllerResult => 
     path == ROOT
     ? getRootController(controller)
