@@ -33,6 +33,9 @@ static partial class Remote
                         .ToFilesResult(getFiles.Path))
                     .GetOrDefaultAsync(new GetFilesResult(Array.Empty<DirectoryItem>(), getFiles.Path, 1, 2));
 
+    public static  Task<IOResult> CopyItemsFromRemote(CopyItemsParam input)
+        => (new IOResult(null)).ToAsync();
+
     static DirectoryItem ToDirectoryItem(this RemoteItem item)
         => new(item.Name, item.Size, item.IsDirectory, null, item.IsHidden, 
             DateTimeOffset.FromUnixTimeMilliseconds(item.Time).LocalDateTime);

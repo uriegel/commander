@@ -7,18 +7,24 @@ import { Controller, ControllerType } from "../controller"
 import { compareVersion, getItemsType, ItemsType } from "../filesystem"
 import { CopyItem, IOError, IOErrorResult, request } from "../../requests/requests"
 import { copy } from "./fileSystem"
+import { copyFromRemote } from "./toRemoteCopy"
 
 export interface CopyController {
     copy: ()=>Promise<IOError|null>
 }
 
+const getCopyFunction = (from: ControllerType, to: ControllerType) =>
+    from == ControllerType.Remote && to == ControllerType.FileSystem
+    ? copyFromRemote
+    : copy    
+
 export const getCopyController = (move: boolean, dialog: DialogHandle|null, fromLeft: boolean, fromController: Controller, toController: Controller,
     sourcePath: string, targetPath: string, items: FolderViewItem[], targetItems: FolderViewItem[]): CopyController|null => {
-    return fromController?.type == ControllerType.FileSystem && toController?.type == ControllerType.FileSystem
-        || fromController?.type == ControllerType.Remote && toController?.type == ControllerType.FileSystem
-        || fromController?.type == ControllerType.FileSystem && toController?.type == ControllerType.Remote
+    return fromController.type == ControllerType.FileSystem && toController.type == ControllerType.FileSystem
+        || fromController.type == ControllerType.Remote && toController.type == ControllerType.FileSystem
+        || fromController.type == ControllerType.FileSystem && toController.type == ControllerType.Remote
     ? getFileSystemCopyController(move, dialog, fromLeft, fromController, toController, sourcePath, targetPath,
-            items?.filter(n => !n.isDirectory), targetItems?.filter(n => !n.isDirectory), copy)
+            items?.filter(n => !n.isDirectory), targetItems?.filter(n => !n.isDirectory), getCopyFunction(fromController.type, toController.type))
     : null
 }
 
