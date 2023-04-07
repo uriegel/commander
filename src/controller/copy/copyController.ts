@@ -6,35 +6,25 @@ import { FolderViewItem } from "../../components/FolderView"
 import { Controller, ControllerType } from "../controller"
 import { compareVersion, getItemsType, ItemsType } from "../filesystem"
 import { CopyItem, IOError, IOErrorResult, request } from "../../requests/requests"
+import { copy } from "./fileSystem"
 
 export interface CopyController {
     copy: ()=>Promise<IOError|null>
 }
 
-export const getCopyController = (move: boolean, dialog: DialogHandle|null, fromLeft: boolean, fromController?: Controller, toController?: Controller,
-    sourcePath?: string, targetPath?: string, items?: FolderViewItem[], targetItems?: FolderViewItem[]): CopyController|null => {
+export const getCopyController = (move: boolean, dialog: DialogHandle|null, fromLeft: boolean, fromController: Controller, toController: Controller,
+    sourcePath: string, targetPath: string, items: FolderViewItem[], targetItems: FolderViewItem[]): CopyController|null => {
     return fromController?.type == ControllerType.FileSystem && toController?.type == ControllerType.FileSystem
         || fromController?.type == ControllerType.Remote && toController?.type == ControllerType.FileSystem
         || fromController?.type == ControllerType.FileSystem && toController?.type == ControllerType.Remote
     ? getFileSystemCopyController(move, dialog, fromLeft, fromController, toController, sourcePath, targetPath,
-            items?.filter(n => !n.isDirectory), targetItems?.filter(n => !n.isDirectory))
+            items?.filter(n => !n.isDirectory), targetItems?.filter(n => !n.isDirectory), copy)
     : null
 }
 
-// TODO add copy function
-// TODO add progress function
-// TODO add copy override = false all: progress and staying forever
-const copy = async (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean) => {
-    return await request<IOErrorResult>("copyitems", {
-        path: sourcePath,
-        targetPath: targetPath,
-        items,
-        move
-    })
-}
-
-const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, fromLeft: boolean, fromController?: Controller, toController?: Controller,
-    sourcePath?: string, targetPath?: string, items?: FolderViewItem[], targetItems?: FolderViewItem[]): CopyController | null => ({
+const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, fromLeft: boolean, fromController: Controller, toController: Controller,
+    sourcePath: string, targetPath: string, items: FolderViewItem[], targetItems: FolderViewItem[],
+        copy: (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean)=>Promise<IOErrorResult>): CopyController | null => ({
         copy: async () => {
             if (!items || !targetItems || items.length == 0)
                 return null

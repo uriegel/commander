@@ -136,8 +136,8 @@ const App = () => {
 	const copyItems = async (move: boolean) => {
 		const active = getActiveFolder()
 		const inActive = getInactiveFolder()
-		const controller = getCopyController(move, dialog.current, active?.id == ID_LEFT, active?.getController(), inActive?.getController(),
-			active?.getPath(), inActive?.getPath(), active?.getSelectedItems(), inActive?.getItems())
+		const controller = getCopyController(move, dialog.current, active?.id == ID_LEFT, active?.getController()!, inActive?.getController()!,
+			active?.getPath()!, inActive?.getPath()!, active?.getSelectedItems()!, inActive?.getItems()!)
 		const result = controller ? await controller.copy() : null
 		if (await checkResult(dialog.current, active, result)) {
 			if (move)

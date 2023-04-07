@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 
 using AspNetExtensions;
+using CsTools;
 using CsTools.Extensions;
 using LinqTools;
 using MetadataExtractor;
@@ -98,10 +99,14 @@ static partial class Directory
                 .ToIOResult();
 
     public static Task<IOResult> CopyItems(CopyItemsParam input)
-        => CopyItems(input.Items.Select(n => n.Size).Aggregate((a, b) => a + b), input, 
-            new CancellationTokenSource()
-                .SideEffect(n => cancellationTokenSource = n)
-                .Token);
+        => CopyItems(input, input.Items)
+            .Catch(MapExceptionToIOResult);
+
+    public async static Task<IOResult> CopyItems(CopyItemsParam input, CopyItem[] items)
+        => await CopyItems(items.Select(n => n.Size).Aggregate(0L, (a, b) => a + b), input,
+                new CancellationTokenSource()
+                    .SideEffect(n => cancellationTokenSource = n)
+                    .Token);
 
     public static Task<IOResult> CancelCopy(Empty _)
         => Task.FromResult(new IOResult(null)
@@ -109,18 +114,18 @@ static partial class Directory
                                 .SideEffect(_ => cancellationTokenSource = null));
 
     static Task<IOResult> CopyItems(long totalSize, CopyItemsParam input, CancellationToken cancellationToken)
-        => LinqTools.Core.Try(
-            () => input.Items.Aggregate(0L, (count, n) => {
-                if (cancellationToken.IsCancellationRequested)
-                    return 0;
-                CopyItem(n.Name, input.Path, input.TargetPath,
-                    (c, t) => Events.CopyProgressChanged(new(n.Name, t, c, totalSize, count + c)),
-                    input.Move, cancellationToken);
-                return count + n.Size;
-            })
-                .ToVoid(),
-            MapExceptionToIOError)
-                .ToIOResult();
+        => input.Items.Aggregate(0L, (count, n) =>
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return 0;
+            CopyItem(n.Name, input.Path, input.TargetPath,
+                (c, t) => Events.CopyProgressChanged(new(n.Name, t, c, totalSize, count + c)),
+                input.Move, cancellationToken);
+            return count + n.Size;
+        }).ToIOResult();
+
+    static Task<IOResult> ToIOResult<T>(this T t)
+        => (new IOResult(null)).ToAsync();
 
     static Task<IOResult> ToIOResult(this Result<Nothing, IOError> result)
         => result.Match(

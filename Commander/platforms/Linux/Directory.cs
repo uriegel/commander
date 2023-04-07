@@ -8,6 +8,7 @@ using GtkDotNet;
 using LinqTools;
 
 using static CsTools.Core;
+using CsTools;
 
 static partial class Directory
 {
@@ -30,14 +31,12 @@ static partial class Directory
             .ToAsync();
 
     public static Task<IOResult> DeleteItems(DeleteItemsParam input)
-        => LinqTools.Core.TryAsync<Nothing, IOError>(
-            () => WebWindowNetCore.WebView.GtkApplication!.Dispatch(() =>
-                {
-                    input.Names.ForEach(n => GFile.Trash(input.Path.AppendPath(n)));
-                    return 0.ToNothing();
-                }, 100),
-            MapExceptionToIOError)
-            .ToIOResult();        
+        => WebWindowNetCore.WebView.GtkApplication!.Dispatch(() =>
+            {
+                input.Names.ForEach(n => GFile.Trash(input.Path.AppendPath(n)));
+                return new IOResult(null);
+            }, 100)
+                .Catch(MapExceptionToIOResult);
 
     static void CopyItem(string name, string path, string targetPath, Action<long, long> progress, bool move, CancellationToken cancellationToken)
         => Copy(path.AppendPath(name), targetPath.AppendPath(name), FileCopyFlags.Overwrite,
@@ -60,6 +59,9 @@ static partial class Directory
             GtkDotNet.GErrorException gee  when gee.Code == 14 => IOError.AccessDenied,
             _                                                  => IOError.Exn
         };
+
+    static IOResult MapExceptionToIOResult(Exception e)
+        => new(MapExceptionToIOError(e));
 
     static readonly DateTime startTime = DateTime.Now;
 }
