@@ -110,7 +110,7 @@ type DeleteItemsType = {
     names:      string[]
 }
 
-type CopyItem = {
+export type CopyItem = {
     name: string
     size: number|undefined
 }
