@@ -13,11 +13,10 @@ const PictureViewer = ({ path }: PictureViewerProps) => {
     return (
         <div className='viewer'>
             <img className='viewerImg'
-                src={`${getViewerPath(path)}`} alt="kein Bild gefunden" />
+                src={`${getViewerPath(path)}${path.startsWith("remote") ? '?' : '&'}nochache=${nocache.current++}`} alt="kein Bild gefunden" />
         </div>
     )
 }
 
 export default PictureViewer
 
-// src={`${getViewerPath(path)}${path.startsWith("remote") ?nochache=${nocache.current++}`} "?" : "&"} alt="kein Bild gefunden" />
