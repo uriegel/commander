@@ -138,6 +138,9 @@ static partial class Directory
                 _ => (IOError?)null,
                 e => e
             ));
+
+    static IOResult MapExceptionToIOResult(Exception e)
+        => new(MapExceptionToIOError(e));
 }
 
 record DirectoryItem(

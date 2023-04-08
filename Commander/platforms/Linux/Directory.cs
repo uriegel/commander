@@ -60,9 +60,6 @@ static partial class Directory
             _                                                  => IOError.Exn
         };
 
-    static IOResult MapExceptionToIOResult(Exception e)
-        => new(MapExceptionToIOError(e));
-
     static readonly DateTime startTime = DateTime.Now;
 }
 
