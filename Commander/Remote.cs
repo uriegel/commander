@@ -24,7 +24,6 @@ static class Remote
                     .Select(ToDirectoryItem))
                         .Select(n => n.Where(n => getFiles.ShowHiddenItems ? true : !n.IsHidden).ToArray()
                         .ToFilesResult(getFiles.Path));
-    //.GetOrDefaultAsync(new GetFilesResult(Array.Empty<DirectoryItem>(), getFiles.Path, 1, 2));
 
     public static Task<IOResult> CopyItemsFromRemote(CopyItemsParam input)
         => CopyItemsFromRemote(input.Path.GetIpAndPath(), input.TargetPath, input.Items, input.Move)
@@ -69,25 +68,26 @@ static class Remote
         {
             if (cancellationToken.IsCancellationRequested)
                 return 0;
-            await CopyItemAsync(n.Name, ipAndPath, targetPath,
+            using var file = File.Create(targetPath.AppendPath(n.Name));
+            await CopyItemAsync(n.Name, ipAndPath, file,
                 (c, t) => Events.CopyProgressChanged(new(n.Name, t, c, totalSize, count + c)),
                 move, cancellationToken);
             return count + n.Size;
         }))
             .ToIOResult();
 
-    static async Task CopyItemAsync(string name, IpAndPath ipAndPath, string targetPath, OnCopyProgress progress, bool move, CancellationToken cancellationToken)
-    {
-        var aff = await Request.RunAsync(ipAndPath.GetFile(name));
-        var af = aff.GetResponseStream().WithProgress(progress);
-        using var file = File.Create(targetPath.AppendPath(name));
-
-        var affe = 9;
-    }
-
+    // TODO Buffered read
+    static Task CopyItemAsync(string name, IpAndPath ipAndPath, Stream targetFile, OnCopyProgress progress, bool move, CancellationToken cancellationToken)
+        =>  from msg in Request.RunAsync(ipAndPath.GetFile(name))
+            select msg
+                    .GetResponseStream()
+                    .WithProgress(progress)
+                    .SideEffect(s => s.CopyTo(targetFile));
+    // TODO DateTime
     static IOResult ToIOResult<T>(this T t)
         => (new IOResult(null));
 
+    // TODO Exceptions
     static IOError MapExceptionToIOError(Exception e)
         => e switch
         {
