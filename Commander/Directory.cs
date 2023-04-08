@@ -103,15 +103,14 @@ static partial class Directory
             .Catch(MapExceptionToIOResult);
 
     public async static Task<IOResult> CopyItems(CopyItemsParam input, CopyItem[] items)
-        => await CopyItems(items.Select(n => n.Size).Aggregate(0L, (a, b) => a + b), input,
-                new CancellationTokenSource()
-                    .SideEffect(n => cancellationTokenSource = n)
-                    .Token);
+        => await CopyItems(items
+                            .Select(n => n.Size)
+                            .Aggregate(0L, (a, b) => a + b), 
+                        input, Cancellation.Create());
 
     public static Task<IOResult> CancelCopy(Empty _)
         => Task.FromResult(new IOResult(null)
-                                .SideEffect(_ => cancellationTokenSource?.Cancel())
-                                .SideEffect(_ => cancellationTokenSource = null));
+                                .SideEffect(Cancellation.Cancel));
 
     static Task<IOResult> CopyItems(long totalSize, CopyItemsParam input, CancellationToken cancellationToken)
         => input.Items.Aggregate(0L, (count, n) =>
@@ -139,8 +138,6 @@ static partial class Directory
                 _ => (IOError?)null,
                 e => e
             ));
-
-    static CancellationTokenSource? cancellationTokenSource;
 }
 
 record DirectoryItem(
