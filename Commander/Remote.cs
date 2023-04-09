@@ -68,21 +68,25 @@ static class Remote
         {
             if (cancellationToken.IsCancellationRequested)
                 return 0;
-            using var file = File.Create(targetPath.AppendPath(n.Name));
-            await CopyItemAsync(n.Name, ipAndPath, file,
-                (c, t) => Events.CopyProgressChanged(new(n.Name, t, c, totalSize, count + c)),
-                move, cancellationToken);
+            using var msg = await Request.RunAsync(ipAndPath.GetFile(n.Name), true);
+            using var targetFile = 
+                File
+                    .Create(targetPath.AppendPath(n.Name))
+                    .WithProgress((c, t) => Events.CopyProgressChanged(new(
+                        n.Name, 
+                        msg.Content.Headers.ContentLength.GetOrDefault(0), 
+                        c, 
+                        totalSize, count + c
+                    )));
+
+            await msg 
+                .Content
+                .ReadAsStream()
+                .CopyToAsync(targetFile, cancellationToken);
             return count + n.Size;
         }))
             .ToIOResult();
 
-    // TODO Buffered read
-    static Task CopyItemAsync(string name, IpAndPath ipAndPath, Stream targetFile, OnCopyProgress progress, bool move, CancellationToken cancellationToken)
-        =>  from msg in Request.RunAsync(ipAndPath.GetFile(name))
-            select msg
-                    .GetResponseStream()
-                    .WithProgress(progress)
-                    .SideEffect(s => s.CopyTo(targetFile));
     // TODO DateTime
     static IOResult ToIOResult<T>(this T t)
         => (new IOResult(null));

@@ -41,6 +41,7 @@
   <ItemGroup>
     <PackageReference Include="MetadataExtractor" Version="2.7.2" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
+    <PackageReference Include="CsTools" Version="4.1.0 " />
   </ItemGroup>
 
   <ItemGroup Condition="'$(IsWindows)'=='true'">

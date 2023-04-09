@@ -17,9 +17,7 @@ WebView
         .CorsOrigin("http://localhost:3000")
 #endif        
         .MapGet("commander/getIcon", context =>  Directory.ProcessIcon(context, context.Request.Query["path"].ToString()))
-        .MapGet("commander/image", context =>  Directory.ProcessFile(context, context.Request.Query["path"].ToString()))
         .MapGet("commander/file", context =>  Directory.ProcessFile(context, context.Request.Query["path"].ToString()))
-        .MapGet("commander/movie", context =>  Directory.ProcessMovie(context, context.Request.Query["path"].ToString()))
         .JsonPost<GetFiles, GetFilesResult>("commander/getfiles", Directory.GetFiles)
         .JsonPost<Empty, RootItem[]>("commander/getroot", Root.Get)
         .JsonPost<GetExtendedItems, GetExtendedItemsResult>("commander/getextendeditems", Directory.GetExtendedItems)

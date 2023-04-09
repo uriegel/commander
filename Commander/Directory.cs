@@ -80,11 +80,10 @@ static partial class Directory
     public static async Task ProcessFile(HttpContext context, string path)
     {
         using var stream = path.OpenFile();
-        await context.SendStream(stream, null, path);
+        await (path.UseRange()
+            ? context.StreamRangeFile(path)
+            : context.SendStream(stream, null, path));
     }
-
-    public static Task ProcessMovie(HttpContext context, string path)
-        => context.StreamRangeFile(path);
 
     public static Task<IOResult> CreateFolder(CreateFolderParam input)
         => LinqTools.Core.Try(
@@ -111,6 +110,10 @@ static partial class Directory
     public static Task<IOResult> CancelCopy(Empty _)
         => Task.FromResult(new IOResult(null)
                                 .SideEffect(Cancellation.Cancel));
+
+    static bool UseRange(this string path)
+        => path.EndsWith(".mp4", StringComparison.InvariantCultureIgnoreCase) 
+        || path.EndsWith(".mp3", StringComparison.InvariantCultureIgnoreCase);
 
     static Task<IOResult> CopyItems(long totalSize, CopyItemsParam input, CancellationToken cancellationToken)
         => input.Items.Aggregate(0L, (count, n) =>
