@@ -138,10 +138,7 @@ static class Remote
                     )));
             using var msg = await Request.RunAsync(ipAndPath.PostFile(n.Name, sourceFile), true);
 
-            // await msg 
-            //     .Content
-            //     .ReadAsStream()
-            //     .CopyToAsync(targetFile, cancellationToken);
+            // TODO set x-file-date
             // msg
             //     .GetHeaderLongValue("x-file-date")
             //     .WhenSome(v => v
