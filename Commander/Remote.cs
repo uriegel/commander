@@ -44,13 +44,21 @@ static class Remote
             Method = HttpMethod.Post,
             BaseUrl = $"http://{ipAndPath.Ip}:8080",
             Url = "/getfile",
-            // TODO: appendLinuxPath
-            AddContent = () => JsonContent.Create(new { Path = ipAndPath.Path.AppendPath(name) })
+            AddContent = () => JsonContent.Create(new 
+                                { 
+                                    Path = ipAndPath.Path.AppendLinuxPath(name) 
+                                })
         };
 
     static DirectoryItem ToDirectoryItem(this RemoteItem item)
-        => new(item.Name, item.Size, item.IsDirectory, null, item.IsHidden, 
-            DateTimeOffset.FromUnixTimeMilliseconds(item.Time).LocalDateTime);
+        => new(
+                item.Name, 
+                item.Size, 
+                item.IsDirectory, 
+                null, 
+                item.IsHidden, 
+                item.Time.FromUnixTime()
+            );
     static GetFilesResult ToFilesResult(this DirectoryItem[] items, string path)
         => new GetFilesResult(items, path, items.Where(n => n.IsDirectory).Count(), items.Where(n => !n.IsDirectory).Count());
 
@@ -68,10 +76,11 @@ static class Remote
         {
             if (cancellationToken.IsCancellationRequested)
                 return 0;
+            var targetFilename = targetPath.AppendLinuxPath(n.Name);
             using var msg = await Request.RunAsync(ipAndPath.GetFile(n.Name), true);
             using var targetFile = 
                 File
-                    .Create(targetPath.AppendPath(n.Name))
+                    .Create(targetFilename)
                     .WithProgress((c, t) => Events.CopyProgressChanged(new(
                         n.Name, 
                         msg.Content.Headers.ContentLength.GetOrDefault(0), 
@@ -83,15 +92,24 @@ static class Remote
                 .Content
                 .ReadAsStream()
                 .CopyToAsync(targetFile, cancellationToken);
+            msg
+                .GetHeaderLongValue("x-file-date")
+                .WhenSome(v => v
+                                .SideEffect(_ => targetFile.Close())
+                                .SetLastWriteTime(targetFilename));
+
             return count + n.Size;
         }))
             .ToIOResult();
 
-    // TODO DateTime
+    static void SetLastWriteTime(this long unixTime, string targetFilename)
+        => File.SetLastWriteTime(targetFilename, unixTime.FromUnixTime());
+
     static IOResult ToIOResult<T>(this T t)
         => (new IOResult(null));
 
     // TODO Exceptions
+    // TODO No action when another action is waiting because of connection lost
     static IOError MapExceptionToIOError(Exception e)
         => e switch
         {
@@ -101,8 +119,12 @@ static class Remote
 
     static IOResult MapExceptionToIOResult(Exception e)
         => new(MapExceptionToIOError(e));
-}
 
+    static string AppendLinuxPath(this string path, string pathToAppend)
+        => path.EndsWith('/')
+            ? path + pathToAppend
+            : path + '/' + pathToAppend;
+}
 record RemoteItem(
     string Name,
     long Size,
