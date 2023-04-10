@@ -148,8 +148,7 @@ static class Remote
             //                     .SideEffect(_ => targetFile.Close())
             //                     .SetLastWriteTime(targetFilename));
 
-            return 0;
-            //            return count + n.Size;
+            return count + n.Size;
         }))
             .ToIOResult();
 
