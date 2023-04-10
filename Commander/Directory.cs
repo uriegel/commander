@@ -192,7 +192,9 @@ record DeleteItemsParam(
 
 record CopyItem(
     string Name,
-    long Size
+    long Size,
+    DateTime Time
+
 );
 
 record CopyItemsParam(

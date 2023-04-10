@@ -54,13 +54,15 @@ static class Remote
                                 })
         };
 
-    static Settings PostFile(this IpAndPath ipAndPath, string name, Stream streamToPost) 
+    static Settings PostFile(this IpAndPath ipAndPath, string name, Stream streamToPost, DateTime lastWriteTime) 
         => DefaultSettings with
         {
             Method = HttpMethod.Post,
             BaseUrl = $"http://{ipAndPath.Ip}:8080",
             Url = $"/postfile?path={ipAndPath.Path.AppendLinuxPath(name)}",
             AddContent = () => new StreamContent(streamToPost, 8100)
+                                    .SideEffect(n => n.Headers.TryAddWithoutValidation("x-file-date", 
+                                                                                        (new DateTimeOffset(lastWriteTime).ToUnixTimeMilliseconds().ToString())))
         };
 
     static DirectoryItem ToDirectoryItem(this RemoteItem item)
@@ -136,15 +138,7 @@ static class Remote
                         c, 
                         totalSize, count + c
                     )));
-            using var msg = await Request.RunAsync(ipAndPath.PostFile(n.Name, sourceFile), true);
-
-            // TODO set x-file-date
-            // msg
-            //     .GetHeaderLongValue("x-file-date")
-            //     .WhenSome(v => v
-            //                     .SideEffect(_ => targetFile.Close())
-            //                     .SetLastWriteTime(targetFilename));
-
+            using var msg = await Request.RunAsync(ipAndPath.PostFile(n.Name, sourceFile, new DateTimeOffset(n.Time).UtcDateTime), true);
             return count + n.Size;
         }))
             .ToIOResult();

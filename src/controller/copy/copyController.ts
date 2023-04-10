@@ -109,8 +109,8 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                         await request("cancelCopy", {})        
                 }, 1000)
                 const copyItems = result?.result == Result.Yes
-                    ? items.map(n => ({ name: n.name, size: n.size }))
-                    : R.without(conflictItems.map(n => ({ name: n.name, size: n.size })), items.map(n => ({ name: n.name, size: n.size })))
+                    ? items.map(n => ({ name: n.name, size: n.size, time: n.time }))
+                    : R.without(conflictItems.map(n => ({ name: n.name, size: n.size, time: n.time })), items.map(n => ({ name: n.name, size: n.size, time: n.time })))
 
                 const ioResult = await copy(sourcePath!, targetPath!, copyItems, move)
                 clearTimeout(timeout)

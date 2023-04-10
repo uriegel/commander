@@ -117,7 +117,8 @@ type DeleteItemsType = {
 
 export type CopyItem = {
     name: string
-    size: number|undefined
+    size: number | undefined
+    time: string | undefined
 }
 
 type CopyItemsType = {
