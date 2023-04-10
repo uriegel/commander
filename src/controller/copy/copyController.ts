@@ -7,7 +7,8 @@ import { Controller, ControllerType } from "../controller"
 import { compareVersion, getItemsType, ItemsType } from "../filesystem"
 import { CopyItem, IOError, IOErrorResult, request } from "../../requests/requests"
 import { copy } from "./fileSystem"
-import { copyFromRemote } from "./toRemoteCopy"
+import { copyToRemote } from "./toRemoteCopy"
+import { copyFromRemote } from "./fromRemoteCopy"
 
 export interface CopyController {
     copy: ()=>Promise<IOError|null>
@@ -16,6 +17,8 @@ export interface CopyController {
 const getCopyFunction = (from: ControllerType, to: ControllerType) =>
     from == ControllerType.Remote && to == ControllerType.FileSystem
     ? copyFromRemote
+    : from == ControllerType.FileSystem && to == ControllerType.Remote
+    ? copyToRemote
     : copy    
 
 export const getCopyController = (move: boolean, dialog: DialogHandle|null, fromLeft: boolean, fromController: Controller, toController: Controller,

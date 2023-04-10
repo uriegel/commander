@@ -64,6 +64,7 @@ type CreateFolder = "createfolder"
 type DeleteItems = "deleteitems"
 type CopyItems = "copyitems"
 type CopyItemsFromRemote = "copyitemsfromremote"
+type CopyItemsToRemote = "copyitemstoremote"
 type CancelCopy = "cancelCopy"
 type GetRemoteFiles = "getremotefiles"
 
@@ -80,6 +81,7 @@ type RequestType =
     | DeleteItems
     | CopyItems
     | CopyItemsFromRemote
+    | CopyItemsToRemote
     | CancelCopy
     | GetRemoteFiles
     

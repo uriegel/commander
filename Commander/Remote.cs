@@ -29,6 +29,10 @@ static class Remote
         => CopyItemsFromRemote(input.Path.GetIpAndPath(), input.TargetPath, input.Items, input.Move)
                 .Catch(MapExceptionToIOResult);
 
+    public static Task<IOResult> CopyItemsToRemote(CopyItemsParam input)
+        => CopyItemsToRemote(input.Path.GetIpAndPath(), input.TargetPath, input.Items, input.Move)
+                .Catch(MapExceptionToIOResult);
+
     static Settings GetFiles(this IpAndPath ipAndPath)
     => DefaultSettings with
         {
@@ -70,6 +74,9 @@ static class Remote
                         .Select(n => n.Size)
                         .Aggregate(0L, (a, b) => a + b), 
                     ipAndPath, targetPath, items, move, Cancellation.Create());
+
+    static async Task<IOResult> CopyItemsToRemote(IpAndPath ipAndPath, string targetPath, CopyItem[] items, bool move)
+        => throw new Exception("Ging nich");
 
     static async Task<IOResult> CopyItems(long totalSize, IpAndPath ipAndPath, string targetPath, CopyItem[] items, bool move, CancellationToken cancellationToken)
         => (await items.ToAsyncEnumerable().AggregateAwaitAsync(0L, async (count, n) =>

@@ -26,6 +26,7 @@ WebView
         .JsonPost<RenameItemParam, IOResult>("commander/renameitem", Directory.RenameItem)
         .JsonPost<CopyItemsParam, IOResult>("commander/copyitems", Directory.CopyItems)
         .JsonPost<CopyItemsParam, IOResult>("commander/copyitemsfromremote", Remote.CopyItemsFromRemote)
+        .JsonPost<CopyItemsParam, IOResult>("commander/copyitemstoremote", Remote.CopyItemsToRemote)
         .JsonPost<Empty, IOResult>("commander/cancelcopy", Directory.CancelCopy)
         .JsonPost<GetFiles, GetFilesResult>("commander/getremotefiles", Remote.GetFiles)
         .Build())
