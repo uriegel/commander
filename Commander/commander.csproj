@@ -41,8 +41,6 @@
   <ItemGroup>
     <PackageReference Include="MetadataExtractor" Version="2.7.2" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
-    <PackageReference Include="CsTools" Version="4.2.0 " />
-    <PackageReference Include="LinqTools" Version="4.0.0 " />
   </ItemGroup>
 
   <ItemGroup Condition="'$(IsWindows)'=='true'">
@@ -55,7 +53,7 @@
   </ItemGroup> 
 
   <ItemGroup Condition="'$(IsLinux)'=='true'">
-    <PackageReference Include="WebWindowNetCore.Linux" Version="2.0.0" />
+    <PackageReference Include="WebWindowNetCore.Linux" Version="2.1.0" />
     <EmbeddedResource Include="./kirk.png">
       <LogicalName>icon</LogicalName>
     </EmbeddedResource>
