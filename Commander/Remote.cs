@@ -54,6 +54,15 @@ static class Remote
                                 })
         };
 
+    static Settings PostFile(this IpAndPath ipAndPath, string name, Stream streamToPost) 
+        => DefaultSettings with
+        {
+            Method = HttpMethod.Post,
+            BaseUrl = $"http://{ipAndPath.Ip}:8080",
+            Url = $"/postfile?path={ipAndPath.Path.AppendLinuxPath(name)}",
+            AddContent = () => new StreamContent(streamToPost, 8100)
+        };
+
     static DirectoryItem ToDirectoryItem(this RemoteItem item)
         => new(
                 item.Name, 
@@ -118,16 +127,16 @@ static class Remote
             if (cancellationToken.IsCancellationRequested)
                 return 0;
             var sourceFilename = sourcePath.AppendPath(n.Name);
-            // using var msg = await Request.RunAsync(ipAndPath.GetFile(n.Name), true);
-            // using var sourceFile = 
-            //     File
-            //         .OpenRead(sourceFilename)
-            //         .WithProgress((c, t) => Events.CopyProgressChanged(new(
-            //             n.Name, 
-            //             msg.Content.Headers.ContentLength.GetOrDefault(0), 
-            //             c, 
-            //             totalSize, count + c
-            //         )));
+            using var sourceFile = 
+                File
+                    .OpenRead(sourceFilename)
+                    .WithProgress((c, t) => Events.CopyProgressChanged(new(
+                        n.Name, 
+                        n.Size, 
+                        c, 
+                        totalSize, count + c
+                    )));
+            using var msg = await Request.RunAsync(ipAndPath.PostFile(n.Name, sourceFile), true);
 
             // await msg 
             //     .Content
