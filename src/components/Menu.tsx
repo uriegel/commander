@@ -7,10 +7,13 @@ export interface MenuProps {
     toggleShowHidden: ()=>void,
     showViewer: boolean,
     toggleShowViewer: () => void,
+    showExtendedRename: boolean,
+    toggleShowExtendedRename: () => void,
     onMenuAction: (key: string)=>void
 }
 
-const Menu = ({ autoMode, toggleAutoMode, showHidden, toggleShowHidden, showViewer, toggleShowViewer, onMenuAction }: MenuProps) => (
+const Menu = ({ autoMode, toggleAutoMode, showHidden, toggleShowHidden, showViewer, toggleShowViewer,
+        showExtendedRename, toggleShowExtendedRename, onMenuAction }: MenuProps) => (
     <Menubar autoMode={autoMode} items={[{
         name: "_Datei",
         items: [{
@@ -20,7 +23,9 @@ const Menu = ({ autoMode, toggleAutoMode, showHidden, toggleShowHidden, showView
             key: "RENAME"
         }, {
             name: "Er_weitertes Umbenennen",
-            type: MenuItemType.MenuItem,
+            checked: showExtendedRename,
+            toggleChecked: toggleShowExtendedRename,
+            type: MenuItemType.MenuCheckItem,
             shortcut: "Strg+F2"
         }, {
             type: MenuItemType.Separator

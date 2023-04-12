@@ -40,8 +40,10 @@ const App = () => {
 	const [autoMode, setAutoMode] = useState(false)
 	const [showHidden, setShowHidden] = useState(false)
 	const [showViewer, setShowViewer] = useState(false)
+	const [showExtendedRename, setShowExtendedRename] = useState(false)
 	const showHiddenRef = useRef(false)
 	const showViewerRef = useRef(false)
+	const showExtendedRenameRef = useRef(false)
 	const [path, setPath] = useState<PathProp>({ path: "", isDirectory: false })
 	const [itemCount, setItemCount] = useState({dirCount: 0, fileCount: 0 })
 	
@@ -69,6 +71,11 @@ const App = () => {
 	const toggleShowViewer = () => {
 		showViewerRef.current = !showViewerRef.current
 		setShowViewer(showViewerRef.current)
+	}
+
+	const toggleShowExtendedRename = () => {
+		showExtendedRenameRef.current = !showExtendedRenameRef.current
+		setShowExtendedRename(showExtendedRenameRef.current)
 	}
 
 	useEffect(() => {
@@ -167,8 +174,10 @@ const App = () => {
 
 	return (
 		<div className={`App ${theme}Theme`} onKeyDown={onKeyDown} >
-			<Menu autoMode={autoMode} onMenuAction={onMenuAction} toggleAutoMode={toggleAutoModeDialog} showHidden={showHidden} toggleShowHidden={toggleShowHiddenAndRefresh}
-				showViewer={showViewer} toggleShowViewer={toggleShowViewer}  />
+			<Menu autoMode={autoMode} onMenuAction={onMenuAction} toggleAutoMode={toggleAutoModeDialog}
+				showHidden={showHidden} toggleShowHidden={toggleShowHiddenAndRefresh}
+				showExtendedRename={showExtendedRename} toggleShowExtendedRename={toggleShowExtendedRename}
+				showViewer={showViewer} toggleShowViewer={toggleShowViewer} />
 			<ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
 			<Statusbar path={path.path} dirCount={itemCount.dirCount} fileCount={itemCount.fileCount} />
 			<Dialog ref={dialog} />
