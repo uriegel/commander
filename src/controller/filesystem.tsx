@@ -6,6 +6,7 @@ import { getPlatform, Platform } from "../globals"
 import { addParent, Controller, ControllerResult, ControllerType, formatDateTime, formatSize, formatVersion, sortItems } from "./controller"
 import { GetExtendedItemsResult, GetItemResult, IOErrorResult, request, Version } from "../requests/requests"
 import { ROOT } from "./root"
+import ExtendedRename from "../components/ExtendedRename"
 
 export enum ItemsType {
 	Directories,
@@ -208,7 +209,10 @@ const rename = async (path: string, item: FolderViewItem, dialog: DialogHandle|n
 const extendedRename = async (dialog: DialogHandle|null) => {
 	const result = await dialog?.show({
 		text: "Erweitertes Umbenennen",
+		extension: ExtendedRename,
 		btnOk: true,
+		btnCancel: true,
+		defBtnOk: true
 	})
 
 }

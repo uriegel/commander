@@ -1,6 +1,5 @@
 import { Controller, ControllerResult, ControllerType } from "./controller";
 
-
 export const getFileSystemController = (controller: Controller): ControllerResult =>
     controller.type == ControllerType.FileSystem
     ? ({ changed: true, controller: createFileSystemController(controller) })

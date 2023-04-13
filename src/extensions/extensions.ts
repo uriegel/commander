@@ -6,7 +6,8 @@ declare global {
         getExtension(): string
         extractSubPath(): string
         getParentPath(): string
-        sideEffect(sideEffect: (s: string)=>void): string
+        sideEffect(sideEffect: (s: string) => void): string
+        parseInt(): number|null
     }
 
     interface Array<T> {
@@ -46,7 +47,16 @@ String.prototype.sideEffect = function (sideEffect: (s: string)=>void): string {
 }
 
 // eslint-disable-next-line
+String.prototype.parseInt = function (): number|null {
+    var result = Number.parseInt(this as string)
+    return Number.isNaN(result)
+    ? null
+    : result
+}
+
+// eslint-disable-next-line
 Array.prototype.sideEffectForEach = function<T> (sideEffect: (t: T)=>void): T[] {
     this.forEach(sideEffect)
     return this 
 }
+
