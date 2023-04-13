@@ -37,6 +37,7 @@ export type FolderViewHandle = {
     changePath: (path: string) => void
     getPath: () => string
     rename: () => Promise<void>
+    extendedRename: (dialog: DialogHandle|null) => void
     createFolder: () => Promise<void>
     deleteItems: () => Promise<void>
     getController: () => Controller
@@ -80,6 +81,9 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             },
             getPath() { return path },
             rename, 
+            extendedRename(dialog: DialogHandle | null) {
+                controller.current.extendedRename(dialog)
+            },
             createFolder,
             deleteItems,
             getController: () => controller.current,

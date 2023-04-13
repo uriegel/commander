@@ -96,6 +96,7 @@ export const getFileSystemController = (controller: Controller|null): Controller
 		itemsSelectable: true,
 		appendPath: platform == Platform.Windows ? appendWindowsPath : appendLinuxPath,
 		rename,
+		extendedRename,
 		createFolder,
 		deleteItems
 	}
@@ -202,6 +203,14 @@ const rename = async (path: string, item: FolderViewItem, dialog: DialogHandle|n
 				newName:  result.input ?? ""
 			})).error ?? null
 		: null
+}
+
+const extendedRename = async (dialog: DialogHandle|null) => {
+	const result = await dialog?.show({
+		text: "Erweitertes Umbenennen",
+		btnOk: true,
+	})
+
 }
 
 const createFolder = async (path: string, item: FolderViewItem, dialog: DialogHandle|null) => {
