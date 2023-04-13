@@ -98,7 +98,7 @@ export const getFileSystemController = (controller: Controller|null): Controller
 		rename,
 		extendedRename,
 		createFolder,
-		deleteItems
+		deleteItems,
 	}
 })
 	
