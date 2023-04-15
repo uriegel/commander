@@ -18,7 +18,7 @@
     "typescript": "^4.9.5",
     "view-split-react": "^1.0.1",
     "virtual-table-react": "^10.3.1",
-    "web-dialog-react": "^2.3.1"
+    "web-dialog-react": "^2.4.0"
   },
   "scripts": {
     "start": "react-scripts start",
