@@ -1,4 +1,10 @@
-import { Controller, ControllerResult, ControllerType } from "./controller";
+import { Controller, ControllerResult, ControllerType } from "./controller"
+
+export interface ExtendedRenameProps {
+    prefix: string
+    digits: number
+    startNumber: number
+}
 
 export const getFileSystemController = (controller: Controller): ControllerResult =>
     controller.type == ControllerType.FileSystem
