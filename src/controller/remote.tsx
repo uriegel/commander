@@ -80,7 +80,7 @@ export const getRemoteController = (controller: Controller | null): ControllerRe
         itemsSelectable: true,
         appendPath: (path: string, subPath: string) => path.appendPath(subPath),
 		rename: async () => null,
-		extendedRename: async () => { },
+		extendedRename: async () => null,
         createFolder: async () => null,
         deleteItems: async () => null,
     }})

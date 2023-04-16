@@ -81,8 +81,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             },
             getPath() { return path },
             rename, 
-            extendedRename(dialog: DialogHandle | null) {
-                controller.current.extendedRename(dialog)
+            async extendedRename(dialog: DialogHandle | null) {
+                const res  = await controller.current.extendedRename(dialog)
             },
             createFolder,
             deleteItems,

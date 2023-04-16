@@ -225,7 +225,9 @@ const extendedRename = async (dialog: DialogHandle|null) => {
 		localStorage.setItem("extendedRenamePrefix", erp.prefix)
 		localStorage.setItem("extendedRenameDigits", erp.digits.toString())
 		localStorage.setItem("extendedRenameStartNumber", erp.startNumber.toString())
-	}
+		return null
+	} else
+		return null
 }
 
 const createFolder = async (path: string, item: FolderViewItem, dialog: DialogHandle|null) => {
