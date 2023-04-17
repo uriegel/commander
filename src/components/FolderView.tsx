@@ -25,7 +25,9 @@ export interface FolderViewItem extends SelectableItem {
     // Remotes item
     ipAddress?:   string
     isAndroid?:   boolean
-    isNew?:       boolean
+    isNew?: boolean
+    // ExtendedRename
+    newName?:     string|null
 }
 
 export type FolderViewHandle = {
@@ -71,12 +73,12 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             selectAll() {
                 if (controller.current.itemsSelectable) 
                     setItems(items.map((n) => setSelection(n, true)))
-                controller.current.onSelectionChanged(getSelectedItems())                    
+                controller.current.onSelectionChanged(items)                    
             },
             selectNone() {
                 if (controller.current.itemsSelectable) 
                     setItems(items.map((n) => setSelection(n, false)))
-                controller.current.onSelectionChanged([])                    
+                controller.current.onSelectionChanged(items)                    
             },
             changePath(path: string) {
                 changePath(path, showHidden)
@@ -222,7 +224,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 if (controller.current.itemsSelectable) {
                     setItems(items.map((n, i) => i != virtualTable.current?.getPosition() ? n : toggleSelection(n)))
                     virtualTable.current?.setPosition(virtualTable.current.getPosition() + 1)
-                    controller.current.onSelectionChanged(getSelectedItems())
+                    controller.current.onSelectionChanged(items)
                     evt.preventDefault()
                     evt.stopPropagation()
                 }
@@ -230,14 +232,14 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             case "Home":
                 if (controller.current.itemsSelectable) 
                     setItems(items.map((n, i) => setSelection(n, i <= virtualTable.current?.getPosition()!)))
-                controller.current.onSelectionChanged(getSelectedItems())
+                controller.current.onSelectionChanged(items)
                 evt.preventDefault()
                 evt.stopPropagation()
                 break
             case "End":
                 if (controller.current.itemsSelectable) 
                     setItems(items.map((n, i) => setSelection(n, i >= virtualTable.current?.getPosition()!)))
-                controller.current.onSelectionChanged(getSelectedItems())                    
+                controller.current.onSelectionChanged(items)                    
                 evt.preventDefault()
                 evt.stopPropagation()
                 break
@@ -248,7 +250,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     setItems(ri)
                 } else if (controller.current.itemsSelectable) 
                     setItems(items.map((n, i) => i != virtualTable.current?.getPosition() ? n : toggleSelection(n)))
-                controller.current.onSelectionChanged(getSelectedItems())                    
+                controller.current.onSelectionChanged(items)                    
                 evt.preventDefault()
                 evt.stopPropagation()
                 break

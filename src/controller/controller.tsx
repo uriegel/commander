@@ -49,7 +49,7 @@ export interface Controller {
     extendedRename: (controller: Controller, dialog: DialogHandle|null) => Promise<Controller|null>
     createFolder: (path: string, item: FolderViewItem, dialog: DialogHandle|null) => Promise<IOError | null>
     deleteItems: (path: string, items: FolderViewItem[], dialog: DialogHandle|null) => Promise<IOError | null>
-    onSelectionChanged: (selectedItems: FolderViewItem[]) => void 
+    onSelectionChanged: (items: FolderViewItem[]) => void 
 }
 
 export interface ControllerResult {
