@@ -1,4 +1,6 @@
 import { Controller, ControllerResult, ControllerType } from "./controller"
+import '../extensions/extensions'
+import { FolderViewItem } from "../components/FolderView"
 
 export interface ExtendedRenameProps {
     prefix: string
@@ -6,16 +8,23 @@ export interface ExtendedRenameProps {
     startNumber: number
 }
 
-export const getFileSystemController = (controller: Controller): ControllerResult =>
-    controller.type == ControllerType.FileSystem
-    ? ({ changed: true, controller: createFileSystemController(controller) })
-    : ({ changed: false, controller })
+// TODO Take RenderRow in column
+// TODO OK in FilesystemExtendedRename: do not change controller
+// TODO Cancel in FilesystemExtendedRename: change controller back
 
-const createFileSystemController = (controller: Controller): Controller => {
+export const createFileSystemController = (controller: Controller): Controller => {
     return {
         type: controller.type,
         id: controller.id,
-        getColumns: controller.getColumns,
+        getColumns: () => {
+            const cols = controller.getColumns()
+            cols.columns = cols.columns.insert(1, { name: "Neuer Name", isSortable: true })
+            cols.renderRow = (item: FolderViewItem) => {
+                var items = controller.getColumns().renderRow(item)
+                return items.insert(1, "Neuer Name")
+            }
+            return cols
+        },
         getExtendedItems: controller.getExtendedItems,
         setExtendedItems: controller.setExtendedItems,
         getItems: controller.getItems,

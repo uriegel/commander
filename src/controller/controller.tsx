@@ -47,7 +47,7 @@ export interface Controller {
     itemsSelectable: boolean
     appendPath: (path: string, subPath: string) => string,
     rename: (path: string, item: FolderViewItem, dialog: DialogHandle | null) => Promise<IOError | null>
-    extendedRename: (dialog: DialogHandle|null) => Promise<Controller|null>
+    extendedRename: (controller: Controller, dialog: DialogHandle|null) => Promise<Controller|null>
     createFolder: (path: string, item: FolderViewItem, dialog: DialogHandle|null) => Promise<IOError | null>
     deleteItems: (path: string, items: FolderViewItem[], dialog: DialogHandle|null) => Promise<IOError | null>
 }

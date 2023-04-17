@@ -12,6 +12,7 @@ declare global {
 
     interface Array<T> {
         sideEffectForEach(sideEffect: (t: T)=>void): T[]
+        insert(index: number, t: T): T[]
     }
 }
 
@@ -59,4 +60,13 @@ Array.prototype.sideEffectForEach = function<T> (sideEffect: (t: T)=>void): T[] 
     this.forEach(sideEffect)
     return this 
 }
+
+// eslint-disable-next-line
+Array.prototype.insert = function<T> (index: number, t: T): T[] {
+    return [...this.slice(0, index),
+        t,
+        ...this.slice(index)
+    ]
+}
+
 

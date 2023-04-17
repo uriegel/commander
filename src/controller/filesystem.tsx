@@ -7,7 +7,7 @@ import { addParent, Controller, ControllerResult, ControllerType, formatDateTime
 import { GetExtendedItemsResult, GetItemResult, IOErrorResult, request, Version } from "../requests/requests"
 import { ROOT } from "./root"
 import ExtendedRename from "../components/ExtendedRename"
-import { ExtendedRenameProps } from "./filesystemExtendedRename"
+import { ExtendedRenameProps, createFileSystemController } from "./filesystemExtendedRename"
 
 export enum ItemsType {
 	Directories,
@@ -207,7 +207,7 @@ const rename = async (path: string, item: FolderViewItem, dialog: DialogHandle|n
 		: null
 }
 
-const extendedRename = async (dialog: DialogHandle|null) => {
+const extendedRename = async (controller: Controller, dialog: DialogHandle|null) => {
 	const result = await dialog?.show({
 		text: "Erweitertes Umbenennen",
 		extension: ExtendedRename,
@@ -225,7 +225,7 @@ const extendedRename = async (dialog: DialogHandle|null) => {
 		localStorage.setItem("extendedRenamePrefix", erp.prefix)
 		localStorage.setItem("extendedRenameDigits", erp.digits.toString())
 		localStorage.setItem("extendedRenameStartNumber", erp.startNumber.toString())
-		return null
+		return createFileSystemController(controller)
 	} else
 		return null
 }
