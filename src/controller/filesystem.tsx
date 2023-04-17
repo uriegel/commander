@@ -6,8 +6,7 @@ import { getPlatform, Platform } from "../globals"
 import { addParent, Controller, ControllerResult, ControllerType, formatDateTime, formatSize, formatVersion, sortItems } from "./controller"
 import { GetExtendedItemsResult, GetItemResult, IOErrorResult, request, Version } from "../requests/requests"
 import { ROOT } from "./root"
-import ExtendedRename from "../components/ExtendedRename"
-import { ExtendedRenameProps, createFileSystemController } from "./filesystemExtendedRename"
+import { extendedRename } from "./filesystemExtendedRename"
 
 export enum ItemsType {
 	Directories,
@@ -98,12 +97,48 @@ export const getFileSystemController = (controller: Controller|null): Controller
 		itemsSelectable: true,
 		appendPath: platform == Platform.Windows ? appendWindowsPath : appendLinuxPath,
 		rename,
-		extendedRename,
+		extendedRename: (controller: Controller, dialog: DialogHandle|null) => extendedRename(controller, dialog, false),
 		createFolder,
 		deleteItems,
 	}
 })
 	
+export const createFileSystemController = (): Controller => ({
+	type: ControllerType.FileSystem, 
+	id: "file",
+	getColumns: platform == Platform.Windows ? getWindowsColumns : getLinuxColumns, 
+	getExtendedItems,
+	setExtendedItems,
+	getItems,
+	onEnter: (path, item, keys) => 
+		item.isParent && path.length > driveLength 
+		?  ({
+			processed: false, 
+			pathToSet: path + '/' + item.name,
+			latestPath: path.extractSubPath()
+		}) 
+		: item.isParent && path.length == driveLength
+		? ({
+			processed: false, 
+			pathToSet: ROOT,
+			latestPath: path
+		}) 
+		: item.isDirectory
+		? ({
+			processed: false, 
+			pathToSet: path + '/' + item.name 
+		}) 
+				
+		: { processed: true },
+	sort,
+	itemsSelectable: true,
+	appendPath: platform == Platform.Windows ? appendWindowsPath : appendLinuxPath,
+	rename,
+	extendedRename: (controller: Controller, dialog: DialogHandle|null) => extendedRename(controller, dialog, false),
+	createFolder,
+	deleteItems,
+})
+
 const getRowClasses = (item: FolderViewItem) => 
 	item.isHidden
 		? ["hidden"]
@@ -205,29 +240,6 @@ const rename = async (path: string, item: FolderViewItem, dialog: DialogHandle|n
 				newName:  result.input ?? ""
 			})).error ?? null
 		: null
-}
-
-const extendedRename = async (controller: Controller, dialog: DialogHandle|null) => {
-	const result = await dialog?.show({
-		text: "Erweitertes Umbenennen",
-		extension: ExtendedRename,
-		extensionProps: {
-			prefix: localStorage.getItem("extendedRenamePrefix") ?? "Bild",
-			digits: localStorage.getItem("extendedRenameDigits")?.parseInt() ?? 3,
-			startNumber: localStorage.getItem("extendedRenameStartNumber")?.parseInt() ?? 1
-		} as ExtendedRenameProps,
-		btnOk: true,
-		btnCancel: true,
-		defBtnOk: true
-	})
-	if (result?.result == Result.Ok) {
-		const erp = result.props as ExtendedRenameProps
-		localStorage.setItem("extendedRenamePrefix", erp.prefix)
-		localStorage.setItem("extendedRenameDigits", erp.digits.toString())
-		localStorage.setItem("extendedRenameStartNumber", erp.startNumber.toString())
-		return createFileSystemController(controller)
-	} else
-		return null
 }
 
 const createFolder = async (path: string, item: FolderViewItem, dialog: DialogHandle|null) => {

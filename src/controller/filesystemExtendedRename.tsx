@@ -1,6 +1,9 @@
 import { Controller, ControllerResult, ControllerType } from "./controller"
 import '../extensions/extensions'
 import { FolderViewItem } from "../components/FolderView"
+import { DialogHandle, Result } from "web-dialog-react"
+import ExtendedRename from "../components/ExtendedRename"
+import { createFileSystemController, getFileSystemController } from "./filesystem"
 
 export interface ExtendedRenameProps {
     prefix: string
@@ -9,10 +12,8 @@ export interface ExtendedRenameProps {
 }
 
 // TODO Take RenderRow in column
-// TODO OK in FilesystemExtendedRename: do not change controller
-// TODO Cancel in FilesystemExtendedRename: change controller back
 
-export const createFileSystemController = (controller: Controller): Controller => {
+export const createExtendedRenameFileSystemController = (controller: Controller): Controller => {
     return {
         type: ControllerType.FileSystem,
         id: "file-extendedrename",
@@ -33,8 +34,36 @@ export const createFileSystemController = (controller: Controller): Controller =
         itemsSelectable: true,
         appendPath: controller.appendPath,
         rename: controller.rename,
-        extendedRename: controller.extendedRename,
+        extendedRename: (controller: Controller, dialog: DialogHandle|null) => extendedRename(controller, dialog, true),
         createFolder: controller.createFolder,
         deleteItems: controller.deleteItems,
     }
 }
+
+export const extendedRename = async (controller: Controller, dialog: DialogHandle|null, isExtended: boolean) => {
+	const result = await dialog?.show({
+		text: "Erweitertes Umbenennen",
+		extension: ExtendedRename,
+		extensionProps: {
+			prefix: localStorage.getItem("extendedRenamePrefix") ?? "Bild",
+			digits: localStorage.getItem("extendedRenameDigits")?.parseInt() ?? 3,
+			startNumber: localStorage.getItem("extendedRenameStartNumber")?.parseInt() ?? 1
+		} as ExtendedRenameProps,
+		btnOk: true,
+		btnCancel: true,
+		defBtnOk: true
+	})
+	if (result?.result == Result.Ok) {
+		const erp = result.props as ExtendedRenameProps
+		localStorage.setItem("extendedRenamePrefix", erp.prefix)
+		localStorage.setItem("extendedRenameDigits", erp.digits.toString())
+		localStorage.setItem("extendedRenameStartNumber", erp.startNumber.toString())
+    }
+	if (result?.result == Result.Ok && !isExtended) 
+		return createExtendedRenameFileSystemController(controller)
+    else if (result?.result != Result.Ok && isExtended) 
+		return createFileSystemController()
+    else
+		return null
+}
+
