@@ -11,8 +11,6 @@ export interface ExtendedRenameProps {
     startNumber: number
 }
 
-// TODO Take RenderRow in column
-
 export const createExtendedRenameFileSystemController = (controller: Controller): Controller => {
     return {
         type: ControllerType.FileSystem,
@@ -37,6 +35,7 @@ export const createExtendedRenameFileSystemController = (controller: Controller)
         extendedRename: (controller: Controller, dialog: DialogHandle|null) => extendedRename(controller, dialog, true),
         createFolder: controller.createFolder,
         deleteItems: controller.deleteItems,
+        onSelectionChanged
     }
 }
 
@@ -67,3 +66,6 @@ export const extendedRename = async (controller: Controller, dialog: DialogHandl
 		return null
 }
 
+const onSelectionChanged = (selectedItems: FolderViewItem[]) => {
+    console.log("onSelChanged", selectedItems)
+} // TODO probably Items | null => setItems

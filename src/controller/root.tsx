@@ -83,6 +83,7 @@ export const getRootController = (controller: Controller | null): ControllerResu
         extendedRename: async () => null,
         createFolder: async () => null,
         deleteItems: async () => null,
+        onSelectionChanged: () => {}
     }})
 
 const getItems = async () => {

@@ -83,5 +83,6 @@ export const getRemoteController = (controller: Controller | null): ControllerRe
 		extendedRename: async () => null,
         createFolder: async () => null,
         deleteItems: async () => null,
+		onSelectionChanged: () => {}
     }})
 

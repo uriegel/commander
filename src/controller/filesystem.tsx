@@ -100,6 +100,7 @@ export const getFileSystemController = (controller: Controller|null): Controller
 		extendedRename: (controller: Controller, dialog: DialogHandle|null) => extendedRename(controller, dialog, false),
 		createFolder,
 		deleteItems,
+		onSelectionChanged: () => {}
 	}
 })
 	
@@ -137,6 +138,7 @@ export const createFileSystemController = (): Controller => ({
 	extendedRename: (controller: Controller, dialog: DialogHandle|null) => extendedRename(controller, dialog, false),
 	createFolder,
 	deleteItems,
+	onSelectionChanged: () => {}
 })
 
 const getRowClasses = (item: FolderViewItem) => 
