@@ -22,7 +22,6 @@ export enum ControllerType {
     Empty,
     Root,
     FileSystem,
-    FileSystemExtendedRename,
     Remotes,
     Remote
 }

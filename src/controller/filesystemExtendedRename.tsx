@@ -14,8 +14,8 @@ export interface ExtendedRenameProps {
 
 export const createFileSystemController = (controller: Controller): Controller => {
     return {
-        type: controller.type,
-        id: controller.id,
+        type: ControllerType.FileSystem,
+        id: "file-extendedrename",
         getColumns: () => {
             const cols = controller.getColumns()
             cols.columns = cols.columns.insert(1, { name: "Neuer Name", isSortable: true })

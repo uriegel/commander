@@ -86,9 +86,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 if (res != null) {
                     restrictionView.current?.reset()
                     controller.current = res
-                    // TODO Widths for extendedrename
-                    //virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
-                    virtualTable.current?.setColumns(controller.current.getColumns())
+                    virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
                 }
             },
             createFolder,
