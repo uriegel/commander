@@ -7,6 +7,9 @@ using LinqTools;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 
+using static LinqTools.Core;
+using static System.IO.Directory;
+
 static partial class Directory
 {
     public static Task<GetFilesResult> GetFiles(GetFiles getFiles)
@@ -86,14 +89,14 @@ static partial class Directory
     }
 
     public static Task<IOResult> CreateFolder(CreateFolderParam input)
-        => LinqTools.Core.Try(
-            () => System.IO.Directory.CreateDirectory(input.Path.AppendPath(input.Name)).ToNothing(),
+        => Try(
+            () => CreateDirectory(input.Path.AppendPath(input.Name)).ToNothing(),
             MapExceptionToIOError)
                 .ToIOResult();
 
     public static Task<IOResult> RenameItem(RenameItemParam input)
-        => LinqTools.Core.Try(
-            () => System.IO.Directory.Move(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName)),
+        => Try(
+            () => Move(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName)),
             MapExceptionToIOError)
                 .ToIOResult();
 
@@ -110,6 +113,21 @@ static partial class Directory
     public static Task<IOResult> CancelCopy(Empty _)
         => Task.FromResult(new IOResult(null)
                                 .SideEffect(Cancellation.Cancel));
+
+    public static Task<IOResult> RenameItems(RenameItemsParam input)
+    {
+        return Try(
+            () => {
+                input.items.ForEach(PreRenameItem);
+                input.items.ForEach(RenameItem);
+            },
+            MapExceptionToIOError)
+                .ToIOResult();
+        void PreRenameItem(RenameItem item)
+            => Move(input.Path.AppendPath(item.Name), input.Path.AppendPath("__RENAMINGE__" + item.NewName));
+        void RenameItem(RenameItem item)
+            => Move(input.Path.AppendPath("__RENAMINGE__" + item.NewName), input.Path.AppendPath(item.NewName));
+    }
 
     static bool UseRange(this string path)
         => path.EndsWith(".mp4", StringComparison.InvariantCultureIgnoreCase) 
@@ -183,6 +201,16 @@ record RenameItemParam(
     string Path,
     string Name,
     string NewName
+);
+
+record RenameItem(
+    string Name,
+    string NewName
+);
+
+record RenameItemsParam(
+    string Path,
+    RenameItem[] items
 );
 
 record DeleteItemsParam(

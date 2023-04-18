@@ -92,6 +92,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     controller.current = res
                     virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
                 }
+                controller.current.onSelectionChanged(items)                    
             },
             createFolder,
             deleteItems,
@@ -407,14 +408,15 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
+// TODO copy folders: unpack folders when entering on directory item in Conflicts
+// TODO move: delete all empty directories
+// TODO ExtendedRename: Check error handling
+// TODO ExtendedRename: Change option, selection not adapted
 // TODO remote createFolder
-// TODO extended rename
 // TODO Take RenderRow in column
 // TODO remote delete files
 // TODO remote rename file
 // TODO remote move
-// TODO copy folders: unpack folders when entering on directory item in Conflicts
-// TODO move: delete all empty directories
 // TODO Selection Ctrl+Mouse click
 // TODO Error from getItems/tooltip from dialog-box-react
 // TODO Statusbar nowrap text-overflow ellipses
