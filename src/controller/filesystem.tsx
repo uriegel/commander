@@ -3,7 +3,7 @@ import { DialogHandle, Result } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
-import { addParent, Controller, ControllerResult, ControllerType, formatDateTime, formatSize, formatVersion, sortItems } from "./controller"
+import { addParent, Controller, ControllerResult, ControllerType, EnterData, formatDateTime, formatSize, formatVersion, sortItems } from "./controller"
 import { GetExtendedItemsResult, GetItemResult, IOErrorResult, request, Version } from "../requests/requests"
 import { ROOT } from "./root"
 import { extendedRename } from "./filesystemExtendedRename"
@@ -73,7 +73,7 @@ export const getFileSystemController = (controller: Controller|null): Controller
 		getExtendedItems,
 		setExtendedItems,
 		getItems,
-		onEnter: (path, item, keys) => 
+		onEnter: ({path, item}) => 
 			item.isParent && path.length > driveLength 
 			?  ({
 				processed: false, 
@@ -111,25 +111,24 @@ export const createFileSystemController = (): Controller => ({
 	getExtendedItems,
 	setExtendedItems,
 	getItems,
-	onEnter: (path, item, keys) => 
-		item.isParent && path.length > driveLength 
+	onEnter: (enterData: EnterData) => 
+        enterData.item.isParent && enterData.path.length > driveLength 
 		?  ({
 			processed: false, 
-			pathToSet: path + '/' + item.name,
-			latestPath: path.extractSubPath()
+			pathToSet: enterData.path + '/' + enterData.item.name,
+			latestPath: enterData.path.extractSubPath()
 		}) 
-		: item.isParent && path.length == driveLength
+		: enterData.item.isParent && enterData.path.length == driveLength
 		? ({
 			processed: false, 
 			pathToSet: ROOT,
-			latestPath: path
+			latestPath: enterData.path
 		}) 
-		: item.isDirectory
+		: enterData.item.isDirectory
 		? ({
 			processed: false, 
-			pathToSet: path + '/' + item.name 
+			pathToSet: enterData.path + '/' + enterData.item.name 
 		}) 
-				
 		: { processed: true },
 	sort,
 	itemsSelectable: true,

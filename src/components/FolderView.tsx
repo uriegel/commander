@@ -181,7 +181,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     const onEnter = (item: FolderViewItem, keys: SpecialKeys) => {
-        const result = controller.current.onEnter(path, item, keys, dialog, () => refresh())
+        const result = controller.current.onEnter({path, item, keys, dialog, refresh, selectedItems: getSelectedItems(), items})
         if (!result.processed && result.pathToSet) 
             changePath(result.pathToSet, showHidden, result.latestPath)
     }
@@ -387,7 +387,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     
                 // this.setFocus()
                 // this.reloadItems()
-            }         
+            }               
             onDrop()   
         }
     }

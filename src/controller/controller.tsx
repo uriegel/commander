@@ -34,6 +34,16 @@ export interface onEnterResult {
     latestPath?: string
 }
 
+export interface EnterData {
+    path: string, 
+    item: FolderViewItem, 
+    keys: SpecialKeys, 
+    dialog?: DialogHandle|null, 
+    refresh?: ()=>void, 
+    selectedItems?: FolderViewItem[]
+    items?: FolderViewItem[]
+}
+
 export interface Controller {
     type: ControllerType
     id: string
@@ -41,7 +51,7 @@ export interface Controller {
     getItems: (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean) => Promise<GetItemResult>
     getExtendedItems: (path: string, items: FolderViewItem[]) => Promise<GetExtendedItemsResult>
     setExtendedItems: (items: FolderViewItem[], extended: GetExtendedItemsResult)=>FolderViewItem[]
-    onEnter: (path: string, item: FolderViewItem, keys: SpecialKeys, dialog: DialogHandle|null, refresh?: ()=>void) => onEnterResult
+    onEnter: (data: EnterData) => onEnterResult
     sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => FolderViewItem[]
     itemsSelectable: boolean
     appendPath: (path: string, subPath: string) => string,
@@ -81,7 +91,7 @@ export const createEmptyController = (): Controller => ({
     getItems: async () => ({ items: [], path: "", dirCount: 0, fileCount: 0 }),
     getExtendedItems: async () => ({ path: "", exifTimes: [], versions: []}),
     setExtendedItems: items=>items,
-    onEnter: (i, k) => ({ processed: true }),
+    onEnter: () => ({ processed: true }),
     sort: (items: FolderViewItem[]) => items,
     itemsSelectable: false,
     appendPath: () => "",

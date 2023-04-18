@@ -2,7 +2,7 @@ import { SpecialKeys } from "virtual-table-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
-import { Controller, ControllerResult, ControllerType, formatSize} from "./controller"
+import { Controller, ControllerResult, ControllerType, EnterData, formatSize} from "./controller"
 import { REMOTES } from "./remotes"
 import { GetRootResult, request } from "../requests/requests"
 
@@ -53,16 +53,16 @@ const getLinuxColumns = () => ({
 	renderRow: renderLinuxRow
 })
 
-const onWindowsEnter = (_: string, item: FolderViewItem, keys: SpecialKeys) => 
+const onWindowsEnter = (enterData: EnterData) => 
 ({
     processed: false, 
-    pathToSet: item.name
+    pathToSet: enterData.item.name
 }) 
 
-const onLinuxEnter = (_: string, item: FolderViewItem, keys: SpecialKeys) => 
+const onLinuxEnter = (enterData: EnterData) => 
 ({
     processed: false, 
-    pathToSet: item.mountPoint || item.mountPoint!.length > 0 ? item.mountPoint : item.name
+    pathToSet: enterData.item.mountPoint || enterData.item.mountPoint!.length > 0 ? enterData.item.mountPoint : enterData.item.name
 }) 
 
 export const getRootController = (controller: Controller | null): ControllerResult => 

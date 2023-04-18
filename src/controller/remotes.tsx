@@ -3,7 +3,7 @@ import { DialogHandle, Result } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import RemoteDialog from "../components/RemoteDialog"
-import { addParent, Controller, ControllerResult, ControllerType } from "./controller"
+import { addParent, Controller, ControllerResult, ControllerType, EnterData } from "./controller"
 import { ROOT } from "./root"
 
 export const REMOTES = "remotes"
@@ -49,7 +49,7 @@ const getItems = async () => {
     }
 }
 
-const showRemote = async (dialog: DialogHandle|null, item?: FolderViewItem) => {
+const showRemote = async (dialog?: DialogHandle|null, item?: FolderViewItem) => {
 
     var name = item?.name
     var ipAddress = item?.ipAddress
@@ -77,7 +77,7 @@ const showRemote = async (dialog: DialogHandle|null, item?: FolderViewItem) => {
         return false
 }
 
-const startShowRemote = (dialog: DialogHandle|null, refresh?: ()=>void) => {
+const startShowRemote = (dialog?: DialogHandle|null, refresh?: ()=>void) => {
 
     const show = async () => {
         if (refresh && await showRemote(dialog))
@@ -91,12 +91,12 @@ const startShowRemote = (dialog: DialogHandle|null, refresh?: ()=>void) => {
     } 
 }
 
-const onEnter = (_: string, item: FolderViewItem, keys: SpecialKeys, dialog: DialogHandle|null, refresh?: ()=>void) => 
-    item.isNew
-        ? startShowRemote(dialog, refresh)
+const onEnter = (enterData: EnterData) => 
+    enterData.item.isNew
+        ? startShowRemote(enterData.dialog, enterData.refresh)
         : {
             processed: false, 
-            pathToSet: item.isParent ? ROOT : `remote/${item.ipAddress}/`
+            pathToSet: enterData.item.isParent ? ROOT : `remote/${enterData.item.ipAddress}/`
         } 
 
 const deleteItems = async (_: string, items: FolderViewItem[], dialog: DialogHandle | null) => {

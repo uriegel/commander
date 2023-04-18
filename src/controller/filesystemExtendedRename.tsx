@@ -1,9 +1,9 @@
-import { Controller, ControllerResult, ControllerType } from "./controller"
+import { Controller, ControllerType, EnterData } from "./controller"
 import '../extensions/extensions'
 import { FolderViewItem } from "../components/FolderView"
 import { DialogHandle, Result } from "web-dialog-react"
 import ExtendedRename from "../components/ExtendedRename"
-import { createFileSystemController, getFileSystemController } from "./filesystem"
+import { createFileSystemController } from "./filesystem"
 
 export interface ExtendedRenameProps {
     prefix: string
@@ -26,7 +26,12 @@ export const createExtendedRenameFileSystemController = (controller: Controller)
     getExtendedItems: controller.getExtendedItems,
     setExtendedItems: controller.setExtendedItems,
     getItems: controller.getItems,
-    onEnter: controller.onEnter,
+    onEnter: (enterData: EnterData) => {
+        if (enterData.item.isParent || enterData.item.isDirectory || enterData.selectedItems?.length == 0)
+            return controller.onEnter(enterData)
+        rename(enterData)
+        return { processed: true }
+    },
     sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => {
         const sorted = controller.sort(items, sortIndex == 0 ? 0 : sortIndex - 1, sortDescending)
         onSelectionChanged(sorted)
@@ -78,4 +83,30 @@ const onSelectionChanged = (items: FolderViewItem[]) => {
             : null
         return p + (n.isSelected && !n.isDirectory ? 1 : 0)
     }, startNumber)
-} // TODO probably Items | null => setItems
+} 
+
+const rename = (enterData: EnterData) => {
+    if (enterData.selectedItems && enterData.selectedItems.length > 0) {
+        const testItems = enterData.items  
+            ?.filter(n => !n.isDirectory)
+            .map(n => n.isSelected ? n.newName?.toLowerCase()! : n.name.toLowerCase()) 
+            ?? []
+        if (new Set(testItems).size == testItems.length) {
+            // let result = await request<IOErrorResult>("renameitems", {
+            //     path,
+            //     items: items.map(n => ({
+            //         name: n.name,
+            //         newName: n.newName!
+            //     }))
+            // })
+            // checkResult(result.error)
+        } else {
+            (async () => await enterData.dialog?.show({
+                text: "Dateinamen nicht eindeutig",
+                btnOk: true
+            }))()
+        }
+        return true            
+    } else
+        return false
+}
