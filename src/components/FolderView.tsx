@@ -255,6 +255,11 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 evt.preventDefault()
                 evt.stopPropagation()
                 break
+            case "Escape":
+                if (controller.current.itemsSelectable) 
+                    setItems(items.map((n) => setSelection(n, false)))
+                controller.current.onSelectionChanged(items)                    
+                break
             case "Delete":
                 await deleteItems()
                 break

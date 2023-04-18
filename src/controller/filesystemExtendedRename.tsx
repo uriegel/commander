@@ -28,7 +28,7 @@ export const createExtendedRenameFileSystemController = (controller: Controller)
     setExtendedItems: controller.setExtendedItems,
     getItems: controller.getItems,
     onEnter: (enterData: EnterData) => {
-        if (enterData.item.isParent || enterData.item.isDirectory || enterData.selectedItems?.length == 0)
+        if (enterData.selectedItems?.length == 0)
             return controller.onEnter(enterData)
         rename(enterData)
         return { processed: true }
