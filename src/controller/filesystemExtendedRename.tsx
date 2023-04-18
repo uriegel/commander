@@ -1,9 +1,10 @@
-import { Controller, ControllerType, EnterData } from "./controller"
+import { Controller, ControllerType, EnterData, checkResult } from "./controller"
 import '../extensions/extensions'
 import { FolderViewItem } from "../components/FolderView"
 import { DialogHandle, Result } from "web-dialog-react"
 import ExtendedRename from "../components/ExtendedRename"
 import { createFileSystemController } from "./filesystem"
+import { IOErrorResult, request } from "../requests/requests"
 
 export interface ExtendedRenameProps {
     prefix: string
@@ -85,21 +86,22 @@ const onSelectionChanged = (items: FolderViewItem[]) => {
     }, startNumber)
 } 
 
-const rename = (enterData: EnterData) => {
+const rename = async (enterData: EnterData) => {
     if (enterData.selectedItems && enterData.selectedItems.length > 0) {
         const testItems = enterData.items  
             ?.filter(n => !n.isDirectory)
             .map(n => n.isSelected ? n.newName?.toLowerCase()! : n.name.toLowerCase()) 
             ?? []
         if (new Set(testItems).size == testItems.length) {
-            // let result = await request<IOErrorResult>("renameitems", {
-            //     path,
-            //     items: items.map(n => ({
-            //         name: n.name,
-            //         newName: n.newName!
-            //     }))
-            // })
-            // checkResult(result.error)
+            const result = await request<IOErrorResult>("renameitems", {
+                path: enterData.path,
+                items: enterData.selectedItems.map(n => ({
+                    name: n.name,
+                    newName: n.newName!
+                }))
+            })
+            if (await checkResult(enterData.dialog, null, result.error) && enterData.refresh) 
+                enterData.refresh()
         } else {
             (async () => await enterData.dialog?.show({
                 text: "Dateinamen nicht eindeutig",

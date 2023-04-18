@@ -67,6 +67,7 @@ type CopyItemsFromRemote = "copyitemsfromremote"
 type CopyItemsToRemote = "copyitemstoremote"
 type CancelCopy = "cancelCopy"
 type GetRemoteFiles = "getremotefiles"
+type RenameItems = "renameitems"
 
 
 type RequestType = 
@@ -84,6 +85,7 @@ type RequestType =
     | CopyItemsToRemote
     | CancelCopy
     | GetRemoteFiles
+    | RenameItems
     
 type Exception = {
 	exception: string
@@ -103,6 +105,16 @@ type RenameItemType = {
     path:     string
     name:     string
     newName:  string
+}
+
+type RenameItemData = {
+    name:     string
+    newName:  string
+}
+
+type RenameItemsType = {
+    path:     string
+    items:    RenameItemData[]
 }
 
 type CreateFolderType = {
@@ -140,6 +152,7 @@ export type RequestInput =
     | CreateFolderType
     | DeleteItemsType
     | CopyItemsType
+    | RenameItemsType
 	
 export async function request<T extends Result>(method: RequestType, input?: RequestInput) {
 
