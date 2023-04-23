@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 using AspNetExtensions;
 using CsTools.Extensions;
-using GtkDotNet;
+//using GtkDotNet;
 using LinqTools;
 
 using static CsTools.Core;
@@ -16,47 +16,48 @@ static partial class Directory
         => info.Extension?.Length > 0 ? info.Extension : ".noextension";
 
     public static Task ProcessIcon(HttpContext context, string iconHint)
-        => RepeatOnException(async () => 
-            await WebWindowNetCore.WebView.GtkApplication!.Dispatch(async () =>
-                {
-                    using var iconInfo = IconInfo.Choose(iconHint, 16, IconLookup.ForceSvg);
-                    var iconFile = iconInfo.GetFileName();
-                    using var stream = iconFile?.OpenFile();
-                    await context.SendStream(stream!, startTime, iconFile);
-                }, 100), 
-            1);
+        => RepeatOnException(async () => { }
+            // await WebWindowNetCore.WebView.GtkApplication!.Dispatch(async () =>
+            //     {
+            //         // using var iconInfo = IconInfo.Choose(iconHint, 16, IconLookup.ForceSvg);
+            //         // var iconFile = iconInfo.GetFileName();
+            //         // using var stream = iconFile?.OpenFile();
+            //         // await context.SendStream(stream!, startTime, iconFile);
+            //    }, 100), 
+            , 1);
 
     public static Task<GetExtendedItemsResult> GetExtendedItems(GetExtendedItems getExtendedItems)
         => GetExtendedItems(getExtendedItems.Path, getExtendedItems.Items)
             .ToAsync();
 
-    public static Task<IOResult> DeleteItems(DeleteItemsParam input)
-        => WebWindowNetCore.WebView.GtkApplication!.Dispatch(() =>
-            {
-                input.Names.ForEach(n => GFile.Trash(input.Path.AppendPath(n)));
-                return new IOResult(null);
-            }, 100)
-                .Catch(MapExceptionToIOResult);
+    public static async Task<IOResult> DeleteItems(DeleteItemsParam input)
+    =>  new IOResult(null);
+    // => WebWindowNetCore.WebView.GtkApplication!.Dispatch(() =>
+    //     {
+    //         input.Names.ForEach(n => GFile.Trash(input.Path.AppendPath(n)));
+    //         return new IOResult(null);
+    //     }, 100)
+    //         .Catch(MapExceptionToIOResult);
 
-    static void CopyItem(string name, string path, string targetPath, Action<long, long> progress, bool move, CancellationToken cancellationToken)
-        => Copy(path.AppendPath(name), targetPath.AppendPath(name), FileCopyFlags.Overwrite,
-                (c, t) => progress(c, t), move, cancellationToken);
+    static void CopyItem(string name, string path, string targetPath, Action<long, long> progress, bool move, CancellationToken cancellationToken) { }
+    // => Copy(path.AppendPath(name), targetPath.AppendPath(name), FileCopyFlags.Overwrite,
+    //         (c, t) => progress(c, t), move, cancellationToken);
 
-    static void Copy(string source, string target, FileCopyFlags flags, GFile.ProgressCallback cb, bool move,
-        CancellationToken cancellationToken)
-    {
-        if (move)
-            GtkDotNet.GFile.Move(source, target, flags, true, cb, cancellationToken);
-        else
-            GtkDotNet.GFile.Copy(source, target, flags, true, cb, cancellationToken);
-    }
+    // static void Copy(string source, string target, FileCopyFlags flags, GFile.ProgressCallback cb, bool move,
+    //     CancellationToken cancellationToken)
+    // {
+    //     if (move)
+    //         GtkDotNet.GFile.Move(source, target, flags, true, cb, cancellationToken);
+    //     else
+    //         GtkDotNet.GFile.Copy(source, target, flags, true, cb, cancellationToken);
+    // }
 
     static IOError MapExceptionToIOError(Exception e)
         => e switch
         {
             UnauthorizedAccessException ue                     => IOError.AccessDenied,
-            GtkDotNet.GErrorException gee  when gee.Code ==  1 => IOError.FileNotFound, 
-            GtkDotNet.GErrorException gee  when gee.Code == 14 => IOError.AccessDenied,
+            //GtkDotNet.GErrorException gee  when gee.Code ==  1 => IOError.FileNotFound, 
+            //GtkDotNet.GErrorException gee  when gee.Code == 14 => IOError.AccessDenied,
             _                                                  => IOError.Exn
         };
 
