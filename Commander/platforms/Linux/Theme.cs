@@ -1,5 +1,7 @@
 #if Linux
 using System.Diagnostics;
+using GtkDotNet;
+using LinqTools;
 
 static class Theme
 {
@@ -45,49 +47,23 @@ static class Theme
         }
 
         static string GetGnomeTheme()
-        {
-            var output = "";
-            try
+            => Application.Dispatch(() => GObjectRef
+                .WithRef(GtkSettings.GetDefault())
+                .Use(Settings =>
+                    Settings
+                        .Value
+                        .GetString("gtk-theme-name")))
+                .Result
+                    .Contains("-dark")
+                            ? "adwaitaDark"
+                            : "adwaita";
+                    
+            return Platform.Value switch
             {
-                using var proc = new Process()
-                {
-                    StartInfo = new ProcessStartInfo()
-                    {
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true,
-                        FileName = "gsettings",
-                        CreateNoWindow = true,
-                        Arguments = "get org.gnome.desktop.interface gtk-theme",
-                    },
-                    EnableRaisingEvents = true
-                };
-                proc.OutputDataReceived += (s, e) =>
-                {
-                    if (e.Data != null)
-                        output = e.Data;
-                };
-                proc.ErrorDataReceived += (s, e) => Console.Error.WriteLine(e.Data);
-                proc.Start();
-                proc.BeginOutputReadLine();
-                proc.BeginErrorReadLine();
-                proc.EnableRaisingEvents = true;
-                proc.WaitForExit();
-            }
-            catch (Exception e)
-            {
-                Console.Error.WriteLine(e);
-            }
-
-            return output.Contains("-dark")
-                ? "adwaitaDark"
-                : "adwaita";
+                PlatformType.Kde => GetKdeTheme(),
+                _ => GetGnomeTheme()
+            };
         }
-        return Platform.Value switch
-        {
-            PlatformType.Kde => GetKdeTheme(),
-            _ => GetGnomeTheme()
-        };
-    }
 
     public static void StartThemeDetection(Action<string> onChanged)
     {
@@ -97,30 +73,15 @@ static class Theme
         {
             try
             {
-                using var proc = new Process()
-                {
-                    StartInfo = new ProcessStartInfo()
-                    {
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true,
-                        FileName = "gsettings",
-                        CreateNoWindow = true,
-                        Arguments = "monitor org.gnome.desktop.interface gtk-theme",
-                    },
-                    EnableRaisingEvents = true
-                };
-                proc.OutputDataReceived += (s, e) =>
-                {
-                    if (e.Data != null)
-                        onChanged(e.Data.Contains("-dark") ? "adwaitaDark" : "adwaita");
-
-                };
-                proc.ErrorDataReceived += (s, e) => Console.Error.WriteLine(e.Data);
-                proc.Start();
-                proc.BeginOutputReadLine();
-                proc.BeginErrorReadLine();
-                proc.EnableRaisingEvents = true;
-                await proc.WaitForExitAsync(CancellationToken.None);
+                await Application.Dispatch(() => 
+                    GtkSettings.GetDefault()
+                       .SignalConnect("notify::gtk-theme-name", () => 
+                        onChanged(GtkSettings.GetDefault()
+                                    .GetString("gtk-theme-name")
+                                    .Contains("-dark")
+                                    ? "adwaitaDark"
+                                    : "adwaita")
+                    ));
             }
             catch (Exception e)
             {
