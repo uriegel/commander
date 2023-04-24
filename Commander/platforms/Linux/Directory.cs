@@ -17,19 +17,47 @@ static partial class Directory
         => info.Extension?.Length > 0 ? info.Extension : ".noextension";
 
     public static Task ProcessIcon(HttpContext context, string iconHint)
-        => RepeatOnException(async () => 
-            await Application.Dispatch(async () =>
+        => RepeatOnException(async () =>
+            {
+                var directory = $"/usr/share/icons/{Theme.BaseTheme}/16x16/mimetypes";
+                var iconFile = Gtk.GuessContentType(iconHint).Replace('/', '-') + ".png";
+                var path = directory.AppendPath(iconFile);
+                if (System.IO.File.Exists(path))
                 {
-            //         // using var iconInfo = IconInfo.Choose(iconHint, 16, IconLookup.ForceSvg);
-                    var type = Gtk.GuessContentType(iconHint);
-                    var icon = IconGet(type);
-                    var names = IconGetNames(icon);
-                    var handle = ChooseIcon(IntPtr.Zero, names, 16, IconLookup.ForceRegular);
-            //         // var iconFile = iconInfo.GetFileName();
-            //         // using var stream = iconFile?.OpenFile();
-            //         // await context.SendStream(stream!, startTime, iconFile);
-               }, 100), 
-            1);
+                    using var stream = path.OpenFile();
+                    await context.SendStream(stream!, startTime, iconFile);
+                } 
+                else if (iconFile == "image-jpeg.png" || iconFile == "image-png.png")
+                {
+                    iconFile = "image-x-generic.png";
+                    path = directory.AppendPath(iconFile);
+                    if (System.IO.File.Exists(path))
+                    {
+                        using var stream = path.OpenFile();
+                        await context.SendStream(stream!, startTime, iconFile);
+                    }
+                }
+                else if (iconFile == "video-mp4.png" || iconFile == "video-x-matroska.png")
+                {
+                    iconFile = "video-x-generic.png";
+                    path = directory.AppendPath(iconFile);
+                    if (System.IO.File.Exists(path))
+                    {
+                        using var stream = path.OpenFile();
+                        await context.SendStream(stream!, startTime, iconFile);
+                    }
+                }
+                else
+                {
+                    iconFile = "unknown.png";
+                    path = directory.AppendPath(iconFile);
+                    if (System.IO.File.Exists(path))
+                    {
+                        using var stream = path.OpenFile();
+                        await context.SendStream(stream!, startTime, iconFile);
+                    }
+                }
+            }, 3);
 
     [DllImport("libgtk-4.so", EntryPoint="g_content_type_get_icon", CallingConvention = CallingConvention.Cdecl)]
     extern static IntPtr IconGet(string contentType);

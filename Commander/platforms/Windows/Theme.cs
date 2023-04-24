@@ -7,6 +7,9 @@ using System.Runtime.Versioning;
 
 static class Theme
 {
+    public static string GetThemeName(this string osTheme)
+        => osTheme;
+
     public static string Get()
     {
         var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");

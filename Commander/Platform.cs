@@ -15,7 +15,7 @@ static partial class Platform
     static Platform()
     {
         getPlatform = Memoize(GetPlatform);
-        QueryString = $"?platform={(Value == PlatformType.Windows ? "windows" : "linux")}&theme={Theme.Get()}";
+        QueryString = $"?platform={(Value == PlatformType.Windows ? "windows" : "linux")}&theme={Theme.Get().GetThemeName()}";
     }
 
     static Func<PlatformType> getPlatform;

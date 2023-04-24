@@ -2,9 +2,17 @@
 using System.Diagnostics;
 using GtkDotNet;
 using LinqTools;
+using CsTools.Extensions;
 
 static class Theme
 {
+    public static readonly string BaseTheme;
+    
+    public static string GetThemeName(this string osTheme)
+        => osTheme.Contains("-dark")
+            ? "adwaitaDark"
+            : "adwaita";
+
     public static string Get()
     {
         static string GetKdeTheme()
@@ -41,9 +49,7 @@ static class Theme
                 Console.Error.WriteLine(e);
             }
 
-            return output.Contains("-dark")
-                ? "breezeDark"
-                : "breeze";
+            return output;
         }
 
         static string GetGnomeTheme()
@@ -53,12 +59,9 @@ static class Theme
                     Settings
                         .Value
                         .GetString("gtk-theme-name")))
-                .Result
-                    .Contains("-dark")
-                            ? "adwaitaDark"
-                            : "adwaita";
-                    
-            return Platform.Value switch
+                .Result;
+
+        return Platform.Value switch
             {
                 PlatformType.Kde => GetKdeTheme(),
                 _ => GetGnomeTheme()
@@ -77,10 +80,7 @@ static class Theme
                     GtkSettings.GetDefault()
                        .SignalConnect("notify::gtk-theme-name", () => 
                         onChanged(GtkSettings.GetDefault()
-                                    .GetString("gtk-theme-name")
-                                    .Contains("-dark")
-                                    ? "adwaitaDark"
-                                    : "adwaita")
+                                    .GetString("gtk-theme-name".GetThemeName()))
                     ));
             }
             catch (Exception e)
@@ -94,5 +94,8 @@ static class Theme
         else
             StartGnomeThemeDetection();
     }
+
+    static Theme()
+    => BaseTheme = Get().SubstringUntil('-');
 }
 #endif
