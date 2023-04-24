@@ -71,18 +71,17 @@ static partial class Directory
         })
             .Catch(MapExceptionToIOResult);
 
-    static void CopyItem(string name, string path, string targetPath, Action<long, long> progress, bool move, CancellationToken cancellationToken) { }
-    // => Copy(path.AppendPath(name), targetPath.AppendPath(name), FileCopyFlags.Overwrite,
-    //         (c, t) => progress(c, t), move, cancellationToken);
+    static void CopyItem(string name, string path, string targetPath, Action<long, long> progress, bool move, CancellationToken cancellationToken) 
+        => Copy(path.AppendPath(name), targetPath.AppendPath(name), FileCopyFlags.Overwrite,
+                (c, t) => progress(c, t), move, cancellationToken);
 
-    // static void Copy(string source, string target, FileCopyFlags flags, GFile.ProgressCallback cb, bool move,
-    //     CancellationToken cancellationToken)
-    // {
-    //     if (move)
-    //         GtkDotNet.GFile.Move(source, target, flags, true, cb, cancellationToken);
-    //     else
-    //         GtkDotNet.GFile.Copy(source, target, flags, true, cb, cancellationToken);
-    // }
+    static void Copy(string source, string target, FileCopyFlags flags, GFile.ProgressCallback cb, bool move, CancellationToken cancellationToken)
+    {
+        if (move)
+            GtkDotNet.GFile.Move(source, target, flags, true, cb, cancellationToken);
+        else
+            GtkDotNet.GFile.Copy(source, target, flags, true, cb, cancellationToken);
+    }
 
     static IOError MapExceptionToIOError(Exception e)
         => e switch
