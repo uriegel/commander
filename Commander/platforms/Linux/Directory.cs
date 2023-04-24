@@ -59,13 +59,6 @@ static partial class Directory
                 }
             }, 3);
 
-    [DllImport("libgtk-4.so", EntryPoint="g_content_type_get_icon", CallingConvention = CallingConvention.Cdecl)]
-    extern static IntPtr IconGet(string contentType);
-    [DllImport("libgtk-4.so", EntryPoint="g_themed_icon_get_names", CallingConvention = CallingConvention.Cdecl)]
-    extern static IntPtr IconGetNames(IntPtr icon);
-    [DllImport("libgtk-4.so", EntryPoint="gtk_icon_theme_choose_icon", CallingConvention = CallingConvention.Cdecl)]
-    extern static IntPtr ChooseIcon(IntPtr theme, IntPtr iconNames, int size, IconLookup flags);
-
     public static Task<GetExtendedItemsResult> GetExtendedItems(GetExtendedItems getExtendedItems)
         => GetExtendedItems(getExtendedItems.Path, getExtendedItems.Items)
             .ToAsync();
@@ -73,17 +66,9 @@ static partial class Directory
     public static Task<IOResult> DeleteItems(DeleteItemsParam input)
         => Application.Dispatch(() =>
         {
-            input.Names.ForEach(Trash);
+            input.Names.ForEach(n => GFile.Trash(input.Path.AppendPath(n)));
             return new IOResult(null);
-
-            void Trash(string name)
-            {
-                var file = GFile.New(input.Path.AppendPath(name));
-                var error = IntPtr.Zero;
-                GFile.Trash(file, IntPtr.Zero, ref error);
-                GObject.Unref(file);
-            }
-        }, 100)
+        })
             .Catch(MapExceptionToIOResult);
 
     static void CopyItem(string name, string path, string targetPath, Action<long, long> progress, bool move, CancellationToken cancellationToken) { }
