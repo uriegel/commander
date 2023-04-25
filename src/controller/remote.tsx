@@ -57,7 +57,7 @@ export const getRemoteController = (controller: Controller | null): ControllerRe
         getItems,
         getExtendedItems: async () => ({ path: "", exifTimes: [], versions: [] }),
         setExtendedItems: items=>items,
-		onEnter: ({path, item}) => 
+		onEnter: async ({path, item}) => 
 			item.isParent && path.split("/").filter(n => n.length > 0).sideEffectForEach(n => console.log("Eintrag", n)).length - 1 == 1
 			?  ({
 				processed: false, 

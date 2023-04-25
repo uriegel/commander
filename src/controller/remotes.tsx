@@ -91,7 +91,7 @@ const startShowRemote = (dialog?: DialogHandle|null, refresh?: ()=>void) => {
     } 
 }
 
-const onEnter = (enterData: EnterData) => 
+const onEnter = async (enterData: EnterData) => 
     enterData.item.isNew
         ? startShowRemote(enterData.dialog, enterData.refresh)
         : {

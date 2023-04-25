@@ -53,13 +53,13 @@ const getLinuxColumns = () => ({
 	renderRow: renderLinuxRow
 })
 
-const onWindowsEnter = (enterData: EnterData) => 
+const onWindowsEnter = async (enterData: EnterData) => 
 ({
     processed: false, 
     pathToSet: enterData.item.name
 }) 
 
-const onLinuxEnter = (enterData: EnterData) => 
+const onLinuxEnter = async (enterData: EnterData) => 
 ({
     processed: false, 
     pathToSet: enterData.item.mountPoint || enterData.item.mountPoint!.length > 0 ? enterData.item.mountPoint : enterData.item.name

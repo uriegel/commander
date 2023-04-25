@@ -27,11 +27,18 @@ export const createExtendedRenameFileSystemController = (controller: Controller)
     getExtendedItems: controller.getExtendedItems,
     setExtendedItems: controller.setExtendedItems,
     getItems: controller.getItems,
-    onEnter: (enterData: EnterData) => {
-        // TODO check if "newNames" are contained, then rename after showing Dialog, else controller.onEnter
-        if (enterData.selectedItems?.length == 0)
+    onEnter: async (enterData: EnterData) => {
+        
+        if (enterData.items?.find(n => n.newName) == undefined)
             return controller.onEnter(enterData)
-        rename(enterData)
+        else {
+            if ((await enterData.dialog?.show({
+                text: "Umbennenungen starten?",
+                btnOk: true,
+                btnCancel: true
+            }))?.result == Result.Ok)
+                rename(enterData)
+        }
         return { processed: true }
     },
     sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => {

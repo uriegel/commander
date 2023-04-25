@@ -181,8 +181,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             setItems(controller.current.setExtendedItems(items.items, extendedInfoItems))    
     }
 
-    const onEnter = (item: FolderViewItem, keys: SpecialKeys) => {
-        const result = controller.current.onEnter({path, item, keys, dialog, refresh, selectedItems: getSelectedItems(), items})
+    const onEnter = async (item: FolderViewItem, keys: SpecialKeys) => {
+        const result = await controller.current.onEnter({path, item, keys, dialog, refresh, selectedItems: getSelectedItems(), items})
         if (!result.processed && result.pathToSet) 
             changePath(result.pathToSet, showHidden, result.latestPath)
     }

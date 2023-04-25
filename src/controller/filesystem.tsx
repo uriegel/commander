@@ -73,7 +73,7 @@ export const getFileSystemController = (controller: Controller|null): Controller
 		getExtendedItems,
 		setExtendedItems,
 		getItems,
-		onEnter: ({path, item}) => 
+		onEnter: async ({path, item}) => 
 			item.isParent && path.length > driveLength 
 			?  ({
 				processed: false, 
@@ -111,7 +111,7 @@ export const createFileSystemController = (): Controller => ({
 	getExtendedItems,
 	setExtendedItems,
 	getItems,
-	onEnter: (enterData: EnterData) => 
+	onEnter: async (enterData: EnterData) => 
         enterData.item.isParent && enterData.path.length > driveLength 
 		?  ({
 			processed: false, 
