@@ -28,6 +28,7 @@ export const createExtendedRenameFileSystemController = (controller: Controller)
     setExtendedItems: controller.setExtendedItems,
     getItems: controller.getItems,
     onEnter: (enterData: EnterData) => {
+        // TODO check if "newNames" are contained, then rename after showing Dialog, else controller.onEnter
         if (enterData.selectedItems?.length == 0)
             return controller.onEnter(enterData)
         rename(enterData)
