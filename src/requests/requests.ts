@@ -62,6 +62,7 @@ type ShowFullScreen = "showfullscreen"
 type RenameItem = "renameitem"
 type CreateFolder = "createfolder"
 type DeleteItems = "deleteitems"
+type CopyItemsInfo = "copyitemsinfo"
 type CopyItems = "copyitems"
 type CopyItemsFromRemote = "copyitemsfromremote"
 type CopyItemsToRemote = "copyitemstoremote"
@@ -80,6 +81,7 @@ type RequestType =
     | RenameItem
     | CreateFolder
     | DeleteItems
+    | CopyItemsInfo
     | CopyItems
     | CopyItemsFromRemote
     | CopyItemsToRemote

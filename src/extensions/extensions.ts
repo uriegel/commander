@@ -13,6 +13,7 @@ declare global {
     interface Array<T> {
         sideEffectForEach(sideEffect: (t: T)=>void): T[]
         insert(index: number, t: T): T[]
+        contains(t: T): boolean
     }
 }
 
@@ -69,4 +70,8 @@ Array.prototype.insert = function<T> (index: number, t: T): T[] {
     ]
 }
 
+// eslint-disable-next-line
+Array.prototype.contains = function <T>(t: T): boolean {
+    return this.find(n => n === t)
+}
 
