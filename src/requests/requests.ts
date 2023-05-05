@@ -131,15 +131,16 @@ type DeleteItemsType = {
 
 export type CopyItem = {
     name: string
+    isDirectory?: boolean | undefined
     size: number | undefined
     time: string | undefined
 }
 
 type CopyItemsType = {
-    path:       string
-    targetPath: string
-    items:      CopyItem[]
-    move:       boolean
+    path:        string
+    targetPath:  string
+    items:       CopyItem[]
+    move:        boolean
 }
 
 type Empty = {
@@ -157,7 +158,7 @@ export type RequestInput =
     | RenameItemsType
 	
 export async function request<T extends Result>(method: RequestType, input?: RequestInput) {
-
+ 
     const msg = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

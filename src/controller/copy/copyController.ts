@@ -34,7 +34,7 @@ export const getCopyController = (move: boolean, dialog: DialogHandle | null, fr
         || fromController.type == ControllerType.Remote && toController.type == ControllerType.FileSystem
         || fromController.type == ControllerType.FileSystem && toController.type == ControllerType.Remote
     ? getFileSystemCopyController(move, dialog, fromLeft, fromController, toController, sourcePath, targetPath,
-        items?.filter(n => !n.isDirectory), targetItems?.filter(n => !n.isDirectory),
+        items, targetItems?.filter(n => !n.isDirectory),
         getPreCopyFunction(fromController.type, toController.type),
         getCopyFunction(fromController.type, toController.type))
     : null
@@ -48,7 +48,14 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
             if (!items || !targetItems || items.length == 0)
                 return null
                     
-            //const res = copyInfo(sourcePath, targetPath, )
+            const copyItems = items.map(n => ({
+                name: n.name,
+                isDirectory: n.isDirectory ?? false,
+                size: n.size,
+                time: n.time
+            }))
+                    
+            const res = copyInfo(sourcePath, targetPath, copyItems, move)
 
             const targetItemsMap = R.mergeAll(targetItems.map(ti => ({ [ti.name]: ti })))
             const conflictItems = items.map(n => {

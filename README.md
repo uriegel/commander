@@ -3,8 +3,8 @@ A Norton Commander clone based on Electron (globally installed), C# and React
 
 ## Setup
 ```
-sudo apt install libgtk-3-dev
-sudo apt install libwebkit2gtk-4.0-dev
+sudo apt install libgtk-4-dev
+sudo npm i -g electron
 npm i
 ```
 
