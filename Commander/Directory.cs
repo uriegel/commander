@@ -108,20 +108,6 @@ static partial class Directory
         => CopyItems(input, input.Items)
             .Catch(MapExceptionToIOResult);
 
-    static IEnumerable<CopyItemInfo> CopyItemsInfo(string path, string subPath, IEnumerable<CopyItemInfo> recentInfos, CopyItem[] items)
-        => items.Aggregate(Enumerable.Empty<CopyItemInfo>(), (infos, item) => AddCopyItemInfo(path, subPath, recentInfos, item));
-
-    static IEnumerable<CopyItemInfo> AddCopyItemInfo(string path, string subPath, IEnumerable<CopyItemInfo> recentInfos, CopyItem item)
-        => item.isDirectory == true
-        ? items.Aggregate(Enumerable.Empty<CopyItemInfo>(), (infos, item) => AddCopyItemInfo(path, subPath.AppendPath(item.Name), recentInfos, item))
-        : recentInfos.Add(new CopyItemInfo(item.Name, subPath, item.Size, item.Time));
-
-    public async static Task<IOResult> CopyItems(CopyItemsParam input, CopyItem[] items)
-        => await CopyItems(items
-                            .Select(n => n.Size)
-                            .Aggregate(0L, (a, b) => a + b), 
-                        input, Cancellation.Create());
-
     public static Task<IOResult> CancelCopy(Empty _)
         => Task.FromResult(new IOResult(null)
                                 .SideEffect(Cancellation.Cancel));
@@ -144,6 +130,20 @@ static partial class Directory
     static bool UseRange(this string path)
         => path.EndsWith(".mp4", StringComparison.InvariantCultureIgnoreCase) 
         || path.EndsWith(".mp3", StringComparison.InvariantCultureIgnoreCase);
+
+    static IEnumerable<CopyItemInfo> CopyItemsInfo(string path, string subPath, IEnumerable<CopyItemInfo> recentInfos, CopyItem[] items)
+        => items.Aggregate(Enumerable.Empty<CopyItemInfo>(), (infos, item) => AddCopyItemInfo(path, subPath, recentInfos, item));
+
+    static IEnumerable<CopyItemInfo> AddCopyItemInfo(string path, string subPath, IEnumerable<CopyItemInfo> recentInfos, CopyItem item)
+        => item.isDirectory == true
+        ? items.Aggregate(Enumerable.Empty<CopyItemInfo>(), (infos, item) => AddCopyItemInfo(path, subPath.AppendPath(item.Name), recentInfos, item))
+        : recentInfos.Add(new CopyItemInfo(item.Name, subPath, item.Size, item.Time));
+
+    static async Task<IOResult> CopyItems(CopyItemsParam input, CopyItem[] items)
+        => await CopyItems(items
+                            .Select(n => n.Size)
+                            .Aggregate(0L, (a, b) => a + b), 
+                        input, Cancellation.Create());
 
     static Task<IOResult> CopyItems(long totalSize, CopyItemsParam input, CancellationToken cancellationToken)
         => input.Items.Aggregate(0L, (count, n) =>
