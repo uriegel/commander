@@ -100,9 +100,21 @@ static partial class Directory
             MapExceptionToIOError)
                 .ToIOResult();
 
+    public static Task<IOResult> CopyItemsInfo(CopyItemsParam input)
+        => CopyItemsInfo(input.Path, "", Enumerable.Empty<CopyItemInfo>(), input.Items)
+            .Catch(MapExceptionToIOResult);
+
     public static Task<IOResult> CopyItems(CopyItemsParam input)
         => CopyItems(input, input.Items)
             .Catch(MapExceptionToIOResult);
+
+    static IEnumerable<CopyItemInfo> CopyItemsInfo(string path, string subPath, IEnumerable<CopyItemInfo> recentInfos, CopyItem[] items)
+        => items.Aggregate(Enumerable.Empty<CopyItemInfo>(), (infos, item) => AddCopyItemInfo(path, subPath, recentInfos, item));
+
+    static IEnumerable<CopyItemInfo> AddCopyItemInfo(string path, string subPath, IEnumerable<CopyItemInfo> recentInfos, CopyItem item)
+        => item.isDirectory == true
+        ? items.Aggregate(Enumerable.Empty<CopyItemInfo>(), (infos, item) => AddCopyItemInfo(path, subPath.AppendPath(item.Name), recentInfos, item))
+        : recentInfos.Add(new CopyItemInfo(item.Name, subPath, item.Size, item.Time));
 
     public async static Task<IOResult> CopyItems(CopyItemsParam input, CopyItem[] items)
         => await CopyItems(items
@@ -124,9 +136,9 @@ static partial class Directory
             MapExceptionToIOError)
                 .ToIOResult();
         void PreRenameItem(RenameItem item)
-            => Move(input.Path.AppendPath(item.Name), input.Path.AppendPath("__RENAMINGE__" + item.NewName));
+            => Move(input.Path.AppendPath(item.Name), input.Path.AppendPath("__RENAMING__" + item.NewName));
         void RenameItem(RenameItem item)
-            => Move(input.Path.AppendPath("__RENAMINGE__" + item.NewName), input.Path.AppendPath(item.NewName));
+            => Move(input.Path.AppendPath("__RENAMING__" + item.NewName), input.Path.AppendPath(item.NewName));
     }
 
     static bool UseRange(this string path)
@@ -220,9 +232,16 @@ record DeleteItemsParam(
 
 record CopyItem(
     string Name,
+    bool? isDirectory,
     long Size,
     DateTime Time
+);
 
+record CopyItemInfo(
+    string Name,
+    string SubPath,
+    long Size,
+    DateTime Time
 );
 
 record CopyItemsParam(
