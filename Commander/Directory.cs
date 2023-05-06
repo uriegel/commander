@@ -101,7 +101,7 @@ static partial class Directory
                 .ToIOResult();
 
     public static Task<CopyItemsResult> CopyItemsInfo(CopyItemsParam input)
-        => CopyItemsInfo(input.Path, null, Enumerable.Empty<CopyItemInfo>(), input.Items)
+        => CopyItemsInfo(input.Path, input.TargetPath, null, Enumerable.Empty<CopyItemInfo>(), input.Items)
             .Catch(MapExceptionToCopyItems);
 
     public static Task<IOResult> CopyItems(CopyItemsParam input)
@@ -131,20 +131,34 @@ static partial class Directory
         => path.EndsWith(".mp4", StringComparison.InvariantCultureIgnoreCase) 
         || path.EndsWith(".mp3", StringComparison.InvariantCultureIgnoreCase);
 
-    static async Task<CopyItemsResult> CopyItemsInfo(string path, string? subPath, IEnumerable<CopyItemInfo> recentInfos, CopyItem[] items)
+    static async Task<CopyItemsResult> CopyItemsInfo(string path, string targetPath, string? subPath, IEnumerable<CopyItemInfo> recentInfos, CopyItem[] items)
         => await (new CopyItemsResult(
                 items
-                    .Aggregate(recentInfos, (infos, item) => AddCopyItemInfo(path, subPath, infos, item))
+                    .Aggregate(recentInfos, (infos, item) => AddCopyItemInfo(path, targetPath, subPath, infos, item))
                     .ToArray(), 
                     null))
                     .ToAsync();
 
-    static IEnumerable<CopyItemInfo> AddCopyItemInfo(string path, string? subPath, IEnumerable<CopyItemInfo> recentInfos, CopyItem copyItem)
+    static IEnumerable<CopyItemInfo> AddCopyItemInfo(string path, string targetPath, string? subPath, IEnumerable<CopyItemInfo> recentInfos, CopyItem copyItem)
         => copyItem.isDirectory == true
         ? GetCopyItems((subPath != null ? path.AppendPath(subPath) : path).AppendPath(copyItem.Name))
-            .Aggregate(recentInfos, (infos, item) => AddCopyItemInfo(path, subPath?.AppendPath(copyItem.Name) ?? copyItem.Name, infos, item))
+            .Aggregate(recentInfos, (infos, item) => AddCopyItemInfo(path, targetPath, subPath?.AppendPath(copyItem.Name) ?? copyItem.Name, infos, item))
         : recentInfos
-            .Add(new CopyItemInfo(copyItem.Name, subPath ?? "", copyItem.Size, copyItem.Time));
+            .Add(CreateCopyItemInfo(copyItem, subPath, targetPath));
+
+    static CopyItemInfo CreateCopyItemInfo(CopyItem copyItem, string? subPath, string targetPath) 
+    {
+        var targetFile = (subPath != null ? targetPath.AppendPath(subPath) : targetPath)
+                            .AppendPath(copyItem.Name);
+        var fi = new FileInfo(targetFile);
+        return new CopyItemInfo(
+            copyItem.Name, 
+            subPath ?? "", 
+            copyItem.Size, 
+            copyItem.Time, 
+            fi.Exists ? fi.Length : null, 
+            fi.Exists ? fi.LastWriteTime : null);
+    }
 
     static IEnumerable<CopyItem> GetCopyItems(string directory)
     {
@@ -263,7 +277,9 @@ record CopyItemInfo(
     string Name,
     string SubPath,
     long Size,
-    DateTime Time
+    DateTime Time,
+    long? TargetSize,
+    DateTime? TargetTime
 );
 
 record CopyItemsParam(
