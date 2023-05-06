@@ -100,10 +100,9 @@ static partial class Directory
             MapExceptionToIOError)
                 .ToIOResult();
 
-    public static Task<CopyItemInfo[]> CopyItemsInfo(CopyItemsParam input)
+    public static Task<CopyItemsResult> CopyItemsInfo(CopyItemsParam input)
         => CopyItemsInfo(input.Path, null, Enumerable.Empty<CopyItemInfo>(), input.Items)
-            .ToArray()
-            .ToAsync();
+            .Catch(MapExceptionToCopyItems);
 
     public static Task<IOResult> CopyItems(CopyItemsParam input)
         => CopyItems(input, input.Items)
@@ -132,8 +131,13 @@ static partial class Directory
         => path.EndsWith(".mp4", StringComparison.InvariantCultureIgnoreCase) 
         || path.EndsWith(".mp3", StringComparison.InvariantCultureIgnoreCase);
 
-    static IEnumerable<CopyItemInfo> CopyItemsInfo(string path, string? subPath, IEnumerable<CopyItemInfo> recentInfos, CopyItem[] items)
-        => items.Aggregate(recentInfos, (infos, item) => AddCopyItemInfo(path, subPath, infos, item));
+    static async Task<CopyItemsResult> CopyItemsInfo(string path, string? subPath, IEnumerable<CopyItemInfo> recentInfos, CopyItem[] items)
+        => await (new CopyItemsResult(
+                items
+                    .Aggregate(recentInfos, (infos, item) => AddCopyItemInfo(path, subPath, infos, item))
+                    .ToArray(), 
+                    null))
+                    .ToAsync();
 
     static IEnumerable<CopyItemInfo> AddCopyItemInfo(string path, string? subPath, IEnumerable<CopyItemInfo> recentInfos, CopyItem copyItem)
         => copyItem.isDirectory == true
@@ -189,6 +193,9 @@ static partial class Directory
 
     static IOResult MapExceptionToIOResult(Exception e)
         => new(MapExceptionToIOError(e));
+
+    static CopyItemsResult MapExceptionToCopyItems(Exception e)
+        => new CopyItemsResult(null, MapExceptionToIOError(e));
 }
 
 record DirectoryItem(
@@ -282,3 +289,8 @@ static class IOResultExtensions
     public static Task<IOResult> ToTask(this IOError? ioError)
         => (new IOResult(ioError)).ToAsync();
 }
+
+record CopyItemsResult(
+    CopyItemInfo[]? Infos,
+    IOError? Error
+);
