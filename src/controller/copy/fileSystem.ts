@@ -1,7 +1,7 @@
-import { CopyItem, IOErrorResult, request } from "../../requests/requests"
+import { CopyItem, CopyItemsResult, IOErrorResult, request } from "../../requests/requests"
 
 export const copyInfo = async (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean) => {
-    return await request<IOErrorResult>("copyitemsinfo", {
+    return await request<CopyItemsResult>("copyitemsinfo", {
         path: sourcePath,
         targetPath: targetPath,
         items,

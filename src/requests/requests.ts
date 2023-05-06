@@ -9,6 +9,7 @@ type Result =
     | GetItemResult 
     | GetExtendedItemsResult
     | IOErrorResult
+    | CopyItemsResult
 
 export interface RootItem {
     name:        string
@@ -131,9 +132,15 @@ type DeleteItemsType = {
 
 export type CopyItem = {
     name: string
+    subPath?: string
     isDirectory?: boolean | undefined
     size: number | undefined
     time: string | undefined
+}
+
+export type CopyItemsResult = {
+    infos?: CopyItem[]
+    error?: IOError
 }
 
 type CopyItemsType = {

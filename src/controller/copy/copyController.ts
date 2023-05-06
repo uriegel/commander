@@ -5,7 +5,7 @@ import CopyProgress from "../../components/CopyProgress"
 import { FolderViewItem } from "../../components/FolderView"
 import { Controller, ControllerType } from "../controller"
 import { compareVersion, getItemsType, ItemsType } from "../filesystem"
-import { CopyItem, IOError, IOErrorResult, request } from "../../requests/requests"
+import { CopyItem, CopyItemsResult, IOError, IOErrorResult, request } from "../../requests/requests"
 import { copy, copyInfo } from "./fileSystem"
 import { copyInfoToRemote, copyToRemote } from "./toRemoteCopy"
 import { copyFromRemote, copyInfoFromRemote } from "./fromRemoteCopy"
@@ -42,7 +42,7 @@ export const getCopyController = (move: boolean, dialog: DialogHandle | null, fr
 
 const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, fromLeft: boolean, fromController: Controller, toController: Controller,
             sourcePath: string, targetPath: string, items: FolderViewItem[], targetItems: FolderViewItem[],
-            copyInfo: (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean)=>Promise<IOErrorResult>,
+            copyInfo: (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean)=>Promise<CopyItemsResult>,
             copy: (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean)=>Promise<IOErrorResult>): CopyController | null => ({
         copy: async () => {
             if (!items || !targetItems || items.length == 0)
@@ -55,7 +55,8 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                 time: n.time
             }))
                     
-            const res = copyInfo(sourcePath, targetPath, copyItems, move)
+            const res = await copyInfo(sourcePath, targetPath, copyItems, move)
+            console.log("CopyItems", res.infos, res.error)
 
             const targetItemsMap = R.mergeAll(targetItems.map(ti => ({ [ti.name]: ti })))
             const conflictItems = items.map(n => {
