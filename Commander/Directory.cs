@@ -169,10 +169,10 @@ static partial class Directory
         var info = new DirectoryInfo(directory);
         var dirInfos = info
                         .GetDirectories()
-                        .Select(n => new CopyItem(n.Name, true, 0, DateTime.MinValue));
+                        .Select(n => new CopyItem(n.Name, true, 0, DateTime.MinValue, null));
         var fileInfos = info
                             .GetFiles()
-                            .Select(n => new CopyItem(n.Name, false, n.Length, n.LastWriteTime));
+                            .Select(n => new CopyItem(n.Name, false, n.Length, n.LastWriteTime, null));
         return dirInfos.Concat(fileInfos);
     }
 
@@ -274,7 +274,8 @@ record CopyItem(
     string Name,
     bool? isDirectory,
     long Size,
-    DateTime Time
+    DateTime Time,
+    string? SubPath 
 );
 
 record CopyItemInfo(

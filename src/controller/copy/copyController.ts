@@ -58,12 +58,9 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                 }))
                     
             const res = await copyInfo(sourcePath, targetPath, copyItems, move)
-            console.log("CopyItems", res.infos, res.error)
             if (res.error)
                 return res.error
 
-            // TODO: conflicts merge of file conflicts and directory conflicts
-                    
             const fileItems = items
                 .filter(n => !n.isDirectory)
                     
@@ -156,17 +153,16 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                     if (res?.result == Result.Cancel)
                         await request("cancelCopy", {})        
                 }, 1000)
-                // TODO items combination of items (files) and copyItems
                 const itemsToCopy = fileItems
-                    .map(n => ({ name: n.name, size: n.size, time: n.time }))
-                    .concat((res.infos?? []).map(n => ({ name: n.name, size: n.size, time: n.time })))
+                    .map(n => ({ name: n.name, size: n.size, time: n.time, subPath: undefined }) as CopyItem)
+                    .concat((res.infos?? []).map(n => ({ name: n.name, size: n.size, time: n.time, subPath: n.subPath || undefined })))
  
                 const copyItems = result?.result == Result.Yes
                     ? itemsToCopy
-                    : R.without(conflictItems.map(n => ({ name: n.name, size: n.size, time: n.time })), itemsToCopy)
-
+                    : R.without(
+                        conflictItems.map(n => ({ name: n.name, size: n.size, time: n.time, subPath: n.subPath || undefined })),
+                        itemsToCopy)
                 
-                console.log("Affe", copyItems)
                 const ioResult = await copy("sourcePath!", "targetPath!", copyItems, move)
                 clearTimeout(timeout)
                 dialog?.close()
