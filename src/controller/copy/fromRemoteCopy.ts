@@ -1,6 +1,8 @@
+import { FolderViewItem } from "../../components/FolderView"
 import { CopyItem, CopyItemsResult, IOErrorResult, request } from "../../requests/requests"
 
-export const copyInfoFromRemote = async (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean): Promise<CopyItemsResult> => {
+export const copyInfoFromRemote = async (sourcePath: string, targetPath: string,
+        items: CopyItem[], targetItems: FolderViewItem[], move: boolean): Promise<CopyItemsResult> => {
     return {
         infos: items.filter(n => !n.isDirectory)
     }

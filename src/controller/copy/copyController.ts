@@ -42,7 +42,7 @@ export const getCopyController = (move: boolean, dialog: DialogHandle | null, fr
 
 const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, fromLeft: boolean, fromController: Controller, toController: Controller,
             sourcePath: string, targetPath: string, items: FolderViewItem[], targetItems: FolderViewItem[],
-            copyInfo: (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean)=>Promise<CopyItemsResult>,
+            copyInfo: (sourcePath: string, targetPath: string, items: CopyItem[], targetItems: FolderViewItem[], move: boolean)=>Promise<CopyItemsResult>,
             copy: (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean)=>Promise<IOErrorResult>): CopyController | null => ({
         copy: async () => {
             if (!items || !targetItems || items.length == 0)
@@ -55,7 +55,8 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                 time: n.time
             }))
                     
-            const res = await copyInfo(sourcePath, targetPath, copyItems, move)
+                    const res = await copyInfo(sourcePath, targetPath, copyItems, targetItems, move)
+                    // TODO get iconpath, version, exiftime
             console.log("CopyItems", res.infos, res.error)
             if (res.error)
                 return res.error
