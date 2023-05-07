@@ -64,8 +64,13 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
 
             // TODO: conflicts merge of file conflicts and directory conflicts
                     
-            const targetItemsMap = R.mergeAll(targetItems.map(ti => ({ [ti.name]: ti })))
-            const conflictItems = items.map(n => {
+            const fileItems = items
+                .filter(n => !n.isDirectory)
+                    const targetItemsMap = R.mergeAll(
+                        targetItems
+                            .filter(n => n.isDirectory)
+                            .map(ti => ({ [ti.name]: ti })))
+            const conflictFileItems = fileItems.map(n => {
                 const check = targetItemsMap[n.name]
                 return check
                 ? {
@@ -82,6 +87,9 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                 } as ConflictItem
                 : undefined                
             }).filter(n => n != undefined) as ConflictItem[]
+
+            const conflictItems = conflictFileItems
+            // TODO add conflicts from copyitems
 
             const copyText = conflictItems.length > 0
                 ? move ? "Verschieben" : "Kopieren"
@@ -133,6 +141,7 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                     if (res?.result == Result.Cancel)
                         await request("cancelCopy", {})        
                 }, 1000)
+                // TODO items combination of items (files) and copyItems
                 const copyItems = result?.result == Result.Yes
                     ? items.map(n => ({ name: n.name, size: n.size, time: n.time }))
                     : R.without(conflictItems.map(n => ({ name: n.name, size: n.size, time: n.time })), items.map(n => ({ name: n.name, size: n.size, time: n.time })))
