@@ -157,11 +157,17 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                         await request("cancelCopy", {})        
                 }, 1000)
                 // TODO items combination of items (files) and copyItems
+                const itemsToCopy = fileItems
+                    .map(n => ({ name: n.name, size: n.size, time: n.time }))
+                    .concat((res.infos?? []).map(n => ({ name: n.name, size: n.size, time: n.time })))
+ 
                 const copyItems = result?.result == Result.Yes
-                    ? items.map(n => ({ name: n.name, size: n.size, time: n.time }))
-                    : R.without(conflictItems.map(n => ({ name: n.name, size: n.size, time: n.time })), items.map(n => ({ name: n.name, size: n.size, time: n.time })))
+                    ? itemsToCopy
+                    : R.without(conflictItems.map(n => ({ name: n.name, size: n.size, time: n.time })), itemsToCopy)
 
-                const ioResult = await copy(sourcePath!, targetPath!, copyItems, move)
+                
+                console.log("Affe", copyItems)
+                const ioResult = await copy("sourcePath!", "targetPath!", copyItems, move)
                 clearTimeout(timeout)
                 dialog?.close()
                 return ioResult.error != undefined ? ioResult.error : null
