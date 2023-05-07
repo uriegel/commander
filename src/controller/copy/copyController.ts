@@ -57,6 +57,8 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                     
             const res = await copyInfo(sourcePath, targetPath, copyItems, move)
             console.log("CopyItems", res.infos, res.error)
+            if (res.error)
+                return res.error
 
             const targetItemsMap = R.mergeAll(targetItems.map(ti => ({ [ti.name]: ti })))
             const conflictItems = items.map(n => {

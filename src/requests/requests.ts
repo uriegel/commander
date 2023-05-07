@@ -48,7 +48,7 @@ export enum IOError {
     Exn
 }
 
-export type IOErrorResult = {
+export interface IOErrorResult {
     error?: IOError
 }
 
@@ -136,11 +136,12 @@ export type CopyItem = {
     isDirectory?: boolean | undefined
     size: number | undefined
     time: string | undefined
+    targetSize?: number | undefined
+    targetTime?: string | undefined
 }
 
-export type CopyItemsResult = {
+export interface CopyItemsResult extends IOErrorResult {
     infos?: CopyItem[]
-    error?: IOError
 }
 
 type CopyItemsType = {
