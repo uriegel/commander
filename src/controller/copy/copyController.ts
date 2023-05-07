@@ -42,25 +42,28 @@ export const getCopyController = (move: boolean, dialog: DialogHandle | null, fr
 
 const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, fromLeft: boolean, fromController: Controller, toController: Controller,
             sourcePath: string, targetPath: string, items: FolderViewItem[], targetItems: FolderViewItem[],
-            copyInfo: (sourcePath: string, targetPath: string, items: CopyItem[], targetItems: FolderViewItem[], move: boolean)=>Promise<CopyItemsResult>,
+            copyInfo: (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean)=>Promise<CopyItemsResult>,
             copy: (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean)=>Promise<IOErrorResult>): CopyController | null => ({
         copy: async () => {
             if (!items || !targetItems || items.length == 0)
                 return null
                     
-            const copyItems = items.map(n => ({
-                name: n.name,
-                isDirectory: n.isDirectory ?? false,
-                size: n.size,
-                time: n.time
-            }))
+            const copyItems = items
+                .filter(n => n.isDirectory)
+                .map(n => ({
+                    name: n.name,
+                    isDirectory: true,
+                    size: n.size,
+                    time: n.time
+                }))
                     
-                    const res = await copyInfo(sourcePath, targetPath, copyItems, targetItems, move)
-                    // TODO get iconpath, version, exiftime
+            const res = await copyInfo(sourcePath, targetPath, copyItems, move)
             console.log("CopyItems", res.infos, res.error)
             if (res.error)
                 return res.error
 
+            // TODO: conflicts merge of file conflicts and directory conflicts
+                    
             const targetItemsMap = R.mergeAll(targetItems.map(ti => ({ [ti.name]: ti })))
             const conflictItems = items.map(n => {
                 const check = targetItemsMap[n.name]
@@ -104,7 +107,6 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                 && conflictItems
                     .filter(filterNoOverwrite)
                     .length > 0
-
                                 
             const result = await dialog?.show({
                 text,   

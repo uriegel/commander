@@ -118,8 +118,8 @@ static partial class Directory
     static IOError MapExceptionToIOError(Exception e)
         => e switch
         {
-            UnauthorizedAccessException ue                     => IOError.AccessDenied,
-            _                                                  => IOError.Exn
+            UnauthorizedAccessException ue => IOError.AccessDenied,
+            _                              => IOError.Exn
         };
 
     // TODO

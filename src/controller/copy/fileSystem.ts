@@ -1,13 +1,11 @@
-import { FolderViewItem } from "../../components/FolderView"
 import { CopyItem, CopyItemsResult, IOErrorResult, request } from "../../requests/requests"
 
-export const copyInfo = async (sourcePath: string, targetPath: string,
-        items: CopyItem[], targetItems: FolderViewItem[], move: boolean) => {
+export const copyInfo = async (sourcePath: string, targetPath: string, items: CopyItem[]) => {
     return await request<CopyItemsResult>("copyitemsinfo", {
         path: sourcePath,
         targetPath: targetPath,
         items,
-        move
+        move: false
     })
 }
 
