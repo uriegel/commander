@@ -10,6 +10,7 @@ import IconName, { IconNameType } from './IconName'
 
 export interface ConflictItem {
 	name: string
+	subPath: string
 	iconPath: string
     size?: number
     time?: string
@@ -40,8 +41,11 @@ const CopyConflicts = ({ props }: ExtensionProps) => {
 		{ name: "Größe", isRightAligned: true }
 	]
 
-	const renderRowBase = ({ name, iconPath, time, exifDate, targetExifDate, targetTime, size, targetSize }: ConflictItem) => [
-		(<IconName namePart={name} type={IconNameType.File } iconPath={iconPath} />),
+	const renderRowBase = ({ name, subPath, iconPath, time, exifDate, targetExifDate, targetTime, size, targetSize }: ConflictItem) => [
+		(<div>
+			<IconName namePart={name} type={IconNameType.File} iconPath={iconPath} />
+			<div className='subPath'>{subPath}</div>
+		</div>),
 		(<div className=
 			{
 				(exifDate ?? time ?? "") > (targetExifDate ?? targetTime ?? "")

@@ -66,10 +66,11 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                     
             const fileItems = items
                 .filter(n => !n.isDirectory)
-                    const targetItemsMap = R.mergeAll(
-                        targetItems
-                            .filter(n => n.isDirectory)
-                            .map(ti => ({ [ti.name]: ti })))
+                    
+            const targetItemsMap = R.mergeAll(
+                targetItems
+                    .filter(n => !n.isDirectory)
+                    .map(ti => ({ [ti.name]: ti })))
             const conflictFileItems = fileItems.map(n => {
                 const check = targetItemsMap[n.name]
                 return check
@@ -94,6 +95,7 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                 .map(n => ({
                     name: n.name,
                     iconPath: null,
+                    subPath: n.subPath,
                     size: n.size,
                     time: n.time,
                     exifDate: null,
