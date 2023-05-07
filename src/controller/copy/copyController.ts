@@ -88,9 +88,22 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                 : undefined                
             }).filter(n => n != undefined) as ConflictItem[]
 
-            const conflictItems = conflictFileItems
-            // TODO add conflicts from copyitems
-
+            const dirInfos = res
+                .infos
+                ?.filter(n => n.targetSize != null)
+                .map(n => ({
+                    name: n.name,
+                    iconPath: null,
+                    size: n.size,
+                    time: n.time,
+                    exifDate: null,
+                    version: null,
+                    targetSize: n.targetSize,
+                    targetTime: n.targetTime,
+                    targetExifDate: null,
+                    targetVersion: null
+                })) as ConflictItem[] | undefined
+            const conflictItems = dirInfos ? conflictFileItems.concat(dirInfos) : conflictFileItems
             const copyText = conflictItems.length > 0
                 ? move ? "Verschieben" : "Kopieren"
                 : move ? "verschieben" : "kopieren"
