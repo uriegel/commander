@@ -413,7 +413,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO copy: overwrite access denied
 // TODO move: delete all empty directories
 // TODO ExtendedRename: Check error handling
 // TODO ExtendedRename: Change option, selection not adapted
