@@ -181,26 +181,44 @@ static partial class Directory
                             .Aggregate(0L, (a, b) => a + b), 
                         input, new HashSet<string>(), Cancellation.Create());
 
-    static Task<IOResult> CopyItems(long totalSize, CopyItemsParam input, 
+    static Task<IOResult> CopyItems(long totalSize, CopyItemsParam input,
         HashSet<string> newDirs, CancellationToken cancellationToken)
         => input.Items.Aggregate(0L, (count, n) =>
         {
             if (cancellationToken.IsCancellationRequested)
                 return 0;
             var targetPath = AppendPath(input.TargetPath, n.SubPath);
-            EnsurePathExists(targetPath, newDirs);
+            EnsurePathExists(input.TargetPath, n.SubPath, newDirs);
             CopyItem(n.Name, AppendPath(input.Path, n.SubPath), targetPath,
                 (c, t) => Events.CopyProgressChanged(new(n.Name, t, c, totalSize, count + c)),
                 input.Move, cancellationToken);
             return count + n.Size;
-        }).ToIOResult();
+        })
+            .SideEffect(n =>
+            {
+                if (input.Move)
+                    foreach (var dir in newDirs)
+                    {   
+                        try 
+                        {
+                            System.IO.Directory.Delete(input.Path.AppendPath(dir));
+                        }
+                        catch (Exception e)
+                        {
 
-    static void EnsurePathExists(string path, HashSet<string> dirs)
+                        }
+                    };
+            })
+            .ToIOResult();
+
+    static void EnsurePathExists(string path, string? subPath, HashSet<string> dirs)
     {
-        if (!dirs.Contains(path) && !System.IO.Directory.Exists(path))
+        var targetPath = AppendPath(path, subPath);
+        if (subPath != null&& !dirs.Contains(subPath))
         {
-            System.IO.Directory.CreateDirectory(path);
-            dirs.Add(path);
+            if (!System.IO.Directory.Exists(targetPath))
+                System.IO.Directory.CreateDirectory(targetPath);
+            dirs.Add(subPath);
         }
     }   
 
