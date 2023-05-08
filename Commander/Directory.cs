@@ -144,7 +144,7 @@ static partial class Directory
     static List<CopyItemInfo> AddCopyItemInfo(string path, string targetPath, string? subPath,
             List<CopyItemInfo> recentInfos, CopyItem copyItem, CancellationToken cancellation)
         => copyItem.isDirectory == true
-        ? GetCopyItems((subPath != null ? path.AppendPath(subPath) : path).AppendPath(copyItem.Name))
+        ? GetCopyItems(AppendPath(path, subPath).AppendPath(copyItem.Name))
             .Aggregate(recentInfos, (infos, item) => AddCopyItemInfo(path, targetPath, subPath?.AppendPath(copyItem.Name) ?? copyItem.Name,
                                                                         infos, item, cancellation))
         : recentInfos.SideEffect(l => l.Add(CreateCopyItemInfo(copyItem, subPath, targetPath, cancellation)));
@@ -152,8 +152,7 @@ static partial class Directory
     static CopyItemInfo CreateCopyItemInfo(CopyItem copyItem, string? subPath, string targetPath, CancellationToken cancellation) 
     {
         cancellation.ThrowIfCancellationRequested();
-        var targetFile = (subPath != null ? targetPath.AppendPath(subPath) : targetPath)
-                            .AppendPath(copyItem.Name);
+        var targetFile = AppendPath(targetPath, subPath).AppendPath(copyItem.Name);
         var fi = new FileInfo(targetFile);
         return new CopyItemInfo(
             copyItem.Name, 
@@ -180,18 +179,33 @@ static partial class Directory
         => await CopyItems(items
                             .Select(n => n.Size)
                             .Aggregate(0L, (a, b) => a + b), 
-                        input, Cancellation.Create());
+                        input, new HashSet<string>(), Cancellation.Create());
 
-    static Task<IOResult> CopyItems(long totalSize, CopyItemsParam input, CancellationToken cancellationToken)
+    static Task<IOResult> CopyItems(long totalSize, CopyItemsParam input, 
+        HashSet<string> newDirs, CancellationToken cancellationToken)
         => input.Items.Aggregate(0L, (count, n) =>
         {
             if (cancellationToken.IsCancellationRequested)
                 return 0;
-            CopyItem(n.Name, input.Path, input.TargetPath,
+            var targetPath = AppendPath(input.TargetPath, n.SubPath);
+            EnsurePathExists(targetPath, newDirs);
+            CopyItem(n.Name, AppendPath(input.Path, n.SubPath), targetPath,
                 (c, t) => Events.CopyProgressChanged(new(n.Name, t, c, totalSize, count + c)),
                 input.Move, cancellationToken);
             return count + n.Size;
         }).ToIOResult();
+
+    static void EnsurePathExists(string path, HashSet<string> dirs)
+    {
+        if (!dirs.Contains(path) && !System.IO.Directory.Exists(path))
+        {
+            System.IO.Directory.CreateDirectory(path);
+            dirs.Add(path);
+        }
+    }   
+
+    static string AppendPath(string path, string? subPath)
+        => subPath != null ? path.AppendPath(subPath) : path;
 
     static Task<IOResult> ToIOResult<T>(this T t)
         => (new IOResult(null)).ToAsync();
