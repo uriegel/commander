@@ -1,6 +1,8 @@
-﻿using GtkDotNet;
-using LinqTools;
+﻿using LinqTools;
 using WebWindowNetCore;
+#if Linux
+using GtkDotNet;
+#endif
 
 WebView
     .Create()
