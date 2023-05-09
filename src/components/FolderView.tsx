@@ -413,7 +413,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO ExtendedRename: Check error handling
 // TODO ExtendedRename: Change option, selection not adapted
 // TODO remote createFolder
 // TODO Take RenderRow in column

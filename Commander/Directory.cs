@@ -203,7 +203,7 @@ static partial class Directory
                         {
                             System.IO.Directory.Delete(input.Path.AppendPath(dir));
                         }
-                        catch (Exception e)
+                        catch
                         {
 
                         }
@@ -213,9 +213,9 @@ static partial class Directory
 
     static void EnsurePathExists(string path, string? subPath, HashSet<string> dirs)
     {
-        var targetPath = AppendPath(path, subPath);
         if (subPath != null&& !dirs.Contains(subPath))
         {
+            var targetPath = AppendPath(path, subPath);
             if (!System.IO.Directory.Exists(targetPath))
                 System.IO.Directory.CreateDirectory(targetPath);
             dirs.Add(subPath);
