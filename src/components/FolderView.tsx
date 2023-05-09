@@ -414,8 +414,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO remote createFolder
 // TODO Take RenderRow in column
+// TODO remote createFolder
 // TODO remote delete files
 // TODO remote rename file
 // TODO remote move
