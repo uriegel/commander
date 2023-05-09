@@ -3,10 +3,6 @@
     // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [{
-            "label": "prepare",
-            "type": "npm",
-            "script": "electron",
-        }, {
             "label": "buildReact",
             "type": "npm",
             "script": "build",
@@ -27,7 +23,7 @@
             },
             "problemMatcher": "$msCompile"
         }, {
-            "label": "buildFRelease",
+            "label": "buildCsRelease",
             "command": "dotnet",
             "type": "shell",
             "args": [
@@ -44,7 +40,7 @@
             "label": "buildRelease",
             "group": "build",
             "dependsOrder": "sequence",
-            "dependsOn": ["prepare", "buildReact", "buildFRelease"]
+            "dependsOn": ["buildReact", "buildCsRelease"]
         }, {
             "label": "build",
             "group": "build",

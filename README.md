@@ -22,6 +22,8 @@ Start devtools:
 
 ## Build
 
+Start npm script `build` or `build Windows`
+ 
 Press `StartCtrl+Shift+B` and run `buildRelease`. `Commander/bin/Release/net6.0/linux-x64/publish/Commander` is a single file executable containing all but `electron` and `.NET runtime 6.0`.
 
 ## Run as admin
