@@ -93,6 +93,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
                 }
                 controller.current.onSelectionChanged(items)                    
+                setItems(items.map(n => n))
             },
             createFolder,
             deleteItems,
@@ -413,7 +414,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO ExtendedRename: Change option, selection not adapted
 // TODO remote createFolder
 // TODO Take RenderRow in column
 // TODO remote delete files
