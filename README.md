@@ -56,4 +56,16 @@ either with .NET included or not: `SelfContained` = true or false in `commander.
 
 ## Install as launcher on Linux:
 
-`sudo desktop-file-install commander.desktop`
+
+
+```
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Exec=/usr/share/applications/commander
+Name=Commander
+Comment=File Commander
+Icon=/usr/share/applications/commander.png
+```
