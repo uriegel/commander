@@ -53,12 +53,9 @@ static class Theme
         }
 
         static string GetGnomeTheme()
-            => Application.Dispatch(() => GObjectRef
-                .WithRef(GtkSettings.GetDefault())
-                .Use(Settings =>
-                    Settings
-                        .Value
-                        .GetString("gtk-theme-name")))
+            => Application.Dispatch(() => 
+                GtkSettings.GetDefault()
+                    .GetString("gtk-theme-name"))
                 .Result;
 
         return Platform.Value switch
@@ -74,19 +71,12 @@ static class Theme
 
         async void StartGnomeThemeDetection()
         {
-            try
-            {
-                await Application.Dispatch(() => 
-                    GtkSettings.GetDefault()
-                       .SignalConnect("notify::gtk-theme-name", () => 
+            await Application.Dispatch(() =>
+                GtkSettings.GetDefault()
+                    .SignalConnect("notify::gtk-theme-name", () =>
                         onChanged(GtkSettings.GetDefault()
-                                    .GetString("gtk-theme-name".GetThemeName()))
-                    ));
-            }
-            catch (Exception e)
-            {
-                Console.Error.WriteLine(e);
-            }
+                                        .GetString("gtk-theme-name")
+                                        .GetThemeName())));
         }
 
         if (Platform.Value == PlatformType.Kde)
