@@ -69,3 +69,5 @@ Name=Commander
 Comment=File Commander
 Icon=/usr/share/applications/commander.png
 ```
+
+```gsettings get org.gnome.shell favorite-apps```
