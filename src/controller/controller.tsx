@@ -32,6 +32,7 @@ export interface onEnterResult {
     processed: boolean
     pathToSet?: string
     latestPath?: string
+    mount?: boolean
 }
 
 export interface EnterData {

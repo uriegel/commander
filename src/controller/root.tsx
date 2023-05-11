@@ -62,7 +62,8 @@ const onWindowsEnter = async (enterData: EnterData) =>
 const onLinuxEnter = async (enterData: EnterData) => 
 ({
     processed: false, 
-    pathToSet: enterData.item.mountPoint || enterData.item.mountPoint!.length > 0 ? enterData.item.mountPoint : enterData.item.name
+    pathToSet: enterData.item.mountPoint || enterData.item.mountPoint!.length > 0 ? enterData.item.mountPoint : enterData.item.name,
+    mount: !enterData.item.mountPoint
 }) 
 
 export const getRootController = (controller: Controller | null): ControllerResult => 

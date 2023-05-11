@@ -159,8 +159,9 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             : columns
     }
 
-    const changePath = async (path: string, showHidden: boolean, latestPath?: string) => {
+    const changePath = async (path: string, showHidden: boolean, latestPath?: string, mount?: boolean) => {
         restrictionView.current?.reset()
+        // TODO mount == true ? take filesystem
         const result = checkController(path, controller.current)
         if (result.changed) {
             controller.current = result.controller
@@ -168,6 +169,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
         }
 
+        // TODO mount == true: 
         const items = await controller.current.getItems(path, showHidden, sortIndex.current, sortDescending.current)
         setPath(items.path)
         setItems(items.items)
@@ -185,7 +187,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const onEnter = async (item: FolderViewItem, keys: SpecialKeys) => {
         const result = await controller.current.onEnter({path, item, keys, dialog, refresh, selectedItems: getSelectedItems(), items})
         if (!result.processed && result.pathToSet) 
-            changePath(result.pathToSet, showHidden, result.latestPath)
+            changePath(result.pathToSet, showHidden, result.latestPath, result.mount)
     }
 
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setPath(e.target.value)
@@ -416,6 +418,7 @@ export default FolderView
 
 // TODO Propertes, Start File xdg-open
 // TODO Mount/unmount drives : udisksctl mount -b /dev/sdb7
+// TODO Viewer text in textedit with save option
 // TODO Take RenderRow in column
 // TODO remote createFolder
 // TODO remote delete files

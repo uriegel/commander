@@ -7,5 +7,6 @@
         ".flatpak": true,
         ".flatpak/**": true,
         "_build/**": true
-    }
+    },
+    "cmake.configureOnOpen": false
 }
