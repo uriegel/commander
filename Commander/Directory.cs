@@ -14,7 +14,10 @@ static partial class Directory
 {
     public static Task<GetFilesResult> GetFiles(GetFiles getFiles)
     {
-        var dirInfo = new DirectoryInfo(getFiles.Path);
+        var path = getFiles.Path;
+        if (getFiles.Mount == true)
+            path = Mount(getFiles.Path);
+        var dirInfo = new DirectoryInfo(path);
         var dirs =
             dirInfo
                 .GetDirectories()
@@ -259,7 +262,8 @@ record DirectoryItem(
 
 record GetFiles(
     string Path,
-    bool ShowHiddenItems
+    bool ShowHiddenItems,
+    bool? Mount
 );
 
 record GetFilesResult(

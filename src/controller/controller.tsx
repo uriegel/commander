@@ -49,7 +49,7 @@ export interface Controller {
     type: ControllerType
     id: string
     getColumns: ()=>TableColumns<FolderViewItem>
-    getItems: (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean) => Promise<GetItemResult>
+    getItems: (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean, mount?: boolean) => Promise<GetItemResult>
     getExtendedItems: (path: string, items: FolderViewItem[]) => Promise<GetExtendedItemsResult>
     setExtendedItems: (items: FolderViewItem[], extended: GetExtendedItemsResult)=>FolderViewItem[]
     onEnter: (data: EnterData) => Promise<onEnterResult>

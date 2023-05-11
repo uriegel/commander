@@ -96,7 +96,8 @@ type Exception = {
 
 type GetFilesType = {
     path:            string,
-    showHiddenItems: boolean
+    showHiddenItems: boolean,
+    mount?:          boolean
 }
 
 type GetExtendedItemsType = {

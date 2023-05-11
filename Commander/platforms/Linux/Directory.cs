@@ -10,6 +10,7 @@ using LinqTools;
 using static CsTools.Core;
 using CsTools;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 static partial class Directory
 {
@@ -70,6 +71,35 @@ static partial class Directory
             return new IOResult(null);
         })
             .Catch(MapExceptionToIOResult);
+
+    static string Mount(string path) 
+    {
+        var output = "";
+        using var proc = new Process()
+        {
+            StartInfo = new ProcessStartInfo()
+            {
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                FileName = "udisksctl",
+                CreateNoWindow = true,
+                Arguments = $"mount -b /dev/{path}",
+            },
+            EnableRaisingEvents = true
+        };
+        proc.OutputDataReceived += (s, e) =>
+        {
+            if (e.Data != null)
+                output = e.Data;
+        };
+        proc.ErrorDataReceived += (s, e) => Console.Error.WriteLine(e.Data);
+        proc.Start();
+        proc.BeginOutputReadLine();
+        proc.BeginErrorReadLine();
+        proc.EnableRaisingEvents = true;
+        proc.WaitForExit();
+        return output.SubstringAfter(" at ");
+    }
 
     static void CopyItem(string name, string path, string targetPath, Action<long, long> progress, bool move, CancellationToken cancellationToken) 
         => Copy(path.AppendPath(name), targetPath.AppendPath(name), FileCopyFlags.Overwrite,

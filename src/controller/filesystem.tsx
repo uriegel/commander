@@ -146,10 +146,11 @@ const getRowClasses = (item: FolderViewItem) =>
 		: []
 	
 
-const getItems = async (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean) => {
+const getItems = async (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean, mount?: boolean) => {
 	const res = await request<GetItemResult>("getfiles", {
 		path,
-		showHiddenItems: showHidden
+		showHiddenItems: showHidden,
+		mount
 	})
 	return { ...res, items: addParent(sortItems(res.items, getSortFunction(sortIndex, sortDescending))) }
 }

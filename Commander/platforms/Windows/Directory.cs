@@ -96,6 +96,8 @@ static partial class Directory
         })
             .ToTask();
 
+    static string Mount(string path) => "";
+
     static void CopyItem(string name, string path, string targetPath, Action<long, long> progress, bool move, CancellationToken cancellationToken)
         => Copy(path.AppendPath(name), targetPath.AppendPath(name), progress, move, cancellationToken);
 

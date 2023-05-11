@@ -161,7 +161,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const changePath = async (path: string, showHidden: boolean, latestPath?: string, mount?: boolean) => {
         restrictionView.current?.reset()
-        // TODO mount == true ? take filesystem
         const result = checkController(path, controller.current)
         if (result.changed) {
             controller.current = result.controller
@@ -169,8 +168,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
         }
 
-        // TODO mount == true: 
-        const items = await controller.current.getItems(path, showHidden, sortIndex.current, sortDescending.current)
+        const items = await controller.current.getItems(path, showHidden, sortIndex.current, sortDescending.current, mount)
         setPath(items.path)
         setItems(items.items)
         itemCount.current = { dirCount: items.dirCount, fileCount: items.fileCount }
@@ -417,8 +415,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 export default FolderView
 
 // TODO Propertes, Start File xdg-open
-// TODO Mount/unmount drives : udisksctl mount -b /dev/sdb7
 // TODO Viewer text in textedit with save option
+// TODO Favorites
 // TODO Take RenderRow in column
 // TODO remote createFolder
 // TODO remote delete files
