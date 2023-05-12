@@ -100,6 +100,33 @@ static partial class Directory
         proc.WaitForExit();
         return output.SubstringAfter(" at ");
     }
+    
+    static void OnEnter(string path, SpecialKeys? keys) 
+    {
+        var output = "";
+        using var proc = new Process()
+        {
+            StartInfo = new ProcessStartInfo()
+            {
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                FileName = "xdg-open",
+                Arguments = $"\"{path}\"",
+            },
+            EnableRaisingEvents = true
+        };
+        proc.OutputDataReceived += (s, e) =>
+        {
+            if (e.Data != null)
+                output = e.Data;
+        };
+        proc.ErrorDataReceived += (s, e) => Console.Error.WriteLine(e.Data);
+        proc.Start();
+        proc.BeginOutputReadLine();
+        proc.BeginErrorReadLine();
+        proc.EnableRaisingEvents = true;
+        proc.WaitForExit();
+    }
 
     static void CopyItem(string name, string path, string targetPath, Action<long, long> progress, bool move, CancellationToken cancellationToken) 
         => Copy(path.AppendPath(name), targetPath.AppendPath(name), FileCopyFlags.Overwrite,

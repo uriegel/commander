@@ -131,6 +131,11 @@ static partial class Directory
             => Move(input.Path.AppendPath("__RENAMING__" + item.NewName), input.Path.AppendPath(item.NewName));
     }
 
+    public static Task<IOResult> OnEnter(OnEnterParam input)
+        => (new IOResult(null))
+            .SideEffect(_ => OnEnter(input.Path, input.Keys))
+            .ToAsync();
+
     static bool UseRange(this string path)
         => path.EndsWith(".mp4", StringComparison.InvariantCultureIgnoreCase) 
         || path.EndsWith(".mp3", StringComparison.InvariantCultureIgnoreCase);
@@ -330,6 +335,11 @@ record CopyItemsParam(
     bool Move
 );
 
+record OnEnterParam(
+    string Path,
+    SpecialKeys? Keys
+);
+
 enum IOError {
     NoError,
     AccessDenied,
@@ -350,4 +360,10 @@ static class IOResultExtensions
 record CopyItemsResult(
     CopyItemInfo[]? Infos,
     IOError? Error
+);
+
+record SpecialKeys(
+    bool Alt,
+    bool Ctrl,
+    bool Shift
 );

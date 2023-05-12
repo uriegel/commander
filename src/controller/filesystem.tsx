@@ -1,4 +1,4 @@
-import { TableColumns } from "virtual-table-react"
+import { SpecialKeys, TableColumns } from "virtual-table-react"
 import { DialogHandle, Result } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
@@ -73,7 +73,7 @@ export const getFileSystemController = (controller: Controller|null): Controller
 		getExtendedItems,
 		setExtendedItems,
 		getItems,
-		onEnter: async ({path, item}) => 
+		onEnter: async ({path, item, keys}) => 
 			item.isParent && path.length > driveLength 
 			?  ({
 				processed: false, 
@@ -91,8 +91,7 @@ export const getFileSystemController = (controller: Controller|null): Controller
 				processed: false, 
 				pathToSet: path + '/' + item.name 
 			}) 
-					
-			: { processed: true },
+			: onFileEnter(path.appendPath(item.name), keys),
 		sort,
 		itemsSelectable: true,
 		appendPath: platform == Platform.Windows ? appendWindowsPath : appendLinuxPath,
@@ -103,7 +102,12 @@ export const getFileSystemController = (controller: Controller|null): Controller
 		onSelectionChanged: () => {}
 	}
 })
-	
+
+const onFileEnter = (path: string, keys?: SpecialKeys) => {
+	request("onenter", {path, keys})
+	return  ({ processed: true })
+}
+		
 export const createFileSystemController = (): Controller => ({
 	type: ControllerType.FileSystem, 
 	id: "file",

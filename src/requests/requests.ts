@@ -1,3 +1,4 @@
+import { SpecialKeys } from "virtual-table-react"
 import { FolderViewItem } from "../components/FolderView"
 
 export type Nothing = {}
@@ -70,7 +71,7 @@ type CopyItemsToRemote = "copyitemstoremote"
 type CancelCopy = "cancelCopy"
 type GetRemoteFiles = "getremotefiles"
 type RenameItems = "renameitems"
-
+type OnEnter= "onenter"
 
 type RequestType = 
 	| Close
@@ -89,6 +90,7 @@ type RequestType =
     | CancelCopy
     | GetRemoteFiles
     | RenameItems
+    | OnEnter
     
 type Exception = {
 	exception: string
@@ -119,6 +121,11 @@ type RenameItemData = {
 type RenameItemsType = {
     path:     string
     items:    RenameItemData[]
+}
+
+type OnEnterType = {
+    path: string
+    keys?: SpecialKeys
 }
 
 type CreateFolderType = {
@@ -165,6 +172,7 @@ export type RequestInput =
     | DeleteItemsType
     | CopyItemsType
     | RenameItemsType
+    | OnEnterType
 	
 export async function request<T extends Result>(method: RequestType, input?: RequestInput) {
  
