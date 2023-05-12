@@ -414,10 +414,12 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
+// TODO const int FileAttributeNormal =
 // TODO Propertes, Start File on Windows
 // TODO Viewer text in textedit with save option
 // TODO Favorites
 // TODO Take RenderRow in column
+// TODO remote copy dirs
 // TODO remote createFolder
 // TODO remote delete files
 // TODO remote rename file
