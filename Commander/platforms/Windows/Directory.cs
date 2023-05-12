@@ -117,6 +117,11 @@ static partial class Directory
             }, IntPtr.Zero, ref cancel, (CopyFileFlags)0);
     }
   
+    static void OnEnter(string path, SpecialKeys? keys) 
+    {
+        
+    }
+
     static IOError MapExceptionToIOError(Exception e)
         => e switch
         {
