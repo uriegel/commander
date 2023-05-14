@@ -119,7 +119,30 @@ static partial class Directory
   
     static void OnEnter(string path, SpecialKeys? keys) 
     {
-        
+        if (keys?.Alt == true) 
+        {
+            var info = new ShellExecuteInfo();
+            info.Size = Marshal.SizeOf(info);
+            info.Verb = "properties";
+            info.File = @"D:\DVD-Bearbeitung\ton.avi";
+            info.Show = ShowWindowFlag.Show;
+            info.Mask = (ShellExecuteFlag)0x10C;
+            var b = ShellExecuteEx(ref info);     
+            var errr = Marshal.GetLastWin32Error();
+            Thread.Sleep(1000);
+        }
+        else 
+        {
+            using var proc = new Process()
+            {
+                StartInfo = new ProcessStartInfo(path)
+                {
+                    UseShellExecute = true,
+                },
+            };
+                
+            proc.Start();        
+        }
     }
 
     static IOError MapExceptionToIOError(Exception e)

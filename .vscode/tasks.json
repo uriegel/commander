@@ -7,6 +7,10 @@
             "type": "npm",
             "script": "build",
         }, {
+            "label": "buildReact Windows",
+            "type": "npm",
+            "script": "build Windows",
+        }, {
             "label": "buildCs",
             "command": "dotnet",
             "type": "shell",
@@ -41,6 +45,11 @@
             "group": "build",
             "dependsOrder": "sequence",
             "dependsOn": ["buildReact", "buildCsRelease"]
+        }, {
+            "label": "buildRelease Windows",
+            "group": "build",
+            "dependsOrder": "sequence",
+            "dependsOn": ["buildReact Windows", "buildCsRelease"]
         }, {
             "label": "build",
             "group": "build",

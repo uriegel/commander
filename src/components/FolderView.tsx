@@ -414,8 +414,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO const int FileAttributeNormal =
-// TODO Propertes, Start File on Windows
 // TODO Viewer text in textedit with save option
 // TODO Favorites
 // TODO Take RenderRow in column
@@ -433,3 +431,6 @@ export default FolderView
 // TODO Check gtk webview: drop file/files/folder/folders sudo apt install libwebkit2gtk-4.0-dev
 // TODO https://stackoverflow.com/questions/71581401/drag-a-file-from-my-gtk-app-to-another-app-not-the-other-way-around
 // TODO Image rotation: Changeset 4.12.2022
+// TODO const int FileAttributeNormal =
+// TODO Propertes
+// TODO alt menu keyup
