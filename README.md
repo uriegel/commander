@@ -56,7 +56,7 @@ either with .NET included or not: `SelfContained` = true or false in `commander.
 
 ## Install as launcher on Linux:
 
-
+Copy commander.desktop (or the contained adapted version) to /usr/share/applications.
 
 ```
 #!/usr/bin/env xdg-open
