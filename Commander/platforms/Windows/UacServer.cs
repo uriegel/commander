@@ -54,6 +54,8 @@ static class UacServer
     static Func<WebApplication, WebApplication>[] RequestDelegates = Array.Empty<Func<WebApplication, WebApplication>>();            
 }
 
+// TODO replace Run() with Start()
+// TODO when started call httpRequest waitOnExit
 // TODO
 /*
 let init () = 
