@@ -53,3 +53,29 @@ static class UacServer
 
     static Func<WebApplication, WebApplication>[] RequestDelegates = Array.Empty<Func<WebApplication, WebApplication>>();            
 }
+
+// TODO
+/*
+let init () = 
+    let startAsAdmin () = 
+        let exe = Assembly.GetEntryAssembly().Location.Replace(".dll", ".exe")
+        let info = new ProcessStartInfo (exe)
+        info.Arguments <- "-adminMode"
+        info.Verb <- "runas"
+        info.UseShellExecute <- true
+        let proc = new Process ()
+        proc.StartInfo <- info 
+        try 
+            proc.Start () |> ignore
+        with
+        | _ -> ()
+ 
+    let args = Environment.GetCommandLineArgs ()
+    match args.Length > 1 && args[1] = "-adminMode" with
+    | true  -> 
+        (20001, false)
+    | false -> 
+        if MessageBox(IntPtr.Zero, "Möchtest Du auch Aktionen mit Administratorrechten ausführen?\n\nEs erscheinen immer Admin-Abfragen bei Bedarf", "Commander", 0x21u) = 1 then
+            startAsAdmin ()
+        (20000, true)
+*/
