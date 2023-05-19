@@ -46,9 +46,7 @@ static class UacServer
                     .ConfigureKestrel(options => options.ListenLocalhost(21000))
                     .ConfigureServices(services =>
                         services
-#if DEBUG                                
                             .AddCors()
-#endif                            
                             .AddResponseCompression())
                     .ConfigureLogging(builder =>
                         builder
@@ -57,13 +55,11 @@ static class UacServer
                             .AddDebug()))
             .Build()
             .WithResponseCompression()
-#if DEBUG                                            
             .WithCors(builder =>
                 builder
                     .WithOrigins("http://localhost:20000")
                     .AllowAnyHeader()
                     .AllowAnyMethod())
-#endif                                        
             .WithRouting()
             .JsonPost<DeleteItemsParam, IOResult>("commander/deleteitems", Directory.DeleteItems)
             .With(RequestDelegates)
