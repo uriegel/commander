@@ -1,5 +1,6 @@
 import { SpecialKeys } from "virtual-table-react"
 import { FolderViewItem } from "../components/FolderView"
+import { Platform, getPlatform } from "../globals"
 
 export type Nothing = {}
 
@@ -186,7 +187,30 @@ export async function request<T extends Result>(method: RequestType, input?: Req
     const res = await response.json() as T
     if ((res as Exception).exception)
         throw ((res as Exception).exception)
+    else if ((res as IOErrorResult).error == IOError.AccessDenied && getPlatform() == Platform.Windows) 
+        return await requestElevated<T>(method, input)
     else 
         return res
+}
+
+async function requestElevated<T extends Result>(method: RequestType, input?: RequestInput) {
+ 
+    const msg = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input || {})
     }
 
+    let response
+    try {
+        response = await fetch(`http://localhost:21000/commander/${method}`, msg) 
+    } catch (e) {
+        // TODO Startelevated request, then call fetch again
+        response = await fetch(`http://localhost:21000/commander/${method}`, msg) 
+    }
+    const res = await response?.json() as T
+    if ((res as Exception).exception)
+        throw ((res as Exception).exception)
+    else 
+        return res
+}
