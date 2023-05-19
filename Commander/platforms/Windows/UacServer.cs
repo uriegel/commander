@@ -5,10 +5,23 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using LinqTools;
 using Microsoft.AspNetCore.Http;
+using CsTools.HttpRequest;
+
+using static CsTools.HttpRequest.Core;
 
 static class UacServer
 {
-    public static void Run()
+    public static async Task Run()
+    {
+        await Start();
+        await Request.GetStringAsync(DefaultSettings with
+        {
+            BaseUrl = $"http://localhost:20000",
+            Url = "/commander/waitonexit",
+        });
+    }
+
+    static Task Start()
         => WebApplication
             .CreateBuilder()
             .ConfigureWebHost(webHostBuilder => 
@@ -37,7 +50,7 @@ static class UacServer
             .WithRouting()
             .JsonPost<DeleteItemsParam, IOResult>("commander/deleteitems", Directory.DeleteItems)
             .With(RequestDelegates)
-            .Run();
+            .StartAsync();
 
     static WebApplication JsonPost<T, TResult>(this WebApplication app, string path, Func<T, Task<TResult>> onRequest)
         => app.SideEffect(n => 
@@ -51,11 +64,9 @@ static class UacServer
                             .ToArray());
 
 
-    static Func<WebApplication, WebApplication>[] RequestDelegates = Array.Empty<Func<WebApplication, WebApplication>>();            
+    static Func<WebApplication, WebApplication>[] RequestDelegates = Array.Empty<Func<WebApplication, WebApplication>>();
 }
 
-// TODO replace Run() with Start()
-// TODO when started call httpRequest waitOnExit
 // TODO
 /*
 let init () = 
