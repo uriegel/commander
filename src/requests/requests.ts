@@ -205,7 +205,8 @@ async function requestElevated<T extends Result>(method: RequestType, input?: Re
     try {
         response = await fetch(`http://localhost:21000/commander/${method}`, msg) 
     } catch (e) {
-        // TODO Startelevated request, then call fetch again
+        await fetch(`http://localhost:20000/commander/startelevated`) 
+        alert("OK")
         response = await fetch(`http://localhost:21000/commander/${method}`, msg) 
     }
     const res = await response?.json() as T

@@ -43,6 +43,9 @@ static class Window
             .JsonPost<RenameItemsParam, IOResult>("commander/renameitems", Directory.RenameItems)
             .JsonPost<OnEnterParam, IOResult>("commander/onenter", Directory.OnEnter)
             .MapGet("commander/waitonexit", WaitOnExit)
+#if Windows            
+            .MapGet("commander/startelevated", UacServer.StartElevated)
+#endif            
             .Build())
 #if DEBUG            
         .DebuggingEnabled()
@@ -62,7 +65,6 @@ static class Window
 		await waitOnExit.Task;
         await context.Response.WriteAsJsonAsync<Empty>(new());
     }
-        
 
     static TaskCompletionSource<Empty> waitOnExit = new();
 }
