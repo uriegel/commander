@@ -215,7 +215,6 @@ async function requestElevated<T extends Result>(method: RequestType, input: Req
                 text: "Diese Aktion als Administrator ausführen?",
                 btnOk: true,
                 btnCancel: true,
-                // TODO defBtnCancel
                 defBtnCancel: true
             })).result == DialogResult.Ok
         : await startElevated()
