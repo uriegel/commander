@@ -257,21 +257,29 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 evt.stopPropagation()
                 break
             case "Escape":
-                if (controller.current.itemsSelectable) 
-                    setItems(items.map((n) => setSelection(n, false)))
-                controller.current.onSelectionChanged(items)                    
-                break
+                if (!checkRestricted(evt.key)) {
+                    if (controller.current.itemsSelectable) 
+                        setItems(items.map((n) => setSelection(n, false)))
+                    controller.current.onSelectionChanged(items)                    
+                }
+                break                
             case "Delete":
                 await deleteItems()
                 break
             default:
-                const restrictedItems = restrictionView.current?.checkKey(evt.key)
-                if (restrictedItems) {
-                    virtualTable.current?.setPosition(0)
-                    setItems(restrictedItems)
-                }
+                checkRestricted(evt.key)
                 break
         }
+    }
+
+    const checkRestricted = (key: string) => {
+        const restrictedItems = restrictionView.current?.checkKey(key)
+        if (restrictedItems) {
+            virtualTable.current?.setPosition(0)
+            setItems(restrictedItems)
+            return true
+        } else
+            return false
     }
 
     const onFocusChanged = useCallback(() => {
@@ -414,6 +422,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
+// TODO DefBtnCancel
 // TODO Viewer text in textedit with save option
 // TODO Favorites
 // TODO Take RenderRow in column

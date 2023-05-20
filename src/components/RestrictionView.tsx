@@ -21,10 +21,10 @@ const RestrictionView = forwardRef<RestrictionViewHandle, RestrictionViewProps>(
         checkKey(code: string) {
             const test =
                 code == "Backspace"
-                    ? restriction.length > 0 ? restriction.substring(0, restriction.length - 1) : ""
-                    : code == "Escape"
-                        ? ""
-                        : restriction + code
+                ? restriction.length > 0 ? restriction.substring(0, restriction.length - 1) : ""
+                : code == "Escape"
+                ? ""
+                : restriction + code
 
             if (test.length > 0) {
                 const itemsToCheck = refItems.current ?? items
