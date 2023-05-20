@@ -56,6 +56,7 @@ static class UacServer
             .WithRouting()
             .JsonPost<DeleteItemsParam, IOResult>("commander/deleteitems", Directory.DeleteItems)
             .JsonPost<CreateFolderParam, IOResult>("commander/createfolder", Directory.CreateFolder)
+            .JsonPost<RenameItemParam, IOResult>("commander/renameitem", Directory.RenameItem)
             .With(RequestDelegates)
             .StartAsync();
 

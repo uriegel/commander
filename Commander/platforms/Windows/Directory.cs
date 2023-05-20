@@ -148,8 +148,9 @@ static partial class Directory
     static IOError MapExceptionToIOError(Exception e)
         => e switch
         {
-            UnauthorizedAccessException ue => IOError.AccessDenied,
-            _                              => IOError.Exn
+            IOException ioe when ioe.HResult == -2147024891 => IOError.AccessDenied,
+            UnauthorizedAccessException ue                  => IOError.AccessDenied,
+            _                                               => IOError.Exn
         };
 
     // TODO

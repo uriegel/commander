@@ -244,7 +244,7 @@ const rename = async (path: string, item: FolderViewItem, dialog: DialogHandle|n
 				path,
 				name: item.name,
 				newName:  result.input ?? ""
-			})).error ?? null
+			}, dialog)).error ?? null
 		: null
 }
 
