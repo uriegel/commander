@@ -6,36 +6,29 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
 using LinqTools;
 using Microsoft.AspNetCore.Http;
-using CsTools.HttpRequest;
-
-using static CsTools.HttpRequest.Core;
 
 static class UacServer
 {
-    public static async Task Run()
+    public static async Task Run(int commanderId)
     {
         await Start();
-        await Request.GetStringAsync(DefaultSettings with
-        {
-            BaseUrl = $"http://localhost:20000",
-            Url = "/commander/waitonexit",
-        });
+        await Process.GetProcessById(commanderId).WaitForExitAsync();
     }
 
     public static async Task StartElevated(HttpContext context)
 	{
         var exe = Process.GetCurrentProcess()?.MainModule?.FileName;
-        new Process()
+        var ok = new Process()
         {
             StartInfo = new ProcessStartInfo(exe!)
             {
-                Arguments = "-adminMode",
+                Arguments = $"-adminMode {Process.GetCurrentProcess().Id}",
                 Verb = "runas",
                 UseShellExecute = true
             }
         }.Start();
       
-        await context.Response.WriteAsJsonAsync<Empty>(new());
+        await context.Response.WriteAsJsonAsync<StartElevatedResult>(new(ok));
     }
 
     static Task Start()
@@ -62,6 +55,7 @@ static class UacServer
                     .AllowAnyMethod())
             .WithRouting()
             .JsonPost<DeleteItemsParam, IOResult>("commander/deleteitems", Directory.DeleteItems)
+            .JsonPost<CreateFolderParam, IOResult>("commander/createfolder", Directory.CreateFolder)
             .With(RequestDelegates)
             .StartAsync();
 
@@ -76,7 +70,7 @@ static class UacServer
                             }))
                             .ToArray());
 
-
     static Func<WebApplication, WebApplication>[] RequestDelegates = Array.Empty<Func<WebApplication, WebApplication>>();
 }
 
+record StartElevatedResult(bool Ok);

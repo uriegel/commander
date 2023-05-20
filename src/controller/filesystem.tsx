@@ -260,7 +260,7 @@ const createFolder = async (path: string, item: FolderViewItem, dialog: DialogHa
 		? (await request<IOErrorResult>("createfolder", {
 				path,
 				name: result.input ?? "",
-			})).error ?? null
+			}, dialog)).error ?? null
 		: null
 }
 
@@ -305,7 +305,7 @@ const deleteItems = async (path: string, items: FolderViewItem[], dialog: Dialog
 	 	? (await request<IOErrorResult>("deleteitems", {
 	 			path,
 	 			names: items.map(n => n.name),
-	 		})).error ?? null
+	 		}, dialog)).error ?? null
 	 	: null
 }
 

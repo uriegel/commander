@@ -1,6 +1,5 @@
 using LinqTools;
 using WebWindowNetCore;
-using Microsoft.AspNetCore.Http;
 #if Linux
 using GtkDotNet;
 #endif
@@ -42,7 +41,6 @@ static class Window
             .JsonPost<GetFiles, GetFilesResult>("commander/getremotefiles", Remote.GetFiles)
             .JsonPost<RenameItemsParam, IOResult>("commander/renameitems", Directory.RenameItems)
             .JsonPost<OnEnterParam, IOResult>("commander/onenter", Directory.OnEnter)
-            .MapGet("commander/waitonexit", WaitOnExit)
 #if Windows            
             .MapGet("commander/startelevated", UacServer.StartElevated)
 #endif            
@@ -54,19 +52,10 @@ static class Window
         .Run("de.uriegel.Commander")
         .SideEffect(_ =>
         {
-            waitOnExit.TrySetResult(new());
 #if Linux
             Application.Stop();
 #endif
         });
-
-    static async Task WaitOnExit(HttpContext context)
-	{
-		await waitOnExit.Task;
-        await context.Response.WriteAsJsonAsync<Empty>(new());
-    }
-
-    static TaskCompletionSource<Empty> waitOnExit = new();
 }
 
 record Empty();

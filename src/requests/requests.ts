@@ -1,6 +1,7 @@
 import { SpecialKeys } from "virtual-table-react"
 import { FolderViewItem } from "../components/FolderView"
 import { Platform, getPlatform } from "../globals"
+import { DialogHandle, Result as DialogResult } from 'web-dialog-react'
 
 export type Nothing = {}
 
@@ -175,7 +176,7 @@ export type RequestInput =
     | RenameItemsType
     | OnEnterType
 	
-export async function request<T extends Result>(method: RequestType, input?: RequestInput) {
+export async function request<T extends Result>(method: RequestType, input?: RequestInput, dialog?: DialogHandle|null) {
  
     const msg = {
         method: 'POST',
@@ -187,19 +188,48 @@ export async function request<T extends Result>(method: RequestType, input?: Req
     const res = await response.json() as T
     if ((res as Exception).exception)
         throw ((res as Exception).exception)
-    else if ((res as IOErrorResult).error == IOError.AccessDenied && getPlatform() == Platform.Windows) 
-        return await requestElevated<T>(method, input)
+    else if (dialog && input && (res as IOErrorResult).error == IOError.AccessDenied && getPlatform() == Platform.Windows) 
+        return await requestElevated<T>(method, input, dialog)
     else 
         return res
 }
 
-async function requestElevated<T extends Result>(method: RequestType, input?: RequestInput) {
- 
+type StartElevated = {
+    ok: boolean
+}
+
+
+async function requestElevated<T extends Result>(method: RequestType, input: RequestInput, dialog: DialogHandle) {
+
+    const startElevated = async () => {
+        const res = await fetch(`http://localhost:20000/commander/startelevated`) 
+        const ok = await res.json() as StartElevated
+        elevatedStarted = ok.ok
+        return ok.ok
+    }
+
+    // TODO copy, move with progress
+    // TODO rename
+    var withElevation = elevatedStarted
+        ? (await dialog.show({
+                text: "Diese Aktion als Administrator ausführen?",
+                btnOk: true,
+                btnCancel: true,
+                // TODO defBtnCancel
+                defBtnCancel: true
+            })).result == DialogResult.Ok
+        : await startElevated()
+
     const msg = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input || {})
     }
+
+    if (!withElevation)
+        return {
+            error: IOError.AccessDenied
+        } as T
 
     let response
     try {
@@ -214,3 +244,5 @@ async function requestElevated<T extends Result>(method: RequestType, input?: Re
     else 
         return res
 }
+
+var elevatedStarted = false
