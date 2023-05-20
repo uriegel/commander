@@ -1,3 +1,4 @@
+import { DialogHandle } from "web-dialog-react"
 import { CopyItem, CopyItemsResult, IOErrorResult, request } from "../../requests/requests"
 
 export const copyInfo = async (sourcePath: string, targetPath: string, items: CopyItem[]) => {
@@ -9,11 +10,11 @@ export const copyInfo = async (sourcePath: string, targetPath: string, items: Co
     })
 }
 
-export const copy = async (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean) => {
+export const copy = async (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean, dialog?: DialogHandle|null) => {
     return await request<IOErrorResult>("copyitems", {
         path: sourcePath,
         targetPath: targetPath,
         items,
         move
-    })
+    }, dialog)
 }

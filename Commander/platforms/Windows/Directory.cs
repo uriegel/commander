@@ -105,16 +105,26 @@ static partial class Directory
     {
         var cancel = 0;
         cancellationToken.Register(() => cancel = -1);
-        if (move)
-            Api.MoveFileWithProgress(source, target, (total, current, c, d, e, f, g, h, i) => {
+        if (move) {
+            if (!Api.MoveFileWithProgress(source, target, (total, current, c, d, e, f, g, h, i) => {
                 progress(current, total);
                 return CopyProgressResult.Continue;
-            }, IntPtr.Zero, MoveFileFlags.CopyAllowed);
-        else
-            Api.CopyFileEx(source, target, (total, current, c, d, e, f, g, h, i) => {
+            }, IntPtr.Zero, MoveFileFlags.CopyAllowed)) {
+                var error = Marshal.GetLastWin32Error();
+                if (error == 5)
+                    throw new UnauthorizedAccessException();
+            }
+        }
+        else {
+            if (!Api.CopyFileEx(source, target, (total, current, c, d, e, f, g, h, i) => {
                 progress(current, total);
                 return CopyProgressResult.Continue;
-            }, IntPtr.Zero, ref cancel, (CopyFileFlags)0);
+            }, IntPtr.Zero, ref cancel, (CopyFileFlags)0)) {
+                var error = Marshal.GetLastWin32Error();
+                if (error == 5)
+                    throw new UnauthorizedAccessException();
+            }
+        }
     }
   
     static void OnEnter(string path, SpecialKeys? keys) 

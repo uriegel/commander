@@ -40,10 +40,10 @@ export const getCopyController = (move: boolean, dialog: DialogHandle | null, fr
     : null
 }
 
-const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, fromLeft: boolean, fromController: Controller, toController: Controller,
+const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|undefined, fromLeft: boolean, fromController: Controller, toController: Controller,
             sourcePath: string, targetPath: string, items: FolderViewItem[], targetItems: FolderViewItem[],
             copyInfo: (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean)=>Promise<CopyItemsResult>,
-            copy: (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean)=>Promise<IOErrorResult>): CopyController | null => ({
+            copy: (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean, dialog?: DialogHandle|null)=>Promise<IOErrorResult>): CopyController | null => ({
         copy: async () => {
             if (!items || !targetItems || items.length == 0)
                 return null
@@ -163,7 +163,7 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null, f
                         conflictItems.map(n => ({ name: n.name, size: n.size, time: n.time, subPath: n.subPath || undefined })),
                         itemsToCopy)
                 
-                const ioResult = await copy(sourcePath!, targetPath!, copyItems, move)
+                const ioResult = await copy(sourcePath!, targetPath!, copyItems, move, dialog)
                 clearTimeout(timeout)
                 dialog?.close()
                 return ioResult.error != undefined ? ioResult.error : null
