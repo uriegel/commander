@@ -143,6 +143,7 @@ static partial class Directory
     static IOError MapExceptionToIOError(Exception e)
         => e switch
         {
+            IOException ioe when ioe.HResult == 13             => IOError.AccessDenied,
             UnauthorizedAccessException ue                     => IOError.AccessDenied,
             GtkDotNet.GErrorException gee  when gee.Code ==  1 => IOError.FileNotFound, 
             GtkDotNet.GErrorException gee  when gee.Code == 14 => IOError.AccessDenied,
