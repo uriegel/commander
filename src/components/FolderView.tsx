@@ -422,7 +422,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO DefBtnCancel
 // TODO Viewer text in textedit with save option
 // TODO Favorites
 // TODO Take RenderRow in column
