@@ -14,7 +14,7 @@ type CommanderEvent = {
 }
 
 const toCommanderEvent = (event: MessageEvent) => 
-JSON.parse(event.data) as CommanderEvent
+    JSON.parse(event.data) as CommanderEvent
 
 const source = new EventSource("http://localhost:20000/commander/sse")
 let commanderEvents = fromEvent<MessageEvent>(source, 'message')
@@ -31,6 +31,16 @@ export const progressChangedEvents = new BehaviorSubject<CopyProgress>({
     totalBytes: 0,
     currentBytes: 0
 })
+
+export const startUacEvents = () => {
+    const source = new EventSource("http://localhost:21000/commander/sse")
+    const commanderEvents = fromEvent<MessageEvent>(source, 'message')
+        .pipe(map(toCommanderEvent))
+    commanderEvents
+        .pipe(filter(n => n.copyProgress != undefined))
+        .pipe(map(n => n.copyProgress!))
+        .subscribe(progressChangedEvents)
+}
 
 commanderEvents
     .pipe(filter(n => n.copyProgress != undefined))

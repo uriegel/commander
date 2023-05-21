@@ -54,6 +54,7 @@ static class UacServer
                     .AllowAnyHeader()
                     .AllowAnyMethod())
             .WithRouting()
+            .UseSse("commander/sse", Events.Source)
             .JsonPost<DeleteItemsParam, IOResult>("commander/deleteitems", Directory.DeleteItems)
             .JsonPost<CreateFolderParam, IOResult>("commander/createfolder", Directory.CreateFolder)
             .JsonPost<RenameItemParam, IOResult>("commander/renameitem", Directory.RenameItem)
@@ -70,6 +71,13 @@ static class UacServer
                                 var param = await context.Request.ReadFromJsonAsync<T>();
                                 await context.Response.WriteAsJsonAsync<TResult>(await onRequest(param!));
                             }))
+                            .ToArray());
+
+    static WebApplication UseSse<T>(this WebApplication app, string path, SseEventSource<T> sseEventSource)
+        => app.SideEffect(n => 
+                RequestDelegates = RequestDelegates.Append(
+                    (WebApplication app) =>
+                        app.WithMapGet(path, (HttpContext context) => new Sse<T>(sseEventSource.Subject).Start(context)))
                             .ToArray());
 
     static Func<WebApplication, WebApplication>[] RequestDelegates = Array.Empty<Func<WebApplication, WebApplication>>();

@@ -2,6 +2,7 @@ import { SpecialKeys } from "virtual-table-react"
 import { FolderViewItem } from "../components/FolderView"
 import { Platform, getPlatform } from "../globals"
 import { DialogHandle, Result as DialogResult } from 'web-dialog-react'
+import { startUacEvents } from "./events"
 
 export type Nothing = {}
 
@@ -205,10 +206,15 @@ async function requestElevated<T extends Result>(method: RequestType, input: Req
         const res = await fetch(`http://localhost:20000/commander/startelevated`) 
         const ok = await res.json() as StartElevated
         elevatedStarted = ok.ok
+        if (elevatedStarted)
+            startUacEvents()
         return ok.ok
     }
 
-    // TODO copy, move with progress
+    // TODO copy, move with progress only one time!
+    // TODO Dialog after 1000 ms, at the same time uac dialog is being shown!!!
+    // TODO Callback in request and copy, when copying starts
+    // TODO Wait until copying starts, then start timer
     var withElevation = elevatedStarted
         ? (await dialog.show({
                 text: "Diese Aktion als Administrator ausführen?",
@@ -233,7 +239,7 @@ async function requestElevated<T extends Result>(method: RequestType, input: Req
     try {
         response = await fetch(`http://localhost:21000/commander/${method}`, msg) 
     } catch (e) {
-        await fetch(`http://localhost:20000/commander/startelevated`) 
+        await startElevated()
         response = await fetch(`http://localhost:21000/commander/${method}`, msg) 
     }
     const res = await response?.json() as T
