@@ -209,7 +209,6 @@ async function requestElevated<T extends Result>(method: RequestType, input: Req
     }
 
     // TODO copy, move with progress
-    // TODO rename
     var withElevation = elevatedStarted
         ? (await dialog.show({
                 text: "Diese Aktion als Administrator ausführen?",

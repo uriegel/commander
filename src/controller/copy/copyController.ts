@@ -143,16 +143,16 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|un
             })
             if (result?.result != Result.Cancel) {
 
-                const timeout = setTimeout(async () => {
-                    const res = await dialog?.show({
-                        text: `Fortschritt beim ${move ? "Verschieben" : "Kopieren"}`,
-                        slide: fromLeft ? Slide.Left : Slide.Right,
-                        extension: CopyProgress,
-                        btnCancel: true
-                    })
-                    if (res?.result == Result.Cancel)
-                        await request("cancelCopy", {})        
-                }, 1000)
+                // const timeout = setTimeout(async () => {
+                //     const res = await dialog?.show({
+                //         text: `Fortschritt beim ${move ? "Verschieben" : "Kopieren"}`,
+                //         slide: fromLeft ? Slide.Left : Slide.Right,
+                //         extension: CopyProgress,
+                //         btnCancel: true
+                //     })
+                //     if (res?.result == Result.Cancel)
+                //         await request("cancelCopy", {})        
+                // }, 1000)
                 const itemsToCopy = fileItems
                     .map(n => ({ name: n.name, size: n.size, time: n.time, subPath: undefined }) as CopyItem)
                     .concat((res.infos?? []).map(n => ({ name: n.name, size: n.size, time: n.time, subPath: n.subPath || undefined })))
@@ -164,7 +164,7 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|un
                         itemsToCopy)
                 
                 const ioResult = await copy(sourcePath!, targetPath!, copyItems, move, dialog)
-                clearTimeout(timeout)
+//                clearTimeout(timeout)
                 dialog?.close()
                 return ioResult.error != undefined ? ioResult.error : null
             }

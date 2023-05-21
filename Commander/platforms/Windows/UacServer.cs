@@ -57,6 +57,7 @@ static class UacServer
             .JsonPost<DeleteItemsParam, IOResult>("commander/deleteitems", Directory.DeleteItems)
             .JsonPost<CreateFolderParam, IOResult>("commander/createfolder", Directory.CreateFolder)
             .JsonPost<RenameItemParam, IOResult>("commander/renameitem", Directory.RenameItem)
+            .JsonPost<CopyItemsParam, IOResult>("commander/copyitems", Directory.CopyItems)
             .With(RequestDelegates)
             .StartAsync();
 
