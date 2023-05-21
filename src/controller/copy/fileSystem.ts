@@ -10,11 +10,11 @@ export const copyInfo = async (sourcePath: string, targetPath: string, items: Co
     })
 }
 
-export const copy = async (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean, dialog?: DialogHandle|null) => {
+export const copy = async (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean, uacShown?: (uac: boolean)=>void, dialog?: DialogHandle|null) => {
     return await request<IOErrorResult>("copyitems", {
         path: sourcePath,
         targetPath: targetPath,
         items,
         move
-    }, dialog)
+    }, dialog, uacShown)
 }

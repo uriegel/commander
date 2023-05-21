@@ -43,7 +43,7 @@ export const getCopyController = (move: boolean, dialog: DialogHandle | null, fr
 const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|undefined, fromLeft: boolean, fromController: Controller, toController: Controller,
             sourcePath: string, targetPath: string, items: FolderViewItem[], targetItems: FolderViewItem[],
             copyInfo: (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean)=>Promise<CopyItemsResult>,
-            copy: (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean, dialog?: DialogHandle|null)=>Promise<IOErrorResult>): CopyController | null => ({
+            copy: (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean, uacShown?: (uac: boolean)=>void, dialog?: DialogHandle|null)=>Promise<IOErrorResult>): CopyController | null => ({
         copy: async () => {
             if (!items || !targetItems || items.length == 0)
                 return null
@@ -143,16 +143,20 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|un
             })
             if (result?.result != Result.Cancel) {
 
-                const timeout = setTimeout(async () => {
-                    const res = await dialog?.show({
-                        text: `Fortschritt beim ${move ? "Verschieben" : "Kopieren"}`,
-                        slide: fromLeft ? Slide.Left : Slide.Right,
-                        extension: CopyProgress,
-                        btnCancel: true
-                    })
-                    if (res?.result == Result.Cancel)
-                        await request("cancelCopy", {})        
-                }, 1000)
+                const startProgressDialog = () => 
+                    setTimeout(async () => {
+                        const res = await dialog?.show({
+                            text: `Fortschritt beim ${move ? "Verschieben" : "Kopieren"}`,
+                            slide: fromLeft ? Slide.Left : Slide.Right,
+                            extension: CopyProgress,
+                            btnCancel: true
+                        })
+                        if (res?.result == Result.Cancel)
+                            await request("cancelCopy", {})        
+                    }, 1000)                    
+
+                let timeout = startProgressDialog()
+
                 const itemsToCopy = fileItems
                     .map(n => ({ name: n.name, size: n.size, time: n.time, subPath: undefined }) as CopyItem)
                     .concat((res.infos?? []).map(n => ({ name: n.name, size: n.size, time: n.time, subPath: n.subPath || undefined })))
@@ -163,7 +167,12 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|un
                         conflictItems.map(n => ({ name: n.name, size: n.size, time: n.time, subPath: n.subPath || undefined })),
                         itemsToCopy)
                 
-                const ioResult = await copy(sourcePath!, targetPath!, copyItems, move, dialog)
+                const ioResult = await copy(sourcePath!, targetPath!, copyItems, move, (uac: boolean) => {
+                    if (uac)
+                        clearTimeout(timeout)        
+                    else
+                        timeout = startProgressDialog()
+                }, dialog)
                 clearTimeout(timeout)
                 dialog?.close()
                 return ioResult.error != undefined ? ioResult.error : null

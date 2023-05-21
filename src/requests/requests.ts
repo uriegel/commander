@@ -177,7 +177,7 @@ export type RequestInput =
     | RenameItemsType
     | OnEnterType
 	
-export async function request<T extends Result>(method: RequestType, input?: RequestInput, dialog?: DialogHandle|null) {
+export async function request<T extends Result>(method: RequestType, input?: RequestInput, dialog?: DialogHandle|null, uacShown?: (uac: boolean)=>void) {
  
     const msg = {
         method: 'POST',
@@ -190,7 +190,7 @@ export async function request<T extends Result>(method: RequestType, input?: Req
     if ((res as Exception).exception)
         throw ((res as Exception).exception)
     else if (dialog && input && (res as IOErrorResult).error == IOError.AccessDenied && getPlatform() == Platform.Windows) 
-        return await requestElevated<T>(method, input, dialog)
+        return await requestElevated<T>(method, input, dialog, uacShown)
     else 
         return res
 }
@@ -200,7 +200,7 @@ type StartElevated = {
 }
 
 
-async function requestElevated<T extends Result>(method: RequestType, input: RequestInput, dialog: DialogHandle) {
+async function requestElevated<T extends Result>(method: RequestType, input: RequestInput, dialog: DialogHandle, uacShown?: (uac: boolean)=>void) {
 
     const startElevated = async () => {
         const res = await fetch(`http://localhost:20000/commander/startelevated`) 
@@ -211,10 +211,11 @@ async function requestElevated<T extends Result>(method: RequestType, input: Req
         return ok.ok
     }
 
+    if (uacShown)
+        uacShown(true)
+
     // TODO copy, move with progress only one time!
-    // TODO Dialog after 1000 ms, at the same time uac dialog is being shown!!!
-    // TODO Callback in request and copy, when copying starts
-    // TODO Wait until copying starts, then start timer
+    // TODO copy, move cancel action
     var withElevation = elevatedStarted
         ? (await dialog.show({
                 text: "Diese Aktion als Administrator ausführen?",
@@ -223,6 +224,9 @@ async function requestElevated<T extends Result>(method: RequestType, input: Req
                 defBtnCancel: true
             })).result == DialogResult.Ok
         : await startElevated()
+    
+    if (uacShown)
+        uacShown(false)
 
     const msg = {
         method: 'POST',
@@ -239,7 +243,11 @@ async function requestElevated<T extends Result>(method: RequestType, input: Req
     try {
         response = await fetch(`http://localhost:21000/commander/${method}`, msg) 
     } catch (e) {
+        if (uacShown)
+            uacShown(true)
         await startElevated()
+        if (uacShown)
+            uacShown(false)
         response = await fetch(`http://localhost:21000/commander/${method}`, msg) 
     }
     const res = await response?.json() as T
