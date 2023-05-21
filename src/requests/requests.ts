@@ -186,6 +186,10 @@ export async function request<T extends Result>(method: RequestType, input?: Req
     }
 
     const response = await fetch(`http://localhost:20000/commander/${method}`, msg) 
+
+    if (elevatedStarted && method == "cancelCopy")
+        await fetch(`http://localhost:21000/commander/${method}`, msg) 
+
     const res = await response.json() as T
     if ((res as Exception).exception)
         throw ((res as Exception).exception)
@@ -214,8 +218,6 @@ async function requestElevated<T extends Result>(method: RequestType, input: Req
     if (uacShown)
         uacShown(true)
 
-    // TODO copy, move with progress only one time!
-    // TODO copy, move cancel action
     var withElevation = elevatedStarted
         ? (await dialog.show({
                 text: "Diese Aktion als Administrator ausführen?",

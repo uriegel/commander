@@ -422,8 +422,11 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO Viewer text in textedit with save option
+// TODO History with backspace
 // TODO Favorites
+// TODO Windows append home drive to root
+// TODO Arrow left and right in web-dialog button bar
+// TODO Viewer text in textedit with save option
 // TODO Take RenderRow in column
 // TODO remote copy dirs
 // TODO remote createFolder

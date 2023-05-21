@@ -143,8 +143,10 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|un
             })
             if (result?.result != Result.Cancel) {
 
-                const startProgressDialog = () => 
-                    setTimeout(async () => {
+                let timeout: NodeJS.Timeout
+
+                const startProgressDialog = () => {
+                    timeout = setTimeout(async () => {
                         const res = await dialog?.show({
                             text: `Fortschritt beim ${move ? "Verschieben" : "Kopieren"}`,
                             slide: fromLeft ? Slide.Left : Slide.Right,
@@ -154,8 +156,15 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|un
                         if (res?.result == Result.Cancel)
                             await request("cancelCopy", {})        
                     }, 1000)                    
+                    console.log("Start progress", timeout)
+                }
 
-                let timeout = startProgressDialog()
+                const stopProgressDialog = () => {
+                    clearTimeout(timeout)    
+                    console.log("Stop progress", timeout)
+                }
+
+                startProgressDialog()
 
                 const itemsToCopy = fileItems
                     .map(n => ({ name: n.name, size: n.size, time: n.time, subPath: undefined }) as CopyItem)
@@ -169,11 +178,11 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|un
                 
                 const ioResult = await copy(sourcePath!, targetPath!, copyItems, move, (uac: boolean) => {
                     if (uac)
-                        clearTimeout(timeout)        
+                        stopProgressDialog()        
                     else
-                        timeout = startProgressDialog()
+                        startProgressDialog()
                 }, dialog)
-                clearTimeout(timeout)
+                stopProgressDialog()
                 dialog?.close()
                 return ioResult.error != undefined ? ioResult.error : null
             }

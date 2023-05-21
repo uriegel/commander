@@ -18,7 +18,6 @@ record RootItem(
 
 static class Root
 {
-    // TODO append home drive
     public static Task<RootItem[]> Get(Empty _)
         =>  (from n in DriveInfo
                         .GetDrives()
