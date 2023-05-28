@@ -434,7 +434,22 @@ export default FolderView
 
 // TODO Favorites
 // TODO .. => Directory Info
-// TODO .. => Btn safe reject
+
+// using System.IO;
+
+// private long GetTotalFreeSpace(string driveName)
+// {
+//     foreach (DriveInfo drive in DriveInfo.GetDrives())
+//     {
+//         if (drive.IsReady && drive.Name == driveName)
+//         {
+//             return drive.TotalFreeSpace;
+//         }
+//     }
+//     return -1;
+// }
+
+// TODO .. => Btn safe reject sudo eject sde1
 // TODO GetNetShares (Windows)
 // TODO Services (Windows)
 // TODO F1 root (or favorites)
