@@ -6,6 +6,7 @@ import { ROOT } from '../controller/root'
 import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
 import { Version } from '../requests/requests'
 import { DialogHandle } from 'web-dialog-react'
+import { initializeHistory } from '../history'
 
 export interface FolderViewItem extends SelectableItem {
     name:         string
@@ -115,6 +116,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const [dragStarted, setDragStarted] = useState(false)
     const [dragging, setDragging] = useState(false)
 
+    const history = useRef(initializeHistory())
+
     const getSelectedItems = () => {
 
         const checkParent = (item: FolderViewItem) => !item.isParent ? item : null
@@ -159,7 +162,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             : columns
     }
 
-    const changePath = async (path: string, showHidden: boolean, latestPath?: string, mount?: boolean) => {
+    const changePath = async (path: string, showHidden: boolean, latestPath?: string, mount?: boolean, fromBacklog?: boolean) => {
         restrictionView.current?.reset()
         const result = checkController(path, controller.current)
         if (result.changed) {
@@ -180,6 +183,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         const extendedInfoItems = await controller.current.getExtendedItems(items.path, items.items)
         if (extendedInfoItems.path == refPath.current) 
             setItems(controller.current.setExtendedItems(items.items, extendedInfoItems))    
+        if (!fromBacklog)
+            history.current?.set(items.path)
     }
 
     const onEnter = async (item: FolderViewItem, keys: SpecialKeys) => {
@@ -265,6 +270,11 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 break                
             case "Delete":
                 await deleteItems()
+                break
+            case "Backspace":
+                const path = history.current?.get(evt.shiftKey)
+                if (path)
+                    changePath(path, showHidden, undefined, undefined, true)
                 break
             default:
                 checkRestricted(evt.key)
@@ -422,8 +432,12 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO History with backspace
 // TODO Favorites
+// TODO .. => Directory Info
+// TODO .. => Btn safe reject
+// TODO GetNetShares (Windows)
+// TODO Services (Windows)
+// TODO F1 root (or favorites)
 // TODO Windows append home drive to root
 // TODO Arrow left and right in web-dialog button bar
 // TODO Viewer text in textedit with save option
