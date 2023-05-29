@@ -29,6 +29,8 @@ export interface FolderViewItem extends SelectableItem {
     isNew?: boolean
     // ExtendedRename
     newName?:     string|null
+    // Favorites
+    path?:     string|null
 }
 
 export type FolderViewHandle = {

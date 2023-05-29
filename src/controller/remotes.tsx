@@ -1,4 +1,3 @@
-import { SpecialKeys } from "virtual-table-react"
 import { DialogHandle, Result } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"

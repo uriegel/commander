@@ -33,15 +33,22 @@ static class Root
                                     .Skip(1)
                                     .Append("home")
                                     .Append("remotes")
+                                    .Append("fav")
                         where n.FilterDrives(columnPositions)
                         let item = CreateRootItem(n, columnPositions)
                         orderby item.IsMounted descending, item.Name
-                        select item.Name == "zzz" ? item with { Name = "remotes" } : item)
+                        select item.Name == "zzzz" 
+                                ? item with { Name = "remotes" } 
+                                : item.Name == "zzz" 
+                                ? item with { Name = "fav" }
+                                : item)
                     .ToArray());
 
         RootItem CreateRootItem(string driveString, int[] columnPositions)
         {
-            var mountPoint = driveString != "home" && driveString != "remotes" ? GetString(3, 4) : "";
+            var mountPoint = driveString != "home" && driveString != "remotes" && driveString != "fav" 
+                ? GetString(3, 4) 
+                : "";
 
             return driveString == "home"
                 ? new(
@@ -53,8 +60,16 @@ static class Root
                     "")
                 : driveString == "remotes"
                 ? new(
-                    "zzz", 
+                    "zzzz", 
                     "Zugriff auf entfernte Geräte",
+                    0,
+                    "",
+                    true,
+                    "")
+                : driveString == "fav"
+                ? new(
+                    "zzz", 
+                    "Favoriten",
                     0,
                     "",
                     true,
@@ -82,7 +97,7 @@ static class Root
         : name;
 
     static bool FilterDrives(this string driveString, int[] columnPositions) => 
-        driveString != "home" && driveString != "remotes" 
+        driveString != "home" && driveString != "remotes" && driveString != "fav" 
         ? driveString[columnPositions[1]] > '~'
         : true;
 }
