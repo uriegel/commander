@@ -435,6 +435,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 export default FolderView
 
 // TODO Favorites
+// TODO Favorites Windows and Linux in React
 // TODO .. => Directory Info
 
 // using System.IO;
