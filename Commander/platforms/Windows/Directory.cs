@@ -35,7 +35,7 @@ static partial class Directory
             : await RepeatOnException(() => 
                 {
                     var shinfo = new ShFileInfo();
-                    var handle = SHGetFileInfo(iconHint, FileAttributeNormal, ref shinfo, Marshal.SizeOf(shinfo),
+                    var handle = SHGetFileInfo(iconHint, ClrWinApi.FileAttributes.Normal, ref shinfo, Marshal.SizeOf(shinfo),
                         SHGetFileInfoConstants.ICON | SHGetFileInfoConstants.SMALLICON | SHGetFileInfoConstants.USEFILEATTRIBUTES | SHGetFileInfoConstants.TYPENAME); 
                         return shinfo.IconHandle != IntPtr.Zero
                         ? shinfo.IconHandle.ToAsync()
@@ -129,17 +129,15 @@ static partial class Directory
   
     static void OnEnter(string path, SpecialKeys? keys) 
     {
-        if (keys?.Alt == true) 
+        if (keys?.Alt == true || keys?.Ctrl == true) 
         {
             var info = new ShellExecuteInfo();
             info.Size = Marshal.SizeOf(info);
-            info.Verb = "properties";
-            info.File = @"D:\DVD-Bearbeitung\ton.avi";
+            info.Verb = keys?.Alt == true ? "properties" : "openas";
+            info.File = path;
             info.Show = ShowWindowFlag.Show;
-            info.Mask = (ShellExecuteFlag)0x10C;
-            var b = ShellExecuteEx(ref info);     
-            var errr = Marshal.GetLastWin32Error();
-            Thread.Sleep(1000);
+            info.Mask = ShellExecuteFlag.InvokeIDList;
+            ShellExecuteEx(ref info);     
         }
         else 
         {
@@ -162,9 +160,6 @@ static partial class Directory
             UnauthorizedAccessException ue                  => IOError.AccessDenied,
             _                                               => IOError.Exn
         };
-
-    // TODO
-    const int FileAttributeNormal = 0x80;
 
     static readonly DateTime startTime = DateTime.Now;
 }

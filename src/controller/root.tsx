@@ -52,11 +52,19 @@ const getLinuxColumns = () => ({
 	renderRow: renderLinuxRow
 })
 
-const onWindowsEnter = async (enterData: EnterData) => 
-({
-    processed: false, 
-    pathToSet: enterData.item.name
-}) 
+const onWindowsEnter = async (enterData: EnterData) => {
+
+    if (enterData.keys.alt) {
+        request("onenter", {path: enterData.item.name , keys: enterData.keys})
+        return {
+            processed: true, 
+        } 
+    } else
+        return {
+            processed: false, 
+            pathToSet: enterData.item.name
+    } 
+}
 
 const onLinuxEnter = async (enterData: EnterData) => 
 ({

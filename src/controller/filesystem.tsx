@@ -86,7 +86,7 @@ export const getFileSystemController = (controller: Controller|null): Controller
 				pathToSet: ROOT,
 				latestPath: path
 			}) 
-			: item.isDirectory
+			: item.isDirectory && !keys.alt 
 			? ({
 				processed: false, 
 				pathToSet: path + '/' + item.name 
