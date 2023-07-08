@@ -475,5 +475,5 @@ export default FolderView
 // TODO https://stackoverflow.com/questions/71581401/drag-a-file-from-my-gtk-app-to-another-app-not-the-other-way-around
 // TODO Image rotation: Changeset 4.12.2022
 // TODO const int FileAttributeNormal =
-// TODO Propertes
-// TODO alt menu keyup
+// TODO Propertes Linux
+// TODO open as Linux
