@@ -434,8 +434,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO favorites dialog
-// TODO favorites
+// TODO add favorites: take other side (dialog)
+// TODO delete favorite
 // TODO Viewer .. => Directory Info
 
 // using System.IO;
