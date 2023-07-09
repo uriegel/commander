@@ -1,6 +1,6 @@
 import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
-import { Controller, ControllerResult, ControllerType, EnterData, addParent, formatSize} from "./controller"
+import { Controller, ControllerResult, ControllerType, EnterData, addParent } from "./controller"
 import { ROOT } from "./root"
 
 export const FAVORITES = "fav"
