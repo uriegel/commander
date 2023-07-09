@@ -109,6 +109,8 @@ const App = () => {
 			webViewShowDevTools()
 		else if (key == "SHOW_FULLSCREEN")
 			await request("showfullscreen")
+		else if (key == "FAVORITES")
+			getActiveFolder()?.changePath("fav")
 		else if (key == "ADAPT_PATH") {
 			const path = getActiveFolder()?.getPath()
 			if (path)

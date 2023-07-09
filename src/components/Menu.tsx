@@ -72,6 +72,7 @@ const Menu = ({ autoMode, toggleAutoMode, showHidden, toggleShowHidden, showView
         items: [{
             name: "_Favoriten",
             type: MenuItemType.MenuItem,
+            key: "FAVORITES",
             shortcut: "F1"
         }, {
             name: "_Gleichen Ordner öffnen",
