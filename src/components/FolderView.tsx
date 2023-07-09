@@ -435,6 +435,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 export default FolderView
 
 // TODO F1 root (or favorites)
+// TODO favorites dialog
+// TODO favorites
 // TODO Viewer .. => Directory Info
 
 // using System.IO;
