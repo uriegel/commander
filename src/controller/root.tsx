@@ -3,7 +3,8 @@ import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, EnterData, formatSize} from "./controller"
 import { REMOTES } from "./remotes"
-import { GetRootResult, request } from "../requests/requests"
+import { GetRootResult, request, RootItem } from "../requests/requests"
+import "functional-extensions"
 
 export const ROOT = "root"
 const platform = getPlatform()
@@ -95,12 +96,28 @@ export const getRootController = (controller: Controller | null): ControllerResu
     }})
 
 const getItems = async () => {
-	const items = await request<GetRootResult>("getroot")
+    const items = await request<GetRootResult>("getroot")
+    const pos = items.findIndex(n => !n.isMounted)
+    const extendedItems = items
+        .insert(pos, {
+            name: "fav",
+            description: "Favoriten",
+            size: 0,
+            isMounted: true,
+            mountPoint: ""
+        })
+        .insert(pos + 1, {
+            name: "remotes",
+            description: "Zugriff auf entfernte Geräte",
+            size: 0,
+            isMounted: true,
+            mountPoint: ""
+        })
     return {
         path: ROOT,
-        dirCount: items.length,
+        dirCount: extendedItems.length,
         fileCount: 0,
-        items
+        items: extendedItems 
     }
 }
 

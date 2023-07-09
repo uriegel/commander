@@ -434,9 +434,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO Favorites
-// TODO Favorites Windows and Linux in React
-// TODO .. => Directory Info
+// TODO F1 root (or favorites)
+// TODO Viewer .. => Directory Info
 
 // using System.IO;
 
@@ -455,7 +454,6 @@ export default FolderView
 // TODO .. => Btn safe reject sudo eject sde1
 // TODO GetNetShares (Windows)
 // TODO Services (Windows)
-// TODO F1 root (or favorites)
 // TODO Windows append home drive to root
 // TODO Arrow left and right in web-dialog button bar
 // TODO Viewer text in textedit with save option
@@ -474,6 +472,3 @@ export default FolderView
 // TODO Check gtk webview: drop file/files/folder/folders sudo apt install libwebkit2gtk-4.0-dev
 // TODO https://stackoverflow.com/questions/71581401/drag-a-file-from-my-gtk-app-to-another-app-not-the-other-way-around
 // TODO Image rotation: Changeset 4.12.2022
-// TODO const int FileAttributeNormal =
-// TODO Propertes Linux
-// TODO open as Linux

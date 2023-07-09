@@ -1,5 +1,5 @@
 import { Controller, ControllerType, EnterData, checkResult } from "./controller"
-import '../extensions/extensions'
+import 'functional-extensions'
 import { FolderViewItem } from "../components/FolderView"
 import { DialogHandle, Result } from "web-dialog-react"
 import ExtendedRename from "../components/ExtendedRename"
