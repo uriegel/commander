@@ -46,7 +46,8 @@ export type FolderViewHandle = {
     createFolder: () => Promise<void>
     deleteItems: () => Promise<void>
     getController: () => Controller
-    getItems: ()=> FolderViewItem[]
+    getItems: () => FolderViewItem[]
+    processEnter: (item: FolderViewItem, keys: SpecialKeys, otherPath?: string) => Promise<void>
     getSelectedItems: ()=> FolderViewItem[]
 }
 
@@ -63,10 +64,11 @@ interface FolderViewProp {
     onPathChanged: (path: string, isDir: boolean) => void
     onItemsChanged: (count: ItemCount) => void
     onCopy: (move: boolean) => void
+    onEnter: (item: FolderViewItem, keys: SpecialKeys) => Promise<void>
 }
 
 const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
-    { id, dialog, showHidden, onFocus, onPathChanged, onItemsChanged, onCopy },
+    { id, dialog, showHidden, onFocus, onPathChanged, onItemsChanged, onCopy, onEnter },
     ref) => {
 
         useImperativeHandle(ref, () => ({
@@ -102,7 +104,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             deleteItems,
             getController: () => controller.current,
             getItems: () => items,
-            getSelectedItems
+            getSelectedItems,
+            processEnter
         }))
 
     const restrictionView = useRef<RestrictionViewHandle>(null)
@@ -189,8 +192,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             history.current?.set(items.path)
     }
 
-    const onEnter = async (item: FolderViewItem, keys: SpecialKeys) => {
-        const result = await controller.current.onEnter({path, item, keys, dialog, refresh, selectedItems: getSelectedItems(), items})
+    const processEnter = async (item: FolderViewItem, keys: SpecialKeys, otherPath?: string) => {
+        const result = await controller.current.onEnter({path, item, keys, dialog, refresh, selectedItems: getSelectedItems(), items, otherPath})
         if (!result.processed && result.pathToSet) 
             changePath(result.pathToSet, showHidden, result.latestPath, result.mount)
     }

@@ -1,3 +1,4 @@
+import { DialogHandle, Result } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import { Controller, ControllerResult, ControllerType, EnterData, addParent } from "./controller"
@@ -26,11 +27,43 @@ const getColumns = () => ({
 	renderRow
 })
 
-const onEnter = async (enterData: EnterData) => 
-({
-    processed: false, 
-    pathToSet: enterData.item.isParent ? ROOT : enterData.item.name
-}) 
+const showAddFavorite = async (dialog?: DialogHandle|null, otherPath?: string) => {
+
+    const result = await dialog?.show({
+        text: `'${otherPath}' als Favoriten hinzufügen?`,
+        btnOk: true,
+        btnCancel: true,
+        defBtnOk: true
+    })
+    if (result?.result == Result.Ok) {
+        // items = items.concat([{ name, ipAddress, isAndroid }])
+        // localStorage.setItem("remotes", JSON.stringify(items))
+        return true
+    }
+    else
+        return false
+}
+
+
+const onNew = (dialog?: DialogHandle|null, refresh?: ()=>void, otherPath?: string) => {
+    const show = async () => {
+        if (refresh && await showAddFavorite(dialog, otherPath))
+            refresh()
+    }
+    show()
+        
+    return {
+        processed: true
+    } 
+}
+
+const onEnter = async (enterData: EnterData) =>
+    enterData.item.isNew
+        ? onNew(enterData.dialog, enterData.refresh, enterData.otherPath)
+        : {
+            processed: false,
+            pathToSet: enterData.item.isParent ? ROOT : enterData.item.name
+        } 
 
 export const getFavoritesController = (controller: Controller | null): ControllerResult => 
     controller?.type == ControllerType.Favorites

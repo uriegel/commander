@@ -4,11 +4,11 @@ export interface History {
 }
 
 export const initializeHistory = () => {
-    const history: string[] = []
+    let history: string[] = []
     let position = -1
 
     const set = (path: string) => {
-        if (position == -1 || history[position] != path) {
+        if (history[history.length -1] != path) {
             history.push(path)
             position = history.length - 1
         }

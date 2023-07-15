@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import ViewSplit from 'view-split-react'
 import Dialog, { DialogHandle, Result } from 'web-dialog-react' 
-import FolderView, { FolderViewHandle } from './components/FolderView'
+import FolderView, { FolderViewHandle, FolderViewItem } from './components/FolderView'
 import Menu from './components/Menu'
 import Statusbar from './components/Statusbar'
 import { checkResult } from './controller/controller'
@@ -19,6 +19,7 @@ import { getCopyController } from './controller/copy/copyController'
 import FileViewer from './components/FileViewer'
 import "functional-extensions"
 import "./extensions/extensions"
+import { SpecialKeys } from 'virtual-table-react'
 
 // TODO in webview.d.ts
 declare const webViewShowDevTools: ()=>void
@@ -79,13 +80,16 @@ const App = () => {
 
 	const onPathChanged = (path: string, isDirectory: boolean) => setPath({ path, isDirectory })
 
+	const onEnter = async (item: FolderViewItem, keys: SpecialKeys) => 
+		await getActiveFolder()?.processEnter(item, keys, getInactiveFolder()?.getPath())
+
 	const FolderLeft = () => (
 		<FolderView ref={folderLeft} id={ID_LEFT} dialog={dialog.current} onFocus={onFocusLeft} onCopy={copyItems}
-			onPathChanged={onPathChanged} showHidden={showHidden} onItemsChanged={setItemCount} />
+			onPathChanged={onPathChanged} showHidden={showHidden} onItemsChanged={setItemCount} onEnter={onEnter} />
 	)
 	const FolderRight = () => (
 		<FolderView ref={folderRight} id={ID_RIGHT} dialog={dialog.current} onFocus={onFocusRight} onCopy={copyItems}
-			onPathChanged={onPathChanged} showHidden={showHidden} onItemsChanged={setItemCount} />
+			onPathChanged={onPathChanged} showHidden={showHidden} onItemsChanged={setItemCount} onEnter={onEnter} />
 	)
 
 	const activeFolderId = useRef("left")

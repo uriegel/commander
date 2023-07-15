@@ -7,6 +7,9 @@ declare global {
         extractSubPath(): string
         getParentPath(): string
     }
+    interface Array<T> { 
+        distinct(): T[] 
+    }
 }
 
 // eslint-disable-next-line
@@ -34,4 +37,7 @@ String.prototype.appendPath = function (subPath: string): string {
         : this + "/" + subPath
 }
 
+Array.prototype.distinct = function () {
+    return [... new Set(this)]
+}
 

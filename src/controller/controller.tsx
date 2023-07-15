@@ -38,7 +38,8 @@ export interface onEnterResult {
 }
 
 export interface EnterData {
-    path: string, 
+    path: string,
+    otherPath?: string
     item: FolderViewItem, 
     keys: SpecialKeys, 
     dialog?: DialogHandle|null, 
