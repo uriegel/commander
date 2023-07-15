@@ -440,7 +440,8 @@ export default FolderView
 // TODO Views: save as view
 // TODO Views: show views
 // TODO Views: views open
-// TODO Views: dlete view
+// TODO Views: delete view
+// TODO Conflicts Windows: TableView item not correct height
 // TODO Viewer .. => Directory Info
 
 // using System.IO;
