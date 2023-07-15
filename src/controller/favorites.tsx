@@ -27,23 +27,28 @@ const getColumns = () => ({
 	renderRow
 })
 
-const showAddFavorite = async (dialog?: DialogHandle|null, otherPath?: string) => {
+const getFavoriteItems = () => {
+    var itemsStr = localStorage.getItem("fav")
+    return itemsStr ? JSON.parse(itemsStr) as FolderViewItem[] : []
+}
 
-    const result = await dialog?.show({
-        text: `'${otherPath}' als Favoriten hinzufügen?`,
-        btnOk: true,
-        btnCancel: true,
-        defBtnOk: true
-    })
-    if (result?.result == Result.Ok) {
-        // items = items.concat([{ name, ipAddress, isAndroid }])
-        // localStorage.setItem("remotes", JSON.stringify(items))
+const showAddFavorite = async (dialog?: DialogHandle | null, otherPath?: string) => {
+    const items = getFavoriteItems()
+    const result =
+        !items.find(n => n.name == otherPath) && (await dialog?.show({
+            text: `'${otherPath}' als Favoriten hinzufügen?`,
+            btnOk: true,
+            btnCancel: true,
+            defBtnOk: true
+        }))?.result == Result.Ok
+    if (result && otherPath) {
+        let newItems = items.concat([{ name: otherPath }])
+        localStorage.setItem("fav", JSON.stringify(newItems))
         return true
     }
     else
         return false
 }
-
 
 const onNew = (dialog?: DialogHandle|null, refresh?: ()=>void, otherPath?: string) => {
     const show = async () => {
@@ -82,18 +87,12 @@ export const getFavoritesController = (controller: Controller | null): Controlle
         rename: async () => null,
         extendedRename: async () => null,
         createFolder: async () => null,
-        deleteItems: async () => null,
+        deleteItems,
         onSelectionChanged: () => {}
     }})
 
 const getItems = async () => {
-    const items = [{
-            name: "/home/uwe",
-            description: "Zuhause"
-        }, {
-            name: "/home/uwe/videos",
-            description: "Filme"
-    }]
+    const items = getFavoriteItems()
     return {
         path: FAVORITES,
         dirCount: items.length,
@@ -104,5 +103,19 @@ const getItems = async () => {
                     isNew: true
                 })
     }
+}
+
+const deleteItems = async (_: string, items: FolderViewItem[], dialog: DialogHandle | null) => {
+	const result = await dialog?.show({
+		text: `Möchtest Du ${items.length > 1 ? "die Favoriten" : "den Favoriten"} löschen?`,
+		btnOk: true,
+		btnCancel: true,
+		defBtnOk: true
+	})
+    if (result?.result == Result.Ok) {
+        const favs = getFavoriteItems().filter(x => !items.find(n => n.name == x.name))
+        localStorage.setItem("fav", JSON.stringify(favs))
+    }
+    return null
 }
 
