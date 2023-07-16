@@ -12,3 +12,6 @@
 .subPath {
     margin-left: 20px;
 }
+.subPath.empty {
+    opacity: 0;
+}

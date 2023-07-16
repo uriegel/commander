@@ -44,7 +44,7 @@ const CopyConflicts = ({ props }: ExtensionProps) => {
 	const renderRowBase = ({ name, subPath, iconPath, time, exifDate, targetExifDate, targetTime, size, targetSize }: ConflictItem) => [
 		(<div>
 			<IconName namePart={name} type={IconNameType.File} iconPath={iconPath} />
-			<div className='subPath'>{subPath}</div>
+			<div className={subPath ? 'subPath' : 'subPath empty'}>{subPath ?? "___"}</div>
 		</div>),
 		(<div className=
 			{

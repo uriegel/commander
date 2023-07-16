@@ -441,7 +441,6 @@ export default FolderView
 // TODO Views: show views
 // TODO Views: views open
 // TODO Views: delete view
-// TODO Conflicts: TableView item not correct height, when path is set in second line
 // TODO Viewer .. => Directory Info
 
 // using System.IO;
