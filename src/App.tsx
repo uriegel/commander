@@ -100,10 +100,9 @@ const App = () => {
 	const onFocusRight = () => activeFolderId.current = ID_RIGHT
 
 	const onMenuAction = async (key: string) => {
-		if (key == "REFRESH") {
+		if (key == "REFRESH") 
 			getActiveFolder()?.refresh()
-		}
-		else if (key == "END")
+		else if (key == "END") 
 			window.close()
 		else if (key == "SEL_ALL")
 			getActiveFolder()?.selectAll()

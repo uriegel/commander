@@ -10,6 +10,9 @@ declare global {
     interface Array<T> { 
         distinct(): T[] 
     }
+    interface Date { 
+        removeMilliseconds(): Date 
+    }
 }
 
 // eslint-disable-next-line
@@ -41,3 +44,8 @@ Array.prototype.distinct = function () {
     return [... new Set(this)]
 }
 
+Date.prototype.removeMilliseconds = function () {
+    const newDate = new Date(this.getTime())
+    newDate.setMilliseconds(0)
+    return newDate
+}
