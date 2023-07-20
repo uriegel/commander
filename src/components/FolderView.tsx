@@ -439,6 +439,7 @@ export default FolderView
 
 // TODO Windows: copyFiles adjust time after copy
 // TODO Windows: WindowCloseRequested for Alt+F4
+// TODO Windows: DPI Awareness 2 Monitore unterschiedliche Auflösungen
 // TODO Views: save as view
 // TODO Views: show views
 // TODO Views: views open
