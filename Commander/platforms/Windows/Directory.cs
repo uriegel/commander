@@ -106,17 +106,17 @@ static partial class Directory
         var cancel = 0;
         cancellationToken.Register(() => cancel = -1);
         if (move) {
-            if (!Api.MoveFileWithProgress(source, target, (total, current, c, d, e, f, g, h, i) => {
+            if (!Api.MoveFileWithProgress(source, target.RemoveWriteProtection(), (total, current, c, d, e, f, g, h, i) => {
                 progress(current, total);
                 return CopyProgressResult.Continue;
-            }, IntPtr.Zero, MoveFileFlags.CopyAllowed)) {
+            }, IntPtr.Zero, MoveFileFlags.CopyAllowed| MoveFileFlags.ReplaceExisting)) {
                 var error = Marshal.GetLastWin32Error();
                 if (error == 5)
                     throw new UnauthorizedAccessException();
             }
         }
         else {
-            if (!Api.CopyFileEx(source, target, (total, current, c, d, e, f, g, h, i) => {
+            if (!Api.CopyFileEx(source, target.RemoveWriteProtection(), (total, current, c, d, e, f, g, h, i) => {
                 progress(current, total);
                 return CopyProgressResult.Continue;
             }, IntPtr.Zero, ref cancel, (CopyFileFlags)0)) {

@@ -99,14 +99,14 @@ const getItems = async () => {
     const items = await request<GetRootResult>("getroot")
     const pos = items.findIndex(n => !n.isMounted)
     const extendedItems = items
-        .insert(pos, {
+        .insert(pos != -1 ? pos : items.length, {
             name: "fav",
             description: "Favoriten",
             size: 0,
             isMounted: true,
             mountPoint: ""
         })
-        .insert(pos + 1, {
+        .insert(pos != -1 ? pos + 1 : items.length + 1, {
             name: "remotes",
             description: "Zugriff auf entfernte Geräte",
             size: 0,
