@@ -136,7 +136,7 @@ static partial class Directory
     }
 
     public static Task<IOResult> OnEnter(OnEnterParam input)
-        => (new IOResult(null))
+        => new IOResult(null)
             .SideEffect(_ => OnEnter(input.Path, input.Keys))
             .ToAsync();
 
