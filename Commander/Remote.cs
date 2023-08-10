@@ -18,9 +18,9 @@ static class Remote
                     .Path
                     .GetIpAndPath()
                     .GetFiles())
-            select JsonSerializer
+            select (JsonSerializer
                     .Deserialize<RemoteItem[]>(n, JsonWebDefaults)
-                    .GetOrDefault(Array.Empty<RemoteItem>())
+                    ?? Array.Empty<RemoteItem>())
                     .Select(ToDirectoryItem))
                         .Select(n => n.Where(n => getFiles.ShowHiddenItems ? true : !n.IsHidden).ToArray()
                         .ToFilesResult(getFiles.Path));
@@ -104,7 +104,7 @@ static class Remote
                     .Create(targetFilename)
                     .WithProgress((c, t) => Events.CopyProgressChanged(new(
                         n.Name, 
-                        msg.Content.Headers.ContentLength.GetOrDefault(0), 
+                        msg.Content.Headers.ContentLength ?? 0, 
                         c, 
                         totalSize, count + c
                     )));

@@ -67,12 +67,16 @@ static partial class Directory
         {
             var directories = ImageMetadataReader.ReadMetadata(path.AppendPath(file));
             var subIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
-            return subIfdDirectory
-                    ?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal)
-                    .WhiteSpaceToNull()
-                    .OrElseWith(() => subIfdDirectory
-                                    ?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal))
-                    .ToDateTime("yyyy:MM:dd HH:mm:ss");
+            return (subIfdDirectory
+                        ?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal)
+                        .WhiteSpaceToNull())
+                        .FromNullable()
+                        .Or(() => (subIfdDirectory
+                                    ?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal)
+                                    .WhiteSpaceToNull())
+                                    .FromNullable())
+                        .GetOrDefault("")
+                        .ToDateTime("yyyy:MM:dd HH:mm:ss");
         }
 
         DateTime? CheckGetExifDate(string item)
