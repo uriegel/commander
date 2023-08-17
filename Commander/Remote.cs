@@ -38,7 +38,7 @@ static class Remote
         {
             Method = HttpMethod.Post,
             BaseUrl = $"http://{ipAndPath.Ip}:8080",
-            Url = "/getfiles",
+            Url = "/remote/getfiles",
             AddContent = () => JsonContent.Create(new { Path = ipAndPath.Path })
         };
 
@@ -47,7 +47,7 @@ static class Remote
         {
             Method = HttpMethod.Post,
             BaseUrl = $"http://{ipAndPath.Ip}:8080",
-            Url = "/getfile",
+            Url = "/remote/getfile",
             AddContent = () => JsonContent.Create(new 
                                 { 
                                     Path = ipAndPath.Path.AppendLinuxPath(name) 
@@ -59,7 +59,7 @@ static class Remote
         {
             Method = HttpMethod.Post,
             BaseUrl = $"http://{ipAndPath.Ip}:8080",
-            Url = $"/postfile?path={ipAndPath.Path.AppendLinuxPath(name)}",
+            Url = $"/remote/postfile?path={ipAndPath.Path.AppendLinuxPath(name)}",
             AddContent = () => new StreamContent(streamToPost, 8100)
                                     .SideEffect(n => n.Headers.TryAddWithoutValidation("x-file-date", 
                                                                                         (new DateTimeOffset(lastWriteTime).ToUnixTimeMilliseconds().ToString())))
