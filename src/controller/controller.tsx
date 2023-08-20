@@ -166,6 +166,8 @@ export const checkResult = async (dialog: DialogHandle|null|undefined, activeFol
                     : error == IOError.FileNotFound
                     ? "Das Element ist nicht vorhanden"
                     : "Die Aktion konnte nicht ausgeführt werden"
+        dialog?.close()
+        await delay(500)
         await dialog?.show({
             text,
             btnOk: true
@@ -175,3 +177,6 @@ export const checkResult = async (dialog: DialogHandle|null|undefined, activeFol
     } else
         return true
 }
+
+const delay = (timeout: number) => new Promise<number>(res => 
+    setTimeout(() => res(0), timeout))
