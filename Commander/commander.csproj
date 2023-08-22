@@ -42,6 +42,7 @@
     <PackageReference Include="MetadataExtractor" Version="2.7.2" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
     <PackageReference Include="AspNetExtensions" Version="3.4.1" />
+    <PackageReference Include="CsTools" Version="5.4.0" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(IsWindows)'=='true'">

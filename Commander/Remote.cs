@@ -54,12 +54,13 @@ static class Remote
                                 })
         };
 
-    static Settings PostFile(this IpAndPath ipAndPath, string name, Stream streamToPost, DateTime lastWriteTime) 
+    static CsTools.HttpRequest.Settings PostFile(this IpAndPath ipAndPath, string name, Stream streamToPost, DateTime lastWriteTime) 
         => DefaultSettings with
         {
             Method = HttpMethod.Post,
             BaseUrl = $"http://{ipAndPath.Ip}:8080",
             Url = $"/remote/postfile?path={ipAndPath.Path.AppendLinuxPath(name)}",
+            Timeout = 100_1000_000,
             AddContent = () => new StreamContent(streamToPost, 8100)
                                     .SideEffect(n => n.Headers.TryAddWithoutValidation("x-file-date", 
                                                                                         (new DateTimeOffset(lastWriteTime).ToUnixTimeMilliseconds().ToString())))
@@ -102,9 +103,10 @@ static class Remote
             using var targetFile = 
                 File
                     .Create(targetFilename)
-                    .WithProgress((c, t) => Events.CopyProgressChanged(new(
+                    .WithProgress((t, c) => Events.CopyProgressChanged(new(
                         n.Name, 
-                        msg.Content.Headers.ContentLength ?? 0, 
+                        n.Size,
+                        //msg.Content.Headers.ContentLength ?? 0, 
                         c, 
                         totalSize, count + c
                     )));
@@ -132,7 +134,7 @@ static class Remote
             using var sourceFile = 
                 File
                     .OpenRead(sourceFilename)
-                    .WithProgress((c, t) => Events.CopyProgressChanged(new(
+                    .WithProgress((t, c) => Events.CopyProgressChanged(new(
                         n.Name, 
                         n.Size, 
                         c, 
@@ -165,6 +167,11 @@ static class Remote
         => path.EndsWith('/')
             ? path + pathToAppend
             : path + '/' + pathToAppend;
+
+    static Remote()
+    {
+        Client.Init(8, TimeSpan.FromDays(1));
+    }            
 }
 record RemoteItem(
     string Name,
