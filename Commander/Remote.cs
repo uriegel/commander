@@ -106,7 +106,6 @@ static class Remote
                     .WithProgress((t, c) => Events.CopyProgressChanged(new(
                         n.Name, 
                         n.Size,
-                        //msg.Content.Headers.ContentLength ?? 0, 
                         c, 
                         totalSize, count + c
                     )));

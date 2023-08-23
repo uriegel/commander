@@ -76,11 +76,11 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|un
                     iconPath: n.iconPath,
                     size: n.size,
                     time: n.time,
-                    exifDate: n.exifDate,
+                    exifDate: n.exifDate && check.exifDate ? n.exifDate : null,
                     version: n.version,
                     targetSize: check.size,
                     targetTime: check.time,
-                    targetExifDate: check.exifDate,
+                    targetExifDate: n.exifDate && check.exifDate ? check.exifDate : null,
                     targetVersion: check.version
                 } as ConflictItem
                 : undefined                
@@ -120,9 +120,11 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|un
                 : `Möchtest Du die Verzeichnisse und Dateien ${copyText}?`
             
             const filterNoOverwrite = (item: ConflictItem) =>
-                (item.exifDate ?? item.time ?? "") < (item.targetExifDate ?? item.targetTime ?? "")
+                (item.exifDate && item.targetExifDate
+                    ? item.exifDate < item.targetExifDate
+                    : (item.time ?? "") < (item.targetTime ?? ""))
                 && compareVersion(item.version, item.targetVersion) < 0
-            
+
             const defNo = conflictItems.length > 0
                 && conflictItems
                     .filter(filterNoOverwrite)
