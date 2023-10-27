@@ -71,43 +71,43 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     { id, dialog, showHidden, onFocus, onPathChanged, onItemsChanged, onCopy, onEnter },
     ref) => {
 
-        useImperativeHandle(ref, () => ({
-            id,
-            setFocus() { virtualTable.current?.setFocus() },    
-            refresh,
-            selectAll() {
-                if (controller.current.itemsSelectable) 
-                    setItems(items.map((n) => setSelection(n, true)))
-                controller.current.onSelectionChanged(items)                    
-            },
-            selectNone() {
-                if (controller.current.itemsSelectable) 
-                    setItems(items.map((n) => setSelection(n, false)))
-                controller.current.onSelectionChanged(items)                    
-            },
-            changePath(path: string) {
-                changePath(path, showHidden)
-            },
-            getPath() { return path },
-            rename, 
-            async extendedRename(dialog: DialogHandle | null) {
-                const res = await controller.current.extendedRename(controller.current, dialog)
-                if (res != null) {
-                    restrictionView.current?.reset()
-                    controller.current = res
-                    virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
-                }
-                controller.current.onSelectionChanged(items)                    
-                setItems(items.map(n => n))
-            },
-            createFolder,
-            deleteItems,
-            getController: () => controller.current,
-            getItems: () => items,
-            getSelectedItems,
-            processEnter
-        }))
-
+    useImperativeHandle(ref, () => ({
+        id,
+        setFocus() { virtualTable.current?.setFocus() },
+        refresh,
+        selectAll() {
+            if (controller.current.itemsSelectable)
+                setItems(items.map((n) => setSelection(n, true)))
+            controller.current.onSelectionChanged(items)
+        },
+        selectNone() {
+            if (controller.current.itemsSelectable)
+                setItems(items.map((n) => setSelection(n, false)))
+            controller.current.onSelectionChanged(items)
+        },
+        changePath(path: string) {
+            changePath(path, showHidden)
+        },
+        getPath() { return path },
+        rename,
+        async extendedRename(dialog: DialogHandle | null) {
+            const res = await controller.current.extendedRename(controller.current, dialog)
+            if (res != null) {
+                restrictionView.current?.reset()
+                controller.current = res
+                virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
+            }
+            controller.current.onSelectionChanged(items)
+            setItems(items.map(n => n))
+        },
+        createFolder,
+        deleteItems,
+        getController: () => controller.current,
+        getItems: () => items,
+        getSelectedItems,
+        processEnter
+    }))
+    
     const restrictionView = useRef<RestrictionViewHandle>(null)
 
     const virtualTable = useRef<VirtualTableHandle<FolderViewItem>>(null)
@@ -226,9 +226,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const onPositionChanged = useCallback(
         (item: FolderViewItem, pos?: number) => onPathChanged(controller.current.appendPath(path, item.name), item.isDirectory == true),
-        // HACK onPathChanged
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [id, path])         
+        [path, onPathChanged])         
 
     const onKeyDown = async (evt: React.KeyboardEvent) => {
         switch (evt.code) {
@@ -304,9 +302,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         if (item)
             onPositionChanged(item)
         onItemsChanged(itemCount.current)
-        // HACK onFocus, onPositionChanged
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [items]) 
+    }, [items, onFocus, onPositionChanged, onItemsChanged]) 
 
     const refresh = async (forceShowHidden?: boolean) =>
         changePath(path, forceShowHidden == undefined ? showHidden : forceShowHidden)
