@@ -25,6 +25,11 @@ const Menu = ({ autoMode, toggleAutoMode, showHidden, toggleShowHidden, showView
             shortcut: "Strg+F2",
             key: "EXTENDED_RENAME"
         }, {
+            name: "Kopie _anlegen",
+            type: MenuItemType.MenuItem,
+            shortcut: "Umschalt+F2",
+            key: "RENAME_AS_COPY"
+        }, {
             type: MenuItemType.Separator
         }, {
             name: "_Kopieren",

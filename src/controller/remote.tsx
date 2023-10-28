@@ -81,6 +81,7 @@ export const getRemoteController = (controller: Controller | null): ControllerRe
         appendPath: (path: string, subPath: string) => path.appendPath(subPath),
 		rename: async () => null,
 		extendedRename: async () => null,
+		renameAsCopy: async () => null,
         createFolder: async () => null,
         deleteItems: async () => null,
 		onSelectionChanged: () => {}

@@ -74,6 +74,7 @@ type CopyItemsToRemote = "copyitemstoremote"
 type CancelCopy = "cancelCopy"
 type GetRemoteFiles = "getremotefiles"
 type RenameItems = "renameitems"
+type RenameAndCopy = "renameandcopy"
 type OnEnter= "onenter"
 
 type RequestType = 
@@ -93,6 +94,7 @@ type RequestType =
     | CancelCopy
     | GetRemoteFiles
     | RenameItems
+    | RenameAndCopy
     | OnEnter
     
 type Exception = {

@@ -90,6 +90,7 @@ export const getRootController = (controller: Controller | null): ControllerResu
         appendPath: (path: string, subPath: string) => subPath,
         rename: async () => null,
         extendedRename: async () => null,
+        renameAsCopy: async () => null,
         createFolder: async () => null,
         deleteItems: async () => null,
         onSelectionChanged: () => {}

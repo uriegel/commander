@@ -122,6 +122,8 @@ const App = () => {
 			await getActiveFolder()?.rename()
 		else if (key == "EXTENDED_RENAME")
 			getActiveFolder()?.extendedRename(dialog.current)
+		else if (key == "RENAME_AS_COPY")
+			getActiveFolder()?.renameAsCopy()
 		else if (key == "CREATE_FOLDER")
 			await getActiveFolder()?.createFolder()
 		else if (key == "DELETE")

@@ -42,7 +42,8 @@ export type FolderViewHandle = {
     changePath: (path: string) => void
     getPath: () => string
     rename: () => Promise<void>
-    extendedRename: (dialog: DialogHandle|null) => void
+    extendedRename: (dialog: DialogHandle | null) => void
+    renameAsCopy: () => Promise<void>
     createFolder: () => Promise<void>
     deleteItems: () => Promise<void>
     getController: () => Controller
@@ -100,6 +101,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             controller.current.onSelectionChanged(items)
             setItems(items.map(n => n))
         },
+        renameAsCopy,
         createFolder,
         deleteItems,
         getController: () => controller.current,
@@ -317,6 +319,15 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         }
     }
 
+    const renameAsCopy = async () => {
+        virtualTable.current?.setFocus()
+        const items = getSelectedItems()
+        if (items?.length == 1) {
+            const result = await controller.current.renameAsCopy(path, items[0], dialog)
+            if (await checkResult(dialog, virtualTable.current, result))
+               refresh() 
+        }
+    }
     const createFolder = async () => {
         virtualTable.current?.setFocus()
         const result = await controller.current.createFolder(path, items[virtualTable.current?.getPosition() ?? 0], dialog)

@@ -86,6 +86,7 @@ export const getFavoritesController = (controller: Controller | null): Controlle
         appendPath: (path: string, subPath: string) => subPath,
         rename: async () => null,
         extendedRename: async () => null,
+        renameAsCopy: async () => null,
         createFolder: async () => null,
         deleteItems,
         onSelectionChanged: () => {}

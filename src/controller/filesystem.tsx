@@ -96,7 +96,8 @@ export const getFileSystemController = (controller: Controller|null): Controller
 		itemsSelectable: true,
 		appendPath: platform == Platform.Windows ? appendWindowsPath : appendLinuxPath,
 		rename,
-		extendedRename: (controller: Controller, dialog: DialogHandle|null) => extendedRename(controller, dialog, false),
+		extendedRename: (controller: Controller, dialog: DialogHandle | null) => extendedRename(controller, dialog, false),
+		renameAsCopy,
 		createFolder,
 		deleteItems,
 		onSelectionChanged: () => {}
@@ -138,7 +139,8 @@ export const createFileSystemController = (): Controller => ({
 	itemsSelectable: true,
 	appendPath: platform == Platform.Windows ? appendWindowsPath : appendLinuxPath,
 	rename,
-	extendedRename: (controller: Controller, dialog: DialogHandle|null) => extendedRename(controller, dialog, false),
+	extendedRename: (controller: Controller, dialog: DialogHandle | null) => extendedRename(controller, dialog, false),
+	renameAsCopy,
 	createFolder,
 	deleteItems,
 	onSelectionChanged: () => {}
@@ -248,7 +250,33 @@ const rename = async (path: string, item: FolderViewItem, dialog: DialogHandle|n
 		: null
 }
 
-const createFolder = async (path: string, item: FolderViewItem, dialog: DialogHandle|null) => {
+const renameAsCopy = async (path: string, item: FolderViewItem, dialog: DialogHandle|null) => {
+	const getInputRange = () => {
+		const pos = item.name.lastIndexOf(".")
+		return (pos == -1)
+			? [0, item.name.length]
+			: [0, pos]
+	}
+
+	const isDir = item.isDirectory
+	const result = await dialog?.show({
+		text: isDir ? "Möchtest Du eine Kopie des Verzeichnisses erstellen?" : "Möchtest Du eine Kopie der Datei erstellen?",
+		inputText: item.name,
+		inputSelectRange: getInputRange(),
+		btnOk: true,
+		btnCancel: true,
+		defBtnOk: true
+	})
+	return result?.result == Result.Ok
+		? (await request<IOErrorResult>("renameandcopy", {
+				path,
+				name: item.name,
+				newName:  result.input ?? ""
+			}, dialog)).error ?? null
+		: null
+}
+
+const createFolder = async (path: string, item: FolderViewItem, dialog: DialogHandle | null) => {
 	const result = await dialog?.show({
 		text: "Neuen Ordner anlegen",
 		inputText: !item.isParent ? item.name : "",

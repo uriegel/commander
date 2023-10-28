@@ -60,7 +60,8 @@ export interface Controller {
     itemsSelectable: boolean
     appendPath: (path: string, subPath: string) => string,
     rename: (path: string, item: FolderViewItem, dialog: DialogHandle | null) => Promise<IOError | null>
-    extendedRename: (controller: Controller, dialog: DialogHandle|null) => Promise<Controller|null>
+    extendedRename: (controller: Controller, dialog: DialogHandle | null) => Promise<Controller | null>
+    renameAsCopy: (path: string, item: FolderViewItem, dialog: DialogHandle | null) => Promise<IOError | null>
     createFolder: (path: string, item: FolderViewItem, dialog: DialogHandle|null) => Promise<IOError | null>
     deleteItems: (path: string, items: FolderViewItem[], dialog: DialogHandle|null) => Promise<IOError | null>
     onSelectionChanged: (items: FolderViewItem[]) => void 
@@ -103,6 +104,7 @@ export const createEmptyController = (): Controller => ({
     appendPath: () => "",
     rename: async () => null,
     extendedRename: async () => null,
+    renameAsCopy: async () => null,
     createFolder: async () => null,
     deleteItems: async () => null,
     onSelectionChanged: () => {}
