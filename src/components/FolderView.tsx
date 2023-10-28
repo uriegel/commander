@@ -444,7 +444,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO Windows: WindowCloseRequested for Alt+F4
 // TODO Fortschritt bei Kopieren: 7/1245
 // TODO Fortschritt bei Kopieren: Restzeit
 // TODO Windows: DPI Awareness 2 Monitore unterschiedliche Auflösungen
