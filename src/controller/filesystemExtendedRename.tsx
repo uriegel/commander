@@ -19,7 +19,7 @@ export const createExtendedRenameFileSystemController = (controller: Controller)
         const cols = controller.getColumns()
         cols.columns = cols.columns.insert(1, { name: "Neuer Name", isSortable: false })
         cols.renderRow = (item: FolderViewItem) => {
-            var items = controller.getColumns().renderRow(item)
+            var items = controller.getColumns().renderRow(item, id=>{})
             return items.insert(1, item.newName ?? "")
         }
         return cols
