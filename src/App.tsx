@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import ViewSplit from 'view-split-react'
 import Dialog, { DialogHandle, Result } from 'web-dialog-react' 
 import FolderView, { FolderViewHandle, FolderViewItem } from './components/FolderView'
@@ -78,7 +78,9 @@ const App = () => {
 		folderLeft.current?.setFocus()
 	}, [])
 
-	const onPathChanged = (path: string, isDirectory: boolean) => setPath({ path, isDirectory })
+	const onPathChanged = useCallback(
+		(path: string, isDirectory: boolean) => setPath({ path, isDirectory }
+	), [])
 
 	const onEnter = async (item: FolderViewItem, keys: SpecialKeys) => 
 		await getActiveFolder()?.processEnter(item, keys, getInactiveFolder()?.getPath())
