@@ -40,6 +40,7 @@ static class Window
             .JsonPost<Empty, IOResult>("commander/cancelcopy", Directory.CancelCopy)
             .JsonPost<GetFiles, GetFilesResult>("commander/getremotefiles", Remote.GetFiles)
             .JsonPost<RenameItemsParam, IOResult>("commander/renameitems", Directory.RenameItems)
+            .JsonPost<RenameItemParam, IOResult>("commander/renameandcopy", Directory.RenameAndCopy)
             .JsonPost<OnEnterParam, IOResult>("commander/onenter", Directory.OnEnter)
 #if Windows            
             .MapGet("commander/startelevated", UacServer.StartElevated)

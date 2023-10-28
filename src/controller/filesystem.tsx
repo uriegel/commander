@@ -258,9 +258,11 @@ const renameAsCopy = async (path: string, item: FolderViewItem, dialog: DialogHa
 			: [0, pos]
 	}
 
-	const isDir = item.isDirectory
+	if (item.isDirectory)
+		return null
+
 	const result = await dialog?.show({
-		text: isDir ? "Möchtest Du eine Kopie des Verzeichnisses erstellen?" : "Möchtest Du eine Kopie der Datei erstellen?",
+		text: "Möchtest Du eine Kopie der Datei erstellen?",
 		inputText: item.name,
 		inputSelectRange: getInputRange(),
 		btnOk: true,

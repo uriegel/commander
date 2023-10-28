@@ -141,6 +141,12 @@ static partial class Directory
             => Move(input.Path.AppendPath("__RENAMING__" + item.NewName), input.Path.AppendPath(item.NewName));
     }
 
+    public static Task<IOResult> RenameAndCopy(RenameItemParam input)
+        => Try(
+            () => File.Copy(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName)),
+            MapExceptionToIOError)
+                .ToIOResult();
+
     public static Task<IOResult> OnEnter(OnEnterParam input)
         => new IOResult(null)
             .SideEffect(_ => OnEnter(input.Path, input.Keys))
