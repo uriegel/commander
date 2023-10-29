@@ -3,7 +3,7 @@ import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, EnterData, formatSize} from "./controller"
 import { REMOTES } from "./remotes"
-import { GetRootResult, request, RootItem } from "../requests/requests"
+import { GetRootResult, request } from "../requests/requests"
 import "functional-extensions"
 
 export const ROOT = "root"

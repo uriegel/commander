@@ -40,10 +40,12 @@ String.prototype.appendPath = function (subPath: string): string {
         : this + "/" + subPath
 }
 
+// eslint-disable-next-line
 Array.prototype.distinct = function () {
-    return [... new Set(this)]
+    return [...new Set(this)]
 }
 
+// eslint-disable-next-line
 Date.prototype.removeMilliseconds = function () {
     const newDate = new Date(this.getTime())
     newDate.setMilliseconds(0)

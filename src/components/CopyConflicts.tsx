@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import VirtualTable, { VirtualTableHandle } from 'virtual-table-react'
 import { ExtensionProps } from 'web-dialog-react'
 import { formatDateTime, formatSize, formatVersion } from '../controller/controller'
@@ -72,14 +72,14 @@ const CopyConflicts = ({ props }: ExtensionProps) => {
 			: "equal"
 }
 
-	const renderRow = (item: ConflictItem) => 
+	const renderRow = useCallback((item: ConflictItem) => 
 		getPlatform() == Platform.Windows 
 		? renderRowBase(item).concat((
 			<div className= {getVersionCompareClass(item.version, item.targetVersion)}>
 				<div>{formatVersion(item.version)}</div>
 				<div>{formatVersion(item.targetVersion)}</div>
 			</div>))
-		: renderRowBase(item)
+		: renderRowBase(item), [])
 
     useEffect(() => {
 		virtualTable.current?.setColumns({
@@ -89,7 +89,7 @@ const CopyConflicts = ({ props }: ExtensionProps) => {
 
 		const items = props as ConflictItem[]
 		setItems(items)
-    }, [setItems])
+    }, [setItems, props, renderRow])
     
     return (
         <div className="tableContainer">
