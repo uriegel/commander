@@ -1,4 +1,5 @@
 import Menubar, { MenuItemType } from 'menubar-react'
+import { isWindows } from '../globals'
 
 export interface MenuProps {
     autoMode: boolean
@@ -121,12 +122,19 @@ const Menu = ({ autoMode, toggleAutoMode, showHidden, toggleShowHidden, showView
             shortcut: "F3"
         }, {
             type: MenuItemType.Separator
-        }, {
-            name: "_Menü verbergen",
-            checked: autoMode,
-            toggleChecked: toggleAutoMode,
-            type: MenuItemType.MenuCheckItem,
-        }, {
+        },
+            isWindows() == false
+            ?
+            {
+                name: "_Menü verbergen",
+                checked: autoMode,
+                toggleChecked: toggleAutoMode,
+                type: MenuItemType.MenuCheckItem,
+                }
+                : {
+                    type: MenuItemType.Separator
+                }
+            , {
             name: "_Vollbild",
             type: MenuItemType.MenuItem,
             key: "SHOW_FULLSCREEN",

@@ -1,4 +1,5 @@
 import { isWindows } from "../globals"
+import './Header.css'
 
 interface HeaderProps {
     menu: JSX.Element
@@ -6,10 +7,11 @@ interface HeaderProps {
 
 const Header = ({menu}: HeaderProps ) => {
     return  isWindows()        
-        ? (<div>
-            <div>Test</div>
+        ? (<div className="header">
+                <div>Test</div>
                 {menu}
-        </div>)
+                <div className="headerGrip"></div>
+            </div>)
         : menu
 }
 

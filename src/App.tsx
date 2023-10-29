@@ -74,7 +74,8 @@ const App = () => {
 	}
 
 	useEffect(() => {
-		setAutoMode(localStorage.getItem("menuAutoHide") == "true")
+		if (!isWindows())
+			setAutoMode(localStorage.getItem("menuAutoHide") == "true")
 		themeChangedEvents.subscribe(setTheme)
 		folderLeft.current?.setFocus()
 	}, [])
