@@ -444,7 +444,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO Fortschritt bei Kopieren 20s/3:45  or 20:34/3:45:33
+// TODO Fortschritt bei Kopieren Remote
 // TODO Windows: DPI Awareness 2 Monitore unterschiedliche Auflösungen
 // TODO Views: save as view
 // TODO Views: show views

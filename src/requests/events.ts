@@ -4,6 +4,7 @@ type CopyProgress = {
     fileName: string
     totalCount: number
     currentCount: number,
+    copyTime: number,
     totalFileBytes: number
     currentFileBytes: number
     totalBytes: number
@@ -30,6 +31,7 @@ export const progressChangedEvents = new BehaviorSubject<CopyProgress>({
     fileName: "",
     totalCount: 0,
     currentCount: 0,
+    copyTime: 0,
     totalFileBytes: 0,
     currentFileBytes: 0,
     totalBytes: 0,

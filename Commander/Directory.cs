@@ -9,6 +9,7 @@ using MetadataExtractor.Formats.Exif;
 
 using static LinqTools.Core;
 using static System.IO.Directory;
+using System.Data;
 
 static partial class Directory
 {
@@ -207,17 +208,20 @@ static partial class Directory
 
     static Task<IOResult> CopyItems(int totalCount, long totalSize, CopyItemsParam input,
         HashSet<string> newDirs, CancellationToken cancellationToken)
-        => input.Items.Aggregate(new FileCopyAggregateItem(0L, 0), (fcai, n) =>
-        {
-            if (cancellationToken.IsCancellationRequested)
-                return new(0, 0);
-            var targetPath = AppendPath(input.TargetPath, n.SubPath);
-            EnsurePathExists(input.TargetPath, n.SubPath, newDirs);
-            CopyItem(n.Name, AppendPath(input.Path, n.SubPath), targetPath,
-                (c, t) =>Events.CopyProgressChanged(new(n.Name, totalCount, fcai.Count + 1, t, c, totalSize, fcai.Bytes + c)),
-                input.Move, cancellationToken);
-            return new(fcai.Bytes + n.Size, fcai.Count + 1);
-        })
+        => input
+            .Items
+            .Aggregate(new FileCopyAggregateItem(0L, 0, DateTime.Now), (fcai, n) =>
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    return new(0, 0, DateTime.Now);
+                var targetPath = AppendPath(input.TargetPath, n.SubPath);
+                EnsurePathExists(input.TargetPath, n.SubPath, newDirs);
+                CopyItem(n.Name, AppendPath(input.Path, n.SubPath), targetPath,
+                    (c, t) => Events.CopyProgressChanged(
+                        new(n.Name, totalCount, fcai.Count + 1, (int)(DateTime.Now - fcai.StartTime).TotalSeconds, t, c, totalSize, fcai.Bytes + c)),
+                    input.Move, cancellationToken);
+                return new(fcai.Bytes + n.Size, fcai.Count + 1, fcai.StartTime);
+            })
             .SideEffect(n =>
             {
                 if (input.Move)
@@ -298,7 +302,8 @@ record GetExtendedItems(
 
 record FileCopyAggregateItem(
     long Bytes,
-    int Count
+    int Count,
+    DateTime StartTime
 );
 
 record FileRequest(string Path);

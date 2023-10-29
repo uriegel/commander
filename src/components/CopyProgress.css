@@ -6,6 +6,10 @@
     width: 100%;
 }
 
+.copyProgress table {
+    width: 100%;
+}
+
 .copyProgress .rightAligned {
     text-align: end;
 }

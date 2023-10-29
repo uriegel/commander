@@ -4,6 +4,7 @@ record CopyProgress(
     string FileName,
     int    TotalCount,
     int    CurrentCount,
+    int    CopyTime,
     long   TotalFileBytes,
     long   CurrentFileBytes,
     long   TotalBytes,

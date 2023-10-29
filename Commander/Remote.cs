@@ -109,6 +109,7 @@ static class Remote
                         n.Name, 
                         totalCount,
                         0, 
+                        0,
                         n.Size,
                         c, 
                         totalSize, count + c
@@ -140,6 +141,7 @@ static class Remote
                     .WithProgress((t, c) => Events.CopyProgressChanged(new(
                         n.Name, 
                         totalCount,
+                        0,
                         0,
                         n.Size, 
                         c, 
