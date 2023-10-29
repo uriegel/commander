@@ -16,6 +16,7 @@ static class Window
         .Title("Commander")
         .ResourceIcon("icon")
         .SaveBounds()
+        .WithoutNativeTitlebar()
         .DebugUrl($"http://localhost:3000")
         .QueryString(Platform.QueryString)
         .ConfigureHttp(http => http
