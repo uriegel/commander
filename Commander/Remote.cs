@@ -96,10 +96,10 @@ static class Remote
                     sourcePath, ipAndPath, items, move, Cancellation.Create());
 
     static async Task<IOResult> CopyItems(int totalCount, long totalSize, IpAndPath ipAndPath, string targetPath, CopyItem[] items, bool move, CancellationToken cancellationToken)
-        => (await items.ToAsyncEnumerable().AggregateAwaitAsync(0L, async (count, n) =>
+        => (await items.ToAsyncEnumerable().AggregateAwaitAsync(new FileCopyAggregateItem(0L, 0, DateTime.Now), async (fcai, n) =>
         {
             if (cancellationToken.IsCancellationRequested)
-                return 0;
+                return new(0, 0, DateTime.Now);
             var targetFilename = targetPath.AppendLinuxPath(n.Name);
             using var msg = await Request.RunAsync(ipAndPath.GetFile(n.Name), true);
             using var targetFile = 
@@ -108,11 +108,12 @@ static class Remote
                     .WithProgress((t, c) => Events.CopyProgressChanged(new(
                         n.Name, 
                         totalCount,
-                        0, 
-                        0,
+                        fcai.Count + 1, 
+                        (int)(DateTime.Now - fcai.StartTime).TotalSeconds,
                         n.Size,
                         c, 
-                        totalSize, count + c
+                        totalSize, 
+                        fcai.Bytes + c
                     )));
 
             await msg 
@@ -125,15 +126,15 @@ static class Remote
                                 .SideEffect(_ => targetFile.Close())
                                 .SetLastWriteTime(targetFilename));
 
-            return count + n.Size;
+            return new(fcai.Bytes + n.Size, fcai.Count + 1, fcai.StartTime);
         }))
             .ToIOResult();
 
     static async Task<IOResult> CopyItems(int totalCount, long totalSize, string sourcePath, IpAndPath ipAndPath, CopyItem[] items, bool move, CancellationToken cancellationToken)
-        => (await items.ToAsyncEnumerable().AggregateAwaitAsync(0L, async (count, n) =>
+        => (await items.ToAsyncEnumerable().AggregateAwaitAsync(new FileCopyAggregateItem(0L, 0, DateTime.Now), async (fcai, n) =>
         {
             if (cancellationToken.IsCancellationRequested)
-                return 0;
+                return new(0, 0, DateTime.Now);
             var sourceFilename = sourcePath.AppendPath(n.Name);
             using var sourceFile = 
                 File
@@ -141,14 +142,15 @@ static class Remote
                     .WithProgress((t, c) => Events.CopyProgressChanged(new(
                         n.Name, 
                         totalCount,
-                        0,
-                        0,
+                        fcai.Count + 1, 
+                        (int)(DateTime.Now - fcai.StartTime).TotalSeconds,
                         n.Size, 
                         c, 
-                        totalSize, count + c
+                        totalSize, 
+                        fcai.Bytes + c
                     )));
             using var msg = await Request.RunAsync(ipAndPath.PostFile(n.Name, sourceFile, new DateTimeOffset(n.Time).UtcDateTime), true);
-            return count + n.Size;
+            return new(fcai.Bytes + n.Size, fcai.Count + 1, fcai.StartTime);
         }))
             .ToIOResult();
 

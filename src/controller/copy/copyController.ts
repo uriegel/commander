@@ -158,12 +158,10 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|un
                         if (res?.result == Result.Cancel)
                             await request("cancelCopy", {})        
                     }, 1000)                    
-                    console.log("Start progress", timeout)
                 }
 
                 const stopProgressDialog = () => {
                     clearTimeout(timeout)    
-                    console.log("Stop progress", timeout)
                 }
 
                 startProgressDialog()
