@@ -13,13 +13,14 @@ import './themes/adwaita.css'
 import './themes/adwaitaDark.css'
 import './themes/windows.css'
 import './themes/windowsDark.css'
-import { getTheme } from './globals'
+import { getTheme, isWindows } from './globals'
 import { themeChangedEvents } from './requests/events'
 import { getCopyController } from './controller/copy/copyController'
 import FileViewer from './components/FileViewer'
 import "functional-extensions"
 import "./extensions/extensions"
 import { SpecialKeys } from 'virtual-table-react'
+import Header from './components/Header'
 
 // TODO in webview.d.ts
 declare const webViewShowDevTools: ()=>void
@@ -178,9 +179,12 @@ const App = () => {
 
 	return (
 		<div className={`App ${theme}Theme`} onKeyDown={onKeyDown} >
-			<Menu autoMode={autoMode} onMenuAction={onMenuAction} toggleAutoMode={toggleAutoModeDialog}
+			<Header menu={(
+				<Menu autoMode={autoMode} onMenuAction={onMenuAction} toggleAutoMode={toggleAutoModeDialog}
 				showHidden={showHidden} toggleShowHidden={toggleShowHiddenAndRefresh}
 				showViewer={showViewer} toggleShowViewer={toggleShowViewer} />
+			)
+			} />
 			<ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
 			<Statusbar path={path.path} dirCount={itemCount.dirCount} fileCount={itemCount.fileCount} />
 			<Dialog ref={dialog} />
