@@ -82,18 +82,20 @@ static class Remote
         => new(url.StringBetween('/', '/'), "/" + url.SubstringAfter('/').SubstringAfter('/'));
 
     static async Task<IOResult> CopyItemsFromRemote(IpAndPath ipAndPath, string targetPath, CopyItem[] items, bool move)
-        => await CopyItems(items
+        => await CopyItems(items.Length, 
+                        items
                         .Select(n => n.Size)
                         .Aggregate(0L, (a, b) => a + b), 
                     ipAndPath, targetPath, items, move, Cancellation.Create());
 
     static async Task<IOResult> CopyItemsToRemote(string sourcePath, IpAndPath ipAndPath, CopyItem[] items, bool move)
-        => await CopyItems(items
+        => await CopyItems(items.Length, 
+                    items
                         .Select(n => n.Size)
                         .Aggregate(0L, (a, b) => a + b), 
                     sourcePath, ipAndPath, items, move, Cancellation.Create());
 
-    static async Task<IOResult> CopyItems(long totalSize, IpAndPath ipAndPath, string targetPath, CopyItem[] items, bool move, CancellationToken cancellationToken)
+    static async Task<IOResult> CopyItems(int totalCount, long totalSize, IpAndPath ipAndPath, string targetPath, CopyItem[] items, bool move, CancellationToken cancellationToken)
         => (await items.ToAsyncEnumerable().AggregateAwaitAsync(0L, async (count, n) =>
         {
             if (cancellationToken.IsCancellationRequested)
@@ -105,6 +107,8 @@ static class Remote
                     .Create(targetFilename)
                     .WithProgress((t, c) => Events.CopyProgressChanged(new(
                         n.Name, 
+                        totalCount,
+                        0, 
                         n.Size,
                         c, 
                         totalSize, count + c
@@ -124,7 +128,7 @@ static class Remote
         }))
             .ToIOResult();
 
-    static async Task<IOResult> CopyItems(long totalSize, string sourcePath, IpAndPath ipAndPath, CopyItem[] items, bool move, CancellationToken cancellationToken)
+    static async Task<IOResult> CopyItems(int totalCount, long totalSize, string sourcePath, IpAndPath ipAndPath, CopyItem[] items, bool move, CancellationToken cancellationToken)
         => (await items.ToAsyncEnumerable().AggregateAwaitAsync(0L, async (count, n) =>
         {
             if (cancellationToken.IsCancellationRequested)
@@ -135,6 +139,8 @@ static class Remote
                     .OpenRead(sourceFilename)
                     .WithProgress((t, c) => Events.CopyProgressChanged(new(
                         n.Name, 
+                        totalCount,
+                        0,
                         n.Size, 
                         c, 
                         totalSize, count + c

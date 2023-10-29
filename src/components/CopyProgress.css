@@ -5,3 +5,7 @@
 .copyProgress progress {
     width: 100%;
 }
+
+.copyProgress .rightAligned {
+    text-align: end;
+}

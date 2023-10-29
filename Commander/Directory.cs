@@ -200,37 +200,34 @@ static partial class Directory
     }
 
     static async Task<IOResult> CopyItems(CopyItemsParam input, CopyItem[] items)
-        => await CopyItems(items
+        => await CopyItems(items.Length, items
                             .Select(n => n.Size)
                             .Aggregate(0L, (a, b) => a + b), 
                         input, new HashSet<string>(), Cancellation.Create());
 
-    static Task<IOResult> CopyItems(long totalSize, CopyItemsParam input,
+    static Task<IOResult> CopyItems(int totalCount, long totalSize, CopyItemsParam input,
         HashSet<string> newDirs, CancellationToken cancellationToken)
-        => input.Items.Aggregate(0L, (count, n) =>
+        => input.Items.Aggregate(new FileCopyAggregateItem(0L, 0), (fcai, n) =>
         {
             if (cancellationToken.IsCancellationRequested)
-                return 0;
+                return new(0, 0);
             var targetPath = AppendPath(input.TargetPath, n.SubPath);
             EnsurePathExists(input.TargetPath, n.SubPath, newDirs);
             CopyItem(n.Name, AppendPath(input.Path, n.SubPath), targetPath,
-                (c, t) => Events.CopyProgressChanged(new(n.Name, t, c, totalSize, count + c)),
+                (c, t) =>Events.CopyProgressChanged(new(n.Name, totalCount, fcai.Count + 1, t, c, totalSize, fcai.Bytes + c)),
                 input.Move, cancellationToken);
-            return count + n.Size;
+            return new(fcai.Bytes + n.Size, fcai.Count + 1);
         })
             .SideEffect(n =>
             {
                 if (input.Move)
                     foreach (var dir in newDirs)
-                    {   
-                        try 
+                    {
+                        try
                         {
-                            System.IO.Directory.Delete(input.Path.AppendPath(dir));
+                            Delete(input.Path.AppendPath(dir));
                         }
-                        catch
-                        {
-
-                        }
+                        catch { }
                     };
             })
             .ToIOResult();
@@ -297,6 +294,11 @@ record GetFilesResult(
 record GetExtendedItems(
     string[] Items,
     string Path
+);
+
+record FileCopyAggregateItem(
+    long Bytes,
+    int Count
 );
 
 record FileRequest(string Path);
