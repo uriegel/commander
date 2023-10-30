@@ -1,8 +1,0 @@
-.header {
-    display: flex;
-}
-
-.headerGrip {
-    flex-grow: 1;
-    -webkit-app-region: drag;
-}

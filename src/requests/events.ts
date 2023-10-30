@@ -11,9 +11,14 @@ type CopyProgress = {
     currentBytes: number
 }
 
+type WindowState = {
+    maximized: boolean
+}
+
 type CommanderEvent = {
     theme?:        string
     copyProgress?: CopyProgress
+    windowState?: WindowState
 }
 
 const toCommanderEvent = (event: MessageEvent) => 
@@ -26,6 +31,10 @@ let commanderEvents = fromEvent<MessageEvent>(source, 'message')
 export const themeChangedEvents = commanderEvents
     .pipe(filter(n => n.theme != undefined))
     .pipe(map(n => n.theme!))
+
+export const windowStateChangedEvents = commanderEvents
+    .pipe(filter(n => n.windowState != undefined))
+    .pipe(map(n => n.windowState!.maximized))
 
 export const progressChangedEvents = new BehaviorSubject<CopyProgress>({
     fileName: "",

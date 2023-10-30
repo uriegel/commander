@@ -6,6 +6,7 @@
     --exif-color: darkblue;
     --selected-exif-color: yellow;
     --vtr-background-color: transparent;
+    --titlebar-hover-color: lightgray;
 
     --vsr-grip-color : var(--scaffolding-background-color);
 

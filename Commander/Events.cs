@@ -11,14 +11,21 @@ record CopyProgress(
     long   CurrentBytes
 );
 
+record WindowState(bool Maximized);
+
 record Events(
     string? Theme,
-    CopyProgress? CopyProgress)
+    CopyProgress? CopyProgress,
+    WindowState? WindowState
+)
 {
     public static void CopyProgressChanged(CopyProgress progress)
-        => Source.Send(new Events(null, progress));
+        => Source.Send(new Events(null, progress, null));
     static Events ThemeChanged(string theme)
-        => new Events(theme, null);
+        => new Events(theme, null, null);
+
+    static Events WindowStateChanged(bool isMaximized)
+        => new Events(null, null, new(isMaximized));
 
     public static SseEventSource<Events> Source = SseEventSource<Events>.Create();   
 

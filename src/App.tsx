@@ -20,7 +20,7 @@ import FileViewer from './components/FileViewer'
 import "functional-extensions"
 import "./extensions/extensions"
 import { SpecialKeys } from 'virtual-table-react'
-import Header from './components/Header'
+import Titlebar from './components/Titlebar'
 
 // TODO in webview.d.ts
 declare const webViewShowDevTools: ()=>void
@@ -180,7 +180,7 @@ const App = () => {
 
 	return (
 		<div className={`App ${theme}Theme`} onKeyDown={onKeyDown} >
-			<Header menu={(
+			<Titlebar menu={(
 				<Menu autoMode={autoMode} onMenuAction={onMenuAction} toggleAutoMode={toggleAutoModeDialog}
 				showHidden={showHidden} toggleShowHidden={toggleShowHiddenAndRefresh}
 				showViewer={showViewer} toggleShowViewer={toggleShowViewer} />
