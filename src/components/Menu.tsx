@@ -122,19 +122,13 @@ const Menu = ({ autoMode, toggleAutoMode, showHidden, toggleShowHidden, showView
             shortcut: "F3"
         }, {
             type: MenuItemType.Separator
-        },
-            isWindows() == false
-            ?
-            {
-                name: "_Menü verbergen",
-                checked: autoMode,
-                toggleChecked: toggleAutoMode,
-                type: MenuItemType.MenuCheckItem,
-                }
-                : {
-                    type: MenuItemType.Separator
-                }
-            , {
+        }, {
+            name: "_Menü verbergen",
+            checked: autoMode,
+            toggleChecked: toggleAutoMode,
+            type: MenuItemType.MenuCheckItem,
+            invisible: isWindows()
+        }, {
             name: "_Vollbild",
             type: MenuItemType.MenuItem,
             key: "SHOW_FULLSCREEN",
