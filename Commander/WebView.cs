@@ -17,6 +17,7 @@ static class Window
         .ResourceIcon("icon")
         .SaveBounds()
         .WithoutNativeTitlebar()
+        .OnWindowStateChanged(state => Events.WindowStateChanged(state == WebWindowNetCore.Data.WebWindowState.Maximized))
         .DebugUrl($"http://localhost:3000")
         .QueryString(Platform.QueryString)
         .ConfigureHttp(http => http
