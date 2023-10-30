@@ -1,7 +1,5 @@
-import { useEffect, useState } from "react"
 import { isWindows } from "../globals"
 import './Titlebar.css'
-import { windowStateChangedEvents } from "../requests/events"
 
 // TODO in webview.d.ts
 declare const webViewMinimize: () => void
@@ -10,19 +8,14 @@ declare const webViewMaximize: () => void
 
 interface TitlebarProps {
     menu: JSX.Element
+    isMaximized: boolean
 }
 
-// TODO When maximized, no border correction is needed
 // TODO Icon from resource
 // TODO Menu hide menu item (separator)
+// TODO Focus border control
 
-const Titlebar = ({ menu }: TitlebarProps) => {
-    
-    const [isMaximized, setIsMaximized] = useState(false)
-    
-    useEffect(() => {
-		windowStateChangedEvents.subscribe(maximized => console.log(setIsMaximized(maximized)))
-    }, [])
+const Titlebar = ({ menu, isMaximized }: TitlebarProps) => {
     
     const onMinimize = () => webViewMinimize()
     const onRestore = () => webViewRestore()

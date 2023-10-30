@@ -14,7 +14,7 @@ import './themes/adwaitaDark.css'
 import './themes/windows.css'
 import './themes/windowsDark.css'
 import { getTheme, isWindows } from './globals'
-import { themeChangedEvents } from './requests/events'
+import { themeChangedEvents, windowStateChangedEvents } from './requests/events'
 import { getCopyController } from './controller/copy/copyController'
 import FileViewer from './components/FileViewer'
 import "functional-extensions"
@@ -23,7 +23,8 @@ import { SpecialKeys } from 'virtual-table-react'
 import Titlebar from './components/Titlebar'
 
 // TODO in webview.d.ts
-declare const webViewShowDevTools: ()=>void
+declare const webViewShowDevTools: () => void
+declare const webViewGetWindowState: () => Promise<number>
 
 const ID_LEFT = "left"
 const ID_RIGHT = "right"
@@ -46,6 +47,16 @@ const App = () => {
 	const showViewerRef = useRef(false)
 	const [path, setPath] = useState<PathProp>({ path: "", isDirectory: false })
 	const [itemCount, setItemCount] = useState({dirCount: 0, fileCount: 0 })
+    const [isMaximized, setIsMaximized] = useState(false)
+    
+	useEffect(() => {
+		windowStateChangedEvents.subscribe(maximized => setIsMaximized(maximized))
+		const setWindowInitialState = async () => {
+			const state = await webViewGetWindowState()
+			setIsMaximized(state == 2)
+		}
+		setWindowInitialState()
+    }, [])
 	
 	const dialog = useRef<DialogHandle>(null)
 		
@@ -178,14 +189,15 @@ const App = () => {
 			: (<div></div>)
 	}
 
+	const getAppClasses = () => ["App", `${theme}Theme`, isMaximized ? "maximized" : null].join(' ')
+
 	return (
-		<div className={`App ${theme}Theme`} onKeyDown={onKeyDown} >
+		<div className={getAppClasses()} onKeyDown={onKeyDown} >
 			<Titlebar menu={(
 				<Menu autoMode={autoMode} onMenuAction={onMenuAction} toggleAutoMode={toggleAutoModeDialog}
 				showHidden={showHidden} toggleShowHidden={toggleShowHiddenAndRefresh}
 				showViewer={showViewer} toggleShowViewer={toggleShowViewer} />
-			)
-			} />
+			)} isMaximized ={isMaximized} />
 			<ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
 			<Statusbar path={path.path} dirCount={itemCount.dirCount} fileCount={itemCount.fileCount} />
 			<Dialog ref={dialog} />

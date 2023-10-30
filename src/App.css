@@ -2,6 +2,11 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
+}
+
+.App.maximized {
+    padding: 8px 4px 4px 4px;
 }
 
 .viewer{
