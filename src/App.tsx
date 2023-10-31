@@ -50,12 +50,14 @@ const App = () => {
     const [isMaximized, setIsMaximized] = useState(false)
     
 	useEffect(() => {
-		windowStateChangedEvents.subscribe(maximized => setIsMaximized(maximized))
-		const setWindowInitialState = async () => {
-			const state = await webViewGetWindowState()
-			setIsMaximized(state == 2)
+		if (isWindows()) {
+			windowStateChangedEvents.subscribe(maximized => setIsMaximized(maximized))
+			const setWindowInitialState = async () => {
+				const state = await webViewGetWindowState()
+				setIsMaximized(state == 2)
+			}
+			setWindowInitialState()
 		}
-		setWindowInitialState()
     }, [])
 	
 	const dialog = useRef<DialogHandle>(null)

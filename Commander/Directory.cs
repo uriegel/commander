@@ -104,7 +104,11 @@ static partial class Directory
 
     public static async Task ProcessFavicon(HttpContext context)
     {
-        
+        var icon = Resources.Get("icon");
+        var ms = new MemoryStream();
+        icon?.CopyTo(ms);
+        ms.Position = 0;
+        await context.SendStream(ms, null, "favicon.png");
     }
 
     public static Task<IOResult> CreateFolder(CreateFolderParam input)

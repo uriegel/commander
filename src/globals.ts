@@ -11,8 +11,7 @@ export const getPlatform = memoize(() => {
 })
 
 export const getTheme = memoize(() => new URLSearchParams(window.location.search).get("theme") || "adwaita")
-//export const isWindows = memoize(() => getTheme().startsWith("windows"))
-export const isWindows = memoize(() => true)
+export const isWindows = memoize(() => getTheme().startsWith("windows"))
 
 function memoize<T>(funcToMemoize: () => T) {
     let memoized: T|null = null

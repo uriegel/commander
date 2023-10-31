@@ -11,8 +11,6 @@ interface TitlebarProps {
     isMaximized: boolean
 }
 
-// TODO Icon from resource
-
 const Titlebar = ({ menu, isMaximized }: TitlebarProps) => {
     
     const onMinimize = () => webViewMinimize()
@@ -22,7 +20,7 @@ const Titlebar = ({ menu, isMaximized }: TitlebarProps) => {
     
     return  isWindows()        
         ? (<div className="titlebar">
-                <img/>
+                <img src="http://localhost:20000/commander/getfavicon"/>
                 {menu}
                 <div className="titlebarGrip">
                     <span>Commander</span>
