@@ -445,7 +445,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 export default FolderView
 
 // TODO Copy: display bytes to copy
-// TODO Windows: Windows Server 2016: nccalc not working
 // TODO Windows: DPI Awareness 2 Monitore unterschiedliche Auflösungen
 // TODO Views: save as view
 // TODO Views: show views
