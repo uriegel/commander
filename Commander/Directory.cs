@@ -102,6 +102,11 @@ static partial class Directory
             : context.SendStream(stream, null, path));
     }
 
+    public static async Task ProcessFavicon(HttpContext context)
+    {
+        
+    }
+
     public static Task<IOResult> CreateFolder(CreateFolderParam input)
         => Try(
             () => CreateDirectory(input.Path.AppendPath(input.Name)).ToNothing(),

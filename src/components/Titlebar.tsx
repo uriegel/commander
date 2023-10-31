@@ -12,7 +12,6 @@ interface TitlebarProps {
 }
 
 // TODO Icon from resource
-// TODO Focus border control
 
 const Titlebar = ({ menu, isMaximized }: TitlebarProps) => {
     
@@ -23,7 +22,7 @@ const Titlebar = ({ menu, isMaximized }: TitlebarProps) => {
     
     return  isWindows()        
         ? (<div className="titlebar">
-                <div>Test</div>
+                <img/>
                 {menu}
                 <div className="titlebarGrip">
                     <span>Commander</span>
