@@ -12,7 +12,6 @@ interface TitlebarProps {
 }
 
 // TODO Icon from resource
-// TODO Menu hide menu item (separator)
 // TODO Focus border control
 
 const Titlebar = ({ menu, isMaximized }: TitlebarProps) => {
