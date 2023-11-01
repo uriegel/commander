@@ -66,7 +66,7 @@ static partial class Directory
                 ? GetVersion(item)
                 : null;
 
-        return (GetExtendedItems(getExtendedItems.Path, getExtendedItems.Items) with 
+        return (GetExtendedItems(getExtendedItems.Id, getExtendedItems.Path, getExtendedItems.Items) with 
         {
             Versions = getExtendedItems
                         .Items

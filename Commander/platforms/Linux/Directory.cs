@@ -63,12 +63,6 @@ static partial class Directory
         => GetExtendedItems(getExtendedItems.Id, getExtendedItems.Path, getExtendedItems.Items)
             .ToAsync();
 
-    public static Task<IOResult> CancelExtendedItems(CancelExtendedItems cancelExtendedItems)
-    {
-        extendedInfosCancellations.GetValue(cancelExtendedItems.Id).WhenSome(n => n.Cancel());
-        return Task.FromResult(new IOResult(IOError.NoError));
-    }
-
     public static Task<IOResult> DeleteItems(DeleteItemsParam input)
         => Application.Dispatch(() =>
         {

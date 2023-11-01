@@ -130,6 +130,12 @@ static partial class Directory
             MapExceptionToIOError)
                 .ToIOResult();
 
+    public static Task<IOResult> CancelExtendedItems(CancelExtendedItems cancelExtendedItems)
+    {
+        extendedInfosCancellations.GetValue(cancelExtendedItems.Id).WhenSome(n => n.Cancel());
+        return Task.FromResult(new IOResult(IOError.NoError));
+    }
+
     public static Task<CopyItemsResult> CopyItemsInfo(CopyItemsParam input)
         => CopyItemsInfo(input.Path, input.TargetPath, null, 
                 new List<CopyItemInfo>(), input.Items, (new CancellationTokenSource(TimeSpan.FromSeconds(10))).Token)
