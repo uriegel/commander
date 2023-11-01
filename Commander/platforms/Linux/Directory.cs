@@ -60,8 +60,11 @@ static partial class Directory
             }, 3);
 
     public static Task<GetExtendedItemsResult> GetExtendedItems(GetExtendedItems getExtendedItems)
-        => GetExtendedItems(getExtendedItems.Path, getExtendedItems.Items)
+        => GetExtendedItems(getExtendedItems.Id, getExtendedItems.Path, getExtendedItems.Items)
             .ToAsync();
+
+    public static Task<IOResult> CancelExtendedItems(CancelExtendedItems cancelExtendedItems)
+        => Task.FromResult(new IOResult(IOError.NoError));
 
     public static Task<IOResult> DeleteItems(DeleteItemsParam input)
         => Application.Dispatch(() =>

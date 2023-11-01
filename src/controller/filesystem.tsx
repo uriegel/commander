@@ -66,42 +66,7 @@ const appendWindowsPath = (path: string, subPath: string) => path.length == 3 ? 
 export const getFileSystemController = (controller: Controller|null): ControllerResult =>
 	controller?.type == ControllerType.FileSystem
 	? ({ changed: false, controller })
-    : ({ changed: true, controller: { 
-		type: ControllerType.FileSystem, 
-		id: "file",
-		getColumns: platform == Platform.Windows ? getWindowsColumns : getLinuxColumns, 
-		getExtendedItems,
-		setExtendedItems,
-		getItems,
-		onEnter: async ({path, item, keys}) => 
-			item.isParent && path.length > driveLength 
-			?  ({
-				processed: false, 
-				pathToSet: path + '/' + item.name,
-				latestPath: path.extractSubPath()
-			}) 
-			: item.isParent && path.length == driveLength
-			? ({
-				processed: false, 
-				pathToSet: ROOT,
-				latestPath: path
-			}) 
-			: item.isDirectory && !keys.alt 
-			? ({
-				processed: false, 
-				pathToSet: path + '/' + item.name 
-			}) 
-			: onFileEnter(path.appendPath(item.name), keys),
-		sort,
-		itemsSelectable: true,
-		appendPath: platform == Platform.Windows ? appendWindowsPath : appendLinuxPath,
-		rename,
-		extendedRename: (controller: Controller, dialog: DialogHandle | null) => extendedRename(controller, dialog, false),
-		renameAsCopy,
-		createFolder,
-		deleteItems,
-		onSelectionChanged: () => {}
-	}
+    : ({ changed: true, controller: createFileSystemController()
 })
 
 const onFileEnter = (path: string, keys?: SpecialKeys) => {
@@ -115,27 +80,28 @@ export const createFileSystemController = (): Controller => ({
 	getColumns: platform == Platform.Windows ? getWindowsColumns : getLinuxColumns, 
 	getExtendedItems,
 	setExtendedItems,
+	cancelExtendedItems: async () => { },
 	getItems,
-	onEnter: async (enterData: EnterData) => 
-        enterData.item.isParent && enterData.path.length > driveLength 
-		?  ({
-			processed: false, 
-			pathToSet: enterData.path + '/' + enterData.item.name,
-			latestPath: enterData.path.extractSubPath()
-		}) 
-		: enterData.item.isParent && enterData.path.length == driveLength
-		? ({
-			processed: false, 
-			pathToSet: ROOT,
-			latestPath: enterData.path
-		}) 
-		: enterData.item.isDirectory
-		? ({
-			processed: false, 
-			pathToSet: enterData.path + '/' + enterData.item.name 
-		}) 
-		: { processed: true },
-	sort,
+	onEnter: async ({path, item, keys}) => 
+	item.isParent && path.length > driveLength 
+	?  ({
+		processed: false, 
+		pathToSet: path + '/' + item.name,
+		latestPath: path.extractSubPath()
+	}) 
+	: item.isParent && path.length == driveLength
+	? ({
+		processed: false, 
+		pathToSet: ROOT,
+		latestPath: path
+	}) 
+	: item.isDirectory && !keys.alt 
+	? ({
+		processed: false, 
+		pathToSet: path + '/' + item.name 
+	}) 
+	: onFileEnter(path.appendPath(item.name), keys),
+sort,
 	itemsSelectable: true,
 	appendPath: platform == Platform.Windows ? appendWindowsPath : appendLinuxPath,
 	rename,
@@ -184,9 +150,10 @@ const checkExtendedItems =
 		? checkExtendedItemsWindows
 		: checkExtendedItemsLinux
 
-const getExtendedItems = async (path: string, items: FolderViewItem[]): Promise<GetExtendedItemsResult> => 
+const getExtendedItems = async (id: string, path: string, items: FolderViewItem[]): Promise<GetExtendedItemsResult> => 
 	checkExtendedItems(items)
 		? request<GetExtendedItemsResult>("getextendeditems", {
+			id,
 			items: (items as FolderViewItem[]).map(n => n.name),
 			path
 		})

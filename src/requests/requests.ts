@@ -108,6 +108,7 @@ type GetFilesType = {
 }
 
 type GetExtendedItemsType = {
+    id: string,
     path: string,
     items: string[]
 }

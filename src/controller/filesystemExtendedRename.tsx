@@ -26,6 +26,7 @@ export const createExtendedRenameFileSystemController = (controller: Controller)
     },
     getExtendedItems: controller.getExtendedItems,
     setExtendedItems: controller.setExtendedItems,
+    cancelExtendedItems: async () => { },
     getItems: controller.getItems,
     onEnter: async (enterData: EnterData) => {
         

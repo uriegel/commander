@@ -117,6 +117,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const sortIndex = useRef(0)
     const sortDescending = useRef(false)
     const itemCount = useRef({ fileCount: 0, dirCount: 0 })
+    const waitOnExtendedItems = useRef(false)
 
     const [items, setItems] = useState([] as FolderViewItem[])
     const [path, setPath] = useState("")
@@ -170,6 +171,9 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     const changePath = async (path: string, showHidden: boolean, latestPath?: string, mount?: boolean, fromBacklog?: boolean) => {
+        if (waitOnExtendedItems.current)
+            controller.current.cancelExtendedItems(id)
+        
         restrictionView.current?.reset()
         const result = checkController(path, controller.current)
         if (result.changed) {
@@ -187,11 +191,13 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         const pos = latestPath ? items.items.findIndex(n => n.name == latestPath) : 0
         virtualTable.current?.setInitialPosition(pos, items.items.length)
         refPath.current = items.path
-        const extendedInfoItems = await controller.current.getExtendedItems(items.path, items.items)
-        if (extendedInfoItems.path == refPath.current) 
-            setItems(controller.current.setExtendedItems(items.items, extendedInfoItems))    
         if (!fromBacklog)
             history.current?.set(items.path)
+        waitOnExtendedItems.current = true
+        const extendedInfoItems = await controller.current.getExtendedItems(id, items.path, items.items)
+        waitOnExtendedItems.current = false
+        if (extendedInfoItems.path == refPath.current) 
+            setItems(controller.current.setExtendedItems(items.items, extendedInfoItems))    
     }
 
     const processEnter = async (item: FolderViewItem, keys: SpecialKeys, otherPath?: string) => {
@@ -444,7 +450,9 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO ExtendedInfos: take groups of 50 files one after another
+// TODO CancelExtendedInfo with id when extendeditems are awaited and the view is to be changed
+// TODO Cancelationtoken map with id
+
 // TODO Windows: DPI Awareness 2 Monitore unterschiedliche Auflösungen
 // TODO Views: save as view
 // TODO Views: show views

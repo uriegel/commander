@@ -62,7 +62,7 @@ static partial class Directory
             => getFiles.ShowHiddenItems || !item.IsHidden;
     }
 
-    public static GetExtendedItemsResult GetExtendedItems(string path, string[] items)
+    public static GetExtendedItemsResult GetExtendedItems(string id, string path, string[] items)
     {
         DateTime? GetExifDate(string file)
         {
@@ -70,6 +70,10 @@ static partial class Directory
             {
                 var directories = ImageMetadataReader.ReadMetadata(path.AppendPath(file));
                 var subIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
+
+                Thread.Sleep(500);
+
+
                 return
                     (subIfdDirectory
                         ?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal)
@@ -306,9 +310,12 @@ record GetFilesResult(
 );
 
 record GetExtendedItems(
+    string Id,
     string[] Items,
     string Path
 );
+
+record CancelExtendedItems(string Id);
 
 record FileCopyAggregateItem(
     long Bytes,

@@ -33,6 +33,7 @@ static class Window
             .JsonPost<GetFiles, GetFilesResult>("commander/getfiles", Directory.GetFiles)
             .JsonPost<Empty, RootItem[]>("commander/getroot", Root.Get)
             .JsonPost<GetExtendedItems, GetExtendedItemsResult>("commander/getextendeditems", Directory.GetExtendedItems)
+            .JsonPost<CancelExtendedItems, IOResult>("commander/cancelextendeditems", Directory.CancelExtendedItems)
             .JsonPost<CreateFolderParam, IOResult>("commander/createfolder", Directory.CreateFolder)
             .JsonPost<DeleteItemsParam, IOResult>("commander/deleteitems", Directory.DeleteItems)
             .JsonPost<RenameItemParam, IOResult>("commander/renameitem", Directory.RenameItem)
