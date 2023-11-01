@@ -78,8 +78,6 @@ static partial class Directory
             {
                 var directories = ImageMetadataReader.ReadMetadata(path.AppendPath(file));
                 var subIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
-
-                Thread.Sleep(500);
                 return (subIfdDirectory
                         ?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal)
                         .WhiteSpaceToNull())
