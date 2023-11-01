@@ -64,7 +64,10 @@ static partial class Directory
             .ToAsync();
 
     public static Task<IOResult> CancelExtendedItems(CancelExtendedItems cancelExtendedItems)
-        => Task.FromResult(new IOResult(IOError.NoError));
+    {
+        extendedInfosCancellations.GetValue(cancelExtendedItems.Id).WhenSome(n => n.Cancel());
+        return Task.FromResult(new IOResult(IOError.NoError));
+    }
 
     public static Task<IOResult> DeleteItems(DeleteItemsParam input)
         => Application.Dispatch(() =>

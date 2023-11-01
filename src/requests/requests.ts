@@ -62,6 +62,7 @@ type Close = "close"
 type GetRoot = "getroot"
 type GetFiles = "getfiles"
 type GetExtendedItems = "getextendeditems"
+type CancelExtendedItems = "cancelextendeditems"
 type ShowDevTools = "showdevtools"
 type ShowFullScreen = "showfullscreen"
 type RenameItem = "renameitem"
@@ -82,6 +83,7 @@ type RequestType =
 	| GetRoot
     | GetFiles
     | GetExtendedItems
+    | CancelExtendedItems
     | ShowDevTools
     | ShowFullScreen
     | RenameItem
@@ -111,6 +113,10 @@ type GetExtendedItemsType = {
     id: string,
     path: string,
     items: string[]
+}
+
+type CancelExtendedItemsType = {
+    id: string
 }
 
 type RenameItemType = {
@@ -173,6 +179,7 @@ export type RequestInput =
     | Empty  
     | GetFilesType 
     | GetExtendedItemsType
+    | CancelExtendedItemsType
     | RenameItemType
     | CreateFolderType
     | DeleteItemsType

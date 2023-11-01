@@ -3,7 +3,7 @@ import { DialogHandle, Result } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
-import { addParent, Controller, ControllerResult, ControllerType, EnterData, formatDateTime, formatSize, formatVersion, sortItems } from "./controller"
+import { addParent, Controller, ControllerResult, ControllerType, formatDateTime, formatSize, formatVersion, sortItems } from "./controller"
 import { GetExtendedItemsResult, GetItemResult, IOErrorResult, request, Version } from "../requests/requests"
 import { ROOT } from "./root"
 import { extendedRename } from "./filesystemExtendedRename"
@@ -80,7 +80,7 @@ export const createFileSystemController = (): Controller => ({
 	getColumns: platform == Platform.Windows ? getWindowsColumns : getLinuxColumns, 
 	getExtendedItems,
 	setExtendedItems,
-	cancelExtendedItems: async () => { },
+	cancelExtendedItems,
 	getItems,
 	onEnter: async ({path, item, keys}) => 
 	item.isParent && path.length > driveLength 
@@ -159,6 +159,10 @@ const getExtendedItems = async (id: string, path: string, items: FolderViewItem[
 		})
 		: { path: "", versions: [], exifTimes: [] }
 
+const cancelExtendedItems = async (id: string): Promise<void> => {
+	await request<IOErrorResult>("cancelextendeditems", { id })
+}
+	
 const setExtendedItems = (items: FolderViewItem[], extended: GetExtendedItemsResult):FolderViewItem[] => 
 	items.map((n, i) => !extended.exifTimes[i] && (extended.versions && !extended.versions[i])
 		? n

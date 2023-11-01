@@ -34,7 +34,7 @@ export const createExtendedRenameFileSystemController = (controller: Controller)
             return controller.onEnter(enterData)
         else {
             if ((await enterData.dialog?.show({
-                text: "Umbennenungen starten?",
+                text: "Umbenennungen starten?",
                 btnOk: true,
                 btnCancel: true
             }))?.result == Result.Ok)

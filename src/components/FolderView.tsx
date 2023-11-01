@@ -450,9 +450,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO CancelExtendedInfo with id when extendeditems are awaited and the view is to be changed
-// TODO Cancelationtoken map with id
-
 // TODO Windows: DPI Awareness 2 Monitore unterschiedliche Auflösungen
 // TODO Views: save as view
 // TODO Views: show views

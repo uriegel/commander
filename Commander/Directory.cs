@@ -10,6 +10,7 @@ using MetadataExtractor.Formats.Exif;
 using static LinqTools.Core;
 using static System.IO.Directory;
 using System.Data;
+using System.Collections.Immutable;
 
 static partial class Directory
 {
@@ -64,18 +65,22 @@ static partial class Directory
 
     public static GetExtendedItemsResult GetExtendedItems(string id, string path, string[] items)
     {
+        extendedInfosCancellations = extendedInfosCancellations.Remove(id);
+        extendedInfosCancellations = extendedInfosCancellations.Add(id, new());
         DateTime? GetExifDate(string file)
         {
+            if (extendedInfosCancellations
+                        .GetValue(id)
+                        .Select(n => n.IsCancellationRequested)
+                        .GetOrDefault(false))
+                return null;
             try
             {
                 var directories = ImageMetadataReader.ReadMetadata(path.AppendPath(file));
                 var subIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
 
                 Thread.Sleep(500);
-
-
-                return
-                    (subIfdDirectory
+                return (subIfdDirectory
                         ?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal)
                         .WhiteSpaceToNull())
                         .FromNullable()
@@ -285,6 +290,9 @@ static partial class Directory
 
     static CopyItemsResult MapExceptionToCopyItems(Exception e)
         => new CopyItemsResult(null, MapExceptionToIOError(e));
+
+    static ImmutableDictionary<string, CancellationTokenSource> extendedInfosCancellations
+        = ImmutableDictionary<string, CancellationTokenSource>.Empty;
 }
 
 record DirectoryItem(
