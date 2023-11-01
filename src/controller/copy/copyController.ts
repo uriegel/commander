@@ -63,6 +63,10 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|un
 
             const fileItems = items
                 .filter(n => !n.isDirectory)
+            const totalSize = fileItems
+                .map(n => n.size || 0)
+                .concat((res.infos ?? []).map(n => n.size || 0))
+                .reduce((a, c) => a + c, 0)
                     
             const targetItemsMap = R.mergeAll(
                 targetItems
@@ -131,7 +135,7 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|un
                     .length > 0
                                 
             const result = await dialog?.show({
-                text,   
+                text: `${text} (${totalSize?.bytesToString()})`,   
                 slide: fromLeft ? Slide.Left : Slide.Right,
                 extension: conflictItems.length ? CopyConflicts : undefined,
                 extensionProps: conflictItems, 
@@ -150,7 +154,7 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|un
                 const startProgressDialog = () => {
                     timeout = setTimeout(async () => {
                         const res = await dialog?.show({
-                            text: `Fortschritt beim ${move ? "Verschieben" : "Kopieren"}`,
+                            text: `Fortschritt beim ${move ? "Verschieben" : "Kopieren"} (${totalSize?.bytesToString()})`,
                             slide: fromLeft ? Slide.Left : Slide.Right,
                             extension: CopyProgress,
                             btnCancel: true

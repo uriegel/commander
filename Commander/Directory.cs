@@ -210,7 +210,8 @@ static partial class Directory
     }
 
     static async Task<IOResult> CopyItems(CopyItemsParam input, CopyItem[] items)
-        => await CopyItems(items.Length, items
+        => await CopyItems(items.Length, 
+                            items
                             .Select(n => n.Size)
                             .Aggregate(0L, (a, b) => a + b), 
                         input, new HashSet<string>(), Cancellation.Create());

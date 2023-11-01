@@ -444,7 +444,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO Copy: display bytes to copy
+// TODO ExtendedInfos: take groups of 50 files one after another
 // TODO Windows: DPI Awareness 2 Monitore unterschiedliche Auflösungen
 // TODO Views: save as view
 // TODO Views: show views
