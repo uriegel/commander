@@ -450,10 +450,10 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO Views: save as view
-// TODO Views: show views
-// TODO Views: views open
-// TODO Views: delete view
+// TODO Services (Windows)
+// TODO GetNetShares (Windows)
+// TODO Windows append home drive to root
+
 // TODO Viewer .. => Directory Info
 
 // using System.IO;
@@ -471,9 +471,6 @@ export default FolderView
 // }
 
 // TODO .. => Btn safe reject sudo eject sde1
-// TODO GetNetShares (Windows)
-// TODO Services (Windows)
-// TODO Windows append home drive to root
 // TODO Arrow left and right in web-dialog button bar
 // TODO Viewer text in textedit with save option
 // TODO Take RenderRow in column
@@ -490,3 +487,97 @@ export default FolderView
 // TODO https://github.com/MicrosoftEdge/WebView2Feedback/issues/2313
 // TODO Check gtk webview: drop file/files/folder/folders sudo apt install libwebkit2gtk-4.0-dev
 // TODO https://stackoverflow.com/questions/71581401/drag-a-file-from-my-gtk-app-to-another-app-not-the-other-way-around
+
+
+/*
+ case "Dienste":
+                        try
+                        {
+                            var services = ServiceController.GetServices();
+                            dirIoItems = services.OrderBy(n => n.DisplayName).Select(n => Item.CreateServiceItem(n));
+                            items = Enumerable.Repeat<Item>(Item.CreateParentItem("drives"), 1).Concat(dirIoItems).ToArray();
+                            itemResult = new ItemResult("Dienste", items);
+                            serviceStates[input.Id] = new ServiceStateProcessor(services, input.Id);
+                        }
+                        catch (Exception)
+                        {
+                        }
+                        break;
+
+public static Item CreateServiceItem(ServiceController sc)
+    {
+        var item = new Item(Kind.Service, "images/serviceStopped.png", sc.DisplayName, default(DateTime), false)
+        {
+            ServiceName = sc.ServiceName
+        };
+        
+        var serviceKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Services\" + item.ServiceName);
+        if (serviceKey != null)
+            item.startType = (int)serviceKey.GetValue("Start");
+        switch (sc.Status)
+        {
+            case ServiceControllerStatus.Running:
+                item.status = "rennt";
+                item.ImageUrl = "images/service.png";
+                break;
+            case ServiceControllerStatus.Stopped:
+                item.status = "aus";
+                break;
+            case ServiceControllerStatus.StartPending:
+                item.status = "läuft an";
+                break;
+            case ServiceControllerStatus.StopPending:
+                item.status = "fährt runter";
+                break;
+        }
+        return item;
+    }                        
+
+public static void StartServices(string[] services)
+        {
+            if (!AdminRights.IsAdmin())
+                ElevatedOperation.StartServices(services);
+            else
+            {
+                foreach (var service in services)
+                {
+                    try
+                    {
+                        var controller = new ServiceController(service);
+                        controller.Start();
+                    }
+                    catch { }
+                }
+            }
+        }
+    
+        public static void StopServices(string[] services)
+        {
+            if (!AdminRights.IsAdmin())
+                ElevatedOperation.StopServices(services);
+            else
+            {
+                foreach (var service in services)
+                {
+                    try
+                    {
+                        var controller = new ServiceController(service);
+                        controller.Stop();
+                    }
+                    catch { }
+                }
+            }
+        }
+
+        void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            var updateItems = services.Where(n =>
+            {
+                var status = n.Status;
+                n.Refresh();
+                return status != n.Status;
+            }).Select(n => Item.CreateServiceItem(n));
+            EventSession.UpdateServiceState(id, updateItems.ToArray());
+        }
+
+        */
