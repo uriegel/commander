@@ -6,10 +6,11 @@ using LinqTools;
 
 record ServiceItem(
     string Name,
-    string? Description
+    string? Description,
+    ServiceControllerStatus Status
 ) {
     public static ServiceItem Create(ServiceController sc)
-        => new(sc.DisplayName, GetServiceDescription(sc.ServiceName));
+        => new(sc.DisplayName, GetServiceDescription(sc.ServiceName), sc.Status);
 
     static string? GetServiceDescription(string serviceName)
     {

@@ -8,6 +8,13 @@ import { Version } from '../requests/requests'
 import { DialogHandle } from 'web-dialog-react'
 import { initializeHistory } from '../history'
 
+export enum ServiceStatus {
+    stopped = 1,
+    starting,
+    stopping,
+    running
+}
+
 export interface FolderViewItem extends SelectableItem {
     name:         string
     size?:        number
@@ -30,7 +37,9 @@ export interface FolderViewItem extends SelectableItem {
     // ExtendedRename
     newName?:     string|null
     // Favorites
-    path?:     string|null
+    path?: string | null
+    // Service
+    status?: ServiceStatus
 }
 
 export type FolderViewHandle = {

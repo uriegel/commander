@@ -1,8 +1,7 @@
 import { TableColumns } from "virtual-table-react"
-import { FolderViewItem } from "../components/FolderView"
+import { FolderViewItem, ServiceStatus } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import { Controller, ControllerResult, ControllerType, addParent, sortItems } from "./controller"
-import { getSortFunction } from "./filesystem"
 import { ROOT } from "./root"
 import { GetServicesResult, request } from "../requests/requests"
 
@@ -14,7 +13,15 @@ const renderRow = (item: FolderViewItem) => [
         ? IconNameType.Parent
         : IconNameType.Service}
         iconPath={item.name.getExtension()} />),
-        "", 
+    item.status == ServiceStatus.running
+        ? "Läuft"
+        : item.status == ServiceStatus.starting
+        ? "Started..."
+        : item.status == ServiceStatus.stopping 
+        ? "Fährt runter..."
+        : item.status == ServiceStatus.stopped
+        ? "Aus"
+        : "",
         "",
         item.description
 ]
@@ -73,4 +80,18 @@ export const getServicesController = (controller: Controller | null): Controller
 		onSelectionChanged: () => {}
     }})
 
-
+const getSortFunction = (index: number, descending: boolean) => {
+    const ascDesc = (sortResult: number) => descending ? -sortResult : sortResult
+    const sf = index == 0
+        ? (a: FolderViewItem, b: FolderViewItem) => a.name.localeCompare(b.name) 
+        : index == 1
+        ? (a: FolderViewItem, b: FolderViewItem) => (a.status || 0) - (b.status || 0)
+        : index == 3
+        ? (a: FolderViewItem, b: FolderViewItem) => a.description?.localeCompare(b.description || "") ?? 0 
+        : undefined
+    
+    return sf
+        ? (a: FolderViewItem, b: FolderViewItem) => ascDesc(sf(a, b))
+        : undefined
+}
+    
