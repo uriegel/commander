@@ -25,7 +25,7 @@ interface IconNameProps {
 }
 
 const IconName = ({ namePart, type, iconPath }: IconNameProps) => 
-    (<div> { type == IconNameType.Folder
+    (<span> { type == IconNameType.Folder
         ? (<Folder />)
         : type == IconNameType.File
         ? (<img className="iconImage" src={`http://localhost:20000/commander/geticon?path=${iconPath}`} alt="" />)
@@ -42,6 +42,6 @@ const IconName = ({ namePart, type, iconPath }: IconNameProps) =>
         : (<Parent />)
         }
         <span>{namePart}</span>
-    </div>)
+    </span>)
 
 export default IconName

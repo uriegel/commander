@@ -4,7 +4,7 @@ import IconName, { IconNameType } from "../components/IconName"
 import { Controller, ControllerResult, ControllerType, addParent, sortItems } from "./controller"
 import { getSortFunction } from "./filesystem"
 import { ROOT } from "./root"
-import { GetItemResult, GetServicesResult, request } from "../requests/requests"
+import { GetServicesResult, request } from "../requests/requests"
 
 export const SERVICES = "services"
 
@@ -12,10 +12,11 @@ const renderRow = (item: FolderViewItem) => [
 	(<IconName namePart={item.name} type={
         item.isParent
         ? IconNameType.Parent
-        : item.isDirectory
-        ? IconNameType.Folder
         : IconNameType.File}
-        iconPath={item.name.getExtension()} />)
+        iconPath={item.name.getExtension()} />),
+        "", 
+        "",
+        item.description
 ]
 
 const getColumns = () => ({
@@ -23,7 +24,6 @@ const getColumns = () => ({
         { name: "Name", isSortable: true },
         { name: "Status", isSortable: true },
         { name: "Starttyp", isSortable: true },
-        { name: "Anmelden als", isSortable: true },
         { name: "Beschreibung", isSortable: true }
 	],
 	renderRow

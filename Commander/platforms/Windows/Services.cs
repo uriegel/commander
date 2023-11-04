@@ -1,7 +1,7 @@
 #if Windows
 
-using System.Runtime.InteropServices;
 using System.ServiceProcess;
+using ClrWinApi;
 using LinqTools;
 
 record ServiceItem(
@@ -9,7 +9,17 @@ record ServiceItem(
     string? Description
 ) {
     public static ServiceItem Create(ServiceController sc)
-        => new(sc.DisplayName, "");
+        => new(sc.DisplayName, GetServiceDescription(sc.ServiceName));
+
+    static string? GetServiceDescription(string serviceName)
+    {
+        var manager = Api.OpenSCManager(null, null, ServicesControlManagerDesiredAccess.Connect);
+        var service = Api.OpenService(manager, serviceName, ServicesControlManagerDesiredAccess.Connect);
+        var desc = Api.GetServiceDescription(service);
+        Api.CloseServiceHandle(service);
+        Api.CloseServiceHandle(manager);
+        return desc;
+    }
 };
 
 static class Services
@@ -20,61 +30,6 @@ static class Services
                 .Select(ServiceItem.Create)
                 .ToArray()
                 .ToAsync();
-
-    public static void Mist()
-    {
-        var schSCManager = OpenSCManager(null, null, SERVICE_QUERY_CONFIG);
-        var schService = OpenService(schSCManager, "Power", SERVICE_QUERY_CONFIG);
-        bool success = QueryServiceConfig2(schService, ServiceConfig.DESCRIPTION, IntPtr.Zero, 0, out var bytesNeeded);
-        if (!success && Marshal.GetLastWin32Error() == ERROR_INSUFFICIENT_BUFFER)
-        {
-
-            var buffer = Marshal.AllocHGlobal((int)bytesNeeded);
-            bool success2 = QueryServiceConfig2(schService, ServiceConfig.DESCRIPTION, buffer, bytesNeeded, out bytesNeeded);
-            if (!success2)
-                return;
-            var description = (SERVICE_DESCRIPTION)Marshal.PtrToStructure(buffer, typeof(SERVICE_DESCRIPTION));
-            Marshal.FreeHGlobal(buffer);
-            CloseServiceHandle(schService);
-            CloseServiceHandle(schSCManager);
-        }
-
-    }
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    public struct SERVICE_DESCRIPTION
-    {
-        public string lpDescription;
-    }
-
-    [DllImport("advapi32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-    static extern IntPtr OpenSCManager(string? lpMachineName, string? lpDatabaseName, uint dwDesiredAccess);
-
-    [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-    static extern IntPtr OpenService(IntPtr hSCManager, string lpServiceName, uint dwDesiredAccess);
-
-    [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-    static extern bool QueryServiceConfig2(IntPtr hService, ServiceConfig dwInfoLevel, IntPtr lpBuffer, uint cbBufSize, out uint pcbBytesNeeded);
-
-    [DllImport("advapi32.dll", SetLastError = true)]
-    static extern bool CloseServiceHandle(IntPtr hSCObject);
-
-    const uint SERVICE_QUERY_CONFIG = 0x0001;
-    const uint ERROR_INSUFFICIENT_BUFFER = 122;
-
-    public enum ServiceConfig 
-    {
-        DESCRIPTION = 1,
-        FAILURE_ACTIONS,
-        DELAYED_AUTO_START_INFO,
-        FAILURE_ACTIONS_FLAG,
-        SERVICE_SID_INFO,
-        REQUIRED_PRIVILEGES_INFO,
-        PRESHUTDOWN_INFO,
-        TRIGGER_INFO,
-        PREFERRED_NODE,
-        LAUNCH_PROTECTED = 12
-    }
 }
 
 #endif
