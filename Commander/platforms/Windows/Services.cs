@@ -36,8 +36,6 @@ static class Services
 #endif
 
 /*
-public static Item CreateServiceItem(ServiceController sc)
-    {
         var item = new Item(Kind.Service, "images/serviceStopped.png", sc.DisplayName, default(DateTime), false)
         {
             ServiceName = sc.ServiceName
@@ -46,24 +44,6 @@ public static Item CreateServiceItem(ServiceController sc)
         var serviceKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Services\" + item.ServiceName);
         if (serviceKey != null)
             item.startType = (int)serviceKey.GetValue("Start");
-        switch (sc.Status)
-        {
-            case ServiceControllerStatus.Running:
-                item.status = "An";
-                item.ImageUrl = "images/service.png";
-                break;
-            case ServiceControllerStatus.Stopped:
-                item.status = "Aus";
-                break;
-            case ServiceControllerStatus.StartPending:
-                item.status = "Läuft an...";
-                break;
-            case ServiceControllerStatus.StopPending:
-                item.status = "Fährt runter...";
-                break;
-        }
-        return item;
-    }                        
 
 public static void StartServices(string[] services)
         {

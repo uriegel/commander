@@ -14,7 +14,7 @@ const renderRow = (item: FolderViewItem) => [
         : IconNameType.Service}
         iconPath={item.name.getExtension()} />),
     item.status == ServiceStatus.running
-        ? "Läuft"
+        ? "An"
         : item.status == ServiceStatus.starting
         ? "Started..."
         : item.status == ServiceStatus.stopping 
