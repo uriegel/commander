@@ -6,6 +6,8 @@ import Home from '../svg/Home'
 import Remote from '../svg/Remote'
 import Android from '../svg/Android'
 import New from '../svg/New'
+import Service from '../svg/Service'
+import Favorite from '../svg/Favorite'
 
 export enum IconNameType {
     Parent,
@@ -15,7 +17,9 @@ export enum IconNameType {
     File,
     Remote,
     Android,
-    New
+    New,
+    Service,
+    Favorite
 }
 
 interface IconNameProps {
@@ -39,6 +43,10 @@ const IconName = ({ namePart, type, iconPath }: IconNameProps) =>
         ? (<Remote />)
         : type == IconNameType.New
         ? (<New />)
+        : type == IconNameType.Service
+        ? (<Service />)
+        : type == IconNameType.Favorite
+        ? (<Favorite />)
         : (<Parent />)
         }
         <span>{namePart}</span>

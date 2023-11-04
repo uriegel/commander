@@ -10,9 +10,9 @@ const renderRow = (item: FolderViewItem) => [
 	(<IconName namePart={item.name} type={
         item.isParent
         ? IconNameType.Parent
-        : item.isDirectory
-        ? IconNameType.Folder
-        : IconNameType.Folder}
+        : item.isNew
+        ? IconNameType.New
+        : IconNameType.Favorite}
         iconPath={item.name.getExtension()}
     />),
     item.path ?? ""

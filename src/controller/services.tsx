@@ -12,7 +12,7 @@ const renderRow = (item: FolderViewItem) => [
 	(<IconName namePart={item.name} type={
         item.isParent
         ? IconNameType.Parent
-        : IconNameType.File}
+        : IconNameType.Service}
         iconPath={item.name.getExtension()} />),
         "", 
         "",

@@ -5,6 +5,9 @@ import { Controller, ControllerResult, ControllerType, EnterData, formatSize} fr
 import { REMOTES } from "./remotes"
 import { GetRootResult, request } from "../requests/requests"
 import "functional-extensions"
+import { SERVICES } from "./services"
+import Favorite from "../svg/Favorite"
+import { FAVORITES } from "./favorites"
 
 export const ROOT = "root"
 const platform = getPlatform()
@@ -13,6 +16,10 @@ const renderWindowsRow = (item: FolderViewItem) => [
     (<IconName namePart={item.name} type={
         item.name == REMOTES
         ? IconNameType.Remote
+        : item.name == SERVICES
+        ? IconNameType.Service
+        : item.name == FAVORITES
+        ? IconNameType.Favorite
         : IconNameType.Root
     } />),
     item.description ?? "",
@@ -25,6 +32,8 @@ const renderLinuxRow = (item: FolderViewItem) => [
         ? IconNameType.Home
         : item.name == REMOTES
         ? IconNameType.Remote
+        : item.name == FAVORITES
+        ? IconNameType.Favorite
         : IconNameType.Root
     } />),
     item.description ?? "",
