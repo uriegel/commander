@@ -7,10 +7,11 @@ using LinqTools;
 record ServiceItem(
     string Name,
     string? Description,
-    ServiceControllerStatus Status
+    ServiceControllerStatus Status,
+    ServiceStartMode StartType
 ) {
     public static ServiceItem Create(ServiceController sc)
-        => new(sc.DisplayName, GetServiceDescription(sc.ServiceName), sc.Status);
+        => new(sc.DisplayName, GetServiceDescription(sc.ServiceName), sc.Status, sc.StartType);
 
     static string? GetServiceDescription(string serviceName)
     {
@@ -36,15 +37,6 @@ static class Services
 #endif
 
 /*
-        var item = new Item(Kind.Service, "images/serviceStopped.png", sc.DisplayName, default(DateTime), false)
-        {
-            ServiceName = sc.ServiceName
-        };
-        
-        var serviceKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Services\" + item.ServiceName);
-        if (serviceKey != null)
-            item.startType = (int)serviceKey.GetValue("Start");
-
 public static void StartServices(string[] services)
         {
             if (!AdminRights.IsAdmin())

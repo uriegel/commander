@@ -9,10 +9,18 @@ import { DialogHandle } from 'web-dialog-react'
 import { initializeHistory } from '../history'
 
 export enum ServiceStatus {
-    stopped = 1,
-    starting,
-    stopping,
-    running
+    Stopped = 1,
+    Starting,
+    Stopping,
+    Running
+}
+
+export enum ServiceStartMode {
+    Boot, 
+    System,
+    Automatic,
+    Manual,
+    Disabled
 }
 
 export interface FolderViewItem extends SelectableItem {
@@ -40,6 +48,7 @@ export interface FolderViewItem extends SelectableItem {
     path?: string | null
     // Service
     status?: ServiceStatus
+    startType?: ServiceStartMode
 }
 
 export type FolderViewHandle = {

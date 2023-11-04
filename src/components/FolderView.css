@@ -45,3 +45,11 @@ tr.isSelected .exif {
 tr.notMounted, tr.hidden {
     Opacity: 0.5;
 }
+
+tr.disabled {
+    Opacity: 0.4;
+}
+
+tr.notRunning svg {
+    Opacity: 0.4;
+}

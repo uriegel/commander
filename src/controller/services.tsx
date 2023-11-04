@@ -1,5 +1,5 @@
 import { TableColumns } from "virtual-table-react"
-import { FolderViewItem, ServiceStatus } from "../components/FolderView"
+import { FolderViewItem, ServiceStartMode, ServiceStatus } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import { Controller, ControllerResult, ControllerType, addParent, sortItems } from "./controller"
 import { ROOT } from "./root"
@@ -13,16 +13,26 @@ const renderRow = (item: FolderViewItem) => [
         ? IconNameType.Parent
         : IconNameType.Service}
         iconPath={item.name.getExtension()} />),
-    item.status == ServiceStatus.running
+        item.status == ServiceStatus.Running
         ? "An"
-        : item.status == ServiceStatus.starting
+        : item.status == ServiceStatus.Starting
         ? "Started..."
-        : item.status == ServiceStatus.stopping 
+        : item.status == ServiceStatus.Stopping 
         ? "Fährt runter..."
-        : item.status == ServiceStatus.stopped
+        : item.status == ServiceStatus.Stopped
         ? "Aus"
         : "",
-        "",
+        item.startType == ServiceStartMode.Boot
+        ? "Boot"
+        : item.startType == ServiceStartMode.System
+        ? "System"
+        : item.startType == ServiceStartMode.Automatic
+        ? "Automatisch"
+        : item.startType == ServiceStartMode.Manual
+        ? "Manuell"
+        : item.startType == ServiceStartMode.Disabled
+        ? "Deaktiviert"
+        : "",
         item.description
 ]
 
@@ -33,7 +43,8 @@ const getColumns = () => ({
         { name: "Starttyp", isSortable: true },
         { name: "Beschreibung", isSortable: true }
 	],
-	renderRow
+    renderRow,
+    getRowClasses
 } as TableColumns<FolderViewItem>)
 
 const getItems = async (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean) => {
@@ -86,6 +97,8 @@ const getSortFunction = (index: number, descending: boolean) => {
         ? (a: FolderViewItem, b: FolderViewItem) => a.name.localeCompare(b.name) 
         : index == 1
         ? (a: FolderViewItem, b: FolderViewItem) => (a.status || 0) - (b.status || 0)
+        : index == 2
+        ? (a: FolderViewItem, b: FolderViewItem) => (a.startType || 0) - (b.startType || 0)
         : index == 3
         ? (a: FolderViewItem, b: FolderViewItem) => a.description?.localeCompare(b.description || "") ?? 0 
         : undefined
@@ -95,3 +108,9 @@ const getSortFunction = (index: number, descending: boolean) => {
         : undefined
 }
     
+const getRowClasses = (item: FolderViewItem) => 
+    item.startType == ServiceStartMode.Disabled
+    ? ["disabled"]
+    : item.status != ServiceStatus.Running
+    ? ["notRunning"]
+    : []
