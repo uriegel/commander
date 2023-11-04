@@ -450,7 +450,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO Services (Windows)
 // TODO GetNetShares (Windows)
 // TODO Windows append home drive to root
 

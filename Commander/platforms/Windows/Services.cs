@@ -34,31 +34,7 @@ static class Services
 
 #endif
 
-
-    /*
-
-
-using System;
-    using System.Diagnostics;
-    using System.Runtime.InteropServices;
-
-    namespace Test
-    {
-    internal class Program
-    {
-
-    #region "Constants"
-
-    const uint STANDARD_RIGHTS_REQUIRED = 0x000F0000;
-    const uint SC_MANAGER_CONNECT = 0x0001;
-    const uint SC_MANAGER_CREATE_SERVICE = 0x0002;
-    const uint SC_MANAGER_ENUMERATE_SERVICE = 0x0004;
-    const uint SC_MANAGER_LOCK = 0x0008;
-    const uint SC_MANAGER_QUERY_LOCK_STATUS = 0x0010;
-    const uint SC_MANAGER_MODIFY_BOOT_CONFIG = 0x0020;
-    const uint SC_MANAGER_ALL_ACCESS = STANDARD_RIGHTS_REQUIRED | SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE | SC_MANAGER_ENUMERATE_SERVICE | SC_MANAGER_LOCK | SC_MANAGER_QUERY_LOCK_STATUS | SC_MANAGER_MODIFY_BOOT_CONFIG;
-
-
+/*
 public static Item CreateServiceItem(ServiceController sc)
     {
         var item = new Item(Kind.Service, "images/serviceStopped.png", sc.DisplayName, default(DateTime), false)
