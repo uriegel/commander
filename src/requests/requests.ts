@@ -23,6 +23,11 @@ export interface RootItem {
     mountPoint?: string
 }
 
+export interface ServiceItem {
+    name:        string
+    description: string
+} 
+
 export type GetItemResult = {
     items: FolderViewItem[]
     dirCount: number
@@ -58,6 +63,8 @@ export interface IOErrorResult {
 
 export type GetRootResult = RootItem[]
 
+export type GetServicesResult = ServiceItem[]
+
 type Close = "close"
 type GetRoot = "getroot"
 type GetFiles = "getfiles"
@@ -76,7 +83,8 @@ type CancelCopy = "cancelCopy"
 type GetRemoteFiles = "getremotefiles"
 type RenameItems = "renameitems"
 type RenameAndCopy = "renameandcopy"
-type OnEnter= "onenter"
+type OnEnter = "onenter"
+type GetServices = "getservices"
 
 type RequestType = 
 	| Close
@@ -98,6 +106,7 @@ type RequestType =
     | RenameItems
     | RenameAndCopy
     | OnEnter
+    | GetServices
     
 type Exception = {
 	exception: string
