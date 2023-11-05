@@ -1,3 +1,4 @@
+#if Windows
 using AspNetExtensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -87,3 +88,4 @@ static class UacServer
 }
 
 record StartElevatedResult(bool Ok);
+#endif
