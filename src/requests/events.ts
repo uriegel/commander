@@ -38,7 +38,7 @@ export const windowStateChangedEvents = commanderEvents
     .pipe(filter(n => n.windowState != undefined))
     .pipe(map(n => n.windowState!.maximized))
 
-export const serviceItemsChangedEvents = commanderEvents
+export const folderViewItemsChangedEvents = commanderEvents
     .pipe(filter(n => n.serviceItems != undefined))
     .pipe(map(n => n.serviceItems!))
 

@@ -4,8 +4,6 @@ import IconName, { IconNameType } from "../components/IconName"
 import { Controller, ControllerResult, ControllerType, addParent, sortItems } from "./controller"
 import { ROOT } from "./root"
 import { GetServicesResult, IOErrorResult, request } from "../requests/requests"
-import { serviceItemsChangedEvents } from "../requests/events"
-import { Subscription } from "rxjs"
 
 export const SERVICES = "services"
 
@@ -70,10 +68,6 @@ export const getServicesController = async (controller: Controller | null): Prom
 
 const createController = async (): Promise<ControllerResult> => {
     await request<IOErrorResult>("initservices")    
-    if (!subscription)
-        subscription = serviceItemsChangedEvents.subscribe(n => {
-            console.log("n", n)
-    })
 
     return {
         changed: true, controller: { 
@@ -101,13 +95,7 @@ const createController = async (): Promise<ControllerResult> => {
             createFolder: async () => null,
             deleteItems: async () => null,
             onSelectionChanged: () => { },
-            cleanUp: () => {
-                if (subscription) {
-                    subscription.unsubscribe()
-                    subscription = null
-                }
-                request("cleanupservices")
-            }
+            cleanUp: () => request("cleanupservices")
         }
     }
 }
@@ -135,5 +123,3 @@ const getRowClasses = (item: FolderViewItem) =>
     : item.status != ServiceStatus.Running
     ? ["notRunning"]
     : []
-
-var subscription: Subscription| null

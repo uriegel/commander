@@ -7,6 +7,9 @@ import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
 import { Version } from '../requests/requests'
 import { DialogHandle } from 'web-dialog-react'
 import { initializeHistory } from '../history'
+import { isWindows } from '../globals'
+import { folderViewItemsChangedEvents } from '../requests/events'
+import { Subscription } from 'rxjs'
 
 export enum ServiceStatus {
     Stopped = 1,
@@ -144,6 +147,25 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const history = useRef(initializeHistory())
 
+    const subscription = useRef<Subscription|null>(null)
+
+    const onActualizedItems = useCallback((actualizedItems: FolderViewItem[]) => {
+        const newItems = items.map(n => {
+            var changedItem = actualizedItems.find(i => i.name == n.name)
+            return changedItem
+                ? changedItem
+                : n
+        })
+        setItems(newItems)
+    }, [items])
+
+    useEffect(() => {
+        if (isWindows()) {
+            subscription.current?.unsubscribe()
+            subscription.current = folderViewItemsChangedEvents.subscribe(onActualizedItems)
+        }
+    }, [onActualizedItems])
+    
     const getSelectedItems = () => {
 
         const checkParent = (item: FolderViewItem) => !item.isParent ? item : null

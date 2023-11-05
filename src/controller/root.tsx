@@ -6,7 +6,6 @@ import { REMOTES } from "./remotes"
 import { GetRootResult, request } from "../requests/requests"
 import "functional-extensions"
 import { SERVICES } from "./services"
-import Favorite from "../svg/Favorite"
 import { FAVORITES } from "./favorites"
 
 export const ROOT = "root"

@@ -69,7 +69,7 @@ export interface Controller {
     createFolder: (path: string, item: FolderViewItem, dialog: DialogHandle|null) => Promise<IOError | null>
     deleteItems: (path: string, items: FolderViewItem[], dialog: DialogHandle|null) => Promise<IOError | null>
     onSelectionChanged: (items: FolderViewItem[]) => void 
-    cleanUp: ()=>void
+    cleanUp: () => void
 }
 
 export interface ControllerResult {
