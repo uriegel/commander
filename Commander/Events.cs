@@ -17,12 +17,20 @@ record Events(
     string? Theme,
     CopyProgress? CopyProgress,
     WindowState? WindowState
+#if Windows 
+    , ServiceItem[]? ServiceItems = null
+#endif
 )
 {
     public static void CopyProgressChanged(CopyProgress progress)
         => Source.Send(new Events(null, progress, null));
     public static void WindowStateChanged(bool isMaximized)
         => Source.Send(new Events(null, null, new(isMaximized)));
+
+#if Windows 
+    public static void ServiceItemsChanged(ServiceItem[] items)
+        => Source.Send(new Events(null, null, null, items));
+#endif
 
     static Events ThemeChanged(string theme)
         => new Events(theme, null, null);

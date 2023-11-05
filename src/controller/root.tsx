@@ -83,7 +83,7 @@ const onLinuxEnter = async (enterData: EnterData) =>
     mount: !enterData.item.mountPoint
 }) 
 
-export const getRootController = (controller: Controller | null): ControllerResult => 
+export const getRootController = async (controller: Controller | null): Promise<ControllerResult> => 
     controller?.type == ControllerType.Root
     ? ({ changed: false, controller })
     : ({ changed: true, controller: { 
@@ -103,7 +103,8 @@ export const getRootController = (controller: Controller | null): ControllerResu
         renameAsCopy: async () => null,
         createFolder: async () => null,
         deleteItems: async () => null,
-        onSelectionChanged: () => {}
+        onSelectionChanged: () => { },
+        cleanUp: () => { }
     }})
 
 const getItems = async () => {

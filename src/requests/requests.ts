@@ -84,7 +84,9 @@ type GetRemoteFiles = "getremotefiles"
 type RenameItems = "renameitems"
 type RenameAndCopy = "renameandcopy"
 type OnEnter = "onenter"
+type InitServices = "initservices"
 type GetServices = "getservices"
+type CleanUpServices = "cleanupservices"
 
 type RequestType = 
 	| Close
@@ -106,7 +108,9 @@ type RequestType =
     | RenameItems
     | RenameAndCopy
     | OnEnter
+    | InitServices
     | GetServices
+    | CleanUpServices
     
 type Exception = {
 	exception: string

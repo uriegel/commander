@@ -117,7 +117,7 @@ const rename = async (path: string, item: FolderViewItem, dialog: DialogHandle |
     return null
 }
 
-export const getRemotesController = (controller: Controller | null): ControllerResult => 
+export const getRemotesController = async (controller: Controller | null): Promise<ControllerResult> => 
     controller?.type == ControllerType.Remotes
     ? ({ changed: false, controller })
     : ({ changed: true, controller: { 
@@ -137,6 +137,7 @@ export const getRemotesController = (controller: Controller | null): ControllerR
         renameAsCopy: async()=>null,
         createFolder: async () => null,
         deleteItems,
-        onSelectionChanged: () => {}
+        onSelectionChanged: () => { },
+        cleanUp: () => { }
     }})
 

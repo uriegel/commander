@@ -54,7 +54,8 @@ export const createExtendedRenameFileSystemController = (controller: Controller)
     renameAsCopy: async(p, i, d)=>null,
     createFolder: controller.createFolder,
     deleteItems: controller.deleteItems,
-    onSelectionChanged
+    onSelectionChanged,
+    cleanUp: () => { }
 })
 
 export const extendedRename = async (controller: Controller, dialog: DialogHandle|null, isExtended: boolean) => {

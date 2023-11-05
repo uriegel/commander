@@ -70,7 +70,7 @@ const onEnter = async (enterData: EnterData) =>
             pathToSet: enterData.item.isParent ? ROOT : enterData.item.name
         } 
 
-export const getFavoritesController = (controller: Controller | null): ControllerResult => 
+export const getFavoritesController = async (controller: Controller | null): Promise<ControllerResult> => 
     controller?.type == ControllerType.Favorites
     ? ({ changed: false, controller })
     : ({ changed: true, controller: { 
@@ -90,7 +90,8 @@ export const getFavoritesController = (controller: Controller | null): Controlle
         renameAsCopy: async () => null,
         createFolder: async () => null,
         deleteItems,
-        onSelectionChanged: () => {}
+        onSelectionChanged: () => { },
+        cleanUp: () => { }
     }})
 
 const getItems = async () => {

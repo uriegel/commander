@@ -69,6 +69,7 @@ export interface Controller {
     createFolder: (path: string, item: FolderViewItem, dialog: DialogHandle|null) => Promise<IOError | null>
     deleteItems: (path: string, items: FolderViewItem[], dialog: DialogHandle|null) => Promise<IOError | null>
     onSelectionChanged: (items: FolderViewItem[]) => void 
+    cleanUp: ()=>void
 }
 
 export interface ControllerResult {
@@ -81,18 +82,19 @@ export const getViewerPath = (path: string) =>
     ? `http://${path.stringBetween("/", "/")}:8080/remote/${path.substringAfter("/").substringAfter("/")}`
     : `http://localhost:20000/commander/file?path=${path}`
 
-export const checkController = (path: string, controller: Controller|null):ControllerResult => 
-    path == ROOT
-    ? getRootController(controller)
-    : path == REMOTES  
-    ? getRemotesController(controller)
-    : path.startsWith("remote/")        
-    ? getRemoteController(controller)
-    : path == FAVORITES  
-    ? getFavoritesController(controller)
-    : path == SERVICES && getPlatform() == Platform.Windows
-    ? getServicesController(controller)
-    : getFileSystemController(controller)
+export const checkController = async (path: string, controller: Controller | null): Promise<ControllerResult> => 
+    checkNewController(
+        path == ROOT
+        ? await getRootController(controller)
+        : path == REMOTES  
+        ? await getRemotesController(controller)
+        : path.startsWith("remote/")        
+        ? await getRemoteController(controller)
+        : path == FAVORITES  
+        ? await getFavoritesController(controller)
+        : path == SERVICES && getPlatform() == Platform.Windows
+        ? await getServicesController(controller)
+        : await getFileSystemController(controller), controller)
 
 export const createEmptyController = (): Controller => ({
     type: ControllerType.Empty,
@@ -102,7 +104,7 @@ export const createEmptyController = (): Controller => ({
         renderRow: p => []
     }),
     getItems: async () => ({ items: [], path: "", dirCount: 0, fileCount: 0 }),
-    getExtendedItems: async () => ({ path: "", exifTimes: [], versions: []}),
+    getExtendedItems: async () => ({ path: "", exifTimes: [], versions: [] }),
     setExtendedItems: items => items,
     cancelExtendedItems: async () => { },
     onEnter: async () => ({ processed: true }),
@@ -114,7 +116,8 @@ export const createEmptyController = (): Controller => ({
     renameAsCopy: async () => null,
     createFolder: async () => null,
     deleteItems: async () => null,
-    onSelectionChanged: () => {}
+    onSelectionChanged: () => { },
+    cleanUp: () => { }
 })
 
 export const addParent = (items: FolderViewItem[]) => 
@@ -185,6 +188,12 @@ export const checkResult = async (dialog: DialogHandle|null|undefined, activeFol
         return false
     } else
         return true
+}
+
+const checkNewController = (controllerResult: ControllerResult, recentController: Controller | null): ControllerResult => {
+    if (controllerResult.changed)
+        recentController?.cleanUp()
+    return controllerResult
 }
 
 const delay = (timeout: number) => new Promise<number>(res => 

@@ -3,7 +3,9 @@ import { FolderViewItem, ServiceStartMode, ServiceStatus } from "../components/F
 import IconName, { IconNameType } from "../components/IconName"
 import { Controller, ControllerResult, ControllerType, addParent, sortItems } from "./controller"
 import { ROOT } from "./root"
-import { GetServicesResult, request } from "../requests/requests"
+import { GetServicesResult, IOErrorResult, request } from "../requests/requests"
+import { serviceItemsChangedEvents } from "../requests/events"
+import { Subscription } from "rxjs"
 
 export const SERVICES = "services"
 
@@ -61,35 +63,54 @@ const getItems = async (path: string, showHidden: boolean, sortIndex: number, so
 const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
 	sortItems(items, getSortFunction(sortIndex, sortDescending), true) 
 
-export const getServicesController = (controller: Controller | null): ControllerResult => 
+export const getServicesController = async (controller: Controller | null): Promise<ControllerResult> => 
     controller?.type == ControllerType.Services
     ? ({ changed: false, controller })
-    : ({ changed: true, controller: { 
-        type: ControllerType.Services, 
-        id: SERVICES,
-        getColumns,
-        getItems,
-        getExtendedItems: async () => ({ path: "", exifTimes: [], versions: [] }),
-		setExtendedItems: items => items,
-		cancelExtendedItems: async () => { },
-		onEnter: async ({path, item}) => 
-			item.isParent
-			?  ({
-				processed: false, 
-				pathToSet: ROOT,
-				latestPath: path
-			}) 
-			: { processed: true },
-        sort,
-        itemsSelectable: true,
-        appendPath: (path: string, subPath: string) => path.appendPath(subPath),
-		rename: async () => null,
-		extendedRename: async () => null,
-		renameAsCopy: async () => null,
-        createFolder: async () => null,
-        deleteItems: async () => null,
-		onSelectionChanged: () => {}
-    }})
+    : await createController()
+
+const createController = async (): Promise<ControllerResult> => {
+    await request<IOErrorResult>("initservices")    
+    if (!subscription)
+        subscription = serviceItemsChangedEvents.subscribe(n => {
+            console.log("n", n)
+    })
+
+    return {
+        changed: true, controller: { 
+            type: ControllerType.Services, 
+            id: SERVICES,
+            getColumns,
+            getItems,
+            getExtendedItems: async () => ({ path: "", exifTimes: [], versions: [] }),
+            setExtendedItems: items => items,
+            cancelExtendedItems: async () => { },
+            onEnter: async ({path, item}) => 
+                item.isParent
+                ?  ({
+                    processed: false, 
+                    pathToSet: ROOT,
+                    latestPath: path
+                }) 
+                : { processed: true },
+            sort,
+            itemsSelectable: true,
+            appendPath: (path: string, subPath: string) => path.appendPath(subPath),
+            rename: async () => null,
+            extendedRename: async () => null,
+            renameAsCopy: async () => null,
+            createFolder: async () => null,
+            deleteItems: async () => null,
+            onSelectionChanged: () => { },
+            cleanUp: () => {
+                if (subscription) {
+                    subscription.unsubscribe()
+                    subscription = null
+                }
+                request("cleanupservices")
+            }
+        }
+    }
+}
 
 const getSortFunction = (index: number, descending: boolean) => {
     const ascDesc = (sortResult: number) => descending ? -sortResult : sortResult
@@ -114,3 +135,5 @@ const getRowClasses = (item: FolderViewItem) =>
     : item.status != ServiceStatus.Running
     ? ["notRunning"]
     : []
+
+var subscription: Subscription| null

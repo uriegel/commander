@@ -47,7 +47,9 @@ static class Window
             .JsonPost<RenameItemParam, IOResult>("commander/renameandcopy", Directory.RenameAndCopy)
             .JsonPost<OnEnterParam, IOResult>("commander/onenter", Directory.OnEnter)
 #if Windows            
+            .JsonPost<Empty, IOResult>("commander/initservices", Services.Init)            
             .JsonPost<Empty, ServiceItem[]>("commander/getservices", Services.Get)            
+            .JsonPost<Empty, IOResult>("commander/cleanupservices", Services.CleanUp)            
             .MapGet("commander/startelevated", UacServer.StartElevated)
 #endif            
             .Build())

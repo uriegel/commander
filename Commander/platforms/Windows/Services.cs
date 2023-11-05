@@ -26,12 +26,48 @@ record ServiceItem(
 
 static class Services
 {
+    public static Task<IOResult> Init(Empty _)
+    {
+        if (Interlocked.Increment(ref refCount) == 1)
+        {
+            services = ServiceController.GetServices();
+            timer = new Timer(_ =>
+            {
+                var updateItems = services.Where(n =>
+                {
+                    var status = n.Status;
+                    n.Refresh();
+                    return status != n.Status;
+                })
+                    .Select(ServiceItem.Create)
+                    .ToArray();
+                if (updateItems != null && updateItems.Length != 0)
+                    Events.ServiceItemsChanged(updateItems);
+            }, null, 300, 300);
+        }
+        return Task.FromResult(new IOResult(IOError.NoError));
+    }
+
     public static Task<ServiceItem[]> Get(Empty _)
-        =>  ServiceController
-                .GetServices()
+        =>  services
                 .Select(ServiceItem.Create)
                 .ToArray()
                 .ToAsync();
+
+    public static Task<IOResult> CleanUp(Empty _)
+    {
+        if (Interlocked.Decrement(ref refCount) <= 0)
+        {
+            timer?.Dispose();
+            timer = null;
+            services = Array.Empty<ServiceController>();
+        }
+        return Task.FromResult(new IOResult(IOError.NoError));
+    }
+
+    static int refCount;
+    static Timer? timer;
+    static ServiceController[] services = Array.Empty<ServiceController>();
 }
 
 #endif
@@ -73,15 +109,5 @@ public static void StartServices(string[] services)
             }
         }
 
-        void Timer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            var updateItems = services.Where(n =>
-            {
-                var status = n.Status;
-                n.Refresh();
-                return status != n.Status;
-            }).Select(n => Item.CreateServiceItem(n));
-            EventSession.UpdateServiceState(id, updateItems.ToArray());
-        }
 
         */

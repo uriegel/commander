@@ -1,4 +1,5 @@
 import { BehaviorSubject, filter, fromEvent, map } from 'rxjs'
+import { FolderViewItem } from '../components/FolderView'
 
 type CopyProgress = {
     fileName: string
@@ -19,6 +20,7 @@ type CommanderEvent = {
     theme?:        string
     copyProgress?: CopyProgress
     windowState?: WindowState
+    serviceItems?: FolderViewItem[]
 }
 
 const toCommanderEvent = (event: MessageEvent) => 
@@ -35,6 +37,10 @@ export const themeChangedEvents = commanderEvents
 export const windowStateChangedEvents = commanderEvents
     .pipe(filter(n => n.windowState != undefined))
     .pipe(map(n => n.windowState!.maximized))
+
+export const serviceItemsChangedEvents = commanderEvents
+    .pipe(filter(n => n.serviceItems != undefined))
+    .pipe(map(n => n.serviceItems!))
 
 export const progressChangedEvents = new BehaviorSubject<CopyProgress>({
     fileName: "",
