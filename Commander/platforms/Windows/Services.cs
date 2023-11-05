@@ -78,7 +78,7 @@ static class Services
                 new ServiceController(service).Start();
             return Task.FromResult(new IOResult(IOError.NoError));
         }
-        catch (Exception e)
+        catch 
         {
             return Task.FromResult(new IOResult(IOError.AccessDenied));
         }
@@ -92,7 +92,7 @@ static class Services
                 new ServiceController(service).Stop();
             return Task.FromResult(new IOResult(IOError.NoError));
         }
-        catch (Exception e)
+        catch 
         {
             return Task.FromResult(new IOResult(IOError.AccessDenied));
         }
