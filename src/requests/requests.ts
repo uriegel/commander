@@ -87,6 +87,8 @@ type OnEnter = "onenter"
 type InitServices = "initservices"
 type GetServices = "getservices"
 type CleanUpServices = "cleanupservices"
+type StartServices = "startservices"
+type StopServices = "stopservices"
 
 type RequestType = 
 	| Close
@@ -111,6 +113,8 @@ type RequestType =
     | InitServices
     | GetServices
     | CleanUpServices
+    | StartServices
+    | StopServices
     
 type Exception = {
 	exception: string
@@ -125,6 +129,10 @@ type GetFilesType = {
 type GetExtendedItemsType = {
     id: string,
     path: string,
+    items: string[]
+}
+
+type StartServiceType = {
     items: string[]
 }
 
@@ -199,6 +207,7 @@ export type RequestInput =
     | CopyItemsType
     | RenameItemsType
     | OnEnterType
+    | StartServiceType
 	
 export async function request<T extends Result>(method: RequestType, input?: RequestInput, dialog?: DialogHandle|null, uacShown?: (uac: boolean)=>void) {
  

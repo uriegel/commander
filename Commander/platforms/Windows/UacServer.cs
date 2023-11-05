@@ -60,6 +60,8 @@ static class UacServer
             .JsonPost<RenameItemParam, IOResult>("commander/renameitem", Directory.RenameItem)
             .JsonPost<CopyItemsParam, IOResult>("commander/copyitems", Directory.CopyItems)
             .JsonPost<Empty, IOResult>("commander/cancelcopy", Directory.CancelCopy)
+            .JsonPost<StartServicesParam, IOResult>("commander/startservices", Services.Start)            
+            .JsonPost<StartServicesParam, IOResult>("commander/stopservices", Services.Stop)            
             .With(RequestDelegates)
             .StartAsync();
 

@@ -4,6 +4,11 @@ using System.ServiceProcess;
 using ClrWinApi;
 using LinqTools;
 
+record StartServicesParam(
+    string[] Items
+);
+
+
 record ServiceItem(
     string Name,
     string? Description,
@@ -65,49 +70,37 @@ static class Services
         return Task.FromResult(new IOResult(IOError.NoError));
     }
 
+    public static Task<IOResult> Start(StartServicesParam param)
+    {
+        try
+        {
+            foreach (var service in param.Items)
+                new ServiceController(service).Start();
+            return Task.FromResult(new IOResult(IOError.NoError));
+        }
+        catch (Exception e)
+        {
+            return Task.FromResult(new IOResult(IOError.AccessDenied));
+        }
+    }
+
+    public static Task<IOResult> Stop(StartServicesParam param)
+    {
+        try
+        {
+            foreach (var service in param.Items)
+                new ServiceController(service).Stop();
+            return Task.FromResult(new IOResult(IOError.NoError));
+        }
+        catch (Exception e)
+        {
+            return Task.FromResult(new IOResult(IOError.AccessDenied));
+        }
+    }
+
     static int refCount;
     static Timer? timer;
     static ServiceController[] services = Array.Empty<ServiceController>();
 }
 
 #endif
-
-/*
-public static void StartServices(string[] services)
-        {
-            if (!AdminRights.IsAdmin())
-                ElevatedOperation.StartServices(services);
-            else
-            {
-                foreach (var service in services)
-                {
-                    try
-                    {
-                        var controller = new ServiceController(service);
-                        controller.Start();
-                    }
-                    catch { }
-                }
-            }
-        }
-    
-        public static void StopServices(string[] services)
-        {
-            if (!AdminRights.IsAdmin())
-                ElevatedOperation.StopServices(services);
-            else
-            {
-                foreach (var service in services)
-                {
-                    try
-                    {
-                        var controller = new ServiceController(service);
-                        controller.Stop();
-                    }
-                    catch { }
-                }
-            }
-        }
-
-
-        */

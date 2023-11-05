@@ -3,7 +3,8 @@ import { FolderViewItem, ServiceStartMode, ServiceStatus } from "../components/F
 import IconName, { IconNameType } from "../components/IconName"
 import { Controller, ControllerResult, ControllerType, addParent, sortItems } from "./controller"
 import { ROOT } from "./root"
-import { GetServicesResult, IOErrorResult, request } from "../requests/requests"
+import { GetServicesResult, IOError, IOErrorResult, request } from "../requests/requests"
+import { DialogHandle } from "web-dialog-react"
 
 export const SERVICES = "services"
 
@@ -78,14 +79,19 @@ const createController = async (): Promise<ControllerResult> => {
             getExtendedItems: async () => ({ path: "", exifTimes: [], versions: [] }),
             setExtendedItems: items => items,
             cancelExtendedItems: async () => { },
-            onEnter: async ({path, item}) => 
-                item.isParent
-                ?  ({
-                    processed: false, 
-                    pathToSet: ROOT,
-                    latestPath: path
-                }) 
-                : { processed: true },
+            onEnter: async ({ path, item, selectedItems, dialog }) => {
+                if (item.isParent)
+                    return ({
+                        processed: false,
+                        pathToSet: ROOT,
+                        latestPath: path
+                    })
+                else {
+                    start(selectedItems || [item ], dialog)
+                    return { processed: true }
+                }
+                    
+            },
             sort,
             itemsSelectable: true,
             appendPath: (path: string, subPath: string) => path.appendPath(subPath),
@@ -93,7 +99,7 @@ const createController = async (): Promise<ControllerResult> => {
             extendedRename: async () => null,
             renameAsCopy: async () => null,
             createFolder: async () => null,
-            deleteItems: async () => null,
+            deleteItems: async (_, items, dialog) => await stop(items, dialog),
             onSelectionChanged: () => { },
             cleanUp: () => request("cleanupservices")
         }
@@ -123,3 +129,20 @@ const getRowClasses = (item: FolderViewItem) =>
     : item.status != ServiceStatus.Running
     ? ["notRunning"]
     : []
+
+const start = async (selectedItems: FolderViewItem[], dialog?: DialogHandle|null) => {
+    request<IOErrorResult>("startservices", {
+        items: selectedItems
+            .filter(n => n.status == ServiceStatus.Stopped)
+            .map(n => n.name)
+    }, dialog)
+}
+
+const stop = async (selectedItems: FolderViewItem[], dialog?: DialogHandle|null) => {
+    request<IOErrorResult>("stopservices", {
+        items: selectedItems
+                    .filter(n => n.status == ServiceStatus.Running)
+                    .map(n => n.name)
+    }, dialog)
+    return IOError.NoError
+}
