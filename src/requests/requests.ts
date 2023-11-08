@@ -33,6 +33,7 @@ export type GetItemResult = {
     dirCount: number
     fileCount: number
     path:  string
+    error: IOError
 }
 
 export type Version = {

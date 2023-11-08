@@ -222,7 +222,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
         }
 
-        const items = await controller.current.getItems(path, showHidden, sortIndex.current, sortDescending.current, mount)
+        const items = await controller.current.getItems(path, showHidden, sortIndex.current, sortDescending.current, 
+            mount || false, dialog)
         setPath(items.path)
         setItems(items.items)
         itemCount.current = { dirCount: items.dirCount, fileCount: items.fileCount }

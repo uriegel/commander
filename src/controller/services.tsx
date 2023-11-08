@@ -55,6 +55,7 @@ const getItems = async (path: string, showHidden: boolean, sortIndex: number, so
         path: SERVICES,
         dirCount: services.length,
         fileCount: 0,
+        error: IOError.NoError,
         items: services 
     }
 }

@@ -4,6 +4,7 @@ import IconName, { IconNameType } from "../components/IconName"
 import RemoteDialog from "../components/RemoteDialog"
 import { addParent, Controller, ControllerResult, ControllerType, EnterData } from "./controller"
 import { ROOT } from "./root"
+import { IOError } from "../requests/requests"
 
 export const REMOTES = "remotes"
 
@@ -40,6 +41,7 @@ const getItems = async () => {
         path: REMOTES,
         dirCount: items.length,
         fileCount: 0,
+        error: IOError.NoError,
         items: addParent(items)
                 .concat({
                     name: "Entferntes Gerät hinzufügen...",

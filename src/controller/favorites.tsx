@@ -3,6 +3,7 @@ import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import { Controller, ControllerResult, ControllerType, EnterData, addParent } from "./controller"
 import { ROOT } from "./root"
+import { IOError } from "../requests/requests"
 
 export const FAVORITES = "fav"
 
@@ -100,6 +101,7 @@ const getItems = async () => {
         path: FAVORITES,
         dirCount: items.length,
         fileCount: 0,
+        error: IOError.NoError,
         items: addParent(items)
                 .concat({
                     name: "Favoriten hinzufügen...",

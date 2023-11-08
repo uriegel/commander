@@ -4,7 +4,7 @@ import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { addParent, Controller, ControllerResult, ControllerType, formatDateTime, formatSize, formatVersion, sortItems } from "./controller"
-import { GetExtendedItemsResult, GetItemResult, IOErrorResult, request, Version } from "../requests/requests"
+import { GetExtendedItemsResult, GetItemResult, IOError, IOErrorResult, request, Version } from "../requests/requests"
 import { ROOT } from "./root"
 import { extendedRename } from "./filesystemExtendedRename"
 
@@ -117,14 +117,17 @@ const getRowClasses = (item: FolderViewItem) =>
 	item.isHidden
 		? ["hidden"]
 		: []
-	
 
-const getItems = async (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean, mount?: boolean) => {
+const getItems = async (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean, mount: boolean, dialog: DialogHandle|null) => {
 	const res = await request<GetItemResult>("getfiles", {
 		path,
 		showHiddenItems: showHidden,
 		mount
 	})
+	if (res.error == IOError.AccessDenied)
+	{
+		
+	}
 	return { ...res, items: addParent(sortItems(res.items, getSortFunction(sortIndex, sortDescending))) }
 }
 

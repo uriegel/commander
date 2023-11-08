@@ -3,7 +3,7 @@ import IconName, { IconNameType } from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, EnterData, formatSize} from "./controller"
 import { REMOTES } from "./remotes"
-import { GetRootResult, request } from "../requests/requests"
+import { GetRootResult, IOError, request } from "../requests/requests"
 import "functional-extensions"
 import { SERVICES } from "./services"
 import { FAVORITES } from "./favorites"
@@ -128,7 +128,8 @@ const getItems = async () => {
         path: ROOT,
         dirCount: extendedItems.length,
         fileCount: 0,
-        items: extendedItems 
+        items: extendedItems,
+        error: IOError.NoError
     }
 }
 
