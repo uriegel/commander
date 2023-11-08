@@ -76,7 +76,7 @@ static class Remote
                 item.Time.FromUnixTime()
             );
     static GetFilesResult ToFilesResult(this DirectoryItem[] items, string path)
-        => new GetFilesResult(items, path, items.Where(n => n.IsDirectory).Count(), items.Where(n => !n.IsDirectory).Count());
+        => new GetFilesResult(items, path, items.Where(n => n.IsDirectory).Count(), items.Where(n => !n.IsDirectory).Count(), IOError.NoError);
 
     static IpAndPath GetIpAndPath(this string url)
         => new(url.StringBetween('/', '/'), "/" + url.SubstringAfter('/').SubstringAfter('/'));

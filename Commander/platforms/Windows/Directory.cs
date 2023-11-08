@@ -16,6 +16,11 @@ using static CsTools.Core;
 
 static partial class Directory
 {
+    public static IOError CheckDirectoryInfo(DirectoryInfo info, string path) 
+        => info.Exists || !path.StartsWith(@"\\")
+            ? IOError.NoError
+            : IOError.AccessDenied;
+
     public static string GetIconPath(FileInfo info)
         => string.Compare(info.Extension, ".exe", true) == 0 
         ? info.FullName

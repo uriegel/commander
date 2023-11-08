@@ -1,3 +1,5 @@
+using System.Data;
+using System.Collections.Immutable;
 using Microsoft.AspNetCore.Http;
 
 using AspNetExtensions;
@@ -9,8 +11,6 @@ using MetadataExtractor.Formats.Exif;
 
 using static LinqTools.Core;
 using static System.IO.Directory;
-using System.Data;
-using System.Collections.Immutable;
 
 static partial class Directory
 {
@@ -20,47 +20,12 @@ static partial class Directory
         if (getFiles.Mount == true)
             path = Mount(getFiles.Path);
         var dirInfo = new DirectoryInfo(path);
-        var dirs =
-            dirInfo
-                .GetDirectories()
-                .Select(CreateDirItem)
-                .Where(FilterHidden)
-                .OrderBy(n => n.Name)
-                .ToArray();
 
-        var files =
-            dirInfo
-                .GetFiles()
-                .Select(CreateFileItem)
-                .Where(FilterHidden)
-                .ToArray();
-
-        return new GetFilesResult(dirs.Concat(files).ToArray(),
-            dirInfo.FullName,
-            dirs.Length,
-            files.Length)
+        var error = CheckDirectoryInfo(dirInfo, path);
+        return (error == IOError.NoError
+            ? GetFiles(dirInfo, getFiles.ShowHiddenItems)
+            : new GetFilesResult(Array.Empty<DirectoryItem>(), path, 0, 0, error))
                 .ToAsync();
-
-        DirectoryItem CreateDirItem(DirectoryInfo info)
-            => new(
-                info.Name,
-                0,
-                true,
-                null,
-                (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden,
-                info.LastWriteTime);
-
-        DirectoryItem CreateFileItem(FileInfo info)
-            => new(
-                info.Name,
-                info.Length,
-                false,
-                GetIconPath(info),
-                (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden,
-                info.LastWriteTime);
-
-        bool FilterHidden(DirectoryItem item)
-            => getFiles.ShowHiddenItems || !item.IsHidden;
     }
 
     public static GetExtendedItemsResult GetExtendedItems(string id, string path, string[] items)
@@ -174,6 +139,51 @@ static partial class Directory
         => new IOResult(null)
             .SideEffect(_ => OnEnter(input.Path, input.Keys))
             .ToAsync();
+
+    public static GetFilesResult GetFiles(DirectoryInfo dirInfo, bool showHiddenItems)
+    {
+        var dirs =
+            dirInfo
+                .GetDirectories()
+                .Select(CreateDirItem)
+                .Where(FilterHidden)
+                .OrderBy(n => n.Name)
+                .ToArray();
+
+        var files =
+            dirInfo
+                .GetFiles()
+                .Select(CreateFileItem)
+                .Where(FilterHidden)
+                .ToArray();
+
+        return new GetFilesResult(dirs.Concat(files).ToArray(),
+            dirInfo.FullName,
+            dirs.Length,
+            files.Length,
+            IOError.NoError);
+
+        DirectoryItem CreateDirItem(DirectoryInfo info)
+            => new(
+                info.Name,
+                0,
+                true,
+                null,
+                (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden,
+                info.LastWriteTime);
+
+        DirectoryItem CreateFileItem(FileInfo info)
+            => new(
+                info.Name,
+                info.Length,
+                false,
+                GetIconPath(info),
+                (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden,
+                info.LastWriteTime);
+
+        bool FilterHidden(DirectoryItem item)
+            => showHiddenItems || !item.IsHidden;
+    }
 
     static bool UseRange(this string path)
         => path.EndsWith(".mp4", StringComparison.InvariantCultureIgnoreCase) 
@@ -318,7 +328,8 @@ record GetFilesResult(
     DirectoryItem[] Items,
     string Path,
     int DirCount,
-    int FileCount
+    int FileCount,
+    IOError Error
 );
 
 record GetExtendedItems(
