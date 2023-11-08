@@ -124,11 +124,28 @@ const getItems = async (path: string, showHidden: boolean, sortIndex: number, so
 		showHiddenItems: showHidden,
 		mount
 	})
-	if (res.error == IOError.AccessDenied)
-	{
-		
+	if (res.error != IOError.AccessDenied)
+		return { ...res, items: addParent(sortItems(res.items, getSortFunction(sortIndex, sortDescending))) }
+	else if (!dialog) {
+		const res = await request<GetItemResult>("getfiles", {
+			path: "root",
+			showHiddenItems: showHidden,
+			mount
+		})
+		return { ...res, items: addParent(sortItems(res.items, getSortFunction(sortIndex, sortDescending))) }
+	} else {
+		while (true) {
+			const result = await dialog?.show({
+				text: "Bitte Zugangsdaten eingeben:",
+				btnOk: true,
+				btnCancel: true,
+				defBtnOk: true
+			})
+			if (result?.result == Result.Cancel)
+			 	break
+		}
+		return { items: [], dirCount: 0, fileCount: 0, path, error: IOError.AccessDenied }
 	}
-	return { ...res, items: addParent(sortItems(res.items, getSortFunction(sortIndex, sortDescending))) }
 }
 
 const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
