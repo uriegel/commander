@@ -7,6 +7,7 @@ import { addParent, Controller, ControllerResult, ControllerType, formatDateTime
 import { GetExtendedItemsResult, GetItemResult, IOError, IOErrorResult, request, Version } from "../requests/requests"
 import { ROOT } from "./root"
 import { extendedRename } from "./filesystemExtendedRename"
+import Credentials, { CredentialsProps } from "../components/dialogparts/Credentials"
 
 export enum ItemsType {
 	Directories,
@@ -135,8 +136,16 @@ const getItems = async (path: string, showHidden: boolean, sortIndex: number, so
 		return { ...res, items: addParent(sortItems(res.items, getSortFunction(sortIndex, sortDescending))) }
 	} else {
 		while (true) {
+			let name = ""
+			let password = ""
 			const result = await dialog?.show({
 				text: "Bitte Zugangsdaten eingeben:",
+				extension: Credentials,
+				extensionProps: { name, password },
+				onExtensionChanged: (e: CredentialsProps) => {
+					name = e.name
+					password = e.password
+				},				
 				btnOk: true,
 				btnCancel: true,
 				defBtnOk: true

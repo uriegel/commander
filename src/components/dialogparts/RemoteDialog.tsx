@@ -1,7 +1,7 @@
 import { ExtensionProps } from 'web-dialog-react'
 import { useEffect, useState } from 'react'
-import './RemoteDialog.css'
-import { FolderViewItem } from './FolderView'
+import './Dialog.css'
+import { FolderViewItem } from '../FolderView'
 
 const RemoteDialog = ({onChange, props }: ExtensionProps) => {
 
@@ -28,7 +28,7 @@ const RemoteDialog = ({onChange, props }: ExtensionProps) => {
     })
 
     return (
-        <div className='remoteDialog' >
+        <div className='dialog' >
             <input type="text" className='wdr-focusable' placeholder="Anzeigenamen festlegen" value={name} onChange={onNameChange} />
             <input type="text" className='wdr-focusable' placeholder="IP-Adresse des externen Gerätes" value={ipAddress} onChange={onIpChange}/>
             <div>

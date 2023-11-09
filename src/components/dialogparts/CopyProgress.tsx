@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { progressChangedEvents } from "../requests/events"
+import { progressChangedEvents } from "../../requests/events"
 import "./CopyProgress.css"
 
 const secondsToTime = (timeInSecs: number) => {

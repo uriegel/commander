@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import VirtualTable, { VirtualTableHandle } from 'virtual-table-react'
 import { ExtensionProps } from 'web-dialog-react'
-import { formatDateTime, formatSize, formatVersion } from '../controller/controller'
-import { compareVersion } from '../controller/filesystem'
-import { Version } from '../requests/requests'
-import { getPlatform, Platform } from '../globals'
+import { formatDateTime, formatSize, formatVersion } from '../../controller/controller'
+import { compareVersion } from '../../controller/filesystem'
+import { Version } from '../../requests/requests'
+import { getPlatform, Platform } from '../../globals'
 import './CopyConflicts.css'
-import IconName, { IconNameType } from './IconName'
+import IconName, { IconNameType } from '../IconName'
 
 export interface ConflictItem {
 	name: string

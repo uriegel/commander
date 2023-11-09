@@ -2,7 +2,7 @@ import { Controller, ControllerType, EnterData, checkResult } from "./controller
 import 'functional-extensions'
 import { FolderViewItem } from "../components/FolderView"
 import { DialogHandle, Result } from "web-dialog-react"
-import ExtendedRename from "../components/ExtendedRename"
+import ExtendedRename from "../components/dialogparts/ExtendedRename"
 import { createFileSystemController } from "./filesystem"
 import { IOErrorResult, request } from "../requests/requests"
 

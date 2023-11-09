@@ -1,7 +1,7 @@
 import { DialogHandle, Result } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName, { IconNameType } from "../components/IconName"
-import RemoteDialog from "../components/RemoteDialog"
+import RemoteDialog from "../components/dialogparts/RemoteDialog"
 import { addParent, Controller, ControllerResult, ControllerType, EnterData } from "./controller"
 import { ROOT } from "./root"
 import { IOError } from "../requests/requests"
