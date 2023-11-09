@@ -134,27 +134,8 @@ const getItems = async (path: string, showHidden: boolean, sortIndex: number, so
 			mount
 		})
 		return { ...res, items: addParent(sortItems(res.items, getSortFunction(sortIndex, sortDescending))) }
-	} else {
-		while (true) {
-			let name = ""
-			let password = ""
-			const result = await dialog?.show({
-				text: "Bitte Zugangsdaten eingeben:",
-				extension: Credentials,
-				extensionProps: { name, password },
-				onExtensionChanged: (e: CredentialsProps) => {
-					name = e.name
-					password = e.password
-				},				
-				btnOk: true,
-				btnCancel: true,
-				defBtnOk: true
-			})
-			if (result?.result == Result.Cancel)
-			 	break
-		}
-		return { items: [], dirCount: 0, fileCount: 0, path, error: IOError.AccessDenied }
-	}
+	} else 
+		return await getItemsWithAccess(dialog, path)
 }
 
 const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
@@ -352,3 +333,26 @@ export const compareVersion = (versionLeft?: Version, versionRight?: Version) =>
 	: versionLeft.patch != versionRight.patch
 	? versionLeft.patch - versionRight.patch
 	: versionLeft.build - versionRight.build
+
+const getItemsWithAccess = async (dialog: DialogHandle, path: string) => {
+	while (true) {
+		let name = ""
+		let password = ""
+		const result = await dialog?.show({
+			text: "Bitte Zugangsdaten eingeben:",
+			extension: Credentials,
+			extensionProps: { name, password },
+			onExtensionChanged: (e: CredentialsProps) => {
+				name = e.name
+				password = e.password
+			},				
+			btnOk: true,
+			btnCancel: true,
+			defBtnOk: true
+		})
+		if (result?.result == Result.Cancel)
+				break
+		await request("elevatedrive", {path, name, password})	
+	}
+	return { items: [], dirCount: 0, fileCount: 0, path, error: IOError.AccessDenied }
+}	

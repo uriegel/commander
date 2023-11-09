@@ -52,6 +52,7 @@ static class Window
             .JsonPost<Empty, IOResult>("commander/cleanupservices", Services.CleanUp)            
             .JsonPost<StartServicesParam, IOResult>("commander/startservices", Services.Start)            
             .JsonPost<StartServicesParam, IOResult>("commander/stopservices", Services.Stop)            
+            .JsonPost<ElevatedDriveParam, IOResult>("commander/elevatedrive", Directory.ElevateDrive)
             .MapGet("commander/startelevated", UacServer.StartElevated)
 #endif            
             .Build())

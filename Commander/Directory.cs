@@ -1,10 +1,12 @@
 using System.Data;
 using System.Collections.Immutable;
+using System.ComponentModel;
 using Microsoft.AspNetCore.Http;
 
 using AspNetExtensions;
 using CsTools;
 using CsTools.Extensions;
+using ClrWinApi;
 using LinqTools;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
@@ -169,7 +171,7 @@ static partial class Directory
                 0,
                 true,
                 null,
-                (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden,
+                (info.Attributes & System.IO.FileAttributes.Hidden) == System.IO.FileAttributes.Hidden,
                 info.LastWriteTime);
 
         DirectoryItem CreateFileItem(FileInfo info)
@@ -178,11 +180,28 @@ static partial class Directory
                 info.Length,
                 false,
                 GetIconPath(info),
-                (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden,
+                (info.Attributes & System.IO.FileAttributes.Hidden) == System.IO.FileAttributes.Hidden,
                 info.LastWriteTime);
 
         bool FilterHidden(DirectoryItem item)
             => showHiddenItems || !item.IsHidden;
+    }
+
+    public static Task<IOResult> ElevateDrive(ElevatedDriveParam param)
+    {
+        var netResource = new NetResource()
+        {
+            Scope = ResourceScope.GlobalNetwork,
+            ResourceType = ResourceType.Disk,
+            DisplayType = ResourceDisplaytype.Share,
+            RemoteName = param.Path
+        };
+
+        var result = Api.WNetAddConnection2(netResource, param.Password, param.Name, 0);
+        if (result != 0)
+            throw new Win32Exception(result);
+
+        return Task.FromResult(new IOResult(null));
     }
 
     static bool UseRange(this string path)
@@ -401,6 +420,12 @@ record CopyItemsParam(
 record OnEnterParam(
     string Path,
     SpecialKeys? Keys
+);
+
+record ElevatedDriveParam(
+    string Path,
+    string Name,
+    string Password
 );
 
 enum IOError {

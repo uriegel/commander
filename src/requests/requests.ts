@@ -90,6 +90,7 @@ type GetServices = "getservices"
 type CleanUpServices = "cleanupservices"
 type StartServices = "startservices"
 type StopServices = "stopservices"
+type ElevateDrive = "elevatedrive"
 
 type RequestType = 
 	| Close
@@ -116,6 +117,7 @@ type RequestType =
     | CleanUpServices
     | StartServices
     | StopServices
+    | ElevateDrive
     
 type Exception = {
 	exception: string
@@ -193,6 +195,13 @@ type CopyItemsType = {
     move:        boolean
 }
 
+type CredentialsType = {
+    path: string
+    name: string,
+    password: string
+}
+
+
 type Empty = {
     empty?: string
 }
@@ -209,6 +218,7 @@ export type RequestInput =
     | RenameItemsType
     | OnEnterType
     | StartServiceType
+    | CredentialsType
 	
 export async function request<T extends Result>(method: RequestType, input?: RequestInput, dialog?: DialogHandle|null, uacShown?: (uac: boolean)=>void) {
  
