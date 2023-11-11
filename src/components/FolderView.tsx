@@ -497,11 +497,11 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO Selection Ctrl+Mouse click
-
 // TODO Windows new version webview2 include new version ClrWinApi
 
-// TODO Drag n drop
+// TODO Selection Ctrl+Mouse click
+
+// TODO Drag n drop  (Windows)
 // TODO Drag n drop from outside (Windows)
 // TODO Drag n drop to outside (Windows)
 // TODO Drag n drop from outside (Linux)
