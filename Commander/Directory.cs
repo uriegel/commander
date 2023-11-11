@@ -15,18 +15,14 @@ using static System.IO.Directory;
 static partial class Directory
 {
     public static Task<GetFilesResult> GetFiles(GetFiles getFiles)
-    {
-        var path = getFiles.Path;
-        if (getFiles.Mount == true)
-            path = Mount(getFiles.Path);
-        var dirInfo = new DirectoryInfo(path);
-
-        var error = CheckDirectoryInfo(dirInfo, path);
-        return (error == IOError.NoError
-            ? GetFiles(dirInfo, getFiles.ShowHiddenItems)
-            : new GetFilesResult(Array.Empty<DirectoryItem>(), path, 0, 0, error))
+        => getFiles.Path
+                .If(getFiles.Mount == true,
+                    Mount)
+                .CreateDirectoryInfo()
+                .Validate()
+                .Select(n => GetFiles(n, getFiles.ShowHiddenItems))
+                .Get(GetFilesResult.CreateError)
                 .ToAsync();
-    }
 
     public static GetExtendedItemsResult GetExtendedItems(string id, string path, string[] items)
     {
@@ -307,6 +303,8 @@ static partial class Directory
 
     static ImmutableDictionary<string, CancellationTokenSource> extendedInfosCancellations
         = ImmutableDictionary<string, CancellationTokenSource>.Empty;
+
+    static DirectoryInfo CreateDirectoryInfo(this string path) => new(path);
 }
 
 record DirectoryItem(
@@ -330,7 +328,10 @@ record GetFilesResult(
     int DirCount,
     int FileCount,
     IOError Error
-);
+) {
+    public static GetFilesResult CreateError(IOError e)
+        => new(Array.Empty<DirectoryItem>(), "", 0, 0, e); 
+}
 
 record GetExtendedItems(
     string Id,

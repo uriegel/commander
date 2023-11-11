@@ -13,7 +13,7 @@ using System.Diagnostics;
 
 static partial class Directory
 {
-    public static IOError CheckDirectoryInfo(DirectoryInfo _, string __) => IOError.NoError;
+    public static Result<DirectoryInfo, IOError> Validate(this DirectoryInfo info) => info;
 
     public static string GetIconPath(FileInfo info)
         => info.Extension?.Length > 0 ? info.Extension : ".noextension";
