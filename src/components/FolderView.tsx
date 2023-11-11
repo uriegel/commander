@@ -497,14 +497,12 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO Selection Ctrl+Mouse click
-
-// TODO Drag n drop from outside (Windows)
+// TODO Drag n drop from outside 
 // TODO Drag n drop to outside (Windows)
 // TODO https://github.com/MicrosoftEdge/WebView2Feedback/issues/2313
-// TODO Drag n drop from outside (Linux)
 // TODO Drag n drop to outside (Linux)
-// TODO Electron native file drop. do not use wayland
+
+// TODO Selection Ctrl+Mouse click
 
 // TODO GetNetShares (Windows)
 // TODO Windows append home drive to root
