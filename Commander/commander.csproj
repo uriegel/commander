@@ -53,7 +53,7 @@
   </ItemGroup> 
 
   <ItemGroup Condition="'$(IsLinux)'=='true'">
-    <PackageReference Include="WebWindowNetCore.Electron" Version="2.3.0" />
+    <PackageReference Include="WebWindowNetCore.Electron" Version="2.4.0" />
     <PackageReference Include="Gtk4DotNet" Version="1.2.1" />
     <EmbeddedResource Include="./kirk.png">
       <LogicalName>icon</LogicalName>
