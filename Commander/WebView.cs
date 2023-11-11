@@ -17,6 +17,7 @@ static class Window
         .ResourceIcon("icon")
         .SaveBounds()
         .WithoutNativeTitlebar()
+        .OnFilesDrop(OnFilesDrop)
         .OnWindowStateChanged(state => Events.WindowStateChanged(state == WebWindowNetCore.Data.WebWindowState.Maximized))
         .DebugUrl($"http://localhost:3000")
         .QueryString(Platform.QueryString)
@@ -67,6 +68,12 @@ static class Window
             Application.Stop();
 #endif
         });
+
+        static void OnFilesDrop(string[] paths)
+        {
+            // TODO send to React
+			// TODO find view which has dropped files
+        }
 }
 
 record Empty();

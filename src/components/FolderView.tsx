@@ -11,6 +11,8 @@ import { isWindows } from '../globals'
 import { folderViewItemsChangedEvents } from '../requests/events'
 import { Subscription } from 'rxjs'
 
+declare const webViewDropFiles: (paths: FileList) => void
+
 export enum ServiceStatus {
     Stopped = 1,
     Starting,
@@ -452,18 +454,11 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const onDrop = (evt: React.DragEvent) => {
         setDragging(false)
-        if (evt.dataTransfer.getData("internalCopy") == "true") {
-            evt.preventDefault()
+        evt.preventDefault()
+        if (evt.dataTransfer.getData("internalCopy") == "true") 
             onCopy(dropEffect.current == "move")
-        } else {
-            let onDrop = async () => {
-                function *getItems() {
-                    if (evt.dataTransfer?.files)
-                        for (let i = 0; i < evt.dataTransfer.files.length; i++)
-                            yield evt.dataTransfer!.files.item(i)!
-                }
-                let input = [...getItems()].map(n => (n as any).path)
-                console.log("input", input, evt)
+        else 
+            webViewDropFiles(evt.dataTransfer.files)
                 // let copyFiles = await request<CopyFiles>("preparefilecopy", input)
                         
                 // await copyItems(this.id, e => this.checkResult(e), false,
@@ -477,9 +472,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     
                 // this.setFocus()
                 // this.reloadItems()
-            }               
-            onDrop()   
-        }
     }
 
     return (
