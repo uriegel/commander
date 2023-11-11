@@ -119,7 +119,8 @@ const getRowClasses = (item: FolderViewItem) =>
 		? ["hidden"]
 		: []
 
-const getItems = async (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean, mount: boolean, dialog: DialogHandle|null) => {
+const getItems = async (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean, mount: boolean, dialog: DialogHandle | null)
+		: Promise<GetItemResult> => {
 	const res = await request<GetItemResult>("getfiles", {
 		path,
 		showHiddenItems: showHidden,
@@ -136,6 +137,8 @@ const getItems = async (path: string, showHidden: boolean, sortIndex: number, so
 		return { ...res, items: addParent(sortItems(res.items, getSortFunction(sortIndex, sortDescending))) }
 	} else 
 		return await getItemsWithAccess(dialog, path)
+			? await getItems(path, showHidden, sortIndex, sortDescending, mount, dialog)
+			: { items: [], dirCount: 0, fileCount: 0, path, error: IOError.AccessDenied }
 }
 
 const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
@@ -351,8 +354,14 @@ const getItemsWithAccess = async (dialog: DialogHandle, path: string) => {
 			defBtnOk: true
 		})
 		if (result?.result == Result.Cancel)
-				break
-		await request("elevatedrive", {path, name, password})	
+			break
+		var res = await request<IOErrorResult>("elevatedrive", { path, name, password })	
+		if (!res.error) 
+			return true
+		else if (res.error == IOError.NetNameNotFound)
+			await dialog?.show({
+				text: "Netzwerkname nicht gefunden",
+				btnOk: true})
 	}
-	return { items: [], dirCount: 0, fileCount: 0, path, error: IOError.AccessDenied }
+	return false
 }	

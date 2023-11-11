@@ -101,6 +101,27 @@ static partial class Directory
         })
             .ToTask();
 
+    public static Task<IOResult> ElevateDrive(ElevatedDriveParam param)
+    {
+        var netResource = new NetResource()
+        {
+            Scope = ResourceScope.GlobalNetwork,
+            ResourceType = ResourceType.Disk,
+            DisplayType = ResourceDisplaytype.Share,
+            RemoteName = param.Path
+        };
+
+        var result = Api.WNetAddConnection2(netResource, param.Password, param.Name, 0);
+        return Task.FromResult(new IOResult(
+            result == 0
+            ? null
+            : result == 5
+            ? IOError.AccessDenied
+            : result == 67
+            ? IOError.NetNameNotFound
+            : IOError.Exn));
+    }
+
     static string Mount(string path) => "";
 
     static void CopyItem(string name, string path, string targetPath, Action<long, long> progress, bool move, CancellationToken cancellationToken)

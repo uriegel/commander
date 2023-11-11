@@ -1,12 +1,10 @@
 using System.Data;
 using System.Collections.Immutable;
-using System.ComponentModel;
 using Microsoft.AspNetCore.Http;
 
 using AspNetExtensions;
 using CsTools;
 using CsTools.Extensions;
-using ClrWinApi;
 using LinqTools;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
@@ -185,23 +183,6 @@ static partial class Directory
 
         bool FilterHidden(DirectoryItem item)
             => showHiddenItems || !item.IsHidden;
-    }
-
-    public static Task<IOResult> ElevateDrive(ElevatedDriveParam param)
-    {
-        var netResource = new NetResource()
-        {
-            Scope = ResourceScope.GlobalNetwork,
-            ResourceType = ResourceType.Disk,
-            DisplayType = ResourceDisplaytype.Share,
-            RemoteName = param.Path
-        };
-
-        var result = Api.WNetAddConnection2(netResource, param.Password, param.Name, 0);
-        if (result != 0)
-            throw new Win32Exception(result);
-
-        return Task.FromResult(new IOResult(null));
     }
 
     static bool UseRange(this string path)
@@ -434,7 +415,8 @@ enum IOError {
     AlreadyExists,
     FileNotFound,
     DeleteToTrashNotPossible,
-    Exn
+    Exn,
+    NetNameNotFound
 }
 
 record IOResult(IOError? Error);
