@@ -16,10 +16,10 @@ using static CsTools.Core;
 
 static partial class Directory
 {
-    public static Result<DirectoryInfo, DirectoryInfo> Validate(this DirectoryInfo info) 
+    public static Result<DirectoryInfo, IOError> Validate(this DirectoryInfo info) 
         => info.Exists || !info.FullName.StartsWith(@"\\")
-            ? IOError.NoError
-            : IOError.AccessDenied;
+            ? info
+            : LinqTools.Core.Error<DirectoryInfo, IOError>(IOError.AccessDenied);
 
     public static string GetIconPath(FileInfo info)
         => string.Compare(info.Extension, ".exe", true) == 0 

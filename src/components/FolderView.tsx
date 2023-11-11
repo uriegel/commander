@@ -497,7 +497,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO Failed to fetch: dialog
 // TODO Selection Ctrl+Mouse click
 
 // TODO Windows new version webview2 include new version ClrWinApi
