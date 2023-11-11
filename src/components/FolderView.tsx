@@ -491,6 +491,17 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
+// TODO Failed to fetch: dialog
+// TODO Selection Ctrl+Mouse click
+
+// TODO Windows new version webview2 include new version ClrWinApi
+
+// TODO Drag n drop
+// TODO Drag n drop from outside (Windows)
+// TODO Drag n drop to outside (Windows)
+// TODO Drag n drop from outside (Linux)
+// TODO Drag n drop to outside (Linux)
+
 // TODO GetNetShares (Windows)
 // TODO Windows append home drive to root
 
@@ -519,7 +530,6 @@ export default FolderView
 // TODO remote delete files
 // TODO remote rename file
 // TODO remote move
-// TODO Selection Ctrl+Mouse click
 // TODO Error from getItems/tooltip from dialog-box-react
 // TODO Statusbar nowrap text-overflow ellipses
 // TODO Viewer: directory info
