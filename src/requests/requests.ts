@@ -56,7 +56,8 @@ export enum IOError {
     FileNotFound,
     DeleteToTrashNotPossible,
     Exn,
-    NetNameNotFound
+    NetNameNotFound,
+    PathNotFound
 }
 
 export interface IOErrorResult {

@@ -126,8 +126,15 @@ const getItems = async (path: string, showHidden: boolean, sortIndex: number, so
 		showHiddenItems: showHidden,
 		mount
 	})
-	if (res.error != IOError.AccessDenied)
+	if (res.error != IOError.AccessDenied && res.error != IOError.PathNotFound)
 		return { ...res, items: addParent(sortItems(res.items, getSortFunction(sortIndex, sortDescending))) }
+	else if (res.error == IOError.PathNotFound && dialog) {
+		await dialog.show({
+			text: "Der Pfad wurde nicht gefunden",
+			btnOk: true
+		})
+		return { items: [], dirCount: 0, fileCount: 0, path, error: IOError.PathNotFound }
+	}
 	else if (!dialog) {
 		const res = await request<GetItemResult>("getfiles", {
 			path: "root",

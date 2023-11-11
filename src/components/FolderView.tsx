@@ -4,7 +4,7 @@ import VirtualTable, { OnSort, SelectableItem, SpecialKeys, TableColumns, Virtua
 import { checkController, checkResult, Controller, createEmptyController } from '../controller/controller'
 import { ROOT } from '../controller/root'
 import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
-import { Version } from '../requests/requests'
+import { IOError, Version } from '../requests/requests'
 import { DialogHandle } from 'web-dialog-react'
 import { initializeHistory } from '../history'
 import { isWindows } from '../globals'
@@ -132,6 +132,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }))
     
     const restrictionView = useRef<RestrictionViewHandle>(null)
+    const input = useRef<HTMLInputElement|null>(null)
 
     const virtualTable = useRef<VirtualTableHandle<FolderViewItem>>(null)
     const controller = useRef<Controller>(createEmptyController())
@@ -228,10 +229,15 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         setItems(items.items)
         itemCount.current = { dirCount: items.dirCount, fileCount: items.fileCount }
         onItemsChanged(itemCount.current)
-        localStorage.setItem(`${id}-lastPath`, items.path)
         const pos = latestPath ? items.items.findIndex(n => n.name == latestPath) : 0
         virtualTable.current?.setInitialPosition(pos, items.items.length)
         refPath.current = items.path
+        if (items.error == IOError.PathNotFound) {
+            input.current?.focus()
+            return
+        }
+
+        localStorage.setItem(`${id}-lastPath`, items.path)
         if (!fromBacklog)
             history.current?.set(items.path)
         waitOnExtendedItems.current = true
@@ -479,7 +485,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     return (
         <div className={`folder${dragging ? " dragging": ""}`} onFocus={onFocusChanged} 
                 onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop}>
-            <input className="pathInput" spellCheck={false} value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
+            <input ref={input} className="pathInput" spellCheck={false} value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
             <div className={`tableContainer${dragStarted ? " dragStarted" : ""}`} onKeyDown={onKeyDown} >
                 <VirtualTable ref={virtualTable} items={items} onSort={onSort} onDragStart={onDragStart} onDragEnd={onDragEnd}
                     onColumnWidths={onColumnWidths} onEnter={onEnter} onPosition={onPositionChanged} />
