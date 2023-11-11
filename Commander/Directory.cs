@@ -20,8 +20,8 @@ static partial class Directory
                     Mount)
                 .CreateDirectoryInfo()
                 .Validate()
-                .Select(n => GetFiles(n, getFiles.ShowHiddenItems))
-                .Get(GetFilesResult.CreateError)
+                .SelectMany(n => GetFiles(n, getFiles.ShowHiddenItems))
+                .Get(e => GetFilesResult.CreateError(e, getFiles.Path))
                 .ToAsync();
 
     public static GetExtendedItemsResult GetExtendedItems(string id, string path, string[] items)
@@ -136,28 +136,31 @@ static partial class Directory
             .SideEffect(_ => OnEnter(input.Path, input.Keys))
             .ToAsync();
 
-    public static GetFilesResult GetFiles(DirectoryInfo dirInfo, bool showHiddenItems)
+    public static Result<GetFilesResult, IOError> GetFiles(DirectoryInfo dirInfo, bool showHiddenItems)
     {
-        var dirs =
-            dirInfo
-                .GetDirectories()
-                .Select(CreateDirItem)
-                .Where(FilterHidden)
-                .OrderBy(n => n.Name)
-                .ToArray();
+        return
+             Try(
+                () => new DirFileInfo(
+                    dirInfo
+                        .GetDirectories()
+                        .Select(CreateDirItem)
+                        .Where(FilterHidden)
+                        .OrderBy(n => n.Name)
+                        .ToArray(),
+                    dirInfo
+                        .GetFiles()
+                        .Select(CreateFileItem)
+                        .Where(FilterHidden)
+                        .ToArray()),
+                e => IOError.PathNotFound)
+            .Select(MakeFilesResult);
 
-        var files =
-            dirInfo
-                .GetFiles()
-                .Select(CreateFileItem)
-                .Where(FilterHidden)
-                .ToArray();
-
-        return new GetFilesResult(dirs.Concat(files).ToArray(),
-            dirInfo.FullName,
-            dirs.Length,
-            files.Length,
-            IOError.NoError);
+        GetFilesResult MakeFilesResult(DirFileInfo dirFileInfo)
+            => new (dirFileInfo.Directories.Concat(dirFileInfo.Files).ToArray(),
+                    dirInfo.FullName,
+                    dirFileInfo.Directories.Length,
+                    dirFileInfo.Files.Length,
+                    IOError.NoError);
 
         DirectoryItem CreateDirItem(DirectoryInfo info)
             => new(
@@ -322,6 +325,11 @@ record GetFiles(
     bool? Mount
 );
 
+record DirFileInfo(
+    DirectoryItem[] Directories,
+    DirectoryItem[] Files
+);
+
 record GetFilesResult(
     DirectoryItem[] Items,
     string Path,
@@ -329,8 +337,8 @@ record GetFilesResult(
     int FileCount,
     IOError Error
 ) {
-    public static GetFilesResult CreateError(IOError e)
-        => new(Array.Empty<DirectoryItem>(), "", 0, 0, e); 
+    public static GetFilesResult CreateError(IOError e, string path)
+        => new(Array.Empty<DirectoryItem>(), path, 0, 0, e); 
 }
 
 record GetExtendedItems(
@@ -417,7 +425,8 @@ enum IOError {
     FileNotFound,
     DeleteToTrashNotPossible,
     Exn,
-    NetNameNotFound
+    NetNameNotFound,
+    PathNotFound
 }
 
 record IOResult(IOError? Error);

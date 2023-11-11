@@ -16,7 +16,7 @@ using static CsTools.Core;
 
 static partial class Directory
 {
-    public static IOError Validate(this DirectoryInfo info) 
+    public static Result<DirectoryInfo, DirectoryInfo> Validate(this DirectoryInfo info) 
         => info.Exists || !info.FullName.StartsWith(@"\\")
             ? IOError.NoError
             : IOError.AccessDenied;
