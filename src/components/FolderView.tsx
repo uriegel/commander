@@ -476,7 +476,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO Drag n drop from outside
 // TODO Drag n drop from outside copy or move
 // TODO Drag n drop to outside (Windows)
 // TODO https://github.com/MicrosoftEdge/WebView2Feedback/issues/2313
