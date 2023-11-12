@@ -144,9 +144,10 @@ static partial class Directory
             => item.isDirectory == true;
     }
 
-    public static void FilesDropped(string id, string[] paths)
+    public static void FilesDropped(string id, bool move, string[] paths)
         => Events.FilesDropped(new FilesDrop(
             id,
+            move,
             new DirectoryInfo(paths[0]).Parent?.FullName ?? "",
             paths
                 .Select(n => IsDirectory(n)

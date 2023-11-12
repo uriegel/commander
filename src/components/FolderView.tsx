@@ -11,7 +11,7 @@ import { isWindows } from '../globals'
 import { folderViewItemsChangedEvents } from '../requests/events'
 import { Subscription } from 'rxjs'
 
-declare const webViewDropFiles: (id: string, paths: FileList) => void
+declare const webViewDropFiles: (id: string, move: boolean, paths: FileList) => void
 
 export enum ServiceStatus {
     Stopped = 1,
@@ -147,6 +147,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const [path, setPath] = useState("")
     const [dragStarted, setDragStarted] = useState(false)
     const [dragging, setDragging] = useState(false)
+    const internalDrag = useRef(false)
 
     const history = useRef(initializeHistory())
 
@@ -404,11 +405,15 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         if (getSelectedItems().length > 0) {
             evt.dataTransfer.setData("internalCopy", "true")
             setDragStarted(true)
+            internalDrag.current = true
         } else
             evt.preventDefault()
 	}
 
-    const onDragEnd = (evt: React.DragEvent) => setDragStarted(false)
+    const onDragEnd = (evt: React.DragEvent) => {
+        setDragStarted(false)
+        internalDrag.current = false
+    }
 
     const dropTarget = useRef<HTMLElement|null>(null)
     
@@ -431,34 +436,41 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const dropEffect = useRef<"move"|"copy"|"none">("none")
 
     const onDragOver = (evt: React.DragEvent) => {
-        if (!dragStarted) {
-            evt.dataTransfer.dropEffect = 
-                evt.dataTransfer.effectAllowed == "move" 
-                || evt.dataTransfer.effectAllowed == "copyMove"
-                || evt.dataTransfer.effectAllowed == "linkMove"
-                || evt.dataTransfer.effectAllowed == "all"
-                ? "move" 
-                : (evt.dataTransfer.effectAllowed == "copy" 
-                || evt.dataTransfer.effectAllowed == "copyLink"
-                ? "copy"
-                : "none")
-            if (evt.ctrlKey && evt.dataTransfer?.dropEffect == "move" && (evt.dataTransfer.effectAllowed == "copy" 
-                || evt.dataTransfer.effectAllowed == "copyMove"
-                || evt.dataTransfer.effectAllowed == "copyLink"
-                || evt.dataTransfer.effectAllowed == "all"))
-                evt.dataTransfer.dropEffect = "copy"
-            dropEffect.current = evt.dataTransfer.dropEffect
-            evt.preventDefault() // Necessary. Allows us to drop.
-        }
+        evt.preventDefault()
+        evt.stopPropagation()
+        if (internalDrag.current) 
+            evt.dataTransfer.dropEffect = evt.ctrlKey ? "move" : "copy"
+            //evt.dataTransfer.dropEffect = 
+                //evt.dataTransfer.effectAllowed == "move" 
+        //         || evt.dataTransfer.effectAllowed == "copyMove"
+        //         || evt.dataTransfer.effectAllowed == "linkMove"
+        //         || evt.dataTransfer.effectAllowed == "all"
+        //         ? "move" 
+        //         : (evt.dataTransfer.effectAllowed == "copy" 
+        //         || evt.dataTransfer.effectAllowed == "copyLink"
+        //         ? "copy"
+        //         : "none")
+        //     if (evt.ctrlKey && evt.dataTransfer?.dropEffect == "copy" && (evt.dataTransfer.effectAllowed == "copy" 
+        //         || evt.dataTransfer.effectAllowed == "copyMove"
+        //         || evt.dataTransfer.effectAllowed == "copyLink"
+        //         || evt.dataTransfer.effectAllowed == "all"))
+        //         evt.dataTransfer.dropEffect = "move"
+        //     dropEffect.current = evt.dataTransfer.dropEffect
+        //     evt.preventDefault() // Necessary. Allows us to drop.
+        else
+            dropEffect.current = evt.dataTransfer.dropEffect == "move" ? "move" : "copy"
     }
 
     const onDrop = (evt: React.DragEvent) => {
         setDragging(false)
         evt.preventDefault()
-        if (evt.dataTransfer.getData("internalCopy") == "true") 
+        console.log("onDrop", dropEffect.current, evt)
+        if (evt.dataTransfer.getData("internalCopy") == "true")
             onCopy(dropEffect.current == "move")
-        else 
-            webViewDropFiles(id, evt.dataTransfer.files)
+        else {
+            console.log("evt.ctrlKey", evt.ctrlKey)
+            webViewDropFiles(id, evt.ctrlKey, evt.dataTransfer.files)
+        }
     }
 
     return (

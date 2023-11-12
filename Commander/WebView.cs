@@ -69,8 +69,8 @@ static class Window
 #endif
         });
 
-	static void OnFilesDrop(string id, string[] paths)
-		=> Directory.FilesDropped(id, paths);
+	static void OnFilesDrop(string id, bool move, string[] paths)
+		=> Directory.FilesDropped(id, move, paths);
 }
 
 record Empty();
