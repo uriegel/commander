@@ -69,11 +69,8 @@ static class Window
 #endif
         });
 
-        static void OnFilesDrop(string[] paths)
-        {
-            // TODO send to React
-			// TODO find view which has dropped files
-        }
+	static void OnFilesDrop(string id, string[] paths)
+		=> Events.FilesDropped(new(id, paths));
 }
 
 record Empty();

@@ -16,11 +16,17 @@ type WindowState = {
     maximized: boolean
 }
 
+type FilesDrop = {
+    id: string
+    paths: string[]
+}
+
 type CommanderEvent = {
     theme?:        string
     copyProgress?: CopyProgress
     windowState?: WindowState
     serviceItems?: FolderViewItem[]
+    filesDrop?: FilesDrop
 }
 
 const toCommanderEvent = (event: MessageEvent) => 
@@ -41,6 +47,10 @@ export const windowStateChangedEvents = commanderEvents
 export const folderViewItemsChangedEvents = commanderEvents
     .pipe(filter(n => n.serviceItems != undefined))
     .pipe(map(n => n.serviceItems!))
+
+export const filesDropEvents = commanderEvents
+    .pipe(filter(n => n.filesDrop != undefined))
+    .pipe(map(n => n.filesDrop!))
 
 export const progressChangedEvents = new BehaviorSubject<CopyProgress>({
     fileName: "",

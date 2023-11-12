@@ -34,6 +34,7 @@ body:focus-within .titlebar {
     display: flex;
     align-items: center;        
     cursor: pointer;
+    color: var(--color);
 }
 .titlebarButton>span {
     flex-grow: 1;   

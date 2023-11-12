@@ -4,7 +4,7 @@ import Dialog, { DialogHandle, Result } from 'web-dialog-react'
 import FolderView, { FolderViewHandle, FolderViewItem } from './components/FolderView'
 import Menu from './components/Menu'
 import Statusbar from './components/Statusbar'
-import { checkResult } from './controller/controller'
+import { Controller, checkResult } from './controller/controller'
 import PictureViewer from './components/PictureViewer'
 import MediaPlayer from './components/MediaPlayer'
 import { request } from './requests/requests'
@@ -14,13 +14,14 @@ import './themes/adwaitaDark.css'
 import './themes/windows.css'
 import './themes/windowsDark.css'
 import { getTheme, isWindows } from './globals'
-import { themeChangedEvents, windowStateChangedEvents } from './requests/events'
+import { filesDropEvents, themeChangedEvents, windowStateChangedEvents } from './requests/events'
 import { getCopyController } from './controller/copy/copyController'
 import FileViewer from './components/FileViewer'
 import "functional-extensions"
 import "./extensions/extensions"
 import { SpecialKeys } from 'virtual-table-react'
 import Titlebar from './components/Titlebar'
+import { Subscription } from 'rxjs'
 
 // TODO in webview.d.ts
 declare const webViewShowDevTools: () => void
@@ -49,6 +50,8 @@ const App = () => {
 	const [itemCount, setItemCount] = useState({dirCount: 0, fileCount: 0 })
     const [isMaximized, setIsMaximized] = useState(false)
     
+const filesDropSubscription = useRef<Subscription|null>(null)
+
 	useEffect(() => {
 		if (isWindows()) {
 			windowStateChangedEvents.subscribe(maximized => setIsMaximized(maximized))
@@ -58,6 +61,11 @@ const App = () => {
 			}
 			setWindowInitialState()
 		}
+		if (filesDropSubscription.current)
+			filesDropSubscription.current.unsubscribe()
+		filesDropSubscription.current = filesDropEvents.subscribe(filesDrop => {
+			console.log("filesDrop", filesDrop)
+		})
     }, [])
 	
 	const dialog = useRef<DialogHandle>(null)
@@ -161,14 +169,22 @@ const App = () => {
 	
 	const copyItems = async (move: boolean) => {
 		const active = getActiveFolder()
-		const inActive = getInactiveFolder()
-		const controller = getCopyController(move, dialog.current, active?.id == ID_LEFT, active?.getController()!, inActive?.getController()!,
-			active?.getPath()!, inActive?.getPath()!, active?.getSelectedItems()!, inActive?.getItems()!)
+		const inactive = getInactiveFolder()
+		copyItemsToInactive(inactive, move, active?.getController()!, active?.getPath()!, active?.getSelectedItems()!, active?.id, active)
+	}
+
+	// TODO
+	// instead of paths: path, FolderViewItems resolved
+
+	const copyItemsToInactive = async (inactive: FolderViewHandle | null, move: boolean, activeController: Controller,
+		activePath: string, itemsToCopy: FolderViewItem[], id?: string, active?: FolderViewHandle | null) => {
+		const controller = getCopyController(move, dialog.current, id == ID_LEFT, activeController, inactive?.getController()!,
+			activePath, inactive?.getPath()!, itemsToCopy, inactive?.getItems()!)
 		const result = controller ? await controller.copy() : null
 		if (await checkResult(dialog.current, active, result)) {
 			if (move)
 				active?.refresh()
-			inActive?.refresh()
+			inactive?.refresh()
 		} 
 	}
 

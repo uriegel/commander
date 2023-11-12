@@ -5,8 +5,8 @@
     --scaffolding-background-color: #181818;
     --svg-image-path-color: var(--color);
     --restriction-background-color: var(--scaffolding-background-color);
-    --exif-color: darkblue;
-    --selected-exif-color: yellow;
+    --exif-color: rgb(255, 255, 173);
+    --selected-exif-color: orange;
     --titlebar-hover-color: gray;
     
     --vtr-color: white;

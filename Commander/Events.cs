@@ -13,27 +13,33 @@ record CopyProgress(
 
 record WindowState(bool Maximized);
 
+record FilesDrop(string Id, string[] Paths);
+
 record Events(
     string? Theme,
     CopyProgress? CopyProgress,
-    WindowState? WindowState
+    WindowState? WindowState,
+    FilesDrop? FilesDrop
+    
 #if Windows 
     , ServiceItem[]? ServiceItems = null
 #endif
 )
 {
     public static void CopyProgressChanged(CopyProgress progress)
-        => Source.Send(new Events(null, progress, null));
+        => Source.Send(new Events(null, progress, null, null));
     public static void WindowStateChanged(bool isMaximized)
-        => Source.Send(new Events(null, null, new(isMaximized)));
+        => Source.Send(new Events(null, null, new(isMaximized), null));
+    public static void FilesDropped(FilesDrop filesDrop)
+        => Source.Send(new Events(null, null, null, filesDrop));
 
 #if Windows 
     public static void ServiceItemsChanged(ServiceItem[] items)
-        => Source.Send(new Events(null, null, null, items));
+        => Source.Send(new Events(null, null, null, null, items));
 #endif
 
     static Events ThemeChanged(string theme)
-        => new Events(theme, null, null);
+        => new(theme, null, null, null);
 
     public static SseEventSource<Events> Source = SseEventSource<Events>.Create();   
 

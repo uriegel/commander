@@ -167,7 +167,7 @@ interface focusable {
     setFocus: ()=>void
 }
 
-export const checkResult = async (dialog: DialogHandle|null|undefined, activeFolderView: focusable|null, error?: IOError | null) => {
+export const checkResult = async (dialog: DialogHandle|null|undefined, activeFolderView?: focusable|null, error?: IOError | null) => {
     if (error) {
         const text = error == IOError.AccessDenied
                     ? "Zugriff verweigert"

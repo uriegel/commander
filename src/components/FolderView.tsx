@@ -11,7 +11,7 @@ import { isWindows } from '../globals'
 import { folderViewItemsChangedEvents } from '../requests/events'
 import { Subscription } from 'rxjs'
 
-declare const webViewDropFiles: (paths: FileList) => void
+declare const webViewDropFiles: (id: string, paths: FileList) => void
 
 export enum ServiceStatus {
     Stopped = 1,
@@ -458,20 +458,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         if (evt.dataTransfer.getData("internalCopy") == "true") 
             onCopy(dropEffect.current == "move")
         else 
-            webViewDropFiles(evt.dataTransfer.files)
-                // let copyFiles = await request<CopyFiles>("preparefilecopy", input)
-                        
-                // await copyItems(this.id, e => this.checkResult(e), false,
-                //     this.id != "folderLeft",
-                //     EngineType.Directory,
-                //     this.engine,
-                //     copyFiles.basePath,
-                //     this.path,
-                //     copyFiles.items
-                // )
-    
-                // this.setFocus()
-                // this.reloadItems()
+            webViewDropFiles(id, evt.dataTransfer.files)
     }
 
     return (
@@ -489,9 +476,11 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
 export default FolderView
 
-// TODO Drag n drop from outside 
+// TODO Drag n drop from outside
+// TODO Drag n drop from outside copy or move
 // TODO Drag n drop to outside (Windows)
 // TODO https://github.com/MicrosoftEdge/WebView2Feedback/issues/2313
+// TODO https://github.com/MicrosoftEdge/WebView2Feedback/blob/main/specs/WebMessageObjects.md
 // TODO Drag n drop to outside (Linux)
 
 // TODO Selection Ctrl+Mouse click

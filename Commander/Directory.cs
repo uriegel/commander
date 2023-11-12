@@ -12,6 +12,8 @@ using MetadataExtractor.Formats.Exif;
 using static LinqTools.Core;
 using static System.IO.Directory;
 
+using static CsTools.Functional.Tree;
+
 static partial class Directory
 {
     public static Task<GetFilesResult> GetFiles(GetFiles getFiles)
@@ -98,9 +100,49 @@ static partial class Directory
     }
 
     public static Task<CopyItemsResult> CopyItemsInfo(CopyItemsParam input)
-        => CopyItemsInfo(input.Path, input.TargetPath, null, 
-                new List<CopyItemInfo>(), input.Items, (new CancellationTokenSource(TimeSpan.FromSeconds(10))).Token)
-            .Catch(MapExceptionToCopyItems);
+    {
+        return CopyItemsInfo()
+                .Catch(MapExceptionToCopyItems);
+
+        async Task<CopyItemsResult> CopyItemsInfo()
+            => await new CopyItemsResult(input.Items.FlattenTree(Resolver, CreateCopyItemInfo, IsDirectory, new CancellationTokenSource(TimeSpan.FromSeconds(10)).Token,
+                        AppendSubPath, (string?)null).ToArray(), null)
+                    .ToAsync();
+
+        (IEnumerable<CopyItem>, string?) Resolver(CopyItem item, string? subPath)
+            => (GetCopyItems(subPath.AppendPath(item.Name)), item.Name);
+
+        IEnumerable<CopyItem> GetCopyItems(string subPath)
+        {
+            var info = new DirectoryInfo(input.Path.AppendPath(subPath));
+            var dirInfos = info
+                            .GetDirectories()
+                            .Select(n => new CopyItem(n.Name, true, 0, DateTime.MinValue, null));
+            var fileInfos = info
+                                .GetFiles()
+                                .Select(n => new CopyItem(n.Name, false, n.Length, n.LastWriteTime, null));
+            return fileInfos.Concat(dirInfos);
+        }
+
+        CopyItemInfo CreateCopyItemInfo(CopyItem copyItem, string? subPath) 
+        {
+            var targetFile = input.TargetPath.AppendPath(subPath).AppendPath(copyItem.Name);
+            var fi = new FileInfo(targetFile);
+            return new CopyItemInfo(
+                copyItem.Name, 
+                subPath ?? "", 
+                copyItem.Size, 
+                copyItem.Time, 
+                fi.Exists ? fi.Length : null, 
+                fi.Exists ? fi.LastWriteTime : null);
+        }
+
+        string AppendSubPath(string? initialPath, string? subPath)
+            => initialPath.AppendPath(subPath);
+
+        bool IsDirectory(CopyItem item, string? subPath)
+            => item.isDirectory == true;
+    }
 
     public static Task<IOResult> CopyItems(CopyItemsParam input)
         => CopyItems(input, input.Items)
@@ -188,49 +230,6 @@ static partial class Directory
         => path.EndsWith(".mp4", StringComparison.InvariantCultureIgnoreCase) 
         || path.EndsWith(".mp3", StringComparison.InvariantCultureIgnoreCase);
 
-    static async Task<CopyItemsResult> CopyItemsInfo(string path, string targetPath, string? subPath, 
-            List<CopyItemInfo> recentInfos, CopyItem[] items, CancellationToken cancellation)
-        => await (new CopyItemsResult(
-                items
-                    .Aggregate(recentInfos, (infos, item) => AddCopyItemInfo(path, targetPath, subPath, infos, item, cancellation))
-                    .ToArray(), 
-                null))
-                    .ToAsync();
-
-    static List<CopyItemInfo> AddCopyItemInfo(string path, string targetPath, string? subPath,
-            List<CopyItemInfo> recentInfos, CopyItem copyItem, CancellationToken cancellation)
-        => copyItem.isDirectory == true
-        ? GetCopyItems(AppendPath(path, subPath).AppendPath(copyItem.Name))
-            .Aggregate(recentInfos, (infos, item) => AddCopyItemInfo(path, targetPath, subPath?.AppendPath(copyItem.Name) ?? copyItem.Name,
-                                                                        infos, item, cancellation))
-        : recentInfos.SideEffect(l => l.Add(CreateCopyItemInfo(copyItem, subPath, targetPath, cancellation)));
-
-    static CopyItemInfo CreateCopyItemInfo(CopyItem copyItem, string? subPath, string targetPath, CancellationToken cancellation) 
-    {
-        cancellation.ThrowIfCancellationRequested();
-        var targetFile = AppendPath(targetPath, subPath).AppendPath(copyItem.Name);
-        var fi = new FileInfo(targetFile);
-        return new CopyItemInfo(
-            copyItem.Name, 
-            subPath ?? "", 
-            copyItem.Size, 
-            copyItem.Time, 
-            fi.Exists ? fi.Length : null, 
-            fi.Exists ? fi.LastWriteTime : null);
-    }
-
-    static IEnumerable<CopyItem> GetCopyItems(string directory)
-    {
-        var info = new DirectoryInfo(directory);
-        var dirInfos = info
-                        .GetDirectories()
-                        .Select(n => new CopyItem(n.Name, true, 0, DateTime.MinValue, null));
-        var fileInfos = info
-                            .GetFiles()
-                            .Select(n => new CopyItem(n.Name, false, n.Length, n.LastWriteTime, null));
-        return dirInfos.Concat(fileInfos);
-    }
-
     static async Task<IOResult> CopyItems(CopyItemsParam input, CopyItem[] items)
         => await CopyItems(items.Length, 
                             items
@@ -246,9 +245,9 @@ static partial class Directory
             {
                 if (cancellationToken.IsCancellationRequested)
                     return new(0, 0, DateTime.Now);
-                var targetPath = AppendPath(input.TargetPath, n.SubPath);
+                var targetPath = input.TargetPath.AppendPath(n.SubPath);
                 EnsurePathExists(input.TargetPath, n.SubPath, newDirs);
-                CopyItem(n.Name, AppendPath(input.Path, n.SubPath), targetPath,
+                CopyItem(n.Name, input.Path.AppendPath(n.SubPath), targetPath,
                     (c, t) => Events.CopyProgressChanged(
                         new(n.Name, totalCount, fcai.Count + 1, (int)(DateTime.Now - fcai.StartTime).TotalSeconds, t, c, totalSize, fcai.Bytes + c)),
                     input.Move, cancellationToken);
@@ -272,18 +271,15 @@ static partial class Directory
     {
         if (subPath != null&& !dirs.Contains(subPath))
         {
-            var targetPath = AppendPath(path, subPath);
+            var targetPath = path.AppendPath(subPath);
             if (!System.IO.Directory.Exists(targetPath))
                 System.IO.Directory.CreateDirectory(targetPath);
             dirs.Add(subPath);
         }
     }   
 
-    static string AppendPath(string path, string? subPath)
-        => subPath != null ? path.AppendPath(subPath) : path;
-
     static Task<IOResult> ToIOResult<T>(this T t)
-        => (new IOResult(null)).ToAsync();
+        => new IOResult(null).ToAsync();
 
     static Task<IOResult> ToIOResult(this Result<Nothing, IOError> result)
         => result.Match(
@@ -291,18 +287,11 @@ static partial class Directory
                 e => e 
             ).ToTask();
 
-    static async Task<IOResult> ToIOResult(this Task<Result<Nothing, IOError>> result)
-        => new IOResult(
-            await result.MatchAsync(
-                _ => (IOError?)null,
-                e => e
-            ));
-
     static IOResult MapExceptionToIOResult(Exception e)
         => new(MapExceptionToIOError(e));
 
     static CopyItemsResult MapExceptionToCopyItems(Exception e)
-        => new CopyItemsResult(null, MapExceptionToIOError(e));
+        => new(null, MapExceptionToIOError(e));
 
     static ImmutableDictionary<string, CancellationTokenSource> extendedInfosCancellations
         = ImmutableDictionary<string, CancellationTokenSource>.Empty;
