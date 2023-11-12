@@ -18,7 +18,8 @@ type WindowState = {
 
 type FilesDrop = {
     id: string
-    paths: string[]
+    path: string
+    items: FolderViewItem[]
 }
 
 type CommanderEvent = {

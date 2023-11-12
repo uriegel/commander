@@ -22,6 +22,7 @@ import "./extensions/extensions"
 import { SpecialKeys } from 'virtual-table-react'
 import Titlebar from './components/Titlebar'
 import { Subscription } from 'rxjs'
+import { createFileSystemController } from './controller/filesystem'
 
 // TODO in webview.d.ts
 declare const webViewShowDevTools: () => void
@@ -63,9 +64,8 @@ const filesDropSubscription = useRef<Subscription|null>(null)
 		}
 		if (filesDropSubscription.current)
 			filesDropSubscription.current.unsubscribe()
-		filesDropSubscription.current = filesDropEvents.subscribe(filesDrop => {
-			console.log("filesDrop", filesDrop)
-		})
+		filesDropSubscription.current = filesDropEvents.subscribe(filesDrop => 
+			copyItemsFromFileSystem(filesDrop.id, filesDrop.path, filesDrop.items, false))
     }, [])
 	
 	const dialog = useRef<DialogHandle>(null)
@@ -173,8 +173,10 @@ const filesDropSubscription = useRef<Subscription|null>(null)
 		copyItemsToInactive(inactive, move, active?.getController()!, active?.getPath()!, active?.getSelectedItems()!, active?.id, active)
 	}
 
-	// TODO
-	// instead of paths: path, FolderViewItems resolved
+	const copyItemsFromFileSystem = async (id: string, path: string,  items: FolderViewItem[], move: boolean) => {
+		const inactive = id == ID_LEFT ? folderLeft.current : folderRight.current
+		copyItemsToInactive(inactive, move, createFileSystemController(), path, items, id)
+	}
 
 	const copyItemsToInactive = async (inactive: FolderViewHandle | null, move: boolean, activeController: Controller,
 		activePath: string, itemsToCopy: FolderViewItem[], id?: string, active?: FolderViewHandle | null) => {

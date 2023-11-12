@@ -70,7 +70,7 @@ static class Window
         });
 
 	static void OnFilesDrop(string id, string[] paths)
-		=> Events.FilesDropped(new(id, paths));
+		=> Directory.FilesDropped(id, paths);
 }
 
 record Empty();

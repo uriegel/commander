@@ -144,6 +144,16 @@ static partial class Directory
             => item.isDirectory == true;
     }
 
+    public static void FilesDropped(string id, string[] paths)
+        => Events.FilesDropped(new FilesDrop(
+            id,
+            new DirectoryInfo(paths[0]).Parent?.FullName ?? "",
+            paths
+                .Select(n => IsDirectory(n)
+                            ? DirectoryItem.CreateDirItem(new DirectoryInfo(n))
+                            : DirectoryItem.CreateFileItem(new FileInfo(n)))
+                .ToArray()));
+
     public static Task<IOResult> CopyItems(CopyItemsParam input)
         => CopyItems(input, input.Items)
             .Catch(MapExceptionToIOResult);
@@ -185,13 +195,13 @@ static partial class Directory
                 () => new DirFileInfo(
                     dirInfo
                         .GetDirectories()
-                        .Select(CreateDirItem)
+                        .Select(DirectoryItem.CreateDirItem)
                         .Where(FilterHidden)
                         .OrderBy(n => n.Name)
                         .ToArray(),
                     dirInfo
                         .GetFiles()
-                        .Select(CreateFileItem)
+                        .Select(DirectoryItem.CreateFileItem)
                         .Where(FilterHidden)
                         .ToArray()),
                 e => IOError.PathNotFound)
@@ -203,24 +213,6 @@ static partial class Directory
                     dirFileInfo.Directories.Length,
                     dirFileInfo.Files.Length,
                     IOError.NoError);
-
-        DirectoryItem CreateDirItem(DirectoryInfo info)
-            => new(
-                info.Name,
-                0,
-                true,
-                null,
-                (info.Attributes & System.IO.FileAttributes.Hidden) == System.IO.FileAttributes.Hidden,
-                info.LastWriteTime);
-
-        DirectoryItem CreateFileItem(FileInfo info)
-            => new(
-                info.Name,
-                info.Length,
-                false,
-                GetIconPath(info),
-                (info.Attributes & System.IO.FileAttributes.Hidden) == System.IO.FileAttributes.Hidden,
-                info.LastWriteTime);
 
         bool FilterHidden(DirectoryItem item)
             => showHiddenItems || !item.IsHidden;
@@ -297,6 +289,10 @@ static partial class Directory
         = ImmutableDictionary<string, CancellationTokenSource>.Empty;
 
     static DirectoryInfo CreateDirectoryInfo(this string path) => new(path);
+
+    static bool IsDirectory(string path)
+        => (File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory;
+
 }
 
 record DirectoryItem(
@@ -306,7 +302,25 @@ record DirectoryItem(
     string? IconPath,
     bool IsHidden,
     DateTime Time
-);
+) {
+    public static DirectoryItem CreateDirItem(DirectoryInfo info)
+        => new(
+            info.Name,
+            0,
+            true,
+            null,
+            (info.Attributes & System.IO.FileAttributes.Hidden) == System.IO.FileAttributes.Hidden,
+            info.LastWriteTime);
+
+    public static DirectoryItem CreateFileItem(FileInfo info)
+        => new(
+            info.Name,
+            info.Length,
+            false,
+            Directory.GetIconPath(info),
+            (info.Attributes & System.IO.FileAttributes.Hidden) == System.IO.FileAttributes.Hidden,
+            info.LastWriteTime);
+};
 
 record GetFiles(
     string Path,

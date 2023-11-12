@@ -13,7 +13,7 @@ record CopyProgress(
 
 record WindowState(bool Maximized);
 
-record FilesDrop(string Id, string[] Paths);
+record FilesDrop(string Id, string Path, DirectoryItem[] Items);
 
 record Events(
     string? Theme,
