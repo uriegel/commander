@@ -404,6 +404,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const onDragStart = (evt: React.DragEvent) => {
         if (getSelectedItems().length > 0) {
             evt.dataTransfer.setData("internalCopy", "true")
+            evt.dataTransfer.effectAllowed = "copyMove";
             setDragStarted(true)
             internalDrag.current = true
         } else
@@ -439,26 +440,27 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         evt.preventDefault()
         evt.stopPropagation()
         if (internalDrag.current) 
-            evt.dataTransfer.dropEffect = evt.ctrlKey ? "move" : "copy"
+            evt.dataTransfer.dropEffect = evt.shiftKey ? "move" : "copy"
             //evt.dataTransfer.dropEffect = 
-                //evt.dataTransfer.effectAllowed == "move" 
+                //evt.dataTransfer.effectAllowed == "move"
         //         || evt.dataTransfer.effectAllowed == "copyMove"
         //         || evt.dataTransfer.effectAllowed == "linkMove"
         //         || evt.dataTransfer.effectAllowed == "all"
-        //         ? "move" 
-        //         : (evt.dataTransfer.effectAllowed == "copy" 
+        //         ? "move"
+        //         : (evt.dataTransfer.effectAllowed == "copy"
         //         || evt.dataTransfer.effectAllowed == "copyLink"
         //         ? "copy"
         //         : "none")
-        //     if (evt.ctrlKey && evt.dataTransfer?.dropEffect == "copy" && (evt.dataTransfer.effectAllowed == "copy" 
+        //     if (evt.ctrlKey && evt.dataTransfer?.dropEffect == "copy" && (evt.dataTransfer.effectAllowed == "copy"
         //         || evt.dataTransfer.effectAllowed == "copyMove"
         //         || evt.dataTransfer.effectAllowed == "copyLink"
         //         || evt.dataTransfer.effectAllowed == "all"))
         //         evt.dataTransfer.dropEffect = "move"
         //     dropEffect.current = evt.dataTransfer.dropEffect
         //     evt.preventDefault() // Necessary. Allows us to drop.
-        else
-            dropEffect.current = evt.dataTransfer.dropEffect == "move" ? "move" : "copy"
+//         else
+        //     dropEffect.current = evt.dataTransfer.dropEffect == "move" ? "move" : "copy"
+        console.log("onDrag", dropEffect.current, evt.dataTransfer.dropEffect)
     }
 
     const onDrop = (evt: React.DragEvent) => {
