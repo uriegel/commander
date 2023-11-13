@@ -208,7 +208,7 @@ const filesDropSubscription = useRef<Subscription|null>(null)
 			? (<FileViewer path={path.path} />)
 			: (<div></div>)
 	}
-
+	
 	const getAppClasses = () => ["App", `${theme}Theme`, isMaximized ? "maximized" : null].join(' ')
 
 	return (
