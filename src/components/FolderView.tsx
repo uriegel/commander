@@ -149,6 +149,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const [dragging, setDragging] = useState(false)
 
     const history = useRef(initializeHistory())
+    const dragEnterRefs = useRef(0)
 
     const subscription = useRef<Subscription|null>(null)
 
@@ -411,22 +412,27 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const onDragEnd = (evt: React.DragEvent) => {
         setDragStarted(false)
+        setDragging(false)
         internalDrag = false
+        dragEnterRefs.current = 0
     }
 
     const onDragEnter = (evt: React.DragEvent) => {
         // var WV_File = (window as any).chrome.webview.hostObjects.WV_File
         // WV_File.DragDropFile()
-        if (!dragStarted) 
+        if (!dragStarted) {
+            dragEnterRefs.current++
             setDragging(true)
 //             dropTarget.current = evt.nativeEvent.target as HTMLElement
-//        }
+//        
+        }
     }
 
     const onDragLeave = (evt: React.DragEvent) => {
         // if (dropTarget.current == evt.nativeEvent.target as HTMLElement) {
         //     dropTarget.current = null
-            setDragging(false)
+            if (--dragEnterRefs.current == 0)
+                setDragging(false)
         // }
     }        
 
@@ -453,7 +459,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         <div className={`folder${dragging ? " dragging": ""}`} onFocus={onFocusChanged} 
                 onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop}>
             <input ref={input} className="pathInput" spellCheck={false} value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
-            <div className={`tableContainer${dragStarted ? " dragStarted" : ""}`} onKeyDown={onKeyDown} onDragEnter={onDragEnter} onDragLeave={onDragLeave}>
+            <div className={`tableContainer${dragStarted ? " dragStarted" : ""}`} onKeyDown={onKeyDown}>
                 <VirtualTable ref={virtualTable} items={items} onSort={onSort} onDragStart={onDragStart} onDragEnd={onDragEnd} 
                     onColumnWidths={onColumnWidths} onEnter={onEnter} onPosition={onPositionChanged} />
             </div>
@@ -466,7 +472,8 @@ var internalDrag = false
 
 export default FolderView
 
-// TODO Drag n drop droptarget TableView
+// TODO Drag n drop instead of dragEnterRef check if entered/leaved element is folderview or one of its children
+// TODO Drag n drop drag file to itself: do not copy!
 // TODO Drag n drop to outside (Windows)
 // TODO https://github.com/MicrosoftEdge/WebView2Feedback/issues/2313
 // TODO https://github.com/MicrosoftEdge/WebView2Feedback/blob/main/specs/WebMessageObjects.md
