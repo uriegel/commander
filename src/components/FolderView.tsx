@@ -147,7 +147,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const [path, setPath] = useState("")
     const [dragStarted, setDragStarted] = useState(false)
     const [dragging, setDragging] = useState(false)
-    const internalDrag = useRef(false)
 
     const history = useRef(initializeHistory())
 
@@ -403,17 +402,16 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const onDragStart = (evt: React.DragEvent) => {
         if (getSelectedItems().length > 0) {
-            evt.dataTransfer.setData("internalCopy", "true")
             evt.dataTransfer.effectAllowed = "copyMove";
             setDragStarted(true)
-            internalDrag.current = true
+            internalDrag = true
         } else
             evt.preventDefault()
-	}
+    }
 
     const onDragEnd = (evt: React.DragEvent) => {
         setDragStarted(false)
-        internalDrag.current = false
+        internalDrag = false
     }
 
     const dropTarget = useRef<HTMLElement|null>(null)
@@ -421,17 +419,17 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const onDragEnter = (evt: React.DragEvent) => {
         // var WV_File = (window as any).chrome.webview.hostObjects.WV_File
         // WV_File.DragDropFile()
-        if (!dragStarted) {
-            setDragging(true)
-            dropTarget.current = evt.nativeEvent.target as HTMLElement
-        }
+//         if (!dragStarted) {
+//             setDragging(true)
+//             dropTarget.current = evt.nativeEvent.target as HTMLElement
+//         }
     }
 
     const onDragLeave = (evt: React.DragEvent) => {
-        if (dropTarget.current == evt.nativeEvent.target as HTMLElement) {
-            dropTarget.current = null
-            setDragging(false)
-        }
+        // if (dropTarget.current == evt.nativeEvent.target as HTMLElement) {
+        //     dropTarget.current = null
+        //     setDragging(false)
+        // }
     }        
 
     const dropEffect = useRef<"move"|"copy"|"none">("none")
@@ -439,40 +437,20 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const onDragOver = (evt: React.DragEvent) => {
         evt.preventDefault()
         evt.stopPropagation()
-        if (internalDrag.current) 
+        if (internalDrag) 
             evt.dataTransfer.dropEffect = evt.shiftKey ? "move" : "copy"
-            //evt.dataTransfer.dropEffect = 
-                //evt.dataTransfer.effectAllowed == "move"
-        //         || evt.dataTransfer.effectAllowed == "copyMove"
-        //         || evt.dataTransfer.effectAllowed == "linkMove"
-        //         || evt.dataTransfer.effectAllowed == "all"
-        //         ? "move"
-        //         : (evt.dataTransfer.effectAllowed == "copy"
-        //         || evt.dataTransfer.effectAllowed == "copyLink"
-        //         ? "copy"
-        //         : "none")
-        //     if (evt.ctrlKey && evt.dataTransfer?.dropEffect == "copy" && (evt.dataTransfer.effectAllowed == "copy"
-        //         || evt.dataTransfer.effectAllowed == "copyMove"
-        //         || evt.dataTransfer.effectAllowed == "copyLink"
-        //         || evt.dataTransfer.effectAllowed == "all"))
-        //         evt.dataTransfer.dropEffect = "move"
-        //     dropEffect.current = evt.dataTransfer.dropEffect
-        //     evt.preventDefault() // Necessary. Allows us to drop.
-//         else
-        //     dropEffect.current = evt.dataTransfer.dropEffect == "move" ? "move" : "copy"
-        console.log("onDrag", dropEffect.current, evt.dataTransfer.dropEffect)
     }
 
     const onDrop = (evt: React.DragEvent) => {
         setDragging(false)
         evt.preventDefault()
-        console.log("onDrop", dropEffect.current, evt)
-        if (evt.dataTransfer.getData("internalCopy") == "true")
-            onCopy(dropEffect.current == "move")
+        if (internalDrag) 
+            onCopy(evt.shiftKey)
         else {
-            console.log("evt.ctrlKey", evt.ctrlKey)
-            webViewDropFiles(id, evt.ctrlKey, evt.dataTransfer.files)
+            console.log("Kopieren", evt.shiftKey)
+            webViewDropFiles(id, evt.shiftKey, evt.dataTransfer.files)
         }
+            
     }
 
     return (
@@ -487,6 +465,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         </div>
     )
 })
+
+var internalDrag = false
 
 export default FolderView
 
