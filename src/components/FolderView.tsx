@@ -478,8 +478,6 @@ export default FolderView
 // TODO https://github.com/MicrosoftEdge/WebView2Feedback/issues/2313
 // TODO https://github.com/MicrosoftEdge/WebView2Feedback/blob/main/specs/WebMessageObjects.md
 
-// TODO Initial dark theme not working (Linux version)
-// TODO Drag n drop to outside (Linux)
 // TODO Drag n drop from outside copy hidden file
 
 // TODO GetNetShares (Windows)
@@ -518,3 +516,4 @@ export default FolderView
 // TODO Check gtk webview: drop file/files/folder/folders sudo apt install libwebkit2gtk-4.0-dev
 // TODO https://stackoverflow.com/questions/71581401/drag-a-file-from-my-gtk-app-to-another-app-not-the-other-way-around
 
+// TODO Drag n drop to outside (Linux) with Gtk feature (startDrag when leaving the app)
