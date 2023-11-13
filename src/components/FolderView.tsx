@@ -436,7 +436,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const onDragOver = (evt: React.DragEvent) => {
         evt.preventDefault()
         evt.stopPropagation()
-        if (internalDrag) 
+        if (internalDrag || isWindows()) 
             evt.dataTransfer.dropEffect = evt.shiftKey ? "move" : "copy"
     }
 
@@ -472,15 +472,15 @@ var internalDrag = false
 
 export default FolderView
 
+// TODO Selection Ctrl+Mouse click
+
 // TODO Drag n drop to outside (Windows)
 // TODO https://github.com/MicrosoftEdge/WebView2Feedback/issues/2313
 // TODO https://github.com/MicrosoftEdge/WebView2Feedback/blob/main/specs/WebMessageObjects.md
+
+// TODO Initial dark theme not working (Linux version)
 // TODO Drag n drop to outside (Linux)
 // TODO Drag n drop from outside copy hidden file
-
-// TODO Selection Ctrl+Mouse click
-
-// TODO Initial dark theme not working
 
 // TODO GetNetShares (Windows)
 // TODO Windows append home drive to root
