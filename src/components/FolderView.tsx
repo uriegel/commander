@@ -418,41 +418,41 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     const onDragEnter = (evt: React.DragEvent) => {
-        // var WV_File = (window as any).chrome.webview.hostObjects.WV_File
-        // WV_File.DragDropFile()
+
+        if (!dragStarted)
+            console.log("dragEnterRefs.current", dragEnterRefs.current)
+
         if (!dragStarted) {
             dragEnterRefs.current++
             setDragging(true)
-//             dropTarget.current = evt.nativeEvent.target as HTMLElement
-//        
         }
     }
 
     const onDragLeave = (evt: React.DragEvent) => {
-        // if (dropTarget.current == evt.nativeEvent.target as HTMLElement) {
-        //     dropTarget.current = null
-            if (--dragEnterRefs.current == 0)
-                setDragging(false)
-        // }
+        if (!dragStarted && --dragEnterRefs.current == 0)
+            setDragging(false)
     }        
 
     const onDragOver = (evt: React.DragEvent) => {
         evt.preventDefault()
         evt.stopPropagation()
-        if (internalDrag || isWindows()) 
+        if (internalDrag) 
             evt.dataTransfer.dropEffect = evt.shiftKey ? "move" : "copy"
     }
 
     const onDrop = (evt: React.DragEvent) => {
         setDragging(false)
+        const internal = internalDrag
+        internalDrag = false
+        dragEnterRefs.current = 0
         evt.preventDefault()
-        if (internalDrag) 
-            onCopy(evt.shiftKey)
-        else {
-            console.log("Kopieren", evt.shiftKey)
-            webViewDropFiles(id, evt.shiftKey, evt.dataTransfer.files)
+        if (internal) {
+            if (!dragStarted)
+                onCopy(evt.shiftKey)
         }
-            
+        else
+            webViewDropFiles(id, evt.shiftKey, evt.dataTransfer.files)
+        
     }
 
     return (
@@ -472,8 +472,7 @@ var internalDrag = false
 
 export default FolderView
 
-// TODO Drag n drop instead of dragEnterRef check if entered/leaved element is folderview or one of its children
-// TODO Drag n drop drag file to itself: do not copy!
+// TODO Drag n drop move from outside or copy 
 // TODO Drag n drop to outside (Windows)
 // TODO https://github.com/MicrosoftEdge/WebView2Feedback/issues/2313
 // TODO https://github.com/MicrosoftEdge/WebView2Feedback/blob/main/specs/WebMessageObjects.md
@@ -481,6 +480,8 @@ export default FolderView
 // TODO Drag n drop from outside copy hidden file
 
 // TODO Selection Ctrl+Mouse click
+
+// TODO Initial dark theme not working
 
 // TODO GetNetShares (Windows)
 // TODO Windows append home drive to root
