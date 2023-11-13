@@ -111,7 +111,7 @@ static partial class Directory
             RemoteName = param.Path
         };
 
-        var result = Api.WNetAddConnection2(netResource, param.Password, param.Name, 0);
+        var result = WNetAddConnection2(netResource, param.Password, param.Name, 0);
         return Task.FromResult(new IOResult(
             result == 0
             ? null
@@ -132,7 +132,7 @@ static partial class Directory
         var cancel = 0;
         cancellationToken.Register(() => cancel = -1);
         if (move) {
-            if (!Api.MoveFileWithProgress(source, target.RemoveWriteProtection(), (total, current, c, d, e, f, g, h, i) => {
+            if (!MoveFileWithProgress(source, target.RemoveWriteProtection(), (total, current, c, d, e, f, g, h, i) => {
                 progress(current, total);
                 return CopyProgressResult.Continue;
             }, IntPtr.Zero, MoveFileFlags.CopyAllowed| MoveFileFlags.ReplaceExisting)) {
@@ -142,7 +142,7 @@ static partial class Directory
             }
         }
         else {
-            if (!Api.CopyFileEx(source, target.RemoveWriteProtection(), (total, current, c, d, e, f, g, h, i) => {
+            if (!CopyFileEx(source, target.RemoveWriteProtection(), (total, current, c, d, e, f, g, h, i) => {
                 progress(current, total);
                 return CopyProgressResult.Continue;
             }, IntPtr.Zero, ref cancel, (CopyFileFlags)0)) {

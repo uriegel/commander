@@ -414,30 +414,26 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         internalDrag = false
     }
 
-    const dropTarget = useRef<HTMLElement|null>(null)
-    
     const onDragEnter = (evt: React.DragEvent) => {
         // var WV_File = (window as any).chrome.webview.hostObjects.WV_File
         // WV_File.DragDropFile()
-//         if (!dragStarted) {
-//             setDragging(true)
+        if (!dragStarted) 
+            setDragging(true)
 //             dropTarget.current = evt.nativeEvent.target as HTMLElement
-//         }
+//        }
     }
 
     const onDragLeave = (evt: React.DragEvent) => {
         // if (dropTarget.current == evt.nativeEvent.target as HTMLElement) {
         //     dropTarget.current = null
-        //     setDragging(false)
+            setDragging(false)
         // }
     }        
-
-    const dropEffect = useRef<"move"|"copy"|"none">("none")
 
     const onDragOver = (evt: React.DragEvent) => {
         evt.preventDefault()
         evt.stopPropagation()
-        if (internalDrag) 
+        if (internalDrag || isWindows()) 
             evt.dataTransfer.dropEffect = evt.shiftKey ? "move" : "copy"
     }
 
@@ -457,8 +453,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         <div className={`folder${dragging ? " dragging": ""}`} onFocus={onFocusChanged} 
                 onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop}>
             <input ref={input} className="pathInput" spellCheck={false} value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
-            <div className={`tableContainer${dragStarted ? " dragStarted" : ""}`} onKeyDown={onKeyDown} >
-                <VirtualTable ref={virtualTable} items={items} onSort={onSort} onDragStart={onDragStart} onDragEnd={onDragEnd}
+            <div className={`tableContainer${dragStarted ? " dragStarted" : ""}`} onKeyDown={onKeyDown} onDragEnter={onDragEnter} onDragLeave={onDragLeave}>
+                <VirtualTable ref={virtualTable} items={items} onSort={onSort} onDragStart={onDragStart} onDragEnd={onDragEnd} 
                     onColumnWidths={onColumnWidths} onEnter={onEnter} onPosition={onPositionChanged} />
             </div>
             <RestrictionView items={items} ref={restrictionView} />
@@ -470,11 +466,12 @@ var internalDrag = false
 
 export default FolderView
 
-// TODO Drag n drop from outside copy or move
+// TODO Drag n drop droptarget TableView
 // TODO Drag n drop to outside (Windows)
 // TODO https://github.com/MicrosoftEdge/WebView2Feedback/issues/2313
 // TODO https://github.com/MicrosoftEdge/WebView2Feedback/blob/main/specs/WebMessageObjects.md
 // TODO Drag n drop to outside (Linux)
+// TODO Drag n drop from outside copy hidden file
 
 // TODO Selection Ctrl+Mouse click
 
