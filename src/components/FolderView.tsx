@@ -472,7 +472,6 @@ var internalDrag = false
 
 export default FolderView
 
-// TODO Drag n drop move from outside or copy 
 // TODO Drag n drop to outside (Windows)
 // TODO https://github.com/MicrosoftEdge/WebView2Feedback/issues/2313
 // TODO https://github.com/MicrosoftEdge/WebView2Feedback/blob/main/specs/WebMessageObjects.md

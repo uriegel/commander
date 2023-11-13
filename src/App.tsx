@@ -65,7 +65,7 @@ const filesDropSubscription = useRef<Subscription|null>(null)
 		if (filesDropSubscription.current)
 			filesDropSubscription.current.unsubscribe()
 		filesDropSubscription.current = filesDropEvents.subscribe(filesDrop => 
-			copyItemsFromFileSystem(filesDrop.id, filesDrop.path, filesDrop.items, false))
+			copyItemsFromFileSystem(filesDrop.id, filesDrop.path, filesDrop.items, filesDrop.move))
     }, [])
 	
 	const dialog = useRef<DialogHandle>(null)

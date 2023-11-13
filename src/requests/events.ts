@@ -20,6 +20,7 @@ type FilesDrop = {
     id: string
     path: string
     items: FolderViewItem[]
+    move: boolean
 }
 
 type CommanderEvent = {
