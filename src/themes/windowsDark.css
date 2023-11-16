@@ -46,5 +46,7 @@
 
 .App.windowsDarkTheme {
     font-size: 75%;
+	font-family: arial; 
+    -webkit-font-smoothing: antialiased;
 }
 

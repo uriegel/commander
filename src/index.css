@@ -1,8 +1,8 @@
 body {
-	font-family: arial;
+	/* font-family: arial; */
   	margin: 0;
-  	-webkit-font-smoothing: antialiased;
-  	-moz-osx-font-smoothing: grayscale;
+  	/* -webkit-font-smoothing: antialiased;
+  	-moz-osx-font-smoothing: grayscale; */
 	padding: 0px;
 	overflow: hidden;
 	height: 100vh;
