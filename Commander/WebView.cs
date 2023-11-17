@@ -9,16 +9,16 @@ static class Window
 			.InitialBounds(600, 800)
 			.Title("Commander")
 			.ResourceIcon("icon")
-			//.SaveBounds()
+			.SaveBounds()
 			.WithoutNativeTitlebar()
 			.OnFilesDrop(OnFilesDrop)
 			.OnWindowStateChanged(state => Events.WindowStateChanged(state == WebWindowNetCore.Data.WebWindowState.Maximized))
 			.DebugUrl($"http://localhost:3000")
-			//.QueryString(Platform.QueryString)
+			.QueryString(() => Platform.QueryString)
+            .OnStarted(() => new Thread(() => Events.StartEvents()).Start())
 			.ConfigureHttp(http => http
 				.ResourceWebroot("webroot", "/static")
 				.UseSse("commander/sse", Events.Source)
-				//.SideEffect(_ => Events.StartEvents())
 #if DEBUG        
                 .CorsOrigin("http://localhost:3000")
 #endif        
