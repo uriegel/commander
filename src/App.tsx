@@ -51,9 +51,14 @@ const App = () => {
 	const [itemCount, setItemCount] = useState({dirCount: 0, fileCount: 0 })
     const [isMaximized, setIsMaximized] = useState(false)
     
-const filesDropSubscription = useRef<Subscription|null>(null)
-
+	const filesDropSubscription = useRef<Subscription | null>(null)
+	
 	useEffect(() => {
+		const copyItemsFromFileSystem = async (id: string, path: string,  items: FolderViewItem[], move: boolean) => {
+			const inactive = id == ID_LEFT ? folderLeft.current : folderRight.current
+			copyItemsToInactive(inactive, move, createFileSystemController(), path, items, id)
+		}
+
 		if (isWindows()) {
 			windowStateChangedEvents.subscribe(maximized => setIsMaximized(maximized))
 			const setWindowInitialState = async () => {
@@ -173,11 +178,6 @@ const filesDropSubscription = useRef<Subscription|null>(null)
 		copyItemsToInactive(inactive, move, active?.getController()!, active?.getPath()!, active?.getSelectedItems()!, active?.id, active)
 	}
 
-	const copyItemsFromFileSystem = async (id: string, path: string,  items: FolderViewItem[], move: boolean) => {
-		const inactive = id == ID_LEFT ? folderLeft.current : folderRight.current
-		copyItemsToInactive(inactive, move, createFileSystemController(), path, items, id)
-	}
-
 	const copyItemsToInactive = async (inactive: FolderViewHandle | null, move: boolean, activeController: Controller,
 		activePath: string, itemsToCopy: FolderViewItem[], id?: string, active?: FolderViewHandle | null) => {
 		const controller = getCopyController(move, dialog.current, id == ID_LEFT, activeController, inactive?.getController()!,
@@ -211,8 +211,14 @@ const filesDropSubscription = useRef<Subscription|null>(null)
 	
 	const getAppClasses = () => ["App", `${theme}Theme`, isMaximized ? "maximized" : null].join(' ')
 
+	const onDragOver = (e: React.DragEvent) => {
+		e.preventDefault()
+		e.stopPropagation()
+		e.dataTransfer.dropEffect = "none"
+	}
+
 	return (
-		<div className={getAppClasses()} onKeyDown={onKeyDown} >
+		<div className={getAppClasses()} onKeyDown={onKeyDown} onDragOver={onDragOver} >
 			<Titlebar menu={(
 				<Menu autoMode={autoMode} onMenuAction={onMenuAction} toggleAutoMode={toggleAutoModeDialog}
 				showHidden={showHidden} toggleShowHidden={toggleShowHiddenAndRefresh}

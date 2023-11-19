@@ -9,11 +9,16 @@ import { DialogHandle } from 'web-dialog-react'
 import { initializeHistory } from '../history'
 import { isWindows } from '../globals'
 import { folderViewItemsChangedEvents } from '../requests/events'
-import { Subscription } from 'rxjs'
+import { Subject, Subscription } from 'rxjs'
 
 declare const webViewDropFiles: (id: string, move: boolean, paths: FileList)=>void
 declare const webViewDragStart: (path: string, fileList: string[]) => void
-declare const webViewRegisterDragEnd: (cb: ()=>void)=>void
+declare const webViewRegisterDragEnd: (cb: () => void) => void
+
+const dragEnd = new Subject<void>()
+
+setTimeout(() => webViewRegisterDragEnd(() => dragEnd.next()), 2000)
+
 
 export enum ServiceStatus {
     Stopped = 1,
@@ -144,6 +149,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const sortDescending = useRef(false)
     const itemCount = useRef({ fileCount: 0, dirCount: 0 })
     const waitOnExtendedItems = useRef(false)
+    const dragEndSubscription = useRef<Subscription|null>(null)
 
     const [items, setItems] = useState([] as FolderViewItem[])
     const [path, setPath] = useState("")
@@ -413,12 +419,32 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         }
     }
 
-    const onDragEnd = () => {
-        setDragStarted(false)
-        internalDrag = false
+    useEffect(() => {
+        dragEndSubscription?.current?.unsubscribe()
+        dragEndSubscription.current = dragEnd?.subscribe(() => {
+            setDragStarted(false)
+            internalDrag = false
+        })
+    }, [setDragStarted])
+
+    const onDragEnter = (evt: React.DragEvent) => {
+        if (!dragStarted) {
+            dragEnterRefs.current++
+            setDragging(true)
+        }
     }
 
-    webViewRegisterDragEnd && webViewRegisterDragEnd(onDragEnd)  
+    const onDragLeave = (evt: React.DragEvent) => {
+        if (!dragStarted && --dragEnterRefs.current == 0)
+            setDragging(false)
+    }        
+
+    const onDragOver = (evt: React.DragEvent) => {
+        evt.preventDefault()
+        evt.stopPropagation()
+        if (internalDrag) 
+            evt.dataTransfer.dropEffect = evt.shiftKey ? "move" : "copy"
+    }
 
     const onDrop = (evt: React.DragEvent) => {
         setDragging(false)
@@ -435,7 +461,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     return (
-        <div className={`folder${dragging ? " dragging": ""}`} onFocus={onFocusChanged} onDrop={onDrop}>
+        <div className={`folder${dragging ? " dragging" : ""}`} onFocus={onFocusChanged}
+                onDragEnter={onDragEnter} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
             <input ref={input} className="pathInput" spellCheck={false} value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
             <div className={`tableContainer${dragStarted ? " dragStarted" : ""}`} onKeyDown={onKeyDown} >
                 <VirtualTable ref={virtualTable} items={items} onSort={onSort} onColumnWidths={onColumnWidths}
