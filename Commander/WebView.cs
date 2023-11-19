@@ -1,4 +1,3 @@
-using LinqTools;
 using WebWindowNetCore;
 
 static class Window
@@ -6,6 +5,7 @@ static class Window
 	public static void Run()
 		=> WebView
 			.Create()
+            .SetAppId("de.uriegel.Commander")
 			.InitialBounds(600, 800)
 			.Title("Commander")
 			.ResourceIcon("icon")
@@ -55,7 +55,7 @@ static class Window
             .DebuggingEnabled()
 #endif
             .Build()
-            .Run("de.uriegel.Commander");
+            .Run();
   
 	static void OnFilesDrop(string id, bool move, string[] paths)
 		=> Directory.FilesDropped(id, move, paths);

@@ -32,8 +32,7 @@ const getColumns = () => ({
 		{ name: "Größe", isSortable: true, isRightAligned: true }
 	],
 	getRowClasses,
-	renderRow,
-	draggable: true
+	renderRow
 } as TableColumns<FolderViewItem>)
 
 const getItems = async (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean) => {

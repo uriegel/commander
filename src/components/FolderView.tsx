@@ -11,7 +11,9 @@ import { isWindows } from '../globals'
 import { folderViewItemsChangedEvents } from '../requests/events'
 import { Subscription } from 'rxjs'
 
-declare const webViewDropFiles: (id: string, move: boolean, paths: FileList) => void
+declare const webViewDropFiles: (id: string, move: boolean, paths: FileList)=>void
+declare const webViewDragStart: (path: string, fileList: string[]) => void
+declare const webViewRegisterDragEnd: (cb: ()=>void)=>void
 
 export enum ServiceStatus {
     Stopped = 1,
@@ -402,43 +404,21 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     const onDragStart = (evt: React.DragEvent) => {
-        if (getSelectedItems().length > 0) {
-            evt.dataTransfer.effectAllowed = "copyMove";
+        var items = getSelectedItems().map(n => n.name)
+        if (items.length > 0) {
+            webViewDragStart(path, items)
             setDragStarted(true)
             internalDrag = true
-        } else
             evt.preventDefault()
-    }
-
-    const onDragEnd = (evt: React.DragEvent) => {
-        setDragStarted(false)
-        setDragging(false)
-        internalDrag = false
-        dragEnterRefs.current = 0
-    }
-
-    const onDragEnter = (evt: React.DragEvent) => {
-
-        if (!dragStarted)
-            console.log("dragEnterRefs.current", dragEnterRefs.current)
-
-        if (!dragStarted) {
-            dragEnterRefs.current++
-            setDragging(true)
         }
     }
 
-    const onDragLeave = (evt: React.DragEvent) => {
-        if (!dragStarted && --dragEnterRefs.current == 0)
-            setDragging(false)
-    }        
-
-    const onDragOver = (evt: React.DragEvent) => {
-        evt.preventDefault()
-        evt.stopPropagation()
-        if (internalDrag || isWindows()) 
-            evt.dataTransfer.dropEffect = evt.shiftKey ? "move" : "copy"
+    const onDragEnd = () => {
+        setDragStarted(false)
+        internalDrag = false
     }
+
+    webViewRegisterDragEnd && webViewRegisterDragEnd(onDragEnd)  
 
     const onDrop = (evt: React.DragEvent) => {
         setDragging(false)
@@ -452,16 +432,14 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         }
         else
             webViewDropFiles(id, evt.shiftKey, evt.dataTransfer.files)
-        
     }
 
     return (
-        <div className={`folder${dragging ? " dragging": ""}`} onFocus={onFocusChanged} 
-                onDragEnter={onDragEnter} onDragLeave={onDragLeave} onDragOver={onDragOver} onDrop={onDrop}>
+        <div className={`folder${dragging ? " dragging": ""}`} onFocus={onFocusChanged} onDrop={onDrop}>
             <input ref={input} className="pathInput" spellCheck={false} value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
-            <div className={`tableContainer${dragStarted ? " dragStarted" : ""}`} onKeyDown={onKeyDown}>
-                <VirtualTable ref={virtualTable} items={items} onSort={onSort} onDragStart={onDragStart} onDragEnd={onDragEnd} 
-                    onColumnWidths={onColumnWidths} onEnter={onEnter} onPosition={onPositionChanged} />
+            <div className={`tableContainer${dragStarted ? " dragStarted" : ""}`} onKeyDown={onKeyDown} >
+                <VirtualTable ref={virtualTable} items={items} onSort={onSort} onColumnWidths={onColumnWidths}
+                    onDragStart={onDragStart} onEnter={onEnter} onPosition={onPositionChanged} />
             </div>
             <RestrictionView items={items} ref={restrictionView} />
         </div>
@@ -472,12 +450,11 @@ var internalDrag = false
 
 export default FolderView
 
+// TODO Windows SaveBounds: window gets smaller every time
+
 // TODO Selection Ctrl+Mouse click
 
 // TODO Drag n drop to outside (Windows)
-// TODO https://github.com/MicrosoftEdge/WebView2Feedback/issues/2313
-// TODO https://github.com/MicrosoftEdge/WebView2Feedback/blob/main/specs/WebMessageObjects.md
-
 // TODO Drag n drop from outside copy hidden file
 
 // TODO GetNetShares (Windows)

@@ -57,7 +57,6 @@ const getLinuxColumns = () => ({
 	],
 	getRowClasses,
 	renderRow,
-	draggable: true
 } as TableColumns<FolderViewItem>)
 
 const appendLinuxPath = (path: string, subPath: string) => `${path}/${subPath}`
