@@ -411,7 +411,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             await webViewDragStart(path, items)
             setDragStarted(false)
             internalDrag = false
-        }
+        } 
     }
 
     const onDragEnter = () => {
@@ -449,11 +449,12 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     return (
         <div className={`folder${dragging ? " dragging" : ""}`} onFocus={onFocusChanged}
-                onDragEnter={onDragEnter} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
+            onDragEnter={isWindows() ? onDragEnter : undefined} onDragOver={isWindows() ? onDragOver : undefined}
+            onDragLeave={isWindows() ? onDragLeave : undefined} onDrop={isWindows() ? onDrop : undefined}>
             <input ref={input} className="pathInput" spellCheck={false} value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
             <div className={`tableContainer${dragStarted ? " dragStarted" : ""}`} onKeyDown={onKeyDown} >
                 <VirtualTable ref={virtualTable} items={items} onSort={onSort} onColumnWidths={onColumnWidths}
-                    onDragStart={onDragStart} onEnter={onEnter} onPosition={onPositionChanged} />
+                    onDragStart={isWindows() ? onDragStart : undefined} onEnter={onEnter} onPosition={onPositionChanged} />
             </div>
             <RestrictionView items={items} ref={restrictionView} />
         </div>
