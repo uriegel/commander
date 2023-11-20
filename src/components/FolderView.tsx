@@ -9,16 +9,10 @@ import { DialogHandle } from 'web-dialog-react'
 import { initializeHistory } from '../history'
 import { isWindows } from '../globals'
 import { folderViewItemsChangedEvents } from '../requests/events'
-import { Subject, Subscription } from 'rxjs'
+import { Subscription } from 'rxjs'
 
 declare const webViewDropFiles: (id: string, move: boolean, paths: FileList)=>void
 declare const webViewDragStart: (path: string, fileList: string[]) => void
-declare const webViewRegisterDragEnd: (cb: () => void) => void
-
-const dragEnd = new Subject<void>()
-
-setTimeout(() => webViewRegisterDragEnd(() => dragEnd.next()), 2000)
-
 
 export enum ServiceStatus {
     Stopped = 1,
@@ -149,8 +143,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const sortDescending = useRef(false)
     const itemCount = useRef({ fileCount: 0, dirCount: 0 })
     const waitOnExtendedItems = useRef(false)
-    const dragEndSubscription = useRef<Subscription|null>(null)
-
+    
     const [items, setItems] = useState([] as FolderViewItem[])
     const [path, setPath] = useState("")
     const [dragStarted, setDragStarted] = useState(false)
@@ -409,32 +402,26 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             refresh() 
     }
 
-    const onDragStart = (evt: React.DragEvent) => {
+    const onDragStart = async (evt: React.DragEvent) => {
         var items = getSelectedItems().map(n => n.name)
         if (items.length > 0) {
-            webViewDragStart(path, items)
             setDragStarted(true)
             internalDrag = true
             evt.preventDefault()
+            await webViewDragStart(path, items)
+            setDragStarted(false)
+            internalDrag = false
         }
     }
 
-    useEffect(() => {
-        dragEndSubscription?.current?.unsubscribe()
-        dragEndSubscription.current = dragEnd?.subscribe(() => {
-            setDragStarted(false)
-            internalDrag = false
-        })
-    }, [setDragStarted])
-
-    const onDragEnter = (evt: React.DragEvent) => {
+    const onDragEnter = () => {
         if (!dragStarted) {
             dragEnterRefs.current++
             setDragging(true)
         }
     }
 
-    const onDragLeave = (evt: React.DragEvent) => {
+    const onDragLeave = () => {
         if (!dragStarted && --dragEnterRefs.current == 0)
             setDragging(false)
     }        
@@ -488,6 +475,8 @@ export default FolderView
 // TODO Windows append home drive to root
 
 // TODO Viewer .. => Directory Info
+
+// TODO Dev tools not in Release mode
 
 // using System.IO;
 
