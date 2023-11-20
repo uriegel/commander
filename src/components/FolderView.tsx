@@ -469,7 +469,6 @@ export default FolderView
 
 // TODO Selection Ctrl+Mouse click
 
-// TODO Drag n drop to outside (Windows)
 // TODO Drag n drop from outside copy hidden file
 
 // TODO GetNetShares (Windows)
