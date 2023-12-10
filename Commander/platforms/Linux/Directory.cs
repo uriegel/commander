@@ -163,9 +163,6 @@ record GetExtendedItemsResult(
 );
 
 #endif
-
-    // TODO error handling Copy, Trash
-
     // TODO KDE
     // let getKdeIcon ext = async {
     //     let extractMime str = 

@@ -4,10 +4,9 @@ using LinqTools;
 
 static class Progress
 {
-    public static WidgetHandle New(ObjectRef<ToggleButtonHandle> progressStarter)
+    public static WidgetHandle New()
         => Revealer.New()
-            .SideEffect(r => progressStarter.Ref.BindProperty("active", r, "reveal-child", BindingFlags.Default))
-            .OnNotify("reveal-child", MakeProgress)
+            .SideEffect(RevealControl)
             .TransitionType(RevealerTransition.SlideLeft)
             .Child(
                 MenuButton.New()
@@ -41,17 +40,23 @@ static class Progress
                 )
             );
 
-    static async void MakeProgress(RevealerHandle revealer)
-    {
-        if (!revealer.IsChildRevealed())
-            for (int i = 0; i < 1000; i++)
+    static void RevealControl(RevealerHandle revealer)            
+        => Events.CopyProgresses.Subscribe(n => 
             {
-                progress = i / 1000f;
-                await Task.Delay(10);
-                drawingArea.Ref.QueueDraw();
-                progressBar.Ref.Fraction(progress);
-            }
-    }
+                if (n.TotalFileBytes == 0)
+                    revealer.RevealChild();
+                else if (n.CurrentBytes == n.TotalBytes)
+                    revealer.RevealChild(false);
+                else
+                {
+                    progress = (float)n.CurrentBytes / n.TotalBytes;
+                    Gtk.Dispatch(() =>
+                    {
+                        drawingArea.Ref.QueueDraw();
+                        progressBar.Ref.Fraction(progress);
+                    });
+                }
+            });
 
     static float progress = 0.0f;
 

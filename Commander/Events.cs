@@ -27,7 +27,7 @@ record Events(
 #endif
 )
 {
-    public IObservable<CopyProgress> CopyProgresses { get => copyProgresses; }
+    public static IObservable<CopyProgress> CopyProgresses { get => copyProgresses; }
     public static void CopyProgressChanged(CopyProgress progress)
         => copyProgresses.OnNext(progress);
     public static void WindowStateChanged(bool isMaximized)

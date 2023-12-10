@@ -465,6 +465,13 @@ var internalDrag = false
 
 export default FolderView
 
+// TODO conceal Revealer when copy is finished, after 10 s, but not if another copy action is started
+// TODO Linux popover like react dialog
+// TODO Windows popup in windows forms
+// TODO remove react copy progress
+
+// TODO Linux error handling Copy
+
 // TODO Windows SaveBounds: window gets smaller every time
 
 // TODO Selection Ctrl+Mouse click
