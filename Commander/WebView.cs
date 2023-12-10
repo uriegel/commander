@@ -8,6 +8,10 @@ static class Window
             .SetAppId("de.uriegel.Commander")
 			.InitialBounds(600, 800)
 			.Title("Commander")
+#if Linux
+            .DownCast<WebViewBuilder>()
+            .TitleBar(TitleBar.New)
+#endif            
 			.ResourceIcon("icon")
 			.SaveBounds()
 			.WithoutNativeTitlebar()

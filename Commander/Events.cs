@@ -1,3 +1,4 @@
+using System.Reactive.Subjects;
 using AspNetExtensions;
 
 record CopyProgress(
@@ -20,14 +21,15 @@ record Events(
     CopyProgress? CopyProgress,
     WindowState? WindowState,
     FilesDrop? FilesDrop
-    
-#if Windows 
+
+#if Windows
     , ServiceItem[]? ServiceItems = null
 #endif
 )
 {
+    public IObservable<CopyProgress> CopyProgresses { get => copyProgresses; }
     public static void CopyProgressChanged(CopyProgress progress)
-        => Source.Send(new Events(null, progress, null, null));
+        => copyProgresses.OnNext(progress);
     public static void WindowStateChanged(bool isMaximized)
         => Source.Send(new Events(null, null, new(isMaximized), null));
     public static void FilesDropped(FilesDrop filesDrop)
@@ -38,11 +40,16 @@ record Events(
         => Source.Send(new Events(null, null, null, null, items));
 #endif
 
-    static Events ThemeChanged(string theme)
-        => new(theme, null, null, null);
-
     public static SseEventSource<Events> Source = SseEventSource<Events>.Create();   
 
     public static void StartEvents()   
         => global::Theme.StartThemeDetection(n => Source.Send(ThemeChanged(n)));
+
+    static Events ThemeChanged(string theme)
+        => new(theme, null, null, null);
+
+    static Events()
+        => copyProgresses.Subscribe(n => Source.Send(new Events(null, n, null, null)));
+
+    static readonly Subject<CopyProgress> copyProgresses = new();
 };

@@ -10,7 +10,6 @@ using LinqTools;
 using static CsTools.Core;
 using CsTools;
 using System.Diagnostics;
-using GtkDotNet.SafeHandles;
 
 static partial class Directory
 {
@@ -164,6 +163,8 @@ record GetExtendedItemsResult(
 );
 
 #endif
+
+    // TODO error handling Copy, Trash
 
     // TODO KDE
     // let getKdeIcon ext = async {
