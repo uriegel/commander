@@ -1,7 +1,6 @@
 #if Linux
 using System.Diagnostics;
 using GtkDotNet;
-using LinqTools;
 using CsTools.Extensions;
 
 static class Theme
@@ -53,10 +52,10 @@ static class Theme
         }
 
         static string GetGnomeTheme()
-            => Application.Dispatch(() => 
+            => Gtk.Dispatch(() => 
                 GtkSettings.GetDefault()
                     .GetString("gtk-theme-name"))
-                .Result;
+                .Result ?? "";
 
         return Platform.Value switch
             {
@@ -71,12 +70,12 @@ static class Theme
 
         async void StartGnomeThemeDetection()
         {
-            await Application.Dispatch(() =>
-                GtkSettings.GetDefault()
-                    .SignalConnect("notify::gtk-theme-name", () =>
-                        onChanged(GtkSettings.GetDefault()
-                                        .GetString("gtk-theme-name")
-                                        .GetThemeName())));
+            await Gtk.Dispatch(() =>
+                GtkSettings
+                    .GetDefault()
+                    .OnNotify("gtk-theme-name", s =>
+                        onChanged(s.GetString("gtk-theme-name")
+                                    ?.GetThemeName() ?? "")));
         }
 
         if (Platform.Value == PlatformType.Kde)

@@ -10,6 +10,7 @@ using LinqTools;
 using static CsTools.Core;
 using CsTools;
 using System.Diagnostics;
+using GtkDotNet.SafeHandles;
 
 static partial class Directory
 {
@@ -22,7 +23,7 @@ static partial class Directory
         => RepeatOnException(async () =>
             {
                 var directory = $"/usr/share/icons/{Theme.BaseTheme}/16x16/mimetypes";
-                var iconFile = Gtk.GuessContentType(iconHint).Replace('/', '-') + ".png";
+                var iconFile = Gtk.GuessContentType(iconHint)?.Replace('/', '-') ?? "" + ".png";
                 var path = directory.AppendPath(iconFile);
                 if (System.IO.File.Exists(path))
                 {
@@ -66,9 +67,12 @@ static partial class Directory
             .ToAsync();
 
     public static Task<IOResult> DeleteItems(DeleteItemsParam input)
-        => Application.Dispatch(() =>
+        => Gtk.Dispatch(() =>
         {
-            input.Names.ForEach(n => GFile.Trash(input.Path.AppendPath(n)));
+            input.Names.ForEach(n =>
+                GFile
+                    .New(input.Path.AppendPath(n))
+                    .Use(f => f.Trash()));
             return new IOResult(null);
         })
             .Catch(MapExceptionToIOResult);
@@ -130,25 +134,25 @@ static partial class Directory
     }
 
     static void CopyItem(string name, string path, string targetPath, Action<long, long> progress, bool move, CancellationToken cancellationToken) 
-        => Copy(path.AppendPath(name), targetPath.AppendPath(name), FileCopyFlags.Overwrite,
+        => path
+            .AppendPath(name)
+            .Copy(targetPath.AppendPath(name), FileCopyFlags.Overwrite,
                 (c, t) => progress(c, t), move, cancellationToken);
 
-    static void Copy(string source, string target, FileCopyFlags flags, GFile.ProgressCallback cb, bool move, CancellationToken cancellationToken)
-    {
-        if (move)
-            GtkDotNet.GFile.Move(source, target, flags, true, cb, cancellationToken);
-        else
-            GtkDotNet.GFile.Copy(source, target, flags, true, cb, cancellationToken);
-    }
-
+    static void Copy(this string source, string target, FileCopyFlags flags, ProgressCallback cb, bool move, CancellationToken cancellationToken)
+        => GFile
+            .New(source)
+            .Use(f => f.If(move,
+                f => f.Move(target, flags, true, cb, cancellationToken),
+                f => f.Copy(target, flags, true, cb, cancellationToken)));
     static IOError MapExceptionToIOError(Exception e)
         => e switch
         {
-            IOException ioe when ioe.HResult == 13             => IOError.AccessDenied,
-            UnauthorizedAccessException ue                     => IOError.AccessDenied,
-            GtkDotNet.GErrorException gee  when gee.Code ==  1 => IOError.FileNotFound, 
-            GtkDotNet.GErrorException gee  when gee.Code == 14 => IOError.AccessDenied,
-            _                                                  => IOError.Exn
+            IOException ioe when ioe.HResult == 13 => IOError.AccessDenied,
+            UnauthorizedAccessException ue         => IOError.AccessDenied,
+            GException gee  when gee.Code ==  1    => IOError.FileNotFound, 
+            GException gee  when gee.Code == 14    => IOError.AccessDenied,
+            _                                      => IOError.Exn
         };
 
     static readonly DateTime startTime = DateTime.Now;

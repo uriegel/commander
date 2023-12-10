@@ -4,7 +4,7 @@
     <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows>
     <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>false</SelfContained>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -21,7 +21,7 @@
   
   <PropertyGroup Condition="'$(IsLinux)'=='true'">
       <OutputType>Exe</OutputType>
-      <TargetFramework>net6.0</TargetFramework>
+      <TargetFramework>net8.0</TargetFramework>
       <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
       <DefineConstants>Linux</DefineConstants>
   </PropertyGroup>
@@ -54,7 +54,7 @@
 
 
   <ItemGroup Condition="'$(IsLinux)'=='true'">
-    <PackageReference Include="WebWindowNetCore.Linux" Version="4.0.4" />
+    <PackageReference Include="WebWindowNetCore.Linux" Version="4.1.0" />
     <EmbeddedResource Include="./kirk.png">
       <LogicalName>icon</LogicalName>
     </EmbeddedResource>
