@@ -23,7 +23,7 @@ static partial class Directory
         => RepeatOnException(async () =>
             {
                 var directory = $"/usr/share/icons/{Theme.BaseTheme}/16x16/mimetypes";
-                var iconFile = Gtk.GuessContentType(iconHint)?.Replace('/', '-') ?? "" + ".png";
+                var iconFile = (Gtk.GuessContentType(iconHint)?.Replace('/', '-') ?? "") + ".png";
                 var path = directory.AppendPath(iconFile);
                 if (System.IO.File.Exists(path))
                 {
