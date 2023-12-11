@@ -56,9 +56,9 @@
     --wdr-button-outlinestyle: dotted;
     --wdr-button-outlineoffset: -2px;
     --wdr-input-selection-color: var(--vtr-selected-background-color);
-}
+}   
 
 .App.adwaitaDarkTheme {
-    font-size: 85%;
+    font-size: 80%;
 }
 
