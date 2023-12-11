@@ -113,7 +113,8 @@ static class Remote
                         n.Size,
                         c, 
                         totalSize, 
-                        fcai.Bytes + c
+                        fcai.Bytes + c,
+                        false
                     )));
 
             await msg 
@@ -125,9 +126,9 @@ static class Remote
                 .WhenSome(v => v
                                 .SideEffect(_ => targetFile.Close())
                                 .SetLastWriteTime(targetFilename));
-
             return new(fcai.Bytes + n.Size, fcai.Count + 1, fcai.StartTime);
         }))
+            .SideEffect(_ => Events.CopyFinished())
             .ToIOResult();
 
     static async Task<IOResult> CopyItems(int totalCount, long totalSize, string sourcePath, IpAndPath ipAndPath, CopyItem[] items, bool move, CancellationToken cancellationToken)
@@ -147,11 +148,14 @@ static class Remote
                         n.Size, 
                         c, 
                         totalSize, 
-                        fcai.Bytes + c
+                        fcai.Bytes + c,
+                        false
                     )));
             using var msg = await Request.RunAsync(ipAndPath.PostFile(n.Name, sourceFile, new DateTimeOffset(n.Time).UtcDateTime), true);
+
             return new(fcai.Bytes + n.Size, fcai.Count + 1, fcai.StartTime);
         }))
+            .SideEffect(_ => Events.CopyFinished())
             .ToIOResult();
 
     static void SetLastWriteTime(this long unixTime, string targetFilename)

@@ -45,7 +45,7 @@ static class Progress
             {
                 if (n.TotalFileBytes == 0)
                     revealer.RevealChild();
-                else if (n.CurrentBytes == n.TotalBytes)
+                else if (n.IsFinished)
                     revealer.RevealChild(false);
                 else
                 {

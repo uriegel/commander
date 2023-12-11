@@ -242,7 +242,7 @@ static partial class Directory
                 EnsurePathExists(input.TargetPath, n.SubPath, newDirs);
                 CopyItem(n.Name, input.Path.AppendPath(n.SubPath), targetPath,
                     (c, t) => Events.CopyProgressChanged(
-                        new(n.Name, totalCount, fcai.Count + 1, (int)(DateTime.Now - fcai.StartTime).TotalSeconds, t, c, totalSize, fcai.Bytes + c)),
+                        new(n.Name, totalCount, fcai.Count + 1, (int)(DateTime.Now - fcai.StartTime).TotalSeconds, t, c, totalSize, fcai.Bytes + c, false)),
                     input.Move, cancellationToken);
                 return new(fcai.Bytes + n.Size, fcai.Count + 1, fcai.StartTime);
             })
@@ -258,6 +258,7 @@ static partial class Directory
                         catch { }
                     };
             })
+            .SideEffect(_ => Events.CopyFinished())
             .ToIOResult();
 
     static void EnsurePathExists(string path, string? subPath, HashSet<string> dirs)
