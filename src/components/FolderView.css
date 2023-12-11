@@ -30,6 +30,7 @@ body {
     width: calc(100% - 6px);
     outline-style: none;
     font-family: sans-serif;
+    font-size: 100%;
     color: var(--vtr-color);
     background-color: var(--light-background-color);    
 }
