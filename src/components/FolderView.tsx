@@ -465,10 +465,10 @@ var internalDrag = false
 
 export default FolderView
 
-// TODO Linux popover like react dialog
 // TODO Windows popup in windows forms
 // TODO remove react copy progress
 
+// TODO Linux Error when closing
 // TODO Linux error handling Copy
 
 // TODO Windows SaveBounds: window gets smaller every time

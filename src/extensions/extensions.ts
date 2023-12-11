@@ -14,7 +14,7 @@ declare global {
         removeMilliseconds(): Date 
     }
     interface Number {
-        bytesToString(): String
+        byteCountToString(): String
     }
 }
 
@@ -56,7 +56,7 @@ Date.prototype.removeMilliseconds = function () {
 }
 
 // eslint-disable-next-line
-Number.prototype.bytesToString = function () {
+Number.prototype.byteCountToString = function () {
     const gb = Math.floor(this.valueOf() / (1024 * 1024 * 1024))
     const mb = this.valueOf() % (1024 * 1024 * 1024)
     if (gb >= 1.0)
@@ -71,6 +71,4 @@ Number.prototype.bytesToString = function () {
         return `${kb2},${b.toString().substring(0, 2)} KB`
     else
         return `${b} B`
-        
-    
 }

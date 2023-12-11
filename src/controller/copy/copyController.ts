@@ -135,7 +135,7 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|un
                     .length > 0
                                 
             const result = await dialog?.show({
-                text: `${text} (${totalSize?.bytesToString()})`,   
+                text: `${text} (${totalSize?.byteCountToString()})`,   
                 slide: fromLeft ? Slide.Left : Slide.Right,
                 extension: conflictItems.length ? CopyConflicts : undefined,
                 extensionProps: conflictItems, 
@@ -154,7 +154,7 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|un
                 const startProgressDialog = () => {
                     timeout = setTimeout(async () => {
                         const res = await dialog?.show({
-                            text: `Fortschritt beim ${move ? "Verschieben" : "Kopieren"} (${totalSize?.bytesToString()})`,
+                            text: `Fortschritt beim ${move ? "Verschieben" : "Kopieren"} (${totalSize?.byteCountToString()})`,
                             slide: fromLeft ? Slide.Left : Slide.Right,
                             extension: CopyProgress,
                             btnCancel: true
