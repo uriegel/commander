@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
-    "@types/react": "^18.0.27",
-    "@types/react-dom": "^18.0.10",
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
     "cp": "^0.2.0",
     "functional-extensions": "^0.0.8",
     "menubar-react": "^2.1.0",
@@ -12,7 +12,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-progress-control": "^0.0.1",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "rxjs": "^7.8.0",
     "typescript": "^4.9.5",
     "view-split-react": "^1.0.1",
@@ -32,8 +32,7 @@
       "no-mixed-operators": "off"
     },
     "extends": [
-      "react-app",
-      "react-app/jest"
+      "react-app"
     ]
   },
   "browserslist": {

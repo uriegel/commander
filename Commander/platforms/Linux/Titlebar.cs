@@ -1,4 +1,4 @@
-#if LINUX
+#if Linux
 using GtkDotNet;
 using GtkDotNet.SafeHandles;
 
