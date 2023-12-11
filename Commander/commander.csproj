@@ -13,7 +13,7 @@
 
   <PropertyGroup Condition="'$(IsWindows)'=='true'">
       <OutputType>WinExe</OutputType>
-      <TargetFramework>net6.0-windows</TargetFramework>
+      <TargetFramework>net8.0-windows</TargetFramework>
       <RuntimeIdentifier>win-x64</RuntimeIdentifier>
       <DefineConstants>Windows</DefineConstants>
       <ApplicationIcon>kirk.ico</ApplicationIcon>
@@ -44,7 +44,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(IsWindows)'=='true'">
-    <PackageReference Include="WebWindowNetCore.Windows" Version="4.0.4" />
+    <PackageReference Include="WebWindowNetCore.Windows" Version="5.0.0" />
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="7.0.1" />
     <Content Include="./kirk.ico" />
     <EmbeddedResource Include="./kirk.ico">

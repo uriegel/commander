@@ -465,8 +465,9 @@ var internalDrag = false
 
 export default FolderView
 
-// TODO Windows popup in windows forms
-// TODO remove react copy progress
+// TODO get copy or move operation (dialog in Windows)
+// TODO Windows close (not cancel) copy progress
+// TODO Linux cancel copy progress
 
 // TODO Linux Error when closing
 // TODO Linux error handling Copy

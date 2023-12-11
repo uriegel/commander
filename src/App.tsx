@@ -52,6 +52,7 @@ const App = () => {
     const [isMaximized, setIsMaximized] = useState(false)
 	const [progress, setProgress] = useState(0)
 	const [progressRevealed, setProgressRevealed] = useState(false)
+	const [totalMax, setTotalMax] = useState(0)
 	
 	const filesDropSubscription = useRef<Subscription | null>(null)
 
@@ -63,14 +64,7 @@ const App = () => {
 				setProgressRevealed(false)
 			else 
 				setProgress(e.currentBytes/e.totalBytes)
-			// setTotalCount(e.totalCount)
-			// setCurrentCount(e.currentCount)
-			// setCurrentTime(e.copyTime)
-			// setMax(e.totalFileBytes)
-			// setValue(e.currentFileBytes)
-			// setTotalMax(e.totalBytes)
-			// setTotalValue(e.currentBytes)
-			// setFileName(e.fileName)
+			setTotalMax(e.totalBytes)
 		}) : null
 		return () => subscription?.unsubscribe()
 	}, [])
@@ -241,7 +235,8 @@ const App = () => {
 
 	return (
 		<div className={getAppClasses()} onKeyDown={onKeyDown} onDragOver={onDragOver} >
-			<Titlebar progress={progress} progressRevealed={progressRevealed} menu={(
+			<Titlebar progress={progress} progressRevealed={progressRevealed} dialog={dialog.current} totalSize={totalMax} move={false}
+				menu={(
 				<Menu autoMode={autoMode} onMenuAction={onMenuAction} toggleAutoMode={toggleAutoModeDialog}
 				showHidden={showHidden} toggleShowHidden={toggleShowHiddenAndRefresh}
 				showViewer={showViewer} toggleShowViewer={toggleShowViewer} />

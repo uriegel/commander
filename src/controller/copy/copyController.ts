@@ -1,7 +1,6 @@
 import * as R from "ramda"
 import { DialogHandle, Slide, Result } from "web-dialog-react"
 import CopyConflicts, { ConflictItem } from "../../components/dialogparts/CopyConflicts"
-import CopyProgress from "../../components/dialogparts/CopyProgress"
 import { FolderViewItem } from "../../components/FolderView"
 import { Controller, ControllerType } from "../controller"
 import { compareVersion, getItemsType, ItemsType } from "../filesystem"
@@ -149,27 +148,6 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|un
             })
             if (result?.result != Result.Cancel) {
 
-                let timeout: NodeJS.Timeout
-
-                const startProgressDialog = () => {
-                    timeout = setTimeout(async () => {
-                        const res = await dialog?.show({
-                            text: `Fortschritt beim ${move ? "Verschieben" : "Kopieren"} (${totalSize?.byteCountToString()})`,
-                            slide: fromLeft ? Slide.Left : Slide.Right,
-                            extension: CopyProgress,
-                            btnCancel: true
-                        })
-                        if (res?.result == Result.Cancel)
-                            await request("cancelCopy", {})        
-                    }, 1000)                    
-                }
-
-                const stopProgressDialog = () => {
-                    clearTimeout(timeout)    
-                }
-
-                startProgressDialog()
-
                 const itemsToCopy = fileItems
                     .map(n => ({ name: n.name, size: n.size, time: n.time, subPath: undefined }) as CopyItem)
                     .concat((res.infos?? []).map(n => ({ name: n.name, size: n.size, time: n.time, subPath: n.subPath || undefined })))
@@ -180,13 +158,7 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|un
                         conflictItems.map(n => ({ name: n.name, size: n.size, time: n.time, subPath: n.subPath || undefined })),
                         itemsToCopy)
                 
-                const ioResult = await copy(sourcePath!, targetPath!, copyItems, move, (uac: boolean) => {
-                    if (uac)
-                        stopProgressDialog()        
-                    else
-                        startProgressDialog()
-                }, dialog)
-                stopProgressDialog()
+                const ioResult = await copy(sourcePath!, targetPath!, copyItems, move, (uac: boolean) => {}, dialog)
                 dialog?.close()
                 return ioResult.error != undefined ? ioResult.error : null
             }

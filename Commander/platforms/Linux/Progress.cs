@@ -129,8 +129,6 @@ static class Progress
     static readonly ObjectRef<LabelHandle> TotalDuration = new();    
 }    
 
-#endif
-
 static class LongExtensions
 {
     public static string ByteCountToString(this long byteCounts, int decimalPlaces)
@@ -162,3 +160,5 @@ static class IntExtensions
         return $"{min:00}:{secs:00}";
     }
 }
+
+#endif
