@@ -234,6 +234,7 @@ static partial class Directory
         HashSet<string> newDirs, CancellationToken cancellationToken)
         => input
             .Items
+            .SideEffect(_ => Events.CopyStarted())
             .Aggregate(new FileCopyAggregateItem(0L, 0, DateTime.Now), (fcai, n) =>
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -242,7 +243,7 @@ static partial class Directory
                 EnsurePathExists(input.TargetPath, n.SubPath, newDirs);
                 CopyItem(n.Name, input.Path.AppendPath(n.SubPath), targetPath,
                     (c, t) => Events.CopyProgressChanged(
-                        new(n.Name, totalCount, fcai.Count + 1, (int)(DateTime.Now - fcai.StartTime).TotalSeconds, t, c, totalSize, fcai.Bytes + c, false)),
+                        new(n.Name, totalCount, fcai.Count + 1, (int)(DateTime.Now - fcai.StartTime).TotalSeconds, t, c, totalSize, fcai.Bytes + c, false, false)),
                     input.Move, cancellationToken);
                 return new(fcai.Bytes + n.Size, fcai.Count + 1, fcai.StartTime);
             })

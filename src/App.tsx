@@ -14,7 +14,7 @@ import './themes/adwaitaDark.css'
 import './themes/windows.css'
 import './themes/windowsDark.css'
 import { getTheme, isWindows } from './globals'
-import { filesDropEvents, themeChangedEvents, windowStateChangedEvents } from './requests/events'
+import { filesDropEvents, progressChangedEvents, themeChangedEvents, windowStateChangedEvents } from './requests/events'
 import { getCopyController } from './controller/copy/copyController'
 import FileViewer from './components/FileViewer'
 import "functional-extensions"
@@ -50,9 +50,31 @@ const App = () => {
 	const [path, setPath] = useState<PathProp>({ path: "", isDirectory: false })
 	const [itemCount, setItemCount] = useState({dirCount: 0, fileCount: 0 })
     const [isMaximized, setIsMaximized] = useState(false)
-    
-	const filesDropSubscription = useRef<Subscription | null>(null)
+	const [progress, setProgress] = useState(0)
+	const [progressRevealed, setProgressRevealed] = useState(false)
 	
+	const filesDropSubscription = useRef<Subscription | null>(null)
+
+	useEffect(() => {
+		const subscription = isWindows() ? progressChangedEvents.subscribe(e => {
+			if (e.isStarted)
+				setProgressRevealed(true)
+			else if (e.isFinished)
+				setProgressRevealed(false)
+			else 
+				setProgress(e.currentBytes/e.totalBytes)
+			// setTotalCount(e.totalCount)
+			// setCurrentCount(e.currentCount)
+			// setCurrentTime(e.copyTime)
+			// setMax(e.totalFileBytes)
+			// setValue(e.currentFileBytes)
+			// setTotalMax(e.totalBytes)
+			// setTotalValue(e.currentBytes)
+			// setFileName(e.fileName)
+		}) : null
+		return () => subscription?.unsubscribe()
+	}, [])
+
 	useEffect(() => {
 		const copyItemsFromFileSystem = async (id: string, path: string,  items: FolderViewItem[], move: boolean) => {
 			const inactive = id == ID_LEFT ? folderLeft.current : folderRight.current
@@ -219,7 +241,7 @@ const App = () => {
 
 	return (
 		<div className={getAppClasses()} onKeyDown={onKeyDown} onDragOver={onDragOver} >
-			<Titlebar menu={(
+			<Titlebar progress={progress} progressRevealed={progressRevealed} menu={(
 				<Menu autoMode={autoMode} onMenuAction={onMenuAction} toggleAutoMode={toggleAutoModeDialog}
 				showHidden={showHidden} toggleShowHidden={toggleShowHiddenAndRefresh}
 				showViewer={showViewer} toggleShowViewer={toggleShowViewer} />

@@ -1,6 +1,7 @@
 using System.Reactive.Subjects;
 using AspNetExtensions;
 using CsTools.Functional;
+using LinqTools;
 
 record CopyProgress(
     string FileName,
@@ -11,6 +12,7 @@ record CopyProgress(
     long   CurrentFileBytes,
     long   TotalBytes,
     long   CurrentBytes,
+    bool   IsStarted,
     bool   IsFinished
 );
 
@@ -32,18 +34,19 @@ record Events(
     public static IObservable<CopyProgress> CopyProgresses { get => copyProgresses; }
 
     public static void CopyProgressChanged(CopyProgress progress)
-    {
-        if (progress.TotalFileBytes == 0)
-            currentCopyId = GetCopyId();
-        copyProgresses.OnNext(progress);
-    }
+        => copyProgresses.OnNext(progress);
+
+    public static void CopyStarted()
+        => copyProgresses
+            .SideEffect(_ => currentCopyId = GetCopyId())
+            .OnNext(new("", 0, 0, 0, 0, 0, 0, 0, true, false));
 
     public static async void CopyFinished()
     {
         var thisCopyId = currentCopyId;
-        await Task.Delay(TimeSpan.FromSeconds(10));
+        await Task.Delay(TimeSpan.FromSeconds(5));
         if (thisCopyId == currentCopyId)
-            copyProgresses.OnNext(new("", 0, 0, 0, -1, 0, 0, 0, true));
+            copyProgresses.OnNext(new("", 0, 0, 0, 0, 0, 0, 0, false, true));
     }        
 
     public static void WindowStateChanged(bool isMaximized)

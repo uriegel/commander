@@ -465,7 +465,6 @@ var internalDrag = false
 
 export default FolderView
 
-// TODO Windows react-progress-control in header
 // TODO Linux popover like react dialog
 // TODO Windows popup in windows forms
 // TODO remove react copy progress

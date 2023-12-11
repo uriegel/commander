@@ -1,3 +1,4 @@
+#if LINUX
 using GtkDotNet;
 using GtkDotNet.SafeHandles;
 using LinqTools;
@@ -43,7 +44,7 @@ static class Progress
     static void RevealControl(RevealerHandle revealer)            
         => Events.CopyProgresses.Subscribe(n => 
             {
-                if (n.TotalFileBytes == 0)
+                if (n.IsStarted)
                     revealer.RevealChild();
                 else if (n.IsFinished)
                     revealer.RevealChild(false);
@@ -63,3 +64,5 @@ static class Progress
     static readonly ObjectRef<DrawingAreaHandle> drawingArea = new();
     static readonly ObjectRef<ProgressBarHandle> progressBar = new();
 }
+
+#endif

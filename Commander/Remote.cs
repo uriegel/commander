@@ -96,65 +96,71 @@ static class Remote
                     sourcePath, ipAndPath, items, move, Cancellation.Create());
 
     static async Task<IOResult> CopyItems(int totalCount, long totalSize, IpAndPath ipAndPath, string targetPath, CopyItem[] items, bool move, CancellationToken cancellationToken)
-        => (await items.ToAsyncEnumerable().AggregateAwaitAsync(new FileCopyAggregateItem(0L, 0, DateTime.Now), async (fcai, n) =>
-        {
-            if (cancellationToken.IsCancellationRequested)
-                return new(0, 0, DateTime.Now);
-            var targetFilename = targetPath.AppendLinuxPath(n.Name);
-            using var msg = await Request.RunAsync(ipAndPath.GetFile(n.Name), true);
-            using var targetFile = 
-                File
-                    .Create(targetFilename)
-                    .WithProgress((t, c) => Events.CopyProgressChanged(new(
-                        n.Name, 
-                        totalCount,
-                        fcai.Count + 1, 
-                        (int)(DateTime.Now - fcai.StartTime).TotalSeconds,
-                        n.Size,
-                        c, 
-                        totalSize, 
-                        fcai.Bytes + c,
-                        false
-                    )));
+        => (await items.ToAsyncEnumerable()
+            .SideEffect(_ => Events.CopyStarted())
+            .AggregateAwaitAsync(new FileCopyAggregateItem(0L, 0, DateTime.Now), async (fcai, n) =>
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    return new(0, 0, DateTime.Now);
+                var targetFilename = targetPath.AppendLinuxPath(n.Name);
+                using var msg = await Request.RunAsync(ipAndPath.GetFile(n.Name), true);
+                using var targetFile = 
+                    File
+                        .Create(targetFilename)
+                        .WithProgress((t, c) => Events.CopyProgressChanged(new(
+                            n.Name, 
+                            totalCount,
+                            fcai.Count + 1, 
+                            (int)(DateTime.Now - fcai.StartTime).TotalSeconds,
+                            n.Size,
+                            c, 
+                            totalSize, 
+                            fcai.Bytes + c,
+                            false,
+                            false
+                        )));
 
-            await msg 
-                .Content
-                .ReadAsStream()
-                .CopyToAsync(targetFile, cancellationToken);
-            msg
-                .GetHeaderLongValue("x-file-date")
-                .WhenSome(v => v
-                                .SideEffect(_ => targetFile.Close())
-                                .SetLastWriteTime(targetFilename));
-            return new(fcai.Bytes + n.Size, fcai.Count + 1, fcai.StartTime);
-        }))
+                await msg 
+                    .Content
+                    .ReadAsStream()
+                    .CopyToAsync(targetFile, cancellationToken);
+                msg
+                    .GetHeaderLongValue("x-file-date")
+                    .WhenSome(v => v
+                                    .SideEffect(_ => targetFile.Close())
+                                    .SetLastWriteTime(targetFilename));
+                return new(fcai.Bytes + n.Size, fcai.Count + 1, fcai.StartTime);
+            }))
             .SideEffect(_ => Events.CopyFinished())
             .ToIOResult();
 
     static async Task<IOResult> CopyItems(int totalCount, long totalSize, string sourcePath, IpAndPath ipAndPath, CopyItem[] items, bool move, CancellationToken cancellationToken)
-        => (await items.ToAsyncEnumerable().AggregateAwaitAsync(new FileCopyAggregateItem(0L, 0, DateTime.Now), async (fcai, n) =>
-        {
-            if (cancellationToken.IsCancellationRequested)
-                return new(0, 0, DateTime.Now);
-            var sourceFilename = sourcePath.AppendPath(n.Name);
-            using var sourceFile = 
-                File
-                    .OpenRead(sourceFilename)
-                    .WithProgress((t, c) => Events.CopyProgressChanged(new(
-                        n.Name, 
-                        totalCount,
-                        fcai.Count + 1, 
-                        (int)(DateTime.Now - fcai.StartTime).TotalSeconds,
-                        n.Size, 
-                        c, 
-                        totalSize, 
-                        fcai.Bytes + c,
-                        false
-                    )));
-            using var msg = await Request.RunAsync(ipAndPath.PostFile(n.Name, sourceFile, new DateTimeOffset(n.Time).UtcDateTime), true);
+        => (await items.ToAsyncEnumerable()
+            .SideEffect(_ => Events.CopyStarted())
+            .AggregateAwaitAsync(new FileCopyAggregateItem(0L, 0, DateTime.Now), async (fcai, n) =>
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    return new(0, 0, DateTime.Now);
+                var sourceFilename = sourcePath.AppendPath(n.Name);
+                using var sourceFile = 
+                    File
+                        .OpenRead(sourceFilename)
+                        .WithProgress((t, c) => Events.CopyProgressChanged(new(
+                            n.Name, 
+                            totalCount,
+                            fcai.Count + 1, 
+                            (int)(DateTime.Now - fcai.StartTime).TotalSeconds,
+                            n.Size, 
+                            c, 
+                            totalSize, 
+                            fcai.Bytes + c,
+                            false,
+                            false
+                        )));
+                using var msg = await Request.RunAsync(ipAndPath.PostFile(n.Name, sourceFile, new DateTimeOffset(n.Time).UtcDateTime), true);
 
-            return new(fcai.Bytes + n.Size, fcai.Count + 1, fcai.StartTime);
-        }))
+                return new(fcai.Bytes + n.Size, fcai.Count + 1, fcai.StartTime);
+            }))
             .SideEffect(_ => Events.CopyFinished())
             .ToIOResult();
 

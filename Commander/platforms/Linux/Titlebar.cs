@@ -1,3 +1,4 @@
+#if LINUX
 using GtkDotNet;
 using GtkDotNet.SafeHandles;
 
@@ -7,3 +8,5 @@ static class TitleBar
         => HeaderBar.New()
             .PackEnd(Progress.New());
 }
+
+#endif

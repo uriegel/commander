@@ -4,12 +4,14 @@ import { FolderViewItem } from '../components/FolderView'
 type CopyProgress = {
     fileName: string
     totalCount: number
-    currentCount: number,
-    copyTime: number,
+    currentCount: number
+    copyTime: number
     totalFileBytes: number
     currentFileBytes: number
     totalBytes: number
     currentBytes: number
+    isStarted: boolean
+    isFinished: boolean
 }
 
 type WindowState = {
@@ -62,7 +64,9 @@ export const progressChangedEvents = new BehaviorSubject<CopyProgress>({
     totalFileBytes: 0,
     currentFileBytes: 0,
     totalBytes: 0,
-    currentBytes: 0
+    currentBytes: 0,
+    isStarted: false,
+    isFinished: false
 })
 
 export const startUacEvents = () => {
