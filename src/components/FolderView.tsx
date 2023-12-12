@@ -465,7 +465,11 @@ var internalDrag = false
 
 export default FolderView
 
-// TODO get copy or move operation (dialog in Windows)
+// TODO Copy and move are operations to queue in
+// TODO Job: copy move copyToRemote copyFromRemote
+// TODO Job queue extendable: only for directory events not for remote!
+// TODO They inform about the current state and errors
+// TODO get copy or move o peration (dialog in Windows)
 // TODO Windows close (not cancel) copy progress
 // TODO Linux cancel copy progress
 
