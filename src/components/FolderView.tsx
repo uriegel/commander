@@ -454,6 +454,8 @@ let internalDrag = false
 
 export default FolderView
 
+// TODO public static Func<string> GetHomeDir { get; } in CsTools gets documents instead of home
+
 // TODO Ctrl+H as ToggleButton
 // TODO F3 as ToggleButton
 // TODO Hamburger Menu with Help overview

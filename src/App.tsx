@@ -200,11 +200,7 @@ const App = () => {
 		const controller = inactive && getCopyController(move, dialog.current, id == ID_LEFT, activeController, inactive.getController(),
 			activePath, inactive.getPath(), itemsToCopy, inactive.getItems())
 		const result = controller ? await controller.copy() : null
-		if (await checkResult(dialog.current, active, result)) {
-			if (move)
-				active?.refresh()
-			inactive?.refresh()
-		} 
+		await checkResult(dialog.current, active, result)
 	}
 
 	const VerticalSplitView = () => (
