@@ -17,14 +17,15 @@ using static CsTools.Functional.Tree;
 static partial class Directory
 {
     public static Task<GetFilesResult> GetFiles(GetFiles getFiles)
-        => getFiles.Path
-                .If(getFiles.Mount == true,
-                    Mount)
-                .CreateDirectoryInfo()
-                .Validate()
-                .SelectMany(n => GetFiles(n, getFiles.ShowHiddenItems))
-                .Get(e => GetFilesResult.CreateError(e, getFiles.Path))
-                .ToAsync();
+        => getFiles
+            .Path
+            .If(getFiles.Mount == true,
+                Mount)
+            .CreateDirectoryInfo()
+            .Validate()
+            .SelectMany(n => GetFiles(n, getFiles.ShowHiddenItems))
+            .Get(e => GetFilesResult.CreateError(e, getFiles.Path))
+            .ToAsync();
 
     public static GetExtendedItemsResult GetExtendedItems(string id, string path, string[] items)
     {
@@ -33,9 +34,9 @@ static partial class Directory
         DateTime? GetExifDate(string file)
         {
             if (extendedInfosCancellations
-                        .GetValue(id)
-                        .Select(n => n.IsCancellationRequested)
-                        .GetOrDefault(false))
+                    .GetValue(id)
+                    .Select(n => n.IsCancellationRequested)
+                    .GetOrDefault(false))
                 return null;
             try
             {
@@ -155,10 +156,6 @@ static partial class Directory
                             : DirectoryItem.CreateFileItem(new FileInfo(n)))
                 .ToArray()));
 
-    public static Task<IOResult> CopyItems(CopyItemsParam input)
-        => CopyItems(input, input.Items)
-            .Catch(MapExceptionToIOResult);
-
     public static Task<IOResult> CancelCopy(Empty _)
         => Task.FromResult(new IOResult(null)
                                 .SideEffect(Cancellation.Cancel));
@@ -194,12 +191,11 @@ static partial class Directory
         return
              Try(
                 () => new DirFileInfo(
-                    dirInfo
+                    [.. dirInfo
                         .GetDirectories()
                         .Select(DirectoryItem.CreateDirItem)
                         .Where(FilterHidden)
-                        .OrderBy(n => n.Name)
-                        .ToArray(),
+                        .OrderBy(n => n.Name)],
                     dirInfo
                         .GetFiles()
                         .Select(DirectoryItem.CreateFileItem)
@@ -209,7 +205,7 @@ static partial class Directory
             .Select(MakeFilesResult);
 
         GetFilesResult MakeFilesResult(DirFileInfo dirFileInfo)
-            => new (dirFileInfo.Directories.Concat(dirFileInfo.Files).ToArray(),
+            => new ([.. dirFileInfo.Directories, .. dirFileInfo.Files],
                     dirInfo.FullName,
                     dirFileInfo.Directories.Length,
                     dirFileInfo.Files.Length,
@@ -344,7 +340,7 @@ record GetFilesResult(
     IOError Error
 ) {
     public static GetFilesResult CreateError(IOError e, string path)
-        => new(Array.Empty<DirectoryItem>(), path, 0, 0, e); 
+        => new([], path, 0, 0, e); 
 }
 
 record GetExtendedItems(
@@ -435,7 +431,10 @@ enum IOError {
     PathNotFound
 }
 
-record IOResult(IOError? Error);
+record IOResult(IOError? Error)
+{
+    public static IOResult NoError() => new(IOError.NoError);
+};
 
 static class IOResultExtensions
 {
