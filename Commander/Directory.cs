@@ -291,7 +291,6 @@ static partial class Directory
 
     static bool IsDirectory(string path)
         => (File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory;
-
 }
 
 record DirectoryItem(

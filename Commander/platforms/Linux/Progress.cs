@@ -53,7 +53,7 @@ static class Progress
                             ProgressBar.New()
                             .Ref(progressBar)
                             .ShowText()
-                            .Fraction(.04)
+                            .Fraction(.0)
                         )
                         .Append(
                             Box.New(Orientation.Vertical)
@@ -62,7 +62,7 @@ static class Progress
                                 ProgressBar.New()
                                 .Ref(totalProgressBar)
                                 .ShowText()
-                                .Fraction(.04)
+                                .Fraction(.0)
                             )
                         )
                     )

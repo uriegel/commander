@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using LinqTools;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 
 static class CopyProcessor
 {
@@ -20,11 +21,19 @@ static class CopyProcessor
 
         => IOResult
             .NoError()
+            .SideEffect(_ => fileCount += input.Items.Length)
+            .SideEffect(_ => completeSize += input.Items.Select(n => n.Size).Aggregate(0L, (a, b) => a + b)) 
+            .SideEffect(_ => Events.CopyStarted())
             .SideEffect(_ => input.Items.SideEffectForAll(n => InsertCopyItem(input.Path, input.TargetPath, input.Move, n)))
             .ToAsync();
 
     static void InsertCopyItem(string path, string targetPath, bool move, CopyItem item)
         => jobs.Enqueue(new(move ? JobType.Move : JobType.Copy, path, targetPath, item.Size, item.Name, item.SubPath, false));
+
+    static int fileCount;
+    static int currentFileCount;
+    static long currentSize;
+    static long completeSize;
 
     static readonly ConcurrentQueue<Job> jobs = [];
 }
