@@ -334,12 +334,13 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             case "Delete":
                 await deleteItems()
                 break
-            case "Backspace": {
-                const path = history.current?.get(evt.shiftKey)
-                if (path)
-                    changePath(path, showHidden, undefined, undefined, true)
+            case "Backspace":
+                if (!checkRestricted(evt.key)) {
+                    const path = history.current?.get(evt.shiftKey)
+                    if (path)
+                        changePath(path, showHidden, undefined, undefined, true)
+                }
                 break
-            }
             default:
                 checkRestricted(evt.key)
                 break
