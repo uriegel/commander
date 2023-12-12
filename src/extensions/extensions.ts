@@ -14,48 +14,41 @@ declare global {
         removeMilliseconds(): Date 
     }
     interface Number {
-        byteCountToString(): String
+        byteCountToString(): string
     }
 }
 
-// eslint-disable-next-line
 String.prototype.getExtension = function (): string {
-    let index = this.lastIndexOf(".")
+    const index = this.lastIndexOf(".")
     return index > 0 ? this.substring(index) : ""
 }
 
-// eslint-disable-next-line
 String.prototype.extractSubPath = function (): string {
     return this.substring(this.lastIndexOfAny(["/", "\\"]))
 }
 
-// eslint-disable-next-line
 String.prototype.getParentPath = function (): string {
     return this.length > 1 && (this.charAt(this.length - 1) == "/" || this.charAt(this.length - 1) == "\\")
         ? this.substring(0, this.substring(0, this.length - 1).lastIndexOfAny(["/", "\\"]))
         : this.substring(0, this.lastIndexOfAny(["/", "\\"]))
 }
 
-// eslint-disable-next-line
 String.prototype.appendPath = function (subPath: string): string {
     return this.endsWith("/")
         ? this + subPath
         : this + "/" + subPath
 }
 
-// eslint-disable-next-line
 Array.prototype.distinct = function () {
     return [...new Set(this)]
 }
 
-// eslint-disable-next-line
 Date.prototype.removeMilliseconds = function () {
     const newDate = new Date(this.getTime())
     newDate.setMilliseconds(0)
     return newDate
 }
 
-// eslint-disable-next-line
 Number.prototype.byteCountToString = function () {
     const gb = Math.floor(this.valueOf() / (1024 * 1024 * 1024))
     const mb = this.valueOf() % (1024 * 1024 * 1024)

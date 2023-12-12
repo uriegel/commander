@@ -191,7 +191,8 @@ const App = () => {
 	const copyItems = async (move: boolean) => {
 		const active = getActiveFolder()
 		const inactive = getInactiveFolder()
-		copyItemsToInactive(inactive, move, active?.getController()!, active?.getPath()!, active?.getSelectedItems()!, active?.id, active)
+		if (active && inactive)
+			copyItemsToInactive(inactive, move, active.getController(), active.getPath(), active.getSelectedItems(), active.id, active)
 	}
 
 	const copyItemsToInactive = async (inactive: FolderViewHandle | null, move: boolean, activeController: Controller,

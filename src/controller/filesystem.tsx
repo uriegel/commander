@@ -190,16 +190,16 @@ const setExtendedItems = (items: FolderViewItem[], extended: GetExtendedItemsRes
 		? {...n, exifDate: extended.exifTimes[i] || undefined } 
 		: !extended.exifTimes[i] && (extended.versions && extended.versions[i])
 		? {...n, version: extended.versions[i] || undefined } 
-		: {...n, version: (extended.versions && extended.versions[i] || undefined), exifDate: extended.exifTimes[i] || undefined })
-		 
+		: { ...n, version: (extended.versions && extended.versions[i] || undefined), exifDate: extended.exifTimes[i] || undefined })
+		
 export const getSortFunction = (index: number, descending: boolean) => {
 	const ascDesc = (sortResult: number) => descending ? -sortResult : sortResult
 	const sf = index == 0
 		? (a: FolderViewItem, b: FolderViewItem) => a.name.localeCompare(b.name) 
 		: index == 1
 			? (a: FolderViewItem, b: FolderViewItem) => {	
-				let aa = a.exifDate ? a.exifDate : a.time || ""
-				let bb = b.exifDate ? b.exifDate : b.time || ""
+				const aa = a.exifDate ? a.exifDate : a.time || ""
+				const bb = b.exifDate ? b.exifDate : b.time || ""
 				return aa.localeCompare(bb) 
 			} 
 		: index == 2
@@ -323,11 +323,11 @@ const deleteItems = async (path: string, items: FolderViewItem[], dialog: Dialog
 		defBtnOk: true
 	})
 	return result?.result == Result.Ok
-	 	? (await request<IOErrorResult>("deleteitems", {
-	 			path,
-	 			names: items.map(n => n.name),
-	 		}, dialog)).error ?? null
-	 	: null
+		? (await request<IOErrorResult>("deleteitems", {
+				path,
+				names: items.map(n => n.name),
+			}, dialog)).error ?? null
+		: null
 }
 
 export const compareVersion = (versionLeft?: Version, versionRight?: Version) =>
@@ -361,7 +361,7 @@ const getItemsWithAccess = async (dialog: DialogHandle, path: string) => {
 		})
 		if (result?.result == Result.Cancel)
 			break
-		var res = await request<IOErrorResult>("elevatedrive", { path, name, password })	
+		const res = await request<IOErrorResult>("elevatedrive", { path, name, password })	
 		if (!res.error) 
 			return true
 		else if (res.error == IOError.NetNameNotFound)

@@ -29,7 +29,7 @@ const getColumns = () => ({
 })
 
 const getFavoriteItems = () => {
-    var itemsStr = localStorage.getItem("fav")
+    const itemsStr = localStorage.getItem("fav")
     return itemsStr ? JSON.parse(itemsStr) as FolderViewItem[] : []
 }
 
@@ -43,7 +43,7 @@ const showAddFavorite = async (dialog?: DialogHandle | null, otherPath?: string)
             defBtnOk: true
         }))?.result == Result.Ok
     if (result && otherPath) {
-        let newItems = items.concat([{ name: otherPath }])
+        const newItems = items.concat([{ name: otherPath }])
         localStorage.setItem("fav", JSON.stringify(newItems))
         return true
     }

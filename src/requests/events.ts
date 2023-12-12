@@ -37,7 +37,7 @@ const toCommanderEvent = (event: MessageEvent) =>
     JSON.parse(event.data) as CommanderEvent
 
 const source = new EventSource("http://localhost:20000/commander/sse")
-let commanderEvents = fromEvent<MessageEvent>(source, 'message')
+const commanderEvents = fromEvent<MessageEvent>(source, 'message')
     .pipe(map(toCommanderEvent))
 
 export const themeChangedEvents = commanderEvents

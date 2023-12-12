@@ -19,7 +19,7 @@ export const createExtendedRenameFileSystemController = (controller: Controller)
         const cols = controller.getColumns()
         cols.columns = cols.columns.insert(1, { name: "Neuer Name", isSortable: false })
         cols.renderRow = (item: FolderViewItem) => {
-            var items = controller.getColumns().renderRow(item)
+            const items = controller.getColumns().renderRow(item)
             return items.insert(1, item.newName ?? "")
         }
         return cols
@@ -51,7 +51,7 @@ export const createExtendedRenameFileSystemController = (controller: Controller)
     appendPath: controller.appendPath,
     rename: controller.rename,
     extendedRename: (controller: Controller, dialog: DialogHandle | null) => extendedRename(controller, dialog, true),
-    renameAsCopy: async(_, __, ___)=>null,
+    renameAsCopy: async()=>null,
     createFolder: controller.createFolder,
     deleteItems: controller.deleteItems,
     onSelectionChanged,
@@ -89,7 +89,7 @@ const onSelectionChanged = (items: FolderViewItem[]) => {
     const prefix = localStorage.getItem("extendedRenamePrefix") ?? "Bild"
     const digits = localStorage.getItem("extendedRenameDigits")?.parseInt() ?? 3
     const startNumber = localStorage.getItem("extendedRenameStartNumber")?.parseInt() ?? 1
-    items.reduce((p, n, _) => {
+    items.reduce((p, n) => {
         n.newName = n.isSelected && !n.isDirectory
             ? `${prefix}${p.toString().padStart(digits, '0')}.${n.name.split('.').pop()}`
             : null
@@ -101,7 +101,7 @@ const rename = async (enterData: EnterData) => {
     if (enterData.selectedItems && enterData.selectedItems.length > 0) {
         const testItems = enterData.items  
             ?.filter(n => !n.isDirectory)
-            .map(n => n.isSelected ? n.newName?.toLowerCase()! : n.name.toLowerCase()) 
+            .map(n => n.isSelected ? n.newName?.toLowerCase() ?? "" : n.name.toLowerCase()) 
             ?? []
         if (new Set(testItems).size == testItems.length) {
             const result = await request<IOErrorResult>("renameitems", {

@@ -101,7 +101,7 @@ export const createEmptyController = (): Controller => ({
     id: "empty",
     getColumns: () => ({
         columns: [],
-        renderRow: _ => []
+        renderRow: () => []
     }),
     getItems: async () => ({ items: [], path: "", dirCount: 0, fileCount: 0, error: IOError.NoError }),
     getExtendedItems: async () => ({ path: "", exifTimes: [], versions: [] }),
@@ -130,7 +130,7 @@ export const formatSize = (num?: number) => {
     let sizeStr = num.toString()
     const sep = '.'
     if (sizeStr.length > 3) {
-        var sizePart = sizeStr
+        const sizePart = sizeStr
         sizeStr = ""
         for (let j = 3; j < sizePart.length; j += 3) {
             const extract = sizePart.slice(sizePart.length - j, sizePart.length - j + 3)

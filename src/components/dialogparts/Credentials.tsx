@@ -9,7 +9,7 @@ export interface CredentialsProps {
 
 const Credentials = ({onChange, props }: ExtensionProps) => {
 
-    var credentialsProps = props as CredentialsProps
+    const credentialsProps = props as CredentialsProps
     const [name, setName] = useState(credentialsProps.name)
     const [password, setPassword] = useState(`${credentialsProps.password}`)
 

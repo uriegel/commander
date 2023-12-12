@@ -4,7 +4,7 @@ import { Platform, getPlatform } from "../globals"
 import { DialogHandle, Result as DialogResult } from 'web-dialog-react'
 import { startUacEvents } from "./events"
 
-export type Nothing = {}
+export type Nothing = NonNullable<unknown>
 
 type Result = 
 	| Nothing 
@@ -263,7 +263,7 @@ async function requestElevated<T extends Result>(method: RequestType, input: Req
     if (uacShown)
         uacShown(true)
 
-    var withElevation = elevatedStarted
+    const withElevation = elevatedStarted
         ? (await dialog.show({
                 text: "Diese Aktion als Administrator ausführen?",
                 btnOk: true,
@@ -304,4 +304,4 @@ async function requestElevated<T extends Result>(method: RequestType, input: Req
         return res
 }
 
-var elevatedStarted = false
+let elevatedStarted = false

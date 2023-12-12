@@ -5,7 +5,7 @@ import { ExtendedRenameProps } from "../../controller/filesystemExtendedRename"
 
 const ExtendedRename = ({props }: ExtensionProps) => {
 
-    var extendedRenameProps = props as ExtendedRenameProps
+    const extendedRenameProps = props as ExtendedRenameProps
     const [prefix, setPrefix] = useState(extendedRenameProps.prefix)
     const [digits, setDigits] = useState(`${extendedRenameProps.digits}`)
     const [startNumber, setStartNumber] = useState(`${extendedRenameProps.startNumber}`)

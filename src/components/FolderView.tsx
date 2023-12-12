@@ -156,7 +156,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const onActualizedItems = useCallback((actualizedItems: FolderViewItem[]) => {
         const newItems = items.map(n => {
-            var changedItem = actualizedItems.find(i => i.name == n.name)
+            const changedItem = actualizedItems.find(i => i.name == n.name)
             return changedItem
                 ? changedItem
                 : n
@@ -193,7 +193,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const getWidthsId = () => `${id}-${controller.current.id}-widths`
 
     const onColumnWidths = (widths: number[]) => {
-    	localStorage.setItem(getWidthsId(), JSON.stringify(widths))
+        localStorage.setItem(getWidthsId(), JSON.stringify(widths))
 	} 
 
     const refPath = useRef("")
@@ -206,8 +206,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }, [])
 
     const setWidths = (columns: TableColumns<FolderViewItem>) => {
-        let widthstr = localStorage.getItem(getWidthsId())
-        let widths = widthstr ? JSON.parse(widthstr) as number[] : null
+        const widthstr = localStorage.getItem(getWidthsId())
+        const widths = widthstr ? JSON.parse(widthstr) as number[] : null
         return widths
             ? {
                 ...columns, columns: columns.columns.map((n, i) => ({...n, width: widths![i]}))
@@ -300,29 +300,30 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 break
             case "Home":
                 if (controller.current.itemsSelectable) 
-                    setItems(items.map((n, i) => setSelection(n, i <= virtualTable.current?.getPosition()!)))
+                    setItems(items.map((n, i) => setSelection(n, i <= (virtualTable.current?.getPosition() ?? 0))))
                 controller.current.onSelectionChanged(items)
                 evt.preventDefault()
                 evt.stopPropagation()
                 break
             case "End":
                 if (controller.current.itemsSelectable) 
-                    setItems(items.map((n, i) => setSelection(n, i >= virtualTable.current?.getPosition()!)))
+                    setItems(items.map((n, i) => setSelection(n, i >= (virtualTable.current?.getPosition() ?? 0))))
                 controller.current.onSelectionChanged(items)                    
                 evt.preventDefault()
                 evt.stopPropagation()
                 break
-            case "Space":
+            case "Space": {
                 const ri = restrictionView.current?.checkKey(" ")
                 if (ri) {
                     virtualTable.current?.setPosition(0)
                     setItems(ri)
-                } else if (controller.current.itemsSelectable) 
+                } else if (controller.current.itemsSelectable)
                     setItems(items.map((n, i) => i != virtualTable.current?.getPosition() ? n : toggleSelection(n)))
-                controller.current.onSelectionChanged(items)                    
+                controller.current.onSelectionChanged(items)
                 evt.preventDefault()
                 evt.stopPropagation()
                 break
+            }
             case "Escape":
                 if (!checkRestricted(evt.key)) {
                     if (controller.current.itemsSelectable) 
@@ -333,11 +334,12 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             case "Delete":
                 await deleteItems()
                 break
-            case "Backspace":
+            case "Backspace": {
                 const path = history.current?.get(evt.shiftKey)
                 if (path)
                     changePath(path, showHidden, undefined, undefined, true)
                 break
+            }
             default:
                 checkRestricted(evt.key)
                 break
@@ -403,7 +405,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     const onDragStart = async (evt: React.DragEvent) => {
-        var items = getSelectedItems().map(n => n.name)
+        const items = getSelectedItems().map(n => n.name)
         if (items.length > 0) {
             setDragStarted(true)
             internalDrag = true
@@ -461,7 +463,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     )
 })
 
-var internalDrag = false
+let internalDrag = false
 
 export default FolderView
 

@@ -35,7 +35,7 @@ const getColumns = () => ({
 })
 
 const getItems = async () => {
-    var items = getRemoteItems()
+    const items = getRemoteItems()
                     .sort((a, b) => a.name.localeCompare(b.name))
     return {
         path: REMOTES,
@@ -52,10 +52,10 @@ const getItems = async () => {
 
 const showRemote = async (dialog?: DialogHandle|null, item?: FolderViewItem) => {
 
-    var name = item?.name
-    var ipAddress = item?.ipAddress
-    var isAndroid = item?.isAndroid ?? true
-    var items = getRemoteItems().filter(n => n.name != item?.name)
+    let name = item?.name
+    let ipAddress = item?.ipAddress
+    let isAndroid = item?.isAndroid ?? true
+    const items = getRemoteItems().filter(n => n.name != item?.name)
     const result = await dialog?.show({
         text: "Entferntes Gerät hinzufügen",   
         extension: RemoteDialog,

@@ -4,7 +4,7 @@ export interface History {
 }
 
 export const initializeHistory = () => {
-    let history: string[] = []
+    const history: string[] = []
     let position = -1
 
     const set = (path: string) => {

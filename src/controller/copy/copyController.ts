@@ -158,7 +158,7 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|un
                         conflictItems.map(n => ({ name: n.name, size: n.size, time: n.time, subPath: n.subPath || undefined })),
                         itemsToCopy)
                 
-                const ioResult = await copy(sourcePath!, targetPath!, copyItems, move, (_: boolean) => {}, dialog)
+                const ioResult = await copy(sourcePath!, targetPath!, copyItems, move, () => {}, dialog)
                 dialog?.close()
                 return ioResult.error != undefined ? ioResult.error : null
             }
