@@ -18,14 +18,14 @@ static class Window
 			.WithoutNativeTitlebar()
 			.OnFilesDrop(OnFilesDrop)
 			.OnWindowStateChanged(state => Events.WindowStateChanged(state == WebWindowNetCore.Data.WebWindowState.Maximized))
-			.DebugUrl($"http://localhost:3000")
+			.DebugUrl($"http://localhost:5173")
 			.QueryString(() => Platform.QueryString)
             .OnStarted(() => new Thread(() => Events.StartEvents()).Start())
 			.ConfigureHttp(http => http
 				.ResourceWebroot("webroot", "/static")
 				.UseSse("commander/sse", Events.Source)
 #if DEBUG        
-                .CorsOrigin("http://localhost:3000")
+                .CorsOrigin("http://localhost:5173")
 #endif        
                 .MapGet("commander/getIcon", context => Directory.ProcessIcon(context, context.Request.Query["path"].ToString()))
                 .MapGet("commander/file", context => Directory.ProcessFile(context, context.Request.Query["path"].ToString()))

@@ -51,7 +51,7 @@ export const createExtendedRenameFileSystemController = (controller: Controller)
     appendPath: controller.appendPath,
     rename: controller.rename,
     extendedRename: (controller: Controller, dialog: DialogHandle | null) => extendedRename(controller, dialog, true),
-    renameAsCopy: async(p, i, d)=>null,
+    renameAsCopy: async(_, __, ___)=>null,
     createFolder: controller.createFolder,
     deleteItems: controller.deleteItems,
     onSelectionChanged,
@@ -89,7 +89,7 @@ const onSelectionChanged = (items: FolderViewItem[]) => {
     const prefix = localStorage.getItem("extendedRenamePrefix") ?? "Bild"
     const digits = localStorage.getItem("extendedRenameDigits")?.parseInt() ?? 3
     const startNumber = localStorage.getItem("extendedRenameStartNumber")?.parseInt() ?? 1
-    items.reduce((p, n, i) => {
+    items.reduce((p, n, _) => {
         n.newName = n.isSelected && !n.isDirectory
             ? `${prefix}${p.toString().padStart(digits, '0')}.${n.name.split('.').pop()}`
             : null

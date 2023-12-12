@@ -85,7 +85,7 @@ export const getFavoritesController = async (controller: Controller | null): Pro
         onEnter,
         sort: (items: FolderViewItem[]) => items,
         itemsSelectable: false,
-        appendPath: (path: string, subPath: string) => subPath,
+        appendPath: (_: string, subPath: string) => subPath,
         rename: async () => null,
         extendedRename: async () => null,
         renameAsCopy: async () => null,

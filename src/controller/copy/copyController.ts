@@ -4,7 +4,7 @@ import CopyConflicts, { ConflictItem } from "../../components/dialogparts/CopyCo
 import { FolderViewItem } from "../../components/FolderView"
 import { Controller, ControllerType } from "../controller"
 import { compareVersion, getItemsType, ItemsType } from "../filesystem"
-import { CopyItem, CopyItemsResult, IOError, IOErrorResult, request } from "../../requests/requests"
+import { CopyItem, CopyItemsResult, IOError, IOErrorResult } from "../../requests/requests"
 import { copy, copyInfo } from "./fileSystem"
 import { copyInfoToRemote, copyToRemote } from "./toRemoteCopy"
 import { copyFromRemote, copyInfoFromRemote } from "./fromRemoteCopy"
@@ -39,7 +39,7 @@ export const getCopyController = (move: boolean, dialog: DialogHandle | null, fr
     : null
 }
 
-const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|undefined, fromLeft: boolean, fromController: Controller, toController: Controller,
+const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|undefined, fromLeft: boolean, _: Controller, __: Controller,
             sourcePath: string, targetPath: string, items: FolderViewItem[], targetItems: FolderViewItem[],
             copyInfo: (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean)=>Promise<CopyItemsResult>,
             copy: (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean, uacShown?: (uac: boolean)=>void, dialog?: DialogHandle|null)=>Promise<IOErrorResult>): CopyController | null => ({
@@ -158,7 +158,7 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|un
                         conflictItems.map(n => ({ name: n.name, size: n.size, time: n.time, subPath: n.subPath || undefined })),
                         itemsToCopy)
                 
-                const ioResult = await copy(sourcePath!, targetPath!, copyItems, move, (uac: boolean) => {}, dialog)
+                const ioResult = await copy(sourcePath!, targetPath!, copyItems, move, (_: boolean) => {}, dialog)
                 dialog?.close()
                 return ioResult.error != undefined ? ioResult.error : null
             }

@@ -96,7 +96,7 @@ export const getRootController = async (controller: Controller | null): Promise<
         onEnter: platform == Platform.Windows ? onWindowsEnter : onLinuxEnter,
         sort: (items: FolderViewItem[]) => items,
         itemsSelectable: false,
-        appendPath: (path: string, subPath: string) => subPath,
+        appendPath: (_: string, subPath: string) => subPath,
         rename: async () => null,
         extendedRename: async () => null,
         renameAsCopy: async () => null,

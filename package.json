@@ -2,49 +2,38 @@
   "name": "commander",
   "version": "0.1.0",
   "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },  
   "devDependencies": {
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.55.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8",
     "cp": "^0.2.0",
     "functional-extensions": "^0.0.8",
     "menubar-react": "^2.1.0",
     "ramda": "^0.28.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "react-progress-control": "^1.0.0",
-    "react-scripts": "^5.0.1",
     "rxjs": "^7.8.0",
-    "typescript": "^4.9.5",
     "view-split-react": "^1.0.1",
     "virtual-table-react": "^10.5.1",
     "web-dialog-react": "^2.4.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "GENERATE_SOURCEMAP='false' react-scripts build && npm run copy",
+    "dev": "vite",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "build": "tsc && vite build && npm run copy",
     "build Windows": "set \"GENERATE_SOURCEMAP=false\" && react-scripts build && npm run wincopy",
-    "copy": "cp build/static/js/*.js resources/script.js && cp build/static/css/*.css resources/style.css",
+    "copy": "cp dist/assets/*.js resources/script.js && cp dist/assets/*.css resources/style.css",
     "wincopy": "xcopy .\\build\\static\\js\\*.js .\\resources\\script.js /y &&  copy .\\build\\static\\css\\*.css .\\resources\\style.css /y"
-  },
-  "eslintConfig": {
-    "rules": {
-      "eqeqeq": "off",
-      "no-mixed-operators": "off"
-    },
-    "extends": [
-      "react-app"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   }
 }

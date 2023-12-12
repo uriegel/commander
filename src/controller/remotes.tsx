@@ -22,7 +22,7 @@ const renderRow = (item: FolderViewItem) => [
 ]
 
 const getRemoteItems = () => {
-    var itemsStr = localStorage.getItem(REMOTES)
+    const itemsStr = localStorage.getItem(REMOTES)
     return itemsStr ? JSON.parse(itemsStr) as FolderViewItem[] : []
 }
 
@@ -114,7 +114,7 @@ const deleteItems = async (_: string, items: FolderViewItem[], dialog: DialogHan
     return null
 }
 
-const rename = async (path: string, item: FolderViewItem, dialog: DialogHandle | null) => {
+const rename = async (_: string, item: FolderViewItem, dialog: DialogHandle | null) => {
     await showRemote(dialog, item)
     return null
 }
@@ -133,7 +133,7 @@ export const getRemotesController = async (controller: Controller | null): Promi
         onEnter,
         sort: (items: FolderViewItem[]) => items,
         itemsSelectable: true,
-        appendPath: (path: string, subPath: string) => subPath,
+        appendPath: (_: string, subPath: string) => subPath,
         rename,
         extendedRename: async () => null,
         renameAsCopy: async()=>null,

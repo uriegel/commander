@@ -48,7 +48,7 @@ const getColumns = () => ({
     getRowClasses
 } as TableColumns<FolderViewItem>)
 
-const getItems = async (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean) => {
+const getItems = async (_: string, __: boolean, sortIndex: number, sortDescending: boolean) => {
     const services =
         addParent(sort(await request<GetServicesResult>("getservices"), sortIndex, sortDescending))
     return {

@@ -284,7 +284,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     const onPositionChanged = useCallback(
-        (item: FolderViewItem, pos?: number) => onPathChanged(controller.current.appendPath(path, item.name), item.isDirectory == true),
+        (item: FolderViewItem) => onPathChanged(controller.current.appendPath(path, item.name), item.isDirectory == true),
         [path, onPathChanged])         
 
     const onKeyDown = async (evt: React.KeyboardEvent) => {

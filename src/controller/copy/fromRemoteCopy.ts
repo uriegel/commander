@@ -1,6 +1,6 @@
 import { CopyItem, CopyItemsResult, IOErrorResult, request } from "../../requests/requests"
 
-export const copyInfoFromRemote = async (sourcePath: string, targetPath: string, items: CopyItem[]): Promise<CopyItemsResult> => {
+export const copyInfoFromRemote = async (_: string, __: string, items: CopyItem[]): Promise<CopyItemsResult> => {
     return {
         infos: items.filter(n => n.isDirectory)
     }

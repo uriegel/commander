@@ -101,7 +101,7 @@ export const createEmptyController = (): Controller => ({
     id: "empty",
     getColumns: () => ({
         columns: [],
-        renderRow: p => []
+        renderRow: _ => []
     }),
     getItems: async () => ({ items: [], path: "", dirCount: 0, fileCount: 0, error: IOError.NoError }),
     getExtendedItems: async () => ({ path: "", exifTimes: [], versions: [] }),
