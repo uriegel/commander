@@ -1,10 +1,11 @@
 import { TableColumns } from "virtual-table-react"
 import { FolderViewItem } from "../components/FolderView"
-import IconName, { IconNameType } from "../components/IconName"
+import IconName from "../components/IconName"
 import { GetItemResult, request } from "../requests/requests"
 import { addParent, Controller, ControllerResult, ControllerType, formatDateTime, formatSize, sortItems } from "./controller"
 import { getSortFunction } from "./filesystem"
 import { REMOTES } from "./remotes"
+import { IconNameType } from "../enums"
 
 export const REMOTE = "remote"
 

@@ -1,13 +1,14 @@
 import { SpecialKeys, TableColumns } from "virtual-table-react"
 import { DialogHandle, Result } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
-import IconName, { IconNameType } from "../components/IconName"
+import IconName from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { addParent, Controller, ControllerResult, ControllerType, formatDateTime, formatSize, formatVersion, sortItems } from "./controller"
 import { GetExtendedItemsResult, GetItemResult, IOError, IOErrorResult, request, Version } from "../requests/requests"
 import { ROOT } from "./root"
 import { extendedRename } from "./filesystemExtendedRename"
 import Credentials, { CredentialsProps } from "../components/dialogparts/Credentials"
+import { IconNameType } from "../enums"
 
 export enum ItemsType {
 	Directories,
@@ -344,6 +345,7 @@ export const compareVersion = (versionLeft?: Version, versionRight?: Version) =>
 	: versionLeft.build - versionRight.build
 
 const getItemsWithAccess = async (dialog: DialogHandle, path: string) => {
+	/* eslint-disable no-constant-condition */
 	while (true) {
 		let name = ""
 		let password = ""

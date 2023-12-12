@@ -197,8 +197,8 @@ const App = () => {
 
 	const copyItemsToInactive = async (inactive: FolderViewHandle | null, move: boolean, activeController: Controller,
 		activePath: string, itemsToCopy: FolderViewItem[], id?: string, active?: FolderViewHandle | null) => {
-		const controller = getCopyController(move, dialog.current, id == ID_LEFT, activeController, inactive?.getController()!,
-			activePath, inactive?.getPath()!, itemsToCopy, inactive?.getItems()!)
+		const controller = inactive && getCopyController(move, dialog.current, id == ID_LEFT, activeController, inactive.getController(),
+			activePath, inactive.getPath(), itemsToCopy, inactive.getItems())
 		const result = controller ? await controller.copy() : null
 		if (await checkResult(dialog.current, active, result)) {
 			if (move)

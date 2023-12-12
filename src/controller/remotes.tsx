@@ -1,10 +1,11 @@
 import { DialogHandle, Result } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
-import IconName, { IconNameType } from "../components/IconName"
+import IconName from "../components/IconName"
 import RemoteDialog from "../components/dialogparts/RemoteDialog"
 import { addParent, Controller, ControllerResult, ControllerType, EnterData } from "./controller"
 import { ROOT } from "./root"
 import { IOError } from "../requests/requests"
+import { IconNameType } from "../enums"
 
 export const REMOTES = "remotes"
 
@@ -55,7 +56,7 @@ const showRemote = async (dialog?: DialogHandle|null, item?: FolderViewItem) => 
     let name = item?.name
     let ipAddress = item?.ipAddress
     let isAndroid = item?.isAndroid ?? true
-    const items = getRemoteItems().filter(n => n.name != item?.name)
+    let items = getRemoteItems().filter(n => n.name != item?.name)
     const result = await dialog?.show({
         text: "Entferntes Gerät hinzufügen",   
         extension: RemoteDialog,

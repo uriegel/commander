@@ -1,5 +1,5 @@
 import { FolderViewItem } from "../components/FolderView"
-import IconName, { IconNameType } from "../components/IconName"
+import IconName from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, EnterData, formatSize} from "./controller"
 import { REMOTES } from "./remotes"
@@ -7,6 +7,7 @@ import { GetRootResult, IOError, request } from "../requests/requests"
 import "functional-extensions"
 import { SERVICES } from "./services"
 import { FAVORITES } from "./favorites"
+import { IconNameType } from "../enums"
 
 export const ROOT = "root"
 const platform = getPlatform()

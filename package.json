@@ -29,7 +29,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "tsc && eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "build": "tsc && vite build && npm run copy",
     "build Windows": "set \"GENERATE_SOURCEMAP=false\" && react-scripts build && npm run wincopy",

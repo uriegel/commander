@@ -1,10 +1,11 @@
 import { TableColumns } from "virtual-table-react"
-import { FolderViewItem, ServiceStartMode, ServiceStatus } from "../components/FolderView"
-import IconName, { IconNameType } from "../components/IconName"
+import { FolderViewItem } from "../components/FolderView"
+import IconName from "../components/IconName"
 import { Controller, ControllerResult, ControllerType, addParent, sortItems } from "./controller"
 import { ROOT } from "./root"
 import { GetServicesResult, IOError, IOErrorResult, request } from "../requests/requests"
 import { DialogHandle } from "web-dialog-react"
+import { IconNameType, ServiceStartMode, ServiceStatus } from "../enums"
 
 export const SERVICES = "services"
 

@@ -6,7 +6,8 @@ import { compareVersion } from '../../controller/filesystem'
 import { Version } from '../../requests/requests'
 import { getPlatform, Platform } from '../../globals'
 import './CopyConflicts.css'
-import IconName, { IconNameType } from '../IconName'
+import IconName from '../IconName'
+import { IconNameType } from '../../enums'
 
 export interface ConflictItem {
 	name: string

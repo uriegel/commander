@@ -8,19 +8,7 @@ import Android from '../svg/Android'
 import New from '../svg/New'
 import Service from '../svg/Service'
 import Favorite from '../svg/Favorite'
-
-export enum IconNameType {
-    Parent,
-    Root,
-    Home,
-    Folder,
-    File,
-    Remote,
-    Android,
-    New,
-    Service,
-    Favorite
-}
+import { IconNameType } from '../enums'
 
 interface IconNameProps {
     namePart: string

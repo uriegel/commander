@@ -1,9 +1,10 @@
 import { DialogHandle, Result } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
-import IconName, { IconNameType } from "../components/IconName"
+import IconName from "../components/IconName"
 import { Controller, ControllerResult, ControllerType, EnterData, addParent } from "./controller"
 import { ROOT } from "./root"
 import { IOError } from "../requests/requests"
+import { IconNameType } from "../enums"
 
 export const FAVORITES = "fav"
 

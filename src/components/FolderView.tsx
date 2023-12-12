@@ -10,24 +10,10 @@ import { initializeHistory } from '../history'
 import { isWindows } from '../globals'
 import { folderViewItemsChangedEvents } from '../requests/events'
 import { Subscription } from 'rxjs'
+import { ServiceStartMode, ServiceStatus } from '../enums'
 
 declare const webViewDropFiles: (id: string, move: boolean, paths: FileList)=>void
 declare const webViewDragStart: (path: string, fileList: string[]) => void
-
-export enum ServiceStatus {
-    Stopped = 1,
-    Starting,
-    Stopping,
-    Running
-}
-
-export enum ServiceStartMode {
-    Boot, 
-    System,
-    Automatic,
-    Manual,
-    Disabled
-}
 
 export interface FolderViewItem extends SelectableItem {
     name:         string
