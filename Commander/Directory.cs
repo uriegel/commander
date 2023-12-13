@@ -219,59 +219,6 @@ static partial class Directory
         => path.EndsWith(".mp4", StringComparison.InvariantCultureIgnoreCase) 
         || path.EndsWith(".mp3", StringComparison.InvariantCultureIgnoreCase);
 
-    static async Task<IOResult> CopyItems(CopyItemsParam input, CopyItem[] items)
-        => await CopyItems(items.Length, 
-                            items
-                            .Select(n => n.Size)
-                            .Aggregate(0L, (a, b) => a + b), 
-                        input, new HashSet<string>(), Cancellation.Create());
-
-    static Task<IOResult> CopyItems(int totalCount, long totalSize, CopyItemsParam input,
-        HashSet<string> newDirs, CancellationToken cancellationToken)
-        => input
-            .Items
-            .SideEffect(_ => Events.CopyStarted())
-            .Aggregate(new FileCopyAggregateItem(0L, 0, DateTime.Now), (fcai, n) =>
-            {
-                if (cancellationToken.IsCancellationRequested)
-                    return new(0, 0, DateTime.Now);
-                var targetPath = input.TargetPath.AppendPath(n.SubPath);
-                EnsurePathExists(input.TargetPath, n.SubPath, newDirs);
-                CopyItem(n.Name, input.Path.AppendPath(n.SubPath), targetPath,
-                    (c, t) => Events.CopyProgressChanged(
-                        new(n.Name, totalCount, fcai.Count + 1, (int)(DateTime.Now - fcai.StartTime).TotalSeconds, t, c, totalSize, fcai.Bytes + c, false, false)),
-                    input.Move, cancellationToken);
-                return new(fcai.Bytes + n.Size, fcai.Count + 1, fcai.StartTime);
-            })
-            .SideEffect(n =>
-            {
-                if (input.Move)
-                    foreach (var dir in newDirs)
-                    {
-                        try
-                        {
-                            Delete(input.Path.AppendPath(dir));
-                        }
-                        catch { }
-                    };
-            })
-            .SideEffect(_ => Events.CopyFinished())
-            .ToIOResult();
-
-    static void EnsurePathExists(string path, string? subPath, HashSet<string> dirs)
-    {
-        if (subPath != null&& !dirs.Contains(subPath))
-        {
-            var targetPath = path.AppendPath(subPath);
-            if (!System.IO.Directory.Exists(targetPath))
-                System.IO.Directory.CreateDirectory(targetPath);
-            dirs.Add(subPath);
-        }
-    }   
-
-    static Task<IOResult> ToIOResult<T>(this T t)
-        => new IOResult(null).ToAsync();
-
     static Task<IOResult> ToIOResult(this Result<Nothing, IOError> result)
         => result.Match(
                 _ => (IOError?)null,
@@ -427,7 +374,9 @@ enum IOError {
     DeleteToTrashNotPossible,
     Exn,
     NetNameNotFound,
-    PathNotFound
+    PathNotFound,
+    NotSupported,
+    PathTooLong
 }
 
 record IOResult(IOError? Error)

@@ -6,10 +6,11 @@ using AspNetExtensions;
 using CsTools.Extensions;
 using GtkDotNet;
 using LinqTools;
-
-using static CsTools.Core;
 using CsTools;
 using System.Diagnostics;
+
+using static LinqTools.Core;
+using static CsTools.Core;
 
 static partial class Directory
 {
@@ -65,16 +66,37 @@ static partial class Directory
         => GetExtendedItems(getExtendedItems.Id, getExtendedItems.Path, getExtendedItems.Items)
             .ToAsync();
 
-    public static Task<IOResult> DeleteItems(DeleteItemsParam input)
+    public static Task<Result<Nothing, IOResult>> DeleteItems(DeleteItemsParam input)
         => Gtk.Dispatch(() =>
-        {
-            input.Names.ForEach(n =>
-                GFile
+            input.Names
+                .Select(n =>
+                    GFile
                     .New(input.Path.AppendPath(n))
-                    .Use(f => f.Trash()));
-            return new IOResult(null);
-        })
-            .Catch(MapExceptionToIOResult);
+                    .Use(f => f.Trash()))
+                .FirstOrDefault(n => !n.IsOK)
+                .Match(
+                    s => s,
+                    e => e != null 
+                    // TODO GError to IOResult
+                        ? Error<Nothing, IOResult>(IOResult.NoError()) 
+                        : nothing));
+
+    public static Result<Nothing, GError> Copy(string name, string path, string targetPath, FileCopyFlags flags, ProgressCallback cb, bool move, CancellationToken cancellationToken)
+        => GFile
+            .New(path.AppendPath(name))
+            .Use(f => f.If(move,
+                f => f.Move(targetPath.AppendPath(name), flags, true, cb, cancellationToken),
+                f => f.Copy(targetPath.AppendPath(name), flags, true, cb, cancellationToken)));
+
+    public static IOError ErrorToIOError(DirectoryError de)
+        => de switch
+        {
+            DirectoryError.AccessDenied => IOError.AccessDenied,
+            DirectoryError.DirectoryNotFound => IOError.PathNotFound,
+            DirectoryError.NotSupported => IOError.NotSupported,
+            DirectoryError.PathTooLong => IOError.PathTooLong,
+            _ => IOError.Exn
+        };
 
     static string Mount(string path) 
     {
@@ -132,25 +154,11 @@ static partial class Directory
         proc.WaitForExit();
     }
 
-    static void CopyItem(string name, string path, string targetPath, Action<long, long> progress, bool move, CancellationToken cancellationToken) 
-        => path
-            .AppendPath(name)
-            .Copy(targetPath.AppendPath(name), FileCopyFlags.Overwrite,
-                (c, t) => progress(c, t), move, cancellationToken);
-
-    static void Copy(this string source, string target, FileCopyFlags flags, ProgressCallback cb, bool move, CancellationToken cancellationToken)
-        => GFile
-            .New(source)
-            .Use(f => f.If(move,
-                f => f.Move(target, flags, true, cb, cancellationToken),
-                f => f.Copy(target, flags, true, cb, cancellationToken)));
     static IOError MapExceptionToIOError(Exception e)
         => e switch
         {
             IOException ioe when ioe.HResult == 13 => IOError.AccessDenied,
             UnauthorizedAccessException ue         => IOError.AccessDenied,
-            GException gee  when gee.Code ==  1    => IOError.FileNotFound, 
-            GException gee  when gee.Code == 14    => IOError.AccessDenied,
             _                                      => IOError.Exn
         };
 
