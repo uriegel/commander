@@ -14,7 +14,7 @@ using LinqTools.Functional;
 
 static partial class Directory
 {
-    public static Result<DirectoryInfo, IOError> Validate(this DirectoryInfo info) => info;
+    public static Result<DirectoryInfo, IOResult> Validate(this DirectoryInfo info) => info;
 
     public static string GetIconPath(FileInfo info)
         => info.Extension?.Length > 0 ? info.Extension : ".noextension";
@@ -66,19 +66,19 @@ static partial class Directory
         => GetExtendedItems(getExtendedItems.Id, getExtendedItems.Path, getExtendedItems.Items)
             .ToAsync();
 
-    public static Task<IOResult> DeleteItems(DeleteItemsParam input)
-        => Gtk.Dispatch(() =>
-            input.Names
-                .Select(n =>
-                    GFile
-                    .New(input.Path.AppendPath(n))
-                    .Use(f => f.Trash()))
-                .FirstOrDefault(n => n.IsError)
-                .Match(
-                    s => IOResult.NoError(),
-                    e => e != null 
-                        ? new IOResult(MapGErrorToIOError(e)) 
-                        : IOResult.NoError()));
+    // public static Task<IOResult> DeleteItems(DeleteItemsParam input)
+    //     => Gtk.Dispatch(() =>
+    //         input.Names
+    //             .Select(n =>
+    //                 GFile
+    //                 .New(input.Path.AppendPath(n))
+    //                 .Use(f => f.Trash()))
+    //             .FirstOrDefault(n => n.IsError)
+    //             .Match(
+    //                 s => IOResult.NoError(),
+    //                 e => e != null 
+    //                     ? new IOResult(MapGErrorToIOError(e)) 
+    //                     : IOResult.NoError()));
 
     public static Result<Nothing, GError> Copy(string name, string path, string targetPath, FileCopyFlags flags, ProgressCallback cb, bool move, CancellationToken cancellationToken)
         => GFile
@@ -87,14 +87,14 @@ static partial class Directory
                 f => f.Move(targetPath.AppendPath(name), flags, true, cb, cancellationToken),
                 f => f.Copy(targetPath.AppendPath(name), flags, true, cb, cancellationToken)));
 
-    public static IOError ErrorToIOError(DirectoryError de)
+    public static IOResult ErrorToIOError(DirectoryError de)
         => de switch
         {
-            DirectoryError.AccessDenied => IOError.AccessDenied,
-            DirectoryError.DirectoryNotFound => IOError.PathNotFound,
-            DirectoryError.NotSupported => IOError.NotSupported,
-            DirectoryError.PathTooLong => IOError.PathTooLong,
-            _ => IOError.Exn
+            DirectoryError.AccessDenied      => new(IOErrorType.AccessDenied),
+            DirectoryError.DirectoryNotFound => new(IOErrorType.PathNotFound),
+            DirectoryError.NotSupported      => new(IOErrorType.NotSupported),
+            DirectoryError.PathTooLong       => new(IOErrorType.PathTooLong),
+            _                                => new(IOErrorType.Exn)
         };
 
     static string Mount(string path) 
@@ -153,21 +153,21 @@ static partial class Directory
         proc.WaitForExit();
     }
 
-    static IOError MapExceptionToIOError(Exception e)
+    static IOResult MapExceptionToIOError(Exception e)
         => e switch
         {
-            IOException ioe when ioe.HResult == 13 => IOError.AccessDenied,
-            UnauthorizedAccessException ue         => IOError.AccessDenied,
-            _                                      => IOError.Exn
+            IOException ioe when ioe.HResult == 13 => new(IOErrorType.AccessDenied),
+            UnauthorizedAccessException ue         => new(IOErrorType.AccessDenied),
+            _                                      => new(IOErrorType.Exn)
         };
 
-    static IOError MapGErrorToIOError(GError e)
+    static IOResult MapGErrorToIOError(GError e)
         => e switch
         {
-            GError ge when e is FileError fe && fe.Error == FileError.ErrorType.AccessDenied   => IOError.AccessDenied,
-            GError ge when e is FileError fe && fe.Error == FileError.ErrorType.SourceNotFound => IOError.AlreadyExists,
-            GError ge when e is FileError fe && fe.Error == FileError.ErrorType.TargetNotFound => IOError.AlreadyExists,
-            _                                                                                  => IOError.Exn
+            GError ge when e is FileError fe && fe.Error == FileError.ErrorType.AccessDenied   => new(IOErrorType.AccessDenied),
+            GError ge when e is FileError fe && fe.Error == FileError.ErrorType.SourceNotFound => new(IOErrorType.AlreadyExists),
+            GError ge when e is FileError fe && fe.Error == FileError.ErrorType.TargetNotFound => new(IOErrorType.AlreadyExists),
+            _                                                                                  => new(IOErrorType.Exn)
         };
 
     static readonly DateTime startTime = DateTime.Now;

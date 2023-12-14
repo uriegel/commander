@@ -13,10 +13,11 @@ using CsTools.Functional;
 
 using static CsTools.Core;
 using LinqTools.Functional;
+using Microsoft.FSharp.Data.UnitSystems.SI.UnitNames;
 
 static partial class Directory
 {
-    public static Task<GetFilesResult> GetFiles(GetFiles getFiles)
+    public static Task<GetFilesRequestResult> GetFiles(GetFiles getFiles)
         => getFiles
             .Path
             .If(getFiles.Mount == true,
@@ -24,7 +25,8 @@ static partial class Directory
             .CreateDirectoryInfo()
             .Validate()
             .SelectMany(n => GetFiles(n, getFiles.ShowHiddenItems))
-            .Get(e => GetFilesResult.CreateError(e, getFiles.Path))
+            .SelectException(e => e.AppendPath(getFiles.Path))
+            .ToRequestResult()
             .ToAsync();
 
     public static GetExtendedItemsResult GetExtendedItems(string id, string path, string[] items)
@@ -78,68 +80,68 @@ static partial class Directory
         await context.SendStream(ms, null, "favicon.png");
     }
 
-    public static Task<IOResult> CreateFolder(CreateFolderParam input)
-        => Try(
-            () => CreateDirectory(input.Path.AppendPath(input.Name)).ToNothing(),
-            MapExceptionToIOError)
-                .ToIOResult();
+    // public static Task<IOResult> CreateFolder(CreateFolderParam input)
+    //     => Try(
+    //         () => CreateDirectory(input.Path.AppendPath(input.Name)).ToNothing(),
+    //         MapExceptionToIOError)
+    //             .ToIOResult();
 
-    public static Task<IOResult> RenameItem(RenameItemParam input)
-        => Try(
-            () => Move(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName)),
-            MapExceptionToIOError)
-                .ToIOResult();
+    // public static Task<IOResult> RenameItem(RenameItemParam input)
+    //     => Try(
+    //         () => Move(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName)),
+    //         MapExceptionToIOError)
+    //             .ToIOResult();
 
-    public static Task<IOResult> CancelExtendedItems(CancelExtendedItems cancelExtendedItems)
-    {
-        extendedInfosCancellations.GetValue(cancelExtendedItems.Id)?.Cancel();        
-        return Task.FromResult(new IOResult(IOError.NoError));
-    }
+    // public static Task<IOResult> CancelExtendedItems(CancelExtendedItems cancelExtendedItems)
+    // {
+    //     extendedInfosCancellations.GetValue(cancelExtendedItems.Id)?.Cancel();        
+    //     return Task.FromResult(new IOResult(IOError.NoError));
+    // }
 
-    public static Task<CopyItemsResult> CopyItemsInfo(CopyItemsParam input)
-    {
-        return CopyItemsInfo()
-                .Catch(MapExceptionToCopyItems);
+    // public static Task<CopyItemsResult> CopyItemsInfo(CopyItemsParam input)
+    // {
+    //     return CopyItemsInfo()
+    //             .Catch(MapExceptionToCopyItems);
 
-        async Task<CopyItemsResult> CopyItemsInfo()
-            => await new CopyItemsResult(input.Items.FlattenTree(Resolver, CreateCopyItemInfo, IsDirectory, new CancellationTokenSource(TimeSpan.FromSeconds(10)).Token,
-                        AppendSubPath, (string?)null).ToArray(), null)
-                    .ToAsync();
+    //     async Task<CopyItemsResult> CopyItemsInfo()
+    //         => await new CopyItemsResult(input.Items.FlattenTree(Resolver, CreateCopyItemInfo, IsDirectory, new CancellationTokenSource(TimeSpan.FromSeconds(10)).Token,
+    //                     AppendSubPath, (string?)null).ToArray(), null)
+    //                 .ToAsync();
 
-        (IEnumerable<CopyItem>, string?) Resolver(CopyItem item, string? subPath)
-            => (GetCopyItems(subPath.AppendPath(item.Name)), item.Name);
+    //     (IEnumerable<CopyItem>, string?) Resolver(CopyItem item, string? subPath)
+    //         => (GetCopyItems(subPath.AppendPath(item.Name)), item.Name);
 
-        IEnumerable<CopyItem> GetCopyItems(string subPath)
-        {
-            var info = new DirectoryInfo(input.Path.AppendPath(subPath));
-            var dirInfos = info
-                            .GetDirectories()
-                            .Select(n => new CopyItem(n.Name, true, 0, DateTime.MinValue, null));
-            var fileInfos = info
-                                .GetFiles()
-                                .Select(n => new CopyItem(n.Name, false, n.Length, n.LastWriteTime, null));
-            return fileInfos.Concat(dirInfos);
-        }
+    //     IEnumerable<CopyItem> GetCopyItems(string subPath)
+    //     {
+    //         var info = new DirectoryInfo(input.Path.AppendPath(subPath));
+    //         var dirInfos = info
+    //                         .GetDirectories()
+    //                         .Select(n => new CopyItem(n.Name, true, 0, DateTime.MinValue, null));
+    //         var fileInfos = info
+    //                             .GetFiles()
+    //                             .Select(n => new CopyItem(n.Name, false, n.Length, n.LastWriteTime, null));
+    //         return fileInfos.Concat(dirInfos);
+    //     }
 
-        CopyItemInfo CreateCopyItemInfo(CopyItem copyItem, string? subPath) 
-        {
-            var targetFile = input.TargetPath.AppendPath(subPath).AppendPath(copyItem.Name);
-            var fi = new FileInfo(targetFile);
-            return new CopyItemInfo(
-                copyItem.Name, 
-                subPath ?? "", 
-                copyItem.Size, 
-                copyItem.Time, 
-                fi.Exists ? fi.Length : null, 
-                fi.Exists ? fi.LastWriteTime : null);
-        }
+    //     CopyItemInfo CreateCopyItemInfo(CopyItem copyItem, string? subPath) 
+    //     {
+    //         var targetFile = input.TargetPath.AppendPath(subPath).AppendPath(copyItem.Name);
+    //         var fi = new FileInfo(targetFile);
+    //         return new CopyItemInfo(
+    //             copyItem.Name, 
+    //             subPath ?? "", 
+    //             copyItem.Size, 
+    //             copyItem.Time, 
+    //             fi.Exists ? fi.Length : null, 
+    //             fi.Exists ? fi.LastWriteTime : null);
+    //     }
 
-        string AppendSubPath(string? initialPath, string? subPath)
-            => initialPath.AppendPath(subPath);
+    //     string AppendSubPath(string? initialPath, string? subPath)
+    //         => initialPath.AppendPath(subPath);
 
-        bool IsDirectory(CopyItem item, string? subPath)
-            => item.isDirectory == true;
-    }
+    //     bool IsDirectory(CopyItem item, string? subPath)
+    //         => item.isDirectory == true;
+    // }
 
     public static void FilesDropped(string id, bool move, string[] paths)
         => Events.FilesDropped(new FilesDrop(
@@ -152,37 +154,37 @@ static partial class Directory
                             : DirectoryItem.CreateFileItem(new FileInfo(n)))
                 .ToArray()));
 
-    public static Task<IOResult> CancelCopy(Empty _)
-        => Task.FromResult(new IOResult(null)
-                                .SideEffect(Cancellation.Cancel));
+    // public static Task<IOResult> CancelCopy(Empty _)
+    //     => Task.FromResult(new IOResult(null)
+    //                             .SideEffect(Cancellation.Cancel));
 
-    public static Task<IOResult> RenameItems(RenameItemsParam input)
-    {
-        return Try(
-            () => {
-                input.items.ForEach(PreRenameItem);
-                input.items.ForEach(RenameItem);
-            },
-            MapExceptionToIOError)
-                .ToIOResult();
-        void PreRenameItem(RenameItem item)
-            => Move(input.Path.AppendPath(item.Name), input.Path.AppendPath("__RENAMING__" + item.NewName));
-        void RenameItem(RenameItem item)
-            => Move(input.Path.AppendPath("__RENAMING__" + item.NewName), input.Path.AppendPath(item.NewName));
-    }
+    // public static Task<IOResult> RenameItems(RenameItemsParam input)
+    // {
+    //     return Try(
+    //         () => {
+    //             input.items.ForEach(PreRenameItem);
+    //             input.items.ForEach(RenameItem);
+    //         },
+    //         MapExceptionToIOError)
+    //             .ToIOResult();
+    //     void PreRenameItem(RenameItem item)
+    //         => Move(input.Path.AppendPath(item.Name), input.Path.AppendPath("__RENAMING__" + item.NewName));
+    //     void RenameItem(RenameItem item)
+    //         => Move(input.Path.AppendPath("__RENAMING__" + item.NewName), input.Path.AppendPath(item.NewName));
+    // }
 
-    public static Task<IOResult> RenameAndCopy(RenameItemParam input)
-        => Try(
-            () => File.Copy(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName)),
-            MapExceptionToIOError)
-                .ToIOResult();
+    // public static Task<IOResult> RenameAndCopy(RenameItemParam input)
+    //     => Try(
+    //         () => File.Copy(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName)),
+    //         MapExceptionToIOError)
+    //             .ToIOResult();
 
-    public static Task<IOResult> OnEnter(OnEnterParam input)
-        => new IOResult(null)
-            .SideEffect(_ => OnEnter(input.Path, input.Keys))
-            .ToAsync();
+    // public static Task<IOResult> OnEnter(OnEnterParam input)
+    //     => new IOResult(null)
+    //         .SideEffect(_ => OnEnter(input.Path, input.Keys))
+    //         .ToAsync();
 
-    public static Result<GetFilesResult, IOError> GetFiles(DirectoryInfo dirInfo, bool showHiddenItems)
+    public static Result<GetFilesResult, IOResult> GetFiles(DirectoryInfo dirInfo, bool showHiddenItems)
     {
         return
              Try(
@@ -197,15 +199,14 @@ static partial class Directory
                         .Select(DirectoryItem.CreateFileItem)
                         .Where(FilterHidden)
                         .ToArray()),
-                e => IOError.PathNotFound)
+                e => new IOResult(IOErrorType.PathNotFound, null))
             .Select(MakeFilesResult);
 
         GetFilesResult MakeFilesResult(DirFileInfo dirFileInfo)
             => new ([.. dirFileInfo.Directories, .. dirFileInfo.Files],
                     dirInfo.FullName,
                     dirFileInfo.Directories.Length,
-                    dirFileInfo.Files.Length,
-                    IOError.NoError);
+                    dirFileInfo.Files.Length);
 
         bool FilterHidden(DirectoryItem item)
             => showHiddenItems || !item.IsHidden;
@@ -215,17 +216,17 @@ static partial class Directory
         => path.EndsWith(".mp4", StringComparison.InvariantCultureIgnoreCase) 
         || path.EndsWith(".mp3", StringComparison.InvariantCultureIgnoreCase);
 
-    static Task<IOResult> ToIOResult(this Result<Nothing, IOError> result)
-        => result.Match(
-                _ => (IOError?)null,
-                e => e 
-            ).ToTask();
+    // static Task<IOResult> ToIOResult(this Result<Nothing, IOError> result)
+    //     => result.Match(
+    //             _ => (IOError?)null,
+    //             e => e 
+    //         ).ToTask();
 
-    static IOResult MapExceptionToIOResult(Exception e)
-        => new(MapExceptionToIOError(e));
+    // static IOResult MapExceptionToIOResult(Exception e)
+    //     => new(MapExceptionToIOError(e));
 
-    static CopyItemsResult MapExceptionToCopyItems(Exception e)
-        => new(null, MapExceptionToIOError(e));
+    // static CopyItemsResult MapExceptionToCopyItems(Exception e)
+    //     => new(null, MapExceptionToIOError(e));
 
     static ImmutableDictionary<string, CancellationTokenSource> extendedInfosCancellations
         = ImmutableDictionary<string, CancellationTokenSource>.Empty;
@@ -278,11 +279,26 @@ record GetFilesResult(
     DirectoryItem[] Items,
     string Path,
     int DirCount,
+    int FileCount
+);
+
+record GetFilesRequestResult(
+    DirectoryItem[] Items,
+    string Path,
+    int DirCount,
     int FileCount,
-    IOError Error
-) {
-    public static GetFilesResult CreateError(IOError e, string path)
-        => new([], path, 0, 0, e); 
+    IOErrorType Error
+);
+
+static class GetFilesResultExt
+{
+    public static GetFilesRequestResult FromResult(this GetFilesResult res)
+        => new(res.Items, res.Path, res.DirCount, res.FileCount, IOErrorType.NoError);
+
+    public static GetFilesRequestResult ToRequestResult(this Result<GetFilesResult, IOResult> res)
+        => res.Match(
+            ok => FromResult(ok),
+            e => new([], e.Path ?? "", 0, 0, e.Type));
 }
 
 record GetExtendedItems(
@@ -362,7 +378,7 @@ record ElevatedDriveParam(
     string Password
 );
 
-enum IOError {
+enum IOErrorType {
     NoError,
     AccessDenied,
     AlreadyExists,
@@ -375,21 +391,14 @@ enum IOError {
     PathTooLong
 }
 
-record IOResult(IOError? Error)
+record IOResult(IOErrorType Type, string? Path = null);
+static class IOResultExt
 {
-    public static IOResult NoError() => new(IOError.NoError);
-};
-
-static class IOResultExtensions
-{
-    public static Task<IOResult> ToTask(this IOError? ioError)
-        => (new IOResult(ioError)).ToAsync();
+    public static IOResult AppendPath(this IOResult res, string path)
+        => res with { Path = path };
 }
 
-record CopyItemsResult(
-    CopyItemInfo[]? Infos,
-    IOError? Error
-);
+//record CopyItemsResult(CopyItemInfo[]? Infos);
 
 record SpecialKeys(
     bool Alt,

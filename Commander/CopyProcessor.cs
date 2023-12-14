@@ -3,14 +3,14 @@ using CsTools.Extensions;
 
 static class CopyProcessor
 {
-    public static Task<IOResult> AddItems(CopyItemsParam input)
-    {
-        fileCount += input.Items.Length;
-        completeSize += input.Items.Select(n => n.Size).Aggregate(0L, (a, b) => a + b);
-        Events.CopyStarted();
-        input.Items.SideEffectForAll(n => InsertCopyItem(input.Path, input.TargetPath, input.Move, n));
-        return IOResult.NoError().ToAsync();
-    }
+    // public static Task<IOResult> AddItems(CopyItemsParam input)
+    // {
+    //     fileCount += input.Items.Length;
+    //     completeSize += input.Items.Select(n => n.Size).Aggregate(0L, (a, b) => a + b);
+    //     Events.CopyStarted();
+    //     input.Items.SideEffectForAll(n => InsertCopyItem(input.Path, input.TargetPath, input.Move, n));
+    //     return IOResult.NoError().ToAsync();
+    // }
         
     async static void Process()
     {
