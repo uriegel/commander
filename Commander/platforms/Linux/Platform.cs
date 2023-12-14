@@ -5,9 +5,7 @@ using LinqTools;
 static partial class Platform
 {
     static PlatformType GetPlatform()
-        =>  "DESKTOP_SESSION"
-                .GetEnvironmentVariable()
-                .GetOrDefault("") switch
+        =>  "DESKTOP_SESSION".GetEnvironmentVariable() switch
             {
                 "plasmawayland" => PlatformType.Kde,
                 "plasma"        => PlatformType.Kde,

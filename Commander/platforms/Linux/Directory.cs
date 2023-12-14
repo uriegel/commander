@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.Http;
 using AspNetExtensions;
 using CsTools.Extensions;
 using GtkDotNet;
-using LinqTools;
 using CsTools;
 using System.Diagnostics;
 
-using static LinqTools.Core;
 using static CsTools.Core;
+using CsTools.Functional;
+using LinqTools.Functional;
 
 static partial class Directory
 {
@@ -66,20 +66,19 @@ static partial class Directory
         => GetExtendedItems(getExtendedItems.Id, getExtendedItems.Path, getExtendedItems.Items)
             .ToAsync();
 
-    public static Task<Result<Nothing, IOResult>> DeleteItems(DeleteItemsParam input)
+    public static Task<IOResult> DeleteItems(DeleteItemsParam input)
         => Gtk.Dispatch(() =>
             input.Names
                 .Select(n =>
                     GFile
                     .New(input.Path.AppendPath(n))
                     .Use(f => f.Trash()))
-                .FirstOrDefault(n => !n.IsOK)
+                .FirstOrDefault(n => n.IsError)
                 .Match(
-                    s => s,
+                    s => IOResult.NoError(),
                     e => e != null 
-                    // TODO GError to IOResult
-                        ? Error<Nothing, IOResult>(IOResult.NoError()) 
-                        : nothing));
+                        ? new IOResult(MapGErrorToIOError(e)) 
+                        : IOResult.NoError()));
 
     public static Result<Nothing, GError> Copy(string name, string path, string targetPath, FileCopyFlags flags, ProgressCallback cb, bool move, CancellationToken cancellationToken)
         => GFile
@@ -160,6 +159,15 @@ static partial class Directory
             IOException ioe when ioe.HResult == 13 => IOError.AccessDenied,
             UnauthorizedAccessException ue         => IOError.AccessDenied,
             _                                      => IOError.Exn
+        };
+
+    static IOError MapGErrorToIOError(GError e)
+        => e switch
+        {
+            GError ge when e is FileError fe && fe.Error == FileError.ErrorType.AccessDenied   => IOError.AccessDenied,
+            GError ge when e is FileError fe && fe.Error == FileError.ErrorType.SourceNotFound => IOError.AlreadyExists,
+            GError ge when e is FileError fe && fe.Error == FileError.ErrorType.TargetNotFound => IOError.AlreadyExists,
+            _                                                                                  => IOError.Exn
         };
 
     static readonly DateTime startTime = DateTime.Now;

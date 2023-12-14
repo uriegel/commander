@@ -1,7 +1,6 @@
 #if Linux
 using CsTools.Extensions;
-using LinqTools;
-using LinqTools.Async;
+using CsTools.Async;
 
 using static CsTools.ProcessCmd;
 
@@ -18,7 +17,7 @@ static class Root
 {
     public static Task<RootItem[]> Get(Empty _)
     {
-        return (from n in RunAsync("lsblk", "--bytes --output SIZE,NAME,LABEL,MOUNTPOINT,FSTYPE")
+        return from n in RunAsync("lsblk", "--bytes --output SIZE,NAME,LABEL,MOUNTPOINT,FSTYPE")
                 let driveLines = n.Split('\n', StringSplitOptions.RemoveEmptyEntries)
                 let titles = driveLines[0]
                 let columnPositions = new[]
@@ -36,7 +35,7 @@ static class Root
                         let item = CreateRootItem(n, columnPositions)
                         orderby item.IsMounted descending, item.Name
                         select item)
-                    .ToArray());
+                    .ToArray();
 
         RootItem CreateRootItem(string driveString, int[] columnPositions)
         {
@@ -56,11 +55,11 @@ static class Root
                     GetString(1, 2).TrimName(),
                     GetString(2, 3),
                     GetString(0, 1)
-                        .ParseLong()
-                        .GetOrDefault(0),
+                        .ParseLong() 
+                        ?? 0,
                     mountPoint,
                     mountPoint.Length > 0,
-                    driveString[(columnPositions[4])..]
+                    driveString[columnPositions[4]..]
                         .Trim()
                 );
 

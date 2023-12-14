@@ -52,13 +52,8 @@
     </EmbeddedResource>
   </ItemGroup> 
 
-
   <ItemGroup Condition="'$(IsLinux)'=='true'">
-    <PackageReference Include="WebWindowNetCore.Linux" Version="4.3.0" />
-
-    <PackageReference Include="LinqTools" Version="6.2.0" />
-
-
+    <PackageReference Include="WebWindowNetCore.Linux" Version="5.0.0" />
     <EmbeddedResource Include="./kirk.png">
       <LogicalName>icon</LogicalName>
     </EmbeddedResource>

@@ -2,13 +2,12 @@ using System.Net.Http.Json;
 
 using CsTools.Extensions;
 using CsTools.HttpRequest;
-using LinqTools;
-using LinqTools.Async;
 
 using static CsTools.HttpRequest.Core;
 using static AspNetExtensions.Core;
 using System.Text.Json;
 using CsTools;
+using CsTools.Async;
 
 static class Remote
 {
@@ -124,11 +123,12 @@ static class Remote
                     .Content
                     .ReadAsStream()
                     .CopyToAsync(targetFile, cancellationToken);
-                msg
-                    .GetHeaderLongValue("x-file-date")
-                    .WhenSome(v => v
-                                    .SideEffect(_ => targetFile.Close())
-                                    .SetLastWriteTime(targetFilename));
+                // msg
+                //     .GetHeaderLongValue("x-file-date")
+                    // TODO
+                    // .WhenSome(v => v
+                    //                 .SideEffect(_ => targetFile.Close())
+                    //                 .SetLastWriteTime(targetFilename));
                 return new(fcai.Bytes + n.Size, fcai.Count + 1, fcai.StartTime);
             }))
             .SideEffect(_ => Events.CopyFinished())

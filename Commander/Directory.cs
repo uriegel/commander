@@ -3,16 +3,16 @@ using System.Collections.Immutable;
 using Microsoft.AspNetCore.Http;
 
 using AspNetExtensions;
-using CsTools;
 using CsTools.Extensions;
-using LinqTools;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 
-using static LinqTools.Core;
 using static System.IO.Directory;
-
 using static CsTools.Functional.Tree;
+using CsTools.Functional;
+
+using static CsTools.Core;
+using LinqTools.Functional;
 
 static partial class Directory
 {
@@ -35,8 +35,7 @@ static partial class Directory
         {
             if (extendedInfosCancellations
                     .GetValue(id)
-                    .Select(n => n.IsCancellationRequested)
-                    .GetOrDefault(false))
+                    ?.IsCancellationRequested == true)
                 return null;
             try
             {
@@ -44,14 +43,11 @@ static partial class Directory
                 var subIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
                 return (subIfdDirectory
                         ?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal)
-                        .WhiteSpaceToNull())
-                        .FromNullable()
-                        .Or(() =>
-                            (subIfdDirectory
-                                        ?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal)
-                                        .WhiteSpaceToNull())
-                        .FromNullable())
-                            .GetOrDefault("")
+                        .WhiteSpaceToNull()
+                        ?? subIfdDirectory
+                            ?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal)
+                            .WhiteSpaceToNull()
+                        ?? "")
                             .ToDateTime("yyyy:MM:dd HH:mm:ss");
             }
             catch { return null; }
@@ -96,7 +92,7 @@ static partial class Directory
 
     public static Task<IOResult> CancelExtendedItems(CancelExtendedItems cancelExtendedItems)
     {
-        extendedInfosCancellations.GetValue(cancelExtendedItems.Id).WhenSome(n => n.Cancel());
+        extendedInfosCancellations.GetValue(cancelExtendedItems.Id)?.Cancel();        
         return Task.FromResult(new IOResult(IOError.NoError));
     }
 
