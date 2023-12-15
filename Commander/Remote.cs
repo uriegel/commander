@@ -18,8 +18,7 @@ static class Remote
                     .GetIpAndPath()
                     .GetFiles())
             select (JsonSerializer
-                    .Deserialize<RemoteItem[]>(n, JsonWebDefaults)
-                    ?? Array.Empty<RemoteItem>())
+                    .Deserialize<RemoteItem[]>(n, JsonWebDefaults) ?? [])
                     .Select(ToDirectoryItem))
                         .Select(n => n.Where(n => getFiles.ShowHiddenItems ? true : !n.IsHidden).ToArray()
                         .ToFilesResult(getFiles.Path));

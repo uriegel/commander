@@ -99,50 +99,53 @@ static partial class Directory
         return new IOResult(IOErrorType.NoError).ToAsync();
     }
 
-    // public static Task<CopyItemsResult> CopyItemsInfo(CopyItemsParam input)
-    // {
-    //     return CopyItemsInfo()
-    //             .Catch(MapExceptionToCopyItems);
+    public static Task<CopyItemsResult> CopyItemsInfo(CopyItemsParam input)
+    {
+        return CopyItemsInfo()
+                .Catch(MapExceptionToCopyItems);
 
-    //     async Task<CopyItemsResult> CopyItemsInfo()
-    //         => await new CopyItemsResult(input.Items.FlattenTree(Resolver, CreateCopyItemInfo, IsDirectory, new CancellationTokenSource(TimeSpan.FromSeconds(10)).Token,
-    //                     AppendSubPath, (string?)null).ToArray(), null)
-    //                 .ToAsync();
+        async Task<CopyItemsResult> CopyItemsInfo()
+            => await new CopyItemsResult(input.Items.FlattenTree(Resolver, CreateCopyItemInfo, IsDirectory, new CancellationTokenSource(TimeSpan.FromSeconds(10)).Token,
+                        AppendSubPath, (string?)null).ToArray())
+                    .ToAsync();
 
-    //     (IEnumerable<CopyItem>, string?) Resolver(CopyItem item, string? subPath)
-    //         => (GetCopyItems(subPath.AppendPath(item.Name)), item.Name);
+        (IEnumerable<CopyItem>, string?) Resolver(CopyItem item, string? subPath)
+            => (GetCopyItems(subPath.AppendPath(item.Name)), item.Name);
 
-    //     IEnumerable<CopyItem> GetCopyItems(string subPath)
-    //     {
-    //         var info = new DirectoryInfo(input.Path.AppendPath(subPath));
-    //         var dirInfos = info
-    //                         .GetDirectories()
-    //                         .Select(n => new CopyItem(n.Name, true, 0, DateTime.MinValue, null));
-    //         var fileInfos = info
-    //                             .GetFiles()
-    //                             .Select(n => new CopyItem(n.Name, false, n.Length, n.LastWriteTime, null));
-    //         return fileInfos.Concat(dirInfos);
-    //     }
+        IEnumerable<CopyItem> GetCopyItems(string subPath)
+        {
+            var info = new DirectoryInfo(input.Path.AppendPath(subPath));
+            var dirInfos = info
+                            .GetDirectories()
+                            .Select(n => new CopyItem(n.Name, true, 0, DateTime.MinValue, null));
+            var fileInfos = info
+                                .GetFiles()
+                                .Select(n => new CopyItem(n.Name, false, n.Length, n.LastWriteTime, null));
+            return fileInfos.Concat(dirInfos);
+        }
 
-    //     CopyItemInfo CreateCopyItemInfo(CopyItem copyItem, string? subPath) 
-    //     {
-    //         var targetFile = input.TargetPath.AppendPath(subPath).AppendPath(copyItem.Name);
-    //         var fi = new FileInfo(targetFile);
-    //         return new CopyItemInfo(
-    //             copyItem.Name, 
-    //             subPath ?? "", 
-    //             copyItem.Size, 
-    //             copyItem.Time, 
-    //             fi.Exists ? fi.Length : null, 
-    //             fi.Exists ? fi.LastWriteTime : null);
-    //     }
+        CopyItemInfo CreateCopyItemInfo(CopyItem copyItem, string? subPath) 
+        {
+            var targetFile = input.TargetPath.AppendPath(subPath).AppendPath(copyItem.Name);
+            var fi = new FileInfo(targetFile);
+            return new CopyItemInfo(
+                copyItem.Name, 
+                subPath ?? "", 
+                copyItem.Size, 
+                copyItem.Time, 
+                fi.Exists ? fi.Length : null, 
+                fi.Exists ? fi.LastWriteTime : null);
+        }
 
-    //     string AppendSubPath(string? initialPath, string? subPath)
-    //         => initialPath.AppendPath(subPath);
+        string AppendSubPath(string? initialPath, string? subPath)
+            => initialPath.AppendPath(subPath);
 
-    //     bool IsDirectory(CopyItem item, string? subPath)
-    //         => item.isDirectory == true;
-    // }
+        bool IsDirectory(CopyItem item, string? subPath)
+            => item.isDirectory == true;
+        
+        static CopyItemsResult MapExceptionToCopyItems(Exception e)
+            => new(null, MapExceptionToIOError(e).Type);            
+    }
 
     public static void FilesDropped(string id, bool move, string[] paths)
         => Events.FilesDropped(new FilesDrop(
@@ -395,7 +398,9 @@ static class IOResultExt
             e => e);
 }
 
-record CopyItemsResult(CopyItemInfo[]? Infos);
+record CopyItemsResult(
+    CopyItemInfo[]? Infos,
+    IOErrorType? Error = null);
 
 record SpecialKeys(
     bool Alt,
