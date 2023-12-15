@@ -11,18 +11,18 @@ using CsTools.Async;
 
 static class Remote
 {
-    // public static Task<GetFilesResult> GetFiles(GetFiles getFiles)
-    //     => (from n in Request.GetStringAsync(
-    //             getFiles
-    //                 .Path
-    //                 .GetIpAndPath()
-    //                 .GetFiles())
-    //         select (JsonSerializer
-    //                 .Deserialize<RemoteItem[]>(n, JsonWebDefaults)
-    //                 ?? Array.Empty<RemoteItem>())
-    //                 .Select(ToDirectoryItem))
-    //                     .Select(n => n.Where(n => getFiles.ShowHiddenItems ? true : !n.IsHidden).ToArray()
-    //                     .ToFilesResult(getFiles.Path));
+    public static Task<GetFilesRequestResult> GetFiles(GetFiles getFiles)
+        => (from n in Request.GetStringAsync(
+                getFiles
+                    .Path
+                    .GetIpAndPath()
+                    .GetFiles())
+            select (JsonSerializer
+                    .Deserialize<RemoteItem[]>(n, JsonWebDefaults)
+                    ?? Array.Empty<RemoteItem>())
+                    .Select(ToDirectoryItem))
+                        .Select(n => n.Where(n => getFiles.ShowHiddenItems ? true : !n.IsHidden).ToArray()
+                        .ToFilesResult(getFiles.Path));
 
     // public static Task<IOResult> CopyItemsFromRemote(CopyItemsParam input)
     //     => CopyItemsFromRemote(input.Path.GetIpAndPath(), input.TargetPath, input.Items, input.Move)
@@ -74,8 +74,8 @@ static class Remote
                 item.IsHidden, 
                 item.Time.FromUnixTime()
             );
-    // static GetFilesResult ToFilesResult(this DirectoryItem[] items, string path)
-    //     => new GetFilesResult(items, path, items.Where(n => n.IsDirectory).Count(), items.Where(n => !n.IsDirectory).Count(), IOError.NoError);
+    static GetFilesRequestResult ToFilesResult(this DirectoryItem[] items, string path)
+        => new GetFilesRequestResult(items, path, items.Where(n => n.IsDirectory).Count(), items.Where(n => !n.IsDirectory).Count(), IOErrorType.NoError);
 
     static IpAndPath GetIpAndPath(this string url)
         => new(url.StringBetween('/', '/'), "/" + url.SubstringAfter('/').SubstringAfter('/'));

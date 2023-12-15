@@ -66,19 +66,19 @@ static partial class Directory
         => GetExtendedItems(getExtendedItems.Id, getExtendedItems.Path, getExtendedItems.Items)
             .ToAsync();
 
-    // public static Task<IOResult> DeleteItems(DeleteItemsParam input)
-    //     => Gtk.Dispatch(() =>
-    //         input.Names
-    //             .Select(n =>
-    //                 GFile
-    //                 .New(input.Path.AppendPath(n))
-    //                 .Use(f => f.Trash()))
-    //             .FirstOrDefault(n => n.IsError)
-    //             .Match(
-    //                 s => IOResult.NoError(),
-    //                 e => e != null 
-    //                     ? new IOResult(MapGErrorToIOError(e)) 
-    //                     : IOResult.NoError()));
+    public static Task<IOResult> DeleteItems(DeleteItemsParam input)
+        => Gtk.Dispatch(() =>
+            input.Names
+                .Select(n =>
+                    GFile
+                    .New(input.Path.AppendPath(n))
+                    .Use(f => f.Trash()))
+                .FirstOrDefault(n => n.IsError)
+                .Match(
+                    s => new IOResult(IOErrorType.NoError),
+                    e => e != null 
+                        ? MapGErrorToIOError(e) 
+                        : new IOResult(IOErrorType.NoError)));
 
     public static Result<Nothing, GError> Copy(string name, string path, string targetPath, FileCopyFlags flags, ProgressCallback cb, bool move, CancellationToken cancellationToken)
         => GFile

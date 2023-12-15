@@ -13,7 +13,6 @@ using CsTools.Functional;
 
 using static CsTools.Core;
 using LinqTools.Functional;
-using Microsoft.FSharp.Data.UnitSystems.SI.UnitNames;
 
 static partial class Directory
 {
@@ -80,23 +79,25 @@ static partial class Directory
         await context.SendStream(ms, null, "favicon.png");
     }
 
-    // public static Task<IOResult> CreateFolder(CreateFolderParam input)
-    //     => Try(
-    //         () => CreateDirectory(input.Path.AppendPath(input.Name)).ToNothing(),
-    //         MapExceptionToIOError)
-    //             .ToIOResult();
+    public static Task<IOResult> CreateFolder(CreateFolderParam input)
+        => Try(
+            () => CreateDirectory(input.Path.AppendPath(input.Name)).ToNothing(),
+            MapExceptionToIOError)
+                .ToIOResult()
+                .ToAsync();
 
-    // public static Task<IOResult> RenameItem(RenameItemParam input)
-    //     => Try(
-    //         () => Move(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName)),
-    //         MapExceptionToIOError)
-    //             .ToIOResult();
+    public static Task<IOResult> RenameItem(RenameItemParam input)
+        => Try(
+            () => Move(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName)),
+            MapExceptionToIOError)
+                .ToIOResult()
+                .ToAsync();
 
-    // public static Task<IOResult> CancelExtendedItems(CancelExtendedItems cancelExtendedItems)
-    // {
-    //     extendedInfosCancellations.GetValue(cancelExtendedItems.Id)?.Cancel();        
-    //     return Task.FromResult(new IOResult(IOError.NoError));
-    // }
+    public static Task<IOResult> CancelExtendedItems(CancelExtendedItems cancelExtendedItems)
+    {
+        extendedInfosCancellations.GetValue(cancelExtendedItems.Id)?.Cancel();        
+        return new IOResult(IOErrorType.NoError).ToAsync();
+    }
 
     // public static Task<CopyItemsResult> CopyItemsInfo(CopyItemsParam input)
     // {
@@ -155,34 +156,37 @@ static partial class Directory
                 .ToArray()));
 
     // public static Task<IOResult> CancelCopy(Empty _)
-    //     => Task.FromResult(new IOResult(null)
-    //                             .SideEffect(Cancellation.Cancel));
+    //     => new IOResult(IOErrorType.NoError)
+    //         .ToAsync()
+    //         .SideEffect(Cancellation.Cancel);
 
-    // public static Task<IOResult> RenameItems(RenameItemsParam input)
-    // {
-    //     return Try(
-    //         () => {
-    //             input.items.ForEach(PreRenameItem);
-    //             input.items.ForEach(RenameItem);
-    //         },
-    //         MapExceptionToIOError)
-    //             .ToIOResult();
-    //     void PreRenameItem(RenameItem item)
-    //         => Move(input.Path.AppendPath(item.Name), input.Path.AppendPath("__RENAMING__" + item.NewName));
-    //     void RenameItem(RenameItem item)
-    //         => Move(input.Path.AppendPath("__RENAMING__" + item.NewName), input.Path.AppendPath(item.NewName));
-    // }
+    public static Task<IOResult> RenameItems(RenameItemsParam input)
+    {
+        return Try(
+            () => {
+                input.items.ForEach(PreRenameItem);
+                input.items.ForEach(RenameItem);
+            },
+            MapExceptionToIOError)
+                .ToIOResult()
+                .ToAsync();
+        void PreRenameItem(RenameItem item)
+            => Move(input.Path.AppendPath(item.Name), input.Path.AppendPath("__RENAMING__" + item.NewName));
+        void RenameItem(RenameItem item)
+            => Move(input.Path.AppendPath("__RENAMING__" + item.NewName), input.Path.AppendPath(item.NewName));
+    }
 
-    // public static Task<IOResult> RenameAndCopy(RenameItemParam input)
-    //     => Try(
-    //         () => File.Copy(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName)),
-    //         MapExceptionToIOError)
-    //             .ToIOResult();
+    public static Task<IOResult> RenameAndCopy(RenameItemParam input)
+        => Try(
+            () => File.Copy(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName)),
+            MapExceptionToIOError)
+                .ToIOResult()
+                .ToAsync();
 
-    // public static Task<IOResult> OnEnter(OnEnterParam input)
-    //     => new IOResult(null)
-    //         .SideEffect(_ => OnEnter(input.Path, input.Keys))
-    //         .ToAsync();
+    public static Task<IOResult> OnEnter(OnEnterParam input)
+        => new IOResult(IOErrorType.NoError)
+            .SideEffect(_ => OnEnter(input.Path, input.Keys))
+            .ToAsync();
 
     public static Result<GetFilesResult, IOResult> GetFiles(DirectoryInfo dirInfo, bool showHiddenItems)
     {
@@ -215,18 +219,6 @@ static partial class Directory
     static bool UseRange(this string path)
         => path.EndsWith(".mp4", StringComparison.InvariantCultureIgnoreCase) 
         || path.EndsWith(".mp3", StringComparison.InvariantCultureIgnoreCase);
-
-    // static Task<IOResult> ToIOResult(this Result<Nothing, IOError> result)
-    //     => result.Match(
-    //             _ => (IOError?)null,
-    //             e => e 
-    //         ).ToTask();
-
-    // static IOResult MapExceptionToIOResult(Exception e)
-    //     => new(MapExceptionToIOError(e));
-
-    // static CopyItemsResult MapExceptionToCopyItems(Exception e)
-    //     => new(null, MapExceptionToIOError(e));
 
     static ImmutableDictionary<string, CancellationTokenSource> extendedInfosCancellations
         = ImmutableDictionary<string, CancellationTokenSource>.Empty;
@@ -396,9 +388,14 @@ static class IOResultExt
 {
     public static IOResult AppendPath(this IOResult res, string path)
         => res with { Path = path };
+    public static IOResult ToIOResult<T>(this Result<T, IOResult> res)
+        where T : notnull
+        => res.Match(
+            _ => new IOResult(IOErrorType.NoError),
+            e => e);
 }
 
-//record CopyItemsResult(CopyItemInfo[]? Infos);
+record CopyItemsResult(CopyItemInfo[]? Infos);
 
 record SpecialKeys(
     bool Alt,
