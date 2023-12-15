@@ -40,11 +40,9 @@ static class Window
                 .JsonPost<DeleteItemsParam, IOResult>("commander/deleteitems", Directory.DeleteItems)
                 .JsonPost<RenameItemParam, IOResult>("commander/renameitem", Directory.RenameItem)
                 .JsonPost<CopyItemsParam, CopyItemsResult>("commander/copyitemsinfo", Directory.CopyItemsInfo)
-
-                // .JsonPost<CopyItemsParam, IOResult>("commander/copyitems", CopyProcessor.AddItems)
+                .JsonPost<CopyItemsParam, IOResult>("commander/copyitems", CopyProcessor.AddItems)
                 // .JsonPost<CopyItemsParam, IOResult>("commander/copyitemsfromremote", Remote.CopyItemsFromRemote)
                 // .JsonPost<CopyItemsParam, IOResult>("commander/copyitemstoremote", Remote.CopyItemsToRemote)
-
                 //.JsonPost<Empty, IOResult>("commander/cancelcopy", Directory.CancelCopy)
                 .JsonPost<GetFiles, GetFilesRequestResult>("commander/getremotefiles", Remote.GetFiles)
                 .JsonPost<RenameItemsParam, IOResult>("commander/renameitems", Directory.RenameItems)

@@ -1,16 +1,20 @@
 using System.Threading.Channels;
+using CsTools;
 using CsTools.Extensions;
+using CsTools.Functional;
 
 static class CopyProcessor
 {
-    // public static Task<IOResult> AddItems(CopyItemsParam input)
-    // {
-    //     fileCount += input.Items.Length;
-    //     completeSize += input.Items.Select(n => n.Size).Aggregate(0L, (a, b) => a + b);
-    //     Events.CopyStarted();
-    //     input.Items.SideEffectForAll(n => InsertCopyItem(input.Path, input.TargetPath, input.Move, n));
-    //     return IOResult.NoError().ToAsync();
-    // }
+    public static Task<IOResult> AddItems(CopyItemsParam input)
+    {
+        totalCount += input.Items.Length; 
+        totalBytes += input.Items.Select(n => n.Size).Aggregate(0L, (a, b) => a + b);
+        if (!startTime.HasValue)
+            startTime = DateTime.Now;
+        Events.CopyStarted();
+        input.Items.ForEach(n => InsertCopyItem(input.Path, input.TargetPath, input.Move, n));
+        return new IOResult(IOErrorType.NoError).ToAsync();
+    }
         
     async static void Process()
     {
@@ -40,28 +44,45 @@ static class CopyProcessor
 
     static void Copy(Job job) 
     {
-        // job.TargetPath
-        //     .AppendPath(job.SubPath)
-        //     .TryEnsureDirectoryExists()
-        //     .SelectException(Directory.ErrorToIOError)
-        //     .SelectMany(target => )
-            
-        // CopyItem(n.Name, input.Path.AppendPath(n.SubPath), targetPath,
-        //     (c, t) => Events.CopyProgressChanged(
-        //         new(n.Name, totalCount, fcai.Count + 1, (int)(DateTime.Now - fcai.StartTime).TotalSeconds, t, c, totalSize, fcai.Bytes + c, false, false)),
-        //     job.JobType == JobType.Move, cancellationToken);
+        job.TargetPath
+            .AppendPath(job.SubPath)
+            .TryEnsureDirectoryExists()
+            .SelectException(Directory.ErrorToIOError)
+            .SelectMany(target => Directory.Copy(job.Item, job.Path.AppendPath(job.SubPath), job.TargetPath,
+                (c, t) => Events.CopyProgressChanged(
+                    new(job.Item, totalCount, currentCount + 1, startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0, t, c, totalBytes, currentBytes + c, false, false)),
+                job.JobType == JobType.Move, cancellationToken))
+            .SideEffect(_ => {
+                currentCount++;
+                currentBytes += job.Size;
+            })
+            .SideEffectIf(jobs.Reader.TryPeek(out var _) == false, 
+                _ => Clear());
     }
-
-    static CopyProcessor() => Process();
 
     static void InsertCopyItem(string path, string targetPath, bool move, CopyItem item)
         => jobs.Writer.TryWrite(new(move ? JobType.Move : JobType.Copy, path, targetPath, item.Size, item.Name, item.SubPath, false));
 
-    static int fileCount;
-    static int currentFileCount;
-    static long currentSize;
-    static long completeSize;
+    static void Clear()
+    {
+        totalCount = 0;
+        totalBytes = 0;
+        startTime = null;
+        currentCount = 0;
+        currentBytes = 0;
+        Events.CopyFinished();
+    }
+
+    static CopyProcessor() => Process();
+
+    static int totalCount;
+    static long totalBytes;
+    static DateTime? startTime;
+
+    static int currentCount;
+    static long currentBytes;
     static readonly Channel<Job> jobs = Channel.CreateUnbounded<Job>();
+    static CancellationToken cancellationToken;
 }
 
 enum JobType
@@ -85,10 +106,7 @@ record Job(
     bool IsCancelled
 );
 
-// TODO Update copy info
-// TODO EndJob
-// TODO ClearDirectoriesJob (when empty)
-// TODO clear copy info when all jobs are finished
+// TODO active progress is red, inactive is gray
 // TODO When move create cleanupEmptyDirectories job
 // TODO Exceptions are collected and shown in the UI
 // TODO Exception: Dialog what to do: cancel, ignore this , ignore all

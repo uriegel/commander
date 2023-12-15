@@ -383,7 +383,8 @@ enum IOErrorType {
     NetNameNotFound,
     PathNotFound,
     NotSupported,
-    PathTooLong
+    PathTooLong,
+    Canceled
 }
 
 record IOResult(IOErrorType Type, string? Path = null);

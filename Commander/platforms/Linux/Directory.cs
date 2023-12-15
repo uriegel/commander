@@ -80,12 +80,24 @@ static partial class Directory
                         ? MapGErrorToIOError(e) 
                         : new IOResult(IOErrorType.NoError)));
 
-    public static Result<Nothing, GError> Copy(string name, string path, string targetPath, FileCopyFlags flags, ProgressCallback cb, bool move, CancellationToken cancellationToken)
+    public static Result<Nothing, IOResult> Copy(string name, string path, string targetPath, ProgressCallback cb, bool move, CancellationToken cancellationToken)
         => GFile
             .New(path.AppendPath(name))
             .Use(f => f.If(move,
-                f => f.Move(targetPath.AppendPath(name), flags, true, cb, cancellationToken),
-                f => f.Copy(targetPath.AppendPath(name), flags, true, cb, cancellationToken)));
+                f => f.Move(targetPath.AppendPath(name), FileCopyFlags.Overwrite, true, cb, cancellationToken),
+                f => f.Copy(targetPath.AppendPath(name), FileCopyFlags.Overwrite, true, cb, cancellationToken)))
+            .SelectException(GErrorToIOResult);
+
+    public static IOResult GErrorToIOResult(GError ge)
+        => ge switch
+        {
+            FileError fe when fe.Error == FileError.ErrorType.AccessDenied   => new(IOErrorType.AccessDenied),
+            FileError fe when fe.Error == FileError.ErrorType.SourceNotFound => new(IOErrorType.FileNotFound),
+            FileError fe when fe.Error == FileError.ErrorType.TargetNotFound => new(IOErrorType.PathNotFound),
+            FileError fe when fe.Error == FileError.ErrorType.TargetExisting => new(IOErrorType.AlreadyExists),
+            FileError fe when fe.Error == FileError.ErrorType.Canceled       => new(IOErrorType.Canceled),
+            _                                                                => new(IOErrorType.Exn),
+        };
 
     public static IOResult ErrorToIOError(DirectoryError de)
         => de switch

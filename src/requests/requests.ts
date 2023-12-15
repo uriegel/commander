@@ -57,7 +57,10 @@ export enum IOError {
     DeleteToTrashNotPossible,
     Exn,
     NetNameNotFound,
-    PathNotFound
+    PathNotFound,
+    NotSupported,
+    PathTooLong,
+    Canceled
 }
 
 export interface IOErrorResult {
