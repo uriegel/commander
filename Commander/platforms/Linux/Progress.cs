@@ -2,7 +2,6 @@
 using CsTools.Extensions;
 using GtkDotNet;
 using GtkDotNet.SafeHandles;
-using LinqTools;
 
 static class Progress
 {

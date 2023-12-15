@@ -5,12 +5,10 @@ using Microsoft.AspNetCore.Http;
 using AspNetExtensions;
 using CsTools.Extensions;
 using GtkDotNet;
-using CsTools;
 using System.Diagnostics;
+using CsTools.Functional;
 
 using static CsTools.Core;
-using CsTools.Functional;
-using LinqTools.Functional;
 
 static partial class Directory
 {

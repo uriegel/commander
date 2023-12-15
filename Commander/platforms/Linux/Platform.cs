@@ -1,6 +1,5 @@
 #if Linux
 using CsTools.Extensions;
-using LinqTools;
 
 static partial class Platform
 {
