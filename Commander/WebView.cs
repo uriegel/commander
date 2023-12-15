@@ -1,5 +1,3 @@
-using CsTools.Functional;
-using LinqTools;
 using WebWindowNetCore;
 
 static class Window
@@ -19,15 +17,15 @@ static class Window
 			.WithoutNativeTitlebar()
 			.OnFilesDrop(OnFilesDrop)
 			.OnWindowStateChanged(state => Events.WindowStateChanged(state == WebWindowNetCore.Data.WebWindowState.Maximized))
-			.DebugUrl($"http://localhost:5173")
 			.QueryString(() => Platform.QueryString)
             .OnStarted(() => new Thread(() => Events.StartEvents()).Start())
+            .DebugUrl($"http://localhost:5173")
 			.ConfigureHttp(http => http
 				.ResourceWebroot("webroot", "/static")
 				.UseSse("commander/sse", Events.Source)
 #if DEBUG        
                 .CorsOrigin("http://localhost:5173")
-#endif        
+#endif            
                 .MapGet("commander/getIcon", context => Directory.ProcessIcon(context, context.Request.Query["path"].ToString()))
                 .MapGet("commander/file", context => Directory.ProcessFile(context, context.Request.Query["path"].ToString()))
                 .MapGet("commander/getfavicon", context => Directory.ProcessFavicon(context))

@@ -455,9 +455,7 @@ let internalDrag = false
 export default FolderView
 
 
-// TODO <PackageReference Include="LinqTools" Version="7.0.0" />
-// TODO CsTools: 7.0.0.0 
-
+// TODO CheckIsModified Windows not working (when cache is disabled)
 // TODO Ctrl+H as ToggleButton
 // TODO F3 as ToggleButton
 // TODO Hamburger Menu with Help overview

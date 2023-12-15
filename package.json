@@ -32,7 +32,7 @@
     "lint": "tsc && eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "build": "tsc && vite build && npm run copy",
-    "build Windows": "set \"GENERATE_SOURCEMAP=false\" && react-scripts build && npm run wincopy",
+    "build Windows": "tsc && vite build && npm run wincopy",
     "copy": "cp dist/assets/*.js resources/script.js && cp dist/assets/*.css resources/style.css",
     "wincopy": "xcopy .\\build\\static\\js\\*.js .\\resources\\script.js /y &&  copy .\\build\\static\\css\\*.css .\\resources\\style.css /y"
   }

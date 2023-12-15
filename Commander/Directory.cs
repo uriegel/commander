@@ -12,7 +12,6 @@ using static CsTools.Functional.Tree;
 using CsTools.Functional;
 
 using static CsTools.Core;
-using LinqTools.Functional;
 using CsTools;
 
 static partial class Directory
