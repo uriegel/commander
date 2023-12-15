@@ -99,16 +99,6 @@ static partial class Directory
             _                                                                => new(IOErrorType.Exn),
         };
 
-    public static IOResult ErrorToIOError(DirectoryError de)
-        => de switch
-        {
-            DirectoryError.AccessDenied      => new(IOErrorType.AccessDenied),
-            DirectoryError.DirectoryNotFound => new(IOErrorType.PathNotFound),
-            DirectoryError.NotSupported      => new(IOErrorType.NotSupported),
-            DirectoryError.PathTooLong       => new(IOErrorType.PathTooLong),
-            _                                => new(IOErrorType.Exn)
-        };
-
     static string Mount(string path) 
     {
         var output = "";

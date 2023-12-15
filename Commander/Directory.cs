@@ -13,6 +13,7 @@ using CsTools.Functional;
 
 using static CsTools.Core;
 using LinqTools.Functional;
+using CsTools;
 
 static partial class Directory
 {
@@ -218,6 +219,16 @@ static partial class Directory
         bool FilterHidden(DirectoryItem item)
             => showHiddenItems || !item.IsHidden;
     }
+
+    public static IOResult ErrorToIOError(DirectoryError de)
+        => de switch
+        {
+            DirectoryError.AccessDenied      => new(IOErrorType.AccessDenied),
+            DirectoryError.DirectoryNotFound => new(IOErrorType.PathNotFound),
+            DirectoryError.NotSupported      => new(IOErrorType.NotSupported),
+            DirectoryError.PathTooLong       => new(IOErrorType.PathTooLong),
+            _                                => new(IOErrorType.Exn)
+        };
 
     static bool UseRange(this string path)
         => path.EndsWith(".mp4", StringComparison.InvariantCultureIgnoreCase) 

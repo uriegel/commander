@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
-using LinqTools;
 using Microsoft.AspNetCore.Http;
+using CsTools.Extensions;
 
 static class UacServer
 {
@@ -59,8 +59,9 @@ static class UacServer
             .JsonPost<DeleteItemsParam, IOResult>("commander/deleteitems", Directory.DeleteItems)
             .JsonPost<CreateFolderParam, IOResult>("commander/createfolder", Directory.CreateFolder)
             .JsonPost<RenameItemParam, IOResult>("commander/renameitem", Directory.RenameItem)
-            .JsonPost<CopyItemsParam, IOResult>("commander/copyitems", Directory.CopyItems)
-            .JsonPost<Empty, IOResult>("commander/cancelcopy", Directory.CancelCopy)
+            // TODO
+            // .JsonPost<CopyItemsParam, IOResult>("commander/copyitems", Directory.CopyItems)
+            // .JsonPost<Empty, IOResult>("commander/cancelcopy", Directory.CancelCopy)
             .JsonPost<StartServicesParam, IOResult>("commander/startservices", Services.Start)            
             .JsonPost<StartServicesParam, IOResult>("commander/stopservices", Services.Stop)            
             .With(RequestDelegates)

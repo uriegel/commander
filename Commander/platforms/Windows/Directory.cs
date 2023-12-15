@@ -8,18 +8,19 @@ using System.Diagnostics;
 
 using AspNetExtensions;
 using ClrWinApi;
-using LinqTools;
 using CsTools.Extensions;
+using CsTools.Functional;
+using CsTools.Async;
 
 using static ClrWinApi.Api;
 using static CsTools.Core;
 
 static partial class Directory
 {
-    public static Result<DirectoryInfo, IOError> Validate(this DirectoryInfo info) 
+    public static Result<DirectoryInfo, IOResult> Validate(this DirectoryInfo info) 
         => info.Exists || !info.FullName.StartsWith(@"\\")
             ? info
-            : LinqTools.Core.Error<DirectoryInfo, IOError>(IOError.AccessDenied);
+            : Error<DirectoryInfo, IOResult>(new(IOErrorType.AccessDenied));
 
     public static string GetIconPath(FileInfo info)
         => string.Compare(info.Extension, ".exe", true) == 0 
@@ -33,29 +34,29 @@ static partial class Directory
         await context.SendStream(stream!, startTime, "icon.png");
     }
 
-    static async Task<Stream> GetIconStream(string iconHint)
-    {
-        var handle = await Try(async () => iconHint.Contains('\\')
-            ? Icon.ExtractAssociatedIcon(iconHint)?.Handle
-            : await RepeatOnException(() => 
+    static Task<Stream> GetIconStream(string iconHint)
+        => Try(() => iconHint.Contains('\\')
+            ? (Icon.ExtractAssociatedIcon(iconHint)?.Handle ?? 0).ToAsync()
+            : RepeatOnException(() => 
                 {
                     var shinfo = new ShFileInfo();
                     var handle = SHGetFileInfo(iconHint, ClrWinApi.FileAttributes.Normal, ref shinfo, Marshal.SizeOf(shinfo),
                         SHGetFileInfoConstants.ICON | SHGetFileInfoConstants.SMALLICON | SHGetFileInfoConstants.USEFILEATTRIBUTES | SHGetFileInfoConstants.TYPENAME); 
-                        return shinfo.IconHandle != IntPtr.Zero
+                    return shinfo.IconHandle != IntPtr.Zero
                         ? shinfo.IconHandle.ToAsync()
                         : throw new Exception("Not found");
-                }, 3, TimeSpan.FromMilliseconds(40)),
-                _ => Icon.ExtractAssociatedIcon(@"C:\Windows\system32\SHELL32.dll")!.Handle);
-
-        using var icon = Icon.FromHandle(handle.Value);
-        using var bitmap = icon.ToBitmap();
-        var ms = new MemoryStream();
-        bitmap.Save(ms, ImageFormat.Png);
-        ms.Position = 0;
-        DestroyIcon(handle.Value);
-        return ms;
-    }
+                }, 3, TimeSpan.FromMilliseconds(40)), _ => Icon.ExtractAssociatedIcon(@"C:\Windows\system32\SHELL32.dll")!.Handle)
+            ?.Select(handle => 
+                {
+                    using var icon = Icon.FromHandle(handle);
+                    using var bitmap = icon.ToBitmap();
+                    var ms = new MemoryStream();
+                    bitmap.Save(ms, ImageFormat.Png);
+                    ms.Position = 0;
+                    DestroyIcon(handle);
+                    return ms as Stream;
+                }) 
+            ?? (new MemoryStream() as Stream).ToAsync();
 
     public static Task<GetExtendedItemsResult> GetExtendedItems(GetExtendedItems getExtendedItems)
     {
@@ -82,7 +83,7 @@ static partial class Directory
     }
 
     public static Task<IOResult> DeleteItems(DeleteItemsParam input)
-        => (SHFileOperation(new ShFileOPStruct
+        => new IOResult(SHFileOperation(new ShFileOPStruct
         {
             Func = FileFuncFlags.DELETE,
             From = string.Join( "\U00000000", input.Names.Select(n => input.Path.AppendPath(n))) 
@@ -94,12 +95,12 @@ static partial class Directory
                 | FileOpFlags.ALLOWUNDO
         }) switch
         {
-            0    => (IOError?)null,
-            2    => IOError.FileNotFound,
-            0x78 => IOError.AccessDenied,
-            _    => IOError.Exn
+            0    => IOErrorType.NoError,
+            2    => IOErrorType.FileNotFound,
+            0x78 => IOErrorType.AccessDenied,
+            _    => IOErrorType.Exn
         })
-            .ToTask();
+            .ToAsync();
 
     public static Task<IOResult> ElevateDrive(ElevatedDriveParam param)
     {
@@ -114,18 +115,19 @@ static partial class Directory
         var result = WNetAddConnection2(netResource, param.Password, param.Name, 0);
         return Task.FromResult(new IOResult(
             result == 0
-            ? null
+            ? IOErrorType.NoError
             : result == 5
-            ? IOError.AccessDenied
+            ? IOErrorType.AccessDenied
             : result == 67
-            ? IOError.NetNameNotFound
-            : IOError.Exn));
+            ? IOErrorType.NetNameNotFound
+            : IOErrorType.Exn));
     }
 
-    static string Mount(string path) => "";
-
-    static void CopyItem(string name, string path, string targetPath, Action<long, long> progress, bool move, CancellationToken cancellationToken)
-        => Copy(path.AppendPath(name), targetPath.AppendPath(name), progress, move, cancellationToken);
+    public static Result<Nothing, IOResult> Copy(string name, string path, string targetPath, Action<long, long> cb, bool move, CancellationToken cancellationToken)
+    {
+        Copy(path.AppendPath(name), targetPath.AppendPath(name), cb, move, cancellationToken);
+        return nothing;
+    }
 
     static void Copy(string source, string target, Action<long, long> progress, bool move, CancellationToken cancellationToken)
     {
@@ -179,15 +181,16 @@ static partial class Directory
         }
     }
 
-    static IOError MapExceptionToIOError(Exception e)
+    static IOResult MapExceptionToIOError(Exception e)
         => e switch
         {
-            IOException ioe when ioe.HResult == -2147024891 => IOError.AccessDenied,
-            UnauthorizedAccessException ue                  => IOError.AccessDenied,
-            _                                               => IOError.Exn
+            IOException ioe when ioe.HResult == -2147024891 => new(IOErrorType.AccessDenied),
+            UnauthorizedAccessException ue                  => new(IOErrorType.AccessDenied),
+            _                                               => new(IOErrorType.Exn)
         };
 
     static readonly DateTime startTime = DateTime.Now;
+    static string Mount(string path) => "";
 }
 
 record Version(

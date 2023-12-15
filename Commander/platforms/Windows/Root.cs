@@ -1,5 +1,5 @@
 #if Windows
-using LinqTools;
+using CsTools.Extensions;
 
 record RootItem(
     string Name,

@@ -2,7 +2,7 @@
 
 using System.ServiceProcess;
 using ClrWinApi;
-using LinqTools;
+using CsTools.Extensions;
 
 record StartServicesParam(
     string[] Items
@@ -50,7 +50,7 @@ static class Services
                     Events.ServiceItemsChanged(updateItems);
             }, null, 300, 300);
         }
-        return Task.FromResult(new IOResult(IOError.NoError));
+        return Task.FromResult(new IOResult(IOErrorType.NoError));
     }
 
     public static Task<ServiceItem[]> Get(Empty _)
@@ -67,7 +67,7 @@ static class Services
             timer = null;
             services = Array.Empty<ServiceController>();
         }
-        return Task.FromResult(new IOResult(IOError.NoError));
+        return Task.FromResult(new IOResult(IOErrorType.NoError));
     }
 
     public static Task<IOResult> Start(StartServicesParam param)
@@ -76,11 +76,11 @@ static class Services
         {
             foreach (var service in param.Items)
                 new ServiceController(service).Start();
-            return Task.FromResult(new IOResult(IOError.NoError));
+            return Task.FromResult(new IOResult(IOErrorType.NoError));
         }
         catch 
         {
-            return Task.FromResult(new IOResult(IOError.AccessDenied));
+            return Task.FromResult(new IOResult(IOErrorType.AccessDenied));
         }
     }
 
@@ -90,11 +90,11 @@ static class Services
         {
             foreach (var service in param.Items)
                 new ServiceController(service).Stop();
-            return Task.FromResult(new IOResult(IOError.NoError));
+            return Task.FromResult(new IOResult(IOErrorType.NoError));
         }
         catch 
         {
-            return Task.FromResult(new IOResult(IOError.AccessDenied));
+            return Task.FromResult(new IOResult(IOErrorType.AccessDenied));
         }
     }
 
