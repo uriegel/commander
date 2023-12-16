@@ -4,6 +4,7 @@ import Pie from 'react-progress-control'
 import CopyProgress from "./dialogparts/CopyProgress"
 import { request } from "../requests/requests"
 import { DialogHandle, Result } from "web-dialog-react"
+import "functional-extensions"
 
 // TODO in webview.d.ts
 declare const webViewMinimize: () => void

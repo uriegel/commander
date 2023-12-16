@@ -17,8 +17,6 @@ import { getTheme, isWindows } from './globals'
 import { filesDropEvents, progressChangedEvents, themeChangedEvents, windowStateChangedEvents } from './requests/events'
 import { getCopyController } from './controller/copy/copyController'
 import FileViewer from './components/FileViewer'
-import "functional-extensions"
-import "./extensions/extensions"
 import { SpecialKeys } from 'virtual-table-react'
 import Titlebar from './components/Titlebar'
 import { Subscription } from 'rxjs'

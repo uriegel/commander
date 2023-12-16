@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react"
-import "../../extensions/extensions"
 import { ExtensionProps } from "web-dialog-react"
 import { ExtendedRenameProps } from "../../controller/filesystemExtendedRename"
 
