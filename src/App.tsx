@@ -21,6 +21,7 @@ import { SpecialKeys } from 'virtual-table-react'
 import Titlebar from './components/Titlebar'
 import { Subscription } from 'rxjs'
 import { createFileSystemController } from './controller/filesystem'
+import './extensions/extensions'
 
 // TODO in webview.d.ts
 declare const webViewShowDevTools: () => void
