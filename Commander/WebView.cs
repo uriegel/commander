@@ -44,7 +44,7 @@ static class Window
                 .JsonPost<DeleteItemsParam, IOResult>("commander/deleteitems", Directory.DeleteItems)
                 // TODO
                 //.JsonPost<RenameItemParam, Result<Nothing, IOResult>>("commander/renameitem", Directory.RenameItem)
-                .JsonPost<RenameItemParam, IOResult>("commander/renameitem", Directory.RenameItem)
+                //.JsonPost<RenameItemParam, Nothing, Error>("commander/renameitem", Directory.RenameItem)
 
                 // TODO
                 .JsonPost<CopyItemsParam, CopyItemsResult>("commander/copyitemsinfo", Directory.CopyItemsInfo)

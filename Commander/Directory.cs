@@ -86,12 +86,11 @@ static partial class Directory
                 .ToIOResult()
                 .ToAsync();
 
-    public static Task<IOResult> RenameItem(RenameItemParam input)
-        => Try(
-            () => Move(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName)),
-            MapExceptionToIOError)
-                .ToIOResult()
-                .ToAsync();
+    // public static AsyncResult<Nothing, Error> RenameItem(RenameItemParam input)
+    //     =>  Move(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName)),
+    //         MapExceptionToIOError)
+    //             .ToIOResult()
+    //             .ToAsync();
 
     public static Task<IOResult> CancelExtendedItems(CancelExtendedItems cancelExtendedItems)
     {
@@ -397,6 +396,7 @@ enum IOErrorType {
     Canceled
 }
 
+record Error(IOErrorType Code, int Status, string StatusText) : RequestError(Status, StatusText);
 record IOResult(IOErrorType Type, string? Path = null);
 static class IOResultExt
 {
