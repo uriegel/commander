@@ -9,6 +9,7 @@ import { ROOT } from "./root"
 import { extendedRename } from "./filesystemExtendedRename"
 import Credentials, { CredentialsProps } from "../components/dialogparts/Credentials"
 import { IconNameType } from "../enums"
+import { Err, Ok } from "functional-extensions"
 
 export enum ItemsType {
 	Directories,
@@ -216,10 +217,6 @@ export const getSortFunction = (index: number, descending: boolean) => {
 		: undefined
 }
 
-// const showDialog = <T, E>():ResultType< T, E > => {
-
-// }
-
 const rename = async (path: string, item: FolderViewItem, dialog: DialogHandle|null) => {
 	const getInputRange = () => {
 		const pos = item.name.lastIndexOf(".")
@@ -228,22 +225,26 @@ const rename = async (path: string, item: FolderViewItem, dialog: DialogHandle|n
 			: [0, pos]
 	}
 
-	const isDir = item.isDirectory
-	const result = await dialog?.show({
-		text: isDir ? "Möchtest Du das Verzeichnis umbenennen?" : "Möchtest Du die Datei umbenennen?",
+	const res1 = dialog?.showDialog<string, boolean>({
+		text: item.isDirectory ? "Möchtest Du das Verzeichnis umbenennen?" : "Möchtest Du die Datei umbenennen?",
 		inputText: item.name,
 		inputSelectRange: getInputRange(),
 		btnOk: true,
 		btnCancel: true,
 		defBtnOk: true
-	})
-	return result?.result == ResultType.Ok
-		? (await request<IOErrorResult>("renameitem", {
-				path,
-				name: item.name,
-				newName:  result.input ?? ""
-			}, dialog)).error ?? null
-		: null
+	}, res => res.result == ResultType.Ok && res.input
+		? new Ok(res.input)
+		: new Err(false))
+
+	const res = await res1?.toResult()
+	return null
+	// return result?.result == ResultType.Ok
+	// 	? (await request<IOErrorResult>("renameitem", {
+	// 			path,
+	// 			name: item.name,
+	// 			newName:  result.input ?? ""
+	// 		}, dialog)).error ?? null
+	// 	: null
 }
 
 const renameAsCopy = async (path: string, item: FolderViewItem, dialog: DialogHandle|null) => {
