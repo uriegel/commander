@@ -1,3 +1,4 @@
+using AspNetExtensions;
 using CsTools.Extensions;
 using CsTools.Functional;
 
@@ -5,20 +6,23 @@ using static CsTools.Core;
 
 static partial class Directory
 {
-    public static Result<Nothing, Error> Move(string path, string newPath)
+    public static Result<Nothing, RequestError> Move(string path, string newPath)
+        // TODO functional-extensions new version:
+        // TODO Nothing type
+        // TODO base url for jsonPost
         // TODO when renamed select new file
         => Try(
             () => nothing.SideEffect(_ => System.IO.Directory.Move(path, newPath)),
             MapException);
 
-    static Error MapException(Exception e)
+    static RequestError MapException(Exception e)
         => e switch
         {
             // TODO take status statustext
             // TODO Windows
-            DirectoryNotFoundException  => Error.IOError(IOErrorType.PathNotFound),
+            DirectoryNotFoundException  => IOErrorType.PathNotFound.ToError(),
             // TODO Windows run uac 
-            IOException                 => Error.IOError(IOErrorType.AccessDenied),
-             _                          => Error.IOError(IOErrorType.Exn)
+            IOException                 => IOErrorType.AccessDenied.ToError(),
+             _                          => IOErrorType.Exn.ToError()
         };
 }

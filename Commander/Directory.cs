@@ -86,7 +86,7 @@ static partial class Directory
                 .ToIOResult()
                 .ToAsync();
 
-    public static AsyncResult<Nothing, Error> RenameItem(RenameItemParam input)
+    public static AsyncResult<Nothing, RequestError> RenameItem(RenameItemParam input)
         =>  Move(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName))
                 .ToAsyncResult();
 
@@ -381,6 +381,7 @@ record ElevatedDriveParam(
 );
 
 enum IOErrorType {
+    Unknown,
     AccessDenied,
     AlreadyExists,
     FileNotFound,
@@ -395,10 +396,6 @@ enum IOErrorType {
     NoError,
 }
 
-record Error(IOErrorType Code, int Status, string StatusText) : RequestError(Status, StatusText)
-{
-    public static Error IOError(IOErrorType code) => new(code, 0, "");
-}
 record IOResult(IOErrorType Type, string? Path = null);
 static class IOResultExt
 {
@@ -410,6 +407,12 @@ static class IOResultExt
             _ => new IOResult(IOErrorType.NoError),
             e => e);
 }
+
+static class IOErrorTypeExtensions
+{
+    public static RequestError ToError(this IOErrorType error)
+        => new((int)error, "");
+} 
 
 record CopyItemsResult(
     CopyItemInfo[]? Infos,

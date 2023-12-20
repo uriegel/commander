@@ -6,6 +6,7 @@ import { addParent, Controller, ControllerResult, ControllerType, EnterData } fr
 import { ROOT } from "./root"
 import { IOError } from "../requests/requests"
 import { IconNameType } from "../enums"
+import { AsyncResult, ErrorType, Ok } from "functional-extensions"
 
 export const REMOTES = "remotes"
 
@@ -115,10 +116,11 @@ const deleteItems = async (_: string, items: FolderViewItem[], dialog: DialogHan
     return null
 }
 
-const rename = async (_: string, item: FolderViewItem, dialog: DialogHandle | null) => {
-    await showRemote(dialog, item)
-    return null
-}
+
+// const rename = async (_: string, item: FolderViewItem, dialog: DialogHandle | null) => {
+//     await showRemote(dialog, item)
+//     return null
+// }
 
 export const getRemotesController = async (controller: Controller | null): Promise<ControllerResult> => 
     controller?.type == ControllerType.Remotes
@@ -135,7 +137,8 @@ export const getRemotesController = async (controller: Controller | null): Promi
         sort: (items: FolderViewItem[]) => items,
         itemsSelectable: true,
         appendPath: (_: string, subPath: string) => subPath,
-        rename,
+        // TODO:
+        rename: () => AsyncResult.ToAsyncResult(new Ok<{}, ErrorType>({})),
         extendedRename: async () => null,
         renameAsCopy: async()=>null,
         createFolder: async () => null,

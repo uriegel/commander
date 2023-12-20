@@ -6,6 +6,7 @@ import { ROOT } from "./root"
 import { GetServicesResult, IOError, IOErrorResult, request } from "../requests/requests"
 import { DialogHandle } from "web-dialog-react"
 import { IconNameType, ServiceStartMode, ServiceStatus } from "../enums"
+import { AsyncResult, ErrorType, Ok } from "functional-extensions"
 
 export const SERVICES = "services"
 
@@ -97,7 +98,7 @@ const createController = async (): Promise<ControllerResult> => {
             sort,
             itemsSelectable: true,
             appendPath: (path: string, subPath: string) => path.appendPath(subPath),
-            rename: async () => null,
+            rename: () => AsyncResult.ToAsyncResult(new Ok<{}, ErrorType>({})),
             extendedRename: async () => null,
             renameAsCopy: async () => null,
             createFolder: async () => null,

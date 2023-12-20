@@ -366,10 +366,10 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         //withSelectedItem(item => item.sideEffect<FolderViewItem>(console.log))
         virtualTable.current?.setFocus()
         const items = getSelectedItems()
-        if (items?.length == 1) {
-            const result = await controller.current.rename(path, items[0], dialog)
-            if (await checkResult(dialog, virtualTable.current, result))
-               refresh() 
+        if (items?.length == 1 && dialog) {
+            controller.current.rename(path, items[0], dialog)
+            // if (await checkResult(dialog, virtualTable.current, result))
+            //    refresh() 
         }
     }
 

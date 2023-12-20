@@ -5,6 +5,7 @@ import { Controller, ControllerResult, ControllerType, EnterData, addParent } fr
 import { ROOT } from "./root"
 import { IOError } from "../requests/requests"
 import { IconNameType } from "../enums"
+import { AsyncResult, ErrorType, Ok } from "functional-extensions"
 
 export const FAVORITES = "fav"
 
@@ -87,7 +88,7 @@ export const getFavoritesController = async (controller: Controller | null): Pro
         sort: (items: FolderViewItem[]) => items,
         itemsSelectable: false,
         appendPath: (_: string, subPath: string) => subPath,
-        rename: async () => null,
+        rename: () => AsyncResult.ToAsyncResult(new Ok<{}, ErrorType>({})),
         extendedRename: async () => null,
         renameAsCopy: async () => null,
         createFolder: async () => null,

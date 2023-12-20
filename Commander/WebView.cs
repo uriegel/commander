@@ -1,3 +1,4 @@
+using AspNetExtensions;
 using CsTools.Functional;
 using WebWindowNetCore;
 
@@ -43,7 +44,7 @@ static class Window
                 // TODO
                 .JsonPost<DeleteItemsParam, IOResult>("commander/deleteitems", Directory.DeleteItems)
                 // TODO
-                .JsonPost<RenameItemParam, Nothing, Error>("commander/renameitem", Directory.RenameItem)
+                .JsonPost<RenameItemParam, Nothing, RequestError>("commander/renameitem", Directory.RenameItem)
 
                 // TODO
                 .JsonPost<CopyItemsParam, CopyItemsResult>("commander/copyitemsinfo", Directory.CopyItemsInfo)

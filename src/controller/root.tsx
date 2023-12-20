@@ -8,6 +8,7 @@ import "functional-extensions"
 import { SERVICES } from "./services"
 import { FAVORITES } from "./favorites"
 import { IconNameType } from "../enums"
+import { AsyncResult, ErrorType, Ok } from "functional-extensions"
 
 export const ROOT = "root"
 const platform = getPlatform()
@@ -98,7 +99,7 @@ export const getRootController = async (controller: Controller | null): Promise<
         sort: (items: FolderViewItem[]) => items,
         itemsSelectable: false,
         appendPath: (_: string, subPath: string) => subPath,
-        rename: async () => null,
+        rename: () => AsyncResult.ToAsyncResult(new Ok<{}, ErrorType>({})),
         extendedRename: async () => null,
         renameAsCopy: async () => null,
         createFolder: async () => null,

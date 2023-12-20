@@ -50,7 +50,7 @@ export type GetExtendedItemsResult = {
 }
 
 export enum IOError {
-    NoError,
+    Unknown,
     AccessDenied,
     AlreadyExists,
     FileNotFound,
@@ -60,7 +60,8 @@ export enum IOError {
     PathNotFound,
     NotSupported,
     PathTooLong,
-    Canceled
+    Canceled,
+    NoError
 }
 
 export interface IOErrorResult {

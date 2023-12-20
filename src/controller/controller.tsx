@@ -9,6 +9,7 @@ import { getRemoteController } from "./remote"
 import { FAVORITES, getFavoritesController } from "./favorites"
 import { SERVICES, getServicesController } from "./services"
 import { Platform, getPlatform } from "../globals"
+import { AsyncResult, ErrorType, Ok } from "functional-extensions"
 
 const dateFormat = Intl.DateTimeFormat("de-DE", {
     year: "numeric",
@@ -63,7 +64,7 @@ export interface Controller {
     sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => FolderViewItem[]
     itemsSelectable: boolean
     appendPath: (path: string, subPath: string) => string,
-    rename: (path: string, item: FolderViewItem, dialog: DialogHandle | null) => Promise<IOError | null>
+    rename: (path: string, item: FolderViewItem, dialog: DialogHandle) => AsyncResult<{}, ErrorType>
     extendedRename: (controller: Controller, dialog: DialogHandle | null) => Promise<Controller | null>
     renameAsCopy: (path: string, item: FolderViewItem, dialog: DialogHandle | null) => Promise<IOError | null>
     createFolder: (path: string, item: FolderViewItem, dialog: DialogHandle|null) => Promise<IOError | null>
@@ -111,7 +112,7 @@ export const createEmptyController = (): Controller => ({
     sort: (items: FolderViewItem[]) => items,
     itemsSelectable: false,
     appendPath: () => "",
-    rename: async () => null,
+    rename: () => AsyncResult.ToAsyncResult(new Ok<{}, ErrorType>({})),
     extendedRename: async () => null,
     renameAsCopy: async () => null,
     createFolder: async () => null,
@@ -169,13 +170,13 @@ interface focusable {
 
 export const checkResult = async (dialog: DialogHandle|null|undefined, activeFolderView?: focusable|null, error?: IOError | null) => {
     if (error) {
-        const text = error == IOError.AccessDenied
+        const text = error === IOError.AccessDenied
                     ? "Zugriff verweigert"
-                    : error == IOError.DeleteToTrashNotPossible
+                    : error === IOError.DeleteToTrashNotPossible
                     ? "Löschen nicht möglich"
-                    : error == IOError.AlreadyExists
+                    : error === IOError.AlreadyExists
                     ? "Das Element existiert bereits"
-                    : error == IOError.FileNotFound
+                    : error === IOError.FileNotFound
                     ? "Das Element ist nicht vorhanden"
                     : "Die Aktion konnte nicht ausgeführt werden"
         dialog?.close()
