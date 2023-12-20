@@ -157,6 +157,13 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         }
     }, [onActualizedItems])
     
+    // const withSelectedItem = <T,>(withSelected: (item: FolderViewItem)=>T) => {
+    //     const items = getSelectedItems()
+    //     return items?.length == 1
+    //         ? withSelected(items[0])
+    //         : null
+    // }
+
     const getSelectedItems = () => {
 
         const checkParent = (item: FolderViewItem) => !item.isParent ? item : null
@@ -356,6 +363,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         changePath(path, forceShowHidden == undefined ? showHidden : forceShowHidden)
 
     const rename = async () => {
+        //withSelectedItem(item => item.sideEffect<FolderViewItem>(console.log))
         virtualTable.current?.setFocus()
         const items = getSelectedItems()
         if (items?.length == 1) {
