@@ -14,6 +14,7 @@ static partial class Directory
     static Error MapException(Exception e)
         => e switch
         {
+            // TODO take status statustext
             // TODO Windows
             DirectoryNotFoundException  => Error.IOError(IOErrorType.PathNotFound),
             // TODO Windows run uac 
