@@ -7,6 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using CsTools.Extensions;
+using CsTools.Functional;
+
+using static CsTools.Core;
 
 static class UacServer
 {
@@ -58,7 +61,7 @@ static class UacServer
             .UseSse("commander/sse", Events.Source)
             .JsonPost<DeleteItemsParam, IOResult>("commander/deleteitems", Directory.DeleteItems)
             .JsonPost<CreateFolderParam, IOResult>("commander/createfolder", Directory.CreateFolder)
-            .JsonPost<RenameItemParam, IOResult>("commander/renameitem", Directory.RenameItem)
+            .JsonPost<RenameItemParam, Nothing, Error>("commander/renameitem", Directory.RenameItem)
             // TODO
             // .JsonPost<CopyItemsParam, IOResult>("commander/copyitems", Directory.CopyItems)
             // .JsonPost<Empty, IOResult>("commander/cancelcopy", Directory.CancelCopy)
@@ -75,6 +78,31 @@ static class UacServer
                             {
                                 var param = await context.Request.ReadFromJsonAsync<T>();
                                 await context.Response.WriteAsJsonAsync<TResult>(await onRequest(param!));
+                            }))
+                            .ToArray());
+
+    static WebApplication JsonPost<T, TR, TE>(this WebApplication app, string path, Func<T, AsyncResult<TR, TE>> onRequest)
+            where TR : notnull
+            where TE : RequestError
+        => app.SideEffect(n =>
+                RequestDelegates = RequestDelegates.Append(
+                    (WebApplication app) =>
+                        app.WithMapPost(path, async context =>
+                            {
+                                try
+                                {
+                                    if (context.Request.ContentLength == 0)
+                                        await context.Response.WriteAsJsonAsync(Error<TR, RequestError>(new RequestError(2002, "Wrongly called without parameters")));
+                                    else 
+                                    {
+                                        var param = await context.Request.ReadFromJsonAsync<T>();
+                                        await context.Response.WriteAsJsonAsync(await onRequest(param!).ToResult());
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    await context.Response.WriteAsJsonAsync(Error<TR, RequestError>(new RequestError(2000, e.Message)));
+                                }
                             }))
                             .ToArray());
 
