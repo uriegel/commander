@@ -515,3 +515,31 @@ export default FolderView
 // TODO https://stackoverflow.com/questions/71581401/drag-a-file-from-my-gtk-app-to-another-app-not-the-other-way-around
 
 // TODO Drag n drop to outside (Linux) with Gtk feature (startDrag when leaving the app)
+
+
+// WindowsIdentity.RunImpersonated(userHandle, () =>
+// {
+//     // do whatever you want as this user.
+// });
+// or
+
+// var result = WindowsIdentity.RunImpersonated(userHandle, () =>
+// {
+//     // do whatever you want as this user.
+//     return result;
+// });
+
+// await WindowsIdentity.RunImpersonatedAsync(userHandle, async () =>
+// {
+//     // do whatever you want as this user.
+// });
+// or
+
+// var result = await WindowsIdentity.RunImpersonated(userHandle, async () =>
+// {
+//     // do whatever you want as this user.
+//     return result;
+// });
+
+// [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+// internal static extern bool LogonUser(String lpszUsername, String lpszDomain, String lpszPassword, int dwLogonType, int dwLogonProvider, out IntPtr phToken);

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import ViewSplit from 'view-split-react'
-import Dialog, { DialogHandle, Result as DialogResult } from 'web-dialog-react' 
+import Dialog, { DialogHandle, ResultType } from 'web-dialog-react' 
 import FolderView, { FolderViewHandle, FolderViewItem } from './components/FolderView'
 import Menu from './components/Menu'
 import Statusbar from './components/Statusbar'
@@ -100,7 +100,7 @@ const App = () => {
 				text: "Soll das Menü verborgen werden? Aktivieren mit Alt-Taste",
 				btnOk: true,
 				btnCancel: true
-			}))?.result == DialogResult.Ok))
+			}))?.result == ResultType.Ok))
 	
 	const toggleShowHiddenAndRefresh = () => {
 		showHiddenRef.current = !showHiddenRef.current

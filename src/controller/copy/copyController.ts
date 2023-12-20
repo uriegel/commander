@@ -1,5 +1,5 @@
 import * as R from "ramda"
-import { DialogHandle, Slide, Result } from "web-dialog-react"
+import { DialogHandle, Slide, ResultType } from "web-dialog-react"
 import CopyConflicts, { ConflictItem } from "../../components/dialogparts/CopyConflicts"
 import { FolderViewItem } from "../../components/FolderView"
 import { Controller, ControllerType } from "../controller"
@@ -146,13 +146,13 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|un
                 defBtnYes: !defNo && conflictItems.length > 0,
                 defBtnNo: defNo
             })
-            if (result?.result != Result.Cancel) {
+            if (result?.result != ResultType.Cancel) {
 
                 const itemsToCopy = fileItems
                     .map(n => ({ name: n.name, size: n.size, time: n.time, subPath: undefined }) as CopyItem)
                     .concat((res.infos?? []).map(n => ({ name: n.name, size: n.size, time: n.time, subPath: n.subPath || undefined })))
  
-                const copyItems = result?.result == Result.Yes
+                const copyItems = result?.result == ResultType.Yes
                     ? itemsToCopy
                     : R.without(
                         conflictItems.map(n => ({ name: n.name, size: n.size, time: n.time, subPath: n.subPath || undefined })),

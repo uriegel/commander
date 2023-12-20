@@ -1,4 +1,4 @@
-import { DialogHandle, Result } from "web-dialog-react"
+import { DialogHandle, ResultType } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
 import { Controller, ControllerResult, ControllerType, EnterData, addParent } from "./controller"
@@ -42,7 +42,7 @@ const showAddFavorite = async (dialog?: DialogHandle | null, otherPath?: string)
             btnOk: true,
             btnCancel: true,
             defBtnOk: true
-        }))?.result == Result.Ok
+        }))?.result == ResultType.Ok
     if (result && otherPath) {
         const newItems = items.concat([{ name: otherPath }])
         localStorage.setItem("fav", JSON.stringify(newItems))
@@ -118,7 +118,7 @@ const deleteItems = async (_: string, items: FolderViewItem[], dialog: DialogHan
 		btnCancel: true,
 		defBtnOk: true
 	})
-    if (result?.result == Result.Ok) {
+    if (result?.result == ResultType.Ok) {
         const favs = getFavoriteItems().filter(x => !items.find(n => n.name == x.name))
         localStorage.setItem("fav", JSON.stringify(favs))
     }

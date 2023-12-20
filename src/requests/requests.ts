@@ -1,7 +1,7 @@
 import { SpecialKeys } from "virtual-table-react"
 import { FolderViewItem } from "../components/FolderView"
 import { Platform, getPlatform } from "../globals"
-import { DialogHandle, Result as DialogResult } from 'web-dialog-react'
+import { DialogHandle, ResultType } from 'web-dialog-react'
 import { startUacEvents } from "./events"
 
 export type Nothing = NonNullable<unknown>
@@ -272,7 +272,7 @@ async function requestElevated<T extends Result>(method: RequestType, input: Req
                 btnOk: true,
                 btnCancel: true,
                 defBtnCancel: true
-            })).result == DialogResult.Ok
+            })).result == ResultType.Ok
         : await startElevated()
     
     if (uacShown)

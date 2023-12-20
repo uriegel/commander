@@ -3,7 +3,7 @@ import './Titlebar.css'
 import Pie from 'react-progress-control'
 import CopyProgress from "./dialogparts/CopyProgress"
 import { request } from "../requests/requests"
-import { DialogHandle, Result } from "web-dialog-react"
+import { DialogHandle, ResultType } from "web-dialog-react"
 import "functional-extensions"
 
 // TODO in webview.d.ts
@@ -34,7 +34,7 @@ const Titlebar = ({ menu, isMaximized, progress, progressRevealed, dialog, total
             extension: CopyProgress,
             btnCancel: true
         })
-        if (res?.result == Result.Cancel)
+        if (res?.result == ResultType.Cancel)
             await request("cancelCopy", {})        
     }
 

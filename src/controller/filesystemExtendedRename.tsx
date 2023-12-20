@@ -1,7 +1,7 @@
 import { Controller, ControllerType, EnterData, checkResult } from "./controller"
 import 'functional-extensions'
 import { FolderViewItem } from "../components/FolderView"
-import { DialogHandle, Result } from "web-dialog-react"
+import { DialogHandle, ResultType } from "web-dialog-react"
 import ExtendedRename from "../components/dialogparts/ExtendedRename"
 import { createFileSystemController } from "./filesystem"
 import { IOErrorResult, request } from "../requests/requests"
@@ -37,7 +37,7 @@ export const createExtendedRenameFileSystemController = (controller: Controller)
                 text: "Umbenennungen starten?",
                 btnOk: true,
                 btnCancel: true
-            }))?.result == Result.Ok)
+            }))?.result == ResultType.Ok)
                 rename(enterData)
         }
         return { processed: true }
@@ -71,15 +71,15 @@ export const extendedRename = async (controller: Controller, dialog: DialogHandl
 		btnCancel: true,
 		defBtnOk: true
 	})
-	if (result?.result == Result.Ok) {
+	if (result?.result == ResultType.Ok) {
 		const erp = result.props as ExtendedRenameProps
 		localStorage.setItem("extendedRenamePrefix", erp.prefix)
 		localStorage.setItem("extendedRenameDigits", erp.digits.toString())
 		localStorage.setItem("extendedRenameStartNumber", erp.startNumber.toString())
     }
-	if (result?.result == Result.Ok && !isExtended) 
+	if (result?.result == ResultType.Ok && !isExtended) 
 		return createExtendedRenameFileSystemController(controller)
-    else if (result?.result != Result.Ok && isExtended) 
+    else if (result?.result != ResultType.Ok && isExtended) 
 		return createFileSystemController()
     else
 		return null

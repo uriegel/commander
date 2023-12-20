@@ -1,4 +1,4 @@
-import { DialogHandle, Result } from "web-dialog-react"
+import { DialogHandle, ResultType } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
 import RemoteDialog from "../components/dialogparts/RemoteDialog"
@@ -70,7 +70,7 @@ const showRemote = async (dialog?: DialogHandle|null, item?: FolderViewItem) => 
         btnCancel: true,
         defBtnOk: true
     })
-    if (name && result?.result == Result.Ok) {
+    if (name && result?.result == ResultType.Ok) {
         items = items.concat([{ name, ipAddress, isAndroid }])
         localStorage.setItem("remotes", JSON.stringify(items))
         return true
@@ -108,7 +108,7 @@ const deleteItems = async (_: string, items: FolderViewItem[], dialog: DialogHan
 		btnCancel: true,
 		defBtnOk: true
 	})
-    if (result?.result == Result.Ok) {
+    if (result?.result == ResultType.Ok) {
         const remotes = getRemoteItems().filter(x => !items.find(n => n.name == x.name))
         localStorage.setItem("remotes", JSON.stringify(remotes))
     }

@@ -1,5 +1,5 @@
 import { SpecialKeys, TableColumns } from "virtual-table-react"
-import { DialogHandle, Result } from "web-dialog-react"
+import { DialogHandle, ResultType } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
@@ -216,6 +216,10 @@ export const getSortFunction = (index: number, descending: boolean) => {
 		: undefined
 }
 
+// const showDialog = <T, E>():ResultType< T, E > => {
+
+// }
+
 const rename = async (path: string, item: FolderViewItem, dialog: DialogHandle|null) => {
 	const getInputRange = () => {
 		const pos = item.name.lastIndexOf(".")
@@ -233,7 +237,7 @@ const rename = async (path: string, item: FolderViewItem, dialog: DialogHandle|n
 		btnCancel: true,
 		defBtnOk: true
 	})
-	return result?.result == Result.Ok
+	return result?.result == ResultType.Ok
 		? (await request<IOErrorResult>("renameitem", {
 				path,
 				name: item.name,
@@ -261,7 +265,7 @@ const renameAsCopy = async (path: string, item: FolderViewItem, dialog: DialogHa
 		btnCancel: true,
 		defBtnOk: true
 	})
-	return result?.result == Result.Ok
+	return result?.result == ResultType.Ok
 		? (await request<IOErrorResult>("renameandcopy", {
 				path,
 				name: item.name,
@@ -278,7 +282,7 @@ const createFolder = async (path: string, item: FolderViewItem, dialog: DialogHa
 		btnCancel: true,
 		defBtnOk: true
 	})
-	return result?.result == Result.Ok
+	return result?.result == ResultType.Ok
 		? (await request<IOErrorResult>("createfolder", {
 				path,
 				name: result.input ?? "",
@@ -323,7 +327,7 @@ const deleteItems = async (path: string, items: FolderViewItem[], dialog: Dialog
 		btnCancel: true,
 		defBtnOk: true
 	})
-	return result?.result == Result.Ok
+	return result?.result == ResultType.Ok
 		? (await request<IOErrorResult>("deleteitems", {
 				path,
 				names: items.map(n => n.name),
@@ -361,7 +365,7 @@ const getItemsWithAccess = async (dialog: DialogHandle, path: string) => {
 			btnCancel: true,
 			defBtnOk: true
 		})
-		if (result?.result == Result.Cancel)
+		if (result?.result == ResultType.Cancel)
 			break
 		const res = await request<IOErrorResult>("elevatedrive", { path, name, password })	
 		if (!res.error) 
