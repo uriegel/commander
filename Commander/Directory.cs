@@ -86,11 +86,9 @@ static partial class Directory
                 .ToIOResult()
                 .ToAsync();
 
-    // public static AsyncResult<Nothing, Error> RenameItem(RenameItemParam input)
-    //     =>  Move(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName)),
-    //         MapExceptionToIOError)
-    //             .ToIOResult()
-    //             .ToAsync();
+    public static AsyncResult<Nothing, Error> RenameItem(RenameItemParam input)
+        =>  Move(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName))
+                .ToAsyncResult();
 
     public static Task<IOResult> CancelExtendedItems(CancelExtendedItems cancelExtendedItems)
     {
@@ -383,7 +381,6 @@ record ElevatedDriveParam(
 );
 
 enum IOErrorType {
-    NoError,
     AccessDenied,
     AlreadyExists,
     FileNotFound,
@@ -393,10 +390,15 @@ enum IOErrorType {
     PathNotFound,
     NotSupported,
     PathTooLong,
-    Canceled
+    Canceled,
+    // TODO eliminate
+    NoError,
 }
 
-record Error(IOErrorType Code, int Status, string StatusText) : RequestError(Status, StatusText);
+record Error(IOErrorType Code, int Status, string StatusText) : RequestError(Status, StatusText)
+{
+    public static Error IOError(IOErrorType code) => new(code, 0, "");
+}
 record IOResult(IOErrorType Type, string? Path = null);
 static class IOResultExt
 {
