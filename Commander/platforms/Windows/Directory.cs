@@ -34,30 +34,6 @@ static partial class Directory
         await context.SendStream(stream!, startTime, "icon.png");
     }
 
-    static Task<Stream> GetIconStream(string iconHint)
-        => Try(() => iconHint.Contains('\\')
-            ? (Icon.ExtractAssociatedIcon(iconHint)?.Handle ?? 0).ToAsync()
-            : RepeatOnException(() => 
-                {
-                    var shinfo = new ShFileInfo();
-                    var handle = SHGetFileInfo(iconHint, ClrWinApi.FileAttributes.Normal, ref shinfo, Marshal.SizeOf(shinfo),
-                        SHGetFileInfoConstants.ICON | SHGetFileInfoConstants.SMALLICON | SHGetFileInfoConstants.USEFILEATTRIBUTES | SHGetFileInfoConstants.TYPENAME); 
-                    return shinfo.IconHandle != IntPtr.Zero
-                        ? shinfo.IconHandle.ToAsync()
-                        : throw new Exception("Not found");
-                }, 3, TimeSpan.FromMilliseconds(40)), _ => Icon.ExtractAssociatedIcon(@"C:\Windows\system32\SHELL32.dll")!.Handle)
-            ?.Select(handle => 
-                {
-                    using var icon = Icon.FromHandle(handle);
-                    using var bitmap = icon.ToBitmap();
-                    var ms = new MemoryStream();
-                    bitmap.Save(ms, ImageFormat.Png);
-                    ms.Position = 0;
-                    DestroyIcon(handle);
-                    return ms as Stream;
-                }) 
-            ?? (new MemoryStream() as Stream).ToAsync();
-
     public static Task<GetExtendedItemsResult> GetExtendedItems(GetExtendedItems getExtendedItems)
     {
         Version? GetVersion(string file)
@@ -81,6 +57,9 @@ static partial class Directory
         })
             .ToAsync();
     }
+
+    public static AsyncResult<Nothing, RequestError> RenameItem(RenameItemParam input)            
+        => InternalRenameItem(input);
 
     public static Task<IOResult> DeleteItems(DeleteItemsParam input)
         => new IOResult(SHFileOperation(new ShFileOPStruct
@@ -128,6 +107,30 @@ static partial class Directory
         Copy(path.AppendPath(name), targetPath.AppendPath(name), cb, move, cancellationToken);
         return nothing;
     }
+
+    static Task<Stream> GetIconStream(string iconHint)
+        => Try(() => iconHint.Contains('\\')
+            ? (Icon.ExtractAssociatedIcon(iconHint)?.Handle ?? 0).ToAsync()
+            : RepeatOnException(() => 
+                {
+                    var shinfo = new ShFileInfo();
+                    var handle = SHGetFileInfo(iconHint, ClrWinApi.FileAttributes.Normal, ref shinfo, Marshal.SizeOf(shinfo),
+                        SHGetFileInfoConstants.ICON | SHGetFileInfoConstants.SMALLICON | SHGetFileInfoConstants.USEFILEATTRIBUTES | SHGetFileInfoConstants.TYPENAME); 
+                    return shinfo.IconHandle != IntPtr.Zero
+                        ? shinfo.IconHandle.ToAsync()
+                        : throw new Exception("Not found");
+                }, 3, TimeSpan.FromMilliseconds(40)), _ => Icon.ExtractAssociatedIcon(@"C:\Windows\system32\SHELL32.dll")!.Handle)
+            ?.Select(handle => 
+                {
+                    using var icon = Icon.FromHandle(handle);
+                    using var bitmap = icon.ToBitmap();
+                    var ms = new MemoryStream();
+                    bitmap.Save(ms, ImageFormat.Png);
+                    ms.Position = 0;
+                    DestroyIcon(handle);
+                    return ms as Stream;
+                }) 
+            ?? (new MemoryStream() as Stream).ToAsync();
 
     static void Copy(string source, string target, Action<long, long> progress, bool move, CancellationToken cancellationToken)
     {

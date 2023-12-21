@@ -86,10 +86,6 @@ static partial class Directory
                 .ToIOResult()
                 .ToAsync();
 
-    public static AsyncResult<Nothing, RequestError> RenameItem(RenameItemParam input)
-        =>  Move(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName))
-                .ToAsyncResult();
-
     public static Task<IOResult> CancelExtendedItems(CancelExtendedItems cancelExtendedItems)
     {
         extendedInfosCancellations.GetValue(cancelExtendedItems.Id)?.Cancel();        
@@ -225,6 +221,10 @@ static partial class Directory
             DirectoryError.PathTooLong       => new(IOErrorType.PathTooLong),
             _                                => new(IOErrorType.Exn)
         };
+
+    static AsyncResult<Nothing, RequestError> InternalRenameItem(RenameItemParam input)
+        =>  Move(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName))
+                .ToAsyncResult();
 
     static bool UseRange(this string path)
         => path.EndsWith(".mp4", StringComparison.InvariantCultureIgnoreCase) 

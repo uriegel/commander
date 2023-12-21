@@ -64,6 +64,9 @@ static partial class Directory
         => GetExtendedItems(getExtendedItems.Id, getExtendedItems.Path, getExtendedItems.Items)
             .ToAsync();
 
+    public static AsyncResult<Nothing, RequestError> RenameItem(RenameItemParam input)            
+        => InternalRenameItem(input);
+
     public static Task<IOResult> DeleteItems(DeleteItemsParam input)
         => Gtk.Dispatch(() =>
             input.Names
