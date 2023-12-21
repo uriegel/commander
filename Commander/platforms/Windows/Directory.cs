@@ -62,7 +62,7 @@ static partial class Directory
         => InternalRenameItem(input)
             .BindExceptionAwait(e =>
                 (IOErrorType)e.Status == IOErrorType.AccessDenied
-                    ? InternalRenameItem(input)
+                    ? InternalRenameItem(input.SideEffect(_ => UacServer.StartElevated()))
                     : Error<Nothing, RequestError>(e).ToAsyncResult());
     public static Task<IOResult> DeleteItems(DeleteItemsParam input)
         => new IOResult(SHFileOperation(new ShFileOPStruct

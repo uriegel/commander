@@ -5,32 +5,38 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
-using Microsoft.AspNetCore.Http;
 using CsTools.Functional;
+using System.Windows.Forms;
+using CsTools.Extensions;
 
 static class UacServer
 {
     public static async Task Run(int commanderId)
     {
+        MessageBox.Show($"Das nbin ich {commanderId}");
         await Start();
         await Process.GetProcessById(commanderId).WaitForExitAsync();
     }
 
-    public static async Task StartElevated(HttpContext context)
-	{
-        var exe = Process.GetCurrentProcess()?.MainModule?.FileName;
-        var ok = new Process()
+    public static bool StartElevated()
+        => new Process()
         {
-            StartInfo = new ProcessStartInfo(exe!)
+            StartInfo = new ProcessStartInfo(Process.GetCurrentProcess()?.MainModule?.FileName ?? "")
+#if DEBUG            
             {
-                Arguments = $"-adminMode {Process.GetCurrentProcess().Id}",
+                Arguments = $"{Environment.CurrentDirectory.AppendPath(@"Commander\bin\Debug\net8.0-windows\win-x64\commander.dll")} -adminMode {Environment.ProcessId}",
                 Verb = "runas",
                 UseShellExecute = true
             }
-        }.Start();
-      
-        await context.Response.WriteAsJsonAsync<StartElevatedResult>(new(ok));
-    }
+#else       
+            {
+                Arguments = "-adminMode {Process.GetCurrentProcess().Id}",
+                Verb = "runas",
+                UseShellExecute = true
+            }
+#endif
+        }
+        .Start();
 
     static Task Start()
         => WebApplication

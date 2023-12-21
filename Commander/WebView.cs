@@ -73,8 +73,6 @@ static class Window
                 .JsonPost<StartServicesParam, IOResult>("commander/stopservices", Services.Stop)            
                 // TODO
                 .JsonPost<ElevatedDriveParam, IOResult>("commander/elevatedrive", Directory.ElevateDrive)
-                // TODO
-                .MapGet("commander/startelevated", UacServer.StartElevated)
 #endif            
                 .Build())
 #if DEBUG
