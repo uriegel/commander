@@ -191,6 +191,29 @@ export const checkResult = async (dialog: DialogHandle|null|undefined, activeFol
         return true
 }
 
+export const showError = async (error: ErrorType, dialog: DialogHandle, activeFolderView?: focusable | null) => {
+    if (error.status < 1000) {
+        // TODO client side errors, server side errors
+        const ioError = error.status as IOError
+        const text = ioError === IOError.AccessDenied
+            ? "Zugriff verweigert"
+            : ioError === IOError.DeleteToTrashNotPossible
+                ? "Löschen nicht möglich"
+                : ioError === IOError.AlreadyExists
+                    ? "Das Element existiert bereits"
+                    : ioError === IOError.FileNotFound
+                        ? "Das Element ist nicht vorhanden"
+                        : "Die Aktion konnte nicht ausgeführt werden"
+        dialog?.close()
+        await delay(500)
+        await dialog?.show({
+            text,
+            btnOk: true
+        })
+        activeFolderView?.setFocus()
+    }
+}
+
 const checkNewController = (controllerResult: ControllerResult, recentController: Controller | null): ControllerResult => {
     if (controllerResult.changed)
         recentController?.cleanUp()

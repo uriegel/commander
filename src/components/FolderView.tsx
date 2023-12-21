@@ -1,7 +1,7 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import './FolderView.css'
 import VirtualTable, { OnSort, SelectableItem, SpecialKeys, TableColumns, VirtualTableHandle } from 'virtual-table-react'
-import { checkController, checkResult, Controller, createEmptyController } from '../controller/controller'
+import { checkController, checkResult, Controller, createEmptyController, showError } from '../controller/controller'
 import { ROOT } from '../controller/root'
 import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
 import { IOError, Version } from '../requests/requests'
@@ -51,7 +51,7 @@ export type FolderViewHandle = {
     selectNone: () => void
     changePath: (path: string) => void
     getPath: () => string
-    rename: () => Promise<void>
+    rename: () => void
     extendedRename: (dialog: DialogHandle | null) => void
     renameAsCopy: () => Promise<void>
     createFolder: () => Promise<void>
@@ -373,13 +373,10 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             controller.current.rename(path, item, dialog)
                 .match(
                     () => refresh(),
-                    console.log)
+                    err => showError(err, dialog, virtualTable.current))
 
-            // TODO when renamed select new file
-            // TODO error dialog
             // TODO Windows: UAC
-            // if (await checkResult(dialog, virtualTable.current, result))
-            //    refresh() 
+            // TODO when renamed select new file when changePath is finished
         })
     
     const renameAsCopy = async () => {
