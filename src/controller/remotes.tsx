@@ -6,7 +6,7 @@ import { addParent, Controller, ControllerResult, ControllerType, EnterData } fr
 import { ROOT } from "./root"
 import { IOError } from "../requests/requests"
 import { IconNameType } from "../enums"
-import { AsyncResult, ErrorType, Ok } from "functional-extensions"
+import { AsyncResult, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
 
 export const REMOTES = "remotes"
 
@@ -138,7 +138,7 @@ export const getRemotesController = async (controller: Controller | null): Promi
         itemsSelectable: true,
         appendPath: (_: string, subPath: string) => subPath,
         // TODO:
-        rename: () => AsyncResult.ToAsyncResult(new Ok<{}, ErrorType>({})),
+        rename: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
         extendedRename: async () => null,
         renameAsCopy: async()=>null,
         createFolder: async () => null,

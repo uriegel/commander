@@ -9,7 +9,7 @@ import { ROOT } from "./root"
 import { extendedRename } from "./filesystemExtendedRename"
 import Credentials, { CredentialsProps } from "../components/dialogparts/Credentials"
 import { IconNameType } from "../enums"
-import { Err, ErrorType, Ok, jsonPost } from "functional-extensions"
+import { Err, ErrorType, Nothing, Ok, jsonPost } from "functional-extensions"
 
 export enum ItemsType {
 	Directories,
@@ -235,7 +235,7 @@ const rename = (path: string, item: FolderViewItem, dialog: DialogHandle) => {
 	}, res => res.result == ResultType.Ok && res.input
 		? new Ok(res.input)
 		: new Err({ status: IOError.Canceled, statusText: "" }))
-		.bindAsync(newName => jsonPost<{}, ErrorType>({ method: "renameitem", payload: { path, name: item.name, newName }}))
+		.bindAsync(newName => jsonPost<Nothing, ErrorType>({ method: "renameitem", payload: { path, name: item.name, newName }}))
 }
 
 const renameAsCopy = async (path: string, item: FolderViewItem, dialog: DialogHandle|null) => {

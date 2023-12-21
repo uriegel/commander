@@ -6,7 +6,7 @@ import { addParent, Controller, ControllerResult, ControllerType, formatDateTime
 import { getSortFunction } from "./filesystem"
 import { REMOTES } from "./remotes"
 import { IconNameType } from "../enums"
-import { AsyncResult, ErrorType, Ok } from "functional-extensions"
+import { AsyncResult, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
 
 export const REMOTE = "remote"
 
@@ -81,7 +81,7 @@ export const getRemoteController = async (controller: Controller | null): Promis
         sort,
         itemsSelectable: true,
         appendPath: (path: string, subPath: string) => path.appendPath(subPath),
-		rename: () => AsyncResult.ToAsyncResult(new Ok<{}, ErrorType>({})),
+		rename: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
 		extendedRename: async () => null,
 		renameAsCopy: async () => null,
         createFolder: async () => null,

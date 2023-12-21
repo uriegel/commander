@@ -9,7 +9,7 @@ import { getRemoteController } from "./remote"
 import { FAVORITES, getFavoritesController } from "./favorites"
 import { SERVICES, getServicesController } from "./services"
 import { Platform, getPlatform } from "../globals"
-import { AsyncResult, ErrorType, Ok } from "functional-extensions"
+import { AsyncResult, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
 
 const dateFormat = Intl.DateTimeFormat("de-DE", {
     year: "numeric",
@@ -64,7 +64,7 @@ export interface Controller {
     sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => FolderViewItem[]
     itemsSelectable: boolean
     appendPath: (path: string, subPath: string) => string,
-    rename: (path: string, item: FolderViewItem, dialog: DialogHandle) => AsyncResult<{}, ErrorType>
+    rename: (path: string, item: FolderViewItem, dialog: DialogHandle) => AsyncResult<Nothing, ErrorType>
     extendedRename: (controller: Controller, dialog: DialogHandle | null) => Promise<Controller | null>
     renameAsCopy: (path: string, item: FolderViewItem, dialog: DialogHandle | null) => Promise<IOError | null>
     createFolder: (path: string, item: FolderViewItem, dialog: DialogHandle|null) => Promise<IOError | null>
@@ -112,7 +112,7 @@ export const createEmptyController = (): Controller => ({
     sort: (items: FolderViewItem[]) => items,
     itemsSelectable: false,
     appendPath: () => "",
-    rename: () => AsyncResult.ToAsyncResult(new Ok<{}, ErrorType>({})),
+    rename: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
     extendedRename: async () => null,
     renameAsCopy: async () => null,
     createFolder: async () => null,

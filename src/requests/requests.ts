@@ -3,8 +3,11 @@ import { FolderViewItem } from "../components/FolderView"
 import { Platform, getPlatform } from "../globals"
 import { DialogHandle, ResultType } from 'web-dialog-react'
 import { startUacEvents } from "./events"
+import { setBaseUrl } from "functional-extensions"
 
 export type Nothing = NonNullable<unknown>
+
+setBaseUrl("http://localhost:20000/commander")
 
 type Result = 
 	| Nothing 
