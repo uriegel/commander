@@ -7,10 +7,6 @@ declare global {
         extractSubPath(): string
         getParentPath(): string
     }
-
-    interface Object {
-        sideEffect<T>(sideEffect: (obj: T)=>void): T
-    }
 }
 
 String.prototype.getExtension = function (): string {
@@ -32,10 +28,5 @@ String.prototype.appendPath = function (subPath: string): string {
     return this.endsWith("/")
         ? this + subPath
         : this + "/" + subPath
-}
-
-Object.prototype.sideEffect = function <T>(sideEffect: (obj: T) => void): T {
-    sideEffect(this as T)
-    return this as T
 }
 

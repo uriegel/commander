@@ -157,12 +157,17 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         }
     }, [onActualizedItems])
     
-    // const withSelectedItem = <T,>(withSelected: (item: FolderViewItem)=>T) => {
-    //     const items = getSelectedItems()
-    //     return items?.length == 1
-    //         ? withSelected(items[0])
-    //         : null
-    // }
+    const withSelectedItem = <T,>(withSelected: (item: FolderViewItem)=>T) => {
+        const items = getSelectedItems()
+        return items?.length == 1
+            ? withSelected(items[0])
+            : null
+    }
+
+    const withSelectedItemAndDialog = <T,>(withSelected: (dialog: DialogHandle, item: FolderViewItem) => T) => {
+        if (dialog)
+            return withSelectedItem(i => withSelected(dialog, i))
+    }
 
     const getSelectedItems = () => {
 
@@ -363,16 +368,21 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         changePath(path, forceShowHidden == undefined ? showHidden : forceShowHidden)
 
     const rename = async () => {
-        //withSelectedItem(item => item.sideEffect<FolderViewItem>(console.log))
-        virtualTable.current?.setFocus()
-        const items = getSelectedItems()
-        if (items?.length == 1 && dialog) {
-            controller.current.rename(path, items[0], dialog)
+        const r = withSelectedItemAndDialog((dialog, item) => {
+            virtualTable.current?.setFocus()
+            return controller.current.rename(path, item, dialog)
+            // TODO nothing as ok, not error unknown
+            // TODO AsyncResult.match
+            // TODO when renamed select new file
+            // TODO Windows: UAC
             // if (await checkResult(dialog, virtualTable.current, result))
             //    refresh() 
-        }
-    }
+        })
+        const res = (await r?.toResult())
+        console.log("Reanmed", res)
 
+    }
+    
     const renameAsCopy = async () => {
         virtualTable.current?.setFocus()
         const items = getSelectedItems()
