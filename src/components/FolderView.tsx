@@ -367,21 +367,20 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const refresh = async (forceShowHidden?: boolean) =>
         changePath(path, forceShowHidden == undefined ? showHidden : forceShowHidden)
 
-    const rename = async () => {
-        const r = withSelectedItemAndDialog((dialog, item) => {
+    const rename = () => 
+        withSelectedItemAndDialog((dialog, item) => {
             virtualTable.current?.setFocus()
-            return controller.current.rename(path, item, dialog)
-            // TODO nothing as ok, not error unknown
-            // TODO AsyncResult.match
+            controller.current.rename(path, item, dialog)
+                .match(
+                    () => refresh(),
+                    console.log)
+
             // TODO when renamed select new file
+            // TODO error dialog
             // TODO Windows: UAC
             // if (await checkResult(dialog, virtualTable.current, result))
             //    refresh() 
         })
-        const res = (await r?.toResult())
-        console.log("Reanmed", res)
-
-    }
     
     const renameAsCopy = async () => {
         virtualTable.current?.setFocus()
