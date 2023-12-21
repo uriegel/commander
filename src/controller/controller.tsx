@@ -216,13 +216,15 @@ export const showError = async (error: ErrorType, dialog: DialogHandle, activeFo
         ? getClientError(error)
         : getServerError(error)
     
-    dialog?.close()
-    await delay(500)
-    await dialog?.show({
-        text,
-        btnOk: true
-    })
-    activeFolderView?.setFocus()
+    if (error.status !== IOError.Canceled) {
+        dialog?.close()
+        await delay(500)
+        await dialog?.show({
+            text,
+            btnOk: true
+        })
+        activeFolderView?.setFocus()
+    }
 }
 
 const checkNewController = (controllerResult: ControllerResult, recentController: Controller | null): ControllerResult => {

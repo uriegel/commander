@@ -58,9 +58,12 @@ static partial class Directory
             .ToAsync();
     }
 
-    public static AsyncResult<Nothing, RequestError> RenameItem(RenameItemParam input)            
-        => InternalRenameItem(input);
-
+    public static AsyncResult<Nothing, RequestError> RenameItem(RenameItemParam input)
+        => InternalRenameItem(input)
+            .BindExceptionAwait(e =>
+                (IOErrorType)e.Status == IOErrorType.AccessDenied
+                    ? InternalRenameItem(input)
+                    : Error<Nothing, RequestError>(e).ToAsyncResult());
     public static Task<IOResult> DeleteItems(DeleteItemsParam input)
         => new IOResult(SHFileOperation(new ShFileOPStruct
         {
