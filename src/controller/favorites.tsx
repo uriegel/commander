@@ -91,7 +91,7 @@ export const getFavoritesController = async (controller: Controller | null): Pro
         rename: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
         extendedRename: async () => null,
         renameAsCopy: async () => null,
-        createFolder: async () => null,
+        createFolder: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
         deleteItems,
         onSelectionChanged: () => { },
         cleanUp: () => { }

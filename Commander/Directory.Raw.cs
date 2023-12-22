@@ -11,6 +11,13 @@ static partial class Directory
             () => nothing.SideEffect(_ => System.IO.Directory.Move(path, newPath)),
             MapException);
 
+    public static Result<Nothing, RequestError> CreateFolder(string name, string path)
+        => Try(
+            () => nothing.SideEffect(_ => System.IO.Directory.CreateDirectory(path.AppendPath(name))),
+            MapException);
+                
+
+
     static RequestError MapException(Exception e)
         => e switch
         {

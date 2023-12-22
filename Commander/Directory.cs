@@ -79,13 +79,6 @@ static partial class Directory
         await context.SendStream(ms, null, "favicon.png");
     }
 
-    public static Task<IOResult> CreateFolder(CreateFolderParam input)
-        => Try(
-            () => CreateDirectory(input.Path.AppendPath(input.Name)).ToNothing(),
-            MapExceptionToIOError)
-                .ToIOResult()
-                .ToAsync();
-
     public static Task<IOResult> CancelExtendedItems(CancelExtendedItems cancelExtendedItems)
     {
         extendedInfosCancellations.GetValue(cancelExtendedItems.Id)?.Cancel();        
@@ -225,6 +218,10 @@ static partial class Directory
     static AsyncResult<Nothing, RequestError> RenameItemRaw(RenameItemParam input)
         =>  Move(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName))
                 .ToAsyncResult();
+
+    static AsyncResult<Nothing, RequestError> CreateFolderRaw(CreateFolderParam input)
+        => CreateFolder(input.Name, input.Path)
+            .ToAsyncResult();
 
     static bool UseRange(this string path)
         => path.EndsWith(".mp4", StringComparison.InvariantCultureIgnoreCase) 

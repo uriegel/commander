@@ -67,6 +67,9 @@ static partial class Directory
     public static AsyncResult<Nothing, RequestError> RenameItem(RenameItemParam input)            
         => RenameItemRaw(input);
 
+    public static AsyncResult<Nothing, RequestError> CreateFolder(CreateFolderParam input)            
+        => CreateFolderRaw(input);
+
     public static Task<IOResult> DeleteItems(DeleteItemsParam input)
         => Gtk.Dispatch(() =>
             input.Names

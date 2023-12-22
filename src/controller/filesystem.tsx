@@ -266,21 +266,17 @@ const renameAsCopy = async (path: string, item: FolderViewItem, dialog: DialogHa
 		: null
 }
 
-const createFolder = async (path: string, item: FolderViewItem, dialog: DialogHandle | null) => {
-	const result = await dialog?.show({
+const createFolder = (path: string, item: FolderViewItem, dialog: DialogHandle) => 
+	dialog.showDialog<string, ErrorType>({
 		text: "Neuen Ordner anlegen",
 		inputText: !item.isParent ? item.name : "",
 		btnOk: true,
 		btnCancel: true,
 		defBtnOk: true
-	})
-	return result?.result == ResultType.Ok
-		? (await request<IOErrorResult>("createfolder", {
-				path,
-				name: result.input ?? "",
-			}, dialog)).error ?? null
-		: null
-}
+	}, res => res.result == ResultType.Ok && res.input
+	? new Ok(res.input)
+	: new Err({ status: IOError.Canceled, statusText: "" }))
+	.bindAsync(name => jsonPost<Nothing, ErrorType>({ method: "createfolder", payload: { path, name }}))
 
 export const getItemsType = (items: FolderViewItem[]): ItemsType => {
 	const dirs = items.filter(n => n.isDirectory)

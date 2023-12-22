@@ -101,7 +101,7 @@ const createController = async (): Promise<ControllerResult> => {
             rename: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
             extendedRename: async () => null,
             renameAsCopy: async () => null,
-            createFolder: async () => null,
+            createFolder: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
             deleteItems: async (_, items, dialog) => await stop(items, dialog),
             onSelectionChanged: () => { },
             cleanUp: () => request("cleanupservices")

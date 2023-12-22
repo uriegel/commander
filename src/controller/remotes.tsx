@@ -141,7 +141,7 @@ export const getRemotesController = async (controller: Controller | null): Promi
         rename: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
         extendedRename: async () => null,
         renameAsCopy: async()=>null,
-        createFolder: async () => null,
+        createFolder: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
         deleteItems,
         onSelectionChanged: () => { },
         cleanUp: () => { }
