@@ -83,19 +83,19 @@ export const getViewerPath = (path: string) =>
     ? `http://${path.stringBetween("/", "/")}:8080/remote/${path.substringAfter("/").substringAfter("/")}`
     : `http://localhost:20000/commander/file?path=${path}`
 
-export const checkController = async (path: string, controller: Controller | null): Promise<ControllerResult> => 
+export const checkController = (path: string, controller: Controller | null): ControllerResult => 
     checkNewController(
         path == ROOT
-        ? await getRootController(controller)
+        ? getRootController(controller)
         : path == REMOTES  
-        ? await getRemotesController(controller)
+        ? getRemotesController(controller)
         : path.startsWith("remote/")        
-        ? await getRemoteController(controller)
+        ? getRemoteController(controller)
         : path == FAVORITES  
-        ? await getFavoritesController(controller)
+        ? getFavoritesController(controller)
         : path == SERVICES && getPlatform() == Platform.Windows
-        ? await getServicesController(controller)
-        : await getFileSystemController(controller), controller)
+        ? getServicesController(controller)
+        : getFileSystemController(controller), controller)
 
 export const createEmptyController = (): Controller => ({
     type: ControllerType.Empty,

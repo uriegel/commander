@@ -84,7 +84,7 @@ const onLinuxEnter = async (enterData: EnterData) =>
     mount: !enterData.item.mountPoint
 }) 
 
-export const getRootController = async (controller: Controller | null): Promise<ControllerResult> => 
+export const getRootController = (controller: Controller | null): ControllerResult => 
     controller?.type == ControllerType.Root
     ? ({ changed: false, controller })
     : ({ changed: true, controller: { 

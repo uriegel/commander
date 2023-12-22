@@ -65,13 +65,14 @@ const getItems = async (_: string, __: boolean, sortIndex: number, sortDescendin
 const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
 	sortItems(items, getSortFunction(sortIndex, sortDescending), true) 
 
-export const getServicesController = async (controller: Controller | null): Promise<ControllerResult> => 
+export const getServicesController = (controller: Controller | null): ControllerResult => 
     controller?.type == ControllerType.Services
     ? ({ changed: false, controller })
-    : await createController()
+    : createController()
 
-const createController = async (): Promise<ControllerResult> => {
-    await request<IOErrorResult>("initservices")    
+const createController = (): ControllerResult => {
+    // TODO move to getServices
+    //await request<IOErrorResult>("initservices")    
 
     return {
         changed: true, controller: { 

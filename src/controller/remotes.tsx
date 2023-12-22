@@ -122,7 +122,7 @@ const onEnter = async (enterData: EnterData) =>
 //     return null
 // }
 
-export const getRemotesController = async (controller: Controller | null): Promise<ControllerResult> => 
+export const getRemotesController = (controller: Controller | null): ControllerResult => 
     controller?.type == ControllerType.Remotes
     ? ({ changed: false, controller })
     : ({ changed: true, controller: { 

@@ -218,7 +218,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             controller.current.cancelExtendedItems(id)
         
         restrictionView.current?.reset()
-        const result = await checkController(path, controller.current)
+        const result = checkController(path, controller.current)
         if (result.changed) {
             controller.current = result.controller
             setItems([])

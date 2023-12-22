@@ -48,7 +48,7 @@ const getItems = async (path: string, showHidden: boolean, sortIndex: number, so
 const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
 	sortItems(items, getSortFunction(sortIndex, sortDescending), true) 
 
-export const getRemoteController = async (controller: Controller | null): Promise<ControllerResult> => 
+export const getRemoteController = (controller: Controller | null): ControllerResult => 
     controller?.type == ControllerType.Remote
     ? ({ changed: false, controller })
     : ({ changed: true, controller: { 

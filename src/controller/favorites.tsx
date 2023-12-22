@@ -73,7 +73,7 @@ const onEnter = async (enterData: EnterData) =>
             pathToSet: enterData.item.isParent ? ROOT : enterData.item.name
         } 
 
-export const getFavoritesController = async (controller: Controller | null): Promise<ControllerResult> => 
+export const getFavoritesController = (controller: Controller | null): ControllerResult => 
     controller?.type == ControllerType.Favorites
     ? ({ changed: false, controller })
     : ({ changed: true, controller: { 
