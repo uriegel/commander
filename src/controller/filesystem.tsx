@@ -9,7 +9,7 @@ import { ROOT } from "./root"
 import { extendedRename } from "./filesystemExtendedRename"
 import Credentials, { CredentialsProps } from "../components/dialogparts/Credentials"
 import { IconNameType } from "../enums"
-import { Err, ErrorType, Nothing, Ok, jsonPost } from "functional-extensions"
+import { Err, ErrorType, Nothing, Ok, jsonPost, nothing } from "functional-extensions"
 
 export enum ItemsType {
 	Directories,
@@ -296,7 +296,7 @@ export const getItemsType = (items: FolderViewItem[]): ItemsType => {
 		: ItemsType.All
 }
 
-const deleteItems = async (path: string, items: FolderViewItem[], dialog: DialogHandle|null) => {
+const deleteItems = (path: string, items: FolderViewItem[], dialog: DialogHandle) => {
 
 	const type = getItemsType(items)
 	const text = type == ItemsType.Directory
@@ -307,20 +307,17 @@ const deleteItems = async (path: string, items: FolderViewItem[], dialog: Dialog
 		? "Möchtest Du die Datei löschen?"
 		: type == ItemsType.Files
 		? "Möchtest Du die Dateien löschen?"		
-		: "Möchtest Du die Verzeichnisse und Dateien löschen?"		
+		: "Möchtest Du die Verzeichnisse und Dateien löschen?"	
 	
-	const result = await dialog?.show({
-		text,
-		btnOk: true,
-		btnCancel: true,
-		defBtnOk: true
-	})
-	return result?.result == ResultType.Ok
-		? (await request<IOErrorResult>("deleteitems", {
-				path,
-				names: items.map(n => n.name),
-			}, dialog)).error ?? null
-		: null
+	return dialog.showDialog<Nothing, ErrorType>({
+			text,
+			btnOk: true,
+			btnCancel: true,
+			defBtnOk: true
+		}, res => res.result == ResultType.Ok
+		? new Ok(nothing)
+		: new Err({ status: IOError.Canceled, statusText: "" }))
+			.bindAsync(() => jsonPost<Nothing, ErrorType>({ method: "deleteitems", payload: { path, names: items.map(n => n.name) }}))
 }
 
 export const compareVersion = (versionLeft?: Version, versionRight?: Version) =>

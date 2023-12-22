@@ -102,19 +102,19 @@ const onEnter = async (enterData: EnterData) =>
             pathToSet: enterData.item.isParent ? ROOT : `remote/${enterData.item.ipAddress}/`
         } 
 
-const deleteItems = async (_: string, items: FolderViewItem[], dialog: DialogHandle | null) => {
-	const result = await dialog?.show({
-		text: `Möchtest Du ${items.length > 1 ? "die Einträge" : "den Eintrag"} löschen?`,
-		btnOk: true,
-		btnCancel: true,
-		defBtnOk: true
-	})
-    if (result?.result == ResultType.Ok) {
-        const remotes = getRemoteItems().filter(x => !items.find(n => n.name == x.name))
-        localStorage.setItem("remotes", JSON.stringify(remotes))
-    }
-    return null
-}
+// const deleteItems = async (_: string, items: FolderViewItem[], dialog: DialogHandle | null) => {
+// 	const result = await dialog?.show({
+// 		text: `Möchtest Du ${items.length > 1 ? "die Einträge" : "den Eintrag"} löschen?`,
+// 		btnOk: true,
+// 		btnCancel: true,
+// 		defBtnOk: true
+// 	})
+//     if (result?.result == ResultType.Ok) {
+//         const remotes = getRemoteItems().filter(x => !items.find(n => n.name == x.name))
+//         localStorage.setItem("remotes", JSON.stringify(remotes))
+//     }
+//     return null
+// }
 
 
 // const rename = async (_: string, item: FolderViewItem, dialog: DialogHandle | null) => {
@@ -142,7 +142,8 @@ export const getRemotesController = async (controller: Controller | null): Promi
         extendedRename: async () => null,
         renameAsCopy: async()=>null,
         createFolder: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
-        deleteItems,
+        // TODO deleteItems,
+        deleteItems: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
         onSelectionChanged: () => { },
         cleanUp: () => { }
     }})

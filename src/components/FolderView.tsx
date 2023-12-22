@@ -55,7 +55,7 @@ export type FolderViewHandle = {
     extendedRename: (dialog: DialogHandle | null) => void
     renameAsCopy: () => Promise<void>
     createFolder: () => void
-    deleteItems: () => Promise<void>
+    deleteItems: () => void
     getController: () => Controller
     getItems: () => FolderViewItem[]
     processEnter: (item: FolderViewItem, keys: SpecialKeys, otherPath?: string) => Promise<void>
@@ -330,7 +330,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 }
                 break                
             case "Delete":
-                await deleteItems()
+                deleteItems()
                 break
             case "Backspace":
                 if (!checkRestricted(evt.key)) {
@@ -396,14 +396,14 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         // TODO when created select new folder when changePath is finished
     }
 
-    const deleteItems = async () => {
+    const deleteItems = () => {
         virtualTable.current?.setFocus()
         const items = getSelectedItems()
-        if (items.length == 0)
-            return
-        const result = await controller.current.deleteItems(path, items, dialog)
-        if (await checkResult(dialog, virtualTable.current, result))
-            refresh() 
+        if (items.length > 0 && dialog)
+            controller.current.deleteItems(path, items, dialog)
+                .match(
+                    () => refresh(),
+                    err => showError(err, dialog, virtualTable.current))
     }
 
     const onDragStart = async (evt: React.DragEvent) => {

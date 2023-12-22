@@ -102,7 +102,8 @@ const createController = async (): Promise<ControllerResult> => {
             extendedRename: async () => null,
             renameAsCopy: async () => null,
             createFolder: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
-            deleteItems: async (_, items, dialog) => await stop(items, dialog),
+            // TODOdeleteItems: async (_, items, dialog) => await stop(items, dialog),
+            deleteItems: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
             onSelectionChanged: () => { },
             cleanUp: () => request("cleanupservices")
         }
@@ -141,11 +142,11 @@ const start = async (selectedItems: FolderViewItem[], dialog?: DialogHandle|null
     }, dialog)
 }
 
-const stop = async (selectedItems: FolderViewItem[], dialog?: DialogHandle|null) => {
-    request<IOErrorResult>("stopservices", {
-        items: selectedItems
-                    .filter(n => n.status == ServiceStatus.Running)
-                    .map(n => n.name)
-    }, dialog)
-    return IOError.NoError
-}
+// const stop = async (selectedItems: FolderViewItem[], dialog?: DialogHandle|null) => {
+//     request<IOErrorResult>("stopservices", {
+//         items: selectedItems
+//                     .filter(n => n.status == ServiceStatus.Running)
+//                     .map(n => n.name)
+//     }, dialog)
+//     return IOError.NoError
+// }

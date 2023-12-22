@@ -70,19 +70,19 @@ static partial class Directory
     public static AsyncResult<Nothing, RequestError> CreateFolder(CreateFolderParam input)            
         => CreateFolderRaw(input);
 
-    public static Task<IOResult> DeleteItems(DeleteItemsParam input)
-        => Gtk.Dispatch(() =>
-            input.Names
-                .Select(n =>
-                    GFile
-                    .New(input.Path.AppendPath(n))
-                    .Use(f => f.Trash()))
-                .FirstOrDefault(n => n.IsError)
-                .Match(
-                    s => new IOResult(IOErrorType.NoError),
-                    e => e != null 
-                        ? MapGErrorToIOError(e) 
-                        : new IOResult(IOErrorType.NoError)));
+    public static AsyncResult<Nothing, RequestError> DeleteItems(DeleteItemsParam input)
+        => DeleteItemsRaw(input);
+
+    public static AsyncResult<Nothing, RequestError> DeleteItemsRaw(DeleteItemsParam input)
+        =>  Gtk.Dispatch(() =>
+                input.Names
+                    .Select(n =>
+                        GFile
+                        .New(input.Path.AppendPath(n))
+                        .Use(f => f.Trash()))
+                    .FirstOrDefault(n => n.IsError)
+                    .SelectError(GErrorToRequestError))
+            .ToAsyncResult();
 
     public static Result<Nothing, IOResult> Copy(string name, string path, string targetPath, ProgressCallback cb, bool move, CancellationToken cancellationToken)
         => GFile
@@ -101,6 +101,17 @@ static partial class Directory
             FileError fe when fe.Error == FileError.ErrorType.TargetExisting => new(IOErrorType.AlreadyExists),
             FileError fe when fe.Error == FileError.ErrorType.Canceled       => new(IOErrorType.Canceled),
             _                                                                => new(IOErrorType.Exn),
+        };
+
+    public static RequestError GErrorToRequestError(GError ge)
+        => ge switch
+        {
+            FileError fe when fe.Error == FileError.ErrorType.AccessDenied   => IOErrorType.AccessDenied.ToError(),
+            FileError fe when fe.Error == FileError.ErrorType.SourceNotFound => IOErrorType.FileNotFound.ToError(),
+            FileError fe when fe.Error == FileError.ErrorType.TargetNotFound => IOErrorType.PathNotFound.ToError(),
+            FileError fe when fe.Error == FileError.ErrorType.TargetExisting => IOErrorType.AlreadyExists.ToError(),
+            FileError fe when fe.Error == FileError.ErrorType.Canceled       => IOErrorType.Canceled.ToError(),
+            _                                                                => IOErrorType.Exn.ToError()
         };
 
     static string Mount(string path) 

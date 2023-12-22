@@ -172,7 +172,7 @@ const App = () => {
 		else if (key == "CREATE_FOLDER")
 			getActiveFolder()?.createFolder()
 		else if (key == "DELETE")
-			await getActiveFolder()?.deleteItems()
+			getActiveFolder()?.deleteItems()
 		else if (key == "COPY")			
 			await copyItems(false)
 		else if (key == "MOVE")			
