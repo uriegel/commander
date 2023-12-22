@@ -22,7 +22,11 @@ static class UacServer
         ]);
     }
 
-    public static void Exit() => processRunning?.TrySetResult();
+    public static async void Exit() 
+    {
+        await Task.Delay(100);
+        processRunning?.TrySetResult();
+    }
 
     public static Result<Nothing, Nothing> StartElevated()
         => Try<Result<Nothing, Nothing>>(() => new Process()
@@ -36,7 +40,7 @@ static class UacServer
             }
 #else       
             {
-                Arguments = "-adminMode {Process.GetCurrentProcess().Id}",
+                Arguments = $"-adminMode {Environment.ProcessId}",
                 Verb = "runas",
                 UseShellExecute = true
             }
@@ -76,7 +80,7 @@ static class UacServer
             .WithSse("commander/sse", Events.Source)
             // .JsonPost<DeleteItemsParam, IOResult>("commander/deleteitems", Directory.DeleteItems)
             // .JsonPost<CreateFolderParam, IOResult>("commander/createfolder", Directory.CreateFolder)
-            .WithJsonPost<RenameItemParam, Nothing, RequestError>("commander/renameitem", Directory.RenameItemUac, e => Exit())
+            .WithJsonPost<RenameItemParam, Nothing, RequestError>("commander/renameitem", Directory.RenameItemUac, _ => Exit())
             // TODO
             // .JsonPost<CopyItemsParam, IOResult>("commander/copyitems", Directory.CopyItems)
             // .JsonPost<Empty, IOResult>("commander/cancelcopy", Directory.CancelCopy)

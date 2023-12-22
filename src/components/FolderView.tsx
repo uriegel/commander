@@ -374,8 +374,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 .match(
                     () => refresh(),
                     err => showError(err, dialog, virtualTable.current))
-
-            // TODO Windows: UAC with release version
             // TODO when renamed select new file when changePath is finished
         })
     
