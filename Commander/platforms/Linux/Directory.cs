@@ -12,7 +12,7 @@ using static CsTools.Core;
 
 static partial class Directory
 {
-    public static Result<DirectoryInfo, IOResult> Validate(this DirectoryInfo info) => info;
+    public static Result<DirectoryInfo, RequestError> Validate(this DirectoryInfo info) => info;
 
     public static string GetIconPath(FileInfo info)
         => info.Extension?.Length > 0 ? info.Extension : ".noextension";

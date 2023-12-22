@@ -14,7 +14,7 @@ using static CsTools.Core;
 
 static partial class Directory
 {
-    public static Task<GetFilesRequestResult> GetFiles(GetFiles getFiles)
+    public static AsyncResult<GetFilesResult, GetFilesError> GetFiles(GetFiles getFiles)
         => getFiles
             .Path
             .If(getFiles.Mount == true,
@@ -22,9 +22,8 @@ static partial class Directory
             .CreateDirectoryInfo()
             .Validate()
             .SelectMany(n => GetFiles(n, getFiles.ShowHiddenItems))
-            .SelectError(e => e.AppendPath(getFiles.Path))
-            .ToRequestResult()
-            .ToAsync();
+            .SelectError(e => new GetFilesError(getFiles.Path, e.Status, e.StatusText)) 
+            .ToAsyncResult();
 
     public static GetExtendedItemsResult GetExtendedItems(string id, string path, string[] items)
     {
@@ -175,7 +174,7 @@ static partial class Directory
             .SideEffect(_ => OnEnter(input.Path, input.Keys))
             .ToAsync();
 
-    public static Result<GetFilesResult, IOResult> GetFiles(DirectoryInfo dirInfo, bool showHiddenItems)
+    public static Result<GetFilesResult, RequestError> GetFiles(DirectoryInfo dirInfo, bool showHiddenItems)
     {
         return
              Try(
@@ -190,7 +189,7 @@ static partial class Directory
                         .Select(DirectoryItem.CreateFileItem)
                         .Where(FilterHidden)
                         .ToArray()),
-                e => new IOResult(IOErrorType.PathNotFound, null))
+                e => IOErrorType.PathNotFound.ToError())
             .Select(MakeFilesResult);
 
         GetFilesResult MakeFilesResult(DirFileInfo dirFileInfo)
@@ -278,6 +277,9 @@ record GetFilesResult(
     int DirCount,
     int FileCount
 );
+
+record GetFilesError(string Path, int Status, string StatusText) 
+    : RequestError(Status, StatusText);
 
 record GetFilesRequestResult(
     DirectoryItem[] Items,
