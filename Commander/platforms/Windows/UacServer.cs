@@ -79,7 +79,7 @@ static class UacServer
             .WithRouting()
             .WithSse("commander/sse", Events.Source)
             // .JsonPost<DeleteItemsParam, IOResult>("commander/deleteitems", Directory.DeleteItems)
-            // .JsonPost<CreateFolderParam, IOResult>("commander/createfolder", Directory.CreateFolder)
+            .WithJsonPost<CreateFolderParam, Nothing, RequestError>("commander/createfolder", Directory.CreateFolder, _ => Exit())
             .WithJsonPost<RenameItemParam, Nothing, RequestError>("commander/renameitem", Directory.RenameItemUac, _ => Exit())
             // TODO
             // .JsonPost<CopyItemsParam, IOResult>("commander/copyitems", Directory.CopyItems)

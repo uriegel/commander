@@ -72,6 +72,20 @@ static partial class Directory
     public static AsyncResult<Nothing, RequestError> RenameItemUac(RenameItemParam input)
         => RenameItemRaw(input);
     
+    public static AsyncResult<Nothing, RequestError> CreateFolder(CreateFolderParam input)
+        => CreateFolderRaw(input)
+            .BindErrorAwait(e =>
+                (IOErrorType)e.Status == IOErrorType.AccessDenied
+                    ? UacServer
+                        .StartElevated()
+                        .SelectError(_ => new CsTools.HttpRequest.RequestError(1099, "UAC not started"))
+                        .ToAsyncResult()
+                        .BindAwait(_ => Requests.JsonRequest.Post<CreateFolderParam, Nothing>(new("commander/createfolder", input)))
+                        .SelectError(e => new RequestError(e.Status, e.StatusText))
+                    : Error<Nothing, RequestError>(e).ToAsyncResult());
+    public static AsyncResult<Nothing, RequestError> CreateFolderUac(CreateFolderParam input)
+        => CreateFolderRaw(input);
+
     public static Task<IOResult> DeleteItems(DeleteItemsParam input)
         => new IOResult(SHFileOperation(new ShFileOPStruct
         {

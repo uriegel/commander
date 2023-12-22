@@ -23,6 +23,7 @@ static partial class Directory
         {
             DirectoryNotFoundException  => IOErrorType.PathNotFound.ToError(),
             IOException                 => IOErrorType.AccessDenied.ToError(),
+            UnauthorizedAccessException => IOErrorType.AccessDenied.ToError(),
              _                          => IOErrorType.Exn.ToError()
         };
 }

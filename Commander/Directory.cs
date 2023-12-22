@@ -1,18 +1,16 @@
 using System.Data;
 using System.Collections.Immutable;
 using Microsoft.AspNetCore.Http;
-
-using AspNetExtensions;
-using CsTools.Extensions;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 
-using static System.IO.Directory;
-using static CsTools.Functional.Tree;
+using AspNetExtensions;
+using CsTools.Extensions;
 using CsTools.Functional;
-
-using static CsTools.Core;
 using CsTools;
+
+using static CsTools.Functional.Tree;
+using static CsTools.Core;
 
 static partial class Directory
 {
