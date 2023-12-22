@@ -64,7 +64,8 @@ export enum IOError {
     NotSupported,
     PathTooLong,
     Canceled,
-    NoError
+    NoError,
+    UacNotStarted = 1099
 }
 
 export interface IOErrorResult {

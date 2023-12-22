@@ -34,6 +34,6 @@
     "build": "tsc && vite build && npm run copy",
     "build Windows": "tsc && vite build && npm run wincopy",
     "copy": "cp dist/assets/*.js resources/script.js && cp dist/assets/*.css resources/style.css",
-    "wincopy": "xcopy .\\build\\static\\js\\*.js .\\resources\\script.js /y &&  copy .\\build\\static\\css\\*.css .\\resources\\style.css /y"
+    "wincopy": "xcopy .\\dist\\assets\\*.js .\\resources\\script.js /y &&  copy .\\dist\\assets\\*.css .\\resources\\style.css /y"
   }
 }

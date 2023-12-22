@@ -216,7 +216,7 @@ export const showError = async (error: ErrorType, dialog: DialogHandle, activeFo
         ? getClientError(error)
         : getServerError(error)
     
-    if (error.status !== IOError.Canceled) {
+    if (error.status !== IOError.Canceled && error.status !== IOError.UacNotStarted) {
         dialog?.close()
         await delay(500)
         await dialog?.show({

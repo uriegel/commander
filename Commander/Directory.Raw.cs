@@ -15,7 +15,6 @@ static partial class Directory
         => e switch
         {
             DirectoryNotFoundException  => IOErrorType.PathNotFound.ToError(),
-            // TODO Windows run uac 
             IOException                 => IOErrorType.AccessDenied.ToError(),
              _                          => IOErrorType.Exn.ToError()
         };

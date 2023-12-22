@@ -6,20 +6,26 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
 using CsTools.Functional;
-using System.Windows.Forms;
 using CsTools.Extensions;
+
+using static CsTools.Core;
 
 static class UacServer
 {
     public static async Task Run(int commanderId)
     {
-        MessageBox.Show($"Das nbin ich {commanderId}");
+        processRunning = new TaskCompletionSource();
         await Start();
-        await Process.GetProcessById(commanderId).WaitForExitAsync();
+        await Task.WhenAny([
+            Process.GetProcessById(commanderId).WaitForExitAsync(),
+            processRunning.Task
+        ]);
     }
 
-    public static bool StartElevated()
-        => new Process()
+    public static void Exit() => processRunning?.TrySetResult();
+
+    public static Result<Nothing, Nothing> StartElevated()
+        => Try<Result<Nothing, Nothing>>(() => new Process()
         {
             StartInfo = new ProcessStartInfo(Process.GetCurrentProcess()?.MainModule?.FileName ?? "")
 #if DEBUG            
@@ -36,7 +42,13 @@ static class UacServer
             }
 #endif
         }
-        .Start();
+        .Start()
+            ? Ok<Nothing, Nothing>(nothing)
+            : Error<Nothing, Nothing>(nothing),
+        e => 
+            (uint)e.HResult == 0x80004005
+            ? Error<Nothing, Nothing>(nothing)
+            : throw e);
 
     static Task Start()
         => WebApplication
@@ -64,7 +76,7 @@ static class UacServer
             .WithSse("commander/sse", Events.Source)
             // .JsonPost<DeleteItemsParam, IOResult>("commander/deleteitems", Directory.DeleteItems)
             // .JsonPost<CreateFolderParam, IOResult>("commander/createfolder", Directory.CreateFolder)
-            .WithJsonPost<RenameItemParam, Nothing, RequestError>("commander/renameitem", Directory.RenameItem)
+            .WithJsonPost<RenameItemParam, Nothing, RequestError>("commander/renameitem", Directory.RenameItemUac, e => Exit())
             // TODO
             // .JsonPost<CopyItemsParam, IOResult>("commander/copyitems", Directory.CopyItems)
             // .JsonPost<Empty, IOResult>("commander/cancelcopy", Directory.CancelCopy)
@@ -78,6 +90,8 @@ static class UacServer
     //                 (WebApplication app) =>
     //                     app.WithMapGet(path, (HttpContext context) => new Sse<T>(sseEventSource.Subject).Start(context)))
     //                         .ToArray());
+
+    static TaskCompletionSource? processRunning; 
 }
 
 record StartElevatedResult(bool Ok);

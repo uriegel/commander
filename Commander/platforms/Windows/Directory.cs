@@ -59,16 +59,24 @@ static partial class Directory
     }
 
     public static AsyncResult<Nothing, RequestError> RenameItem(RenameItemParam input)
-        => InternalRenameItem(input)
-            .BindExceptionAwait(e =>
+        => RenameItemRaw(input)
+            .BindErrorAwait(e =>
                 (IOErrorType)e.Status == IOErrorType.AccessDenied
-                    ? InternalRenameItem(input.SideEffect(_ => UacServer.StartElevated()))
+                    ? UacServer
+                        .StartElevated()
+                        .SelectError(_ => new CsTools.HttpRequest.RequestError(1099, "UAC not started"))
+                        .ToAsyncResult()
+                        .BindAwait(_ => Requests.JsonRequest.Post<RenameItemParam, Nothing>(new("commander/renameitem", input)))
+                        .SelectError(e => new RequestError(e.Status, e.StatusText))
                     : Error<Nothing, RequestError>(e).ToAsyncResult());
+    public static AsyncResult<Nothing, RequestError> RenameItemUac(RenameItemParam input)
+        => RenameItemRaw(input);
+    
     public static Task<IOResult> DeleteItems(DeleteItemsParam input)
         => new IOResult(SHFileOperation(new ShFileOPStruct
         {
             Func = FileFuncFlags.DELETE,
-            From = string.Join( "\U00000000", input.Names.Select(n => input.Path.AppendPath(n))) 
+            From = string.Join( "\U00000000", input.Names.Select(input.Path.AppendPath)) 
                         +  "\U00000000\U00000000",
             Flags = FileOpFlags.NOCONFIRMATION
                 | FileOpFlags.NOERRORUI

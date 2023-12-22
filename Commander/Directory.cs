@@ -24,7 +24,7 @@ static partial class Directory
             .CreateDirectoryInfo()
             .Validate()
             .SelectMany(n => GetFiles(n, getFiles.ShowHiddenItems))
-            .SelectException(e => e.AppendPath(getFiles.Path))
+            .SelectError(e => e.AppendPath(getFiles.Path))
             .ToRequestResult()
             .ToAsync();
 
@@ -222,7 +222,7 @@ static partial class Directory
             _                                => new(IOErrorType.Exn)
         };
 
-    static AsyncResult<Nothing, RequestError> InternalRenameItem(RenameItemParam input)
+    static AsyncResult<Nothing, RequestError> RenameItemRaw(RenameItemParam input)
         =>  Move(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName))
                 .ToAsyncResult();
 

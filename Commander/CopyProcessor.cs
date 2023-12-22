@@ -47,7 +47,7 @@ static class CopyProcessor
         job.TargetPath
             .AppendPath(job.SubPath)
             .TryEnsureDirectoryExists()
-            .SelectException(Directory.ErrorToIOError)
+            .SelectError(Directory.ErrorToIOError)
             .SelectMany(target => Directory.Copy(job.Item, job.Path.AppendPath(job.SubPath), job.TargetPath,
                 (c, t) => Events.CopyProgressChanged(
                     new(job.Item, totalCount, currentCount + 1, startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0, t, c, totalBytes, currentBytes + c, false, false)),
