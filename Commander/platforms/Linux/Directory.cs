@@ -65,7 +65,7 @@ static partial class Directory
             .ToAsync();
 
     public static AsyncResult<Nothing, RequestError> RenameItem(RenameItemParam input)            
-        => InternalRenameItem(input);
+        => RenameItemRaw(input);
 
     public static Task<IOResult> DeleteItems(DeleteItemsParam input)
         => Gtk.Dispatch(() =>
@@ -87,7 +87,7 @@ static partial class Directory
             .Use(f => f.If(move,
                 f => f.Move(targetPath.AppendPath(name), FileCopyFlags.Overwrite, true, cb, cancellationToken),
                 f => f.Copy(targetPath.AppendPath(name), FileCopyFlags.Overwrite, true, cb, cancellationToken)))
-            .SelectException(GErrorToIOResult);
+            .SelectError(GErrorToIOResult);
 
     public static IOResult GErrorToIOResult(GError ge)
         => ge switch
