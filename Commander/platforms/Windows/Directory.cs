@@ -86,25 +86,19 @@ static partial class Directory
     public static AsyncResult<Nothing, RequestError> CreateFolderUac(CreateFolderParam input)
         => CreateFolderRaw(input);
 
-    public static Task<IOResult> DeleteItems(DeleteItemsParam input)
-        => new IOResult(SHFileOperation(new ShFileOPStruct
-        {
-            Func = FileFuncFlags.DELETE,
-            From = string.Join( "\U00000000", input.Names.Select(input.Path.AppendPath)) 
-                        +  "\U00000000\U00000000",
-            Flags = FileOpFlags.NOCONFIRMATION
-                | FileOpFlags.NOERRORUI
-                | FileOpFlags.NOCONFIRMMKDIR
-                | FileOpFlags.SILENT
-                | FileOpFlags.ALLOWUNDO
-        }) switch
-        {
-            0    => IOErrorType.NoError,
-            2    => IOErrorType.FileNotFound,
-            0x78 => IOErrorType.AccessDenied,
-            _    => IOErrorType.Exn
-        })
-            .ToAsync();
+    public static AsyncResult<Nothing, RequestError> DeleteItems(DeleteItemsParam input)
+        => DeleteItemsRaw(input)
+            .BindErrorAwait(e =>
+                (IOErrorType)e.Status == IOErrorType.AccessDenied
+                    ? UacServer
+                        .StartElevated()
+                        .SelectError(_ => new CsTools.HttpRequest.RequestError(1099, "UAC not started"))
+                        .ToAsyncResult()
+                        .BindAwait(_ => Requests.JsonRequest.Post<DeleteItemsParam, Nothing>(new("commander/deleteitems", input)))
+                        .SelectError(e => new RequestError(e.Status, e.StatusText))
+                    : Error<Nothing, RequestError>(e).ToAsyncResult());
+    public static AsyncResult<Nothing, RequestError> DeleteItemsUac(DeleteItemsParam input)
+        => DeleteItemsRaw(input);
 
     public static Task<IOResult> ElevateDrive(ElevatedDriveParam param)
     {
@@ -156,6 +150,26 @@ static partial class Directory
                     return ms as Stream;
                 }) 
             ?? (new MemoryStream() as Stream).ToAsync();
+
+    static AsyncResult<Nothing, RequestError> DeleteItemsRaw(DeleteItemsParam input)
+        => (SHFileOperation(new ShFileOPStruct
+            {
+                Func = FileFuncFlags.DELETE,
+                From = string.Join( "\U00000000", input.Names.Select(input.Path.AppendPath)) 
+                            +  "\U00000000\U00000000",
+                Flags = FileOpFlags.NOCONFIRMATION
+                    | FileOpFlags.NOERRORUI
+                    | FileOpFlags.NOCONFIRMMKDIR
+                    | FileOpFlags.SILENT
+                    | FileOpFlags.ALLOWUNDO
+            }) switch
+            {
+                0    => Ok<Nothing, RequestError>(nothing),
+                2    => Error<Nothing, RequestError>(IOErrorType.FileNotFound.ToError()),
+                0x78 => Error<Nothing, RequestError>(IOErrorType.AccessDenied.ToError()),
+                _    => Error<Nothing, RequestError>(IOErrorType.Exn.ToError())
+            })
+            .ToAsyncResult();
 
     static void Copy(string source, string target, Action<long, long> progress, bool move, CancellationToken cancellationToken)
     {
