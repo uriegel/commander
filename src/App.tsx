@@ -14,7 +14,7 @@ import './themes/adwaitaDark.css'
 import './themes/windows.css'
 import './themes/windowsDark.css'
 import { getTheme, isWindows } from './globals'
-import { filesDropEvents, progressChangedEvents, themeChangedEvents, windowStateChangedEvents } from './requests/events'
+import { filesDropEvents, getCredentialsEvents, progressChangedEvents, themeChangedEvents, windowStateChangedEvents } from './requests/events'
 import { getCopyController } from './controller/copy/copyController'
 import FileViewer from './components/FileViewer'
 import { SpecialKeys } from 'virtual-table-react'
@@ -54,7 +54,8 @@ const App = () => {
 	const [totalMax, setTotalMax] = useState(0)
 	
 	const filesDropSubscription = useRef<Subscription | null>(null)
-
+	const getCredentialsSubscription = useRef<Subscription | null>(null)
+	
 	useEffect(() => {
 		const subscription = isWindows() ? progressChangedEvents.subscribe(e => {
 			if (e.isStarted)
@@ -82,10 +83,14 @@ const App = () => {
 			}
 			setWindowInitialState()
 		}
-		if (filesDropSubscription.current)
-			filesDropSubscription.current.unsubscribe()
+		filesDropSubscription.current?.unsubscribe()
 		filesDropSubscription.current = filesDropEvents.subscribe(filesDrop => 
 			copyItemsFromFileSystem(filesDrop.id, filesDrop.path, filesDrop.items, filesDrop.move))
+		
+		getCredentialsSubscription.current?.unsubscribe()
+		getCredentialsSubscription.current = getCredentialsEvents.subscribe(() => {
+			console.log("will credentials")
+		})
     }, [])
 	
 	const dialog = useRef<DialogHandle>(null)

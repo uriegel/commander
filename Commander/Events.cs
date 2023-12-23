@@ -25,8 +25,8 @@ record Events(
     CopyProgress? CopyProgress,
     WindowState? WindowState,
     FilesDrop? FilesDrop
-
 #if Windows
+    , bool? GetCredentials
     , ServiceItem[]? ServiceItems = null
 #endif
 )
@@ -50,13 +50,16 @@ record Events(
     }        
 
     public static void WindowStateChanged(bool isMaximized)
-        => Source.Send(new Events(null, null, new(isMaximized), null));
+        => Source.Send(DefaultEvents with { WindowState = new(isMaximized) });
     public static void FilesDropped(FilesDrop filesDrop)
-        => Source.Send(new Events(null, null, null, filesDrop));
+        => Source.Send(DefaultEvents with { FilesDrop = filesDrop });
 
 #if Windows 
+    public static void Credentials()
+        => Source.Send(DefaultEvents with { GetCredentials = true });
+
     public static void ServiceItemsChanged(ServiceItem[] items)
-        => Source.Send(new Events(null, null, null, null, items));
+        => Source.Send(DefaultEvents with { ServiceItems = items });
 #endif
 
     public static SseEventSource<Events> Source = SseEventSource<Events>.Create();   
@@ -64,13 +67,15 @@ record Events(
     public static void StartEvents()   
         => global::Theme.StartThemeDetection(n => Source.Send(ThemeChanged(n)));
 
+    static Events DefaultEvents { get; } = new(null, null, null, null, null);
+
     static Events ThemeChanged(string theme)
-        => new(theme, null, null, null);
+        => DefaultEvents with { Theme = theme };
 
     static Events()
-        => copyProgresses.Subscribe(n => Source.Send(new Events(null, n, null, null)));
+        => copyProgresses.Subscribe(n => Source.Send(DefaultEvents));
 
-    static Func<int> GetCopyId = Incrementor.UseInt();
+    static readonly Func<int> GetCopyId = Incrementor.UseInt();
     static int currentCopyId;
     static readonly Subject<CopyProgress> copyProgresses = new();
 };

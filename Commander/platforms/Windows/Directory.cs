@@ -17,10 +17,17 @@ using static CsTools.Core;
 
 static partial class Directory
 {
-    public static Result<DirectoryInfo, RequestError> Validate(this DirectoryInfo info) 
-        => info.Exists || !info.FullName.StartsWith(@"\\")
+    public static AsyncResult<DirectoryInfo, RequestError> Validate(this DirectoryInfo info)
+        => (info.Exists || !info.FullName.StartsWith(@"\\")
             ? info
-            : Error<DirectoryInfo, RequestError>(IOErrorType.AccessDenied.ToError());
+            : Error<DirectoryInfo, RequestError>(IOErrorType.AccessDenied.ToError()))
+            .ToAsyncResult()
+            .BindErrorAwait(n =>
+                n.Status == (int)IOErrorType.AccessDenied
+                ? GetCredentials()
+                    .SelectError(_ => IOErrorType.Exn.ToError())
+                    .Select(ok => new DirectoryInfo(""))
+                : Error<DirectoryInfo, RequestError>(n).ToAsyncResult());
 
     public static string GetIconPath(FileInfo info)
         => string.Compare(info.Extension, ".exe", true) == 0 
@@ -125,6 +132,14 @@ static partial class Directory
     {
         Copy(path.AppendPath(name), targetPath.AppendPath(name), cb, move, cancellationToken);
         return nothing;
+    }
+
+    static AsyncResult<Credentials, Nothing> GetCredentials()
+    {
+        credentialsTaskSource?.TrySetCanceled();
+        credentialsTaskSource = new();
+        Events.Credentials();
+        return credentialsTaskSource.Task.ToAsyncResult();
     }
 
     static Task<Stream> GetIconStream(string iconHint)
@@ -233,6 +248,8 @@ static partial class Directory
 
     static readonly DateTime startTime = DateTime.Now;
     static string Mount(string path) => "";
+
+    static TaskCompletionSource<Result<Credentials, Nothing>>? credentialsTaskSource;
 }
 
 record Version(
@@ -258,5 +275,7 @@ static class VersionExtensions
             ? new(info.FileMajorPart, info.FileMinorPart, info.FilePrivatePart, info.FileBuildPart)
             : null;
 }    
+
+record Credentials(string Name, string Password);
 
 #endif

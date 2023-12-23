@@ -31,6 +31,7 @@ type CommanderEvent = {
     windowState?: WindowState
     serviceItems?: FolderViewItem[]
     filesDrop?: FilesDrop
+    getCredentials?: boolean
 }
 
 const toCommanderEvent = (event: MessageEvent) => 
@@ -55,6 +56,10 @@ export const folderViewItemsChangedEvents = commanderEvents
 export const filesDropEvents = commanderEvents
     .pipe(filter(n => n.filesDrop != undefined))
     .pipe(map(n => n.filesDrop!))
+
+export const getCredentialsEvents = commanderEvents
+    .pipe(filter(n => n.getCredentials != undefined))
+    .pipe(map(n => n.getCredentials == true))
 
 export const progressChangedEvents = new BehaviorSubject<CopyProgress>({
     fileName: "",

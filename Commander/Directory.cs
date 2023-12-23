@@ -21,9 +21,8 @@ static partial class Directory
                 Mount)
             .CreateDirectoryInfo()
             .Validate()
-            .SelectMany(n => GetFiles(n, getFiles.ShowHiddenItems))
-            .SelectError(e => new GetFilesError(getFiles.Path, e.Status, e.StatusText)) 
-            .ToAsyncResult();
+            .Bind(n => GetFiles(n, getFiles.ShowHiddenItems))
+            .SelectError(e => new GetFilesError(getFiles.Path, e.Status, e.StatusText));
 
     public static GetExtendedItemsResult GetExtendedItems(string id, string path, string[] items)
     {
