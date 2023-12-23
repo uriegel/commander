@@ -22,6 +22,7 @@ import Titlebar from './components/Titlebar'
 import { Subscription } from 'rxjs'
 import { createFileSystemController } from './controller/filesystem'
 import './extensions/extensions'
+import Credentials, { CredentialsProps } from './components/dialogparts/Credentials'
 
 // TODO in webview.d.ts
 declare const webViewShowDevTools: () => void
@@ -89,9 +90,27 @@ const App = () => {
 		
 		getCredentialsSubscription.current?.unsubscribe()
 		getCredentialsSubscription.current = getCredentialsEvents.subscribe(() => {
-			console.log("will credentials")
+			let name = ""
+			let password = ""
+			if (dialog.current)
+				dialog.current.show({
+					text: "Bitte Zugangsdaten eingeben:",
+					extension: Credentials,
+					extensionProps: { name, password },
+					onExtensionChanged: (e: CredentialsProps) => {
+						name = e.name
+						password = e.password
+					},
+					btnOk: true,
+					btnCancel: true,
+					defBtnOk: true
+				})
+					.then(res => {
+						if (res.result == ResultType.Ok)
+							console.log(`name: ${name} pw: ${password}`)
+					})
+			})
 		})
-    }, [])
 	
 	const dialog = useRef<DialogHandle>(null)
 		
