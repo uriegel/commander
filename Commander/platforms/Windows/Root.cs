@@ -1,5 +1,9 @@
 #if Windows
+using AspNetExtensions;
 using CsTools.Extensions;
+using CsTools.Functional;
+
+using static CsTools.Core;
 
 record RootItem(
     string Name,
@@ -18,17 +22,17 @@ record RootItem(
 
 static class Root
 {
-    public static Task<RootItem[]> Get(Empty _)
-        =>  (from n in DriveInfo
+    public static AsyncResult<RootItem[], RequestError> Get()
+        =>  Ok<RootItem[], RequestError>((from n in DriveInfo
                         .GetDrives()
                         .Select(RootItem.Create)
                         .Append(new("zzz", "", 0, true))
             orderby n.IsMounted descending, n.Name
             select n.Name == "zzz" 
                 ? n with { Name = "services" } 
-                : n)
-            .ToArray()
-            .ToAsync();
+                : n).ToArray())
+            .ToAsync()
+            .ToAsyncResult();
 }
 
 #endif
