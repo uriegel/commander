@@ -1,8 +1,7 @@
 import { TableColumns } from "virtual-table-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
-import { GetItemResult, request } from "../requests/requests"
-import { addParent, Controller, ControllerResult, ControllerType, formatDateTime, formatSize, sortItems } from "./controller"
+import { Controller, ControllerResult, ControllerType, formatDateTime, formatSize, sortItems } from "./controller"
 import { getSortFunction } from "./filesystem"
 import { REMOTES } from "./remotes"
 import { IconNameType } from "../enums"
@@ -37,13 +36,15 @@ const getColumns = () => ({
 	renderRow
 } as TableColumns<FolderViewItem>)
 
-const getItems = async (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean) => {
-	const res = await request<GetItemResult>("getremotefiles", {
-		path,
-		showHiddenItems: showHidden
-	})
-	return { ...res, items: addParent(sort(res.items, sortIndex, sortDescending)) }
-}
+const getItems = async () => ({dirCount: 0, fileCount: 0, items: [], path: ""})
+// TODO
+// const getItems = async (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean) => {
+// 	const res = await request<GetItemResult>("getremotefiles", {
+// 		path,
+// 		showHiddenItems: showHidden
+// 	})
+// 	return { ...res, items: addParent(sort(res.items, sortIndex, sortDescending)) }
+// }
 
 const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
 	sortItems(items, getSortFunction(sortIndex, sortDescending), true) 

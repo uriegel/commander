@@ -13,7 +13,7 @@ type Result =
 	| Nothing 
     | Exception
     | GetRootResult 
-    | GetItemResult 
+    | GetItemsResult 
     | GetExtendedItemsResult
     | IOErrorResult
     | CopyItemsResult
@@ -31,12 +31,17 @@ export interface ServiceItem {
     description: string
 } 
 
-export type GetItemResult = {
+export type GetItemsResult = {
     items: FolderViewItem[]
     dirCount: number
     fileCount: number
     path:  string
-    error: IOError
+}
+
+export type GetItemsError = {
+    status: number 
+    statusText: string
+    path:  string
 }
 
 export type Version = {

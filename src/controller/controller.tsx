@@ -3,7 +3,7 @@ import { DialogHandle } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import { getFileSystemController } from "./filesystem"
 import { getRemotesController, REMOTES } from "./remotes"
-import { GetExtendedItemsResult, GetItemResult, IOError, Version } from "../requests/requests"
+import { GetExtendedItemsResult, GetItemsResult, IOError, Version } from "../requests/requests"
 import { getRootController, ROOT } from "./root"
 import { getRemoteController } from "./remote"
 import { FAVORITES, getFavoritesController } from "./favorites"
@@ -56,7 +56,7 @@ export interface Controller {
     type: ControllerType
     id: string
     getColumns: ()=>TableColumns<FolderViewItem>
-    getItems: (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean, mount: boolean, dialog: DialogHandle|null) => Promise<GetItemResult>
+    getItems: (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean, mount: boolean, dialog: DialogHandle) => Promise<GetItemsResult>
     getExtendedItems: (id: string, path: string, items: FolderViewItem[]) => Promise<GetExtendedItemsResult>
     setExtendedItems: (items: FolderViewItem[], extended: GetExtendedItemsResult) => FolderViewItem[]
     cancelExtendedItems: (id: string)=>Promise<void>
@@ -104,7 +104,7 @@ export const createEmptyController = (): Controller => ({
         columns: [],
         renderRow: () => []
     }),
-    getItems: async () => ({ items: [], path: "", dirCount: 0, fileCount: 0, error: IOError.NoError }),
+    getItems: async () => ({dirCount: 0, fileCount: 0, items: [], path: ""}),
     getExtendedItems: async () => ({ path: "", exifTimes: [], versions: [] }),
     setExtendedItems: items => items,
     cancelExtendedItems: async () => { },

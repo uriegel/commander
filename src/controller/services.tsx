@@ -1,9 +1,9 @@
 import { TableColumns } from "virtual-table-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
-import { Controller, ControllerResult, ControllerType, addParent, sortItems } from "./controller"
+import { Controller, ControllerResult, ControllerType, sortItems } from "./controller"
 import { ROOT } from "./root"
-import { GetServicesResult, IOError, IOErrorResult, request } from "../requests/requests"
+import { IOErrorResult, request } from "../requests/requests"
 import { DialogHandle } from "web-dialog-react"
 import { IconNameType, ServiceStartMode, ServiceStatus } from "../enums"
 import { AsyncResult, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
@@ -50,17 +50,19 @@ const getColumns = () => ({
     getRowClasses
 } as TableColumns<FolderViewItem>)
 
-const getItems = async (_: string, __: boolean, sortIndex: number, sortDescending: boolean) => {
-    const services =
-        addParent(sort(await request<GetServicesResult>("getservices"), sortIndex, sortDescending))
-    return {
-        path: SERVICES,
-        dirCount: services.length,
-        fileCount: 0,
-        error: IOError.NoError,
-        items: services 
-    }
-}
+const getItems = async () => ({dirCount: 0, fileCount: 0, items: [], path: ""})
+// TODO
+// const getItems = async (_: string, __: boolean, sortIndex: number, sortDescending: boolean) => {
+//     const services =
+//         addParent(sort(await request<GetServicesResult>("getservices"), sortIndex, sortDescending))
+//     return {
+//         path: SERVICES,
+//         dirCount: services.length,
+//         fileCount: 0,
+//         error: IOError.NoError,
+//         items: services 
+//     }
+// }
 
 const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
 	sortItems(items, getSortFunction(sortIndex, sortDescending), true) 

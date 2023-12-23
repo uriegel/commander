@@ -2,9 +2,8 @@ import { DialogHandle, ResultType } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
 import RemoteDialog from "../components/dialogparts/RemoteDialog"
-import { addParent, Controller, ControllerResult, ControllerType, EnterData } from "./controller"
+import { Controller, ControllerResult, ControllerType, EnterData } from "./controller"
 import { ROOT } from "./root"
-import { IOError } from "../requests/requests"
 import { IconNameType } from "../enums"
 import { AsyncResult, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
 
@@ -36,21 +35,23 @@ const getColumns = () => ({
 	renderRow
 })
 
-const getItems = async () => {
-    const items = getRemoteItems()
-                    .sort((a, b) => a.name.localeCompare(b.name))
-    return {
-        path: REMOTES,
-        dirCount: items.length,
-        fileCount: 0,
-        error: IOError.NoError,
-        items: addParent(items)
-                .concat({
-                    name: "Entferntes Gerät hinzufügen...",
-                    isNew: true
-                })
-    }
-}
+const getItems = async () => ({dirCount: 0, fileCount: 0, items: [], path: ""})
+// TODO
+// const getItems = async () => {
+//     const items = getRemoteItems()
+//                     .sort((a, b) => a.name.localeCompare(b.name))
+//     return {
+//         path: REMOTES,
+//         dirCount: items.length,
+//         fileCount: 0,
+//         error: IOError.NoError,
+//         items: addParent(items)
+//                 .concat({
+//                     name: "Entferntes Gerät hinzufügen...",
+//                     isNew: true
+//                 })
+//     }
+// }
 
 const showRemote = async (dialog?: DialogHandle|null, item?: FolderViewItem) => {
 

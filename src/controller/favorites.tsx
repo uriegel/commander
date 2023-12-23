@@ -1,9 +1,8 @@
 import { DialogHandle, ResultType } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
-import { Controller, ControllerResult, ControllerType, EnterData, addParent } from "./controller"
+import { Controller, ControllerResult, ControllerType, EnterData } from "./controller"
 import { ROOT } from "./root"
-import { IOError } from "../requests/requests"
 import { IconNameType } from "../enums"
 import { AsyncResult, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
 
@@ -98,20 +97,22 @@ export const getFavoritesController = (controller: Controller | null): Controlle
         cleanUp: () => { }
     }})
 
-const getItems = async () => {
-    const items = getFavoriteItems()
-    return {
-        path: FAVORITES,
-        dirCount: items.length,
-        fileCount: 0,
-        error: IOError.NoError,
-        items: addParent(items)
-                .concat({
-                    name: "Favoriten hinzufügen...",
-                    isNew: true
-                })
-    }
-}
+    // TODO
+    const getItems = async () => ({dirCount: 0, fileCount: 0, items: [], path: ""})
+// const getItems = async () => {
+//     const items = getFavoriteItems()
+//     return {
+//         path: FAVORITES,
+//         dirCount: items.length,
+//         fileCount: 0,
+//         error: IOError.NoError,
+//         items: addParent(items)
+//                 .concat({
+//                     name: "Favoriten hinzufügen...",
+//                     isNew: true
+//                 })
+//    }
+//}
 
 // const deleteItems = async (_: string, items: FolderViewItem[], dialog: DialogHandle | null) => {
 // 	const result = await dialog?.show({

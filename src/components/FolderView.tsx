@@ -4,7 +4,7 @@ import VirtualTable, { OnSort, SelectableItem, SpecialKeys, TableColumns, Virtua
 import { checkController, checkResult, Controller, createEmptyController, showError } from '../controller/controller'
 import { ROOT } from '../controller/root'
 import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
-import { IOError, Version } from '../requests/requests'
+import { Version } from '../requests/requests'
 import { DialogHandle } from 'web-dialog-react'
 import { initializeHistory } from '../history'
 import { isWindows } from '../globals'
@@ -213,7 +213,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             : columns
     }
 
-    const changePath = async (path: string, showHidden: boolean, latestPath?: string, mount?: boolean, fromBacklog?: boolean) => {
+    const changePath = (path: string, showHidden: boolean, latestPath?: string, mount?: boolean, fromBacklog?: boolean) => {
         if (waitOnExtendedItems.current)
             controller.current.cancelExtendedItems(id)
         
@@ -225,28 +225,30 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
         }
 
-        const items = await controller.current.getItems(path, showHidden, sortIndex.current, sortDescending.current, 
-            mount || false, dialog)
-        setPath(items.path)
-        setItems(items.items)
-        itemCount.current = { dirCount: items.dirCount, fileCount: items.fileCount }
-        onItemsChanged(itemCount.current)
-        const pos = latestPath ? items.items.findIndex(n => n.name == latestPath) : 0
-        virtualTable.current?.setInitialPosition(pos, items.items.length)
-        refPath.current = items.path
-        if (items.error == IOError.PathNotFound) {
-            input.current?.focus()
-            return
-        }
-
-        localStorage.setItem(`${id}-lastPath`, items.path)
-        if (!fromBacklog)
-            history.current?.set(items.path)
-        waitOnExtendedItems.current = true
-        const extendedInfoItems = await controller.current.getExtendedItems(id, items.path, items.items)
-        waitOnExtendedItems.current = false
-        if (extendedInfoItems.path == refPath.current) 
-            setItems(controller.current.setExtendedItems(items.items, extendedInfoItems))    
+        controller.current
+            .getItems(path, showHidden, sortIndex.current, sortDescending.current, mount || false, dialog)
+            .then(res => {
+                setPath(res.path)
+                setItems(res.items)
+                itemCount.current = { dirCount: res.dirCount, fileCount: res.fileCount }
+                onItemsChanged(itemCount.current)
+                const pos = latestPath ? res.items.findIndex(n => n.name == latestPath) : 0
+                virtualTable.current?.setInitialPosition(pos, res.items.length)
+                refPath.current = res.path
+                // if (items.error == IOError.PathNotFound) {
+                //     input.current?.focus()
+                //     return
+                // }
+        
+                // localStorage.setItem(`${id}-lastPath`, items.path)
+                if (!fromBacklog)
+                    history.current?.set(res.path)
+                waitOnExtendedItems.current = true
+                // const extendedInfoItems = await controller.current.getExtendedItems(id, items.path, items.items)
+                // waitOnExtendedItems.current = false
+                // if (extendedInfoItems.path == refPath.current) 
+                //     setItems(controller.current.setExtendedItems(items.items, extendedInfoItems))    
+            })
     }
 
     const processEnter = async (item: FolderViewItem, keys: SpecialKeys, otherPath?: string) => {

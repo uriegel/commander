@@ -3,7 +3,7 @@ import IconName from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, EnterData, formatSize} from "./controller"
 import { REMOTES } from "./remotes"
-import { GetRootResult, IOError, request } from "../requests/requests"
+import { request } from "../requests/requests"
 import "functional-extensions"
 import { SERVICES } from "./services"
 import { FAVORITES } from "./favorites"
@@ -108,32 +108,34 @@ export const getRootController = (controller: Controller | null): ControllerResu
         cleanUp: () => { }
     }})
 
-const getItems = async () => {
-    const items = await request<GetRootResult>("getroot")
-    const pos = items.findIndex(n => !n.isMounted)
-    const extendedItems = items
-        .insert(pos != -1 ? pos : items.length, {
-            name: "fav",
-            description: "Favoriten",
-            size: 0,
-            isMounted: true,
-            mountPoint: ""
-        })
-        .insert(pos != -1 ? pos + 1 : items.length + 1, {
-            name: "remotes",
-            description: "Zugriff auf entfernte Geräte",
-            size: 0,
-            isMounted: true,
-            mountPoint: ""
-        })
-    return {
-        path: ROOT,
-        dirCount: extendedItems.length,
-        fileCount: 0,
-        items: extendedItems,
-        error: IOError.NoError
-    }
-}
+    const getItems = async () => ({dirCount: 0, fileCount: 0, items: [], path: ""})
+// TODO
+// const getItems = async () => {
+//     const items = await request<GetRootResult>("getroot")
+//     const pos = items.findIndex(n => !n.isMounted)
+//     const extendedItems = items
+//         .insert(pos != -1 ? pos : items.length, {
+//             name: "fav",
+//             description: "Favoriten",
+//             size: 0,
+//             isMounted: true,
+//             mountPoint: ""
+//         })
+//         .insert(pos != -1 ? pos + 1 : items.length + 1, {
+//             name: "remotes",
+//             description: "Zugriff auf entfernte Geräte",
+//             size: 0,
+//             isMounted: true,
+//             mountPoint: ""
+//         })
+//     return {
+//         path: ROOT,
+//         dirCount: extendedItems.length,
+//         fileCount: 0,
+//         items: extendedItems,
+//         error: IOError.NoError
+//     }
+// }
 
 const getRowClasses = (item: FolderViewItem) => 
     item.isMounted == false

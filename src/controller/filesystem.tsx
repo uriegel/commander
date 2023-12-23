@@ -3,11 +3,10 @@ import { DialogHandle, ResultType } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
-import { addParent, Controller, ControllerResult, ControllerType, formatDateTime, formatSize, formatVersion, sortItems } from "./controller"
-import { GetExtendedItemsResult, GetItemResult, IOError, IOErrorResult, request, Version } from "../requests/requests"
+import { Controller, ControllerResult, ControllerType, formatDateTime, formatSize, formatVersion, sortItems } from "./controller"
+import { GetExtendedItemsResult, GetItemsError, GetItemsResult, IOError, IOErrorResult, request, Version } from "../requests/requests"
 import { ROOT } from "./root"
 import { extendedRename } from "./filesystemExtendedRename"
-import Credentials, { CredentialsProps } from "../components/dialogparts/Credentials"
 import { IconNameType } from "../enums"
 import { Err, ErrorType, Nothing, Ok, jsonPost, nothing } from "functional-extensions"
 
@@ -120,34 +119,33 @@ const getRowClasses = (item: FolderViewItem) =>
 		? ["hidden"]
 		: []
 
-const getItems = async (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean, mount: boolean, dialog: DialogHandle | null)
-		: Promise<GetItemResult> => {
-	const res = await request<GetItemResult>("getfiles", {
-		path,
-		showHiddenItems: showHidden,
-		mount
-	})
-	if (res.error != IOError.AccessDenied && res.error != IOError.PathNotFound)
-		return { ...res, items: addParent(sortItems(res.items, getSortFunction(sortIndex, sortDescending))) }
-	else if (res.error == IOError.PathNotFound && dialog) {
-		await dialog.show({
-			text: "Der Pfad wurde nicht gefunden",
-			btnOk: true
-		})
-		return { items: [], dirCount: 0, fileCount: 0, path, error: IOError.PathNotFound }
-	}
-	else if (!dialog) {
-		const res = await request<GetItemResult>("getfiles", {
-			path: "root",
-			showHiddenItems: showHidden,
-			mount
-		})
-		return { ...res, items: addParent(sortItems(res.items, getSortFunction(sortIndex, sortDescending))) }
-	} else 
-		return await getItemsWithAccess(dialog, path)
-			? await getItems(path, showHidden, sortIndex, sortDescending, mount, dialog)
-			: { items: [], dirCount: 0, fileCount: 0, path, error: IOError.AccessDenied }
+const getItems = (path: string, showHiddenItems: boolean, _sortIndex: number, _sortDescending: boolean, mount: boolean, _dialog?: DialogHandle) => {
+	const ress = jsonPost<GetItemsResult, GetItemsError>({ method: "getfiles", payload: { path, showHiddenItems, mount } })
+	const resss = ress.match(ok => ok, () => ({ dirCount: 0, fileCount: 0, items: [], path: "" }))
+	return resss
 }
+// TODO
+// 	if (res.error != IOError.AccessDenied && res.error != IOError.PathNotFound)
+// 		return { ...res, items: addParent(sortItems(res.items, getSortFunction(sortIndex, sortDescending))) }
+// 	else if (res.error == IOError.PathNotFound && dialog) {
+// 		await dialog.show({
+// 			text: "Der Pfad wurde nicht gefunden",
+// 			btnOk: true
+// 		})
+// 		return { items: [], dirCount: 0, fileCount: 0, path, error: IOError.PathNotFound }
+// 	}
+// 	else if (!dialog) {
+// 		const res = await request<GetItemResult>("getfiles", {
+// 			path: "root",
+// 			showHiddenItems: showHidden,
+// 			mount
+// 		})
+// 		return { ...res, items: addParent(sortItems(res.items, getSortFunction(sortIndex, sortDescending))) }
+// 	} else 
+// 		return await getItemsWithAccess(dialog, path)
+// 			? await getItems(path, showHidden, sortIndex, sortDescending, mount, dialog)
+// 			: { items: [], dirCount: 0, fileCount: 0, path, error: IOError.AccessDenied }
+// }
 
 const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
 	sortItems(items, getSortFunction(sortIndex, sortDescending)) 
@@ -333,32 +331,33 @@ export const compareVersion = (versionLeft?: Version, versionRight?: Version) =>
 	? versionLeft.patch - versionRight.patch
 	: versionLeft.build - versionRight.build
 
-const getItemsWithAccess = async (dialog: DialogHandle, path: string) => {
-	/* eslint-disable no-constant-condition */
-	while (true) {
-		let name = ""
-		let password = ""
-		const result = await dialog?.show({
-			text: "Bitte Zugangsdaten eingeben:",
-			extension: Credentials,
-			extensionProps: { name, password },
-			onExtensionChanged: (e: CredentialsProps) => {
-				name = e.name
-				password = e.password
-			},				
-			btnOk: true,
-			btnCancel: true,
-			defBtnOk: true
-		})
-		if (result?.result == ResultType.Cancel)
-			break
-		const res = await request<IOErrorResult>("elevatedrive", { path, name, password })	
-		if (!res.error) 
-			return true
-		else if (res.error == IOError.NetNameNotFound)
-			await dialog?.show({
-				text: "Netzwerkname nicht gefunden",
-				btnOk: true})
-	}
-	return false
-}	
+	// TODO Windows
+// const getItemsWithAccess = async (dialog: DialogHandle, path: string) => {
+// 	/* eslint-disable no-constant-condition */
+// 	while (true) {
+// 		let name = ""
+// 		let password = ""
+// 		const result = await dialog?.show({
+// 			text: "Bitte Zugangsdaten eingeben:",
+// 			extension: Credentials,
+// 			extensionProps: { name, password },
+// 			onExtensionChanged: (e: CredentialsProps) => {
+// 				name = e.name
+// 				password = e.password
+// 			},				
+// 			btnOk: true,
+// 			btnCancel: true,
+// 			defBtnOk: true
+// 		})
+// 		if (result?.result == ResultType.Cancel)
+// 			break
+// 		const res = await request<IOErrorResult>("elevatedrive", { path, name, password })	
+// 		if (!res.error) 
+// 			return true
+// 		else if (res.error == IOError.NetNameNotFound)
+// 			await dialog?.show({
+// 				text: "Netzwerkname nicht gefunden",
+// 				btnOk: true})
+// 	}
+// 	return false
+// }	
