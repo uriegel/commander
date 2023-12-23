@@ -1,8 +1,11 @@
 #if Linux
 using CsTools.Extensions;
 using CsTools.Async;
+using CsTools.Functional;
+using AspNetExtensions;
 
 using static CsTools.ProcessCmd;
+using static CsTools.Core;
 
 record RootItem(
     string Name,
@@ -15,27 +18,30 @@ record RootItem(
 
 static class Root
 {
-    public static Task<RootItem[]> Get(Empty _)
+    public static AsyncResult<RootItem[], RequestError> Get()
     {
-        return from n in RunAsync("lsblk", "--bytes --output SIZE,NAME,LABEL,MOUNTPOINT,FSTYPE")
-                let driveLines = n.Split('\n', StringSplitOptions.RemoveEmptyEntries)
-                let titles = driveLines[0]
-                let columnPositions = new[]
-                {
-                    0,
-                    titles.IndexOf("NAME"),
-                    titles.IndexOf("LABEL"),
-                    titles.IndexOf("MOUNT"),
-                    titles.IndexOf("FSTYPE")
-                }
-                select (from n in driveLines
-                                    .Skip(1)
-                                    .Append("home")
-                        where n.FilterDrives(columnPositions)
-                        let item = CreateRootItem(n, columnPositions)
-                        orderby item.IsMounted descending, item.Name
-                        select item)
-                    .ToArray();
+        return (
+            from n in RunAsync("lsblk", "--bytes --output SIZE,NAME,LABEL,MOUNTPOINT,FSTYPE")
+            let driveLines = n.Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            let titles = driveLines[0]
+            let columnPositions = new[]
+            {
+                0,
+                titles.IndexOf("NAME"),
+                titles.IndexOf("LABEL"),
+                titles.IndexOf("MOUNT"),
+                titles.IndexOf("FSTYPE")
+            }
+            select Ok<RootItem[], RequestError>(
+                (from n in driveLines
+                        .Skip(1)
+                        .Append("home")
+                    where n.FilterDrives(columnPositions)
+                    let item = CreateRootItem(n, columnPositions)
+                    orderby item.IsMounted descending, item.Name
+                    select item)
+                .ToArray()))
+                .ToAsyncResult();
 
         RootItem CreateRootItem(string driveString, int[] columnPositions)
         {
@@ -74,9 +80,8 @@ static class Root
         : name;
 
     static bool FilterDrives(this string driveString, int[] columnPositions) => 
-        driveString != "home"
-        ? driveString[columnPositions[1]] > '~'
-        : true;
+        driveString == "home"
+        || driveString[columnPositions[1]] > '~';
 }
 
 #endif

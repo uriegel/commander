@@ -3,12 +3,12 @@ import IconName from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, EnterData, formatSize} from "./controller"
 import { REMOTES } from "./remotes"
-import { request } from "../requests/requests"
+import { GetRootResult, request } from "../requests/requests"
 import "functional-extensions"
 import { SERVICES } from "./services"
 import { FAVORITES } from "./favorites"
 import { IconNameType } from "../enums"
-import { AsyncResult, ErrorType, nothing, Nothing, Ok } from "functional-extensions"
+import { AsyncResult, ErrorType, jsonPost, nothing, Nothing, Ok } from "functional-extensions"
 
 export const ROOT = "root"
 const platform = getPlatform()
@@ -108,34 +108,35 @@ export const getRootController = (controller: Controller | null): ControllerResu
         cleanUp: () => { }
     }})
 
-    const getItems = async () => ({dirCount: 0, fileCount: 0, items: [], path: ""})
-// TODO
-// const getItems = async () => {
-//     const items = await request<GetRootResult>("getroot")
-//     const pos = items.findIndex(n => !n.isMounted)
-//     const extendedItems = items
-//         .insert(pos != -1 ? pos : items.length, {
-//             name: "fav",
-//             description: "Favoriten",
-//             size: 0,
-//             isMounted: true,
-//             mountPoint: ""
-//         })
-//         .insert(pos != -1 ? pos + 1 : items.length + 1, {
-//             name: "remotes",
-//             description: "Zugriff auf entfernte Geräte",
-//             size: 0,
-//             isMounted: true,
-//             mountPoint: ""
-//         })
-//     return {
-//         path: ROOT,
-//         dirCount: extendedItems.length,
-//         fileCount: 0,
-//         items: extendedItems,
-//         error: IOError.NoError
-//     }
-// }
+const getItems = async () => 
+    jsonPost<GetRootResult, ErrorType>({ method: "getroot" })
+        .map(items => {
+            const pos = items.findIndex(n => !n.isMounted)
+            const extendedItems = items
+                .insert(pos != -1 ? pos : items.length, {
+                    name: "fav",
+                    description: "Favoriten",
+                    size: 0,
+                    isMounted: true,
+                    mountPoint: ""
+                })
+                .insert(pos != -1 ? pos + 1 : items.length + 1, {
+                    name: "remotes",
+                    description: "Zugriff auf entfernte Geräte",
+                    size: 0,
+                    isMounted: true,
+                    mountPoint: ""
+                })
+                return {
+                    path: ROOT,
+                    dirCount: extendedItems.length,
+                    fileCount: 0,
+                    items: extendedItems
+                }            
+        })
+		.match(
+			ok => ok,
+			() => ({ dirCount: 0, fileCount: 0, items: [], path: "" }))
 
 const getRowClasses = (item: FolderViewItem) => 
     item.isMounted == false

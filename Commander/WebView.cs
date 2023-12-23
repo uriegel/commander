@@ -35,8 +35,7 @@ static class Window
                 .JsonPost<RenameItemParam, Nothing, RequestError>("commander/renameitem", Directory.RenameItem)
                 .JsonPost<CreateFolderParam, Nothing, RequestError>("commander/createfolder", Directory.CreateFolder)
                 .JsonPost<DeleteItemsParam, Nothing, RequestError>("commander/deleteitems", Directory.DeleteItems)
-                // TODO??
-                .JsonPost<Empty, RootItem[]>("commander/getroot", Root.Get)
+                .JsonPost("commander/getroot", Root.Get)
                 // TODO ??
                 .JsonPost<GetExtendedItems, GetExtendedItemsResult>("commander/getextendeditems", Directory.GetExtendedItems)
                 .JsonPost<CancelExtendedItems, IOResult>("commander/cancelextendeditems", Directory.CancelExtendedItems)
