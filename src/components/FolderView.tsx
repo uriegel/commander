@@ -240,7 +240,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 //     return
                 // }
         
-                // localStorage.setItem(`${id}-lastPath`, items.path)
+                localStorage.setItem(`${id}-lastPath`, res.path)
                 if (!fromBacklog)
                     history.current?.set(res.path)
                 waitOnExtendedItems.current = true

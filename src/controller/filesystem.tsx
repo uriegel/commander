@@ -3,7 +3,7 @@ import { DialogHandle, ResultType } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
-import { Controller, ControllerResult, ControllerType, formatDateTime, formatSize, formatVersion, sortItems } from "./controller"
+import { Controller, ControllerResult, ControllerType, addParent, formatDateTime, formatSize, formatVersion, sortItems } from "./controller"
 import { GetExtendedItemsResult, GetItemsError, GetItemsResult, IOError, IOErrorResult, request, Version } from "../requests/requests"
 import { ROOT } from "./root"
 import { extendedRename } from "./filesystemExtendedRename"
@@ -119,32 +119,28 @@ const getRowClasses = (item: FolderViewItem) =>
 		? ["hidden"]
 		: []
 
-const getItems = (path: string, showHiddenItems: boolean, _sortIndex: number, _sortDescending: boolean, mount: boolean, _dialog: DialogHandle|null) => 
+const getItems = (path: string, showHiddenItems: boolean, sortIndex: number, sortDescending: boolean, mount: boolean, _dialog: DialogHandle|null) => 
 	jsonPost<GetItemsResult, GetItemsError>({ method: "getfiles", payload: { path, showHiddenItems, mount } })
-		.match(ok => ok, () => ({ dirCount: 0, fileCount: 0, items: [], path: "" }))
+		.match(
+			ok => ({ ...ok, items: addParent(sortItems(ok.items, getSortFunction(sortIndex, sortDescending))) }),
+			() => ({ dirCount: 0, fileCount: 0, items: [], path: "" }))
 
-// TODO
-// 	if (res.error != IOError.AccessDenied && res.error != IOError.PathNotFound)
-// 		return { ...res, items: addParent(sortItems(res.items, getSortFunction(sortIndex, sortDescending))) }
-// 	else if (res.error == IOError.PathNotFound && dialog) {
-// 		await dialog.show({
-// 			text: "Der Pfad wurde nicht gefunden",
-// 			btnOk: true
-// 		})
-// 		return { items: [], dirCount: 0, fileCount: 0, path, error: IOError.PathNotFound }
-// 	}
-// 	else if (!dialog) {
+// TODO GetRoot
+// TODO getRoot when error &&	!dialog but statusbar??? {
 // 		const res = await request<GetItemResult>("getfiles", {
 // 			path: "root",
 // 			showHiddenItems: showHidden,
 // 			mount
 // 		})
-// 		return { ...res, items: addParent(sortItems(res.items, getSortFunction(sortIndex, sortDescending))) }
-// 	} else 
+
+// TODO windows getItemsWithAccess from getItems c# when access denied
 // 		return await getItemsWithAccess(dialog, path)
 // 			? await getItems(path, showHidden, sortIndex, sortDescending, mount, dialog)
 // 			: { items: [], dirCount: 0, fileCount: 0, path, error: IOError.AccessDenied }
-// }
+// TODO error in status bar red white
+// 			text: "Der Pfad wurde nicht gefunden",
+// 		return { items: [], dirCount: 0, fileCount: 0, path, error: IOError.PathNotFound }
+
 
 const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
 	sortItems(items, getSortFunction(sortIndex, sortDescending)) 
