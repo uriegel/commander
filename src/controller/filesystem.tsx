@@ -119,11 +119,10 @@ const getRowClasses = (item: FolderViewItem) =>
 		? ["hidden"]
 		: []
 
-const getItems = (path: string, showHiddenItems: boolean, _sortIndex: number, _sortDescending: boolean, mount: boolean, _dialog?: DialogHandle) => {
-	const ress = jsonPost<GetItemsResult, GetItemsError>({ method: "getfiles", payload: { path, showHiddenItems, mount } })
-	const resss = ress.match(ok => ok, () => ({ dirCount: 0, fileCount: 0, items: [], path: "" }))
-	return resss
-}
+const getItems = (path: string, showHiddenItems: boolean, _sortIndex: number, _sortDescending: boolean, mount: boolean, _dialog: DialogHandle|null) => 
+	jsonPost<GetItemsResult, GetItemsError>({ method: "getfiles", payload: { path, showHiddenItems, mount } })
+		.match(ok => ok, () => ({ dirCount: 0, fileCount: 0, items: [], path: "" }))
+
 // TODO
 // 	if (res.error != IOError.AccessDenied && res.error != IOError.PathNotFound)
 // 		return { ...res, items: addParent(sortItems(res.items, getSortFunction(sortIndex, sortDescending))) }
