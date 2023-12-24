@@ -4,7 +4,8 @@ import IconName from "../components/IconName"
 import { Controller, ControllerResult, ControllerType, EnterData } from "./controller"
 import { ROOT } from "./root"
 import { IconNameType } from "../enums"
-import { AsyncResult, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
+import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
+import { GetItemsResult, IOError } from "../requests/requests"
 
 export const FAVORITES = "fav"
 
@@ -80,6 +81,7 @@ export const getFavoritesController = (controller: Controller | null): Controlle
         id: FAVORITES,
         getColumns,
         getItems,
+        getPath: () => FAVORITES,
         getExtendedItems: async () => ({ path: "", exifTimes: [], versions: [] }),
         setExtendedItems: items => items,
         cancelExtendedItems: async () => { },
@@ -98,7 +100,7 @@ export const getFavoritesController = (controller: Controller | null): Controlle
     }})
 
     // TODO
-    const getItems = async () => ({dirCount: 0, fileCount: 0, items: [], path: ""})
+    const getItems = () => AsyncResult.from(new Err<GetItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""}))
 // const getItems = async () => {
 //     const items = getFavoriteItems()
 //     return {

@@ -3,10 +3,10 @@ import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
 import { Controller, ControllerResult, ControllerType, sortItems } from "./controller"
 import { ROOT } from "./root"
-import { IOErrorResult, request } from "../requests/requests"
+import { GetItemsResult, IOError, IOErrorResult, request } from "../requests/requests"
 import { DialogHandle } from "web-dialog-react"
 import { IconNameType, ServiceStartMode, ServiceStatus } from "../enums"
-import { AsyncResult, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
+import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
 
 export const SERVICES = "services"
 
@@ -50,7 +50,7 @@ const getColumns = () => ({
     getRowClasses
 } as TableColumns<FolderViewItem>)
 
-const getItems = async () => ({dirCount: 0, fileCount: 0, items: [], path: ""})
+const getItems = () => AsyncResult.from(new Err<GetItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""}))
 // TODO
 // const getItems = async (_: string, __: boolean, sortIndex: number, sortDescending: boolean) => {
 //     const services =
@@ -82,6 +82,7 @@ const createController = (): ControllerResult => {
             id: SERVICES,
             getColumns,
             getItems,
+            getPath: () => SERVICES,
             getExtendedItems: async () => ({ path: "", exifTimes: [], versions: [] }),
             setExtendedItems: items => items,
             cancelExtendedItems: async () => { },

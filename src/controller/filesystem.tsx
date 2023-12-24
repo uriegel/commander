@@ -75,44 +75,55 @@ const onFileEnter = (path: string, keys?: SpecialKeys) => {
 	return  ({ processed: true })
 }
 		
-export const createFileSystemController = (): Controller => ({
-	type: ControllerType.FileSystem, 
-	id: "file",
-	getColumns: platform == Platform.Windows ? getWindowsColumns : getLinuxColumns, 
-	getExtendedItems,
-	setExtendedItems,
-	cancelExtendedItems,
-	getItems,
-	onEnter: async ({path, item, keys}) => 
-	item.isParent && path.length > driveLength 
-	?  ({
-		processed: false, 
-		pathToSet: path + '/' + item.name,
-		latestPath: path.extractSubPath()
-	}) 
-	: item.isParent && path.length == driveLength
-	? ({
-		processed: false, 
-		pathToSet: ROOT,
-		latestPath: path
-	}) 
-	: item.isDirectory && !keys.alt 
-	? ({
-		processed: false, 
-		pathToSet: path + '/' + item.name 
-	}) 
-	: onFileEnter(path.appendPath(item.name), keys),
-sort,
-	itemsSelectable: true,
-	appendPath: platform == Platform.Windows ? appendWindowsPath : appendLinuxPath,
-	rename,
-	extendedRename: (controller: Controller, dialog: DialogHandle | null) => extendedRename(controller, dialog, false),
-	renameAsCopy,
-	createFolder,
-	deleteItems,
-	onSelectionChanged: () => { },
-	cleanUp: () => { }
-})
+export const createFileSystemController = (): Controller => {
+	let currentPath = ""
+	return ({
+		type: ControllerType.FileSystem,
+		id: "file",
+		getColumns: platform == Platform.Windows ? getWindowsColumns : getLinuxColumns,
+		getExtendedItems,
+		setExtendedItems,
+		cancelExtendedItems,
+		getItems: (path, showHidden, sortIndex, sortDescending, mount, dialog) => {
+			const res = getItems(path, showHidden, sortIndex, sortDescending, mount, dialog)
+			res.map(res => {
+				currentPath = res.path
+				return res
+			})
+			return res
+		},
+		getPath: () => currentPath,
+		onEnter: async ({ path, item, keys }) =>
+			item.isParent && path.length > driveLength
+				? ({
+					processed: false,
+					pathToSet: path + '/' + item.name,
+					latestPath: path.extractSubPath()
+				})
+				: item.isParent && path.length == driveLength
+					? ({
+						processed: false,
+						pathToSet: ROOT,
+						latestPath: path
+					})
+					: item.isDirectory && !keys.alt
+						? ({
+							processed: false,
+							pathToSet: path + '/' + item.name
+						})
+						: onFileEnter(path.appendPath(item.name), keys),
+		sort,
+		itemsSelectable: true,
+		appendPath: platform == Platform.Windows ? appendWindowsPath : appendLinuxPath,
+		rename,
+		extendedRename: (controller: Controller, dialog: DialogHandle | null) => extendedRename(controller, dialog, false),
+		renameAsCopy,
+		createFolder,
+		deleteItems,
+		onSelectionChanged: () => { },
+		cleanUp: () => { },
+	})
+}
 
 const getRowClasses = (item: FolderViewItem) => 
 	item.isHidden
@@ -121,10 +132,7 @@ const getRowClasses = (item: FolderViewItem) =>
 
 const getItems = (path: string, showHiddenItems: boolean, sortIndex: number, sortDescending: boolean, mount: boolean, _dialog: DialogHandle|null) => 
 	jsonPost<GetItemsResult, GetItemsError>({ method: "getfiles", payload: { path, showHiddenItems, mount } })
-		// TODO select instead of match
-		.match(
-			ok => ({ ...ok, items: addParent(sortItems(ok.items, getSortFunction(sortIndex, sortDescending))) }),
-			() => ({ dirCount: 0, fileCount: 0, items: [], path: "" }))
+		.map(ok => ({ ...ok, items: addParent(sortItems(ok.items, getSortFunction(sortIndex, sortDescending))) }))
 
 // TODO GetRoot
 // TODO getRoot when error &&	!dialog but statusbar??? {

@@ -5,7 +5,8 @@ import { Controller, ControllerResult, ControllerType, formatDateTime, formatSiz
 import { getSortFunction } from "./filesystem"
 import { REMOTES } from "./remotes"
 import { IconNameType } from "../enums"
-import { AsyncResult, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
+import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
+import { GetItemsResult, IOError } from "../requests/requests"
 
 export const REMOTE = "remote"
 
@@ -36,7 +37,7 @@ const getColumns = () => ({
 	renderRow
 } as TableColumns<FolderViewItem>)
 
-const getItems = async () => ({dirCount: 0, fileCount: 0, items: [], path: ""})
+const getItems = () => AsyncResult.from(new Err<GetItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""}))
 // TODO
 // const getItems = async (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean) => {
 // 	const res = await request<GetItemResult>("getremotefiles", {
@@ -56,7 +57,8 @@ export const getRemoteController = (controller: Controller | null): ControllerRe
         type: ControllerType.Remote, 
         id: REMOTE,
         getColumns,
-        getItems,
+		getItems,
+		getPath: () => REMOTE,
         getExtendedItems: async () => ({ path: "", exifTimes: [], versions: [] }),
 		setExtendedItems: items => items,
 		cancelExtendedItems: async () => { },

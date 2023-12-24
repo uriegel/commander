@@ -28,6 +28,7 @@ export const createExtendedRenameFileSystemController = (controller: Controller)
     setExtendedItems: controller.setExtendedItems,
     cancelExtendedItems: async () => { },
     getItems: controller.getItems,
+    getPath: controller.getPath,
     onEnter: async (enterData: EnterData) => {
         
         if (enterData.items?.find(n => n.newName) == undefined)

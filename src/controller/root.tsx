@@ -90,6 +90,7 @@ export const getRootController = (controller: Controller | null): ControllerResu
     : ({ changed: true, controller: { 
         type: ControllerType.Root, 
         id: ROOT,
+        getPath: () => ROOT,
         getColumns: platform == Platform.Windows ? getWindowsColumns : getLinuxColumns,
         getItems,
         getExtendedItems: async () => ({ path: "", exifTimes: [], versions: [] }),
@@ -108,7 +109,7 @@ export const getRootController = (controller: Controller | null): ControllerResu
         cleanUp: () => { }
     }})
 
-const getItems = async () => 
+const getItems = () => 
     jsonPost<GetRootResult, ErrorType>({ method: "getroot" })
         .map(items => {
             const pos = items.findIndex(n => !n.isMounted)
@@ -134,9 +135,6 @@ const getItems = async () =>
                     items: extendedItems
                 }            
         })
-		.match(
-			ok => ok,
-			() => ({ dirCount: 0, fileCount: 0, items: [], path: "" }))
 
 const getRowClasses = (item: FolderViewItem) => 
     item.isMounted == false

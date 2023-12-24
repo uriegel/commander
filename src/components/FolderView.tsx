@@ -221,39 +221,43 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         const controllerChanged = checkController(path, controller.current)
         controllerChanged.controller
             .getItems(path, showHidden, sortIndex.current, sortDescending.current, mount || false, dialog)
-            // TODO Result
-            // when ok do this
-            // when error leave all but show error in statusbar for 10 s
-            // TODO status bar white text on red
-            // TODO Path not found: Der Pfad wurde nicht gefunden
-            // TODO canceled
-            // TODO Access denied: Zugriff auf den Pfad nicht erlaubt
-            .then(res => {
-                if (controllerChanged.changed) {
-                    controller.current = controllerChanged.controller
-                    virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
+            .match(
+                res => {
+                    if (controllerChanged.changed) {
+                        controller.current = controllerChanged.controller
+                        virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
+                    }
+                    setPath(res.path)
+                    setItems(res.items)
+                    itemCount.current = { dirCount: res.dirCount, fileCount: res.fileCount }
+                    onItemsChanged(itemCount.current)
+                    const pos = latestPath ? res.items.findIndex(n => n.name == latestPath) : 0
+                    virtualTable.current?.setInitialPosition(pos, res.items.length)
+                    refPath.current = res.path
+                    localStorage.setItem(`${id}-lastPath`, res.path)
+                    if (!fromBacklog)
+                        history.current?.set(res.path)
+                    waitOnExtendedItems.current = true
+                    // TODO
+                    // const extendedInfoItems = await controller.current.getExtendedItems(id, items.path, items.items)
+                    // waitOnExtendedItems.current = false
+                    // if (extendedInfoItems.path == refPath.current) 
+                    //     setItems(controller.current.setExtendedItems(items.items, extendedInfoItems))    
+                },
+                _ => {
+                    setPath(controller.current.getPath())
+  
+                    // when error leave all but show error in statusbar for 10 s
+                    // TODO status bar white text on red
+                    // TODO Path not found: Der Pfad wurde nicht gefunden
+                    // TODO canceled
+                    // TODO Access denied: Zugriff auf den Pfad nicht erlaubt
+                    // if (items.error == IOError.PathNotFound) {
+                    //     input.current?.focus()
+                    //     return
+                    // }
                 }
-                setPath(res.path)
-                setItems(res.items)
-                itemCount.current = { dirCount: res.dirCount, fileCount: res.fileCount }
-                onItemsChanged(itemCount.current)
-                const pos = latestPath ? res.items.findIndex(n => n.name == latestPath) : 0
-                virtualTable.current?.setInitialPosition(pos, res.items.length)
-                refPath.current = res.path
-                // if (items.error == IOError.PathNotFound) {
-                //     input.current?.focus()
-                //     return
-                // }
-        
-                localStorage.setItem(`${id}-lastPath`, res.path)
-                if (!fromBacklog)
-                    history.current?.set(res.path)
-                waitOnExtendedItems.current = true
-                // const extendedInfoItems = await controller.current.getExtendedItems(id, items.path, items.items)
-                // waitOnExtendedItems.current = false
-                // if (extendedInfoItems.path == refPath.current) 
-                //     setItems(controller.current.setExtendedItems(items.items, extendedInfoItems))    
-            })
+            )
     }
 
     const processEnter = async (item: FolderViewItem, keys: SpecialKeys, otherPath?: string) => {

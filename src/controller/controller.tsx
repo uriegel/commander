@@ -9,7 +9,7 @@ import { getRemoteController } from "./remote"
 import { FAVORITES, getFavoritesController } from "./favorites"
 import { SERVICES, getServicesController } from "./services"
 import { Platform, getPlatform } from "../globals"
-import { AsyncResult, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
+import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
 
 const dateFormat = Intl.DateTimeFormat("de-DE", {
     year: "numeric",
@@ -56,7 +56,8 @@ export interface Controller {
     type: ControllerType
     id: string
     getColumns: ()=>TableColumns<FolderViewItem>
-    getItems: (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean, mount: boolean, dialog: DialogHandle|null) => Promise<GetItemsResult>
+    getItems: (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean, mount: boolean, dialog: DialogHandle | null) => AsyncResult<GetItemsResult, ErrorType>
+    getPath(): string
     getExtendedItems: (id: string, path: string, items: FolderViewItem[]) => Promise<GetExtendedItemsResult>
     setExtendedItems: (items: FolderViewItem[], extended: GetExtendedItemsResult) => FolderViewItem[]
     cancelExtendedItems: (id: string)=>Promise<void>
@@ -104,7 +105,8 @@ export const createEmptyController = (): Controller => ({
         columns: [],
         renderRow: () => []
     }),
-    getItems: async () => ({dirCount: 0, fileCount: 0, items: [], path: ""}),
+    getItems: () => AsyncResult.from(new Err<GetItemsResult, ErrorType>({ status: IOError.Canceled, statusText: "" })),
+    getPath: () => "empty",
     getExtendedItems: async () => ({ path: "", exifTimes: [], versions: [] }),
     setExtendedItems: items => items,
     cancelExtendedItems: async () => { },
