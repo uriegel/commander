@@ -370,12 +370,6 @@ record OnEnterParam(
     SpecialKeys? Keys
 );
 
-record ElevatedDriveParam(
-    string Path,
-    string Name,
-    string Password
-);
-
 enum IOErrorType {
     Unknown,
     AccessDenied,

@@ -108,25 +108,25 @@ static partial class Directory
     public static AsyncResult<Nothing, RequestError> DeleteItemsUac(DeleteItemsParam input)
         => DeleteItemsRaw(input);
 
-    public static Task<IOResult> ElevateDrive(ElevatedDriveParam param)
+    public static void ElevateDrive(Credentials credentials)
     {
         var netResource = new NetResource()
         {
             Scope = ResourceScope.GlobalNetwork,
             ResourceType = ResourceType.Disk,
             DisplayType = ResourceDisplaytype.Share,
-            RemoteName = param.Path
+            RemoteName = credentials.Path
         };
 
-        var result = WNetAddConnection2(netResource, param.Password, param.Name, 0);
-        return Task.FromResult(new IOResult(
-            result == 0
-            ? IOErrorType.NoError
-            : result == 5
-            ? IOErrorType.AccessDenied
-            : result == 67
-            ? IOErrorType.NetNameNotFound
-            : IOErrorType.Exn));
+        var result = WNetAddConnection2(netResource, credentials.Password, credentials.Name, 0);
+        // TODO
+            // result == 0
+            // ? IOErrorType.NoError
+            // : result == 5
+            // ? IOErrorType.AccessDenied
+            // : result == 67
+            // ? IOErrorType.NetNameNotFound
+            // : IOErrorType.Exn));
     }
 
     public static Result<Nothing, IOResult> Copy(string name, string path, string targetPath, Action<long, long> cb, bool move, CancellationToken cancellationToken)
@@ -139,10 +139,13 @@ static partial class Directory
         => Ok<Nothing, RequestError>(nothing)
             .SideEffect(_ =>
                 credentials
-                    .SelectError(e => nothing)
-
-                    // TODO: elevate drive with credentials, check access if necessary try again
-                    .SideEffect(res => credentialsTaskSource?.TrySetResult(res)))
+                    .Match(
+                        ElevateDrive,
+                        // TODO path in credentials
+                        // TODO: elevate drive with credentials, check access if necessary try again
+                        // TODO can return error!!!
+                        // TODO SideEffect(res => credentialsTaskSource?.TrySetResult(res))) 
+                        _ => {}))
             .ToAsyncResult();
 
     static AsyncResult<Credentials, Nothing> GetCredentials()
@@ -287,6 +290,6 @@ static class VersionExtensions
             : null;
 }    
 
-record Credentials(string Name, string Password);
+record Credentials(string Name, string Password, string Path);
 
 #endif

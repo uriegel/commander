@@ -67,8 +67,6 @@ static class Window
                 .JsonPost<StartServicesParam, IOResult>("commander/startservices", Services.Start)            
                 // TODO
                 .JsonPost<StartServicesParam, IOResult>("commander/stopservices", Services.Stop)            
-                // TODO
-                .JsonPost<ElevatedDriveParam, IOResult>("commander/elevatedrive", Directory.ElevateDrive)
 #endif            
                 .Build())
 #if DEBUG
