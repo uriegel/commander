@@ -51,6 +51,11 @@ export type Version = {
     build: number
 }
 
+export type CredentialsResult = {
+    name: string
+    password: string
+}
+
 export type GetExtendedItemsResult = {
     exifTimes: (string | null)[]
     versions?: (Version | null)[]

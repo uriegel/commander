@@ -7,7 +7,7 @@ import Statusbar from './components/Statusbar'
 import { Controller, checkResult } from './controller/controller'
 import PictureViewer from './components/PictureViewer'
 import MediaPlayer from './components/MediaPlayer'
-import { request } from './requests/requests'
+import { CredentialsResult, IOError, request } from './requests/requests'
 import './App.css'
 import './themes/adwaita.css'
 import './themes/adwaitaDark.css'
@@ -23,6 +23,7 @@ import { Subscription } from 'rxjs'
 import { createFileSystemController } from './controller/filesystem'
 import './extensions/extensions'
 import Credentials, { CredentialsProps } from './components/dialogparts/Credentials'
+import { Err, ErrorType, Ok, jsonPost } from 'functional-extensions'
 
 // TODO in webview.d.ts
 declare const webViewShowDevTools: () => void
@@ -93,7 +94,7 @@ const App = () => {
 			let name = ""
 			let password = ""
 			if (dialog.current)
-				dialog.current.show({
+				dialog.current.showDialog<CredentialsResult, ErrorType>({
 					text: "Bitte Zugangsdaten eingeben:",
 					extension: Credentials,
 					extensionProps: { name, password },
@@ -104,13 +105,13 @@ const App = () => {
 					btnOk: true,
 					btnCancel: true,
 					defBtnOk: true
-				})
-					.then(res => {
-						if (res.result == ResultType.Ok)
-							console.log(`name: ${name} pw: ${password}`)
-					})
+				}, res => res.result == ResultType.Ok
+					? new Ok({ name, password })
+					: new Err({ status: IOError.Canceled, statusText: "" }))
+					.toResult()
+					.then(res => jsonPost<CredentialsResult, ErrorType>({ method: "sendcredentials", payload: res }))
 			})
-		})
+	})
 	
 	const dialog = useRef<DialogHandle>(null)
 		

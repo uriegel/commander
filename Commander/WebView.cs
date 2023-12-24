@@ -55,6 +55,8 @@ static class Window
                 // TODO
                 .JsonPost<OnEnterParam, IOResult>("commander/onenter", Directory.OnEnter)
 #if Windows            
+                .JsonPost<Result<Credentials, RequestError>, Nothing, RequestError>("commander/sendcredentials", Directory.CredentialsReceived)            
+
                 // TODO
                 .JsonPost<Empty, IOResult>("commander/initservices", Services.Init)            
                 // TODO

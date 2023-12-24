@@ -121,6 +121,7 @@ const getRowClasses = (item: FolderViewItem) =>
 
 const getItems = (path: string, showHiddenItems: boolean, sortIndex: number, sortDescending: boolean, mount: boolean, _dialog: DialogHandle|null) => 
 	jsonPost<GetItemsResult, GetItemsError>({ method: "getfiles", payload: { path, showHiddenItems, mount } })
+		// TODO select instead of match
 		.match(
 			ok => ({ ...ok, items: addParent(sortItems(ok.items, getSortFunction(sortIndex, sortDescending))) }),
 			() => ({ dirCount: 0, fileCount: 0, items: [], path: "" }))
@@ -132,15 +133,6 @@ const getItems = (path: string, showHiddenItems: boolean, sortIndex: number, sor
 // 			showHiddenItems: showHidden,
 // 			mount
 // 		})
-
-// TODO windows getItemsWithAccess from getItems c# when access denied
-// 		return await getItemsWithAccess(dialog, path)
-// 			? await getItems(path, showHidden, sortIndex, sortDescending, mount, dialog)
-// 			: { items: [], dirCount: 0, fileCount: 0, path, error: IOError.AccessDenied }
-// TODO error in status bar red white
-// 			text: "Der Pfad wurde nicht gefunden",
-// 		return { items: [], dirCount: 0, fileCount: 0, path, error: IOError.PathNotFound }
-
 
 const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
 	sortItems(items, getSortFunction(sortIndex, sortDescending)) 
@@ -326,33 +318,3 @@ export const compareVersion = (versionLeft?: Version, versionRight?: Version) =>
 	? versionLeft.patch - versionRight.patch
 	: versionLeft.build - versionRight.build
 
-	// TODO Windows
-// const getItemsWithAccess = async (dialog: DialogHandle, path: string) => {
-// 	/* eslint-disable no-constant-condition */
-// 	while (true) {
-// 		let name = ""
-// 		let password = ""
-// 		const result = await dialog?.show({
-// 			text: "Bitte Zugangsdaten eingeben:",
-// 			extension: Credentials,
-// 			extensionProps: { name, password },
-// 			onExtensionChanged: (e: CredentialsProps) => {
-// 				name = e.name
-// 				password = e.password
-// 			},				
-// 			btnOk: true,
-// 			btnCancel: true,
-// 			defBtnOk: true
-// 		})
-// 		if (result?.result == ResultType.Cancel)
-// 			break
-// 		const res = await request<IOErrorResult>("elevatedrive", { path, name, password })	
-// 		if (!res.error) 
-// 			return true
-// 		else if (res.error == IOError.NetNameNotFound)
-// 			await dialog?.show({
-// 				text: "Netzwerkname nicht gefunden",
-// 				btnOk: true})
-// 	}
-// 	return false
-// }	

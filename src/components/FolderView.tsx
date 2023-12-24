@@ -218,16 +218,21 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             controller.current.cancelExtendedItems(id)
         
         restrictionView.current?.reset()
-        const result = checkController(path, controller.current)
-        if (result.changed) {
-            controller.current = result.controller
-            setItems([])
-            virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
-        }
-
-        controller.current
+        const controllerChanged = checkController(path, controller.current)
+        controllerChanged.controller
             .getItems(path, showHidden, sortIndex.current, sortDescending.current, mount || false, dialog)
+            // TODO Result
+            // when ok do this
+            // when error leave all but show error in statusbar for 10 s
+            // TODO status bar white text on red
+            // TODO Path not found: Der Pfad wurde nicht gefunden
+            // TODO canceled
+            // TODO Access denied: Zugriff auf den Pfad nicht erlaubt
             .then(res => {
+                if (controllerChanged.changed) {
+                    controller.current = controllerChanged.controller
+                    virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
+                }
                 setPath(res.path)
                 setItems(res.items)
                 itemCount.current = { dirCount: res.dirCount, fileCount: res.fileCount }

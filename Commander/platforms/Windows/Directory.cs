@@ -25,7 +25,8 @@ static partial class Directory
             .BindErrorAwait(n =>
                 n.Status == (int)IOErrorType.AccessDenied
                 ? GetCredentials()
-                    .SelectError(_ => IOErrorType.Exn.ToError())
+                    // TODO: Canceled: leave changePath like it was
+                    .SelectError(_ => IOErrorType.Canceled.ToError())
                     .Select(ok => new DirectoryInfo(""))
                 : Error<DirectoryInfo, RequestError>(n).ToAsyncResult());
 
@@ -133,6 +134,16 @@ static partial class Directory
         Copy(path.AppendPath(name), targetPath.AppendPath(name), cb, move, cancellationToken);
         return nothing;
     }
+
+    public static AsyncResult<Nothing, RequestError> CredentialsReceived(Result<Credentials, RequestError> credentials)
+        => Ok<Nothing, RequestError>(nothing)
+            .SideEffect(_ =>
+                credentials
+                    .SelectError(e => nothing)
+
+                    // TODO: elevate drive with credentials, check access if necessary try again
+                    .SideEffect(res => credentialsTaskSource?.TrySetResult(res)))
+            .ToAsyncResult();
 
     static AsyncResult<Credentials, Nothing> GetCredentials()
     {
