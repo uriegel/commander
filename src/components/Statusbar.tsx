@@ -14,14 +14,9 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText }: Statu
     const timer = useRef(0)
 
     useEffect(() => {
-        console.log("setting effect timer", errorText, setErrorText)
         if (errorText) {
-            console.log("setting effect timer errortext")
             clearTimeout(timer.current)
-            timer.current = setTimeout(() => {
-                setErrorText(null)
-                console.log("resettet")
-            }, 5000)            
+            timer.current = setTimeout(() => setErrorText(null), 5000)            
         }
     }, [errorText, setErrorText])
 
