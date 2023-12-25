@@ -1,6 +1,6 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import ViewSplit from 'view-split-react'
-import Dialog, { DialogHandle, ResultType } from 'web-dialog-react' 
+import { DialogContext, ResultType } from 'web-dialog-react' 
 import FolderView, { FolderViewHandle, FolderViewItem } from './components/FolderView'
 import Menu from './components/Menu'
 import Statusbar from './components/Statusbar'
@@ -62,7 +62,8 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 	const [itemCount, setItemCount] = useState({dirCount: 0, fileCount: 0 })
 	const [progress, setProgress] = useState(0)
 	const [progressRevealed, setProgressRevealed] = useState(false)
-	const [totalMax, setTotalMax] = useState(0)
+    const [totalMax, setTotalMax] = useState(0)
+    const dialog = useContext(DialogContext)
 	
 	const filesDropSubscription = useRef<Subscription | null>(null)
 	const getCredentialsSubscription = useRef<Subscription | null>(null)
@@ -95,35 +96,32 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 		getCredentialsSubscription.current = getCredentialsEvents.subscribe(getCredentials => {
 			let name = ""
 			let password = ""
-			if (dialog.current)
-				dialog.current.showDialog<CredentialsResult, ErrorType>({
-					text: "Bitte Zugangsdaten eingeben:",
-					extension: Credentials,
-					extensionProps: { name, password },
-					onExtensionChanged: (e: CredentialsProps) => {
-						name = e.name
-						password = e.password
-					},
-					btnOk: true,
-					btnCancel: true,
-					defBtnOk: true
-				}, res => res.result == ResultType.Ok
-					? new Ok({ name, password, path: getCredentials.path })
-					: new Err({ status: IOError.Canceled, statusText: "" }))
-					.toResult()
-					.then(res => jsonPost<CredentialsResult, ErrorType>({ method: "sendcredentials", payload: res }))
-			})
+            dialog.showDialog<CredentialsResult, ErrorType>({
+                text: "Bitte Zugangsdaten eingeben:",
+                extension: Credentials,
+                extensionProps: { name, password },
+                onExtensionChanged: (e: CredentialsProps) => {
+                    name = e.name
+                    password = e.password
+                },
+                btnOk: true,
+                btnCancel: true,
+                defBtnOk: true
+            }, res => res.result == ResultType.Ok
+                ? new Ok({ name, password, path: getCredentials.path })
+                : new Err({ status: IOError.Canceled, statusText: "" }))
+                .toResult()
+                .then(res => jsonPost<CredentialsResult, ErrorType>({ method: "sendcredentials", payload: res }))
+        })
 	})
 	
-	const dialog = useRef<DialogHandle>(null)
-		
 	const setAndSaveAutoMode = (mode: boolean) => {
 		setAutoMode(mode)
 		localStorage.setItem("menuAutoHide", mode ? "true" : "false")
 	}
 
 	const toggleAutoModeDialog = async () => 
-		setAndSaveAutoMode(autoMode == false && ((await dialog.current?.show({
+		setAndSaveAutoMode(autoMode == false && ((await dialog.show({
 				text: "Soll das Menü verborgen werden? Aktivieren mit Alt-Taste",
 				btnOk: true,
 				btnCancel: true
@@ -155,11 +153,11 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 		await getActiveFolder()?.processEnter(item, keys, getInactiveFolder()?.getPath())
 
 	const FolderLeft = () => (
-		<FolderView ref={folderLeft} id={ID_LEFT} dialog={dialog.current} onFocus={onFocusLeft} onCopy={copyItems}
+		<FolderView ref={folderLeft} id={ID_LEFT} onFocus={onFocusLeft} onCopy={copyItems}
 			onPathChanged={onPathChanged} showHidden={showHidden} onItemsChanged={setItemCount} onEnter={onEnter} />
 	)
 	const FolderRight = () => (
-		<FolderView ref={folderRight} id={ID_RIGHT} dialog={dialog.current} onFocus={onFocusRight} onCopy={copyItems}
+		<FolderView ref={folderRight} id={ID_RIGHT} onFocus={onFocusRight} onCopy={copyItems}
 			onPathChanged={onPathChanged} showHidden={showHidden} onItemsChanged={setItemCount} onEnter={onEnter} />
 	)
 
@@ -192,7 +190,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 		} else if (key == "RENAME")
 			getActiveFolder()?.rename()
 		else if (key == "EXTENDED_RENAME")
-			getActiveFolder()?.extendedRename(dialog.current)
+			getActiveFolder()?.extendedRename(dialog)
 		else if (key == "RENAME_AS_COPY")
 			getActiveFolder()?.renameAsCopy()
 		else if (key == "CREATE_FOLDER")
@@ -222,10 +220,10 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 
 	const copyItemsToInactive = async (inactive: FolderViewHandle | null, move: boolean, activeController: Controller,
 		activePath: string, itemsToCopy: FolderViewItem[], id?: string, active?: FolderViewHandle | null) => {
-		const controller = inactive && getCopyController(move, dialog.current, id == ID_LEFT, activeController, inactive.getController(),
+		const controller = inactive && getCopyController(move, dialog, id == ID_LEFT, activeController, inactive.getController(),
 			activePath, inactive.getPath(), itemsToCopy, inactive.getItems())
 		const result = controller ? await controller.copy() : null
-		await checkResult(dialog.current, active, result)
+		await checkResult(dialog, active, result)
 	}
 
 	const VerticalSplitView = () => (
@@ -249,7 +247,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 	
 	return (
 		<>
-			<Titlebar progress={progress} progressRevealed={progressRevealed} dialog={dialog.current} totalSize={totalMax} move={false}
+			<Titlebar progress={progress} progressRevealed={progressRevealed} totalSize={totalMax} move={false}
 				menu={(
 				<Menu autoMode={autoMode} onMenuAction={onMenuAction} toggleAutoMode={toggleAutoModeDialog}
 				showHidden={showHidden} toggleShowHidden={toggleShowHiddenAndRefresh}
@@ -257,7 +255,6 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 			)} isMaximized ={isMaximized} />
 			<ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
 			<Statusbar path={path.path} dirCount={itemCount.dirCount} fileCount={itemCount.fileCount} />
-			<Dialog ref={dialog} />
 		</>
 	)
 })

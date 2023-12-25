@@ -8,6 +8,7 @@ import { getTheme, isWindows } from './globals'
 import { themeChangedEvents, windowStateChangedEvents } from './requests/events'
 import './extensions/extensions'
 import Commander, { CommanderHandle } from './Commander'
+import WithDialog from 'web-dialog-react'
 
 // TODO in webview.d.ts
 declare const webViewGetWindowState: () => Promise<number>
@@ -44,8 +45,10 @@ const App = () => {
 	}
 
 	return (
-		<div className={getAppClasses()} onKeyDown={onKeyDown} onDragOver={onDragOver} >
-			<Commander ref={commander} isMaximized={isMaximized} ></Commander>
+		<div className={getAppClasses()} onKeyDown={onKeyDown} onDragOver={onDragOver}>
+			<WithDialog>
+				<Commander ref={commander} isMaximized={isMaximized} ></Commander>
+			</WithDialog>
 		</div>
 	)
 }

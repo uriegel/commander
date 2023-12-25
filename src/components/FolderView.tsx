@@ -1,16 +1,16 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import './FolderView.css'
 import VirtualTable, { OnSort, SelectableItem, SpecialKeys, TableColumns, VirtualTableHandle } from 'virtual-table-react'
 import { checkController, checkResult, Controller, createEmptyController, showError } from '../controller/controller'
 import { ROOT } from '../controller/root'
 import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
 import { Version } from '../requests/requests'
-import { DialogHandle } from 'web-dialog-react'
 import { initializeHistory } from '../history'
 import { isWindows } from '../globals'
 import { folderViewItemsChangedEvents } from '../requests/events'
 import { Subscription } from 'rxjs'
 import { ServiceStartMode, ServiceStatus } from '../enums'
+import { DialogContext, DialogHandle } from 'web-dialog-react'
 
 declare const webViewDropFiles: (id: string, move: boolean, paths: FileList)=>void
 declare const webViewDragStart: (path: string, fileList: string[]) => void
@@ -52,7 +52,7 @@ export type FolderViewHandle = {
     changePath: (path: string) => void
     getPath: () => string
     rename: () => void
-    extendedRename: (dialog: DialogHandle | null) => void
+    extendedRename: (dialog: DialogHandle) => void
     renameAsCopy: () => Promise<void>
     createFolder: () => void
     deleteItems: () => void
@@ -70,7 +70,6 @@ interface ItemCount {
 interface FolderViewProp {
     id: string
     showHidden: boolean
-    dialog: DialogHandle|null,
     onFocus: () => void
     onPathChanged: (path: string, isDir: boolean) => void
     onItemsChanged: (count: ItemCount) => void
@@ -79,7 +78,7 @@ interface FolderViewProp {
 }
 
 const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
-    { id, dialog, showHidden, onFocus, onPathChanged, onItemsChanged, onCopy, onEnter },
+    { id, showHidden, onFocus, onPathChanged, onItemsChanged, onCopy, onEnter },
     ref) => {
 
     useImperativeHandle(ref, () => ({
@@ -138,7 +137,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const history = useRef(initializeHistory())
     const dragEnterRefs = useRef(0)
 
-    const subscription = useRef<Subscription|null>(null)
+    const subscription = useRef<Subscription | null>(null)
+    const dialog = useContext(DialogContext)
 
     const onActualizedItems = useCallback((actualizedItems: FolderViewItem[]) => {
         const newItems = items.map(n => {
@@ -244,7 +244,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     // if (extendedInfoItems.path == refPath.current) 
                     //     setItems(controller.current.setExtendedItems(items.items, extendedInfoItems))    
                 },
-                _ => {
+                () => {
                     setPath(controller.current.getPath())
   
                     // when error leave all but show error in statusbar for 10 s

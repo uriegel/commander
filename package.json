@@ -25,7 +25,7 @@
     "rxjs": "^7.8.0",
     "view-split-react": "^1.0.1",
     "virtual-table-react": "^10.5.1",
-    "web-dialog-react": "^3.0.0"
+    "web-dialog-react": "^4.0.0"
   },
   "scripts": {
     "dev": "vite",

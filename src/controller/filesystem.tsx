@@ -84,8 +84,8 @@ export const createFileSystemController = (): Controller => {
 		getExtendedItems,
 		setExtendedItems,
 		cancelExtendedItems,
-		getItems: (path, showHidden, sortIndex, sortDescending, mount, dialog) => {
-			const res = getItems(path, showHidden, sortIndex, sortDescending, mount, dialog)
+		getItems: (path, showHidden, sortIndex, sortDescending, mount) => {
+			const res = getItems(path, showHidden, sortIndex, sortDescending, mount)
 			res.map(res => {
 				currentPath = res.path
 				return res
@@ -130,7 +130,7 @@ const getRowClasses = (item: FolderViewItem) =>
 		? ["hidden"]
 		: []
 
-const getItems = (path: string, showHiddenItems: boolean, sortIndex: number, sortDescending: boolean, mount: boolean, _dialog: DialogHandle|null) => 
+const getItems = (path: string, showHiddenItems: boolean, sortIndex: number, sortDescending: boolean, mount: boolean) => 
 	jsonPost<GetItemsResult, GetItemsError>({ method: "getfiles", payload: { path, showHiddenItems, mount } })
 		.map(ok => ({ ...ok, items: addParent(sortItems(ok.items, getSortFunction(sortIndex, sortDescending))) }))
 

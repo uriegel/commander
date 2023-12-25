@@ -46,7 +46,7 @@ export interface EnterData {
     otherPath?: string
     item: FolderViewItem, 
     keys: SpecialKeys, 
-    dialog?: DialogHandle|null, 
+    dialog?: DialogHandle, 
     refresh?: ()=>void, 
     selectedItems?: FolderViewItem[]
     items?: FolderViewItem[]
@@ -56,7 +56,7 @@ export interface Controller {
     type: ControllerType
     id: string
     getColumns: ()=>TableColumns<FolderViewItem>
-    getItems: (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean, mount: boolean, dialog: DialogHandle | null) => AsyncResult<GetItemsResult, ErrorType>
+    getItems: (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean, mount: boolean, dialog: DialogHandle) => AsyncResult<GetItemsResult, ErrorType>
     getPath(): string
     getExtendedItems: (id: string, path: string, items: FolderViewItem[]) => Promise<GetExtendedItemsResult>
     setExtendedItems: (items: FolderViewItem[], extended: GetExtendedItemsResult) => FolderViewItem[]

@@ -3,8 +3,9 @@ import './Titlebar.css'
 import Pie from 'react-progress-control'
 import CopyProgress from "./dialogparts/CopyProgress"
 import { request } from "../requests/requests"
-import { DialogHandle, ResultType } from "web-dialog-react"
+import { DialogContext, ResultType } from "web-dialog-react"
 import "functional-extensions"
+import { useContext } from "react"
 
 // TODO in webview.d.ts
 declare const webViewMinimize: () => void
@@ -16,20 +17,21 @@ interface TitlebarProps {
     isMaximized: boolean
     progress: number
     progressRevealed: boolean
-    dialog: DialogHandle| null
     totalSize: number
     move: boolean
 }
 
-const Titlebar = ({ menu, isMaximized, progress, progressRevealed, dialog, totalSize, move }: TitlebarProps) => {
+const Titlebar = ({ menu, isMaximized, progress, progressRevealed, totalSize, move }: TitlebarProps) => {
     
     const onMinimize = () => webViewMinimize()
     const onRestore = () => webViewRestore()
     const onMaximize = () => webViewMaximize()
     const onClose = () => window.close()
 
+    const dialog = useContext(DialogContext)
+
     const startProgressDialog = async () => {
-        const res = await dialog?.show({
+        const res = await dialog.show({
             text: `Fortschritt beim ${move ? "Verschieben" : "Kopieren"} (${totalSize?.byteCountToString()})`,
             extension: CopyProgress,
             btnCancel: true
