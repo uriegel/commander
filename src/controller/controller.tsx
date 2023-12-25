@@ -193,7 +193,7 @@ export const checkResult = async (dialog: DialogHandle|null|undefined, activeFol
         return true
 }
 
-export const showError = async (error: ErrorType, dialog: DialogHandle, activeFolderView?: focusable | null) => {
+export const showError = async (error: ErrorType, activeFolderView?: focusable | null) => {
 
     const getRequestError = (ioError: IOError) => 
         ioError === IOError.AccessDenied
@@ -217,7 +217,8 @@ export const showError = async (error: ErrorType, dialog: DialogHandle, activeFo
         : error.status < 2000
         ? getClientError(error)
         : getServerError(error)
-    
+
+    // TODO show 10s in status bar with red/white
     if (error.status !== IOError.Canceled && error.status !== IOError.UacNotStarted) {
         dialog?.close()
         await delay(500)

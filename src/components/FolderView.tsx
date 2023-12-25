@@ -164,11 +164,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             : null
     }
 
-    const withSelectedItemAndDialog = <T,>(withSelected: (dialog: DialogHandle, item: FolderViewItem) => T) => {
-        if (dialog)
-            return withSelectedItem(i => withSelected(dialog, i))
-    }
-
     const getSelectedItems = () => {
 
         const checkParent = (item: FolderViewItem) => !item.isParent ? item : null
@@ -379,7 +374,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         changePath(path, forceShowHidden == undefined ? showHidden : forceShowHidden)
 
     const rename = () => 
-        withSelectedItemAndDialog((dialog, item) => {
+        withSelectedItem(item => {
             virtualTable.current?.setFocus()
             controller.current.rename(path, item, dialog)
                 .match(
