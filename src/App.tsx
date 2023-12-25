@@ -90,7 +90,7 @@ const App = () => {
 			copyItemsFromFileSystem(filesDrop.id, filesDrop.path, filesDrop.items, filesDrop.move))
 		
 		getCredentialsSubscription.current?.unsubscribe()
-		getCredentialsSubscription.current = getCredentialsEvents.subscribe(() => {
+		getCredentialsSubscription.current = getCredentialsEvents.subscribe(getCredentials => {
 			let name = ""
 			let password = ""
 			if (dialog.current)
@@ -106,7 +106,7 @@ const App = () => {
 					btnCancel: true,
 					defBtnOk: true
 				}, res => res.result == ResultType.Ok
-					? new Ok({ name, password })
+					? new Ok({ name, password, path: getCredentials.path })
 					: new Err({ status: IOError.Canceled, statusText: "" }))
 					.toResult()
 					.then(res => jsonPost<CredentialsResult, ErrorType>({ method: "sendcredentials", payload: res }))

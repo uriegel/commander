@@ -382,6 +382,7 @@ enum IOErrorType {
     NotSupported,
     PathTooLong,
     Canceled,
+    WrongCredentials,
     // TODO eliminate
     NoError,
 }

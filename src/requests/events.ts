@@ -25,13 +25,15 @@ type FilesDrop = {
     move: boolean
 }
 
+type GetCredentials = { path: string }
+
 type CommanderEvent = {
     theme?:        string
     copyProgress?: CopyProgress
     windowState?: WindowState
     serviceItems?: FolderViewItem[]
     filesDrop?: FilesDrop
-    getCredentials?: boolean
+    getCredentials?: GetCredentials
 }
 
 const toCommanderEvent = (event: MessageEvent) => 
@@ -59,7 +61,7 @@ export const filesDropEvents = commanderEvents
 
 export const getCredentialsEvents = commanderEvents
     .pipe(filter(n => n.getCredentials != undefined))
-    .pipe(map(n => n.getCredentials == true))
+    .pipe(map(n => n.getCredentials!))
 
 export const progressChangedEvents = new BehaviorSubject<CopyProgress>({
     fileName: "",

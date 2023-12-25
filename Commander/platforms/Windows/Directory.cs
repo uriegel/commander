@@ -24,7 +24,7 @@ static partial class Directory
             .ToAsyncResult()
             .BindErrorAwait(n =>
                 n.Status == (int)IOErrorType.AccessDenied
-                ? GetCredentials()
+                ? GetCredentials(info.FullName)
                     // TODO: Canceled: leave changePath like it was
                     .SelectError(_ => IOErrorType.Canceled.ToError())
                     .Select(ok => new DirectoryInfo(""))
@@ -108,26 +108,22 @@ static partial class Directory
     public static AsyncResult<Nothing, RequestError> DeleteItemsUac(DeleteItemsParam input)
         => DeleteItemsRaw(input);
 
-    public static void ElevateDrive(Credentials credentials)
-    {
-        var netResource = new NetResource()
+    public static Result<Nothing, RequestError> ElevateDrive(Credentials credentials)
+        => WNetAddConnection2(new()
+            {
+                Scope = ResourceScope.GlobalNetwork,
+                ResourceType = ResourceType.Disk,
+                DisplayType = ResourceDisplaytype.Share,
+                RemoteName = credentials.Path
+            }, credentials.Password, credentials.Name, 0) switch
         {
-            Scope = ResourceScope.GlobalNetwork,
-            ResourceType = ResourceType.Disk,
-            DisplayType = ResourceDisplaytype.Share,
-            RemoteName = credentials.Path
+            0 => Ok<Nothing, RequestError>(nothing),
+            5 => Error<Nothing, RequestError>(IOErrorType.AccessDenied.ToError()),
+            67 => Error<Nothing, RequestError>(IOErrorType.NetNameNotFound.ToError()),
+            86 => Error<Nothing, RequestError>(IOErrorType.WrongCredentials.ToError())
+                    .SideEffect(_ => Events.Credentials(credentials.Path)),
+            _ => Error<Nothing, RequestError>(IOErrorType.Exn.ToError())
         };
-
-        var result = WNetAddConnection2(netResource, credentials.Password, credentials.Name, 0);
-        // TODO
-            // result == 0
-            // ? IOErrorType.NoError
-            // : result == 5
-            // ? IOErrorType.AccessDenied
-            // : result == 67
-            // ? IOErrorType.NetNameNotFound
-            // : IOErrorType.Exn));
-    }
 
     public static Result<Nothing, IOResult> Copy(string name, string path, string targetPath, Action<long, long> cb, bool move, CancellationToken cancellationToken)
     {
@@ -141,18 +137,15 @@ static partial class Directory
                 credentials
                     .Match(
                         ElevateDrive,
-                        // TODO path in credentials
-                        // TODO: elevate drive with credentials, check access if necessary try again
-                        // TODO can return error!!!
-                        // TODO SideEffect(res => credentialsTaskSource?.TrySetResult(res))) 
-                        _ => {}))
+                        _ => Error<Nothing, RequestError>(IOErrorType.Exn.ToError()))
+                    .SideEffectIf(res => true, res => credentialsTaskSource?.TrySetResult(res)))
             .ToAsyncResult();
 
-    static AsyncResult<Credentials, Nothing> GetCredentials()
+    static AsyncResult<Nothing, RequestError> GetCredentials(string path)
     {
         credentialsTaskSource?.TrySetCanceled();
         credentialsTaskSource = new();
-        Events.Credentials();
+        Events.Credentials(path);
         return credentialsTaskSource.Task.ToAsyncResult();
     }
 
@@ -263,7 +256,7 @@ static partial class Directory
     static readonly DateTime startTime = DateTime.Now;
     static string Mount(string path) => "";
 
-    static TaskCompletionSource<Result<Credentials, Nothing>>? credentialsTaskSource;
+    static TaskCompletionSource<Result<Nothing, RequestError>>? credentialsTaskSource;
 }
 
 record Version(

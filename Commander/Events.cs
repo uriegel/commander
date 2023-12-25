@@ -20,13 +20,15 @@ record WindowState(bool Maximized);
 
 record FilesDrop(string Id, bool Move, string Path, DirectoryItem[] Items);
 
+record GetCredentials(string Path);
+
 record Events(
     string? Theme,
     CopyProgress? CopyProgress,
     WindowState? WindowState,
     FilesDrop? FilesDrop
 #if Windows
-    , bool? GetCredentials
+    , GetCredentials? GetCredentials
     , ServiceItem[]? ServiceItems = null
 #endif
 )
@@ -55,8 +57,8 @@ record Events(
         => Source.Send(DefaultEvents with { FilesDrop = filesDrop });
 
 #if Windows 
-    public static void Credentials()
-        => Source.Send(DefaultEvents with { GetCredentials = true });
+    public static void Credentials(string path)
+        => Source.Send(DefaultEvents with { GetCredentials = new(path) });
 
     public static void ServiceItemsChanged(ServiceItem[] items)
         => Source.Send(DefaultEvents with { ServiceItems = items });
