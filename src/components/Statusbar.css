@@ -5,6 +5,11 @@
     display: flex;
 }
 
+.statusbar.error {
+    color: white;
+    background-color: red;
+}
+
 .fill {
     flex-grow: 1;
 }

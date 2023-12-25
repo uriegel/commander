@@ -193,7 +193,7 @@ export const checkResult = async (dialog: DialogHandle|null|undefined, activeFol
         return true
 }
 
-export const showError = async (error: ErrorType, activeFolderView?: focusable | null) => {
+export const showError = async (error: ErrorType, setError: (error: string)=>void) => {
 
     const getRequestError = (ioError: IOError) => 
         ioError === IOError.AccessDenied
@@ -218,16 +218,8 @@ export const showError = async (error: ErrorType, activeFolderView?: focusable |
         ? getClientError(error)
         : getServerError(error)
 
-    // TODO show 10s in status bar with red/white
-    if (error.status !== IOError.Canceled && error.status !== IOError.UacNotStarted) {
-        dialog?.close()
-        await delay(500)
-        await dialog?.show({
-            text,
-            btnOk: true
-        })
-        activeFolderView?.setFocus()
-    }
+    if (error.status !== IOError.Canceled && error.status !== IOError.UacNotStarted) 
+        setError(text)
 }
 
 const checkNewController = (controllerResult: ControllerResult, recentController: Controller | null): ControllerResult => {

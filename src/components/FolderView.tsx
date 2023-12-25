@@ -75,10 +75,11 @@ interface FolderViewProp {
     onItemsChanged: (count: ItemCount) => void
     onCopy: (move: boolean) => void
     onEnter: (item: FolderViewItem, keys: SpecialKeys) => Promise<void>
+    setError: (error: string)=>void
 }
 
 const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
-    { id, showHidden, onFocus, onPathChanged, onItemsChanged, onCopy, onEnter },
+    { id, showHidden, onFocus, onPathChanged, onItemsChanged, onCopy, onEnter, setError },
     ref) => {
 
     useImperativeHandle(ref, () => ({
@@ -379,7 +380,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             controller.current.rename(path, item, dialog)
                 .match(
                     () => refresh(),
-                    err => showError(err, dialog, virtualTable.current))
+                    err => showError(err, setError))
             // TODO when renamed select new file when changePath is finished
         })
     
@@ -398,7 +399,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             controller.current.createFolder(path, items[virtualTable.current?.getPosition() ?? 0], dialog)
             .match(
                 () => refresh(),
-                err => showError(err, dialog, virtualTable.current))
+                err => showError(err, setError))
         // TODO when created select new folder when changePath is finished
     }
 
@@ -409,7 +410,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             controller.current.deleteItems(path, items, dialog)
                 .match(
                     () => refresh(),
-                    err => showError(err, dialog, virtualTable.current))
+                    err => showError(err, setError))
     }
 
     const onDragStart = async (evt: React.DragEvent) => {

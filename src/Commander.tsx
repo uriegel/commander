@@ -59,6 +59,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 	const showHiddenRef = useRef(false)
 	const showViewerRef = useRef(false)
 	const [path, setPath] = useState<PathProp>({ path: "", isDirectory: false })
+	const [errorText, setErrorText] = useState<string | null>(null)
 	const [itemCount, setItemCount] = useState({dirCount: 0, fileCount: 0 })
 	const [progress, setProgress] = useState(0)
 	const [progressRevealed, setProgressRevealed] = useState(false)
@@ -153,11 +154,11 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 		await getActiveFolder()?.processEnter(item, keys, getInactiveFolder()?.getPath())
 
 	const FolderLeft = () => (
-		<FolderView ref={folderLeft} id={ID_LEFT} onFocus={onFocusLeft} onCopy={copyItems}
+		<FolderView ref={folderLeft} id={ID_LEFT} onFocus={onFocusLeft} onCopy={copyItems} setError={setErrorText}
 			onPathChanged={onPathChanged} showHidden={showHidden} onItemsChanged={setItemCount} onEnter={onEnter} />
 	)
 	const FolderRight = () => (
-		<FolderView ref={folderRight} id={ID_RIGHT} onFocus={onFocusRight} onCopy={copyItems}
+		<FolderView ref={folderRight} id={ID_RIGHT} onFocus={onFocusRight} onCopy={copyItems} setError={setErrorText}
 			onPathChanged={onPathChanged} showHidden={showHidden} onItemsChanged={setItemCount} onEnter={onEnter} />
 	)
 
@@ -244,7 +245,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 			? (<FileViewer path={path.path} />)
 			: (<div></div>)
 	}
-	
+
 	return (
 		<>
 			<Titlebar progress={progress} progressRevealed={progressRevealed} totalSize={totalMax} move={false}
@@ -254,7 +255,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 				showViewer={showViewer} toggleShowViewer={toggleShowViewer} />
 			)} isMaximized ={isMaximized} />
 			<ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
-			<Statusbar path={path.path} dirCount={itemCount.dirCount} fileCount={itemCount.fileCount} />
+			<Statusbar path={path.path} dirCount={itemCount.dirCount} fileCount={itemCount.fileCount} errorText={errorText} setErrorText={setErrorText} />
 		</>
 	)
 })
