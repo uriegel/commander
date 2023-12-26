@@ -118,10 +118,9 @@ static partial class Directory
             }, credentials.Password, credentials.Name, 0) switch
         {
             0  => Ok<Nothing, RequestError>(nothing),
-            5  => Error<Nothing, RequestError>(IOErrorType.AccessDenied.ToError()),
             67 => Error<Nothing, RequestError>(IOErrorType.NetNameNotFound.ToError()),
-            86 => Error<Nothing, RequestError>(IOErrorType.WrongCredentials.ToError())
-                    .SideEffect(_ => Events.Credentials(credentials.Path)),
+            5 or 86  => Error<Nothing, RequestError>(IOErrorType.WrongCredentials.ToError())
+                            .SideEffect(_ => Events.Credentials(credentials.Path)),
             _  => Error<Nothing, RequestError>(IOErrorType.Exn.ToError())
         };
 

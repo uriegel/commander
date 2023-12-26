@@ -11,6 +11,7 @@ using CsTools;
 
 using static CsTools.Functional.Tree;
 using static CsTools.Core;
+using Accessibility;
 
 static partial class Directory
 {
@@ -402,7 +403,21 @@ static class IOResultExt
 static class IOErrorTypeExtensions
 {
     public static RequestError ToError(this IOErrorType error)
-        => new((int)error, "");
+        => new((int)error, error switch 
+                                {
+                                    IOErrorType.AccessDenied => "Access denied",
+                                    IOErrorType.AlreadyExists => "aLREADY Already exists",
+                                    IOErrorType.FileNotFound => "File not found",
+                                    IOErrorType.DeleteToTrashNotPossible => "Delete to trash not possible",
+                                    IOErrorType.Exn => "Exception",
+                                    IOErrorType.NetNameNotFound => "Net name not found",
+                                    IOErrorType.PathNotFound => "Path not found",
+                                    IOErrorType.NotSupported => "Not supported",
+                                    IOErrorType.PathTooLong => "Path too long",
+                                    IOErrorType.Canceled => "Canceled",
+                                    IOErrorType.WrongCredentials => "Wrong credentials",
+                                    _ => "Unknown"
+                                });
 } 
 
 record CopyItemsResult(

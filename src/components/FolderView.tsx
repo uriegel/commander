@@ -241,6 +241,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     //     setItems(controller.current.setExtendedItems(items.items, extendedInfoItems))    
                 },
                 err => {
+                    console.log("err", err)
                     setPath(controller.current.getPath())
                     showError(err, setError)
                     // TODO Path not found: Der Pfad wurde nicht gefunden
