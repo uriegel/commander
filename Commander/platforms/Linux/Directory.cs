@@ -197,7 +197,14 @@ record GetExtendedItemsResult(
 );
 
 #endif
+
     // TODO KDE
+
+
+// import mimetypes
+// import sys
+// print(mimetypes.guess_type(sys.argv[1]))
+
     // let getKdeIcon ext = async {
     //     let extractMime str = 
     //         let pos1 = str |> String.indexOf "('" 
