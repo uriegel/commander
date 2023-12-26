@@ -198,12 +198,22 @@ export const showError = async (error: ErrorType, setError: (error: string)=>voi
     const getRequestError = (ioError: IOError) => 
         ioError === IOError.AccessDenied
             ? "Zugriff verweigert"
-            : ioError === IOError.DeleteToTrashNotPossible
-            ? "Löschen nicht möglich"
             : ioError === IOError.AlreadyExists
             ? "Das Element existiert bereits"
             : ioError === IOError.FileNotFound
             ? "Das Element ist nicht vorhanden"
+            : ioError === IOError.DeleteToTrashNotPossible
+            ? "Löschen nicht möglich"
+            : ioError === IOError.NetNameNotFound
+            ? "Der Netzwerkname wurde nicht gefunden"
+            : ioError === IOError.PathNotFound
+            ? "Der Pfad wurde nicht gefunden"
+            : ioError === IOError.NotSupported
+            ? "Nicht unterstützt"
+            : ioError === IOError.PathTooLong
+            ? "Der Pfad ist zu lang"
+            : ioError === IOError.WrongCredentials
+            ? "Die Zugangsdaten sind falsch"
             : "Die Aktion konnte nicht ausgeführt werden"
 
     const getClientError = (error: ErrorType) => 

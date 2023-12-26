@@ -41,10 +41,6 @@ const toCommanderEvent = (event: MessageEvent) =>
 
 const source = new EventSource("http://localhost:20000/commander/sse")
 
-
-// TODO
-source.onmessage = s => console.log("Event", s)
-
 const commanderEvents = fromEvent<MessageEvent>(source, 'message')
     .pipe(map(toCommanderEvent))
 

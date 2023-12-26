@@ -25,8 +25,6 @@ static partial class Directory
             .BindErrorAwait(n =>
                 n.Status == (int)IOErrorType.AccessDenied
                 ? GetCredentials(info.FullName)
-                    // TODO: Canceled: leave changePath like it was
-                    // TODO: display error in status bar
                     .Select(_ => info.FullName.CreateDirectoryInfo())
                 : Error<DirectoryInfo, RequestError>(n).ToAsyncResult());
 
@@ -136,7 +134,7 @@ static partial class Directory
                 credentials
                     .Match(
                         ElevateDrive,
-                        _ => Error<Nothing, RequestError>(IOErrorType.Exn.ToError()))
+                        e => Error<Nothing, RequestError>(e))
                     .SideEffectIf(
                         res => res.Select(_ => true).Get(err => err.Status != (int)IOErrorType.WrongCredentials), 
                         res => credentialsTaskSource?.TrySetResult(res)))

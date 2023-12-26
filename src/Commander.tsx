@@ -104,10 +104,6 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 		getCredentialsSubscription.current = getCredentialsEvents.subscribe(getCredentials => {
 			let name = ""
 			let password = ""
-
-			// TODO
-			console.log("getCredentials",getCredentials)
-
             dialog.showDialog<CredentialsResult, ErrorType>({
                 text: "Bitte Zugangsdaten eingeben:",
                 extension: Credentials,

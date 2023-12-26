@@ -244,13 +244,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     console.log("err", err)
                     setPath(controller.current.getPath())
                     showError(err, setError)
-                    // TODO Path not found: Der Pfad wurde nicht gefunden
-                    // TODO canceled
-                    // TODO Access denied: Zugriff auf den Pfad nicht erlaubt
-                    // if (items.error == IOError.PathNotFound) {
-                    //     input.current?.focus()
-                    //     return
-                    // }
                 }
             )
     }
