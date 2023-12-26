@@ -28,7 +28,7 @@ record Events(
     WindowState? WindowState,
     FilesDrop? FilesDrop
 #if Windows
-    , GetCredentials? GetCredentials
+    , GetCredentials? GetCredentials = null
     , ServiceItem[]? ServiceItems = null
 #endif
 )
@@ -69,7 +69,7 @@ record Events(
     public static void StartEvents()   
         => global::Theme.StartThemeDetection(n => Source.Send(ThemeChanged(n)));
 
-    static Events DefaultEvents { get; } = new(null, null, null, null, null);
+    static Events DefaultEvents { get; } = new(null, null, null, null);
 
     static Events ThemeChanged(string theme)
         => DefaultEvents with { Theme = theme };

@@ -12,7 +12,8 @@ using static CsTools.Core;
 
 static partial class Directory
 {
-    public static Result<DirectoryInfo, RequestError> Validate(this DirectoryInfo info) => info;
+    public static AsyncResult<DirectoryInfo, RequestError> Validate(this DirectoryInfo info)
+        => Ok<DirectoryInfo, RequestError>(info).ToAsyncResult();
 
     public static string GetIconPath(FileInfo info)
         => info.Extension?.Length > 0 ? info.Extension : ".noextension";
@@ -23,7 +24,7 @@ static partial class Directory
                 var directory = $"/usr/share/icons/{Theme.BaseTheme}/16x16/mimetypes";
                 var iconFile = (Gtk.GuessContentType(iconHint)?.Replace('/', '-') ?? "") + ".png";
                 var path = directory.AppendPath(iconFile);
-                if (System.IO.File.Exists(path))
+                if (File.Exists(path))
                 {
                     using var stream = path.OpenFile();
                     await context.SendStream(stream!, startTime, iconFile);
@@ -32,7 +33,7 @@ static partial class Directory
                 {
                     iconFile = "image-x-generic.png";
                     path = directory.AppendPath(iconFile);
-                    if (System.IO.File.Exists(path))
+                    if (File.Exists(path))
                     {
                         using var stream = path.OpenFile();
                         await context.SendStream(stream!, startTime, iconFile);
@@ -42,7 +43,7 @@ static partial class Directory
                 {
                     iconFile = "video-x-generic.png";
                     path = directory.AppendPath(iconFile);
-                    if (System.IO.File.Exists(path))
+                    if (File.Exists(path))
                     {
                         using var stream = path.OpenFile();
                         await context.SendStream(stream!, startTime, iconFile);
@@ -52,7 +53,7 @@ static partial class Directory
                 {
                     iconFile = "unknown.png";
                     path = directory.AppendPath(iconFile);
-                    if (System.IO.File.Exists(path))
+                    if (File.Exists(path))
                     {
                         using var stream = path.OpenFile();
                         await context.SendStream(stream!, startTime, iconFile);
