@@ -74,6 +74,7 @@ export enum IOError {
     NotSupported,
     PathTooLong,
     Canceled,
+    WrongCredentials,
     NoError,
     UacNotStarted = 1099
 }
