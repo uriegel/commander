@@ -26,8 +26,8 @@ static partial class Directory
                 n.Status == (int)IOErrorType.AccessDenied
                 ? GetCredentials(info.FullName)
                     // TODO: Canceled: leave changePath like it was
-                    .SelectError(_ => IOErrorType.Canceled.ToError())
-                    .Select(ok => new DirectoryInfo(""))
+                    // TODO: display error in status bar
+                    .Select(_ => info.FullName.CreateDirectoryInfo())
                 : Error<DirectoryInfo, RequestError>(n).ToAsyncResult());
 
     public static string GetIconPath(FileInfo info)
@@ -117,12 +117,12 @@ static partial class Directory
                 RemoteName = credentials.Path
             }, credentials.Password, credentials.Name, 0) switch
         {
-            0 => Ok<Nothing, RequestError>(nothing),
-            5 => Error<Nothing, RequestError>(IOErrorType.AccessDenied.ToError()),
+            0  => Ok<Nothing, RequestError>(nothing),
+            5  => Error<Nothing, RequestError>(IOErrorType.AccessDenied.ToError()),
             67 => Error<Nothing, RequestError>(IOErrorType.NetNameNotFound.ToError()),
             86 => Error<Nothing, RequestError>(IOErrorType.WrongCredentials.ToError())
                     .SideEffect(_ => Events.Credentials(credentials.Path)),
-            _ => Error<Nothing, RequestError>(IOErrorType.Exn.ToError())
+            _  => Error<Nothing, RequestError>(IOErrorType.Exn.ToError())
         };
 
     public static Result<Nothing, IOResult> Copy(string name, string path, string targetPath, Action<long, long> cb, bool move, CancellationToken cancellationToken)
@@ -138,7 +138,9 @@ static partial class Directory
                     .Match(
                         ElevateDrive,
                         _ => Error<Nothing, RequestError>(IOErrorType.Exn.ToError()))
-                    .SideEffectIf(res => true, res => credentialsTaskSource?.TrySetResult(res)))
+                    .SideEffectIf(
+                        res => res.Select(_ => true).Get(err => err.Status != (int)IOErrorType.WrongCredentials), 
+                        res => credentialsTaskSource?.TrySetResult(res)))
             .ToAsyncResult();
 
     static AsyncResult<Nothing, RequestError> GetCredentials(string path)
