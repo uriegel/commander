@@ -27,6 +27,10 @@ static class Theme
 
     public static void StartThemeDetection(Action<string> onChanged)
     {
+        if (started)
+            return;
+        started = true;
+        
         var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
 
         var currentTheme = Get();    
@@ -48,6 +52,8 @@ static class Theme
         }){
             IsBackground = true
         }.Start();
-    } 
+    }
+
+    static bool started;
 }
 #endif

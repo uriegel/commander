@@ -240,11 +240,9 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     // if (extendedInfoItems.path == refPath.current) 
                     //     setItems(controller.current.setExtendedItems(items.items, extendedInfoItems))    
                 },
-                () => {
+                err => {
                     setPath(controller.current.getPath())
-  
-                    // when error leave all but show error in statusbar for 10 s
-                    // TODO status bar white text on red
+                    showError(err, setError)
                     // TODO Path not found: Der Pfad wurde nicht gefunden
                     // TODO canceled
                     // TODO Access denied: Zugriff auf den Pfad nicht erlaubt

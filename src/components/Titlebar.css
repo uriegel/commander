@@ -2,6 +2,7 @@
     display: flex;
     height: 32px;
     background-color: var(--scaffolding-background-color);
+    color: var(--color);
     border-top: 1px solid transparent;
 }
 
