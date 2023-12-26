@@ -19,47 +19,9 @@ static partial class Directory
         => info.Extension?.Length > 0 ? info.Extension : ".noextension";
 
     public static Task ProcessIcon(HttpContext context, string iconHint)
-        => RepeatOnException(async () =>
-            {
-                var directory = $"/usr/share/icons/{Theme.BaseTheme}/16x16/mimetypes";
-                var iconFile = (Gtk.GuessContentType(iconHint)?.Replace('/', '-') ?? "") + ".png";
-                var path = directory.AppendPath(iconFile);
-                if (File.Exists(path))
-                {
-                    using var stream = path.OpenFile();
-                    await context.SendStream(stream!, startTime, iconFile);
-                } 
-                else if (iconFile == "image-jpeg.png" || iconFile == "image-png.png")
-                {
-                    iconFile = "image-x-generic.png";
-                    path = directory.AppendPath(iconFile);
-                    if (File.Exists(path))
-                    {
-                        using var stream = path.OpenFile();
-                        await context.SendStream(stream!, startTime, iconFile);
-                    }
-                }
-                else if (iconFile == "video-mp4.png" || iconFile == "video-x-matroska.png")
-                {
-                    iconFile = "video-x-generic.png";
-                    path = directory.AppendPath(iconFile);
-                    if (File.Exists(path))
-                    {
-                        using var stream = path.OpenFile();
-                        await context.SendStream(stream!, startTime, iconFile);
-                    }
-                }
-                else
-                {
-                    iconFile = "unknown.png";
-                    path = directory.AppendPath(iconFile);
-                    if (File.Exists(path))
-                    {
-                        using var stream = path.OpenFile();
-                        await context.SendStream(stream!, startTime, iconFile);
-                    }
-                }
-            }, 3);
+        => Platform.Value == PlatformType.Gnome
+            ? ProcessGtkIcon(context, iconHint)
+            : ProcessKdeIcon(context, iconHint);
 
     public static Task<GetExtendedItemsResult> GetExtendedItems(GetExtendedItems getExtendedItems)
         => GetExtendedItems(getExtendedItems.Id, getExtendedItems.Path, getExtendedItems.Items)
@@ -114,6 +76,90 @@ static partial class Directory
             FileError fe when fe.Error == FileError.ErrorType.Canceled       => IOErrorType.Canceled.ToError(),
             _                                                                => IOErrorType.Exn.ToError()
         };
+
+    static Task ProcessGtkIcon(HttpContext context, string iconHint)
+        => RepeatOnException(async () =>
+            {
+                var directory = $"/usr/share/icons/{Theme.BaseTheme}/16x16/mimetypes";
+                var iconFile = (Gtk.GuessContentType(iconHint)?.Replace('/', '-') ?? "") + ".png";
+                var path = directory.AppendPath(iconFile);
+                if (File.Exists(path))
+                {
+                    using var stream = path.OpenFile();
+                    await context.SendStream(stream!, startTime, iconFile);
+                } 
+                else if (iconFile == "image-jpeg.png" || iconFile == "image-png.png")
+                {
+                    iconFile = "image-x-generic.png";
+                    path = directory.AppendPath(iconFile);
+                    if (File.Exists(path))
+                    {
+                        using var stream = path.OpenFile();
+                        await context.SendStream(stream!, startTime, iconFile);
+                    }
+                }
+                else if (iconFile == "video-mp4.png" || iconFile == "video-x-matroska.png")
+                {
+                    iconFile = "video-x-generic.png";
+                    path = directory.AppendPath(iconFile);
+                    if (File.Exists(path))
+                    {
+                        using var stream = path.OpenFile();
+                        await context.SendStream(stream!, startTime, iconFile);
+                    }
+                }
+                else
+                {
+                    iconFile = "unknown.png";
+                    path = directory.AppendPath(iconFile);
+                    if (File.Exists(path))
+                    {
+                        using var stream = path.OpenFile();
+                        await context.SendStream(stream!, startTime, iconFile);
+                    }
+                }
+            }, 3);
+
+    static async Task ProcessKdeIcon(HttpContext context, string iconHint)
+    {
+        var output = "";
+        using var proc = new Process()
+        {
+            StartInfo = new ProcessStartInfo()
+            {
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                FileName = "python3",
+                Arguments = $"-c \"import mimetypes; import sys; print(mimetypes.guess_type('test.{iconHint}'))\"",
+            },
+            EnableRaisingEvents = true
+        };
+        proc.OutputDataReceived += (s, e) =>
+        {
+            if (e.Data != null)
+                output = e.Data;
+        };
+        proc.ErrorDataReceived += (s, e) => Console.Error.WriteLine(e.Data);
+        proc.Start();
+        proc.BeginOutputReadLine();
+        proc.BeginErrorReadLine();
+        proc.EnableRaisingEvents = true;
+        await proc.WaitForExitAsync();
+        var mime = output
+                    .StringBetween('(', ',')
+                    .Replace("'", "")
+                    .Replace("None", "")
+                    .Replace("application-x-msdos-program", "application-x-ms-dos-executable")
+                    .Replace("application-java-archive", "application-x-jar")
+                    .Replace('/', '-')
+                    .WhiteSpaceToNull()
+                    ?? "application-x-zerosize";
+        var iconpath = $"/usr/share/icons/breeze/mimetypes/16/{mime}.svg";
+        if (!File.Exists(iconpath))
+            iconpath = $"/usr/share/icons/breeze/mimetypes/16/application-x-zerosize.svg";
+        using var stream = iconpath.OpenFile();
+        await context.SendStream(stream!, startTime, iconpath);
+    }
 
     static string Mount(string path) 
     {
@@ -198,44 +244,3 @@ record GetExtendedItemsResult(
 
 #endif
 
-    // TODO KDE
-
-
-// import mimetypes
-// import sys
-// print(mimetypes.guess_type(sys.argv[1]))
-
-    // let getKdeIcon ext = async {
-    //     let extractMime str = 
-    //         let pos1 = str |> String.indexOf "('" 
-    //         let pos2 = str |> String.indexOf "',"
-    //         match pos1, pos2 with
-    //         | Some pos1, Some pos2 
-    //             -> Some (str |> String.substring2 (pos1+2) (pos2-pos1-2))
-    //         | _ -> None
-
-    //     let replaceSlash str = Some (str |> String.replaceChar  '/' '-')
-    //     let getMime = extractMime >=> replaceSlash
-
-    //     let mapVarious mime =
-    //         match mime with
-    //         | "/usr/share/icons/breeze/mimetypes/16/application-x-msdos-program.svg" 
-    //                         -> "/usr/share/icons/breeze/mimetypes/16/application-x-ms-dos-executable.svg"
-    //         | "/usr/share/icons/breeze/mimetypes/16/application-java-archive.svg"    
-    //                         -> "/usr/share/icons/breeze/mimetypes/16/application-x-jar.svg"
-    //         | s     -> s
-
-    //     let! mimeType = asyncRunCmd "python3" (sprintf "%s *%s" (getIconScript ()) ext)
-
-    //     let icon = 
-    //         sprintf "/usr/share/icons/breeze/mimetypes/16/%s.svg" (mimeType |> getMime |> defaultValue "application-x-zerosize")
-    //         |> mapVarious
-    //         |> getExistingFile
-    //         |> Option.defaultValue "/usr/share/icons/breeze/mimetypes/16/application-x-zerosize.svg"
-    //     return icon, "image/svg+xml"
-    // }
-
-//     return! 
-//         match getPlatform () with
-// //        | Platform.Kde -> getKdeIcon ext
-//         | _            -> async { return getIcon ext, "image/png" }
