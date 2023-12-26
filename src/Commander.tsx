@@ -82,7 +82,14 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 		return () => subscription?.unsubscribe()
 	}, [])
 
-    // TODO on every render??????
+	const copyItemsToInactive = useCallback(async (inactive: FolderViewHandle | null, move: boolean, activeController: Controller,
+		activePath: string, itemsToCopy: FolderViewItem[], id?: string, active?: FolderViewHandle | null) => {
+		const controller = inactive && getCopyController(move, dialog, id == ID_LEFT, activeController, inactive.getController(),
+			activePath, inactive.getPath(), itemsToCopy, inactive.getItems())
+		const result = controller ? await controller.copy() : null
+		await checkResult(dialog, active, result)
+	}, [dialog])
+
 	useEffect(() => {
 		const copyItemsFromFileSystem = async (id: string, path: string,  items: FolderViewItem[], move: boolean) => {
 			const inactive = id == ID_LEFT ? folderLeft.current : folderRight.current
@@ -97,6 +104,9 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 		getCredentialsSubscription.current = getCredentialsEvents.subscribe(getCredentials => {
 			let name = ""
 			let password = ""
+
+			console.log("getCredentials",getCredentials)
+
             dialog.showDialog<CredentialsResult, ErrorType>({
                 text: "Bitte Zugangsdaten eingeben:",
                 extension: Credentials,
@@ -114,7 +124,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
                 .toResult()
                 .then(res => jsonPost<CredentialsResult, ErrorType>({ method: "sendcredentials", payload: res }))
         })
-	})
+	}, [dialog, copyItemsToInactive])
 	
 	const setAndSaveAutoMode = (mode: boolean) => {
 		setAutoMode(mode)
@@ -217,14 +227,6 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 		const inactive = getInactiveFolder()
 		if (active && inactive)
 			copyItemsToInactive(inactive, move, active.getController(), active.getPath(), active.getSelectedItems(), active.id, active)
-	}
-
-	const copyItemsToInactive = async (inactive: FolderViewHandle | null, move: boolean, activeController: Controller,
-		activePath: string, itemsToCopy: FolderViewItem[], id?: string, active?: FolderViewHandle | null) => {
-		const controller = inactive && getCopyController(move, dialog, id == ID_LEFT, activeController, inactive.getController(),
-			activePath, inactive.getPath(), itemsToCopy, inactive.getItems())
-		const result = controller ? await controller.copy() : null
-		await checkResult(dialog, active, result)
 	}
 
 	const VerticalSplitView = () => (
