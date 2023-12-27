@@ -128,7 +128,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const sortIndex = useRef(0)
     const sortDescending = useRef(false)
     const itemCount = useRef({ fileCount: 0, dirCount: 0 })
-    const waitOnExtendedItems = useRef(false)
     
     const [items, setItems] = useState([] as FolderViewItem[])
     const [path, setPath] = useState("")
@@ -211,8 +210,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     // TODO changePathProps
     const changePath = (path: string, showHidden: boolean, latestPath?: string, mount?: boolean, fromBacklog?: boolean, checkPosition?: (checkItem: FolderViewItem)=>boolean) => {
-        if (waitOnExtendedItems.current)
-            controller.current.cancelExtendedItems(id)
+            // TODO getItems with folderId cancels extendedItems events
         
         restrictionView.current?.reset()
         const controllerChanged = checkController(path, controller.current)
@@ -239,10 +237,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     localStorage.setItem(`${id}-lastPath`, res.path)
                     if (!fromBacklog)
                         history.current?.set(res.path)
-                    waitOnExtendedItems.current = true
                     // TODO
                     // const extendedInfoItems = await controller.current.getExtendedItems(id, items.path, items.items)
-                    // waitOnExtendedItems.current = false
                     // if (extendedInfoItems.path == refPath.current) 
                     //     setItems(controller.current.setExtendedItems(items.items, extendedInfoItems))    
                 },

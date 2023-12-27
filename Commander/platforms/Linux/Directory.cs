@@ -23,10 +23,6 @@ static partial class Directory
             ? ProcessGtkIcon(context, iconHint)
             : ProcessKdeIcon(context, iconHint);
 
-    public static Task<GetExtendedItemsResult> GetExtendedItems(GetExtendedItems getExtendedItems)
-        => GetExtendedItems(getExtendedItems.Id, getExtendedItems.Path, getExtendedItems.Items)
-            .ToAsync();
-
     public static AsyncResult<Nothing, RequestError> RenameItem(RenameItemParam input)            
         => RenameItemRaw(input);
 

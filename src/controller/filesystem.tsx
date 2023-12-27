@@ -81,9 +81,7 @@ export const createFileSystemController = (): Controller => {
 		type: ControllerType.FileSystem,
 		id: "file",
 		getColumns: platform == Platform.Windows ? getWindowsColumns : getLinuxColumns,
-		getExtendedItems,
 		setExtendedItems,
-		cancelExtendedItems,
 		getItems: (path, showHidden, sortIndex, sortDescending, mount) => {
 			const res = getItems(path, showHidden, sortIndex, sortDescending, mount)
 			res.map(res => {
@@ -145,39 +143,6 @@ const getItems = (path: string, showHiddenItems: boolean, sortIndex: number, sor
 const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
 	sortItems(items, getSortFunction(sortIndex, sortDescending)) 
 
-const checkExtendedItemsWindows = (items: FolderViewItem[]) => 
-	items.find(n => {
-		const check = n.name.toLowerCase()
-		return check.endsWith(".jpg") 
-			|| check.endsWith(".png") 
-			|| check.endsWith(".exe") 
-			|| check.endsWith(".dll")
-	})
-
-const checkExtendedItemsLinux = (items: FolderViewItem[]) => 
-	items.find(n => {
-		const check = n.name.toLowerCase()
-		return check.endsWith(".jpg") || check.endsWith(".png")
-	})
-
-const checkExtendedItems = 
-	platform == Platform.Windows
-		? checkExtendedItemsWindows
-		: checkExtendedItemsLinux
-
-const getExtendedItems = async (id: string, path: string, items: FolderViewItem[]): Promise<GetExtendedItemsResult> => 
-	checkExtendedItems(items)
-		? request<GetExtendedItemsResult>("getextendeditems", {
-			id,
-			items: (items as FolderViewItem[]).map(n => n.name),
-			path
-		})
-		: { path: "", versions: [], exifTimes: [] }
-
-const cancelExtendedItems = async (id: string): Promise<void> => {
-	await request<IOErrorResult>("cancelextendeditems", { id })
-}
-	
 const setExtendedItems = (items: FolderViewItem[], extended: GetExtendedItemsResult):FolderViewItem[] => 
 	items.map((n, i) => !extended.exifTimes[i] && (extended.versions && !extended.versions[i])
 		? n

@@ -75,12 +75,6 @@ static partial class Directory
         await context.SendStream(ms, null, "favicon.png");
     }
 
-    public static Task<IOResult> CancelExtendedItems(CancelExtendedItems cancelExtendedItems)
-    {
-        extendedInfosCancellations.GetValue(cancelExtendedItems.Id)?.Cancel();        
-        return new IOResult(IOErrorType.NoError).ToAsync();
-    }
-
     public static Task<CopyItemsResult> CopyItemsInfo(CopyItemsParam input)
     {
         return CopyItemsInfo()

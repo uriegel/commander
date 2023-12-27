@@ -90,8 +90,6 @@ export type GetServicesResult = ServiceItem[]
 type Close = "close"
 type GetRoot = "getroot"
 type GetFiles = "getfiles"
-type GetExtendedItems = "getextendeditems"
-type CancelExtendedItems = "cancelextendeditems"
 type ShowDevTools = "showdevtools"
 type ShowFullScreen = "showfullscreen"
 type RenameItem = "renameitem"
@@ -117,8 +115,6 @@ type RequestType =
 	| Close
 	| GetRoot
     | GetFiles
-    | GetExtendedItems
-    | CancelExtendedItems
     | ShowDevTools
     | ShowFullScreen
     | RenameItem

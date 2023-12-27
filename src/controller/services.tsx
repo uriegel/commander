@@ -83,9 +83,7 @@ const createController = (): ControllerResult => {
             getColumns,
             getItems,
             getPath: () => SERVICES,
-            getExtendedItems: async () => ({ path: "", exifTimes: [], versions: [] }),
             setExtendedItems: items => items,
-            cancelExtendedItems: async () => { },
             onEnter: async ({ path, item, selectedItems, dialog }) => {
                 if (item.isParent)
                     return ({
