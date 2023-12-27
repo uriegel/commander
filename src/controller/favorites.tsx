@@ -92,7 +92,7 @@ export const getFavoritesController = (controller: Controller | null): Controlle
         rename: () => AsyncResult.from(new Ok<string, ErrorType>("")),
         extendedRename: async () => null,
         renameAsCopy: async () => null,
-        createFolder: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
+        createFolder: () => AsyncResult.from(new Ok<string, ErrorType>("")),
         deleteItems: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
         // TODOdeleteItems,
         onSelectionChanged: () => { },

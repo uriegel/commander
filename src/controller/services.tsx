@@ -105,7 +105,7 @@ const createController = (): ControllerResult => {
             rename: () => AsyncResult.from(new Ok<string, ErrorType>("")),
             extendedRename: async () => null,
             renameAsCopy: async () => null,
-            createFolder: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
+            createFolder: () => AsyncResult.from(new Ok<string, ErrorType>("")),
             // TODOdeleteItems: async (_, items, dialog) => await stop(items, dialog),
             deleteItems: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
             onSelectionChanged: () => { },

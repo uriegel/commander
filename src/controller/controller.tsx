@@ -68,7 +68,7 @@ export interface Controller {
     rename: (path: string, item: FolderViewItem, dialog: DialogHandle) => AsyncResult<string, ErrorType>
     extendedRename: (controller: Controller, dialog: DialogHandle | null) => Promise<Controller | null>
     renameAsCopy: (path: string, item: FolderViewItem, dialog: DialogHandle | null) => Promise<IOError | null>
-    createFolder: (path: string, item: FolderViewItem, dialog: DialogHandle) => AsyncResult<Nothing, ErrorType>
+    createFolder: (path: string, item: FolderViewItem, dialog: DialogHandle) => AsyncResult<string, ErrorType>
     deleteItems: (path: string, items: FolderViewItem[], dialog: DialogHandle) => AsyncResult<Nothing, ErrorType>
     onSelectionChanged: (items: FolderViewItem[]) => void 
     cleanUp: () => void
@@ -117,7 +117,7 @@ export const createEmptyController = (): Controller => ({
     rename: () => AsyncResult.from(new Ok<string, ErrorType>("")),
     extendedRename: async () => null,
     renameAsCopy: async () => null,
-    createFolder: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
+    createFolder: () => AsyncResult.from(new Ok<string, ErrorType>("")),
     deleteItems: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
     onSelectionChanged: () => { },
     cleanUp: () => { }

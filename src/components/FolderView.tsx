@@ -377,11 +377,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             virtualTable.current?.setFocus()
             controller.current.rename(path, item, dialog)
                 .match(
-                    newName => {
-                        console.log("newName", newName)
-                        return refresh(false, n => n.name == newName)
-                    },
-                            
+                    newName => refresh(false, n => n.name == newName),
                     err => showError(err, setError))
         })
     
@@ -397,11 +393,11 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const createFolder = async () => {
         virtualTable.current?.setFocus()
         if (dialog)
-            controller.current.createFolder(path, items[virtualTable.current?.getPosition() ?? 0], dialog)
-            .match(
-                () => refresh(),
-                err => showError(err, setError))
-        // TODO when created select new folder when changePath is finished
+            controller.current
+                .createFolder(path, items[virtualTable.current?.getPosition() ?? 0], dialog)
+                .match(
+                    newName => refresh(false, n => n.name == newName),
+                    err => showError(err, setError))
     }
 
     const deleteItems = () => {
