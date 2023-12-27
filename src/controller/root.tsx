@@ -3,12 +3,12 @@ import IconName from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, EnterData, formatSize} from "./controller"
 import { REMOTES } from "./remotes"
-import { GetRootResult, request } from "../requests/requests"
+import { GetExtendedItemsResult, GetRootResult, IOError, request } from "../requests/requests"
 import "functional-extensions"
 import { SERVICES } from "./services"
 import { FAVORITES } from "./favorites"
 import { IconNameType } from "../enums"
-import { AsyncResult, ErrorType, jsonPost, nothing, Nothing, Ok } from "functional-extensions"
+import { AsyncResult, Err, ErrorType, jsonPost, nothing, Nothing, Ok } from "functional-extensions"
 
 export const ROOT = "root"
 const platform = getPlatform()
@@ -93,7 +93,9 @@ export const getRootController = (controller: Controller | null): ControllerResu
         getPath: () => ROOT,
         getColumns: platform == Platform.Windows ? getWindowsColumns : getLinuxColumns,
         getItems,
+        getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
         setExtendedItems: items => items,
+        cancelExtendedItems: () => { },
         onEnter: platform == Platform.Windows ? onWindowsEnter : onLinuxEnter,
         sort: (items: FolderViewItem[]) => items,
         itemsSelectable: false,

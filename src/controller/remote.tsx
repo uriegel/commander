@@ -6,7 +6,7 @@ import { getSortFunction } from "./filesystem"
 import { REMOTES } from "./remotes"
 import { IconNameType } from "../enums"
 import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
-import { GetItemsResult, IOError } from "../requests/requests"
+import { GetExtendedItemsResult, GetItemsResult, IOError } from "../requests/requests"
 
 export const REMOTE = "remote"
 
@@ -59,7 +59,9 @@ export const getRemoteController = (controller: Controller | null): ControllerRe
         getColumns,
 		getItems,
 		getPath: () => REMOTE,
+		getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
 		setExtendedItems: items => items,
+		cancelExtendedItems: () => { },
 		onEnter: async ({path, item}) => 
 			item.isParent && path.split("/").filter(n => n.length > 0).sideEffectForEach(n => console.log("Eintrag", n)).length - 1 == 1
 			?  ({

@@ -5,7 +5,7 @@ import { Controller, ControllerResult, ControllerType, EnterData } from "./contr
 import { ROOT } from "./root"
 import { IconNameType } from "../enums"
 import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
-import { GetItemsResult, IOError } from "../requests/requests"
+import { GetExtendedItemsResult, GetItemsResult, IOError } from "../requests/requests"
 
 export const FAVORITES = "fav"
 
@@ -82,7 +82,9 @@ export const getFavoritesController = (controller: Controller | null): Controlle
         getColumns,
         getItems,
         getPath: () => FAVORITES,
+        getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
         setExtendedItems: items => items,
+        cancelExtendedItems: () => { },
         onEnter,
         sort: (items: FolderViewItem[]) => items,
         itemsSelectable: false,

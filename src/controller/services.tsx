@@ -3,7 +3,7 @@ import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
 import { Controller, ControllerResult, ControllerType, sortItems } from "./controller"
 import { ROOT } from "./root"
-import { GetItemsResult, IOError, IOErrorResult, request } from "../requests/requests"
+import { GetExtendedItemsResult, GetItemsResult, IOError, IOErrorResult, request } from "../requests/requests"
 import { DialogHandle } from "web-dialog-react"
 import { IconNameType, ServiceStartMode, ServiceStatus } from "../enums"
 import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
@@ -83,7 +83,9 @@ const createController = (): ControllerResult => {
             getColumns,
             getItems,
             getPath: () => SERVICES,
+            getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
             setExtendedItems: items => items,
+            cancelExtendedItems: () => { },
             onEnter: async ({ path, item, selectedItems, dialog }) => {
                 if (item.isParent)
                     return ({

@@ -58,7 +58,9 @@ export interface Controller {
     getColumns: ()=>TableColumns<FolderViewItem>
     getItems: (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean, mount: boolean, dialog: DialogHandle) => AsyncResult<GetItemsResult, ErrorType>
     getPath(): string
+    getExtendedItems: (id: string, path: string, items: FolderViewItem[]) => AsyncResult<GetExtendedItemsResult, ErrorType>
     setExtendedItems: (items: FolderViewItem[], extended: GetExtendedItemsResult) => FolderViewItem[]
+    cancelExtendedItems: (id: string)=>void,
     onEnter: (data: EnterData) => Promise<onEnterResult>
     sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => FolderViewItem[]
     itemsSelectable: boolean
@@ -105,7 +107,9 @@ export const createEmptyController = (): Controller => ({
     }),
     getItems: () => AsyncResult.from(new Err<GetItemsResult, ErrorType>({ status: IOError.Canceled, statusText: "" })),
     getPath: () => "empty",
+    getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
     setExtendedItems: items => items,
+    cancelExtendedItems: () => { },
     onEnter: async () => ({ processed: true }),
     sort: (items: FolderViewItem[]) => items,
     itemsSelectable: false,

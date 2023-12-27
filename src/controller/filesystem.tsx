@@ -8,7 +8,7 @@ import { GetExtendedItemsResult, GetItemsError, GetItemsResult, IOError, IOError
 import { ROOT } from "./root"
 import { extendedRename } from "./filesystemExtendedRename"
 import { IconNameType } from "../enums"
-import { Err, ErrorType, Nothing, Ok, jsonPost, nothing } from "functional-extensions"
+import { AsyncResult, Err, ErrorType, Nothing, Ok, jsonPost, nothing } from "functional-extensions"
 
 export enum ItemsType {
 	Directories,
@@ -81,7 +81,9 @@ export const createFileSystemController = (): Controller => {
 		type: ControllerType.FileSystem,
 		id: "file",
 		getColumns: platform == Platform.Windows ? getWindowsColumns : getLinuxColumns,
+		getExtendedItems,
 		setExtendedItems,
+		cancelExtendedItems,
 		getItems: (path, showHidden, sortIndex, sortDescending, mount) => {
 			const res = getItems(path, showHidden, sortIndex, sortDescending, mount)
 			res.map(res => {
@@ -143,14 +145,48 @@ const getItems = (path: string, showHiddenItems: boolean, sortIndex: number, sor
 const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
 	sortItems(items, getSortFunction(sortIndex, sortDescending)) 
 
-const setExtendedItems = (items: FolderViewItem[], extended: GetExtendedItemsResult):FolderViewItem[] => 
+const checkExtendedItemsWindows = (items: FolderViewItem[]) => 
+	items.find(n => {
+		const check = n.name.toLowerCase()
+		return check.endsWith(".jpg") 
+			|| check.endsWith(".png") 
+			|| check.endsWith(".exe") 
+			|| check.endsWith(".dll")
+	})
+
+const checkExtendedItemsLinux = (items: FolderViewItem[]) => 
+	items.find(n => {
+		const check = n.name.toLowerCase()
+		return check.endsWith(".jpg") || check.endsWith(".png")
+	})
+const checkExtendedItems = 
+	platform == Platform.Windows
+		? checkExtendedItemsWindows
+		: checkExtendedItemsLinux	
+
+const getExtendedItems = (id: string, path: string, items: FolderViewItem[]): AsyncResult<GetExtendedItemsResult, ErrorType> => 
+	checkExtendedItems(items)
+		? jsonPost<GetExtendedItemsResult, ErrorType>({
+			method: "getextendeditems",
+			payload: {
+				id,
+				items: (items as FolderViewItem[]).map(n => n.name),
+				path
+			}
+		}) 
+		: AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""}))
+
+const setExtendedItems = (items: FolderViewItem[], extended: GetExtendedItemsResult): FolderViewItem[] => 
 	items.map((n, i) => !extended.exifTimes[i] && (extended.versions && !extended.versions[i])
 		? n
 		: extended.exifTimes[i] && (extended.versions && !extended.versions[i])
 		? {...n, exifDate: extended.exifTimes[i] || undefined } 
 		: !extended.exifTimes[i] && (extended.versions && extended.versions[i])
 		? {...n, version: extended.versions[i] || undefined } 
-		: { ...n, version: (extended.versions && extended.versions[i] || undefined), exifDate: extended.exifTimes[i] || undefined })
+				: { ...n, version: (extended.versions && extended.versions[i] || undefined), exifDate: extended.exifTimes[i] || undefined })
+		
+const cancelExtendedItems = (id: string) => 
+	jsonPost<Nothing, ErrorType>({ method: "cancelextendeditems", payload: { id } })
 		
 export const getSortFunction = (index: number, descending: boolean) => {
 	const ascDesc = (sortResult: number) => descending ? -sortResult : sortResult
