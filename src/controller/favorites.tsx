@@ -89,7 +89,7 @@ export const getFavoritesController = (controller: Controller | null): Controlle
         sort: (items: FolderViewItem[]) => items,
         itemsSelectable: false,
         appendPath: (_: string, subPath: string) => subPath,
-        rename: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
+        rename: () => AsyncResult.from(new Ok<string, ErrorType>("")),
         extendedRename: async () => null,
         renameAsCopy: async () => null,
         createFolder: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),

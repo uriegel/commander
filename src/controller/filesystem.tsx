@@ -228,7 +228,8 @@ const rename = (path: string, item: FolderViewItem, dialog: DialogHandle) => {
 	}, res => res.result == ResultType.Ok && res.input
 		? new Ok(res.input)
 		: new Err({ status: IOError.Canceled, statusText: "" }))
-		.bindAsync(newName => jsonPost<Nothing, ErrorType>({ method: "renameitem", payload: { path, name: item.name, newName }}))
+		.bindAsync(newName => jsonPost<Nothing, ErrorType>({ method: "renameitem", payload: { path, name: item.name, newName } })
+								.map(_ => newName))
 }
 
 const renameAsCopy = async (path: string, item: FolderViewItem, dialog: DialogHandle|null) => {

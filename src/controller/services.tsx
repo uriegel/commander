@@ -102,7 +102,7 @@ const createController = (): ControllerResult => {
             sort,
             itemsSelectable: true,
             appendPath: (path: string, subPath: string) => path.appendPath(subPath),
-            rename: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
+            rename: () => AsyncResult.from(new Ok<string, ErrorType>("")),
             extendedRename: async () => null,
             renameAsCopy: async () => null,
             createFolder: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),

@@ -209,7 +209,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             : columns
     }
 
-    const changePath = (path: string, showHidden: boolean, latestPath?: string, mount?: boolean, fromBacklog?: boolean) => {
+    // TODO changePathProps
+    const changePath = (path: string, showHidden: boolean, latestPath?: string, mount?: boolean, fromBacklog?: boolean, checkPosition?: (checkItem: FolderViewItem)=>boolean) => {
         if (waitOnExtendedItems.current)
             controller.current.cancelExtendedItems(id)
         
@@ -227,7 +228,12 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     setItems(res.items)
                     itemCount.current = { dirCount: res.dirCount, fileCount: res.fileCount }
                     onItemsChanged(itemCount.current)
-                    const pos = latestPath ? res.items.findIndex(n => n.name == latestPath) : 0
+                    const pos =
+                        latestPath
+                        ? res.items.findIndex(n => n.name == latestPath)
+                        : checkPosition
+                        ? res.items.findIndex(n => checkPosition(n))
+                        : 0
                     virtualTable.current?.setInitialPosition(pos, res.items.length)
                     refPath.current = res.path
                     localStorage.setItem(`${id}-lastPath`, res.path)
@@ -363,17 +369,20 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         onItemsChanged(itemCount.current)
     }, [items, onFocus, onPositionChanged, onItemsChanged]) 
 
-    const refresh = async (forceShowHidden?: boolean) =>
-        changePath(path, forceShowHidden == undefined ? showHidden : forceShowHidden)
+    const refresh = async (forceShowHidden?: boolean, checkPosition?: (checkItem: FolderViewItem)=>boolean) =>
+        changePath(path, forceShowHidden == undefined ? showHidden : forceShowHidden, undefined, undefined, undefined, checkPosition)
 
     const rename = () => 
         withSelectedItem(item => {
             virtualTable.current?.setFocus()
             controller.current.rename(path, item, dialog)
                 .match(
-                    () => refresh(),
+                    newName => {
+                        console.log("newName", newName)
+                        return refresh(false, n => n.name == newName)
+                    },
+                            
                     err => showError(err, setError))
-            // TODO when renamed select new file when changePath is finished
         })
     
     const renameAsCopy = async () => {

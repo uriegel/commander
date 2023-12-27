@@ -100,7 +100,7 @@ export const getRootController = (controller: Controller | null): ControllerResu
         sort: (items: FolderViewItem[]) => items,
         itemsSelectable: false,
         appendPath: (_: string, subPath: string) => subPath,
-        rename: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
+        rename: () => AsyncResult.from(new Ok<string, ErrorType>("")),
         extendedRename: async () => null,
         renameAsCopy: async () => null,
         createFolder: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
