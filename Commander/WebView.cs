@@ -34,6 +34,8 @@ static class Window
                 .MapGet("commander/file", context => Directory.ProcessFile(context, context.Request.Query["path"].ToString()))
                 .MapGet("commander/getfavicon", context => Directory.ProcessFavicon(context))
                 .JsonPost<GetFiles, GetFilesResult, GetFilesError>("commander/getfiles", Directory.GetFiles)
+                .JsonPost<GetExtendedItems, GetExtendedItemsResult, GetFilesError>("commander/getextendeditems", Directory.GetExtendedItems)
+                .JsonPost<CancelExtendedItems, Nothing, GetFilesError>("commander/cancelextendeditems", Directory.CancelExtendedItems)
                 .JsonPost<RenameItemParam, Nothing, RequestError>("commander/renameitem", Directory.RenameItem)
                 .JsonPost<CreateFolderParam, Nothing, RequestError>("commander/createfolder", Directory.CreateFolder)
                 .JsonPost<DeleteItemsParam, Nothing, RequestError>("commander/deleteitems", Directory.DeleteItems)

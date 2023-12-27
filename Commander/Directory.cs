@@ -24,19 +24,19 @@ static partial class Directory
             .Bind(n => GetFiles(n, getFiles.ShowHiddenItems))
             .SelectError(e => new GetFilesError(getFiles.Path, e.Status, e.StatusText));
 
-    public static GetExtendedItemsResult GetExtendedItems(string id, string path, string[] items)
+    public static AsyncResult<GetExtendedItemsResult, GetFilesError> GetExtendedItems(GetExtendedItems param)
     {
-        extendedInfosCancellations = extendedInfosCancellations.Remove(id);
-        extendedInfosCancellations = extendedInfosCancellations.Add(id, new());
+        extendedInfosCancellations = extendedInfosCancellations.Remove(param.Id);
+        extendedInfosCancellations = extendedInfosCancellations.Add(param.Id, new());
         DateTime? GetExifDate(string file)
         {
             if (extendedInfosCancellations
-                    .GetValue(id)
+                    .GetValue(param.Id)
                     ?.IsCancellationRequested == true)
                 return null;
             try
             {
-                var directories = ImageMetadataReader.ReadMetadata(path.AppendPath(file));
+                var directories = ImageMetadataReader.ReadMetadata(param.Path.AppendPath(file));
                 var subIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
                 return (subIfdDirectory
                         ?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal)
@@ -55,9 +55,15 @@ static partial class Directory
                 ? GetExifDate(item)
                 : null;
 
-        return new(items.Select(CheckGetExifDate).ToArray(), path);
+        return Ok<GetExtendedItemsResult, GetFilesError>(new(param.Items.Select(CheckGetExifDate).ToArray(), param.Path))
+                    .ToAsyncResult();
     }
 
+    public static AsyncResult<Nothing, GetFilesError> CancelExtendedItems(CancelExtendedItems cancelExtendedItems)
+        => Ok<Nothing, GetFilesError>(nothing)
+            .SideEffect(_ => extendedInfosCancellations.GetValue(cancelExtendedItems.Id)?.Cancel())
+            .ToAsyncResult();
+    
     public static async Task ProcessFile(HttpContext context, string path)
     {
         using var stream = path.OpenFile();
