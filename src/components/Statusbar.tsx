@@ -6,10 +6,11 @@ export interface StatusbarProps {
     dirCount: number
     fileCount: number
     errorText: string | null
-    setErrorText: (text: string|null)=>void
+    setErrorText: (text: string | null) => void
+    statusText: string | null
 }
 
-const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText }: StatusbarProps) => {
+const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusText  }: StatusbarProps) => {
 
     const timer = useRef(0)
 
@@ -20,13 +21,17 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText }: Statu
         }
     }, [errorText, setErrorText])
 
-    const getClasses = () => ["statusbar", errorText ? "error" : null].join(' ')
-
+    const getClasses = () => ["statusbar", errorText
+                                                ? "error"
+                                                : statusText
+                                                ? "status"
+                                                : null]
+                                                    .join(' ')
     return (
         <div className={getClasses()}>
-            {errorText ||
-                (<>
-                    <span>{path}</span>
+            { errorText
+                || (<>
+                    <span>{statusText || path}</span>
                     <span className='fill'></span>
                     <span>{`${dirCount} Verz.`}</span>
                     <span className='lastStatus'>{`${fileCount} Dateien`}</span>

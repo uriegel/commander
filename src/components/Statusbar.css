@@ -10,6 +10,11 @@
     background-color: red;
 }
 
+.statusbar.status {
+    color: white;
+    background-color: var(--vtr-selected-background-color);
+}
+
 .fill {
     flex-grow: 1;
 }

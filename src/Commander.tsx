@@ -60,6 +60,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 	const showViewerRef = useRef(false)
 	const [path, setPath] = useState<PathProp>({ path: "", isDirectory: false })
 	const [errorText, setErrorText] = useState<string | null>(null)
+	const [statusText, setStatusText] = useState<string | null>(null)
 	const [itemCount, setItemCount] = useState({dirCount: 0, fileCount: 0 })
 	const [progress, setProgress] = useState(0)
 	const [progressRevealed, setProgressRevealed] = useState(false)
@@ -162,11 +163,13 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 
 	const FolderLeft = () => (
 		<FolderView ref={folderLeft} id={ID_LEFT} onFocus={onFocusLeft} onCopy={copyItems} setError={setErrorText}
-			onPathChanged={onPathChanged} showHidden={showHidden} onItemsChanged={setItemCount} onEnter={onEnter} />
+			onPathChanged={onPathChanged} showHidden={showHidden} onItemsChanged={setItemCount} onEnter={onEnter}
+			statusText={statusText} setStatusText={setStatusText} />
 	)
 	const FolderRight = () => (
 		<FolderView ref={folderRight} id={ID_RIGHT} onFocus={onFocusRight} onCopy={copyItems} setError={setErrorText}
-			onPathChanged={onPathChanged} showHidden={showHidden} onItemsChanged={setItemCount} onEnter={onEnter} />
+			onPathChanged={onPathChanged} showHidden={showHidden} onItemsChanged={setItemCount} onEnter={onEnter}
+			statusText={statusText} setStatusText={setStatusText} />
 	)
 
 	const activeFolderId = useRef("left")
@@ -254,7 +257,8 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 				showViewer={showViewer} toggleShowViewer={toggleShowViewer} />
 			)} isMaximized ={isMaximized} />
 			<ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
-			<Statusbar path={path.path} dirCount={itemCount.dirCount} fileCount={itemCount.fileCount} errorText={errorText} setErrorText={setErrorText} />
+			<Statusbar path={path.path} dirCount={itemCount.dirCount} fileCount={itemCount.fileCount}
+				errorText={errorText} setErrorText={setErrorText} statusText={statusText} />
 		</>
 	)
 })

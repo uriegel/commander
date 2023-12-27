@@ -75,11 +75,13 @@ interface FolderViewProp {
     onItemsChanged: (count: ItemCount) => void
     onCopy: (move: boolean) => void
     onEnter: (item: FolderViewItem, keys: SpecialKeys) => Promise<void>
-    setError: (error: string)=>void
+    setError: (error: string) => void
+    statusText: string | null
+    setStatusText: (text: string|null)=>void
 }
 
 const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
-    { id, showHidden, onFocus, onPathChanged, onItemsChanged, onCopy, onEnter, setError },
+    { id, showHidden, onFocus, onPathChanged, onItemsChanged, onCopy, onEnter, setError, setStatusText, statusText },
     ref) => {
 
     useImperativeHandle(ref, () => ({
@@ -128,7 +130,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const sortIndex = useRef(0)
     const sortDescending = useRef(false)
     const itemCount = useRef({ fileCount: 0, dirCount: 0 })
-    const waitOnExtendedItems = useRef(false)
     
     const [items, setItems] = useState([] as FolderViewItem[])
     const [path, setPath] = useState("")
@@ -211,7 +212,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     // TODO changePathProps
     const changePath = (path: string, showHidden: boolean, latestPath?: string, mount?: boolean, fromBacklog?: boolean, checkPosition?: (checkItem: FolderViewItem)=>boolean) => {
-        if (waitOnExtendedItems)      
+        if (statusText)      
             // TODO control sorting version or date    
             controller.current.cancelExtendedItems(id)
         restrictionView.current?.reset()
@@ -239,15 +240,15 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     localStorage.setItem(`${id}-lastPath`, res.path)
                     if (!fromBacklog)
                         history.current?.set(res.path)
-                    waitOnExtendedItems.current = true
+                    setStatusText("Erweiterte Infos werden abgerufen...")
                     controller.current
                         .getExtendedItems(id, res.path, res.items)
                         .match(
                             ok => {
-                                waitOnExtendedItems.current = false
+                                setStatusText(null)
                                 if (ok.path == refPath.current)
                                     setItems(controller.current.setExtendedItems(res.items, ok))    
-                            }, () => {})
+                            }, () => setStatusText(null))
                 },
                 err => {
                     console.log("err", err)
