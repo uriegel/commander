@@ -16,7 +16,6 @@ type Result =
     | GetItemsResult 
     | GetExtendedItemsResult
     | IOErrorResult
-    | CopyItemsResult
 
 export interface RootItem {
     name:        string

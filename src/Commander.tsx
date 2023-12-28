@@ -83,12 +83,13 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 		return () => subscription?.unsubscribe()
 	}, [])
 
-	const copyItemsToInactive = useCallback(async (inactive: FolderViewHandle | null, move: boolean, activeController: Controller,
+	const copyItemsToInactive = useCallback((inactive: FolderViewHandle | null, move: boolean, activeController: Controller,
 		activePath: string, itemsToCopy: FolderViewItem[], id?: string, active?: FolderViewHandle | null) => {
 		const controller = inactive && getCopyController(move, dialog, id == ID_LEFT, activeController, inactive.getController(),
 			activePath, inactive.getPath(), itemsToCopy, inactive.getItems())
-		const result = controller ? await controller.copy() : null
-		await checkResult(dialog, active, result)
+		
+		const result = controller ? controller.copy() : null
+		//checkResult(dialog, active, result)
 	}, [dialog])
 
 	useEffect(() => {

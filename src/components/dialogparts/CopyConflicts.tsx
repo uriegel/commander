@@ -12,7 +12,7 @@ import { IconNameType } from '../../enums'
 export interface ConflictItem {
 	name: string
 	subPath: string
-	iconPath: string
+	iconPath?: string
     size?: number
     time?: string
     exifDate?: string
