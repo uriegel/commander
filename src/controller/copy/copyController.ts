@@ -4,27 +4,30 @@ import CopyConflicts, { ConflictItem } from "../../components/dialogparts/CopyCo
 import { FolderViewItem } from "../../components/FolderView"
 import { Controller, ControllerType } from "../controller"
 import { compareVersion, getItemsType, ItemsType } from "../filesystem"
-import { CopyItem, CopyItemsResult, IOError, IOErrorResult } from "../../requests/requests"
+import { CopyItem } from "../../requests/requests"
 import { copy, copyInfo } from "./fileSystem"
-import { copyInfoToRemote, copyToRemote } from "./toRemoteCopy"
-import { copyFromRemote, copyInfoFromRemote } from "./fromRemoteCopy"
+import { AsyncResult, ErrorType, Nothing } from "functional-extensions"
 
 export interface CopyController {
-    copy: ()=>Promise<IOError|null>
+    copy: () => AsyncResult<Nothing, ErrorType>
 }
 
 const getCopyFunction = (from: ControllerType, to: ControllerType) =>
     from == ControllerType.Remote && to == ControllerType.FileSystem
-    ? copyFromRemote
+    // TODO copyFromRemote
+    ? copy
     : from == ControllerType.FileSystem && to == ControllerType.Remote
-    ? copyToRemote
+    // TODO copyToRemote
+    ? copy
     : copy    
 
 const getPreCopyFunction = (from: ControllerType, to: ControllerType) =>
     from == ControllerType.Remote && to == ControllerType.FileSystem
-    ? copyInfoFromRemote
+    // TODO ? copyInfoFromRemote
+    ? copyInfo
     : from == ControllerType.FileSystem && to == ControllerType.Remote
-    ? copyInfoToRemote
+    // TODO? copyInfoToRemote
+    ? copyInfo
     : copyInfo
 
 export const getCopyController = (move: boolean, dialog: DialogHandle | null, fromLeft: boolean, fromController: Controller, toController: Controller,
@@ -41,9 +44,9 @@ export const getCopyController = (move: boolean, dialog: DialogHandle | null, fr
 
 const getFileSystemCopyController = (move: boolean, dialog: DialogHandle|null|undefined, fromLeft: boolean, _: Controller, __: Controller,
             sourcePath: string, targetPath: string, items: FolderViewItem[], targetItems: FolderViewItem[],
-            copyInfo: (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean)=>Promise<CopyItemsResult>,
-            copy: (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean, uacShown?: (uac: boolean)=>void, dialog?: DialogHandle|null)=>Promise<IOErrorResult>): CopyController | null => ({
-        copy: async () => {
+            copyInfo: (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean)=>AsyncResult<CopyItem[], ErrorType>,
+            copy: (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean)=>AsyncResult<Nothing, ErrorType>): CopyController | null => ({
+        copy: () => {
             if (!items || !targetItems || items.length == 0)
                 return null
                     

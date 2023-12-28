@@ -1,20 +1,25 @@
-import { DialogHandle } from "web-dialog-react"
-import { CopyItem, CopyItemsResult, IOErrorResult, request } from "../../requests/requests"
+import { CopyItem } from "../../requests/requests"
+import { ErrorType, Nothing, jsonPost } from "functional-extensions"
 
-export const copyInfo = async (sourcePath: string, targetPath: string, items: CopyItem[]) => {
-    return await request<CopyItemsResult>("copyitemsinfo", {
-        path: sourcePath,
-        targetPath: targetPath,
-        items,
-        move: false
+export const copyInfo = (sourcePath: string, targetPath: string, items: CopyItem[]) =>
+    jsonPost<CopyItem[], ErrorType>({
+        method: "copyitemsinfo",
+        payload: {
+            path: sourcePath,
+            targetPath: targetPath,
+            items,
+            move: false
+        }
     })
-}
 
-export const copy = async (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean, uacShown?: (uac: boolean)=>void, dialog?: DialogHandle|null) => {
-    return await request<IOErrorResult>("copyitems", {
-        path: sourcePath,
-        targetPath: targetPath,
-        items,
-        move
-    }, dialog, uacShown)
-}
+export const copy = (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean) => 
+    jsonPost<Nothing, ErrorType>({
+        method: "copyitems", 
+        payload: {
+            path: sourcePath,
+            targetPath: targetPath,
+            items,
+            move
+        }
+    })
+

@@ -1,11 +1,14 @@
 using System.Threading.Channels;
+using AspNetExtensions;
 using CsTools;
 using CsTools.Extensions;
 using CsTools.Functional;
 
+using static CsTools.Core;
+
 static class CopyProcessor
 {
-    public static Task<IOResult> AddItems(CopyItemsParam input)
+    public static AsyncResult<Nothing, RequestError> AddItems(CopyItemsParam input)
     {
         totalCount += input.Items.Length; 
         totalBytes += input.Items.Select(n => n.Size).Aggregate(0L, (a, b) => a + b);
@@ -13,7 +16,8 @@ static class CopyProcessor
             startTime = DateTime.Now;
         Events.CopyStarted();
         input.Items.ForEach(n => InsertCopyItem(input.Path, input.TargetPath, input.Move, n));
-        return new IOResult(IOErrorType.NoError).ToAsync();
+        return Ok<Nothing, RequestError>(nothing)
+            .ToAsyncResult();
     }
         
     async static void Process()

@@ -244,14 +244,6 @@ static partial class Directory
         }
     }
 
-    static IOResult MapExceptionToIOError(Exception e)
-        => e switch
-        {
-            IOException ioe when ioe.HResult == -2147024891 => new(IOErrorType.AccessDenied),
-            UnauthorizedAccessException ue                  => new(IOErrorType.AccessDenied),
-            _                                               => new(IOErrorType.Exn)
-        };
-
     static readonly DateTime startTime = DateTime.Now;
     static string Mount(string path) => "";
 

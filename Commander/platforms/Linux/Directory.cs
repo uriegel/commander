@@ -213,14 +213,6 @@ static partial class Directory
         proc.WaitForExit();
     }
 
-    static IOResult MapExceptionToIOError(Exception e)
-        => e switch
-        {
-            IOException ioe when ioe.HResult == 13 => new(IOErrorType.AccessDenied),
-            UnauthorizedAccessException ue         => new(IOErrorType.AccessDenied),
-            _                                      => new(IOErrorType.Exn)
-        };
-
     static IOResult MapGErrorToIOError(GError e)
         => e switch
         {

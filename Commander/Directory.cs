@@ -81,15 +81,13 @@ static partial class Directory
         await context.SendStream(ms, null, "favicon.png");
     }
 
-    public static Task<CopyItemsResult> CopyItemsInfo(CopyItemsParam input)
+    public static AsyncResult<CopyItemInfo[], RequestError> CopyItemsInfo(CopyItemsParam input)
     {
-        return CopyItemsInfo()
-                .Catch(MapExceptionToCopyItems);
-
-        async Task<CopyItemsResult> CopyItemsInfo()
-            => await new CopyItemsResult(input.Items.FlattenTree(Resolver, CreateCopyItemInfo, IsDirectory, new CancellationTokenSource(TimeSpan.FromSeconds(10)).Token,
-                        AppendSubPath, (string?)null).ToArray())
-                    .ToAsync();
+        return Try(
+            () => input.Items.FlattenTree(Resolver, CreateCopyItemInfo, IsDirectory, new CancellationTokenSource(TimeSpan.FromSeconds(10)).Token,
+                            AppendSubPath, (string?)null).ToArray(),
+            MapException)
+                .ToAsyncResult();
 
         (IEnumerable<CopyItem>, string?) Resolver(CopyItem item, string? subPath)
             => (GetCopyItems(subPath.AppendPath(item.Name)), item.Name);
@@ -124,9 +122,6 @@ static partial class Directory
 
         bool IsDirectory(CopyItem item, string? subPath)
             => item.isDirectory == true;
-        
-        static CopyItemsResult MapExceptionToCopyItems(Exception e)
-            => new(null, MapExceptionToIOError(e).Type);            
     }
 
     public static void FilesDropped(string id, bool move, string[] paths)
@@ -230,6 +225,15 @@ static partial class Directory
 
     static bool IsDirectory(string path)
         => (File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory;
+
+    static IOResult MapExceptionToIOError(Exception e)
+        => e switch
+        {
+            IOException ioe when ioe.HResult == 13          => new(IOErrorType.AccessDenied),
+            IOException ioe when ioe.HResult == -2147024891 => new(IOErrorType.AccessDenied),
+            UnauthorizedAccessException ue                  => new(IOErrorType.AccessDenied),
+            _                                               => new(IOErrorType.Exn)
+        };
 }
 
 record DirectoryItem(

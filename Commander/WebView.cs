@@ -40,14 +40,12 @@ static class Window
                 .JsonPost<CreateFolderParam, Nothing, RequestError>("commander/createfolder", Directory.CreateFolder)
                 .JsonPost<DeleteItemsParam, Nothing, RequestError>("commander/deleteitems", Directory.DeleteItems)
                 .JsonPost("commander/getroot", Root.Get)
+                .JsonPost<CopyItemsParam, CopyItemInfo[], RequestError>("commander/copyitemsinfo", Directory.CopyItemsInfo)
+                .JsonPost<CopyItemsParam, Nothing, RequestError>("commander/copyitems", CopyProcessor.AddItems)
                 // TODO
-                .JsonPost<CopyItemsParam, CopyItemsResult>("commander/copyitemsinfo", Directory.CopyItemsInfo)
-                // TODO
-                .JsonPost<CopyItemsParam, IOResult>("commander/copyitems", CopyProcessor.AddItems)
                 // .JsonPost<CopyItemsParam, IOResult>("commander/copyitemsfromremote", Remote.CopyItemsFromRemote)
                 // .JsonPost<CopyItemsParam, IOResult>("commander/copyitemstoremote", Remote.CopyItemsToRemote)
                 //.JsonPost<Empty, IOResult>("commander/cancelcopy", Directory.CancelCopy)
-                // TODO
                 .JsonPost<GetFiles, GetFilesRequestResult>("commander/getremotefiles", Remote.GetFiles)
                 // TODO
                 .JsonPost<RenameItemsParam, IOResult>("commander/renameitems", Directory.RenameItems)

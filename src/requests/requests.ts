@@ -201,10 +201,6 @@ export type CopyItem = {
     targetTime?: string | undefined
 }
 
-export interface CopyItemsResult extends IOErrorResult {
-    infos?: CopyItem[]
-}
-
 type CopyItemsType = {
     path:        string
     targetPath:  string
