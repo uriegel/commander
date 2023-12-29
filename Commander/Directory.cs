@@ -22,6 +22,7 @@ static partial class Directory
             .CreateDirectoryInfo()
             .Validate()
             .Bind(n => GetFiles(n, getFiles.ShowHiddenItems))
+            .Select(n => n.SideEffect(n => DirectoryWatcher.Initialize(getFiles.Id, n.Path)))
             .SelectError(e => new GetFilesError(getFiles.Path, e.Status, e.StatusText));
 
     public static AsyncResult<Nothing, GetFilesError> CancelExtendedItems(CancelExtendedItems cancelExtendedItems)
@@ -260,11 +261,12 @@ record DirectoryItem(
             info.Length,
             false,
             Directory.GetIconPath(info),
-            (info.Attributes & System.IO.FileAttributes.Hidden) == System.IO.FileAttributes.Hidden,
+            (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden,
             info.LastWriteTime);
 };
 
 record GetFiles(
+    string Id, 
     string Path,
     bool ShowHiddenItems,
     bool? Mount

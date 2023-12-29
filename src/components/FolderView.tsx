@@ -99,7 +99,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             controller.current.onSelectionChanged(items)
         },
         changePath(path: string) {
-            changePath(path, showHidden)
+            changePath(id, path, showHidden)
         },
         getPath() { return path },
         rename,
@@ -196,7 +196,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     useEffect(() => virtualTable.current?.setFocus(), [])
 
     useEffect(() => {
-        changePath(localStorage.getItem(`${id}-lastPath`) ?? ROOT, false)
+        changePath(id, localStorage.getItem(`${id}-lastPath`) ?? ROOT, false)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -211,14 +211,14 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     // TODO changePathProps
-    const changePath = (path: string, showHidden: boolean, latestPath?: string, mount?: boolean, fromBacklog?: boolean, checkPosition?: (checkItem: FolderViewItem)=>boolean) => {
+    const changePath = (id: string, path: string, showHidden: boolean, latestPath?: string, mount?: boolean, fromBacklog?: boolean, checkPosition?: (checkItem: FolderViewItem)=>boolean) => {
         if (statusText)      
             // TODO control sorting version or date    
             controller.current.cancelExtendedItems(id)
         restrictionView.current?.reset()
         const controllerChanged = checkController(path, controller.current)
         controllerChanged.controller
-            .getItems(path, showHidden, sortIndex.current, sortDescending.current, mount || false, dialog)
+            .getItems(id, path, showHidden, sortIndex.current, sortDescending.current, mount || false, dialog)
             .match(
                 res => {
                     if (controllerChanged.changed) {
@@ -261,14 +261,14 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const processEnter = async (item: FolderViewItem, keys: SpecialKeys, otherPath?: string) => {
         const result = await controller.current.onEnter({path, item, keys, dialog, refresh, selectedItems: getSelectedItems(), items, otherPath})
         if (!result.processed && result.pathToSet) 
-            changePath(result.pathToSet, showHidden, result.latestPath, result.mount)
+            changePath(id, result.pathToSet, showHidden, result.latestPath, result.mount)
     }
 
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setPath(e.target.value)
 
     const onInputKeyDown = (e: React.KeyboardEvent) => {
         if (e.code == "Enter") {
-            changePath(path, showHidden)
+            changePath(id, path, showHidden)
             virtualTable.current?.setFocus()
             e.stopPropagation()
             e.preventDefault()
@@ -345,7 +345,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 if (!checkRestricted(evt.key)) {
                     const path = history.current?.get(evt.shiftKey)
                     if (path)
-                        changePath(path, showHidden, undefined, undefined, true)
+                        changePath(id, path, showHidden, undefined, undefined, true)
                 }
                 break
             default:
@@ -374,7 +374,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }, [items, onFocus, onPositionChanged, onItemsChanged]) 
 
     const refresh = (forceShowHidden?: boolean, checkPosition?: (checkItem: FolderViewItem)=>boolean) =>
-        changePath(path, forceShowHidden == undefined ? showHidden : forceShowHidden, undefined, undefined, undefined, checkPosition)
+        changePath(id, path, forceShowHidden == undefined ? showHidden : forceShowHidden, undefined, undefined, undefined, checkPosition)
 
     const rename = () => 
         withSelectedItem(item => {
