@@ -193,7 +193,7 @@ export const checkResult = async (dialog: DialogHandle|null|undefined, activeFol
         return true
 }
 
-export const showError = async (error: ErrorType, setError: (error: string)=>void) => {
+export const showError = (error: ErrorType, setError: (error: string)=>void) => {
 
     const getRequestError = (ioError: IOError) => 
         ioError === IOError.AccessDenied

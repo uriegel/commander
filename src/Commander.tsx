@@ -4,7 +4,7 @@ import { DialogContext, ResultType } from 'web-dialog-react'
 import FolderView, { FolderViewHandle, FolderViewItem } from './components/FolderView'
 import Menu from './components/Menu'
 import Statusbar from './components/Statusbar'
-import { Controller, checkResult } from './controller/controller'
+import { Controller, showError } from './controller/controller'
 import PictureViewer from './components/PictureViewer'
 import MediaPlayer from './components/MediaPlayer'
 import { CredentialsResult, IOError, request } from './requests/requests'
@@ -84,12 +84,15 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 	}, [])
 
 	const copyItemsToInactive = useCallback((inactive: FolderViewHandle | null, move: boolean, activeController: Controller,
-		activePath: string, itemsToCopy: FolderViewItem[], id?: string, active?: FolderViewHandle | null) => {
+		activePath: string, itemsToCopy: FolderViewItem[], id?: string) => {
 		const controller = inactive && getCopyController(move, dialog, id == ID_LEFT, activeController, inactive.getController(),
 			activePath, inactive.getPath(), itemsToCopy, inactive.getItems())
-		
-		const result = controller ? controller.copy() : null
-		//checkResult(dialog, active, result)
+		if (controller)
+			controller
+				.copy()
+				.match(
+					() => { },
+					e => showError(e, setErrorText))
 	}, [dialog])
 
 	useEffect(() => {
@@ -227,7 +230,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 		const active = getActiveFolder()
 		const inactive = getInactiveFolder()
 		if (active && inactive)
-			copyItemsToInactive(inactive, move, active.getController(), active.getPath(), active.getSelectedItems(), active.id, active)
+			copyItemsToInactive(inactive, move, active.getController(), active.getPath(), active.getSelectedItems(), active.id)
 	}
 
 	const VerticalSplitView = () => (

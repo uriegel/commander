@@ -373,7 +373,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         onItemsChanged(itemCount.current)
     }, [items, onFocus, onPositionChanged, onItemsChanged]) 
 
-    const refresh = async (forceShowHidden?: boolean, checkPosition?: (checkItem: FolderViewItem)=>boolean) =>
+    const refresh = (forceShowHidden?: boolean, checkPosition?: (checkItem: FolderViewItem)=>boolean) =>
         changePath(path, forceShowHidden == undefined ? showHidden : forceShowHidden, undefined, undefined, undefined, checkPosition)
 
     const rename = () => 
@@ -394,7 +394,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                refresh() 
         }
     }
-    const createFolder = async () => {
+    const createFolder = () => {
         virtualTable.current?.setFocus()
         if (dialog)
             controller.current
