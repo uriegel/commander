@@ -10,7 +10,8 @@ if (args.Length > 0 && args[0] == "-adminMode")
         
 #endif
 
-var fsw = new FileSystemWatcher("/media/uwe/Video")
+//var fsw = new FileSystemWatcher("/media/uwe/Video")
+var fsw = new FileSystemWatcher(@"\\vme-win2016\c$\Datenaustauschverzeichnis")
 {
     NotifyFilter = NotifyFilters.CreationTime
                     | NotifyFilters.DirectoryName

@@ -12,6 +12,9 @@ using static CsTools.Core;
 
 static partial class Directory
 {
+    public static AsyncResult<GetExtendedItemsResult, GetFilesError> GetExtendedItems(GetExtendedItems param)
+        => GetExtendedItems(param.Id, param.Path, param.Items);
+
     public static AsyncResult<DirectoryInfo, RequestError> Validate(this DirectoryInfo info)
         => Ok<DirectoryInfo, RequestError>(info).ToAsyncResult();
 

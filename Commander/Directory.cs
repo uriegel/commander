@@ -24,41 +24,6 @@ static partial class Directory
             .Bind(n => GetFiles(n, getFiles.ShowHiddenItems))
             .SelectError(e => new GetFilesError(getFiles.Path, e.Status, e.StatusText));
 
-    public static AsyncResult<GetExtendedItemsResult, GetFilesError> GetExtendedItems(GetExtendedItems param)
-    {
-        extendedInfosCancellations = extendedInfosCancellations.Remove(param.Id);
-        extendedInfosCancellations = extendedInfosCancellations.Add(param.Id, new());
-        DateTime? GetExifDate(string file)
-        {
-            if (extendedInfosCancellations
-                    .GetValue(param.Id)
-                    ?.IsCancellationRequested == true)
-                return null;
-            try
-            {
-                var directories = ImageMetadataReader.ReadMetadata(param.Path.AppendPath(file));
-                var subIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
-                return (subIfdDirectory
-                        ?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal)
-                        .WhiteSpaceToNull()
-                        ?? subIfdDirectory
-                            ?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal)
-                            .WhiteSpaceToNull()
-                        ?? "")
-                            .ToDateTime("yyyy:MM:dd HH:mm:ss");
-            }
-            catch { return null; }
-        }
-
-        DateTime? CheckGetExifDate(string item)
-            => item.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase) || item.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase)
-                ? GetExifDate(item)
-                : null;
-
-        return Ok<GetExtendedItemsResult, GetFilesError>(new(param.Items.Select(CheckGetExifDate).ToArray(), param.Path))
-                    .ToAsyncResult();
-    }
-
     public static AsyncResult<Nothing, GetFilesError> CancelExtendedItems(CancelExtendedItems cancelExtendedItems)
         => Ok<Nothing, GetFilesError>(nothing)
             .SideEffect(_ => extendedInfosCancellations.GetValue(cancelExtendedItems.Id)?.Cancel())
@@ -205,6 +170,42 @@ static partial class Directory
             DirectoryError.PathTooLong       => new(IOErrorType.PathTooLong),
             _                                => new(IOErrorType.Exn)
         };
+
+    // TODO Set extendedInfosCancellations on getItems
+    static AsyncResult<GetExtendedItemsResult, GetFilesError> GetExtendedItems(string id, string path, string[] items)
+    {
+        extendedInfosCancellations = extendedInfosCancellations.Remove(id);
+        extendedInfosCancellations = extendedInfosCancellations.Add(id, new());
+        DateTime? GetExifDate(string file)
+        {
+            if (extendedInfosCancellations
+                    .GetValue(id)
+                    ?.IsCancellationRequested == true)
+                return null;
+            try
+            {
+                var directories = ImageMetadataReader.ReadMetadata(path.AppendPath(file));
+                var subIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
+                return (subIfdDirectory
+                        ?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal)
+                        .WhiteSpaceToNull()
+                        ?? subIfdDirectory
+                            ?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal)
+                            .WhiteSpaceToNull()
+                        ?? "")
+                            .ToDateTime("yyyy:MM:dd HH:mm:ss");
+            }
+            catch { return null; }
+        }
+
+        DateTime? CheckGetExifDate(string item)
+            => item.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase) || item.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase)
+                ? GetExifDate(item)
+                : null;
+
+        return Ok<GetExtendedItemsResult, GetFilesError>(new(items.Select(CheckGetExifDate).ToArray(), path))
+                    .ToAsyncResult();
+    }
 
     static AsyncResult<Nothing, RequestError> RenameItemRaw(RenameItemParam input)
         =>  Move(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName))

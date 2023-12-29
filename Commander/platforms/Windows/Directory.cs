@@ -40,29 +40,14 @@ static partial class Directory
         await context.SendStream(stream!, startTime, "icon.png");
     }
 
-    public static Task<GetExtendedItemsResult> GetExtendedItems(GetExtendedItems getExtendedItems)
-    {
-        Version? GetVersion(string file)
-            => FileVersionInfo
-                .GetVersionInfo(getExtendedItems
-                                    .Path
-                                    .AppendPath(file))
-                .MapVersion();
-
-        Version? CheckGetVersion(string item)
-            => item.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase) || item.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase)
-                ? GetVersion(item)
-                : null;
-
-        return (GetExtendedItems(getExtendedItems.Id, getExtendedItems.Path, getExtendedItems.Items) with 
-        {
-            Versions = getExtendedItems
-                        .Items
-                        .Select(CheckGetVersion)
-                        .ToArray()
-        })
-            .ToAsync();
-    }
+    public static AsyncResult<GetExtendedItemsResult, GetFilesError> GetExtendedItems(GetExtendedItems param)
+        => GetExtendedItems(param.Id, param.Path, param.Items)
+            .Select(items => items with {
+                Versions = param
+                            .Items
+                            .Select(n => CheckGetVersion(param.Path, n))
+                            .ToArray()
+            });
 
     public static AsyncResult<Nothing, RequestError> RenameItem(RenameItemParam input)
         => RenameItemRaw(input)
@@ -171,6 +156,13 @@ static partial class Directory
                     return ms as Stream;
                 }) 
             ?? (new MemoryStream() as Stream).ToAsync();
+
+    static Version? CheckGetVersion(string path, string item)
+        => item.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase) || item.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase)
+            ? FileVersionInfo
+                .GetVersionInfo(path.AppendPath(item))
+                .MapVersion()
+            : null;
 
     static AsyncResult<Nothing, RequestError> DeleteItemsRaw(DeleteItemsParam input)
         => (SHFileOperation(new ShFileOPStruct
