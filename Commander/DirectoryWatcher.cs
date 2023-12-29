@@ -1,36 +1,42 @@
-using System.Collections.Immutable;
+using System.Collections.Concurrent;
 using CsTools.Extensions;
 
 // TODO call with path = null when a Controller != FileSystemController is selected
-class DirectoryWatcher(string path) : IDisposable
+class DirectoryWatcher(string? path) : IDisposable
 {
-    public static void Initialize(string key, string path)
-        => watchers = watchers.AddOrUpdate(key, dw =>
-        {
-            dw?.Dispose();
-            return new DirectoryWatcher(path);
-        });
+    public string? Path { get => path; }
+
+    public static void Initialize(string key, string? path)
+        => watchers.AddOrUpdateLocked(key, 
+            k => new DirectoryWatcher(path),
+            (key, dw) => dw == null
+                ? new DirectoryWatcher(path)
+                : dw.Path != path ? new DirectoryWatcher(path).SideEffect(_ => dw.Dispose()) : dw);
 
     // fsw.Created += (s, e) => Console.WriteLine($"Created {e.Name}");
     // fsw.Deleted += (s, e) => Console.WriteLine($"Deleted {e.Name}");
     // fsw.Renamed += (s, e) => Console.WriteLine($"Renamed {e.OldName}, {e.Name}");
 
-    readonly FileSystemWatcher fsw = new FileSystemWatcher(path)
-    {
-        NotifyFilter = NotifyFilters.CreationTime
+    static FileSystemWatcher CreateWatcher(string path)
+        => new FileSystemWatcher(path)
+        {
+            NotifyFilter = NotifyFilters.CreationTime
                         | NotifyFilters.DirectoryName
                         | NotifyFilters.FileName
                         | NotifyFilters.LastWrite
                         | NotifyFilters.Size,
-        EnableRaisingEvents = true,
-        IncludeSubdirectories = true
-    }.SideEffect(n =>
-    {
-        n.Changed += (s, e) => Console.WriteLine($"Changed {e.Name}");
-        n.Renamed += (s, e) => Console.WriteLine($"Renamed {e.OldName}, {e.Name}");
-    });
+            EnableRaisingEvents = true
+        }.SideEffect(n =>
+            {
+                n.Changed += (s, e) => Console.WriteLine($"Changed {e.Name}");
+                n.Renamed += (s, e) => Console.WriteLine($"Renamed {e.OldName}, {e.Name}");
+            });
 
-    static ImmutableDictionary<string, DirectoryWatcher> watchers = ImmutableDictionary<string, DirectoryWatcher>.Empty;
+    readonly FileSystemWatcher? fsw = path != null
+        ? CreateWatcher(path)
+        : null;
+
+    static readonly ConcurrentDictionary<string, DirectoryWatcher> watchers = new();
 
     #region IDisposable
 
@@ -47,7 +53,7 @@ class DirectoryWatcher(string path) : IDisposable
         {
             if (disposing)
                 // Verwalteten Zustand (verwaltete Objekte) bereinigen
-                fsw.Dispose();
+                fsw?.Dispose();
 
             // Nicht verwaltete Ressourcen (nicht verwaltete Objekte) freigeben und Finalizer überschreiben
             // Große Felder auf NULL setzen
@@ -67,7 +73,6 @@ class DirectoryWatcher(string path) : IDisposable
     #endregion
 }
 
-// TODO FSW for both sides
 // TODO creates sse events 
 // TODO onChanged with 0,5s pausings observable filter
 // TODO CopyItem file, on change sends file sizes update view 
