@@ -414,6 +414,11 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     err => showError(err, setError))
     }
 
+	const onItemClick = (item: FolderViewItem, _: number, ctrlKey: boolean) => {
+		if (ctrlKey == true)
+			toggleSelection(item)
+	}
+
     const onDragStart = async (evt: React.DragEvent) => {
         const items = getSelectedItems().map(n => n.name)
         if (items.length > 0) {
@@ -465,7 +470,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             onDragLeave={isWindows() ? onDragLeave : undefined} onDrop={isWindows() ? onDrop : undefined}>
             <input ref={input} className="pathInput" spellCheck={false} value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
             <div className={`tableContainer${dragStarted ? " dragStarted" : ""}`} onKeyDown={onKeyDown} >
-                <VirtualTable ref={virtualTable} items={items} onSort={onSort} onColumnWidths={onColumnWidths}
+                <VirtualTable ref={virtualTable} items={items} onSort={onSort} onColumnWidths={onColumnWidths} onItemClick={onItemClick}
                     onDragStart={isWindows() ? onDragStart : undefined} onEnter={onEnter} onPosition={onPositionChanged} />
             </div>
             <RestrictionView items={items} ref={restrictionView} />
@@ -488,8 +493,6 @@ export default FolderView
 // TODO Linux error handling Copy
 
 // TODO Windows SaveBounds: window gets smaller every time
-
-// TODO Selection Ctrl+Mouse click
 
 // TODO Drag n drop from outside copy hidden file
 
