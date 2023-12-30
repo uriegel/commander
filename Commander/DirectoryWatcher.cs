@@ -10,7 +10,21 @@ class DirectoryWatcher : IDisposable
             k => new DirectoryWatcher(key, path),
             (key, dw) => dw == null
                 ? new DirectoryWatcher(key, path)
-                : dw.Path != path ? new DirectoryWatcher(key, path).SideEffect(_ => dw.Dispose()) : dw);
+                : dw.Path
+                    .SideEffect(path => {
+                        if (path == "/daten/Bilder/Fotos/2019/MarsaAlam")
+                            {
+                            TEST(path); 
+                                
+                            }
+
+                    })  != path ? new DirectoryWatcher(key, path).SideEffect(_ => dw.Dispose()) : dw);
+
+    static async void TEST(string path)
+    {
+        await Task.Delay(20);
+        Enumerable.Range(1, 1110).Select(n => $"Bild{n:0000}.JPG").ForEach(n => Events.SendExif(path, n));
+    }
 
     DirectoryWatcher(string id, string? path)
     {
@@ -33,6 +47,14 @@ class DirectoryWatcher : IDisposable
                 => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Renamed, CreateItem(Path.AppendPath(e.Name)), e.OldName);
             fsw.Deleted += (s, e)
                 => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Deleted, new DirectoryItem(e.Name ?? "", 0, false, null, false, DateTime.MinValue));
+
+
+
+            // TODO in folder /daten/Bilder/Fotos/2019/MarsaAlam after 3s send extended items name Bild0001.JPG .. Bild1111.JPG with exifdate 22.2.2222 22:22
+            // TODO one event after another
+            // TODO 10 events together
+            // TODO view in javascript console
+            // TODO update view
         }
     }
 

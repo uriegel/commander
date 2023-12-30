@@ -38,12 +38,19 @@ record DirectoryChangedEvent(
     string? OldName
 );
 
+record ExifTime(
+    string Path,
+    string Name,
+    DateTime Exif
+);
+
 record Events(
     string? Theme,
     CopyProgress? CopyProgress,
     WindowState? WindowState,
     FilesDrop? FilesDrop,
-    DirectoryChangedEvent? DirectoryChanged
+    DirectoryChangedEvent? DirectoryChanged,
+    ExifTime? ExifTime
 #if Windows
     , GetCredentials? GetCredentials = null
     , ServiceItem[]? ServiceItems = null
@@ -76,6 +83,9 @@ record Events(
     public static void SendDirectoryChanged(string folderId, string? path, DirectoryChangedType type, DirectoryItem item, string? oldName = null)
         => Source.Send(DefaultEvents with { DirectoryChanged = new(folderId, path, type, item, oldName) });
 
+    public static void SendExif(string path, string name)
+        => Source.Send(DefaultEvents with { ExifTime = new(path, name, DateTime.Parse("22.2.2022 22:22")) });
+
 #if Windows 
     public static void Credentials(string path)
         => Source.Send(DefaultEvents with { GetCredentials = new(path) });
@@ -89,7 +99,7 @@ record Events(
     public static void StartEvents()   
         => global::Theme.StartThemeDetection(n => Source.Send(ThemeChanged(n)));
 
-    static Events DefaultEvents { get; } = new(null, null, null, null, null);
+    static Events DefaultEvents { get; } = new(null, null, null, null, null, null);
 
     static Events ThemeChanged(string theme)
         => DefaultEvents with { Theme = theme };

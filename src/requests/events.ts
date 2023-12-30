@@ -42,6 +42,12 @@ export type DirectoryChangedEvent = {
     oldName?: string
 }
 
+type ExifTime = {
+    path: string,
+    name: string,
+    exif: string
+}
+
 type CommanderEvent = {
     theme?:        string
     copyProgress?: CopyProgress
@@ -50,6 +56,7 @@ type CommanderEvent = {
     filesDrop?: FilesDrop
     getCredentials?: GetCredentials
     directoryChanged?: DirectoryChangedEvent
+    exifTime?: ExifTime
 }
 
 const toCommanderEvent = (event: MessageEvent) =>
@@ -85,6 +92,10 @@ export const getDirectoryChangedEvents = (folderId: string) =>
         .pipe(filter(n => n.directoryChanged != undefined && n.directoryChanged.folderId == folderId))
         .pipe(map(n => n.directoryChanged!))
 
+export const exifTimeEvents = commanderEvents
+        .pipe(filter(n => n.exifTime != undefined))
+        .pipe(map(n => n.exifTime!))
+    
 export const progressChangedEvents = new BehaviorSubject<CopyProgress>({
     fileName: "",
     totalCount: 0,

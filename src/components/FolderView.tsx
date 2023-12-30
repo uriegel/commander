@@ -7,7 +7,7 @@ import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
 import { Version } from '../requests/requests'
 import { initializeHistory } from '../history'
 import { isWindows } from '../globals'
-import { DirectoryChangedType, folderViewItemsChangedEvents, getDirectoryChangedEvents } from '../requests/events'
+import { DirectoryChangedType, exifTimeEvents, folderViewItemsChangedEvents, getDirectoryChangedEvents } from '../requests/events'
 import { Subscription } from 'rxjs'
 import { ServiceStartMode, ServiceStatus } from '../enums'
 import { DialogContext, DialogHandle } from 'web-dialog-react'
@@ -142,6 +142,11 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const subscription = useRef<Subscription | null>(null)
     const refItems = useRef(items)
     const directoryChangedSubscription = useRef<Subscription | null>(null)
+
+
+    const exifTimeSubscription = useRef<Subscription | null>(null)
+
+
     const dialog = useContext(DialogContext)
 
     const setItems = (items: FolderViewItem[]) => {
@@ -182,6 +187,22 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     virtualTable.current?.setPosition(newPos, newItems)
             }
         })
+
+        exifTimeSubscription.current?.unsubscribe()
+        exifTimeSubscription.current = exifTimeEvents.subscribe(e => {
+            if (e.path == controller.current.getPath()) {
+                console.log(e.name)
+                const newItems = refItems.current.map(n => n.name == e.name
+                    ? { ...n, exifDate: e.exif } as FolderViewItem
+                    : n as FolderViewItem)
+                console.log("newItems", newItems)
+                setItems(newItems)
+            }
+                
+                
+        }) 
+
+
     }, [id, showHidden, controller])
 
     const withSelectedItem = <T,>(withSelected: (item: FolderViewItem) => T) => {
@@ -265,15 +286,16 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     localStorage.setItem(`${id}-lastPath`, res.path)
                     if (!fromBacklog)
                         history.current?.set(res.path)
-                    setStatusText("Erweiterte Infos werden abgerufen...")
-                    controller.current
-                        .getExtendedItems(id, res.path, res.items)
-                        .match(
-                            ok => {
-                                setStatusText(null)
-                                if (ok.path == refPath.current)
-                                    setItems(controller.current.setExtendedItems(res.items, ok))    
-                            }, () => setStatusText(null))
+                    // TODO TEST
+                    // setStatusText("Erweiterte Infos werden abgerufen...")
+                    // controller.current
+                    //     .getExtendedItems(id, res.path, res.items)
+                    //     .match(
+                    //         ok => {
+                    //             setStatusText(null)
+                    //             if (ok.path == refPath.current)
+                    //                 setItems(controller.current.setExtendedItems(res.items, ok))    
+                    //         }, () => setStatusText(null))
                 },
                 err => {
                     console.log("err", err)
