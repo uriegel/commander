@@ -1,13 +1,13 @@
 import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import './FolderView.css'
 import VirtualTable, { OnSort, SelectableItem, SpecialKeys, TableColumns, VirtualTableHandle } from 'virtual-table-react'
-import { checkController, checkResult, Controller, createEmptyController, showError } from '../controller/controller'
+import { checkController, checkResult, Controller, createEmptyController, formatSize, showError } from '../controller/controller'
 import { ROOT } from '../controller/root'
 import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
 import { Version } from '../requests/requests'
 import { initializeHistory } from '../history'
 import { isWindows } from '../globals'
-import { folderViewItemsChangedEvents } from '../requests/events'
+import { folderViewItemsChangedEvents, getDirectoryChangedEvents } from '../requests/events'
 import { Subscription } from 'rxjs'
 import { ServiceStartMode, ServiceStatus } from '../enums'
 import { DialogContext, DialogHandle } from 'web-dialog-react'
@@ -140,6 +140,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const dragEnterRefs = useRef(0)
 
     const subscription = useRef<Subscription | null>(null)
+    const directoryChangedSubscription = useRef<Subscription | null>(null)
     const dialog = useContext(DialogContext)
 
     const onActualizedItems = useCallback((actualizedItems: FolderViewItem[]) => {
@@ -159,7 +160,12 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         }
     }, [onActualizedItems])
     
-    const withSelectedItem = <T,>(withSelected: (item: FolderViewItem)=>T) => {
+    useEffect(() => {
+        directoryChangedSubscription.current?.unsubscribe()
+        directoryChangedSubscription.current = getDirectoryChangedEvents(id).subscribe(e => console.log("Directory", e.type == 0 ? "created" : e.type == 1 ? "changed" : e.type == 2 ? "renamed" : "deleted", e.item.name, formatSize(e.item.size)))
+    }, [])
+
+    const withSelectedItem = <T,>(withSelected: (item: FolderViewItem) => T) => {
         const items = getSelectedItems()
         return items?.length == 1
             ? withSelected(items[0])

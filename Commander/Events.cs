@@ -22,11 +22,27 @@ record FilesDrop(string Id, bool Move, string Path, DirectoryItem[] Items);
 
 record GetCredentials(string Path);
 
+enum DirectoryChangedType
+{
+    Created,
+    Changed,
+    Renamed,
+    Deleted
+}
+
+record DirectoryChangedEvent(
+    string FolderId,
+    DirectoryChangedType Type,
+    DirectoryItem Item,
+    string? OldName
+);
+
 record Events(
     string? Theme,
     CopyProgress? CopyProgress,
     WindowState? WindowState,
-    FilesDrop? FilesDrop
+    FilesDrop? FilesDrop,
+    DirectoryChangedEvent? DirectoryChanged
 #if Windows
     , GetCredentials? GetCredentials = null
     , ServiceItem[]? ServiceItems = null
@@ -56,6 +72,9 @@ record Events(
     public static void FilesDropped(FilesDrop filesDrop)
         => Source.Send(DefaultEvents with { FilesDrop = filesDrop });
 
+    public static void SendDirectoryChanged(string folderId, DirectoryChangedType type, DirectoryItem item, string? oldName = null)
+        => Source.Send(DefaultEvents with { DirectoryChanged = new(folderId, type, item, oldName) });
+
 #if Windows 
     public static void Credentials(string path)
         => Source.Send(DefaultEvents with { GetCredentials = new(path) });
@@ -69,7 +88,7 @@ record Events(
     public static void StartEvents()   
         => global::Theme.StartThemeDetection(n => Source.Send(ThemeChanged(n)));
 
-    static Events DefaultEvents { get; } = new(null, null, null, null);
+    static Events DefaultEvents { get; } = new(null, null, null, null, null);
 
     static Events ThemeChanged(string theme)
         => DefaultEvents with { Theme = theme };

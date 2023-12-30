@@ -87,7 +87,7 @@ static partial class Directory
             => initialPath.AppendPath(subPath);
 
         bool IsDirectory(CopyItem item, string? subPath)
-            => item.isDirectory == true;
+            => item.IsDirectory == true;
     }
 
     public static void FilesDropped(string id, bool move, string[] paths)
@@ -162,6 +162,9 @@ static partial class Directory
             => showHiddenItems || !item.IsHidden;
     }
 
+    public static bool IsDirectory(string path)
+        => (File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory;
+
     public static IOResult ErrorToIOError(DirectoryError de)
         => de switch
         {
@@ -225,9 +228,6 @@ static partial class Directory
 
     static DirectoryInfo CreateDirectoryInfo(this string path) => new(path);
 
-    static bool IsDirectory(string path)
-        => (File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory;
-
     static IOResult MapExceptionToIOError(Exception e)
         => e switch
         {
@@ -252,7 +252,7 @@ record DirectoryItem(
             0,
             true,
             null,
-            (info.Attributes & System.IO.FileAttributes.Hidden) == System.IO.FileAttributes.Hidden,
+            (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden,
             info.LastWriteTime);
 
     public static DirectoryItem CreateFileItem(FileInfo info)
@@ -302,7 +302,7 @@ static class GetFilesResultExt
 
     public static GetFilesRequestResult ToRequestResult(this Result<GetFilesResult, IOResult> res)
         => res.Match(
-            ok => FromResult(ok),
+            FromResult,
             e => new([], e.Path ?? "", 0, 0, e.Type));
 }
 
@@ -350,7 +350,7 @@ record DeleteItemsParam(
 
 record CopyItem(
     string Name,
-    bool? isDirectory,
+    bool? IsDirectory,
     long Size,
     DateTime Time,
     string? SubPath 

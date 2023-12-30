@@ -27,6 +27,20 @@ type FilesDrop = {
 
 type GetCredentials = { path: string }
 
+enum DirectoryChangedType {
+    Created,
+    Changed,
+    Renamed,
+    Deleted
+}
+
+type DirectoryChangedEvent = {
+    folderId: string
+    type: DirectoryChangedType
+    item: FolderViewItem
+    oldName?: string
+}
+
 type CommanderEvent = {
     theme?:        string
     copyProgress?: CopyProgress
@@ -34,6 +48,7 @@ type CommanderEvent = {
     serviceItems?: FolderViewItem[]
     filesDrop?: FilesDrop
     getCredentials?: GetCredentials
+    directoryChanged?: DirectoryChangedEvent
 }
 
 const toCommanderEvent = (event: MessageEvent) =>
@@ -63,6 +78,11 @@ export const filesDropEvents = commanderEvents
 export const getCredentialsEvents = commanderEvents
     .pipe(filter(n => n.getCredentials != undefined))
     .pipe(map(n => n.getCredentials!))
+
+export const getDirectoryChangedEvents = (folderId: string) =>
+    commanderEvents
+        .pipe(filter(n => n.directoryChanged != undefined && n.directoryChanged.folderId == folderId))
+        .pipe(map(n => n.directoryChanged!))
 
 export const progressChangedEvents = new BehaviorSubject<CopyProgress>({
     fileName: "",
