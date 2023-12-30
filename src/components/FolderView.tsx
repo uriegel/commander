@@ -131,7 +131,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const sortDescending = useRef(false)
     const itemCount = useRef({ fileCount: 0, dirCount: 0 })
     
-    const [items, setItems] = useState([] as FolderViewItem[])
+    const [items, setStateItems] = useState([] as FolderViewItem[])
     const [path, setPath] = useState("")
     const [dragStarted, setDragStarted] = useState(false)
     const [dragging, setDragging] = useState(false)
@@ -140,8 +140,14 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const dragEnterRefs = useRef(0)
 
     const subscription = useRef<Subscription | null>(null)
+    const refItems = useRef(items)
     const directoryChangedSubscription = useRef<Subscription | null>(null)
     const dialog = useContext(DialogContext)
+
+    const setItems = (items: FolderViewItem[]) => {
+        setStateItems(items)
+        refItems.current = items
+    }
 
     const onActualizedItems = useCallback((actualizedItems: FolderViewItem[]) => {
         const newItems = items.map(n => {
@@ -163,9 +169,9 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     useEffect(() => {
         directoryChangedSubscription.current?.unsubscribe()
         directoryChangedSubscription.current = getDirectoryChangedEvents(id).subscribe(e => {
-            const selected = items[virtualTable.current?.getPosition() || 0].name
+            const selected = refItems.current[virtualTable.current?.getPosition() || 0].name
             const newItems = controller.current.getPath() == e.path
-                ? controller.current.updateItems(items, showHidden, sortIndex.current, sortDescending.current, e)
+                ? controller.current.updateItems(refItems.current, showHidden, sortIndex.current, sortDescending.current, e)
                 : null
             if (newItems) {
                 const newPos = newItems.findIndex(n => n.name == selected)
@@ -174,7 +180,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     virtualTable.current?.setPosition(newPos)
             }
         })
-    }, [id, items, showHidden, controller])
+    }, [id, showHidden, controller])
 
     const withSelectedItem = <T,>(withSelected: (item: FolderViewItem) => T) => {
         const items = getSelectedItems()
