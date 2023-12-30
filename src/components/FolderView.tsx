@@ -169,8 +169,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     useEffect(() => {
         directoryChangedSubscription.current?.unsubscribe()
         directoryChangedSubscription.current = getDirectoryChangedEvents(id).subscribe(e => {
-            // TODO rename
-            // TODO check on windows
             const selected = refItems.current[virtualTable.current?.getPosition() || 0].name
             const newItems = controller.current.getPath() == e.path
                 ? controller.current.updateItems(refItems.current, showHidden, sortIndex.current, sortDescending.current, e)
