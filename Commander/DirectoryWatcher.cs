@@ -118,5 +118,5 @@ class DirectoryWatcher : IDisposable
 
 // TODO Dispose DirectoryWatcher disposes renameQueue
 // TODO measure updates when 10 000 items are in view
-// TODO Rename file, check file changed event with sorting 
+
 

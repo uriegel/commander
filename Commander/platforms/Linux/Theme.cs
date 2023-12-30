@@ -14,7 +14,6 @@ static class Theme
 
     public static string Get()
     {
-        // TODO
         static string GetKdeTheme()
         {
             var output = "";
