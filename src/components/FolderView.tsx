@@ -505,7 +505,7 @@ let internalDrag = false
 
 export default FolderView
 
-// TODO react to file changes in folders, folder changes
+// TODO Version and exif date only via changes
 // TODO When changed, disable sorting date or version and display it in the status bar
 
 // TODO CheckIsModified Windows not working (when cache is disabled)
