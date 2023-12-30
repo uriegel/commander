@@ -82,6 +82,7 @@ const createController = (): ControllerResult => {
             id: SERVICES,
             getColumns,
             getItems,
+            updateItems: ()=>null,
             getPath: () => SERVICES,
             getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
             setExtendedItems: items => items,

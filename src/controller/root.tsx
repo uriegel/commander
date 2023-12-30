@@ -93,6 +93,7 @@ export const getRootController = (controller: Controller | null): ControllerResu
         getPath: () => ROOT,
         getColumns: platform == Platform.Windows ? getWindowsColumns : getLinuxColumns,
         getItems,
+        updateItems: ()=>null,
         getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
         setExtendedItems: items => items,
         cancelExtendedItems: () => { },

@@ -1,7 +1,7 @@
 import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import './FolderView.css'
 import VirtualTable, { OnSort, SelectableItem, SpecialKeys, TableColumns, VirtualTableHandle } from 'virtual-table-react'
-import { checkController, checkResult, Controller, createEmptyController, formatSize, showError } from '../controller/controller'
+import { checkController, checkResult, Controller, createEmptyController, showError } from '../controller/controller'
 import { ROOT } from '../controller/root'
 import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
 import { Version } from '../requests/requests'
@@ -162,8 +162,19 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     
     useEffect(() => {
         directoryChangedSubscription.current?.unsubscribe()
-        directoryChangedSubscription.current = getDirectoryChangedEvents(id).subscribe(e => console.log("Directory", e.type == 0 ? "created" : e.type == 1 ? "changed" : e.type == 2 ? "renamed" : "deleted", e.item.name, formatSize(e.item.size)))
-    }, [])
+        directoryChangedSubscription.current = getDirectoryChangedEvents(id).subscribe(e => {
+            const selected = items[virtualTable.current?.getPosition() || 0].name
+            const newItems = controller.current.getPath() == e.path
+                ? controller.current.updateItems(items, showHidden, sortIndex.current, sortDescending.current, e)
+                : null
+            if (newItems) {
+                const newPos = newItems.findIndex(n => n.name == selected)
+                setItems(newItems)
+                if (newPos != -1)
+                    virtualTable.current?.setPosition(newPos)
+            }
+        })
+    }, [id, items, showHidden, controller])
 
     const withSelectedItem = <T,>(withSelected: (item: FolderViewItem) => T) => {
         const items = getSelectedItems()

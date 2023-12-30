@@ -26,13 +26,13 @@ class DirectoryWatcher : IDisposable
                 IsBackground = true
             }.Start();
             fsw.Created += (s, e) 
-                => Events.SendDirectoryChanged(id, DirectoryChangedType.Created, CreateItem(Path.AppendPath(e.Name)));
+                => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Created, CreateItem(Path.AppendPath(e.Name)));
             fsw.Changed += (s, e) => { if (e.Name != null) renameQueue = renameQueue.Add(e.Name)
                 .SideEffect(_ => renameEvent.Set()); };
             fsw.Renamed += (s, e)
-                => Events.SendDirectoryChanged(id, DirectoryChangedType.Renamed, CreateItem(Path.AppendPath(e.Name)), e.OldName);
+                => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Renamed, CreateItem(Path.AppendPath(e.Name)), e.OldName);
             fsw.Deleted += (s, e)
-                => Events.SendDirectoryChanged(id, DirectoryChangedType.Deleted, new DirectoryItem(e.Name ?? "", 0, false, null, false, DateTime.MinValue));
+                => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Deleted, new DirectoryItem(e.Name ?? "", 0, false, null, false, DateTime.MinValue));
         }
     }
 
@@ -67,7 +67,7 @@ class DirectoryWatcher : IDisposable
                     Thread.Sleep(lastRenameUpdate + RENAME_DELAY - DateTime.Now);
                 lastRenameUpdate = DateTime.Now;
                 items.ForEach(n =>
-                    Events.SendDirectoryChanged(id, DirectoryChangedType.Changed, CreateItem(Path.AppendPath(n))));
+                    Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Changed, CreateItem(Path.AppendPath(n))));
             }
             catch { }
         }

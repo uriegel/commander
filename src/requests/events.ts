@@ -27,15 +27,16 @@ type FilesDrop = {
 
 type GetCredentials = { path: string }
 
-enum DirectoryChangedType {
+export enum DirectoryChangedType {
     Created,
     Changed,
     Renamed,
     Deleted
 }
 
-type DirectoryChangedEvent = {
+export type DirectoryChangedEvent = {
     folderId: string
+    path?: string
     type: DirectoryChangedType
     item: FolderViewItem
     oldName?: string

@@ -58,6 +58,7 @@ export const getRemoteController = (controller: Controller | null): ControllerRe
         id: REMOTE,
         getColumns,
 		getItems,
+		updateItems: ()=>null,
 		getPath: () => REMOTE,
 		getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
 		setExtendedItems: items => items,

@@ -9,6 +9,7 @@ import { ROOT } from "./root"
 import { extendedRename } from "./filesystemExtendedRename"
 import { IconNameType } from "../enums"
 import { AsyncResult, Err, ErrorType, Nothing, Ok, jsonPost, nothing } from "functional-extensions"
+import { DirectoryChangedEvent, DirectoryChangedType } from "../requests/events"
 
 export enum ItemsType {
 	Directories,
@@ -92,6 +93,7 @@ export const createFileSystemController = (): Controller => {
 			})
 			return res
 		},
+		updateItems,
 		getPath: () => currentPath,
 		onEnter: async ({ path, item, keys }) =>
 			item.isParent && path.length > driveLength
@@ -133,6 +135,11 @@ const getRowClasses = (item: FolderViewItem) =>
 const getItems = (id: string, path: string, showHiddenItems: boolean, sortIndex: number, sortDescending: boolean, mount: boolean) => 
 	jsonPost<GetItemsResult, GetItemsError>({ method: "getfiles", payload: { id, path, showHiddenItems, mount } })
 		.map(ok => ({ ...ok, items: addParent(sortItems(ok.items, getSortFunction(sortIndex, sortDescending))) }))
+
+const updateItems = (items: FolderViewItem[], showHidden: boolean, sortIndex: number, sortDescending: boolean, evt: DirectoryChangedEvent) => 
+	evt.type == DirectoryChangedType.Created && (!evt.item.isHidden || showHidden)
+		? sort([...items, evt.item], sortIndex, sortDescending) 
+		: null
 
 // TODO GetRoot
 // TODO getRoot when error &&	!dialog but statusbar??? {

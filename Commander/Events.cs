@@ -32,6 +32,7 @@ enum DirectoryChangedType
 
 record DirectoryChangedEvent(
     string FolderId,
+    string? Path,
     DirectoryChangedType Type,
     DirectoryItem Item,
     string? OldName
@@ -72,8 +73,8 @@ record Events(
     public static void FilesDropped(FilesDrop filesDrop)
         => Source.Send(DefaultEvents with { FilesDrop = filesDrop });
 
-    public static void SendDirectoryChanged(string folderId, DirectoryChangedType type, DirectoryItem item, string? oldName = null)
-        => Source.Send(DefaultEvents with { DirectoryChanged = new(folderId, type, item, oldName) });
+    public static void SendDirectoryChanged(string folderId, string? path, DirectoryChangedType type, DirectoryItem item, string? oldName = null)
+        => Source.Send(DefaultEvents with { DirectoryChanged = new(folderId, path, type, item, oldName) });
 
 #if Windows 
     public static void Credentials(string path)

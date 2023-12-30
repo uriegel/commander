@@ -81,6 +81,7 @@ export const getFavoritesController = (controller: Controller | null): Controlle
         id: FAVORITES,
         getColumns,
         getItems,
+        updateItems: () => null,
         getPath: () => FAVORITES,
         getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
         setExtendedItems: items => items,

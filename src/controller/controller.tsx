@@ -10,6 +10,7 @@ import { FAVORITES, getFavoritesController } from "./favorites"
 import { SERVICES, getServicesController } from "./services"
 import { Platform, getPlatform } from "../globals"
 import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
+import { DirectoryChangedEvent } from "../requests/events"
 
 const dateFormat = Intl.DateTimeFormat("de-DE", {
     year: "numeric",
@@ -57,6 +58,7 @@ export interface Controller {
     id: string
     getColumns: ()=>TableColumns<FolderViewItem>
     getItems: (id: string, path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean, mount: boolean, dialog: DialogHandle) => AsyncResult<GetItemsResult, ErrorType>
+    updateItems: (items: FolderViewItem[], showHidden: boolean, sortIndex: number, sortDescending: boolean, evt: DirectoryChangedEvent)=>FolderViewItem[]|null
     getPath(): string
     getExtendedItems: (id: string, path: string, items: FolderViewItem[]) => AsyncResult<GetExtendedItemsResult, ErrorType>
     setExtendedItems: (items: FolderViewItem[], extended: GetExtendedItemsResult) => FolderViewItem[]
@@ -106,6 +108,7 @@ export const createEmptyController = (): Controller => ({
         renderRow: () => []
     }),
     getItems: () => AsyncResult.from(new Err<GetItemsResult, ErrorType>({ status: IOError.Canceled, statusText: "" })),
+    updateItems: () => null,
     getPath: () => "empty",
     getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
     setExtendedItems: items => items,
