@@ -7,7 +7,7 @@ import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
 import { Version } from '../requests/requests'
 import { initializeHistory } from '../history'
 import { isWindows } from '../globals'
-import { folderViewItemsChangedEvents, getDirectoryChangedEvents } from '../requests/events'
+import { DirectoryChangedType, folderViewItemsChangedEvents, getDirectoryChangedEvents } from '../requests/events'
 import { Subscription } from 'rxjs'
 import { ServiceStartMode, ServiceStatus } from '../enums'
 import { DialogContext, DialogHandle } from 'web-dialog-react'
@@ -170,14 +170,15 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         directoryChangedSubscription.current?.unsubscribe()
         directoryChangedSubscription.current = getDirectoryChangedEvents(id).subscribe(e => {
             // TODO rename
-            // TODO delete
             // TODO check on windows
             const selected = refItems.current[virtualTable.current?.getPosition() || 0].name
             const newItems = controller.current.getPath() == e.path
                 ? controller.current.updateItems(refItems.current, showHidden, sortIndex.current, sortDescending.current, e)
                 : null
             if (newItems) {
-                const newPos = newItems.findIndex(n => n.name == selected)
+                const newPos = e.type != DirectoryChangedType.Deleted || selected != e.item.name
+                    ? newItems.findIndex(n => n.name == selected)
+                    : 0
                 setItems(newItems)
                 if (newPos != -1)
                     virtualTable.current?.setPosition(newPos, newItems)
