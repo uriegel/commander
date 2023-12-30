@@ -177,7 +177,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 const newPos = newItems.findIndex(n => n.name == selected)
                 setItems(newItems)
                 if (newPos != -1)
-                    virtualTable.current?.setPosition(newPos)
+                    virtualTable.current?.setPosition(newPos, newItems)
             }
         })
     }, [id, showHidden, controller])
