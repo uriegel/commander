@@ -139,6 +139,8 @@ const getItems = (id: string, path: string, showHiddenItems: boolean, sortIndex:
 const updateItems = (items: FolderViewItem[], showHidden: boolean, sortIndex: number, sortDescending: boolean, evt: DirectoryChangedEvent) => 
 	evt.type == DirectoryChangedType.Created && (!evt.item.isHidden || showHidden)
 		? sort([...items, evt.item], sortIndex, sortDescending) 
+		: evt.type == DirectoryChangedType.Changed && (!evt.item.isHidden || showHidden)
+			? items.map(n => n.name == evt.item.name ? { ...n, size: evt.item.size, time: evt.item.time } : n) 
 		: null
 
 // TODO GetRoot
