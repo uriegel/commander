@@ -9,15 +9,14 @@ class ExtendedInfos : IDisposable
     public ExtendedInfos(string path)
         => Path = path;
 
-    public string Path { get; }
-    
+    string Path { get; }
+       
     public void FileChanged(string name)
     {
         try
         {
-            // TODO after getItems
             // TODO Windows Version
-            if (!disposedValue && (name.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase) || name.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase)))
+            if (!disposedValue && ForExif(name))
                 filesToCheck.AddOrUpdate(name, new InfoCheck(name, this), (name, check) => check.Updated());
         }
         catch (Exception e)
@@ -25,6 +24,11 @@ class ExtendedInfos : IDisposable
             Console.WriteLine($"Unexpected error {e}");
         }
     }
+
+    static bool ForExif(string name)
+        => name.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase)
+        || name.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase);
+
 
     class InfoCheck
     {
@@ -138,5 +142,3 @@ class ExtendedInfos : IDisposable
 
     #endregion
 }
-//        Enumerable.Range(1, 1110).Select(n => $"Bild{n:0000}.JPG").ForEach(n => Events.SendExif(path, n));
-
