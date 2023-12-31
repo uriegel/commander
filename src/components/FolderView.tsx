@@ -142,17 +142,18 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const subscription = useRef<Subscription | null>(null)
     const refItems = useRef(items)
     const directoryChangedSubscription = useRef<Subscription | null>(null)
-
-
     const exifTimeSubscription = useRef<Subscription | null>(null)
-
 
     const dialog = useContext(DialogContext)
 
-    const setItems = (items: FolderViewItem[]) => {
+    const setItems = useCallback((items: FolderViewItem[], dirCount?: number, fileCount?: number) => {
         setStateItems(items)
         refItems.current = items
-    }
+        if (dirCount != undefined || fileCount != undefined) {
+            itemCount.current = { dirCount: dirCount || 0, fileCount: fileCount || 0 }
+            onItemsChanged(itemCount.current)
+        }
+    }, [onItemsChanged])
 
     const onActualizedItems = useCallback((actualizedItems: FolderViewItem[]) => {
         const newItems = items.map(n => {
@@ -162,7 +163,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 : n
         })
         setItems(newItems)
-    }, [items])
+    }, [items, setItems])
 
     useEffect(() => {
         if (isWindows()) {
@@ -182,7 +183,13 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 const newPos = e.type != DirectoryChangedType.Deleted || selected != e.item.name
                     ? newItems.findIndex(n => n.name == selected)
                     : 0
-                setItems(newItems)
+                const dirs = e.type == DirectoryChangedType.Deleted || e.type == DirectoryChangedType.Created
+                    ? newItems.filter(n => n.isDirectory).length - 1
+                    : undefined
+                const files = dirs != undefined
+                    ? newItems.length - dirs - 1
+                    : undefined
+                setItems(newItems, dirs, files)
                 if (newPos != -1)
                     virtualTable.current?.setPosition(newPos, newItems)
             }
@@ -198,7 +205,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             }
         }) 
 
-    }, [id, showHidden, controller])
+    }, [id, showHidden, controller, setItems])
 
     const withSelectedItem = <T,>(withSelected: (item: FolderViewItem) => T) => {
         const items = getSelectedItems()
@@ -218,9 +225,9 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
     
     const onSort = async (sort: OnSort) => {
-        sortIndex.current = sort.column
+        sortIndex.current = sort.isSubColumn ? 10 : sort.column
         sortDescending.current = sort.isDescending
-        const newItems = controller.current.sort(items, sort.isSubColumn ? 10 : sortIndex.current, sortDescending.current)
+        const newItems = controller.current.sort(items, sortIndex.current, sortDescending.current)
         setItems(newItems)
         const name = items[virtualTable.current?.getPosition() ?? 0].name
         virtualTable.current?.setPosition(newItems.findIndex(n => n.name == name))
@@ -266,9 +273,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                         virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
                     }
                     setPath(res.path)
-                    setItems(res.items)
-                    itemCount.current = { dirCount: res.dirCount, fileCount: res.fileCount }
-                    onItemsChanged(itemCount.current)
+                    setItems(res.items, res.dirCount, res.fileCount)
                     const pos =
                         latestPath
                         ? res.items.findIndex(n => n.name == latestPath)
@@ -522,9 +527,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 let internalDrag = false
 
 export default FolderView
-
-// TODO On created/ondeleted must change statusbar files, dirs
-// TODO sort subColumn
 
 // TODO CheckIsModified Windows not working (when cache is disabled)
 // TODO Ctrl+H as ToggleButton
