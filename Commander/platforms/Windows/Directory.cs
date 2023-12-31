@@ -125,6 +125,13 @@ static partial class Directory
                         res => credentialsTaskSource?.TrySetResult(res)))
             .ToAsyncResult();
 
+    public static Version? CheckGetVersion(string path, string item)
+        => item.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase) || item.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase)
+            ? FileVersionInfo
+                .GetVersionInfo(path.AppendPath(item))
+                .MapVersion()
+            : null;
+
     static AsyncResult<Nothing, RequestError> GetCredentials(string path)
     {
         credentialsTaskSource?.TrySetCanceled();
@@ -156,13 +163,6 @@ static partial class Directory
                     return ms as Stream;
                 }) 
             ?? (new MemoryStream() as Stream).ToAsync();
-
-    static Version? CheckGetVersion(string path, string item)
-        => item.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase) || item.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase)
-            ? FileVersionInfo
-                .GetVersionInfo(path.AppendPath(item))
-                .MapVersion()
-            : null;
 
     static AsyncResult<Nothing, RequestError> DeleteItemsRaw(DeleteItemsParam input)
         => (SHFileOperation(new ShFileOPStruct

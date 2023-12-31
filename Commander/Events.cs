@@ -50,7 +50,8 @@ record Events(
     WindowState? WindowState,
     FilesDrop? FilesDrop,
     DirectoryChangedEvent? DirectoryChanged,
-    ExifTime? ExifTime
+    ExifTime? ExifTime,
+    ExtendedData? ExtendedData
 #if Windows
     , GetCredentials? GetCredentials = null
     , ServiceItem[]? ServiceItems = null
@@ -86,6 +87,9 @@ record Events(
     public static void SendExif(string path, string name, DateTime exifTime)
         => Source.Send(DefaultEvents with { ExifTime = new(path, name, exifTime) });
 
+    public static void SendExtendedData(string path, string name, ExtendedData extendedData)
+        => Source.Send(DefaultEvents with { ExtendedData = extendedData });
+
 #if Windows 
     public static void Credentials(string path)
         => Source.Send(DefaultEvents with { GetCredentials = new(path) });
@@ -99,7 +103,7 @@ record Events(
     public static void StartEvents()   
         => global::Theme.StartThemeDetection(n => Source.Send(ThemeChanged(n)));
 
-    static Events DefaultEvents { get; } = new(null, null, null, null, null, null);
+    static Events DefaultEvents { get; } = new(null, null, null, null, null, null, null);
 
     static Events ThemeChanged(string theme)
         => DefaultEvents with { Theme = theme };

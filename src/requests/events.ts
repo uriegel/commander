@@ -1,5 +1,6 @@
 import { BehaviorSubject, filter, fromEvent, map } from 'rxjs'
 import { FolderViewItem } from '../components/FolderView'
+import { Version } from './requests'
 
 type CopyProgress = {
     fileName: string
@@ -48,6 +49,12 @@ type ExifTime = {
     exif: string
 }
 
+type ExtendedData = {
+    path: string,
+    name: string,
+    version: Version
+}
+
 type CommanderEvent = {
     theme?:        string
     copyProgress?: CopyProgress
@@ -57,6 +64,7 @@ type CommanderEvent = {
     getCredentials?: GetCredentials
     directoryChanged?: DirectoryChangedEvent
     exifTime?: ExifTime
+    extendedData?: ExtendedData
 }
 
 const toCommanderEvent = (event: MessageEvent) =>
@@ -93,9 +101,13 @@ export const getDirectoryChangedEvents = (folderId: string) =>
         .pipe(map(n => n.directoryChanged!))
 
 export const exifTimeEvents = commanderEvents
-        .pipe(filter(n => n.exifTime != undefined))
-        .pipe(map(n => n.exifTime!))
+    .pipe(filter(n => n.exifTime != undefined))
+    .pipe(map(n => n.exifTime!))
     
+export const extendedDataEvents = commanderEvents
+    .pipe(filter(n => n.extendedData != undefined))
+    .pipe(map(n => n.extendedData!))
+
 export const progressChangedEvents = new BehaviorSubject<CopyProgress>({
     fileName: "",
     totalCount: 0,

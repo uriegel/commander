@@ -7,7 +7,7 @@ import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
 import { Version } from '../requests/requests'
 import { initializeHistory } from '../history'
 import { isWindows } from '../globals'
-import { DirectoryChangedType, exifTimeEvents, folderViewItemsChangedEvents, getDirectoryChangedEvents } from '../requests/events'
+import { DirectoryChangedType, exifTimeEvents, extendedDataEvents, folderViewItemsChangedEvents, getDirectoryChangedEvents } from '../requests/events'
 import { Subscription } from 'rxjs'
 import { ServiceStartMode, ServiceStatus } from '../enums'
 import { DialogContext, DialogHandle } from 'web-dialog-react'
@@ -143,6 +143,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const refItems = useRef(items)
     const directoryChangedSubscription = useRef<Subscription | null>(null)
     const exifTimeSubscription = useRef<Subscription | null>(null)
+    const extendedDataSubscription = useRef<Subscription | null>(null)
 
     const dialog = useContext(DialogContext)
 
@@ -200,6 +201,16 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             if (e.path == controller.current.getPath()) {
                 const newItems = refItems.current.map(n => n.name == e.name
                     ? { ...n, exifDate: e.exif } as FolderViewItem
+                    : n as FolderViewItem)
+                setItems(controller.current.sort(newItems, sortIndex.current, sortDescending.current))
+            }
+        }) 
+
+        extendedDataSubscription.current?.unsubscribe()
+        extendedDataSubscription.current = extendedDataEvents.subscribe(e => {
+            if (e.path == controller.current.getPath()) {
+                const newItems = refItems.current.map(n => n.name == e.name
+                    ? { ...n, version: e.version } as FolderViewItem
                     : n as FolderViewItem)
                 setItems(controller.current.sort(newItems, sortIndex.current, sortDescending.current))
             }

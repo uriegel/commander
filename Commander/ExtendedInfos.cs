@@ -4,7 +4,7 @@ using CsTools.Extensions;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 
-class ExtendedInfos : IDisposable
+partial class ExtendedInfos : IDisposable
 {
     public ExtendedInfos(string path)
         => Path = path;
@@ -15,8 +15,7 @@ class ExtendedInfos : IDisposable
     {
         try
         {
-            // TODO Windows Version
-            if (!disposedValue && ForExif(name))
+            if (!disposedValue && ForExtended(name))
                 filesToCheck.AddOrUpdate(name, new InfoCheck(name, this), (name, check) => check.Updated());
         }
         catch (Exception e)
@@ -25,10 +24,9 @@ class ExtendedInfos : IDisposable
         }
     }
 
-    static bool ForExif(string name)
+    bool ForExif(string name)
         => name.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase)
         || name.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase);
-
 
     class InfoCheck
     {
@@ -60,6 +58,9 @@ class ExtendedInfos : IDisposable
                     {
                         if (infos.filesToCheck.TryRemove(name, out var info))
                         {
+                            var extendedData = infos.GetExtendedData(infos.Path, name);
+                            if (extendedData != null)
+                                Events.SendExtendedData(infos.Path, name, extendedData);
                             var exif = GetExifDate(infos.Path.AppendPath(name));
                             if (exif.HasValue)
                                 Events.SendExif(infos.Path, name, exif.Value);
