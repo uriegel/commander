@@ -37,14 +37,6 @@ class DirectoryWatcher : IDisposable
                 => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Renamed, CreateItem(Path.AppendPath(e.Name)), e.OldName);
             fsw.Deleted += (s, e)
                 => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Deleted, new DirectoryItem(e.Name ?? "", 0, false, null, false, DateTime.MinValue));
-
-
-
-            // TODO in folder /daten/Bilder/Fotos/2019/MarsaAlam after 3s send extended items name Bild0001.JPG .. Bild1111.JPG with exifdate 22.2.2222 22:22
-            // TODO one event after another
-            // TODO 10 events together
-            // TODO view in javascript console
-            // TODO update view
         }
     }
 

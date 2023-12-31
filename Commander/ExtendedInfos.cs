@@ -15,6 +15,7 @@ class ExtendedInfos : IDisposable
     {
         try
         {
+            // TODO after getItems
             // TODO Windows Version
             if (!disposedValue && (name.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase) || name.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase)))
                 filesToCheck.AddOrUpdate(name, new InfoCheck(name, this), (name, check) => check.Updated());
