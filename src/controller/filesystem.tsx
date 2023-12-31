@@ -140,7 +140,7 @@ const updateItems = (items: FolderViewItem[], showHidden: boolean, sortIndex: nu
 	evt.type == DirectoryChangedType.Created && (!evt.item.isHidden || showHidden)
 		? sort([...items, evt.item], sortIndex, sortDescending) 
 		: evt.type == DirectoryChangedType.Changed && (!evt.item.isHidden || showHidden)
-		? items.map(n => n.name == evt.item.name ? { ...n, size: evt.item.size, time: evt.item.time } : n) 
+		? items.map(n => n.name == evt.item.name ? { ...n, size: evt.item.size, time: evt.item.time } : n)  
 		: evt.type == DirectoryChangedType.Deleted
 		? items.filter(n => n.name != evt.item.name)
 		: evt.type == DirectoryChangedType.Renamed
@@ -191,14 +191,14 @@ const getExtendedItems = (id: string, path: string, items: FolderViewItem[]): As
 		}) 
 		: AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""}))
 
-const setExtendedItems = (items: FolderViewItem[], extended: GetExtendedItemsResult): FolderViewItem[] => 
-	items.map((n, i) => !extended.exifTimes[i] && (extended.versions && !extended.versions[i])
+const setExtendedItems = (items: FolderViewItem[], extended: GetExtendedItemsResult, sortColumn: number, sortDescending: boolean): FolderViewItem[] => 
+	sort(items.map((n, i) => !extended.exifTimes[i] && (extended.versions && !extended.versions[i])
 		? n
 		: extended.exifTimes[i] && (extended.versions && !extended.versions[i])
 		? {...n, exifDate: extended.exifTimes[i] || undefined } 
 		: !extended.exifTimes[i] && (extended.versions && extended.versions[i])
 		? {...n, version: extended.versions[i] || undefined } 
-				: { ...n, version: (extended.versions && extended.versions[i] || undefined), exifDate: extended.exifTimes[i] || undefined })
+		: { ...n, version: (extended.versions && extended.versions[i] || undefined), exifDate: extended.exifTimes[i] || undefined }), sortColumn, sortDescending)
 		
 const cancelExtendedItems = (id: string) => 
 	jsonPost<Nothing, ErrorType>({ method: "cancelextendeditems", payload: { id } })

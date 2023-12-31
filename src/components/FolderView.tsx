@@ -191,17 +191,12 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         exifTimeSubscription.current?.unsubscribe()
         exifTimeSubscription.current = exifTimeEvents.subscribe(e => {
             if (e.path == controller.current.getPath()) {
-                console.log(e.name)
                 const newItems = refItems.current.map(n => n.name == e.name
                     ? { ...n, exifDate: e.exif } as FolderViewItem
                     : n as FolderViewItem)
-                console.log("newItems", newItems)
-                setItems(newItems)
+                setItems(controller.current.sort(newItems, sortIndex.current, sortDescending.current))
             }
-                
-                
         }) 
-
 
     }, [id, showHidden, controller])
 
@@ -259,7 +254,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     // TODO changePathProps
     const changePath = (id: string, path: string, showHidden: boolean, latestPath?: string, mount?: boolean, fromBacklog?: boolean, checkPosition?: (checkItem: FolderViewItem)=>boolean) => {
         if (statusText)      
-            // TODO control sorting version or date    
             controller.current.cancelExtendedItems(id)
         restrictionView.current?.reset()
         const controllerChanged = checkController(path, controller.current)
@@ -286,16 +280,16 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     localStorage.setItem(`${id}-lastPath`, res.path)
                     if (!fromBacklog)
                         history.current?.set(res.path)
-                    // TODO TEST
-                    // setStatusText("Erweiterte Infos werden abgerufen...")
-                    // controller.current
-                    //     .getExtendedItems(id, res.path, res.items)
-                    //     .match(
-                    //         ok => {
-                    //             setStatusText(null)
-                    //             if (ok.path == refPath.current)
-                    //                 setItems(controller.current.setExtendedItems(res.items, ok))    
-                    //         }, () => setStatusText(null))
+                    
+                    setStatusText("Erweiterte Infos werden abgerufen...")
+                    controller.current
+                        .getExtendedItems(id, res.path, res.items)
+                        .match(
+                            ok => {
+                                setStatusText(null)
+                                if (ok.path == refPath.current)
+                                    setItems(controller.current.setExtendedItems(res.items, ok, sortIndex.current, sortDescending.current))    
+                            }, () => setStatusText(null))
                 },
                 err => {
                     console.log("err", err)
@@ -529,8 +523,8 @@ let internalDrag = false
 
 export default FolderView
 
-// TODO Version and exif date only via changes
-// TODO When changed, disable sorting date or version and display it in the status bar
+// TODO On created/ondeleted must change statusbar files, dirs
+// TODO sort subColumn
 
 // TODO CheckIsModified Windows not working (when cache is disabled)
 // TODO Ctrl+H as ToggleButton
