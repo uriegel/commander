@@ -175,7 +175,6 @@ static partial class Directory
             _                                => new(IOErrorType.Exn)
         };
 
-    // TODO Set extendedInfosCancellations on getItems
     static AsyncResult<GetExtendedItemsResult, GetFilesError> GetExtendedItems(string id, string path, string[] items)
     {
         extendedInfosCancellations = extendedInfosCancellations.Remove(id);

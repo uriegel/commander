@@ -83,8 +83,8 @@ record Events(
     public static void SendDirectoryChanged(string folderId, string? path, DirectoryChangedType type, DirectoryItem item, string? oldName = null)
         => Source.Send(DefaultEvents with { DirectoryChanged = new(folderId, path, type, item, oldName) });
 
-    public static void SendExif(string path, string name)
-        => Source.Send(DefaultEvents with { ExifTime = new(path, name, DateTime.Parse("22.2.2022 22:22")) });
+    public static void SendExif(string path, string name, DateTime exifTime)
+        => Source.Send(DefaultEvents with { ExifTime = new(path, name, exifTime) });
 
 #if Windows 
     public static void Credentials(string path)

@@ -8,28 +8,18 @@ class DirectoryWatcher : IDisposable
     public static void Initialize(string key, string? path)
         => watchers.AddOrUpdateLocked(key, 
             k => new DirectoryWatcher(key, path),
-            (key, dw) => dw == null
+            (key, dw) => 
+                dw == null
                 ? new DirectoryWatcher(key, path)
-                : dw.Path
-                    .SideEffect(path => {
-                        if (path == "/daten/Bilder/Fotos/2019/MarsaAlam")
-                            {
-                            TEST(path); 
-                                
-                            }
-
-                    })  != path ? new DirectoryWatcher(key, path).SideEffect(_ => dw.Dispose()) : dw);
-
-    static async void TEST(string path)
-    {
-        await Task.Delay(20);
-        Enumerable.Range(1, 1110).Select(n => $"Bild{n:0000}.JPG").ForEach(n => Events.SendExif(path, n));
-    }
+                : dw.Path != path 
+                ? new DirectoryWatcher(key, path).SideEffect(_ => dw.Dispose()) 
+                : dw);
 
     DirectoryWatcher(string id, string? path)
     {
         this.id = id;
         Path = path;
+        extendedInfos = path != null ? new(path) : null;
         fsw = Path != null 
                 ? CreateWatcher(Path)
                 : null;        
@@ -89,17 +79,22 @@ class DirectoryWatcher : IDisposable
                     Thread.Sleep(lastRenameUpdate + RENAME_DELAY - DateTime.Now);
                 lastRenameUpdate = DateTime.Now;
                 items.ForEach(n =>
-                    Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Changed, CreateItem(Path.AppendPath(n))));
+                {
+                    extendedInfos?.FileChanged(n);
+                    Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Changed, CreateItem(Path.AppendPath(n)));
+                });
+                    
             }
             catch { }
         }
     }
 
     static readonly ConcurrentDictionary<string, DirectoryWatcher> watchers = [];
-    readonly TimeSpan RENAME_DELAY = TimeSpan.FromMilliseconds(500);
+    readonly TimeSpan RENAME_DELAY = TimeSpan.FromMilliseconds(200);
     readonly FileSystemWatcher? fsw;
     readonly string id;
     readonly ManualResetEvent renameEvent = new(false);
+    readonly ExtendedInfos? extendedInfos;
     DateTime lastRenameUpdate = DateTime.MinValue;
     ImmutableHashSet<string> renameQueue = [];
 
@@ -137,8 +132,5 @@ class DirectoryWatcher : IDisposable
 
     #endregion
 }
-
-// TODO Dispose DirectoryWatcher disposes renameQueue
-// TODO measure updates when 10 000 items are in view
 
 

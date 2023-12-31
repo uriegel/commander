@@ -37,13 +37,13 @@ static partial class Directory
 
     public static AsyncResult<Nothing, RequestError> DeleteItemsRaw(DeleteItemsParam input)
         =>  Gtk.Dispatch(() =>
-                input.Names
-                    .Select(n =>
-                        GFile
-                        .New(input.Path.AppendPath(n))
-                        .Use(f => f.Trash()))
-                    .FirstOrDefault(n => n.IsError)
-                    .SelectError(GErrorToRequestError))
+                    input.Names
+                        .Select(n =>
+                            GFile
+                            .New(input.Path.AppendPath(n))
+                            .Use(f => f.Trash()))
+                        .FirstOrDefault(n => n.IsError)
+                        .SelectError(GErrorToRequestError))
             .ToAsyncResult();
 
     public static Result<Nothing, IOResult> Copy(string name, string path, string targetPath, ProgressCallback cb, bool move, CancellationToken cancellationToken)
@@ -54,6 +54,7 @@ static partial class Directory
                 f => f.Copy(targetPath.AppendPath(name), FileCopyFlags.Overwrite, true, cb, cancellationToken)))
             .SelectError(GErrorToIOResult);
 
+    // TODO no more disk space available code 12 domain 236
     public static IOResult GErrorToIOResult(GError ge)
         => ge switch
         {
