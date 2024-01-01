@@ -3,8 +3,6 @@ using CsTools.Extensions;
 using GtkDotNet;
 using GtkDotNet.SafeHandles;
 
-
-// TODO sort by file changed
 static class Progress
 {
     public static WidgetHandle New()
