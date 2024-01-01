@@ -1,8 +1,6 @@
 
 using System.Collections.Concurrent;
 using CsTools.Extensions;
-using MetadataExtractor;
-using MetadataExtractor.Formats.Exif;
 
 partial class ExtendedInfos : IDisposable
 {
@@ -61,7 +59,7 @@ partial class ExtendedInfos : IDisposable
                             var extendedData = infos.GetExtendedData(infos.Path, name);
                             if (extendedData != null)
                                 Events.SendExtendedData(infos.Path, name, extendedData);
-                            var exif = GetExifDate(infos.Path.AppendPath(name));
+                            var exif = ExifReader.GetDateTime(infos.Path.AppendPath(name));
                             if (exif.HasValue)
                                 Events.SendExif(infos.Path, name, exif.Value);
                         }
@@ -72,24 +70,6 @@ partial class ExtendedInfos : IDisposable
                 catch 
                 {}
             }
-        }
-
-        static DateTime? GetExifDate(string file)
-        {
-            try
-            {
-                var directories = ImageMetadataReader.ReadMetadata(file);
-                var subIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
-                return (subIfdDirectory
-                        ?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal)
-                            .WhiteSpaceToNull()
-                        ?? subIfdDirectory
-                            ?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal)
-                            .WhiteSpaceToNull()
-                        ?? "")
-                            .ToDateTime("yyyy:MM:dd HH:mm:ss");
-            }
-            catch { return null; }
         }
 
         TimeSpan? GetTimeSpan()

@@ -1,8 +1,6 @@
 using System.Data;
 using System.Collections.Immutable;
 using Microsoft.AspNetCore.Http;
-using MetadataExtractor;
-using MetadataExtractor.Formats.Exif;
 
 using AspNetExtensions;
 using CsTools.Extensions;
@@ -186,20 +184,7 @@ static partial class Directory
                     .GetValue(id)
                     ?.IsCancellationRequested == true)
                 return null;
-            try
-            {
-                var directories = ImageMetadataReader.ReadMetadata(path.AppendPath(file));
-                var subIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
-                return (subIfdDirectory
-                        ?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal)
-                        .WhiteSpaceToNull()
-                        ?? subIfdDirectory
-                            ?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal)
-                            .WhiteSpaceToNull()
-                        ?? "")
-                            .ToDateTime("yyyy:MM:dd HH:mm:ss");
-            }
-            catch { return null; }
+            return ExifReader.GetDateTime(path.AppendPath(file));
         }
 
         DateTime? CheckGetExifDate(string item)

@@ -539,7 +539,6 @@ let internalDrag = false
 
 export default FolderView
 
-// TODO ImageMetadataReader fails on stop on Linux
 // TODO CheckIsModified Windows not working (when cache is disabled)
 // TODO Ctrl+H as ToggleButton
 // TODO F3 as ToggleButton
