@@ -12,5 +12,11 @@ if (args.Length > 0 && args[0] == "-adminMode")
 
 Window.Run();
 
+// TODO exception on end Linux
+GC.Collect();
+GC.Collect();
+GC.Collect();
+GC.Collect();
+
 
 

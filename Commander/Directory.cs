@@ -136,6 +136,7 @@ static partial class Directory
 
     public static Result<GetFilesResult, RequestError> GetFiles(DirectoryInfo dirInfo, bool showHiddenItems)
     {
+        // TODO When directory not found => root
         return
              Try(
                 () => new DirFileInfo(

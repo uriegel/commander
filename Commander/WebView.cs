@@ -20,9 +20,7 @@ static class Window
 			.OnFilesDrop(OnFilesDrop)
 			.OnWindowStateChanged(state => Events.WindowStateChanged(state == WebWindowNetCore.Data.WebWindowState.Maximized))
 			.QueryString(() => Platform.QueryString)
-            .OnStarted(() => 
-            
-            new Thread(() => Events.StartEvents()).Start())
+            .OnStarted(() => new Thread(() => Events.StartEvents()).Start())
             .DebugUrl($"http://localhost:5173")
 			.ConfigureHttp(http => http
 				.ResourceWebroot("webroot", "/static")

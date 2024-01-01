@@ -88,6 +88,7 @@ static class Progress
             );
 
     static void RevealControl(RevealerHandle revealer)
+    // TODO while copying color selected then 5s color gray
         => Events.CopyProgresses.Subscribe(n =>
             {
                 if (n.IsStarted)
@@ -100,7 +101,8 @@ static class Progress
                     Gtk.Dispatch(() =>
                     {
                         drawingArea.Ref.QueueDraw();
-                        progressBar.Ref.Fraction((float)n.CurrentFileBytes / n.TotalFileBytes);
+                        if (n.TotalFileBytes > 0)
+                            progressBar.Ref.Fraction((float)n.CurrentFileBytes / n.TotalFileBytes);
                         totalProgressBar.Ref.Fraction(progress);
                         CopyProgressTitle.Ref.Set($"Fortschritt beim Kopieren ({n.TotalBytes.ByteCountToString(2)})");
                         CurrentName.Ref.Set(n.FileName + " ");
@@ -109,7 +111,8 @@ static class Progress
                         {
                             lastCopyTime = n.CopyTime;
                             Duration.Ref.Set(n.CopyTime.FormatSeconds());
-                            TotalDuration.Ref.Set($"{((int)(n.CopyTime * n.TotalBytes / n.CurrentBytes)).FormatSeconds()}");
+                            if (n.CurrentBytes > 0)
+                                TotalDuration.Ref.Set($"{((int)(n.CopyTime * n.TotalBytes / n.CurrentBytes)).FormatSeconds()}");
                         }
                     });
                 }
