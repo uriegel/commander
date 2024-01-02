@@ -22,7 +22,16 @@ static class CopyProcessor
     }
 
     public static void Cancel()
-        => cancellationTokenSource.Cancel();
+    {
+        try 
+        {
+            cancellationTokenSource.Cancel();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"An error has occurred while cancelling copy jobs: {e}");
+        }
+    }
         
     async static void Process()
     {
@@ -44,6 +53,8 @@ static class CopyProcessor
                     default:
                         break;
                 }
+            if (jobs.Reader.TryPeek(out var _) == false)
+                Clear();
         }
         catch
         {
@@ -52,8 +63,7 @@ static class CopyProcessor
     }
 
     static void Copy(Job job) 
-    {
-        job.TargetPath
+        => job.TargetPath
             .AppendPath(job.SubPath)
             .TryEnsureDirectoryExists()
             .SelectError(Directory.ErrorToIOError)
@@ -61,13 +71,11 @@ static class CopyProcessor
                 (c, t) => Events.CopyProgressChanged(
                     new(job.Item, totalCount, currentCount + 1, startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0, t, c, totalBytes, currentBytes + c, false, false)),
                 job.JobType == JobType.Move, cancellationTokenSource.Token))
-            .SideEffect(_ => {
+            .SideEffect(_ =>
+            {
                 currentCount++;
                 currentBytes += job.Size;
-            })
-            .SideEffectIf(jobs.Reader.TryPeek(out var _) == false, 
-                _ => Clear());
-    }
+            });
 
     static void InsertCopyItem(string path, string targetPath, bool move, CopyItem item)
         => jobs.Writer.TryWrite(new(move ? JobType.Move : JobType.Copy, path, targetPath, item.Size, item.Name, item.SubPath, false));
@@ -115,9 +123,9 @@ record Job(
     bool IsCancelled
 );
 
+
+// TODO Windows Cancel close Progress 
 // TODO When move create cleanupEmptyDirectories job
-// TODO Linux Cancel close Progress check move
-// TODO Windows Cancel close Progress check move
 // TODO Exceptions are collected and shown in the UI
 // TODO Exception: Dialog what to do: cancel, ignore this , ignore all
 // TODO Update the view which contains new (or removed) items (background color)

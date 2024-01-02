@@ -54,7 +54,6 @@
 
   <ItemGroup Condition="'$(IsLinux)'=='true'">
     <PackageReference Include="WebWindowNetCore.Linux" Version="5.4.1" />
-    <PackageReference Include="Gtk4DotNet" Version="5.3.2" />
     <EmbeddedResource Include="./kirk.png">
       <LogicalName>icon</LogicalName>
     </EmbeddedResource>

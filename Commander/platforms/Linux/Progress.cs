@@ -7,6 +7,7 @@ static class Progress
 {
     public static WidgetHandle New()
         => Revealer.New()
+            .Ref(revealer)
             .SideEffect(RevealControl)
             .TransitionType(RevealerTransition.SlideLeft)
             .Child(
@@ -66,7 +67,11 @@ static class Progress
                         )
                         .Append(
                             Button.NewWithLabel("Abbrechen")
-                            .OnClicked(CopyProcessor.Cancel)
+                            .OnClicked(() =>
+                            {
+                                CopyProcessor.Cancel();
+                                revealer.Ref.RevealChild(false);
+                            })
                         )
                     )
                 )
@@ -125,6 +130,7 @@ static class Progress
     static float progress = 0.0f;
     static int lastCopyTime;
 
+    static readonly ObjectRef<RevealerHandle> revealer = new();
     static readonly ObjectRef<DrawingAreaHandle> drawingArea = new();
     static readonly ObjectRef<ProgressBarHandle> progressBar = new();
     static readonly ObjectRef<ProgressBarHandle> totalProgressBar = new();
