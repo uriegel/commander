@@ -56,10 +56,6 @@ const CopyProgress = () => {
             <progress className='currentProgress' max={max} value={value}></progress>
             <p>Gesamt:</p>
             <progress className='totalProgress' max={totalMax} value={totalValue}></progress>
-            <div className='btns rightAligned'>
-                <button className='wdr--button'>Abbrechen</button>
-                <button className='wdr--button'>Schließen</button>
-            </div>
         </div>
     )
 }

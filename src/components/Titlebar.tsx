@@ -33,9 +33,14 @@ const Titlebar = ({ menu, isMaximized, progress, progressRevealed, totalSize, mo
     const startProgressDialog = async () => {
         const res = await dialog.show({
             text: `Fortschritt beim ${move ? "Verschieben" : "Kopieren"} (${totalSize?.byteCountToString()})`,
+            btnCancel: true,
+            btnCancelText: "Abbrechen",
+            btnOk: true,
+            btnOkText: "Stoppen",
+            defBtnCancel: true,
             extension: CopyProgress
         })
-        if (res?.result == ResultType.Cancel)
+        if (res?.result == ResultType.Ok)
             await request("cancelCopy", {})        
     }
 

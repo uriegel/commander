@@ -9,8 +9,8 @@
   "devDependencies": {
     "@types/react": "^18.2.46",
     "@types/react-dom": "^18.2.17",
-    "@typescript-eslint/eslint-plugin": "^6.15.0",
-    "@typescript-eslint/parser": "^6.15.0",
+    "@typescript-eslint/eslint-plugin": "^6.17.0",
+    "@typescript-eslint/parser": "^6.17.0",
     "@vitejs/plugin-react": "^4.2.1",
     "eslint": "^8.55.0",
     "eslint-plugin-react-hooks": "^4.6.0",
@@ -25,7 +25,7 @@
     "rxjs": "^7.8.0",
     "view-split-react": "^1.0.1",
     "virtual-table-react": "^10.9.0",
-    "web-dialog-react": "^4.0.0"
+    "web-dialog-react": "^4.1.0"
   },
   "scripts": {
     "dev": "vite",
