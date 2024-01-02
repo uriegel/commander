@@ -126,6 +126,7 @@ record Job(
 // TODO Dialog custom names for buttons
 // TODO Windows Copy when a file is already there with different size
 // TODO Windows Cancel close Progress 
+// TODO Windows Cancel deletes half copied file
 // TODO When move create cleanupEmptyDirectories job
 // TODO Exceptions are collected and shown in the UI
 // TODO Exception: Dialog what to do: cancel, ignore this , ignore all
