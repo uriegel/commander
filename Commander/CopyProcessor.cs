@@ -10,6 +10,7 @@ static class CopyProcessor
 {
     public static AsyncResult<Nothing, RequestError> AddItems(CopyItemsParam input)
     {
+        cancellationTokenSource = new();
         totalCount += input.Items.Length; 
         totalBytes += input.Items.Select(n => n.Size).Aggregate(0L, (a, b) => a + b);
         if (!startTime.HasValue)
@@ -19,6 +20,9 @@ static class CopyProcessor
         return Ok<Nothing, RequestError>(nothing)
             .ToAsyncResult();
     }
+
+    public static void Cancel()
+        => cancellationTokenSource.Cancel();
         
     async static void Process()
     {
@@ -30,15 +34,16 @@ static class CopyProcessor
     {
         try
         {
-            switch (job.JobType)
-            {
-                case JobType.Copy:
-                case JobType.Move:
-                    Copy(job);
-                    break;
-                default:
-                    break;
-            }
+            if (!cancellationTokenSource.IsCancellationRequested)
+                switch (job.JobType)
+                {
+                    case JobType.Copy:
+                    case JobType.Move:
+                        Copy(job);
+                        break;
+                    default:
+                        break;
+                }
         }
         catch
         {
@@ -55,7 +60,7 @@ static class CopyProcessor
             .SelectMany(target => Directory.Copy(job.Item, job.Path.AppendPath(job.SubPath), job.TargetPath,
                 (c, t) => Events.CopyProgressChanged(
                     new(job.Item, totalCount, currentCount + 1, startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0, t, c, totalBytes, currentBytes + c, false, false)),
-                job.JobType == JobType.Move, cancellationToken))
+                job.JobType == JobType.Move, cancellationTokenSource.Token))
             .SideEffect(_ => {
                 currentCount++;
                 currentBytes += job.Size;
@@ -86,7 +91,7 @@ static class CopyProcessor
     static int currentCount;
     static long currentBytes;
     static readonly Channel<Job> jobs = Channel.CreateUnbounded<Job>();
-    static CancellationToken cancellationToken;
+    static CancellationTokenSource cancellationTokenSource = new();
 }
 
 enum JobType
@@ -110,17 +115,16 @@ record Job(
     bool IsCancelled
 );
 
-// TODO active progress is red, inactive is gray
 // TODO When move create cleanupEmptyDirectories job
+// TODO Linux Cancel close Progress check move
+// TODO Windows Cancel close Progress check move
 // TODO Exceptions are collected and shown in the UI
 // TODO Exception: Dialog what to do: cancel, ignore this , ignore all
-// TODO Esc to cancel (all or some) requests
 // TODO Update the view which contains new (or removed) items (background color)
 // TODO They inform about the current state and errors
 // TODO get copy or move operation (dialog in Windows)
 // TODO Windows close (not cancel) copy progress
 // TODO Linux cancel copy progress
-
 
     // static Task<IOResult> CopyItems(int totalCount, long totalSize, CopyItemsParam input,
     //     HashSet<string> newDirs, CancellationToken cancellationToken)

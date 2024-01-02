@@ -64,6 +64,10 @@ static class Progress
                                 .Fraction(.0)
                             )
                         )
+                        .Append(
+                            Button.NewWithLabel("Abbrechen")
+                            .OnClicked(CopyProcessor.Cancel)
+                        )
                     )
                 )
                 .Child(
