@@ -123,7 +123,8 @@ record Job(
     bool IsCancelled
 );
 
-
+// TODO Copy when a file is already there with different size
+// TODO Dialog custom names for buttons
 // TODO Windows Cancel close Progress 
 // TODO When move create cleanupEmptyDirectories job
 // TODO Exceptions are collected and shown in the UI

@@ -109,7 +109,7 @@ record Events(
         => DefaultEvents with { Theme = theme };
 
     static Events()
-        => copyProgresses.Subscribe(n => Source.Send(DefaultEvents));
+        => copyProgresses.Subscribe(n => Source.Send(DefaultEvents with { CopyProgress = n }));
 
     static readonly Func<int> GetCopyId = Incrementor.UseInt();
     static int currentCopyId;
