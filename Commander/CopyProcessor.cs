@@ -123,9 +123,10 @@ record Job(
     bool IsCancelled
 );
 
-// TODO Copy when a file is already there with different size
 // TODO Dialog custom names for buttons
+// TODO Windows Copy when a file is already there with different size
 // TODO Windows Cancel close Progress 
+// TODO Windows Cancel deletes half copied file
 // TODO When move create cleanupEmptyDirectories job
 // TODO Exceptions are collected and shown in the UI
 // TODO Exception: Dialog what to do: cancel, ignore this , ignore all
@@ -133,7 +134,6 @@ record Job(
 // TODO They inform about the current state and errors
 // TODO get copy or move operation (dialog in Windows)
 // TODO Windows close (not cancel) copy progress
-// TODO Linux cancel copy progress
 
     // static Task<IOResult> CopyItems(int totalCount, long totalSize, CopyItemsParam input,
     //     HashSet<string> newDirs, CancellationToken cancellationToken)
