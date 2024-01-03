@@ -4,7 +4,7 @@ import Pie from 'react-progress-control'
 import CopyProgress from "./dialogparts/CopyProgress"
 import { DialogContext, ResultType } from "web-dialog-react"
 import "functional-extensions"
-import { useContext } from "react"
+import { useContext, useEffect, useRef } from "react"
 import { ErrorType, Nothing, jsonPost } from "functional-extensions"
 
 // TODO in webview.d.ts
@@ -30,7 +30,10 @@ const Titlebar = ({ menu, isMaximized, progress, progressRevealed, totalSize, mo
 
     const dialog = useContext(DialogContext)
 
+    const dialogOpen = useRef(false)
+
     const startProgressDialog = async () => {
+        dialogOpen.current = true
         const res = await dialog.show({
             text: `Fortschritt beim ${move ? "Verschieben" : "Kopieren"} (${totalSize?.byteCountToString()})`,
             btnCancel: true,
@@ -40,9 +43,16 @@ const Titlebar = ({ menu, isMaximized, progress, progressRevealed, totalSize, mo
             defBtnCancel: true,
             extension: CopyProgress
         })
+        dialogOpen.current = false
         if (res?.result == ResultType.Ok)
             jsonPost<Nothing, ErrorType>({ method: "cancelCopy" })
     }
+
+    useEffect(() => {
+        if (dialogOpen.current)
+            dialog.close()
+
+    }, [progressRevealed, dialog])
 
     return  isWindows()        
         ? (<div className="titlebar">

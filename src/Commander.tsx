@@ -74,8 +74,10 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 		const subscription = isWindows() ? progressChangedEvents.subscribe(e => {
 			if (e.isStarted)
 				setProgressRevealed(true)
-			else if (e.isFinished)
+			else if (e.isFinished) {
+				setProgress(0)
 				setProgressRevealed(false)
+			}
 			else 
 				setProgress(e.currentBytes/e.totalBytes)
 			setTotalMax(e.totalBytes)

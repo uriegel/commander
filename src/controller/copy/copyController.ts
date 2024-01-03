@@ -6,7 +6,7 @@ import { Controller, ControllerType } from "../controller"
 import { compareVersion, getItemsType, ItemsType } from "../filesystem"
 import { CopyItem, IOError } from "../../requests/requests"
 import { copy, copyInfo } from "./fileSystem"
-import { AsyncResult, Err, ErrorType, Nothing, Ok } from "functional-extensions"
+import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
 
 export interface CopyController {
     copy: () => AsyncResult<Nothing, ErrorType>
@@ -55,7 +55,7 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle, fromLe
                     size: n.size,
                     time: n.time
                 }))
-                    
+            
             return copyInfo(sourcePath, targetPath, copyItems, move)
                 .bindAsync(infos => {
                     const fileItems = items
@@ -143,11 +143,14 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle, fromLe
                         btnCancel: true,
                         defBtnYes: !defNo && conflictItems.length > 0,
                         defBtnNo: defNo
-                    }, res => res.result != ResultType.Cancel
+                    }, res => res.result != ResultType.Cancel 
                         ? makeDialogResult(res, fileItems, infos, conflictItems)
                         : new Err<CopyItem[], ErrorType>({ status: IOError.Canceled, statusText: "" }))
-                }) 
-                .bindAsync(copyItems => copy(sourcePath, targetPath, copyItems, move))
+                    }) 
+                    .bindAsync(copyItems =>
+                        copyItems.length > 0
+                        ? copy(sourcePath, targetPath, copyItems, move)
+                        : AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)))
         }
     })
 
