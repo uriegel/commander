@@ -128,14 +128,15 @@ record Job(
     bool IsCancelled
 );
 
-// TODO Close app when copy jobs are there to process
 // TODO Windows elevate copy jobs
-// TODO Windows Close app when elevated copy jobs are there to process
 // TODO When move create cleanupEmptyDirectories job
 // TODO Exceptions are collected and shown in the UI
 // TODO Exception: Dialog what to do: cancel, ignore this , ignore all
 // TODO Update the view which contains new (or removed) items (background color)
 // TODO They inform about the current state and errors
 // TODO get copy or move operation (dialog in Windows)
-// TODO Windows close (not cancel) copy progress
-
+// TODO Window closing: cancel
+// TODO if dialog is open do not close app
+// TODO if copy operations are running show dialog 
+// TODO Close app when copy jobs are there to process
+// TODO Windows Close app when elevated copy jobs are there to process
