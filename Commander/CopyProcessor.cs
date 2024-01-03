@@ -41,41 +41,58 @@ static class CopyProcessor
     async static void Process()
     {
         await foreach (var job in jobs.Reader.ReadAllAsync())
-            Process(job);
+            await Process(job)
+                .Match(
+                    Bypass,
+                    ProcessError);
     }
 
-    static void Process(Job job)
+    static Result<Nothing, RequestError> Process(Job job)
     {
         try
         {
+            Result<Nothing, RequestError>? result = null;
             if (!cancellationTokenSource.IsCancellationRequested)
                 switch (job.JobType)
                 {
                     case JobType.Copy:
                     case JobType.Move:
-                        Copy(job);
+                        result = Copy(job);
                         break;
                     default:
                         break;
                 }
-            if (jobs.Reader.TryPeek(out var _) == false)
+            if (result?.IsError != true && jobs.Reader.TryPeek(out var _) == false)
                 Clear();
+            return result ?? Ok<Nothing, RequestError>(nothing);
         }
         catch (Exception e)
         {
-            // TODO error handling or complete ROP
-
-            // TODO on windows when access denied:
-            // TODO on windows await foreach (var job in jobs.Reader.ReadAllAsync()) get all jobs with the same target dir
-            // TODO send one request with all files to uac
+            Console.WriteLine($"Exception occurred while copying: {e}");
+            return Error<Nothing, RequestError>(IOErrorType.Exn.ToError());
         }
     }
 
-    static void Copy(Job job) 
+    static Task Bypass(Nothing _)
+        => Task.FromResult(0);
+
+    static async Task ProcessError(RequestError err)
+    {
+        // TODO on windows when access denied:
+        // TODO on windows await foreach (var job in jobs.Reader.ReadAllAsync()) get all jobs with the same target dir
+        // TODO send one request with all files to uac
+
+        if (jobs.Reader.TryPeek(out var _) == false)
+            await jobs.Reader.ReadAsync();
+        Clear();
+        Events.SendCopyError(err);
+    }
+
+    static Result<Nothing, RequestError> Copy(Job job) 
         => job.TargetPath
             .AppendPath(job.SubPath)
             .TryEnsureDirectoryExists()
-            .SelectError(Directory.ErrorToIOError)
+            .SelectError(Directory.ErrorToRequestError)
             .SelectMany(target => Directory.Copy(job.Item, job.Path.AppendPath(job.SubPath), job.TargetPath,
                 (c, t) => Events.CopyProgressChanged(
                     new(job.Item, totalCount, currentCount + 1, startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0, t, c, totalBytes, currentBytes + c, false, false)),

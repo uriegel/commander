@@ -1,6 +1,7 @@
 import { BehaviorSubject, filter, fromEvent, map } from 'rxjs'
 import { FolderViewItem } from '../components/FolderView'
 import { Version } from './requests'
+import { ErrorType } from 'functional-extensions'
 
 type CopyProgress = {
     fileName: string
@@ -58,6 +59,7 @@ type ExtendedData = {
 type CommanderEvent = {
     theme?:        string
     copyProgress?: CopyProgress
+    copyError: ErrorType
     windowState?: WindowState
     serviceItems?: FolderViewItem[]
     filesDrop?: FilesDrop
@@ -107,6 +109,10 @@ export const exifTimeEvents = commanderEvents
 export const extendedDataEvents = commanderEvents
     .pipe(filter(n => n.extendedData != undefined))
     .pipe(map(n => n.extendedData!))
+
+export const copyErrorEvents = commanderEvents
+    .pipe(filter(n => n.copyError != undefined))
+    .pipe(map(n => n.copyError!))
 
 export const progressChangedEvents = new BehaviorSubject<CopyProgress>({
     fileName: "",

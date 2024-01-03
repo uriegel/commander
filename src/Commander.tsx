@@ -14,7 +14,7 @@ import './themes/adwaitaDark.css'
 import './themes/windows.css'
 import './themes/windowsDark.css'
 import { isWindows } from './globals'
-import { filesDropEvents, getCredentialsEvents, progressChangedEvents, } from './requests/events'
+import { copyErrorEvents, filesDropEvents, getCredentialsEvents, progressChangedEvents, } from './requests/events'
 import { getCopyController } from './controller/copy/copyController'
 import FileViewer from './components/FileViewer'
 import { SpecialKeys } from 'virtual-table-react'
@@ -69,6 +69,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 	
 	const filesDropSubscription = useRef<Subscription | null>(null)
 	const getCredentialsSubscription = useRef<Subscription | null>(null)
+	const copyErrorSubscription = useRef<Subscription | null>(null)
 	
 	useEffect(() => {
 		const subscription = isWindows() ? progressChangedEvents.subscribe(e => {
@@ -82,6 +83,10 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 				setProgress(e.currentBytes/e.totalBytes)
 			setTotalMax(e.totalBytes)
 		}) : null
+
+		copyErrorSubscription.current?.unsubscribe()
+		copyErrorSubscription.current = copyErrorEvents.subscribe(err => showError(err, setErrorText, "Fehler beim Kopieren: "))
+
 		return () => subscription?.unsubscribe()
 	}, [])
 
@@ -129,7 +134,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
                 .then(res => jsonPost<CredentialsResult, ErrorType>({ method: "sendcredentials", payload: res }))
         })
 	}, [dialog, copyItemsToInactive])
-	
+
 	const setAndSaveAutoMode = (mode: boolean) => {
 		setAutoMode(mode)
 		localStorage.setItem("menuAutoHide", mode ? "true" : "false")

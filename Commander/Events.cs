@@ -51,7 +51,8 @@ record Events(
     FilesDrop? FilesDrop,
     DirectoryChangedEvent? DirectoryChanged,
     ExifTime? ExifTime,
-    ExtendedData? ExtendedData
+    ExtendedData? ExtendedData,
+    RequestError? CopyError
 #if Windows
     , GetCredentials? GetCredentials = null
     , ServiceItem[]? ServiceItems = null
@@ -62,6 +63,9 @@ record Events(
 
     public static void CopyProgressChanged(CopyProgress progress)
         => copyProgresses.OnNext(progress);
+
+    public static void SendCopyError(RequestError error)
+        => Source.Send(DefaultEvents with { CopyError = error });
 
     public static void CopyStarted()
         => copyProgresses
@@ -103,7 +107,7 @@ record Events(
     public static void StartEvents()   
         => global::Theme.StartThemeDetection(n => Source.Send(ThemeChanged(n)));
 
-    static Events DefaultEvents { get; } = new(null, null, null, null, null, null, null);
+    static Events DefaultEvents { get; } = new(null, null, null, null, null, null, null, null);
 
     static Events ThemeChanged(string theme)
         => DefaultEvents with { Theme = theme };

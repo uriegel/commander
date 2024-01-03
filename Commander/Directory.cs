@@ -164,14 +164,14 @@ static partial class Directory
     public static bool IsDirectory(string path)
         => (File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory;
 
-    public static IOResult ErrorToIOError(DirectoryError de)
+    public static RequestError ErrorToRequestError(DirectoryError de)
         => de switch
         {
-            DirectoryError.AccessDenied      => new(IOErrorType.AccessDenied),
-            DirectoryError.DirectoryNotFound => new(IOErrorType.PathNotFound),
-            DirectoryError.NotSupported      => new(IOErrorType.NotSupported),
-            DirectoryError.PathTooLong       => new(IOErrorType.PathTooLong),
-            _                                => new(IOErrorType.Exn)
+            DirectoryError.AccessDenied      => IOErrorType.AccessDenied.ToError(),
+            DirectoryError.DirectoryNotFound => IOErrorType.PathNotFound.ToError(),
+            DirectoryError.NotSupported      => IOErrorType.NotSupported.ToError(),
+            DirectoryError.PathTooLong       => IOErrorType.PathTooLong.ToError(),
+            _                                => IOErrorType.Exn.ToError()
         };
 
     static AsyncResult<GetExtendedItemsResult, GetFilesError> GetExtendedItems(string id, string path, string[] items)
@@ -376,6 +376,7 @@ enum IOErrorType {
     Canceled,
     WrongCredentials,
     // TODO eliminate
+    NoDiskSpace,
     NoError,
 }
 
@@ -397,7 +398,7 @@ static class IOErrorTypeExtensions
         => new((int)error, error switch 
                                 {
                                     IOErrorType.AccessDenied => "Access denied",
-                                    IOErrorType.AlreadyExists => "aLREADY Already exists",
+                                    IOErrorType.AlreadyExists => "Already exists",
                                     IOErrorType.FileNotFound => "File not found",
                                     IOErrorType.DeleteToTrashNotPossible => "Delete to trash not possible",
                                     IOErrorType.Exn => "Exception",

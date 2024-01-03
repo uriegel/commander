@@ -196,7 +196,7 @@ export const checkResult = async (dialog: DialogHandle|null|undefined, activeFol
         return true
 }
 
-export const showError = (error: ErrorType, setError: (error: string)=>void) => {
+export const showError = (error: ErrorType, setError: (error: string)=>void, prefix?: string) => {
 
     const getRequestError = (ioError: IOError) => 
         ioError === IOError.AccessDenied
@@ -217,6 +217,8 @@ export const showError = (error: ErrorType, setError: (error: string)=>void) => 
             ? "Der Pfad ist zu lang"
             : ioError === IOError.WrongCredentials
             ? "Die Zugangsdaten sind falsch"
+            : ioError === IOError.NoDiskSpace
+            ? "Kein Speicherplatz mehr vorhanden"
             : "Die Aktion konnte nicht ausgeführt werden"
 
     const getClientError = (error: ErrorType) => 
@@ -231,8 +233,9 @@ export const showError = (error: ErrorType, setError: (error: string)=>void) => 
         ? getClientError(error)
         : getServerError(error)
 
-    if (error.status !== IOError.Canceled && error.status !== IOError.UacNotStarted) 
-        setError(text)
+    if (error.status !== IOError.Canceled && error.status !== IOError.UacNotStarted) {
+        setError((prefix ?? "") + text)
+    }
 }
 
 const checkNewController = (controllerResult: ControllerResult, recentController: Controller | null): ControllerResult => {

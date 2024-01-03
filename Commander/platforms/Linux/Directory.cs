@@ -46,25 +46,13 @@ static partial class Directory
                         .SelectError(GErrorToRequestError))
             .ToAsyncResult();
 
-    public static Result<Nothing, IOResult> Copy(string name, string path, string targetPath, ProgressCallback cb, bool move, CancellationToken cancellationToken)
+    public static Result<Nothing, RequestError> Copy(string name, string path, string targetPath, ProgressCallback cb, bool move, CancellationToken cancellationToken)
         => GFile
             .New(path.AppendPath(name))
             .Use(f => f.If(move,
                 f => f.Move(targetPath.AppendPath(name), FileCopyFlags.Overwrite, true, cb, cancellationToken),
                 f => f.Copy(targetPath.AppendPath(name), FileCopyFlags.Overwrite, true, cb, cancellationToken)))
-            .SelectError(GErrorToIOResult);
-
-    // TODO no more disk space available code 12 domain 236
-    public static IOResult GErrorToIOResult(GError ge)
-        => ge switch
-        {
-            FileError fe when fe.Error == FileError.ErrorType.AccessDenied   => new(IOErrorType.AccessDenied),
-            FileError fe when fe.Error == FileError.ErrorType.SourceNotFound => new(IOErrorType.FileNotFound),
-            FileError fe when fe.Error == FileError.ErrorType.TargetNotFound => new(IOErrorType.PathNotFound),
-            FileError fe when fe.Error == FileError.ErrorType.TargetExisting => new(IOErrorType.AlreadyExists),
-            FileError fe when fe.Error == FileError.ErrorType.Canceled       => new(IOErrorType.Canceled),
-            _                                                                => new(IOErrorType.Exn),
-        };
+            .SelectError(GErrorToRequestError);
 
     public static RequestError GErrorToRequestError(GError ge)
         => ge switch
@@ -73,6 +61,7 @@ static partial class Directory
             FileError fe when fe.Error == FileError.ErrorType.SourceNotFound => IOErrorType.FileNotFound.ToError(),
             FileError fe when fe.Error == FileError.ErrorType.TargetNotFound => IOErrorType.PathNotFound.ToError(),
             FileError fe when fe.Error == FileError.ErrorType.TargetExisting => IOErrorType.AlreadyExists.ToError(),
+            FileError fe when fe.Error == FileError.ErrorType.NoDiskSpace    => IOErrorType.NoDiskSpace.ToError(),
             FileError fe when fe.Error == FileError.ErrorType.Canceled       => IOErrorType.Canceled.ToError(),
             _                                                                => IOErrorType.Exn.ToError()
         };
