@@ -6,7 +6,7 @@ using CsTools.Functional;
 
 using static CsTools.Core;
 
-static class CopyProcessor
+static partial class CopyProcessor
 {
     public static AsyncResult<Nothing, RequestError> AddItems(CopyItemsParam input)
     {
@@ -44,7 +44,7 @@ static class CopyProcessor
             await Process(job)
                 .Match(
                     Bypass,
-                    ProcessError);
+                    e => ProcessError(e, job));
     }
 
     static Result<Nothing, RequestError> Process(Job job)
@@ -78,12 +78,7 @@ static class CopyProcessor
 
     static async Task ProcessError(RequestError err)
     {
-        // TODO on windows when access denied:
-        // TODO on windows await foreach (var job in jobs.Reader.ReadAllAsync()) get all jobs with the same target dir
-        // TODO send one request with all files to uac
-
-        if (jobs.Reader.TryPeek(out var _) == false)
-            await jobs.Reader.ReadAsync();
+        await GetCurrentJobs();
         Clear();
         Events.SendCopyError(err);
     }
@@ -114,6 +109,23 @@ static class CopyProcessor
         currentCount = 0;
         currentBytes = 0;
         Events.CopyFinished();
+    }
+
+    static Task<Job[]> GetCurrentJobs(Func<Job, bool>? predicate = null)
+    {
+        async IAsyncEnumerable<Job> GetCurrentJobs()
+        {
+            while (true)
+                if (jobs.Reader.TryPeek(out var job) != false) {
+                    if (predicate == null || predicate(job))
+                        yield return await jobs.Reader.ReadAsync();
+                }
+                else
+                    break;
+        }
+        return GetCurrentJobs()
+            .ToArrayAsync()
+            .AsTask();
     }
 
     static CopyProcessor() => Process();
@@ -149,10 +161,6 @@ record Job(
     bool IsCancelled
 );
 
-// TODO Exceptions are collected and shown in the UI
-// TODO Exception: Dialog what to do: cancel, ignore this , ignore all
-// TODO Update the view which contains new (or removed) items (background color)
-// TODO They inform about the current state and errors
 // TODO Windows elevate copy jobs
 // TODO get copy or move operation (dialog in Windows)
 // TODO When move create cleanupEmptyDirectories job
