@@ -61,9 +61,13 @@ static class CopyProcessor
             if (jobs.Reader.TryPeek(out var _) == false)
                 Clear();
         }
-        catch
+        catch (Exception e)
         {
             // TODO error handling or complete ROP
+
+            // TODO on windows when access denied:
+            // TODO on windows await foreach (var job in jobs.Reader.ReadAllAsync()) get all jobs with the same target dir
+            // TODO send one request with all files to uac
         }
     }
 
@@ -128,13 +132,13 @@ record Job(
     bool IsCancelled
 );
 
-// TODO Windows elevate copy jobs
-// TODO When move create cleanupEmptyDirectories job
 // TODO Exceptions are collected and shown in the UI
 // TODO Exception: Dialog what to do: cancel, ignore this , ignore all
 // TODO Update the view which contains new (or removed) items (background color)
 // TODO They inform about the current state and errors
+// TODO Windows elevate copy jobs
 // TODO get copy or move operation (dialog in Windows)
+// TODO When move create cleanupEmptyDirectories job
 // TODO Window closing: cancel
 // TODO if dialog is open do not close app
 // TODO if copy operations are running show dialog 
