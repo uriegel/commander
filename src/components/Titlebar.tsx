@@ -2,10 +2,10 @@ import { isWindows } from "../globals"
 import './Titlebar.css'
 import Pie from 'react-progress-control'
 import CopyProgress from "./dialogparts/CopyProgress"
-import { request } from "../requests/requests"
 import { DialogContext, ResultType } from "web-dialog-react"
 import "functional-extensions"
 import { useContext } from "react"
+import { ErrorType, Nothing, jsonPost } from "functional-extensions"
 
 // TODO in webview.d.ts
 declare const webViewMinimize: () => void
@@ -41,7 +41,7 @@ const Titlebar = ({ menu, isMaximized, progress, progressRevealed, totalSize, mo
             extension: CopyProgress
         })
         if (res?.result == ResultType.Ok)
-            await request("cancelCopy", {})        
+            jsonPost<Nothing, ErrorType>({ method: "cancelCopy" })
     }
 
     return  isWindows()        

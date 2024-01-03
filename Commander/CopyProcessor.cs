@@ -21,6 +21,11 @@ static class CopyProcessor
             .ToAsyncResult();
     }
 
+    public static AsyncResult<Nothing, RequestError> CancelRequest()
+        => Ok<Nothing, RequestError>(nothing)
+            .SideEffect(_ => Cancel())
+            .ToAsyncResult();
+    
     public static void Cancel()
     {
         try 

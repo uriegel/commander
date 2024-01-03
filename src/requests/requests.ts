@@ -87,18 +87,11 @@ export type GetRootResult = RootItem[]
 export type GetServicesResult = ServiceItem[]
 
 type Close = "close"
-type GetRoot = "getroot"
-type GetFiles = "getfiles"
 type ShowDevTools = "showdevtools"
 type ShowFullScreen = "showfullscreen"
 type RenameItem = "renameitem"
-type CreateFolder = "createfolder"
-type DeleteItems = "deleteitems"
-type CopyItemsInfo = "copyitemsinfo"
-type CopyItems = "copyitems"
 type CopyItemsFromRemote = "copyitemsfromremote"
 type CopyItemsToRemote = "copyitemstoremote"
-type CancelCopy = "cancelCopy"
 type GetRemoteFiles = "getremotefiles"
 type RenameItems = "renameitems"
 type RenameAndCopy = "renameandcopy"
@@ -112,18 +105,11 @@ type ElevateDrive = "elevatedrive"
 
 type RequestType = 
 	| Close
-	| GetRoot
-    | GetFiles
     | ShowDevTools
     | ShowFullScreen
     | RenameItem
-    | CreateFolder
-    | DeleteItems
-    | CopyItemsInfo
-    | CopyItems
     | CopyItemsFromRemote
     | CopyItemsToRemote
-    | CancelCopy
     | GetRemoteFiles
     | RenameItems
     | RenameAndCopy
@@ -241,9 +227,6 @@ export async function request<T extends Result>(method: RequestType, input?: Req
     }
 
     const response = await fetch(`http://localhost:20000/commander/${method}`, msg) 
-
-    if (elevatedStarted && method == "cancelCopy")
-        await fetch(`http://localhost:21000/commander/${method}`, msg) 
 
     const res = await response.json() as T
     if ((res as Exception).exception)
