@@ -109,33 +109,50 @@ static partial class Directory
 
     public static Result<Nothing, RequestError> Copy(string name, string path, string targetPath, Action<long, long> progress, bool move, CancellationToken cancellationToken)
     {
-        var cancel = 0;
-        cancellationToken.Register(() => cancel = -1);
-        if (move) {
-            if (!MoveFileWithProgress(path.AppendPath(name), targetPath.AppendPath(name).RemoveWriteProtection(), (total, current, c, d, e, f, g, h, i) => {
-                progress(current, total);
-                return CopyProgressResult.Continue;
-            }, IntPtr.Zero, MoveFileFlags.CopyAllowed| MoveFileFlags.ReplaceExisting)) {
-                var error = Marshal.GetLastWin32Error();
-                if (error == 5)
-                    return Error<Nothing, RequestError>(IOErrorType.AccessDenied.ToError());
-                else if (error != 0)
-                    return Error<Nothing, RequestError>(IOErrorType.Exn.ToError());
+        try
+        {
+            var cancel = 0;
+            cancellationToken.Register(() => cancel = -1);
+            if (move)
+            {
+                if (!MoveFileWithProgress(path.AppendPath(name), targetPath.AppendPath(name).RemoveWriteProtection(), (total, current, c, d, e, f, g, h, i) =>
+                {
+                    progress(current, total);
+                    return CopyProgressResult.Continue;
+                }, IntPtr.Zero, MoveFileFlags.CopyAllowed | MoveFileFlags.ReplaceExisting))
+                {
+                    var error = Marshal.GetLastWin32Error();
+                    if (error == 5)
+                        return Error<Nothing, RequestError>(IOErrorType.AccessDenied.ToError());
+                    else if (error != 0)
+                        return Error<Nothing, RequestError>(IOErrorType.Exn.ToError());
+                }
             }
-        }
-        else {
-            if (!CopyFileEx(path.AppendPath(name), targetPath.AppendPath(name).RemoveWriteProtection(), (total, current, c, d, e, f, g, h, i) => {
-                progress(current, total);
-                return CopyProgressResult.Continue;
-            }, IntPtr.Zero, ref cancel, (CopyFileFlags)0)) {
-                var error = Marshal.GetLastWin32Error();
-                if (error == 5)
-                    return Error<Nothing, RequestError>(IOErrorType.AccessDenied.ToError());
-                else if (error != 0)
-                    return Error<Nothing, RequestError>(IOErrorType.Exn.ToError());
+            else
+            {
+                if (!CopyFileEx(path.AppendPath(name), targetPath.AppendPath(name).RemoveWriteProtection(), (total, current, c, d, e, f, g, h, i) =>
+                {
+                    progress(current, total);
+                    return CopyProgressResult.Continue;
+                }, IntPtr.Zero, ref cancel, (CopyFileFlags)0))
+                {
+                    var error = Marshal.GetLastWin32Error();
+                    if (error == 5)
+                        return Error<Nothing, RequestError>(IOErrorType.AccessDenied.ToError());
+                    else if (error != 0)
+                        return Error<Nothing, RequestError>(IOErrorType.Exn.ToError());
+                }
             }
+            return nothing;
         }
-        return nothing;
+        catch (UnauthorizedAccessException)
+        {
+            return Error<Nothing, RequestError>(IOErrorType.AccessDenied.ToError());
+        }
+        catch (Exception e)
+        {
+            return Error<Nothing, RequestError>(IOErrorType.Exn.ToError());
+        }
     }
 
     public static AsyncResult<Nothing, RequestError> CredentialsReceived(Result<Credentials, RequestError> credentials)

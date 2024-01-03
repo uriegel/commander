@@ -1,6 +1,7 @@
 #if Windows
 
 using AspNetExtensions;
+using CsTools.Extensions;
 using CsTools.Functional;
 using static CsTools.Core;
 
@@ -22,8 +23,9 @@ static partial class CopyProcessor
         if (err.Status == (int)IOErrorType.AccessDenied)
         {
             var allJobs = new[] { job }.Concat(await GetCurrentJobs(n => n.Path == job.Path && n.SubPath == job.SubPath));
-            UacServer
+            (await UacServer
                 .StartElevated()
+                .SideEffect(_ => sseClient = new CsTools.HttpRequest.SseClient<Events>("http://localhost:21000/commander/sse", e => Console.WriteLine($"Events From Uac: {e}")))
                 .SelectError(_ => new CsTools.HttpRequest.RequestError(1099, "UAC not started"))
                 .ToAsyncResult()
                 .BindAwait(_ => Requests.JsonRequest.Post<CopyItemsParam, Nothing>(new(
@@ -35,12 +37,15 @@ static partial class CopyProcessor
                             .Select(n => new CopyItem(n.Item, null, 0, DateTime.MinValue, n.SubPath))
                             .ToArray(),
                         job.JobType == JobType.Move))))
-                .SelectError(e => new RequestError(e.Status, e.StatusText));
-            // TODO send Progress from uac
+                .SelectError(e => new RequestError(e.Status, e.StatusText))
+                .ToResult())
+                .SideEffect(_ => sseClient?.Dispose());
         }
         else
             await ProcessError(err);
     }
+
+    static CsTools.HttpRequest.SseClient<Events>? sseClient;
 }
 
 #endif
