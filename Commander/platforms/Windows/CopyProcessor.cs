@@ -7,6 +7,16 @@ using static CsTools.Core;
 
 static partial class CopyProcessor
 {
+    // TODO 
+        //     totalCount = 0;
+        // totalBytes = 0;
+        // startTime = null;
+        // currentCount = 0;
+        // currentBytes = 0;
+
+    // TODO Cancel jobs in uac
+
+
     public static AsyncResult<Nothing, RequestError> CopyUac(CopyItemsParam input)
         => input
             .Items
