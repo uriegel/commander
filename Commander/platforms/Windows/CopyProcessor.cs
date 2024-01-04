@@ -7,17 +7,10 @@ using static CsTools.Core;
 
 static partial class CopyProcessor
 {
-    // TODO 
-        //     totalCount = 0;
-        // totalBytes = 0;
-        // startTime = null;
-        // currentCount = 0;
-        // currentBytes = 0;
-
     // TODO Cancel jobs in uac
 
 
-    public static AsyncResult<Nothing, RequestError> CopyUac(CopyItemsParam input)
+    public static AsyncResult<Nothing, RequestError> CopyUac(UacCopyItemsParam input)
         => input
             .Items
             .Aggregate(Ok<Nothing, RequestError>(nothing),
@@ -35,18 +28,25 @@ static partial class CopyProcessor
             var allJobs = new[] { job }.Concat(await GetCurrentJobs(n => n.Path == job.Path && n.SubPath == job.SubPath));
             (await UacServer
                 .StartElevated()
-                .SideEffect(_ => sseClient = new CsTools.HttpRequest.SseClient<Events>("http://localhost:21000/commander/sse", e => Console.WriteLine($"Events From Uac: {e}")))
+                .SideEffect(_ => sseClient = new CsTools.HttpRequest.SseClient<Events>("http://localhost:21000/commander/sse", 
+                                                e => Events.CopyProgressChanged(e.CopyProgress!)))
                 .SelectError(_ => new CsTools.HttpRequest.RequestError(1099, "UAC not started"))
                 .ToAsyncResult()
-                .BindAwait(_ => Requests.JsonRequest.Post<CopyItemsParam, Nothing>(new(
+                .BindAwait(_ => Requests.JsonRequest.Post<UacCopyItemsParam, Nothing>(new(
                     "commander/copyitems",
                     new(
+                        totalCount,
+                        totalBytes,
+                        startTime,
+                        currentCount,
+                        currentBytes,
+                        job.JobType == JobType.Move,
                         job.Path,
                         job.TargetPath,
                         allJobs
                             .Select(n => new CopyItem(n.Item, null, 0, DateTime.MinValue, n.SubPath))
-                            .ToArray(),
-                        job.JobType == JobType.Move))))
+                            .ToArray()
+                        ))))
                 .SelectError(e => new RequestError(e.Status, e.StatusText))
                 .ToResult())
                 .SideEffect(_ => sseClient?.Dispose());
@@ -57,5 +57,17 @@ static partial class CopyProcessor
 
     static CsTools.HttpRequest.SseClient<Events>? sseClient;
 }
+
+record UacCopyItemsParam(
+    int TotalCount,
+    long TotalBytes,
+    DateTime? StartTime,
+    int CurrentCount,
+    long CurrentBytes,
+    bool Move,
+    string Path,
+    string TargetPath,
+    CopyItem[] Items
+);
 
 #endif

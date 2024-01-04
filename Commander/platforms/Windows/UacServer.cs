@@ -81,7 +81,7 @@ static class UacServer
             .WithJsonPost<DeleteItemsParam, Nothing, RequestError>("commander/deleteitems", Directory.DeleteItems, _ => Exit())
             .WithJsonPost<CreateFolderParam, Nothing, RequestError>("commander/createfolder", Directory.CreateFolder, _ => Exit())
             .WithJsonPost<RenameItemParam, Nothing, RequestError>("commander/renameitem", Directory.RenameItemUac, _ => Exit())
-            .WithJsonPost<CopyItemsParam, Nothing, RequestError>("commander/copyitems", CopyProcessor.CopyUac, _ => Exit())
+            .WithJsonPost<UacCopyItemsParam, Nothing, RequestError>("commander/copyitems", CopyProcessor.CopyUac, _ => Exit())
             // TODO
             // .JsonPost<CopyItemsParam, IOResult>("commander/copyitems", Directory.CopyItems)
             // .JsonPost<Empty, IOResult>("commander/cancelcopy", Directory.CancelCopy)
