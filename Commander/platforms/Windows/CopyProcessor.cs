@@ -35,16 +35,13 @@ static partial class CopyProcessor
                 .BindAwait(_ => Requests.JsonRequest.Post<UacCopyItemsParam, Nothing>(new(
                     "commander/copyitems",
                     new(
-                        totalCount,
-                        totalBytes,
-                        startTime,
                         currentCount,
                         currentBytes,
                         job.JobType == JobType.Move,
                         job.Path,
                         job.TargetPath,
                         allJobs
-                            .Select(n => new CopyItem(n.Item, null, 0, DateTime.MinValue, n.SubPath))
+                            .Select(n => new CopyItem(n.Item, null, n.Size, DateTime.MinValue, n.SubPath))
                             .ToArray()
                         ))))
                 .SelectError(e => new RequestError(e.Status, e.StatusText))
@@ -59,9 +56,6 @@ static partial class CopyProcessor
 }
 
 record UacCopyItemsParam(
-    int TotalCount,
-    long TotalBytes,
-    DateTime? StartTime,
     int CurrentCount,
     long CurrentBytes,
     bool Move,

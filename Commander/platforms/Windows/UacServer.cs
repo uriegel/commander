@@ -89,13 +89,6 @@ static class UacServer
             // .JsonPost<StartServicesParam, IOResult>("commander/stopservices", Services.Stop)            
             .StartAsync();
 
-    // static WebApplication UseSse<T>(this WebApplication app, string path, SseEventSource<T> sseEventSource)
-    //     => app.SideEffect(n => 
-    //             RequestDelegates = RequestDelegates.Append(
-    //                 (WebApplication app) =>
-    //                     app.WithMapGet(path, (HttpContext context) => new Sse<T>(sseEventSource.Subject).Start(context)))
-    //                         .ToArray());
-
     static TaskCompletionSource? processRunning; 
 }
 

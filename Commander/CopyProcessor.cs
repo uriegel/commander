@@ -92,7 +92,7 @@ static partial class CopyProcessor
                 (c, t) => Events.CopyProgressChanged(
                     new(job.Item, totalCount, currentCount + 1, startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0, t, c, totalBytes, currentBytes + c, false, false)),
                 job.JobType == JobType.Move, cancellationTokenSource.Token))
-            .SideEffect(_ =>
+            .SideEffectWhenOk(_ =>
             {
                 currentCount++;
                 currentBytes += job.Size;
