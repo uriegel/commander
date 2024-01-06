@@ -7,6 +7,8 @@ using static CsTools.Core;
 
 static partial class CopyProcessor
 {
+    // TODO Send error from uac (canceled from uac dialog)
+    // TODO many copy files
     // TODO Cancel jobs in uac
 
 
@@ -18,7 +20,9 @@ static partial class CopyProcessor
                     input.Move ? JobType.Move : JobType.Copy,
                     input.Path,
                     input.TargetPath,
-                    0, i.Name, i.SubPath, false))))
+                    0, i.Name, i.SubPath, false))
+            ))
+            .SideEffect(_ => Events.CopyProgressChanged(new("", 0, 0, 0, 0, 0, 0, 0, false, true)))
             .ToAsyncResult();
 
     static async Task ProcessError(RequestError err, Job job)
@@ -29,7 +33,14 @@ static partial class CopyProcessor
             (await UacServer
                 .StartElevated()
                 .SideEffect(_ => sseClient = new CsTools.HttpRequest.SseClient<Events>("http://localhost:21000/commander/sse", 
-                                                e => Events.CopyProgressChanged(e.CopyProgress!))) // TODO add all params!!!
+                                                e => { if (e.CopyProgress!.IsFinished)
+                                                        Clear();
+                                                    else 
+                                                        Events.CopyProgressChanged(
+                                                            new(e.CopyProgress!.FileName, totalCount, currentCount + 1, startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0,
+                                                                e.CopyProgress!.TotalFileBytes, e.CopyProgress!.CurrentFileBytes, totalBytes, currentBytes + e.CopyProgress!.CurrentFileBytes,
+                                                                false, false));
+                                                    }))
                 .SelectError(_ => new CsTools.HttpRequest.RequestError(1099, "UAC not started"))
                 .ToAsyncResult()
                 .BindAwait(_ => Requests.JsonRequest.Post<UacCopyItemsParam, Nothing>(new(
