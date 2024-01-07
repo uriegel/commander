@@ -161,9 +161,6 @@ record Job(
     bool IsCancelled
 );
 
-// TODO get copy or move operation (dialog in Windows)
 // TODO When move create cleanupEmptyDirectories job
-// TODO Window closing: cancel
-// TODO if dialog is open do not close app
-// TODO Close app when copy jobs are there to process
-// TODO Windows Close app when elevated copy jobs are there to process
+// TODO Window closing when copy processes are running: Show Copy Process 
+// TODO get copy or move operation (dialog in Windows)
