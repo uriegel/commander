@@ -22,6 +22,10 @@ static partial class CopyProcessor
                     input.TargetPath,
                     i.Size, i.Name, i.SubPath, false))
             ))
+            .SideEffectWhenOk(_ => DeleteMovedDirs(input
+                                                        .Items
+                                                        .Select(n => input.Path.AppendPath(n.SubPath))
+                                                        .Distinct()))
             .ToAsyncResult();
 
     public static AsyncResult<Nothing, RequestError> Cancel(Nothing nothing)
@@ -39,12 +43,14 @@ static partial class CopyProcessor
     {
         if (err.Status == (int)IOErrorType.AccessDenied)
         {
-            var allJobs = new[] { job }.Concat(await GetCurrentJobs(n => n.Path == job.Path && n.SubPath == job.SubPath));
+            var allJobs = new[] { job }.Concat((await GetCurrentJobs())
+                                                    .Where(n => n.Path == job.Path && n.SubPath?.StartsWith(job.SubPath ?? "", StringComparison.CurrentCultureIgnoreCase) == true))
+                                        .ToArray();
             (await UacServer
                 .StartElevated()
                 .SideEffect(_ => sseClient = new CsTools.HttpRequest.SseClient<Events>("http://localhost:21000/commander/sse", 
                                                 e => Events.CopyProgressChanged(
-                                                            new CopyProgress(e.CopyProgress!.FileName, totalCount, e.CopyProgress!.CurrentCount, 
+                                                            new CopyProgress(e.CopyProgress!.FileName, e.CopyProgress.IsMove, totalCount, e.CopyProgress!.CurrentCount, 
                                                                 startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0,
                                                                 e.CopyProgress!.TotalFileBytes, e.CopyProgress!.CurrentFileBytes, totalBytes, e.CopyProgress!.CurrentBytes,
                                                                 false, false))))

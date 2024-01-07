@@ -149,7 +149,7 @@ static partial class Directory
         {
             return Error<Nothing, RequestError>(IOErrorType.AccessDenied.ToError());
         }
-        catch (Exception e)
+        catch 
         {
             return Error<Nothing, RequestError>(IOErrorType.Exn.ToError());
         }

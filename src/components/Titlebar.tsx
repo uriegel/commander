@@ -4,8 +4,9 @@ import Pie from 'react-progress-control'
 import CopyProgress from "./dialogparts/CopyProgress"
 import { DialogContext, ResultType } from "web-dialog-react"
 import "functional-extensions"
-import { useContext, useEffect, useRef } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { ErrorType, Nothing, jsonPost } from "functional-extensions"
+import { progressChangedEvents } from "../requests/events"
 
 // TODO in webview.d.ts
 declare const webViewMinimize: () => void
@@ -18,10 +19,9 @@ interface TitlebarProps {
     progress: number
     progressRevealed: boolean
     totalSize: number
-    move: boolean
 }
 
-const Titlebar = ({ menu, isMaximized, progress, progressRevealed, totalSize, move }: TitlebarProps) => {
+const Titlebar = ({ menu, isMaximized, progress, progressRevealed, totalSize }: TitlebarProps) => {
     
     const onMinimize = () => webViewMinimize()
     const onRestore = () => webViewRestore()
@@ -30,7 +30,15 @@ const Titlebar = ({ menu, isMaximized, progress, progressRevealed, totalSize, mo
 
     const dialog = useContext(DialogContext)
 
+    const [move, setMove] = useState(false)
+
     const dialogOpen = useRef(false)
+
+    useEffect(() => {
+        const subscription = progressChangedEvents.subscribe(e => setMove(e.isMove))
+        return () => subscription.unsubscribe()
+	}, [])
+
 
     const startProgressDialog = async () => {
         dialogOpen.current = true

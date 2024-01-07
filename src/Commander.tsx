@@ -261,7 +261,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 
 	return (
 		<>
-			<Titlebar progress={progress} progressRevealed={progressRevealed} totalSize={totalMax} move={false}
+			<Titlebar progress={progress} progressRevealed={progressRevealed} totalSize={totalMax} 
 				menu={(
 				<Menu autoMode={autoMode} onMenuAction={onMenuAction} toggleAutoMode={toggleAutoModeDialog}
 				showHidden={showHidden} toggleShowHidden={toggleShowHiddenAndRefresh}

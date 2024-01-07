@@ -112,6 +112,12 @@ static partial class CopyProcessor
         currentCount = 0;
         currentBytes = 0;
         Events.CopyFinished();
+        DeleteMovedDirs(movedDirs);
+        movedDirs.Clear();
+    }
+
+    static void DeleteMovedDirs(IEnumerable<string> movedDirs)
+    {
         foreach (var dir in movedDirs
                                 .OrderByDescending(GetSubDirs))
         {
@@ -122,18 +128,14 @@ static partial class CopyProcessor
             }
             catch { }
         };
-        movedDirs.Clear();
     }
-
-    static Task<Job[]> GetCurrentJobs(Func<Job, bool>? predicate = null)
+    static Task<Job[]> GetCurrentJobs()
     {
         async IAsyncEnumerable<Job> GetCurrentJobs()
         {
             while (true)
-                if (jobs.Reader.TryPeek(out var job) != false) {
-                    if (predicate == null || predicate(job))
-                        yield return await jobs.Reader.ReadAsync();
-                }
+                if (jobs.Reader.TryPeek(out var _) != false) 
+                    yield return await jobs.Reader.ReadAsync();
                 else
                     break;
         }
@@ -183,8 +185,6 @@ record Job(
     bool IsCancelled
 );
 
-// TODO Title kopieren/verschieben in Windows Progress Dialog
-// TODO When move create cleanupEmptyDirectories job (UAC)
 // TODO Window closing when copy processes are running: Show Copy Process 
-// TODO get copy or move operation (dialog in Windows)
+
 

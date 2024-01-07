@@ -5,6 +5,7 @@ import { ErrorType } from 'functional-extensions'
 
 type CopyProgress = {
     fileName: string
+    isMove: boolean
     totalCount: number
     currentCount: number
     copyTime: number
@@ -116,6 +117,7 @@ export const copyErrorEvents = commanderEvents
 
 export const progressChangedEvents = new BehaviorSubject<CopyProgress>({
     fileName: "",
+    isMove: false,
     totalCount: 0,
     currentCount: 0,
     copyTime: 0,
