@@ -7,8 +7,6 @@ using static CsTools.Core;
 
 static partial class CopyProcessor
 {
-    // TODO Cancel jobs in uac
-    
     public static AsyncResult<Nothing, RequestError> CopyUac(UacCopyItemsParam input)
         => input
             .SideEffect(j => 
@@ -25,6 +23,17 @@ static partial class CopyProcessor
                     i.Size, i.Name, i.SubPath, false))
             ))
             .ToAsyncResult();
+
+    public static AsyncResult<Nothing, RequestError> Cancel(Nothing nothing)
+        => Ok<Nothing, RequestError>(nothing)
+            .SideEffect(_ => PerformCancel())
+            .ToAsyncResult();
+
+    static void Cancel()
+    {
+        Requests.JsonRequest.Post<Nothing, Nothing>(new("commander/cancelcopy", nothing));
+        PerformCancel();
+    }
 
     static async Task ProcessError(RequestError err, Job job)
     {

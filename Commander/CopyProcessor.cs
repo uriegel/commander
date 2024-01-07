@@ -26,7 +26,7 @@ static partial class CopyProcessor
             .SideEffect(_ => Cancel())
             .ToAsyncResult();
     
-    public static void Cancel()
+    static void PerformCancel()
     {
         try 
         {
@@ -37,7 +37,7 @@ static partial class CopyProcessor
             Console.WriteLine($"An error has occurred while cancelling copy jobs: {e}");
         }
     }
-        
+       
     async static void Process()
     {
         await foreach (var job in jobs.Reader.ReadAllAsync())
