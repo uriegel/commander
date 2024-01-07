@@ -113,7 +113,7 @@ static class Progress
                         if (n.TotalFileBytes > 0)
                             progressBar.Ref.Fraction((float)n.CurrentFileBytes / n.TotalFileBytes);
                         totalProgressBar.Ref.Fraction(progress);
-                        CopyProgressTitle.Ref.Set($"Fortschritt beim Kopieren ({n.TotalBytes.ByteCountToString(2)})");
+                        CopyProgressTitle.Ref.Set($"Fortschritt beim {(n.IsMove ? "Verschieben" : "Kopieren")} ({n.TotalBytes.ByteCountToString(2)})");
                         CurrentName.Ref.Set(n.FileName + " ");
                         FileCount.Ref.Set($"{n.CurrentCount}/{n.TotalCount}");
                         if (lastCopyTime != n.CopyTime)

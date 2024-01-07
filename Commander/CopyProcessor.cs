@@ -15,7 +15,7 @@ static partial class CopyProcessor
         totalBytes += input.Items.Select(n => n.Size).Aggregate(0L, (a, b) => a + b);
         if (!startTime.HasValue)
             startTime = DateTime.Now;
-        Events.CopyStarted();
+        Events.CopyStarted(input.Move);
         input.Items.ForEach(n => InsertCopyItem(input.Path, input.TargetPath, input.Move, n));
         return Ok<Nothing, RequestError>(nothing)
             .ToAsyncResult();
@@ -86,11 +86,13 @@ static partial class CopyProcessor
     static Result<Nothing, RequestError> Copy(Job job) 
         => job.TargetPath
             .AppendPath(job.SubPath)
+            .SideEffectIf(job.JobType == JobType.Move, 
+                _ => movedDirs.Add(job.Path.AppendPath(job.SubPath)))
             .TryEnsureDirectoryExists()
             .SelectError(Directory.ErrorToRequestError)
             .SelectMany(target => Directory.Copy(job.Item, job.Path.AppendPath(job.SubPath), job.TargetPath.AppendPath(job.SubPath),
                 (c, t) => Events.CopyProgressChanged(
-                    new(job.Item, totalCount, currentCount + 1, startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0, 
+                    new(job.Item, job.JobType == JobType.Move, totalCount, currentCount + 1, startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0, 
                     t, c, totalBytes, currentBytes + c, false, false)),
                 job.JobType == JobType.Move, cancellationTokenSource.Token))
             .SideEffectWhenOk(_ =>
@@ -110,6 +112,17 @@ static partial class CopyProcessor
         currentCount = 0;
         currentBytes = 0;
         Events.CopyFinished();
+        foreach (var dir in movedDirs
+                                .OrderByDescending(GetSubDirs))
+        {
+            try
+            {
+                if (dir.IsEmpty())
+                    System.IO.Directory.Delete(dir);
+            }
+            catch { }
+        };
+        movedDirs.Clear();
     }
 
     static Task<Job[]> GetCurrentJobs(Func<Job, bool>? predicate = null)
@@ -129,11 +142,20 @@ static partial class CopyProcessor
             .AsTask();
     }
 
+    static bool IsEmpty(this string path)
+        => System.IO.Directory.EnumerateFiles(path).Any() == false;
+
+    static int GetSubDirs(this string path)
+        => path
+            .Where(n => n == Path.DirectorySeparatorChar)
+            .Count();
+
     static CopyProcessor() => Process();
 
     static int totalCount;
     static long totalBytes;
     static DateTime? startTime;
+    static readonly HashSet<string> movedDirs = [];
 
     static int currentCount;
     static long currentBytes;
@@ -148,8 +170,7 @@ enum JobType
     CopyToRemote,
     MoveToRemote, //?
     CopyFromRemote,
-    MoveFromRemote, //?
-    CleanUpEmptyDirs
+    MoveFromRemote //?
 }
 
 record Job(
@@ -162,37 +183,8 @@ record Job(
     bool IsCancelled
 );
 
-// TODO When move create cleanupEmptyDirectories job
+// TODO Title kopieren/verschieben in Windows Progress Dialog
 // TODO When move create cleanupEmptyDirectories job (UAC)
 // TODO Window closing when copy processes are running: Show Copy Process 
 // TODO get copy or move operation (dialog in Windows)
 
-// as param new HashSet<string>()
-
-// param HashSet<string> newDirs
-
-// EnsurePathExists(input.TargetPath, n.SubPath, newDirs);
-
-// static void EnsurePathExists(string path, string? subPath, HashSet<string> dirs)
-// {
-//     if (subPath != null&& !dirs.Contains(subPath))
-//     {
-//         var targetPath = path.AppendPath(subPath);
-//         if (!System.IO.Directory.Exists(targetPath))
-//             System.IO.Directory.CreateDirectory(targetPath);
-//         dirs.Add(subPath);
-//     }
-// }   
-
-// .SideEffect(n =>
-//             {
-//                 if (input.Move)
-//                     foreach (var dir in newDirs)
-//                     {
-//                         try
-//                         {
-//                             Delete(input.Path.AppendPath(dir));
-//                         }
-//                         catch { }
-//                     };
-//             })

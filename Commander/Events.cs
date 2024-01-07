@@ -5,6 +5,7 @@ using CsTools.Functional;
 
 record CopyProgress(
     string FileName,
+    bool   IsMove,
     int    TotalCount,
     int    CurrentCount,
     int    CopyTime,
@@ -67,17 +68,17 @@ record Events(
     public static void SendCopyError(RequestError error)
         => Source.Send(DefaultEvents with { CopyError = error });
 
-    public static void CopyStarted()
+    public static void CopyStarted(bool move)
         => copyProgresses
             .SideEffect(_ => currentCopyId = GetCopyId())
-            .OnNext(new("", 0, 0, 0, 0, 0, 0, 0, true, false));
+            .OnNext(new("", move, 0, 0, 0, 0, 0, 0, 0, true, false));
 
     public static async void CopyFinished()
     {
         var thisCopyId = currentCopyId;
         await Task.Delay(TimeSpan.FromSeconds(5));
         if (thisCopyId == currentCopyId)
-            copyProgresses.OnNext(new("", 0, 0, 0, 0, 0, 0, 0, false, true));
+            copyProgresses.OnNext(new("", false, 0, 0, 0, 0, 0, 0, 0, false, true));
     }        
 
     public static void WindowStateChanged(bool isMaximized)
