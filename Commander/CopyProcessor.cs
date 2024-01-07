@@ -88,9 +88,10 @@ static partial class CopyProcessor
             .AppendPath(job.SubPath)
             .TryEnsureDirectoryExists()
             .SelectError(Directory.ErrorToRequestError)
-            .SelectMany(target => Directory.Copy(job.Item, job.Path.AppendPath(job.SubPath), job.TargetPath,
+            .SelectMany(target => Directory.Copy(job.Item, job.Path.AppendPath(job.SubPath), job.TargetPath.AppendPath(job.SubPath),
                 (c, t) => Events.CopyProgressChanged(
-                    new(job.Item, totalCount, currentCount + 1, startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0, t, c, totalBytes, currentBytes + c, false, false)),
+                    new(job.Item, totalCount, currentCount + 1, startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0, 
+                    t, c, totalBytes, currentBytes + c, false, false)),
                 job.JobType == JobType.Move, cancellationTokenSource.Token))
             .SideEffectWhenOk(_ =>
             {
@@ -162,5 +163,36 @@ record Job(
 );
 
 // TODO When move create cleanupEmptyDirectories job
+// TODO When move create cleanupEmptyDirectories job (UAC)
 // TODO Window closing when copy processes are running: Show Copy Process 
 // TODO get copy or move operation (dialog in Windows)
+
+// as param new HashSet<string>()
+
+// param HashSet<string> newDirs
+
+// EnsurePathExists(input.TargetPath, n.SubPath, newDirs);
+
+// static void EnsurePathExists(string path, string? subPath, HashSet<string> dirs)
+// {
+//     if (subPath != null&& !dirs.Contains(subPath))
+//     {
+//         var targetPath = path.AppendPath(subPath);
+//         if (!System.IO.Directory.Exists(targetPath))
+//             System.IO.Directory.CreateDirectory(targetPath);
+//         dirs.Add(subPath);
+//     }
+// }   
+
+// .SideEffect(n =>
+//             {
+//                 if (input.Move)
+//                     foreach (var dir in newDirs)
+//                     {
+//                         try
+//                         {
+//                             Delete(input.Path.AppendPath(dir));
+//                         }
+//                         catch { }
+//                     };
+//             })
