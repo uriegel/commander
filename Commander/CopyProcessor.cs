@@ -25,7 +25,12 @@ static partial class CopyProcessor
         => Ok<Nothing, RequestError>(nothing)
             .SideEffect(_ => Cancel())
             .ToAsyncResult();
-    
+
+    public static bool WantClose()
+        => jobs.Reader.TryPeek(out var _)
+            .SideEffectIf(b => b,
+                _ => Progress.Show())
+                 == false;
     static void PerformCancel()
     {
         try 

@@ -14,6 +14,7 @@ static class Progress
                 MenuButton.New()
                 .Popover(
                     Popover.New()
+                    .Ref(pop)
                     .Child(
                         Box.New(Orientation.Vertical, 20)
                         .SizeRequest(400, -1)
@@ -96,6 +97,8 @@ static class Progress
                 )
             );
 
+    public static void Show() => pop.Ref.Show();
+
     static void RevealControl(RevealerHandle revealer)
     // TODO while copying color selected then 5s color gray
         => Events.CopyProgresses.Subscribe(n =>
@@ -131,6 +134,8 @@ static class Progress
     static int lastCopyTime;
 
     static readonly ObjectRef<RevealerHandle> revealer = new();
+    static readonly ObjectRef<PopoverHandle> pop = new();
+    
     static readonly ObjectRef<DrawingAreaHandle> drawingArea = new();
     static readonly ObjectRef<ProgressBarHandle> progressBar = new();
     static readonly ObjectRef<ProgressBarHandle> totalProgressBar = new();
