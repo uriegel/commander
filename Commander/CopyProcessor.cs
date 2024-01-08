@@ -194,6 +194,6 @@ record Job(
     bool IsCancelled
 );
 
-// TODO Window closing when copy processes are running: Show Copy Process 
+
 
 
