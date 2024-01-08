@@ -57,6 +57,7 @@ record Events(
 #if Windows
     , GetCredentials? GetCredentials = null
     , ServiceItem[]? ServiceItems = null
+    , bool? ShowProgress = null
 #endif
 )
 {
@@ -101,6 +102,9 @@ record Events(
 
     public static void ServiceItemsChanged(ServiceItem[] items)
         => Source.Send(DefaultEvents with { ServiceItems = items });
+
+    public static void ShowProgressChanged()
+        => Source.Send(DefaultEvents with { ShowProgress = true });
 #endif
 
     public static SseEventSource<Events> Source = SseEventSource<Events>.Create();   

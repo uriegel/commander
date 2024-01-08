@@ -68,6 +68,7 @@ type CommanderEvent = {
     directoryChanged?: DirectoryChangedEvent
     exifTime?: ExifTime
     extendedData?: ExtendedData
+    showProgress?: boolean
 }
 
 const toCommanderEvent = (event: MessageEvent) =>
@@ -114,6 +115,10 @@ export const extendedDataEvents = commanderEvents
 export const copyErrorEvents = commanderEvents
     .pipe(filter(n => n.copyError != undefined))
     .pipe(map(n => n.copyError!))
+
+export const showProgressEvents = commanderEvents
+    .pipe(filter(n => n.showProgress == true))
+    .pipe(map(() => true))
 
 export const progressChangedEvents = new BehaviorSubject<CopyProgress>({
     fileName: "",

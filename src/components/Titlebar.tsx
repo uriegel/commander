@@ -4,9 +4,10 @@ import Pie from 'react-progress-control'
 import CopyProgress from "./dialogparts/CopyProgress"
 import { DialogContext, ResultType } from "web-dialog-react"
 import "functional-extensions"
-import { useContext, useEffect, useRef, useState } from "react"
+import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { ErrorType, Nothing, jsonPost } from "functional-extensions"
-import { progressChangedEvents } from "../requests/events"
+import { progressChangedEvents, showProgressEvents } from "../requests/events"
+import { closeWindow } from "../requests/requests"
 
 // TODO in webview.d.ts
 declare const webViewMinimize: () => void
@@ -26,7 +27,7 @@ const Titlebar = ({ menu, isMaximized, progress, progressRevealed, totalSize }: 
     const onMinimize = () => webViewMinimize()
     const onRestore = () => webViewRestore()
     const onMaximize = () => webViewMaximize()
-    const onClose = () => window.close()
+    const onClose = () => closeWindow()
 
     const dialog = useContext(DialogContext)
 
@@ -34,27 +35,38 @@ const Titlebar = ({ menu, isMaximized, progress, progressRevealed, totalSize }: 
 
     const dialogOpen = useRef(false)
 
+    const startProgressDialog = useCallback(() => {
+
+        console.log("show progress")
+
+        const start = async () => {
+            dialogOpen.current = true
+            const res = await dialog.show({
+                text: `Fortschritt beim ${move ? "Verschieben" : "Kopieren"} (${totalSize?.byteCountToString()})`,
+                btnCancel: true,
+                btnCancelText: "Abbrechen",
+                btnOk: true,
+                btnOkText: "Stoppen",
+                defBtnCancel: true,
+                extension: CopyProgress
+            })
+            dialogOpen.current = false
+            if (res?.result == ResultType.Ok)
+                jsonPost<Nothing, ErrorType>({ method: "cancelCopy" })
+        }
+
+        start()
+    }, [dialog, move, totalSize])
+
     useEffect(() => {
         const subscription = progressChangedEvents.subscribe(e => setMove(e.isMove))
         return () => subscription.unsubscribe()
 	}, [])
 
-
-    const startProgressDialog = async () => {
-        dialogOpen.current = true
-        const res = await dialog.show({
-            text: `Fortschritt beim ${move ? "Verschieben" : "Kopieren"} (${totalSize?.byteCountToString()})`,
-            btnCancel: true,
-            btnCancelText: "Abbrechen",
-            btnOk: true,
-            btnOkText: "Stoppen",
-            defBtnCancel: true,
-            extension: CopyProgress
-        })
-        dialogOpen.current = false
-        if (res?.result == ResultType.Ok)
-            jsonPost<Nothing, ErrorType>({ method: "cancelCopy" })
-    }
+    useEffect(() => {
+        const subscription = showProgressEvents.subscribe(() => startProgressDialog())
+        return () => subscription.unsubscribe()
+	}, [startProgressDialog])
 
     useEffect(() => {
         if (dialogOpen.current)

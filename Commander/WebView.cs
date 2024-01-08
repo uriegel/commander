@@ -1,6 +1,10 @@
+using System.Windows.Forms;
 using AspNetExtensions;
+using CsTools.Extensions;
 using CsTools.Functional;
 using WebWindowNetCore;
+
+using static CsTools.Core;
 
 static class Window
 {
@@ -14,6 +18,10 @@ static class Window
             .DownCast<WebViewBuilder>()
             .TitleBar(TitleBar.New)
 #endif            
+#if Windows
+            .DownCast<WebViewBuilder>()
+            .FormCreating(f => refForm.Value = f)
+#endif                        
 			.ResourceIcon("icon")
 			.SaveBounds()
 			.WithoutNativeTitlebar()
@@ -21,7 +29,7 @@ static class Window
 			.OnWindowStateChanged(state => Events.WindowStateChanged(state == WebWindowNetCore.Data.WebWindowState.Maximized))
 			.QueryString(() => Platform.QueryString)
             .OnStarted(() => new Thread(() => Events.StartEvents()).Start())
-            .OnClosing(() => CopyProcessor.WantClose())
+            .OnClosing(CopyProcessor.WantClose)
             .DebugUrl($"http://localhost:5173")
 			.ConfigureHttp(http => http
 				.ResourceWebroot("webroot", "/static")
@@ -52,6 +60,7 @@ static class Window
                 .JsonPost<RenameItemParam, IOResult>("commander/renameandcopy", Directory.RenameAndCopy)
                 // TODO
                 .JsonPost<OnEnterParam, IOResult>("commander/onenter", Directory.OnEnter)
+                .JsonPost("commander/close", Close)
 #if Windows            
                 .JsonPost<Result<Credentials, RequestError>, Nothing, RequestError>("commander/sendcredentials", Directory.CredentialsReceived)            
 
@@ -72,9 +81,23 @@ static class Window
 #endif
             .Build()
             .Run();
+
+#if Windows            
+    static void CloseWindow()
+        => refForm.Value?.Invoke(() => refForm.Value?.Close());
+       
+    static readonly RefCell<Form> refForm = new();
+#else
+    static void CloseWindow() {}
+#endif            
   
 	static void OnFilesDrop(string id, bool move, string[] paths)
 		=> Directory.FilesDropped(id, move, paths);
+
+    static AsyncResult<Nothing, RequestError> Close()
+        => Ok<Nothing, RequestError>(nothing)
+            .SideEffect(_ => CloseWindow())
+            .ToAsyncResult();
 }
 
 record Empty();

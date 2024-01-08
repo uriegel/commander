@@ -7,7 +7,7 @@ import Statusbar from './components/Statusbar'
 import { Controller, showError } from './controller/controller'
 import PictureViewer from './components/PictureViewer'
 import MediaPlayer from './components/MediaPlayer'
-import { CredentialsResult, IOError, request } from './requests/requests'
+import { CredentialsResult, IOError, closeWindow, request } from './requests/requests'
 import './App.css'
 import './themes/adwaita.css'
 import './themes/adwaitaDark.css'
@@ -194,7 +194,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 		if (key == "REFRESH") 
 			getActiveFolder()?.refresh()
 		else if (key == "END") 
-			window.close()
+			closeWindow()
 		else if (key == "SEL_ALL")
 			getActiveFolder()?.selectAll()
 		else if (key == "SEL_NONE")

@@ -3,7 +3,7 @@ import { FolderViewItem } from "../components/FolderView"
 import { Platform, getPlatform } from "../globals"
 import { DialogHandle, ResultType } from 'web-dialog-react'
 import { startUacEvents } from "./events"
-import { setBaseUrl } from "functional-extensions"
+import { ErrorType, jsonPost, setBaseUrl } from "functional-extensions"
 
 export type Nothing = NonNullable<unknown>
 
@@ -78,6 +78,10 @@ export enum IOError {
     NoError,
     UacNotStarted = 1099
 }
+
+export const closeWindow = () => 
+    jsonPost<Nothing, ErrorType>({ method: "close" })
+
 
 export interface IOErrorResult {
     error?: IOError

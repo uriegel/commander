@@ -27,10 +27,14 @@ static partial class CopyProcessor
             .ToAsyncResult();
 
     public static bool WantClose()
-        => jobs.Reader.TryPeek(out var _)
+        => IsProcessing()
             .SideEffectIf(b => b,
                 _ => Progress.Show())
                  == false;
+
+    static bool IsProcessing()
+        => jobs.Reader.TryPeek(out var _) || totalCount > 0;
+
     static void PerformCancel()
     {
         try 
