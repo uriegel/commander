@@ -55,9 +55,9 @@ static class Window
                 // .JsonPost<CopyItemsParam, IOResult>("commander/copyitemsfromremote", Remote.CopyItemsFromRemote)
                 // .JsonPost<CopyItemsParam, IOResult>("commander/copyitemstoremote", Remote.CopyItemsToRemote)
                 .JsonPost("commander/cancelcopy", CopyProcessor.CancelRequest)
-                .JsonPost<GetFiles, GetFilesRequestResult>("commander/getremotefiles", Remote.GetFiles)
                 // TODO
-                .JsonPost<RenameItemsParam, IOResult>("commander/renameitems", Directory.RenameItems)
+                .JsonPost<GetFiles, GetFilesRequestResult>("commander/getremotefiles", Remote.GetFiles)
+                .JsonPost<RenameItemsParam, Nothing, RequestError>("commander/renameitems", Directory.RenameItems)
                 // TODO
                 .JsonPost<RenameItemParam, IOResult>("commander/renameandcopy", Directory.RenameAndCopy)
                 // TODO

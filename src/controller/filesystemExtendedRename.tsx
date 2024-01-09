@@ -1,10 +1,10 @@
-import { Controller, ControllerType, EnterData, checkResult } from "./controller"
+import { Controller, ControllerType, EnterData, showError } from "./controller"
 import 'functional-extensions'
 import { FolderViewItem } from "../components/FolderView"
 import { DialogHandle, ResultType } from "web-dialog-react"
 import ExtendedRename from "../components/dialogparts/ExtendedRename"
 import { createFileSystemController } from "./filesystem"
-import { IOErrorResult, request } from "../requests/requests"
+import { ErrorType, Nothing, jsonPost } from "functional-extensions"
 
 export interface ExtendedRenameProps {
     prefix: string
@@ -99,29 +99,31 @@ const onSelectionChanged = (items: FolderViewItem[]) => {
     }, startNumber)
 } 
 
-const rename = async (enterData: EnterData) => {
+const rename = (enterData: EnterData) => {
     if (enterData.selectedItems && enterData.selectedItems.length > 0) {
-        const testItems = enterData.items  
+        const testItems = enterData.items
             ?.filter(n => !n.isDirectory)
-            .map(n => n.isSelected ? n.newName?.toLowerCase() ?? "" : n.name.toLowerCase()) 
+            .map(n => n.isSelected ? n.newName?.toLowerCase() ?? "" : n.name.toLowerCase())
             ?? []
         if (new Set(testItems).size == testItems.length) {
-            const result = await request<IOErrorResult>("renameitems", {
-                path: enterData.path,
-                items: enterData.selectedItems.map(n => ({
-                    name: n.name,
-                    newName: n.newName!
-                }))
-            })
-            if (await checkResult(enterData.dialog, null, result.error) && enterData.refresh) 
-                enterData.refresh()
+            jsonPost<Nothing, ErrorType>({
+                method: "renameitems",
+                payload: {
+                    path: enterData.path,
+                    items: enterData.selectedItems.map(n => ({
+                        name: n.name,
+                        newName: n.newName!
+                    }))
+                }
+            }).match(
+                () => enterData.refresh && enterData.refresh(), // TODO
+                e => showError(e, () => {})) // TODO setError as Param
         } else {
-            (async () => await enterData.dialog?.show({
-                text: "Dateinamen nicht eindeutig",
-                btnOk: true
-            }))()
+            // TODO
+            // (async () => await enterData.dialog?.show({
+            //     text: "Dateinamen nicht eindeutig",
+            //     btnOk: true
+            // }))()
         }
-        return true            
-    } else
-        return false
+    }
 }

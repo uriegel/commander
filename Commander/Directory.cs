@@ -99,24 +99,15 @@ static partial class Directory
                             : DirectoryItem.CreateFileItem(new FileInfo(n)))
                 .ToArray()));
 
-    // public static Task<IOResult> CancelCopy(Empty _)
-    //     => new IOResult(IOErrorType.NoError)
-    //         .ToAsync()
-    //         .SideEffect(Cancellation.Cancel);
-
-    public static Task<IOResult> RenameItems(RenameItemsParam input)
+    public static AsyncResult<Nothing, RequestError> RenameItems(RenameItemsParam input)
     {
-        return Try(
-            () => {
-                input.items.ForEach(PreRenameItem);
-                input.items.ForEach(RenameItem);
-            },
-            MapExceptionToIOError)
-                .ToIOResult()
-                .ToAsync();
-        void PreRenameItem(RenameItem item)
+        var res = input.Items.Aggregate(Ok<Nothing, RequestError>(nothing), (r, i) => r.SelectMany(_ => PreRenameItem(i)));
+        res = input.Items.Aggregate(res, (r, i) => r.SelectMany(_ => RenameItem(i)));
+        return res.ToAsyncResult();
+
+        Result<Nothing, RequestError> PreRenameItem(RenameItem item)
             => Move(input.Path.AppendPath(item.Name), input.Path.AppendPath("__RENAMING__" + item.NewName));
-        void RenameItem(RenameItem item)
+        Result<Nothing, RequestError> RenameItem(RenameItem item)
             => Move(input.Path.AppendPath("__RENAMING__" + item.NewName), input.Path.AppendPath(item.NewName));
     }
 
@@ -325,7 +316,7 @@ record RenameItem(
 
 record RenameItemsParam(
     string Path,
-    RenameItem[] items
+    RenameItem[] Items
 );
 
 record DeleteItemsParam(
