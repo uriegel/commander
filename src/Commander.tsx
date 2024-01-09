@@ -169,8 +169,9 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 		(path: string, isDirectory: boolean) => setPath({ path, isDirectory }
 	), [])
 
-	const onEnter = async (item: FolderViewItem, keys: SpecialKeys) => 
-		await getActiveFolder()?.processEnter(item, keys, getInactiveFolder()?.getPath())
+	const onEnter = (item: FolderViewItem, keys: SpecialKeys) => {
+		getActiveFolder()?.processEnter(item, keys, getInactiveFolder()?.getPath())
+	}
 
 	const FolderLeft = () => (
 		<FolderView ref={folderLeft} id={ID_LEFT} onFocus={onFocusLeft} onCopy={copyItems} setError={setErrorText}

@@ -3,7 +3,7 @@ import { DialogHandle, ResultType } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
-import { Controller, ControllerResult, ControllerType, addParent, formatDateTime, formatSize, formatVersion, sortItems } from "./controller"
+import { Controller, ControllerResult, ControllerType, OnEnterResult, addParent, formatDateTime, formatSize, formatVersion, sortItems } from "./controller"
 import { GetExtendedItemsResult, GetItemsError, GetItemsResult, IOError, IOErrorResult, request, Version } from "../requests/requests"
 import { ROOT } from "./root"
 import { extendedRename } from "./filesystemExtendedRename"
@@ -95,25 +95,26 @@ export const createFileSystemController = (): Controller => {
 		},
 		updateItems,
 		getPath: () => currentPath,
-		onEnter: async ({ path, item, keys }) =>
-			item.isParent && path.length > driveLength
-				? ({
-					processed: false,
-					pathToSet: path + '/' + item.name,
-					latestPath: path.extractSubPath()
-				})
-				: item.isParent && path.length == driveLength
+		onEnter: ({ path, item, keys }) =>
+			AsyncResult.from(new Ok<OnEnterResult, ErrorType>(
+				item.isParent && path.length > driveLength
 					? ({
 						processed: false,
-						pathToSet: ROOT,
-						latestPath: path
+						pathToSet: path + '/' + item.name,
+						latestPath: path.extractSubPath()
 					})
-					: item.isDirectory && !keys.alt
+					: item.isParent && path.length == driveLength
 						? ({
 							processed: false,
-							pathToSet: path + '/' + item.name
+							pathToSet: ROOT,
+							latestPath: path
 						})
-						: onFileEnter(path.appendPath(item.name), keys),
+						: item.isDirectory && !keys.alt
+							? ({
+								processed: false,
+								pathToSet: path + '/' + item.name
+							})
+							: onFileEnter(path.appendPath(item.name), keys))),
 		sort,
 		itemsSelectable: true,
 		appendPath: platform == Platform.Windows ? appendWindowsPath : appendLinuxPath,

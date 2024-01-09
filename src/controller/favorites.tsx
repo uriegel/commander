@@ -1,7 +1,7 @@
 import { DialogHandle, ResultType } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
-import { Controller, ControllerResult, ControllerType, EnterData } from "./controller"
+import { Controller, ControllerResult, ControllerType, EnterData, OnEnterResult } from "./controller"
 import { ROOT } from "./root"
 import { IconNameType } from "../enums"
 import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
@@ -65,13 +65,14 @@ const onNew = (dialog?: DialogHandle|null, refresh?: ()=>void, otherPath?: strin
     } 
 }
 
-const onEnter = async (enterData: EnterData) =>
-    enterData.item.isNew
+const onEnter = (enterData: EnterData) =>
+    AsyncResult.from(new Ok<OnEnterResult, ErrorType>(
+        enterData.item.isNew
         ? onNew(enterData.dialog, enterData.refresh, enterData.otherPath)
         : {
             processed: false,
             pathToSet: enterData.item.isParent ? ROOT : enterData.item.name
-        } 
+        })) 
 
 export const getFavoritesController = (controller: Controller | null): ControllerResult => 
     controller?.type == ControllerType.Favorites

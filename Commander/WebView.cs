@@ -51,6 +51,7 @@ static class Window
                 .JsonPost("commander/getroot", Root.Get)
                 .JsonPost<CopyItemsParam, CopyItemInfo[], RequestError>("commander/copyitemsinfo", Directory.CopyItemsInfo)
                 .JsonPost<CopyItemsParam, Nothing, RequestError>("commander/copyitems", CopyProcessor.AddItems)
+                .JsonPost<OnEnterParam, Nothing, RequestError>("commander/onenter", Directory.OnEnter)
                 // TODO
                 // .JsonPost<CopyItemsParam, IOResult>("commander/copyitemsfromremote", Remote.CopyItemsFromRemote)
                 // .JsonPost<CopyItemsParam, IOResult>("commander/copyitemstoremote", Remote.CopyItemsToRemote)
@@ -60,8 +61,6 @@ static class Window
                 .JsonPost<RenameItemsParam, Nothing, RequestError>("commander/renameitems", Directory.RenameItems)
                 // TODO
                 .JsonPost<RenameItemParam, IOResult>("commander/renameandcopy", Directory.RenameAndCopy)
-                // TODO
-                .JsonPost<OnEnterParam, IOResult>("commander/onenter", Directory.OnEnter)
                 .JsonPost("commander/close", Close)
 #if Windows            
                 .JsonPost<Result<Credentials, RequestError>, Nothing, RequestError>("commander/sendcredentials", Directory.CredentialsReceived)            

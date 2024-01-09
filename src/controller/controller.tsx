@@ -35,7 +35,7 @@ export enum ControllerType {
 
 export type SortFunction = (a: FolderViewItem, b: FolderViewItem) => number
 
-export interface onEnterResult {
+export interface OnEnterResult {
     processed: boolean
     pathToSet?: string
     latestPath?: string
@@ -63,7 +63,7 @@ export interface Controller {
     getExtendedItems: (id: string, path: string, items: FolderViewItem[]) => AsyncResult<GetExtendedItemsResult, ErrorType>
     setExtendedItems: (items: FolderViewItem[], extended: GetExtendedItemsResult, sortIndex: number, sortDescending: boolean) => FolderViewItem[]
     cancelExtendedItems: (id: string)=>void,
-    onEnter: (data: EnterData) => Promise<onEnterResult>
+    onEnter: (data: EnterData) => AsyncResult<OnEnterResult, ErrorType> 
     sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => FolderViewItem[]
     itemsSelectable: boolean
     appendPath: (path: string, subPath: string) => string,
@@ -113,7 +113,7 @@ export const createEmptyController = (): Controller => ({
     getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
     setExtendedItems: items => items,
     cancelExtendedItems: () => { },
-    onEnter: async () => ({ processed: true }),
+    onEnter: () => AsyncResult.from(new Ok<OnEnterResult, ErrorType>({ processed: true })),
     sort: (items: FolderViewItem[]) => items,
     itemsSelectable: false,
     appendPath: () => "",

@@ -2,7 +2,7 @@ import { DialogHandle, ResultType } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
 import RemoteDialog from "../components/dialogparts/RemoteDialog"
-import { Controller, ControllerResult, ControllerType, EnterData } from "./controller"
+import { Controller, ControllerResult, ControllerType, EnterData, OnEnterResult } from "./controller"
 import { ROOT } from "./root"
 import { IconNameType } from "../enums"
 import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
@@ -96,13 +96,14 @@ const startShowRemote = (dialog?: DialogHandle|null, refresh?: ()=>void) => {
     } 
 }
 
-const onEnter = async (enterData: EnterData) => 
-    enterData.item.isNew
-        ? startShowRemote(enterData.dialog, enterData.refresh)
-        : {
-            processed: false, 
-            pathToSet: enterData.item.isParent ? ROOT : `remote/${enterData.item.ipAddress}/`
-        } 
+const onEnter = (enterData: EnterData) => 
+    AsyncResult.from(new Ok<OnEnterResult, ErrorType>(
+        enterData.item.isNew
+            ? startShowRemote(enterData.dialog, enterData.refresh)
+            : {
+                processed: false, 
+                pathToSet: enterData.item.isParent ? ROOT : `remote/${enterData.item.ipAddress}/`
+            } ))
 
 // const deleteItems = async (_: string, items: FolderViewItem[], dialog: DialogHandle | null) => {
 // 	const result = await dialog?.show({

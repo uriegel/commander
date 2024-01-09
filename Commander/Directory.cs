@@ -118,10 +118,10 @@ static partial class Directory
                 .ToIOResult()
                 .ToAsync();
 
-    public static Task<IOResult> OnEnter(OnEnterParam input)
-        => new IOResult(IOErrorType.NoError)
+    public static AsyncResult<Nothing, RequestError> OnEnter(OnEnterParam input)
+        => Ok<Nothing, RequestError>(nothing)
             .SideEffect(_ => OnEnter(input.Path, input.Keys))
-            .ToAsync();
+            .ToAsyncResult();
 
     public static Result<GetFilesResult, RequestError> GetFiles(DirectoryInfo dirInfo, bool showHiddenItems)
     {

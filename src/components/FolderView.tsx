@@ -11,6 +11,7 @@ import { DirectoryChangedType, exifTimeEvents, extendedDataEvents, folderViewIte
 import { Subscription } from 'rxjs'
 import { ServiceStartMode, ServiceStatus } from '../enums'
 import { DialogContext, DialogHandle } from 'web-dialog-react'
+import { AsyncResult, ErrorType, Nothing, nothing } from 'functional-extensions'
 
 declare const webViewDropFiles: (id: string, move: boolean, paths: FileList)=>void
 declare const webViewDragStart: (path: string, fileList: string[]) => void
@@ -58,7 +59,7 @@ export type FolderViewHandle = {
     deleteItems: () => void
     getController: () => Controller
     getItems: () => FolderViewItem[]
-    processEnter: (item: FolderViewItem, keys: SpecialKeys, otherPath?: string) => Promise<void>
+    processEnter: (item: FolderViewItem, keys: SpecialKeys, otherPath?: string)=>AsyncResult<Nothing, ErrorType>
     getSelectedItems: ()=> FolderViewItem[]
 }
 
@@ -74,7 +75,7 @@ interface FolderViewProp {
     onPathChanged: (path: string, isDir: boolean) => void
     onItemsChanged: (count: ItemCount) => void
     onCopy: (move: boolean) => void
-    onEnter: (item: FolderViewItem, keys: SpecialKeys) => Promise<void>
+    onEnter: (item: FolderViewItem, keys: SpecialKeys) => void
     setError: (error: string) => void
     statusText: string | null
     setStatusText: (text: string|null)=>void
@@ -315,11 +316,13 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             )
     }
 
-    const processEnter = async (item: FolderViewItem, keys: SpecialKeys, otherPath?: string) => {
-        const result = await controller.current.onEnter({path, item, keys, dialog, refresh, selectedItems: getSelectedItems(), items, otherPath})
-        if (!result.processed && result.pathToSet) 
-            changePath(id, result.pathToSet, showHidden, result.latestPath, result.mount)
-    }
+    const processEnter = (item: FolderViewItem, keys: SpecialKeys, otherPath?: string) => 
+        controller.current.onEnter({ path, item, keys, dialog, refresh, selectedItems: getSelectedItems(), items, otherPath })
+        .map(res => {
+            if (!res.processed && res.pathToSet) 
+                changePath(id, res.pathToSet, showHidden, res.latestPath, res.mount)
+            return nothing;
+        })
 
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setPath(e.target.value)
 

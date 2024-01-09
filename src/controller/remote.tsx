@@ -1,7 +1,7 @@
 import { TableColumns } from "virtual-table-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
-import { Controller, ControllerResult, ControllerType, formatDateTime, formatSize, sortItems } from "./controller"
+import { Controller, ControllerResult, ControllerType, OnEnterResult, formatDateTime, formatSize, sortItems } from "./controller"
 import { getSortFunction } from "./filesystem"
 import { REMOTES } from "./remotes"
 import { IconNameType } from "../enums"
@@ -63,25 +63,26 @@ export const getRemoteController = (controller: Controller | null): ControllerRe
 		getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
 		setExtendedItems: items => items,
 		cancelExtendedItems: () => { },
-		onEnter: async ({path, item}) => 
-			item.isParent && path.split("/").filter(n => n.length > 0).sideEffectForEach(n => console.log("Eintrag", n)).length - 1 == 1
-			?  ({
-				processed: false, 
-				pathToSet: REMOTES,
-				latestPath: path
-			}) 
-			: item.isParent
-			? ({
-				processed: false, 
-				pathToSet: path.getParentPath(),
-				latestPath: path.extractSubPath()
-			}) 
-			: item.isDirectory
-			? ({
-				processed: false, 
-				pathToSet: path.appendPath(item.name)
-			}) 
-			: { processed: true },
+		onEnter: ({ path, item }) => 
+			AsyncResult.from(new Ok<OnEnterResult, ErrorType>(
+				item.isParent && path.split("/").filter(n => n.length > 0).sideEffectForEach(n => console.log("Eintrag", n)).length - 1 == 1
+				?  ({
+					processed: false, 
+					pathToSet: REMOTES,
+					latestPath: path
+				}) 
+				: item.isParent
+				? ({
+					processed: false, 
+					pathToSet: path.getParentPath(),
+					latestPath: path.extractSubPath()
+				}) 
+				: item.isDirectory
+				? ({
+					processed: false, 
+					pathToSet: path.appendPath(item.name)
+				}) 
+				: { processed: true })),
         sort,
         itemsSelectable: true,
         appendPath: (path: string, subPath: string) => path.appendPath(subPath),

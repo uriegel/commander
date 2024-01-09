@@ -30,7 +30,7 @@ export const createExtendedRenameFileSystemController = (controller: Controller)
     getItems: controller.getItems,
     updateItems: controller.updateItems,
     getPath: controller.getPath,
-    onEnter: async (enterData: EnterData) => {
+    onEnter: (enterData: EnterData) => {
         
         if (enterData.items?.find(n => n.newName) == undefined)
             return controller.onEnter(enterData)
