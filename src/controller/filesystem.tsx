@@ -4,7 +4,7 @@ import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, OnEnterResult, addParent, formatDateTime, formatSize, formatVersion, sortItems } from "./controller"
-import { GetExtendedItemsResult, GetItemsError, GetItemsResult, IOError, IOErrorResult, request, Version } from "../requests/requests"
+import { GetExtendedItemsResult, GetItemsError, GetItemsResult, IOError, Version } from "../requests/requests"
 import { ROOT } from "./root"
 import { extendedRename } from "./filesystemExtendedRename"
 import { IconNameType } from "../enums"
@@ -247,7 +247,7 @@ const rename = (path: string, item: FolderViewItem, dialog: DialogHandle) => {
 								.map(() => newName))
 }
 
-const renameAsCopy = async (path: string, item: FolderViewItem, dialog: DialogHandle|null) => {
+const renameAsCopy = (path: string, item: FolderViewItem, dialog: DialogHandle) => {
 	const getInputRange = () => {
 		const pos = item.name.lastIndexOf(".")
 		return (pos == -1)
@@ -255,24 +255,23 @@ const renameAsCopy = async (path: string, item: FolderViewItem, dialog: DialogHa
 			: [0, pos]
 	}
 
-	if (item.isDirectory)
-		return null
-
-	const result = await dialog?.show({
-		text: "Möchtest Du eine Kopie der Datei erstellen?",
-		inputText: item.name,
-		inputSelectRange: getInputRange(),
-		btnOk: true,
-		btnCancel: true,
-		defBtnOk: true
-	})
-	return result?.result == ResultType.Ok
-		? (await request<IOErrorResult>("renameandcopy", {
+	return item.isDirectory == false
+		? dialog.showDialog({
+				text: "Möchtest Du eine Kopie der Datei erstellen?",
+				inputText: item.name,
+				inputSelectRange: getInputRange(),
+				btnOk: true,
+				btnCancel: true,
+				defBtnOk: true
+			}, res => res.result == ResultType.Ok
+				? new Ok<string, ErrorType>(res.input ?? "")
+				: new Err<string, ErrorType>({ status: IOError.Canceled, statusText: "" }))
+			.bindAsync(newName => jsonPost<Nothing, ErrorType>({method: "renameascopy", payload: {
 				path,
 				name: item.name,
-				newName:  result.input ?? ""
-			}, dialog)).error ?? null
-		: null
+				newName
+			}}))
+		: AsyncResult.from(new Ok<Nothing, ErrorType>(nothing))
 }
 
 const createFolder = (path: string, item: FolderViewItem, dialog: DialogHandle) => 

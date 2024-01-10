@@ -1,7 +1,7 @@
 import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import './FolderView.css'
 import VirtualTable, { OnSort, SelectableItem, SpecialKeys, TableColumns, VirtualTableHandle } from 'virtual-table-react'
-import { checkController, checkResult, Controller, createEmptyController, showError } from '../controller/controller'
+import { checkController, Controller, createEmptyController, showError } from '../controller/controller'
 import { ROOT } from '../controller/root'
 import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
 import { Version } from '../requests/requests'
@@ -54,7 +54,7 @@ export type FolderViewHandle = {
     getPath: () => string
     rename: () => void
     extendedRename: (dialog: DialogHandle) => void
-    renameAsCopy: () => Promise<void>
+    renameAsCopy: () => void
     createFolder: () => void
     deleteItems: () => void
     getController: () => Controller
@@ -445,15 +445,18 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     err => showError(err, setError))
         })
     
-    const renameAsCopy = async () => {
+    const renameAsCopy = () => {
         virtualTable.current?.setFocus()
         const items = getSelectedItems()
         if (items?.length == 1) {
-            const result = await controller.current.renameAsCopy(path, items[0], dialog)
-            if (await checkResult(dialog, virtualTable.current, result))
-               refresh() 
+            controller.current.renameAsCopy(path, items[0], dialog)
+                .match(
+                    () => refresh(),
+                    e => showError(e, setError)
+                )
         }
     }
+
     const createFolder = () => {
         virtualTable.current?.setFocus()
         if (dialog)

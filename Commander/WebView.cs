@@ -52,29 +52,23 @@ static class Window
                 .JsonPost<CopyItemsParam, CopyItemInfo[], RequestError>("commander/copyitemsinfo", Directory.CopyItemsInfo)
                 .JsonPost<CopyItemsParam, Nothing, RequestError>("commander/copyitems", CopyProcessor.AddItems)
                 .JsonPost<OnEnterParam, Nothing, RequestError>("commander/onenter", Directory.OnEnter)
+                .JsonPost("commander/cancelcopy", CopyProcessor.CancelRequest)
+                .JsonPost<RenameItemsParam, Nothing, RequestError>("commander/renameitems", Directory.RenameItems)
+                .JsonPost<RenameItemParam, Nothing, RequestError>("commander/renameascopy", Directory.RenameAsCopy)
+                .JsonPost("commander/close", Close)
                 // TODO
                 // .JsonPost<CopyItemsParam, IOResult>("commander/copyitemsfromremote", Remote.CopyItemsFromRemote)
                 // .JsonPost<CopyItemsParam, IOResult>("commander/copyitemstoremote", Remote.CopyItemsToRemote)
-                .JsonPost("commander/cancelcopy", CopyProcessor.CancelRequest)
-                // TODO
-                .JsonPost<GetFiles, GetFilesRequestResult>("commander/getremotefiles", Remote.GetFiles)
-                .JsonPost<RenameItemsParam, Nothing, RequestError>("commander/renameitems", Directory.RenameItems)
-                // TODO
-                .JsonPost<RenameItemParam, IOResult>("commander/renameandcopy", Directory.RenameAndCopy)
-                .JsonPost("commander/close", Close)
+                // .JsonPost<GetFiles, GetFilesRequestResult>("commander/getremotefiles", Remote.GetFiles)
 #if Windows            
                 .JsonPost<Result<Credentials, RequestError>, Nothing, RequestError>("commander/sendcredentials", Directory.CredentialsReceived)            
 
                 // TODO
-                .JsonPost<Empty, IOResult>("commander/initservices", Services.Init)            
-                // TODO
-                .JsonPost<Empty, ServiceItem[]>("commander/getservices", Services.Get)            
-                // TODO
-                .JsonPost<Empty, IOResult>("commander/cleanupservices", Services.CleanUp)            
-                // TODO
-                .JsonPost<StartServicesParam, IOResult>("commander/startservices", Services.Start)            
-                // TODO
-                .JsonPost<StartServicesParam, IOResult>("commander/stopservices", Services.Stop)            
+                //.JsonPost<Empty, IOResult>("commander/initservices", Services.Init)            
+                //.JsonPost<Empty, ServiceItem[]>("commander/getservices", Services.Get)            
+                // .JsonPost<Empty, IOResult>("commander/cleanupservices", Services.CleanUp)            
+                // .JsonPost<StartServicesParam, IOResult>("commander/startservices", Services.Start)            
+                // .JsonPost<StartServicesParam, IOResult>("commander/stopservices", Services.Stop)            
 #endif            
                 .Build())
 #if DEBUG

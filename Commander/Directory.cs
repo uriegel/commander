@@ -111,12 +111,12 @@ static partial class Directory
             => Move(input.Path.AppendPath("__RENAMING__" + item.NewName), input.Path.AppendPath(item.NewName));
     }
 
-    public static Task<IOResult> RenameAndCopy(RenameItemParam input)
+    public static AsyncResult<Nothing, RequestError> RenameAsCopy(RenameItemParam input)
         => Try(
-            () => File.Copy(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName)),
-            MapExceptionToIOError)
-                .ToIOResult()
-                .ToAsync();
+            () => nothing
+                    .SideEffect(_ => File.Copy(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName))),
+            MapExceptionToRequestError)
+                .ToAsyncResult();
 
     public static AsyncResult<Nothing, RequestError> OnEnter(OnEnterParam input)
         => Ok<Nothing, RequestError>(nothing)
@@ -164,6 +164,14 @@ static partial class Directory
             DirectoryError.PathTooLong       => IOErrorType.PathTooLong.ToError(),
             _                                => IOErrorType.Exn.ToError()
         };
+    static RequestError MapExceptionToRequestError(Exception e)
+        => e switch
+        {
+            IOException ioe when ioe.HResult == 13 => IOErrorType.AccessDenied.ToError(),
+            IOException ioe when ioe.HResult == -2147024891 => IOErrorType.AccessDenied.ToError(),
+            UnauthorizedAccessException ue => IOErrorType.AccessDenied.ToError(),
+            _ => IOErrorType.Exn.ToError()
+        };
 
     static AsyncResult<GetExtendedItemsResult, GetFilesError> GetExtendedItems(string id, string path, string[] items)
     {
@@ -203,15 +211,6 @@ static partial class Directory
         = ImmutableDictionary<string, CancellationTokenSource>.Empty;
 
     static DirectoryInfo CreateDirectoryInfo(this string path) => new(path);
-
-    static IOResult MapExceptionToIOError(Exception e)
-        => e switch
-        {
-            IOException ioe when ioe.HResult == 13          => new(IOErrorType.AccessDenied),
-            IOException ioe when ioe.HResult == -2147024891 => new(IOErrorType.AccessDenied),
-            UnauthorizedAccessException ue                  => new(IOErrorType.AccessDenied),
-            _                                               => new(IOErrorType.Exn)
-        };
 }
 
 record DirectoryItem(

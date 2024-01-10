@@ -94,7 +94,6 @@ export type GetServicesResult = ServiceItem[]
 type CopyItemsFromRemote = "copyitemsfromremote"
 type CopyItemsToRemote = "copyitemstoremote"
 type GetRemoteFiles = "getremotefiles"
-type RenameAndCopy = "renameandcopy"
 type InitServices = "initservices"
 type GetServices = "getservices"
 type CleanUpServices = "cleanupservices"
@@ -105,7 +104,6 @@ type RequestType =
     | CopyItemsFromRemote
     | CopyItemsToRemote
     | GetRemoteFiles
-    | RenameAndCopy
     | InitServices
     | GetServices
     | CleanUpServices

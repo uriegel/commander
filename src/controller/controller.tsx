@@ -69,8 +69,9 @@ export interface Controller {
     itemsSelectable: boolean
     appendPath: (path: string, subPath: string) => string,
     rename: (path: string, item: FolderViewItem, dialog: DialogHandle) => AsyncResult<string, ErrorType>
+    // TODO
     extendedRename: (controller: Controller, dialog: DialogHandle | null) => Promise<Controller | null>
-    renameAsCopy: (path: string, item: FolderViewItem, dialog: DialogHandle | null) => Promise<IOError | null>
+    renameAsCopy: (path: string, item: FolderViewItem, dialog: DialogHandle) => AsyncResult<Nothing, ErrorType>
     createFolder: (path: string, item: FolderViewItem, dialog: DialogHandle) => AsyncResult<string, ErrorType>
     deleteItems: (path: string, items: FolderViewItem[], dialog: DialogHandle) => AsyncResult<Nothing, ErrorType>
     onSelectionChanged: (items: FolderViewItem[]) => void 
@@ -120,7 +121,7 @@ export const createEmptyController = (): Controller => ({
     appendPath: () => "",
     rename: () => AsyncResult.from(new Ok<string, ErrorType>("")),
     extendedRename: async () => null,
-    renameAsCopy: async () => null,
+    renameAsCopy: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
     createFolder: () => AsyncResult.from(new Ok<string, ErrorType>("")),
     deleteItems: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
     onSelectionChanged: () => { },
@@ -170,33 +171,6 @@ export const sortItems = (folderItemArray: FolderViewItem[], sortFunction?: Sort
 export const excludeParent = (items: FolderViewItem[]) => 
     items.filter(n => !n.isParent)
 
-interface focusable {
-    setFocus: ()=>void
-}
-
-export const checkResult = async (dialog: DialogHandle|null|undefined, activeFolderView?: focusable|null, error?: IOError | null) => {
-    if (error) {
-        const text = error === IOError.AccessDenied
-                    ? "Zugriff verweigert"
-                    : error === IOError.DeleteToTrashNotPossible
-                    ? "Löschen nicht möglich"
-                    : error === IOError.AlreadyExists
-                    ? "Das Element existiert bereits"
-                    : error === IOError.FileNotFound
-                    ? "Das Element ist nicht vorhanden"
-                    : "Die Aktion konnte nicht ausgeführt werden"
-        dialog?.close()
-        await delay(500)
-        await dialog?.show({
-            text,
-            btnOk: true
-        })
-        activeFolderView?.setFocus()
-        return false
-    } else
-        return true
-}
-
 export const showError = (error: ErrorType, setError: (error: string)=>void, prefix?: string) => {
 
     const getRequestError = (ioError: IOError) => 
@@ -245,5 +219,3 @@ const checkNewController = (controllerResult: ControllerResult, recentController
     return controllerResult
 }
 
-const delay = (timeout: number) => new Promise<number>(res => 
-    setTimeout(() => res(0), timeout))

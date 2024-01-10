@@ -103,7 +103,7 @@ const createController = (): ControllerResult => {
             appendPath: (path: string, subPath: string) => path.appendPath(subPath),
             rename: () => AsyncResult.from(new Ok<string, ErrorType>("")),
             extendedRename: async () => null,
-            renameAsCopy: async () => null,
+            renameAsCopy: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
             createFolder: () => AsyncResult.from(new Ok<string, ErrorType>("")),
             // TODOdeleteItems: async (_, items, dialog) => await stop(items, dialog),
             deleteItems: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),

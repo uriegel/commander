@@ -145,7 +145,7 @@ export const getRemotesController = (controller: Controller | null): ControllerR
         // TODO:
         rename: () => AsyncResult.from(new Ok<string, ErrorType>("")),
         extendedRename: async () => null,
-        renameAsCopy: async()=>null,
+        renameAsCopy: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
         createFolder: () => AsyncResult.from(new Ok<string, ErrorType>("")),
         // TODO deleteItems,
         deleteItems: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
