@@ -87,7 +87,7 @@ export const getRemoteController = (controller: Controller | null): ControllerRe
         itemsSelectable: true,
         appendPath: (path: string, subPath: string) => path.appendPath(subPath),
 		rename: () => AsyncResult.from(new Ok<string, ErrorType>("")),
-		extendedRename: async () => null,
+		extendedRename: () => AsyncResult.from(new Err<Controller, Nothing>(nothing)),
 		renameAsCopy: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
         createFolder: () => AsyncResult.from(new Ok<string, ErrorType>("")),
         deleteItems: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),

@@ -104,13 +104,14 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         },
         getPath() { return path },
         rename,
-        async extendedRename(dialog: DialogHandle | null) {
-            const res = await controller.current.extendedRename(controller.current, dialog)
-            if (res != null) {
-                restrictionView.current?.reset()
-                controller.current = res
-                virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
-            }
+        extendedRename(dialog: DialogHandle) {
+            controller.current.extendedRename(controller.current, dialog)
+                .match(c => {
+                    restrictionView.current?.reset()
+                    controller.current = c
+                    virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
+                },
+                () => {})
             controller.current.onSelectionChanged(items)
             setItems(items.map(n => n))
         },

@@ -117,7 +117,7 @@ export const createFileSystemController = (): Controller => {
 		itemsSelectable: true,
 		appendPath: platform == Platform.Windows ? appendWindowsPath : appendLinuxPath,
 		rename,
-		extendedRename: (controller: Controller, dialog: DialogHandle | null) => extendedRename(controller, dialog, false),
+		extendedRename: (controller: Controller, dialog: DialogHandle) => extendedRename(controller, dialog, false),
 		renameAsCopy,
 		createFolder,
 		deleteItems,

@@ -50,7 +50,7 @@ export const createExtendedRenameFileSystemController = (controller: Controller)
     itemsSelectable: true,
     appendPath: controller.appendPath,
     rename: controller.rename,
-    extendedRename: (controller: Controller, dialog: DialogHandle | null) => extendedRename(controller, dialog, true),
+    extendedRename: (controller: Controller, dialog: DialogHandle) => extendedRename(controller, dialog, true),
     renameAsCopy: controller.renameAsCopy,
     createFolder: controller.createFolder,
     deleteItems: controller.deleteItems,
@@ -58,8 +58,8 @@ export const createExtendedRenameFileSystemController = (controller: Controller)
     cleanUp: () => { }
 })
 
-export const extendedRename = async (controller: Controller, dialog: DialogHandle|null, isExtended: boolean) => {
-	const result = await dialog?.show({
+export const extendedRename = (controller: Controller, dialog: DialogHandle, isExtended: boolean) => 
+	dialog.showDialog({
 		text: "Erweitertes Umbenennen",
 		extension: ExtendedRename,
 		extensionProps: {
@@ -70,20 +70,23 @@ export const extendedRename = async (controller: Controller, dialog: DialogHandl
 		btnOk: true,
 		btnCancel: true,
 		defBtnOk: true
-	})
-	if (result?.result == ResultType.Ok) {
-		const erp = result.props as ExtendedRenameProps
-		localStorage.setItem("extendedRenamePrefix", erp.prefix)
-		localStorage.setItem("extendedRenameDigits", erp.digits.toString())
-		localStorage.setItem("extendedRenameStartNumber", erp.startNumber.toString())
-    }
-	if (result?.result == ResultType.Ok && !isExtended) 
-		return createExtendedRenameFileSystemController(controller)
-    else if (result?.result != ResultType.Ok && isExtended) 
-		return createFileSystemController()
-    else
-		return null
-}
+    }, res => res.result == ResultType.Ok
+        ? new Ok<ExtendedRenameProps, Nothing>(res.props)
+        : new Err<ExtendedRenameProps, Nothing>(nothing))
+        .map(props => {
+            localStorage.setItem("extendedRenamePrefix", props.prefix)
+            localStorage.setItem("extendedRenameDigits", props.digits.toString())
+            localStorage.setItem("extendedRenameStartNumber", props.startNumber.toString())
+            return !isExtended
+                ? createExtendedRenameFileSystemController(controller)
+                : createFileSystemController()
+    })
+
+// TODO 
+else if (result?.result != ResultType.Ok && isExtended) 
+return createFileSystemController()
+else
+return null
 
 const onSelectionChanged = (items: FolderViewItem[]) => {
     const prefix = localStorage.getItem("extendedRenamePrefix") ?? "Bild"
