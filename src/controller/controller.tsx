@@ -47,10 +47,11 @@ export interface EnterData {
     otherPath?: string
     item: FolderViewItem, 
     keys: SpecialKeys, 
-    dialog?: DialogHandle, 
-    refresh?: ()=>void, 
-    selectedItems?: FolderViewItem[]
-    items?: FolderViewItem[]
+    dialog: DialogHandle, 
+    setError: (e: string)=>void
+    refresh: ()=>void, 
+    selectedItems: FolderViewItem[]
+    items: FolderViewItem[]
 }
 
 export interface Controller {

@@ -317,7 +317,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     const processEnter = (item: FolderViewItem, keys: SpecialKeys, otherPath?: string) => 
-        controller.current.onEnter({ path, item, keys, dialog, refresh, selectedItems: getSelectedItems(), items, otherPath })
+        controller.current.onEnter({ path, item, keys, dialog, setError, refresh, selectedItems: getSelectedItems(), items, otherPath })
         .map(res => {
             if (!res.processed && res.pathToSet) 
                 changePath(id, res.pathToSet, showHidden, res.latestPath, res.mount)

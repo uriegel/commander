@@ -1,10 +1,9 @@
 import { TableColumns } from "virtual-table-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
-import { Controller, ControllerResult, ControllerType, sortItems } from "./controller"
+import { Controller, ControllerResult, ControllerType, OnEnterResult, sortItems } from "./controller"
 import { ROOT } from "./root"
-import { GetExtendedItemsResult, GetItemsResult, IOError, IOErrorResult, request } from "../requests/requests"
-import { DialogHandle } from "web-dialog-react"
+import { GetExtendedItemsResult, GetItemsResult, IOError, request } from "../requests/requests"
 import { IconNameType, ServiceStartMode, ServiceStatus } from "../enums"
 import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
 
@@ -87,19 +86,18 @@ const createController = (): ControllerResult => {
             getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
             setExtendedItems: items => items,
             cancelExtendedItems: () => { },
-            onEnter: async ({ path, item, selectedItems, dialog }) => {
-                if (item.isParent)
-                    return ({
+            onEnter: ({ path, item }) => 
+                item.isParent
+                    ? AsyncResult.from(new Ok<OnEnterResult, ErrorType>({
                         processed: false,
                         pathToSet: ROOT,
                         latestPath: path
-                    })
-                else {
-                    start(selectedItems || [item ], dialog)
-                    return { processed: true }
-                }
-                    
-            },
+                    }))
+                    : 
+                    AsyncResult.from(new Ok<OnEnterResult, ErrorType>({ processed: true } )),
+                    // TODO
+                    // start(selectedItems || [item ], dialog)
+                    // return { processed: true }
             sort,
             itemsSelectable: true,
             appendPath: (path: string, subPath: string) => path.appendPath(subPath),
@@ -139,14 +137,16 @@ const getRowClasses = (item: FolderViewItem) =>
     ? ["notRunning"]
     : []
 
-const start = async (selectedItems: FolderViewItem[], dialog?: DialogHandle|null) => {
-    request<IOErrorResult>("startservices", {
-        items: selectedItems
-            .filter(n => n.status == ServiceStatus.Stopped)
-            .map(n => n.name)
-    }, dialog)
-}
+// TODO
+// const start = async (selectedItems: FolderViewItem[], dialog?: DialogHandle|null) => {
+//     request<IOErrorResult>("startservices", {
+//         items: selectedItems
+//             .filter(n => n.status == ServiceStatus.Stopped)
+//             .map(n => n.name)
+//     }, dialog)
+// }
 
+// TODO
 // const stop = async (selectedItems: FolderViewItem[], dialog?: DialogHandle|null) => {
 //     request<IOErrorResult>("stopservices", {
 //         items: selectedItems

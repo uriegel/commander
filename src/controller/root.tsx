@@ -1,7 +1,7 @@
 import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
-import { Controller, ControllerResult, ControllerType, EnterData, formatSize} from "./controller"
+import { Controller, ControllerResult, ControllerType, EnterData, formatSize, OnEnterResult} from "./controller"
 import { REMOTES } from "./remotes"
 import { GetExtendedItemsResult, GetRootResult, IOError, request } from "../requests/requests"
 import "functional-extensions"
@@ -63,26 +63,30 @@ const getLinuxColumns = () => ({
 	renderRow: renderLinuxRow
 })
 
-const onWindowsEnter = async (enterData: EnterData) => {
+const onWindowsEnter = (enterData: EnterData) => {
 
+    let res = {
+        processed: true, 
+    } as OnEnterResult
     if (enterData.keys.alt) {
         request("onenter", {path: enterData.item.name , keys: enterData.keys})
-        return {
+        res = {
             processed: true, 
         } 
     } else
-        return {
+        res = {
             processed: false, 
             pathToSet: enterData.item.name
-    } 
+        } 
+    return AsyncResult.from(new Ok<OnEnterResult, ErrorType>(res))
 }
 
-const onLinuxEnter = async (enterData: EnterData) => 
-({
-    processed: false, 
-    pathToSet: enterData.item.mountPoint || enterData.item.mountPoint!.length > 0 ? enterData.item.mountPoint : enterData.item.name,
-    mount: !enterData.item.mountPoint
-}) 
+const onLinuxEnter = (enterData: EnterData) => 
+    AsyncResult.from(new Ok<OnEnterResult, ErrorType>({
+        processed: false, 
+        pathToSet: enterData.item.mountPoint || enterData.item.mountPoint!.length > 0 ? enterData.item.mountPoint : enterData.item.name,
+        mount: !enterData.item.mountPoint
+    }))
 
 export const getRootController = (controller: Controller | null): ControllerResult => 
     controller?.type == ControllerType.Root

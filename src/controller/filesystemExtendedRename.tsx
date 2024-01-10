@@ -1,10 +1,11 @@
-import { Controller, ControllerType, EnterData, showError } from "./controller"
+import { Controller, ControllerType, EnterData, OnEnterResult, showError } from "./controller"
 import 'functional-extensions'
 import { FolderViewItem } from "../components/FolderView"
 import { DialogHandle, ResultType } from "web-dialog-react"
 import ExtendedRename from "../components/dialogparts/ExtendedRename"
 import { createFileSystemController } from "./filesystem"
-import { ErrorType, Nothing, jsonPost } from "functional-extensions"
+import { Err, ErrorType, Nothing, Ok, jsonPost, nothing } from "functional-extensions"
+import { IOError } from "../requests/requests"
 
 export interface ExtendedRenameProps {
     prefix: string
@@ -30,20 +31,17 @@ export const createExtendedRenameFileSystemController = (controller: Controller)
     getItems: controller.getItems,
     updateItems: controller.updateItems,
     getPath: controller.getPath,
-    onEnter: (enterData: EnterData) => {
-        
-        if (enterData.items?.find(n => n.newName) == undefined)
-            return controller.onEnter(enterData)
-        else {
-            if ((await enterData.dialog?.show({
+    onEnter: (enterData: EnterData) => 
+        enterData.items.find(n => n.newName) == undefined
+        ? controller.onEnter(enterData)
+        : enterData.dialog.showDialog<Nothing, ErrorType>({
                 text: "Umbenennungen starten?",
                 btnOk: true,
                 btnCancel: true
-            }))?.result == ResultType.Ok)
-                rename(enterData)
-        }
-        return { processed: true }
-    },
+            }, res => res.result == ResultType.Ok
+                ? new Ok(nothing)
+                : new Err({ status: IOError.Canceled, statusText: "" }))
+            .bind(() => rename(enterData)),
     sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => {
         const sorted = controller.sort(items, sortIndex == 0 ? 0 : sortIndex - 1, sortDescending)
         onSelectionChanged(sorted)
@@ -100,7 +98,7 @@ const onSelectionChanged = (items: FolderViewItem[]) => {
 } 
 
 const rename = (enterData: EnterData) => {
-    if (enterData.selectedItems && enterData.selectedItems.length > 0) {
+    if (enterData.selectedItems.length > 0) {
         const testItems = enterData.items
             ?.filter(n => !n.isDirectory)
             .map(n => n.isSelected ? n.newName?.toLowerCase() ?? "" : n.name.toLowerCase())
@@ -116,14 +114,10 @@ const rename = (enterData: EnterData) => {
                     }))
                 }
             }).match(
-                () => enterData.refresh && enterData.refresh(), // TODO
-                e => showError(e, () => {})) // TODO setError as Param
-        } else {
-            // TODO
-            // (async () => await enterData.dialog?.show({
-            //     text: "Dateinamen nicht eindeutig",
-            //     btnOk: true
-            // }))()
-        }
+                enterData.refresh,
+                e => showError(e, enterData.setError))
+        } else
+            enterData.setError("Dateinamen nicht eindeutig")
     }
+    return new Ok<OnEnterResult, ErrorType>({ processed: true })
 }
