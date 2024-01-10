@@ -366,8 +366,8 @@ enum IOErrorType {
     PathTooLong,
     Canceled,
     WrongCredentials,
-    // TODO eliminate
     NoDiskSpace,
+    // TODO eliminate
     NoError,
 }
 
