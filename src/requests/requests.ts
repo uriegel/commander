@@ -91,40 +91,26 @@ export type GetRootResult = RootItem[]
 
 export type GetServicesResult = ServiceItem[]
 
-type Close = "close"
-type ShowDevTools = "showdevtools"
-type ShowFullScreen = "showfullscreen"
-type RenameItem = "renameitem"
 type CopyItemsFromRemote = "copyitemsfromremote"
 type CopyItemsToRemote = "copyitemstoremote"
 type GetRemoteFiles = "getremotefiles"
-type RenameItems = "renameitems"
 type RenameAndCopy = "renameandcopy"
-type OnEnter = "onenter"
 type InitServices = "initservices"
 type GetServices = "getservices"
 type CleanUpServices = "cleanupservices"
 type StartServices = "startservices"
 type StopServices = "stopservices"
-type ElevateDrive = "elevatedrive"
 
 type RequestType = 
-	| Close
-    | ShowDevTools
-    | ShowFullScreen
-    | RenameItem
     | CopyItemsFromRemote
     | CopyItemsToRemote
     | GetRemoteFiles
-    | RenameItems
     | RenameAndCopy
-    | OnEnter
     | InitServices
     | GetServices
     | CleanUpServices
     | StartServices
     | StopServices
-    | ElevateDrive
     
 type Exception = {
 	exception: string

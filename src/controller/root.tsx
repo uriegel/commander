@@ -3,7 +3,7 @@ import IconName from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, EnterData, formatSize, OnEnterResult} from "./controller"
 import { REMOTES } from "./remotes"
-import { GetExtendedItemsResult, GetRootResult, IOError, request } from "../requests/requests"
+import { GetExtendedItemsResult, GetRootResult, IOError } from "../requests/requests"
 import "functional-extensions"
 import { SERVICES } from "./services"
 import { FAVORITES } from "./favorites"
@@ -63,23 +63,14 @@ const getLinuxColumns = () => ({
 	renderRow: renderLinuxRow
 })
 
-const onWindowsEnter = (enterData: EnterData) => {
-
-    let res = {
-        processed: true, 
-    } as OnEnterResult
-    if (enterData.keys.alt) {
-        request("onenter", {path: enterData.item.name , keys: enterData.keys})
-        res = {
-            processed: true, 
-        } 
-    } else
-        res = {
-            processed: false, 
-            pathToSet: enterData.item.name
-        } 
-    return AsyncResult.from(new Ok<OnEnterResult, ErrorType>(res))
-}
+const onWindowsEnter = (enterData: EnterData) => 
+    enterData.keys.alt
+    ? jsonPost<OnEnterResult, ErrorType>({ method: "onenter", payload: { path: enterData.item.name, keys: enterData.keys } })
+        .map(() => ({ processed: true }))
+    : AsyncResult.from(new Ok<OnEnterResult, ErrorType>({
+        processed: false, 
+        pathToSet: enterData.item.name
+    }))
 
 const onLinuxEnter = (enterData: EnterData) => 
     AsyncResult.from(new Ok<OnEnterResult, ErrorType>({

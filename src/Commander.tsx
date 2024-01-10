@@ -7,7 +7,7 @@ import Statusbar from './components/Statusbar'
 import { Controller, showError } from './controller/controller'
 import PictureViewer from './components/PictureViewer'
 import MediaPlayer from './components/MediaPlayer'
-import { CredentialsResult, IOError, closeWindow, request } from './requests/requests'
+import { CredentialsResult, IOError, closeWindow } from './requests/requests'
 import './App.css'
 import './themes/adwaita.css'
 import './themes/adwaitaDark.css'
@@ -202,8 +202,9 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 			getActiveFolder()?.selectNone()
 		else if (key == "SHOW_DEV_TOOLS")
 			webViewShowDevTools()
-		else if (key == "SHOW_FULLSCREEN")
-			await request("showfullscreen")
+		// TODO
+		// else if (key == "SHOW_FULLSCREEN")
+		// 	await request("showfullscreen")
 		else if (key == "FAVORITES")
 			getActiveFolder()?.changePath("fav")
 		else if (key == "ADAPT_PATH") {

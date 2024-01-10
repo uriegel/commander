@@ -71,10 +71,9 @@ export const getFileSystemController = (controller: Controller|null): Controller
     : ({ changed: true, controller: createFileSystemController()
 })
 
-const onFileEnter = (path: string, keys?: SpecialKeys) => {
-	request("onenter", {path, keys})
-	return  ({ processed: true })
-}
+const onFileEnter = (path: string, keys?: SpecialKeys) => 
+	jsonPost<Nothing, ErrorType>({ method: "onenter", payload: { path, keys } })
+	.map(() => ({ processed: true }) as OnEnterResult)
 		
 export const createFileSystemController = (): Controller => {
 	let currentPath = ""
@@ -96,25 +95,24 @@ export const createFileSystemController = (): Controller => {
 		updateItems,
 		getPath: () => currentPath,
 		onEnter: ({ path, item, keys }) =>
-			AsyncResult.from(new Ok<OnEnterResult, ErrorType>(
-				item.isParent && path.length > driveLength
-					? ({
-						processed: false,
-						pathToSet: path + '/' + item.name,
-						latestPath: path.extractSubPath()
-					})
-					: item.isParent && path.length == driveLength
-						? ({
-							processed: false,
-							pathToSet: ROOT,
-							latestPath: path
-						})
-						: item.isDirectory && !keys.alt
-							? ({
-								processed: false,
-								pathToSet: path + '/' + item.name
-							})
-							: onFileEnter(path.appendPath(item.name), keys))),
+			item.isParent && path.length > driveLength
+			? AsyncResult.from(new Ok<OnEnterResult, ErrorType>({
+				processed: false,
+				pathToSet: path + '/' + item.name,
+				latestPath: path.extractSubPath()
+			}))
+			: item.isParent && path.length == driveLength
+			? AsyncResult.from(new Ok<OnEnterResult, ErrorType>({
+				processed: false,
+				pathToSet: ROOT,
+				latestPath: path
+			}))
+			: item.isDirectory && !keys.alt
+			? AsyncResult.from(new Ok<OnEnterResult, ErrorType>({
+				processed: false,
+				pathToSet: path + '/' + item.name
+			}))
+			: onFileEnter(path.appendPath(item.name), keys),
 		sort,
 		itemsSelectable: true,
 		appendPath: platform == Platform.Windows ? appendWindowsPath : appendLinuxPath,
