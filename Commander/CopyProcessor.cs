@@ -3,7 +3,7 @@ using AspNetExtensions;
 using CsTools;
 using CsTools.Extensions;
 using CsTools.Functional;
-
+using CsTools.HttpRequest;
 using static CsTools.Core;
 
 static partial class CopyProcessor

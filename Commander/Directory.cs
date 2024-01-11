@@ -9,6 +9,7 @@ using CsTools;
 
 using static CsTools.Functional.Tree;
 using static CsTools.Core;
+using CsTools.HttpRequest;
 
 static partial class Directory
 {

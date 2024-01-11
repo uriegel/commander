@@ -9,6 +9,7 @@ using System.Diagnostics;
 using CsTools.Functional;
 
 using static CsTools.Core;
+using CsTools.HttpRequest;
 
 static partial class Directory
 {

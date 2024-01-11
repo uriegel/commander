@@ -1,6 +1,7 @@
 #if Linux
 
 using AspNetExtensions;
+using CsTools.HttpRequest;
 
 static partial class CopyProcessor
 {

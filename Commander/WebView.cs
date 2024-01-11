@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using AspNetExtensions;
 using CsTools.Extensions;
 using CsTools.Functional;
+using CsTools.HttpRequest;
 using WebWindowNetCore;
 
 using static CsTools.Core;

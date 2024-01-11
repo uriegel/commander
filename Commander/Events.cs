@@ -2,6 +2,7 @@ using System.Reactive.Subjects;
 using AspNetExtensions;
 using CsTools.Extensions;
 using CsTools.Functional;
+using CsTools.HttpRequest;
 
 record CopyProgress(
     string FileName,
