@@ -110,8 +110,9 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     restrictionView.current?.reset()
                     controller.current = c
                     virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
+                    controller.current.onSelectionChanged(items)
                 },
-                () => {})
+                () => controller.current.onSelectionChanged(items))
             controller.current.onSelectionChanged(items)
             setItems(items.map(n => n))
         },

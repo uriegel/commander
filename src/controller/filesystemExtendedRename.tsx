@@ -70,23 +70,19 @@ export const extendedRename = (controller: Controller, dialog: DialogHandle, isE
 		btnOk: true,
 		btnCancel: true,
 		defBtnOk: true
-    }, res => res.result == ResultType.Ok
-        ? new Ok<ExtendedRenameProps, Nothing>(res.props)
-        : new Err<ExtendedRenameProps, Nothing>(nothing))
-        .map(props => {
-            localStorage.setItem("extendedRenamePrefix", props.prefix)
-            localStorage.setItem("extendedRenameDigits", props.digits.toString())
-            localStorage.setItem("extendedRenameStartNumber", props.startNumber.toString())
+    }, res => {
+        if (res.result == ResultType.Ok) {
+            localStorage.setItem("extendedRenamePrefix", res.props.prefix)
+            localStorage.setItem("extendedRenameDigits", res.props.digits.toString())
+            localStorage.setItem("extendedRenameStartNumber", res.props.startNumber.toString())
             return !isExtended
-                ? createExtendedRenameFileSystemController(controller)
-                : createFileSystemController()
+                ? new Ok<Controller, Nothing>(createExtendedRenameFileSystemController(controller)) 
+                : new Err<Controller, Nothing>(nothing)
+        } else
+            return isExtended
+                ? new Ok<Controller, Nothing>(createFileSystemController())
+                : new Err<Controller, Nothing>(nothing)    
     })
-
-// TODO 
-else if (result?.result != ResultType.Ok && isExtended) 
-return createFileSystemController()
-else
-return null
 
 const onSelectionChanged = (items: FolderViewItem[]) => {
     const prefix = localStorage.getItem("extendedRenamePrefix") ?? "Bild"
