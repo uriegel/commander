@@ -14,6 +14,7 @@ using CsTools.Async;
 
 using static ClrWinApi.Api;
 using static CsTools.Core;
+using CsTools.HttpRequest;
 
 static partial class Directory
 {

@@ -9,6 +9,7 @@ using CsTools.Functional;
 using CsTools.Extensions;
 
 using static CsTools.Core;
+using CsTools.HttpRequest;
 
 static class UacServer
 {
