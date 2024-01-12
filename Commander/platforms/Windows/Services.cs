@@ -2,7 +2,10 @@
 
 using System.ServiceProcess;
 using ClrWinApi;
-using CsTools.Extensions;
+using CsTools.Functional;
+using CsTools.HttpRequest;
+
+using static CsTools.Core;
 
 record StartServicesParam(
     string[] Items
@@ -31,43 +34,25 @@ record ServiceItem(
 
 static class Services
 {
-    public static Task<IOResult> Init(Empty _)
-    {
-        if (Interlocked.Increment(ref refCount) == 1)
-        {
-            services = ServiceController.GetServices();
-            timer = new Timer(_ =>
-            {
-                var updateItems = services.Where(n =>
-                {
-                    var status = n.Status;
-                    n.Refresh();
-                    return status != n.Status;
-                })
+    public static AsyncResult<ServiceItem[], RequestError> Get()
+        =>  Ok<ServiceItem[], RequestError>(
+                (services.Length == 0
+                ? Init()
+                : services)
                     .Select(ServiceItem.Create)
-                    .ToArray();
-                if (updateItems != null && updateItems.Length != 0)
-                    Events.ServiceItemsChanged(updateItems);
-            }, null, 300, 300);
-        }
-        return Task.FromResult(new IOResult(IOErrorType.NoError));
-    }
+                    .ToArray())
+                .ToAsyncResult();
 
-    public static Task<ServiceItem[]> Get(Empty _)
-        =>  services
-                .Select(ServiceItem.Create)
-                .ToArray()
-                .ToAsync();
-
-    public static Task<IOResult> CleanUp(Empty _)
+    public static AsyncResult<Nothing, RequestError> CleanUp()
     {
         if (Interlocked.Decrement(ref refCount) <= 0)
         {
             timer?.Dispose();
             timer = null;
-            services = Array.Empty<ServiceController>();
+            services = [];
         }
-        return Task.FromResult(new IOResult(IOErrorType.NoError));
+        return Ok<Nothing, RequestError>(nothing)
+                .ToAsyncResult();
     }
 
     public static Task<IOResult> Start(StartServicesParam param)
@@ -97,6 +82,29 @@ static class Services
             return Task.FromResult(new IOResult(IOErrorType.AccessDenied));
         }
     }
+
+    static ServiceController[] Init()
+    {
+        if (Interlocked.Increment(ref refCount) == 1)
+        {
+            services = ServiceController.GetServices();
+            timer = new Timer(_ =>
+            {
+                var updateItems = services.Where(n =>
+                {
+                    var status = n.Status;
+                    n.Refresh();
+                    return status != n.Status;
+                })
+                    .Select(ServiceItem.Create)
+                    .ToArray();
+                if (updateItems != null && updateItems.Length != 0)
+                    Events.ServiceItemsChanged(updateItems);
+            }, null, 300, 300);
+        }
+        return services;
+    }
+
 
     static int refCount;
     static Timer? timer;

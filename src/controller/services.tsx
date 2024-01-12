@@ -1,11 +1,11 @@
 import { TableColumns } from "virtual-table-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
-import { Controller, ControllerResult, ControllerType, OnEnterResult, sortItems } from "./controller"
+import { Controller, ControllerResult, ControllerType, OnEnterResult, addParent, sortItems } from "./controller"
 import { ROOT } from "./root"
-import { GetExtendedItemsResult, GetItemsResult, IOError, request } from "../requests/requests"
+import { GetExtendedItemsResult, GetItemsResult, IOError, ServiceItem } from "../requests/requests"
 import { IconNameType, ServiceStartMode, ServiceStatus } from "../enums"
-import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
+import { AsyncResult, Err, ErrorType, Nothing, Ok, jsonPost, nothing } from "functional-extensions"
 
 export const SERVICES = "services"
 
@@ -49,19 +49,15 @@ const getColumns = () => ({
     getRowClasses
 } as TableColumns<FolderViewItem>)
 
-const getItems = () => AsyncResult.from(new Err<GetItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""}))
-// TODO
-// const getItems = async (_: string, __: boolean, sortIndex: number, sortDescending: boolean) => {
-//     const services =
-//         addParent(sort(await request<GetServicesResult>("getservices"), sortIndex, sortDescending))
-//     return {
-//         path: SERVICES,
-//         dirCount: services.length,
-//         fileCount: 0,
-//         error: IOError.NoError,
-//         items: services 
-//     }
-// }
+const getItems = (_: string, __: string, ___: boolean, sortIndex: number, sortDescending: boolean) => 
+    jsonPost<ServiceItem[], ErrorType>({ method: "getservices" })
+        .map(items => ({
+            path: SERVICES,
+            dirCount: items.length,
+            fileCount: 0,
+            error: IOError.NoError,
+            items: addParent(sort(items, sortIndex, sortDescending))
+        } as GetItemsResult))
 
 const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
 	sortItems(items, getSortFunction(sortIndex, sortDescending), true) 
@@ -71,47 +67,43 @@ export const getServicesController = (controller: Controller | null): Controller
     ? ({ changed: false, controller })
     : createController()
 
-const createController = (): ControllerResult => {
-    // TODO move to getServices
-    //await request<IOErrorResult>("initservices")    
-
-    return {
-        changed: true, controller: { 
-            type: ControllerType.Services, 
-            id: SERVICES,
-            getColumns,
-            getItems,
-            updateItems: ()=>null,
-            getPath: () => SERVICES,
-            getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
-            setExtendedItems: items => items,
-            cancelExtendedItems: () => { },
-            onEnter: ({ path, item }) => 
-                item.isParent
-                    ? AsyncResult.from(new Ok<OnEnterResult, ErrorType>({
-                        processed: false,
-                        pathToSet: ROOT,
-                        latestPath: path
-                    }))
-                    : 
-                    AsyncResult.from(new Ok<OnEnterResult, ErrorType>({ processed: true } )),
-                    // TODO
-                    // start(selectedItems || [item ], dialog)
-                    // return { processed: true }
-            sort,
-            itemsSelectable: true,
-            appendPath: (path: string, subPath: string) => path.appendPath(subPath),
-            rename: () => AsyncResult.from(new Ok<string, ErrorType>("")),
-            extendedRename: () => AsyncResult.from(new Err<Controller, Nothing>(nothing)),
-            renameAsCopy: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
-            createFolder: () => AsyncResult.from(new Ok<string, ErrorType>("")),
-            // TODOdeleteItems: async (_, items, dialog) => await stop(items, dialog),
-            deleteItems: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
-            onSelectionChanged: () => { },
-            cleanUp: () => request("cleanupservices")
-        }
+const createController = (): ControllerResult => ({
+    changed: true, controller: { 
+        type: ControllerType.Services, 
+        id: SERVICES,
+        getColumns,
+        getItems,
+        updateItems: ()=>null,
+        getPath: () => SERVICES,
+        getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
+        setExtendedItems: items => items,
+        cancelExtendedItems: () => { },
+        onEnter: ({ path, item }) => 
+            item.isParent
+                ? AsyncResult.from(new Ok<OnEnterResult, ErrorType>({
+                    processed: false,
+                    pathToSet: ROOT,
+                    latestPath: path
+                }))
+                : 
+                AsyncResult.from(new Ok<OnEnterResult, ErrorType>({ processed: true } )),
+                // TODO
+                // start(selectedItems || [item ], dialog)
+                // return { processed: true }
+        sort,
+        itemsSelectable: true,
+        appendPath: (path: string, subPath: string) => path.appendPath(subPath),
+        rename: () => AsyncResult.from(new Ok<string, ErrorType>("")),
+        extendedRename: () => AsyncResult.from(new Err<Controller, Nothing>(nothing)),
+        renameAsCopy: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
+        createFolder: () => AsyncResult.from(new Ok<string, ErrorType>("")),
+        // TODOdeleteItems: async (_, items, dialog) => await stop(items, dialog),
+        deleteItems: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
+        onSelectionChanged: () => { },
+        cleanUp: () => jsonPost<Nothing, ErrorType>({ method: "cleanupservices"})
     }
-}
+})
+
 
 const getSortFunction = (index: number, descending: boolean) => {
     const ascDesc = (sortResult: number) => descending ? -sortResult : sortResult

@@ -63,11 +63,8 @@ static class Window
                 // .JsonPost<GetFiles, GetFilesRequestResult>("commander/getremotefiles", Remote.GetFiles)
 #if Windows            
                 .JsonPost<Result<Credentials, RequestError>, Nothing, RequestError>("commander/sendcredentials", Directory.CredentialsReceived)            
-
-                // TODO
-                //.JsonPost<Empty, IOResult>("commander/initservices", Services.Init)            
-                //.JsonPost<Empty, ServiceItem[]>("commander/getservices", Services.Get)            
-                // .JsonPost<Empty, IOResult>("commander/cleanupservices", Services.CleanUp)            
+                .JsonPost("commander/cleanupservices", Services.CleanUp)            
+                .JsonPost("commander/getservices", Services.Get)            
                 // .JsonPost<StartServicesParam, IOResult>("commander/startservices", Services.Start)            
                 // .JsonPost<StartServicesParam, IOResult>("commander/stopservices", Services.Stop)            
 #endif            
@@ -96,4 +93,3 @@ static class Window
             .ToAsyncResult();
 }
 
-record Empty();

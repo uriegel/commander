@@ -89,14 +89,9 @@ export interface IOErrorResult {
 
 export type GetRootResult = RootItem[]
 
-export type GetServicesResult = ServiceItem[]
-
 type CopyItemsFromRemote = "copyitemsfromremote"
 type CopyItemsToRemote = "copyitemstoremote"
 type GetRemoteFiles = "getremotefiles"
-type InitServices = "initservices"
-type GetServices = "getservices"
-type CleanUpServices = "cleanupservices"
 type StartServices = "startservices"
 type StopServices = "stopservices"
 
@@ -104,9 +99,6 @@ type RequestType =
     | CopyItemsFromRemote
     | CopyItemsToRemote
     | GetRemoteFiles
-    | InitServices
-    | GetServices
-    | CleanUpServices
     | StartServices
     | StopServices
     
