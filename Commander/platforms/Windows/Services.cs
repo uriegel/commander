@@ -55,17 +55,30 @@ static class Services
                 .ToAsyncResult();
     }
 
-    public static Task<IOResult> Start(StartServicesParam param)
+    public static AsyncResult<Nothing, RequestError> Start(StartServicesParam param)
+        => StartServices(param)
+            .ToAsyncResult()
+            .BindErrorAwait(e =>
+                (IOErrorType)e.Status == IOErrorType.AccessDenied
+                    ? UacServer
+                        .StartElevated()
+                        .SelectError(_ => new RequestError(1099, "UAC not started"))
+                        .ToAsyncResult()
+                        .BindAwait(_ => Requests.JsonRequest.Post<StartServicesParam, Nothing>(new("commander/startservices", param)))
+                        .SelectError(e => new RequestError(e.Status, e.StatusText))
+                    : Error<Nothing, RequestError>(e).ToAsyncResult());
+
+    static Result<Nothing, RequestError> StartServices(StartServicesParam param)
     {
         try
         {
             foreach (var service in param.Items)
                 new ServiceController(service).Start();
-            return Task.FromResult(new IOResult(IOErrorType.NoError));
+            return Ok<Nothing, RequestError>(nothing);
         }
         catch 
         {
-            return Task.FromResult(new IOResult(IOErrorType.AccessDenied));
+            return Error<Nothing, RequestError>(IOErrorType.AccessDenied.ToError());
         }
     }
 

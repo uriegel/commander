@@ -84,7 +84,7 @@ static class UacServer
             .WithJsonPost<RenameItemParam, Nothing, RequestError>("commander/renameitem", Directory.RenameItemUac, _ => Exit())
             .WithJsonPost<UacCopyItemsParam, Nothing, RequestError>("commander/copyitems", CopyProcessor.CopyUac, _ => Exit())
             .WithJsonPost<Nothing, Nothing, RequestError>("commander/cancelcopy", CopyProcessor.Cancel)
-            // .JsonPost<StartServicesParam, IOResult>("commander/startservices", Services.Start)            
+            .WithJsonPost<StartServicesParam, Nothing, RequestError>("commander/startservices", Services.Start, _ => Exit())            
             // .JsonPost<StartServicesParam, IOResult>("commander/stopservices", Services.Stop)            
             .StartAsync();
 

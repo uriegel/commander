@@ -78,18 +78,15 @@ const createController = (): ControllerResult => ({
         getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
         setExtendedItems: items => items,
         cancelExtendedItems: () => { },
-        onEnter: ({ path, item }) => 
+        onEnter: ({ path, item, selectedItems }) => 
             item.isParent
                 ? AsyncResult.from(new Ok<OnEnterResult, ErrorType>({
                     processed: false,
                     pathToSet: ROOT,
                     latestPath: path
                 }))
-                : 
-                AsyncResult.from(new Ok<OnEnterResult, ErrorType>({ processed: true } )),
-                // TODO
-                // start(selectedItems || [item ], dialog)
-                // return { processed: true }
+                : start(selectedItems || [item ])
+                    .map(() =>({ processed: true } as OnEnterResult)),
         sort,
         itemsSelectable: true,
         appendPath: (path: string, subPath: string) => path.appendPath(subPath),
@@ -129,15 +126,15 @@ const getRowClasses = (item: FolderViewItem) =>
     ? ["notRunning"]
     : []
 
-// TODO
-// const start = async (selectedItems: FolderViewItem[], dialog?: DialogHandle|null) => {
-//     request<IOErrorResult>("startservices", {
-//         items: selectedItems
-//             .filter(n => n.status == ServiceStatus.Stopped)
-//             .map(n => n.name)
-//     }, dialog)
-// }
-
+const start = (selectedItems: FolderViewItem[]) => 
+    jsonPost<Nothing, ErrorType>({
+        method: "startservices",
+        payload: {
+            items: selectedItems
+                .filter(n => n.status == ServiceStatus.Stopped)
+                .map(n => n.name)
+        }})
+      
 // TODO
 // const stop = async (selectedItems: FolderViewItem[], dialog?: DialogHandle|null) => {
 //     request<IOErrorResult>("stopservices", {

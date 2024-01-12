@@ -56,7 +56,7 @@ static partial class Directory
                 (IOErrorType)e.Status == IOErrorType.AccessDenied
                     ? UacServer
                         .StartElevated()
-                        .SelectError(_ => new CsTools.HttpRequest.RequestError(1099, "UAC not started"))
+                        .SelectError(_ => new RequestError(1099, "UAC not started"))
                         .ToAsyncResult()
                         .BindAwait(_ => Requests.JsonRequest.Post<RenameItemParam, Nothing>(new("commander/renameitem", input)))
                         .SelectError(e => new RequestError(e.Status, e.StatusText))
@@ -70,7 +70,7 @@ static partial class Directory
                 (IOErrorType)e.Status == IOErrorType.AccessDenied
                     ? UacServer
                         .StartElevated()
-                        .SelectError(_ => new CsTools.HttpRequest.RequestError(1099, "UAC not started"))
+                        .SelectError(_ => new RequestError(1099, "UAC not started"))
                         .ToAsyncResult()
                         .BindAwait(_ => Requests.JsonRequest.Post<CreateFolderParam, Nothing>(new("commander/createfolder", input)))
                         .SelectError(e => new RequestError(e.Status, e.StatusText))
@@ -84,7 +84,7 @@ static partial class Directory
                 (IOErrorType)e.Status == IOErrorType.AccessDenied
                     ? UacServer
                         .StartElevated()
-                        .SelectError(_ => new CsTools.HttpRequest.RequestError(1099, "UAC not started"))
+                        .SelectError(_ => new RequestError(1099, "UAC not started"))
                         .ToAsyncResult()
                         .BindAwait(_ => Requests.JsonRequest.Post<DeleteItemsParam, Nothing>(new("commander/deleteitems", input)))
                         .SelectError(e => new RequestError(e.Status, e.StatusText))

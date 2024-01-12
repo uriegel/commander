@@ -11,7 +11,7 @@ import { DirectoryChangedType, exifTimeEvents, extendedDataEvents, folderViewIte
 import { Subscription } from 'rxjs'
 import { ServiceStartMode, ServiceStatus } from '../enums'
 import { DialogContext, DialogHandle } from 'web-dialog-react'
-import { AsyncResult, ErrorType, Nothing, nothing } from 'functional-extensions'
+import { nothing } from 'functional-extensions'
 
 declare const webViewDropFiles: (id: string, move: boolean, paths: FileList)=>void
 declare const webViewDragStart: (path: string, fileList: string[]) => void
@@ -59,7 +59,7 @@ export type FolderViewHandle = {
     deleteItems: () => void
     getController: () => Controller
     getItems: () => FolderViewItem[]
-    processEnter: (item: FolderViewItem, keys: SpecialKeys, otherPath?: string)=>AsyncResult<Nothing, ErrorType>
+    processEnter: (item: FolderViewItem, keys: SpecialKeys, otherPath?: string)=>Promise<void>
     getSelectedItems: ()=> FolderViewItem[]
 }
 
@@ -325,6 +325,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 changePath(id, res.pathToSet, showHidden, res.latestPath, res.mount)
             return nothing;
         })
+        .match(() => {},
+            e => showError(e, setError))
 
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setPath(e.target.value)
 
