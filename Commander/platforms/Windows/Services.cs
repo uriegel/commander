@@ -68,33 +68,18 @@ static class Services
                         .SelectError(e => new RequestError(e.Status, e.StatusText))
                     : Error<Nothing, RequestError>(e).ToAsyncResult());
 
-    static Result<Nothing, RequestError> StartServices(StartServicesParam param)
-    {
-        try
-        {
-            foreach (var service in param.Items)
-                new ServiceController(service).Start();
-            return Ok<Nothing, RequestError>(nothing);
-        }
-        catch 
-        {
-            return Error<Nothing, RequestError>(IOErrorType.AccessDenied.ToError());
-        }
-    }
-
-    public static Task<IOResult> Stop(StartServicesParam param)
-    {
-        try
-        {
-            foreach (var service in param.Items)
-                new ServiceController(service).Stop();
-            return Task.FromResult(new IOResult(IOErrorType.NoError));
-        }
-        catch 
-        {
-            return Task.FromResult(new IOResult(IOErrorType.AccessDenied));
-        }
-    }
+    public static AsyncResult<Nothing, RequestError> Stop(StartServicesParam param)
+        => StopServices(param)
+            .ToAsyncResult()
+            .BindErrorAwait(e =>
+                (IOErrorType)e.Status == IOErrorType.AccessDenied
+                    ? UacServer
+                        .StartElevated()
+                        .SelectError(_ => new RequestError(1099, "UAC not started"))
+                        .ToAsyncResult()
+                        .BindAwait(_ => Requests.JsonRequest.Post<StartServicesParam, Nothing>(new("commander/stopservices", param)))
+                        .SelectError(e => new RequestError(e.Status, e.StatusText))
+                    : Error<Nothing, RequestError>(e).ToAsyncResult());
 
     static ServiceController[] Init()
     {
@@ -118,6 +103,33 @@ static class Services
         return services;
     }
 
+    static Result<Nothing, RequestError> StartServices(StartServicesParam param)
+    {
+        try
+        {
+            foreach (var service in param.Items)
+                new ServiceController(service).Start();
+            return Ok<Nothing, RequestError>(nothing);
+        }
+        catch 
+        {
+            return Error<Nothing, RequestError>(IOErrorType.AccessDenied.ToError());
+        }
+    }
+
+    static Result<Nothing, RequestError> StopServices(StartServicesParam param)
+    {
+        try
+        {
+            foreach (var service in param.Items)
+                new ServiceController(service).Stop();
+            return Ok<Nothing, RequestError>(nothing);
+        }
+        catch 
+        {
+            return Error<Nothing, RequestError>(IOErrorType.AccessDenied.ToError());
+        }
+    }
 
     static int refCount;
     static Timer? timer;

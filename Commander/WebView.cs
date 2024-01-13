@@ -66,8 +66,7 @@ static class Window
                 .JsonPost("commander/cleanupservices", Services.CleanUp)            
                 .JsonPost("commander/getservices", Services.Get)            
                 .JsonPost<StartServicesParam, Nothing, RequestError>("commander/startservices", Services.Start)            
-                // TODO
-                // .JsonPost<StartServicesParam, IOResult>("commander/stopservices", Services.Stop)            
+                .JsonPost<StartServicesParam, Nothing, RequestError>("commander/stopservices", Services.Stop)  
 #endif            
                 .Build())
 #if DEBUG

@@ -1,21 +1,10 @@
 import { SpecialKeys } from "virtual-table-react"
 import { FolderViewItem } from "../components/FolderView"
-import { Platform, getPlatform } from "../globals"
-import { DialogHandle, ResultType } from 'web-dialog-react'
-import { startUacEvents } from "./events"
 import { ErrorType, jsonPost, setBaseUrl } from "functional-extensions"
 
 export type Nothing = NonNullable<unknown>
 
 setBaseUrl("http://localhost:20000/commander")
-
-type Result = 
-	| Nothing 
-    | Exception
-    | GetRootResult 
-    | GetItemsResult 
-    | GetExtendedItemsResult
-    | IOErrorResult
 
 export interface RootItem {
     name:        string
@@ -88,23 +77,6 @@ export interface IOErrorResult {
 }
 
 export type GetRootResult = RootItem[]
-
-type CopyItemsFromRemote = "copyitemsfromremote"
-type CopyItemsToRemote = "copyitemstoremote"
-type GetRemoteFiles = "getremotefiles"
-type StartServices = "startservices"
-type StopServices = "stopservices"
-
-type RequestType = 
-    | CopyItemsFromRemote
-    | CopyItemsToRemote
-    | GetRemoteFiles
-    | StartServices
-    | StopServices
-    
-type Exception = {
-	exception: string
-}	
 
 type GetFilesType = {
     path:            string,
@@ -199,83 +171,3 @@ export type RequestInput =
     | StartServiceType
     | CredentialsType
 	
-export async function request<T extends Result>(method: RequestType, input?: RequestInput, dialog?: DialogHandle|null, uacShown?: (uac: boolean)=>void) {
- 
-    const msg = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(input || {})
-    }
-
-    const response = await fetch(`http://localhost:20000/commander/${method}`, msg) 
-
-    const res = await response.json() as T
-    if ((res as Exception).exception)
-        throw ((res as Exception).exception)
-    else if (dialog && input && (res as IOErrorResult).error == IOError.AccessDenied && getPlatform() == Platform.Windows) 
-        return await requestElevated<T>(method, input, dialog, uacShown)
-    else 
-        return res
-}
-
-type StartElevated = {
-    ok: boolean
-}
-
-
-async function requestElevated<T extends Result>(method: RequestType, input: RequestInput, dialog: DialogHandle, uacShown?: (uac: boolean)=>void) {
-
-    const startElevated = async () => {
-        const res = await fetch(`http://localhost:20000/commander/startelevated`) 
-        const ok = await res.json() as StartElevated
-        elevatedStarted = ok.ok
-        if (elevatedStarted)
-            startUacEvents()
-        return ok.ok
-    }
-
-    if (uacShown)
-        uacShown(true)
-
-    const withElevation = elevatedStarted
-        ? (await dialog.show({
-                text: "Diese Aktion als Administrator ausführen?",
-                btnOk: true,
-                btnCancel: true,
-                defBtnCancel: true
-            })).result == ResultType.Ok
-        : await startElevated()
-    
-    if (uacShown)
-        uacShown(false)
-
-    const msg = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(input || {})
-    }
-
-    if (!withElevation)
-        return {
-            error: IOError.AccessDenied
-        } as T
-
-    let response
-    try {
-        response = await fetch(`http://localhost:21000/commander/${method}`, msg) 
-    } catch (e) {
-        if (uacShown)
-            uacShown(true)
-        await startElevated()
-        if (uacShown)
-            uacShown(false)
-        response = await fetch(`http://localhost:21000/commander/${method}`, msg) 
-    }
-    const res = await response?.json() as T
-    if ((res as Exception).exception)
-        throw ((res as Exception).exception)
-    else 
-        return res
-}
-
-let elevatedStarted = false

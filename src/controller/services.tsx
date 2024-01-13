@@ -94,8 +94,10 @@ const createController = (): ControllerResult => ({
         extendedRename: () => AsyncResult.from(new Err<Controller, Nothing>(nothing)),
         renameAsCopy: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
         createFolder: () => AsyncResult.from(new Ok<string, ErrorType>("")),
-        // TODOdeleteItems: async (_, items, dialog) => await stop(items, dialog),
-        deleteItems: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
+        deleteItems: (_: string, selectedItems: FolderViewItem[]) => 
+            selectedItems[0].isParent
+                ? AsyncResult.from(new Ok<Nothing, ErrorType>(nothing))
+                : stop(selectedItems),
         onSelectionChanged: () => { },
         cleanUp: () => jsonPost<Nothing, ErrorType>({ method: "cleanupservices"})
     }
@@ -135,12 +137,11 @@ const start = (selectedItems: FolderViewItem[]) =>
                 .map(n => n.name)
         }})
       
-// TODO
-// const stop = async (selectedItems: FolderViewItem[], dialog?: DialogHandle|null) => {
-//     request<IOErrorResult>("stopservices", {
-//         items: selectedItems
-//                     .filter(n => n.status == ServiceStatus.Running)
-//                     .map(n => n.name)
-//     }, dialog)
-//     return IOError.NoError
-// }
+const stop = (selectedItems: FolderViewItem[]) => 
+    jsonPost<Nothing, ErrorType>({
+        method: "stopservices",
+        payload: {
+            items: selectedItems
+                .filter(n => n.status == ServiceStatus.Running)
+                .map(n => n.name)
+        }})

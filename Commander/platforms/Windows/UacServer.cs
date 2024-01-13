@@ -85,7 +85,7 @@ static class UacServer
             .WithJsonPost<UacCopyItemsParam, Nothing, RequestError>("commander/copyitems", CopyProcessor.CopyUac, _ => Exit())
             .WithJsonPost<Nothing, Nothing, RequestError>("commander/cancelcopy", CopyProcessor.Cancel)
             .WithJsonPost<StartServicesParam, Nothing, RequestError>("commander/startservices", Services.Start, _ => Exit())            
-            // .JsonPost<StartServicesParam, IOResult>("commander/stopservices", Services.Stop)            
+            .WithJsonPost<StartServicesParam, Nothing, RequestError>("commander/stopservices", Services.Stop, _ => Exit())            
             .StartAsync();
 
     static TaskCompletionSource? processRunning; 
