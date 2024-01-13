@@ -4,7 +4,7 @@ import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, OnEnterResult, addParent, formatDateTime, formatSize, formatVersion, sortItems } from "./controller"
-import { GetExtendedItemsResult, GetItemsError, GetItemsResult, IOError, Version } from "../requests/requests"
+import { GetExtendedItemsResult, GetItemsResult, IOError, Version } from "../requests/requests"
 import { ROOT } from "./root"
 import { extendedRename } from "./filesystemExtendedRename"
 import { IconNameType } from "../enums"
@@ -17,6 +17,12 @@ export enum ItemsType {
 	Files,
 	File,
 	All
+}
+
+type GetItemsError = {
+    status: number 
+    statusText: string
+    path:  string
 }
 
 const platform = getPlatform()

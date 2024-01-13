@@ -3,7 +3,7 @@ import IconName from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, EnterData, formatSize, OnEnterResult} from "./controller"
 import { REMOTES } from "./remotes"
-import { GetExtendedItemsResult, GetRootResult, IOError } from "../requests/requests"
+import { GetExtendedItemsResult, IOError } from "../requests/requests"
 import "functional-extensions"
 import { SERVICES } from "./services"
 import { FAVORITES } from "./favorites"
@@ -12,6 +12,17 @@ import { AsyncResult, Err, ErrorType, jsonPost, nothing, Nothing, Ok } from "fun
 
 export const ROOT = "root"
 const platform = getPlatform()
+
+interface RootItem {
+    name:        string
+    description: string
+    size:        number
+    isMounted?:  boolean
+    mountPoint?: string
+}
+
+type GetRootResult = RootItem[]
+
 
 const renderWindowsRow = (item: FolderViewItem) => [
     (<IconName namePart={item.name} type={

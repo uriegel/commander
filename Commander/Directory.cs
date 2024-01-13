@@ -271,17 +271,6 @@ record GetFilesRequestResult(
     IOErrorType Error
 );
 
-static class GetFilesResultExt
-{
-    public static GetFilesRequestResult FromResult(this GetFilesResult res)
-        => new(res.Items, res.Path, res.DirCount, res.FileCount, IOErrorType.NoError);
-
-    public static GetFilesRequestResult ToRequestResult(this Result<GetFilesResult, IOResult> res)
-        => res.Match(
-            FromResult,
-            e => new([], e.Path ?? "", 0, 0, e.Type));
-}
-
 record GetExtendedItems(
     string Id,
     string[] Items,
@@ -366,9 +355,7 @@ enum IOErrorType {
     PathTooLong,
     Canceled,
     WrongCredentials,
-    NoDiskSpace,
-    // TODO eliminate
-    NoError,
+    NoDiskSpace
 }
 
 record IOResult(IOErrorType Type, string? Path = null);
@@ -376,11 +363,6 @@ static class IOResultExt
 {
     public static IOResult AppendPath(this IOResult res, string path)
         => res with { Path = path };
-    public static IOResult ToIOResult<T>(this Result<T, IOResult> res)
-        where T : notnull
-        => res.Match(
-            _ => new IOResult(IOErrorType.NoError),
-            e => e);
 }
 
 static class IOErrorTypeExtensions

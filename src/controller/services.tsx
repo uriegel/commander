@@ -3,11 +3,16 @@ import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
 import { Controller, ControllerResult, ControllerType, OnEnterResult, addParent, sortItems } from "./controller"
 import { ROOT } from "./root"
-import { GetExtendedItemsResult, GetItemsResult, IOError, ServiceItem } from "../requests/requests"
+import { GetExtendedItemsResult, GetItemsResult, IOError } from "../requests/requests"
 import { IconNameType, ServiceStartMode, ServiceStatus } from "../enums"
 import { AsyncResult, Err, ErrorType, Nothing, Ok, jsonPost, nothing } from "functional-extensions"
 
 export const SERVICES = "services"
+
+interface ServiceItem {
+    name:        string
+    description: string
+} 
 
 const renderRow = (item: FolderViewItem) => [
 	(<IconName namePart={item.name} type={

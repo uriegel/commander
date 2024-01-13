@@ -7,7 +7,7 @@ import Statusbar from './components/Statusbar'
 import { Controller, showError } from './controller/controller'
 import PictureViewer from './components/PictureViewer'
 import MediaPlayer from './components/MediaPlayer'
-import { CredentialsResult, IOError, closeWindow } from './requests/requests'
+import { IOError, closeWindow } from './requests/requests'
 import './App.css'
 import './themes/adwaita.css'
 import './themes/adwaitaDark.css'
@@ -34,6 +34,11 @@ const ID_RIGHT = "right"
 interface PathProp {
 	path: string
 	isDirectory: boolean
+}
+
+type CredentialsResult = {
+    name: string
+    password: string
 }
 
 export type CommanderHandle = {
