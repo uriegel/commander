@@ -52,13 +52,13 @@ const getItems = () => {
         ))
 }
 
-const showRemote = async (dialog?: DialogHandle|null, item?: FolderViewItem) => {
+const showRemote = (dialog: DialogHandle, item?: FolderViewItem) => {
 
     let name = item?.name
     let ipAddress = item?.ipAddress
     let isAndroid = item?.isAndroid ?? true
     let items = getRemoteItems().filter(n => n.name != item?.name)
-    const result = await dialog?.show({
+    return dialog.showDialog({
         text: "Entferntes Gerät hinzufügen",   
         extension: RemoteDialog,
         extensionProps: { name, ipAddress, isAndroid },
@@ -70,24 +70,22 @@ const showRemote = async (dialog?: DialogHandle|null, item?: FolderViewItem) => 
         btnOk: true,
         btnCancel: true,
         defBtnOk: true
+    }, res => {
+        if (name && res.result == ResultType.Ok) {
+            items = items.concat([{ name, ipAddress, isAndroid }])
+            localStorage.setItem("remotes", JSON.stringify(items))
+            return new Ok<string, ErrorType>(name)
+        } else
+            return new Err<string, ErrorType>({ status: IOError.Exn, statusText: "" })
     })
-    if (name && result?.result == ResultType.Ok) {
-        items = items.concat([{ name, ipAddress, isAndroid }])
-        localStorage.setItem("remotes", JSON.stringify(items))
-        return true
-    }
-    else
-        return false
 }
 
-const startShowRemote = (dialog?: DialogHandle|null, refresh?: ()=>void) => {
+const startShowRemote = (dialog: DialogHandle, refresh?: ()=>void) => {
 
-    const show = async () => {
-        if (refresh && await showRemote(dialog))
-            refresh()
-    }
-    show()
-
+    showRemote(dialog)
+        .match(
+            () => refresh && refresh(),
+            () => {})
     return {
         processed: true, 
         pathToSet: ROOT
@@ -117,10 +115,8 @@ const deleteItems = (_: string, items: FolderViewItem[], dialog: DialogHandle) =
         return new Ok<Nothing, ErrorType>(nothing)
     })
 
-// const rename = async (_: string, item: FolderViewItem, dialog: DialogHandle | null) => {
-//     await showRemote(dialog, item)
-//     return null
-// }
+const rename = (_: string, item: FolderViewItem, dialog: DialogHandle) => 
+    showRemote(dialog, item)
 
 export const getRemotesController = (controller: Controller | null): ControllerResult => 
     controller?.type == ControllerType.Remotes
@@ -139,8 +135,7 @@ export const getRemotesController = (controller: Controller | null): ControllerR
         sort: (items: FolderViewItem[]) => items,
         itemsSelectable: true,
         appendPath: (_: string, subPath: string) => subPath,
-        // TODO:
-        rename: () => AsyncResult.from(new Ok<string, ErrorType>("")),
+        rename,
         extendedRename: () => AsyncResult.from(new Err<Controller, Nothing>(nothing)),
         renameAsCopy: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
         createFolder: () => AsyncResult.from(new Ok<string, ErrorType>("")),
