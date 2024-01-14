@@ -117,7 +117,7 @@ const getItems = () => {
 }
 
 const deleteItems = (_: string, items: FolderViewItem[], dialog: DialogHandle) => 
-    dialog?.showDialog<Nothing, ErrorType>({
+    dialog.showDialog<Nothing, ErrorType>({
 		text: `Möchtest Du ${items.length > 1 ? "die Favoriten" : "den Favoriten"} löschen?`,
 		btnOk: true,
 		btnCancel: true,

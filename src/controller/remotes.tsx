@@ -2,7 +2,7 @@ import { DialogHandle, ResultType } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
 import RemoteDialog from "../components/dialogparts/RemoteDialog"
-import { Controller, ControllerResult, ControllerType, EnterData, OnEnterResult } from "./controller"
+import { Controller, ControllerResult, ControllerType, EnterData, OnEnterResult, addParent } from "./controller"
 import { ROOT } from "./root"
 import { IconNameType } from "../enums"
 import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
@@ -36,23 +36,21 @@ const getColumns = () => ({
 	renderRow
 })
 
-const getItems = () => AsyncResult.from(new Err<GetItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""}))
-// TODO
-// const getItems = async () => {
-//     const items = getRemoteItems()
-//                     .sort((a, b) => a.name.localeCompare(b.name))
-//     return {
-//         path: REMOTES,
-//         dirCount: items.length,
-//         fileCount: 0,
-//         error: IOError.NoError,
-//         items: addParent(items)
-//                 .concat({
-//                     name: "Entferntes Gerät hinzufügen...",
-//                     isNew: true
-//                 })
-//     }
-// }
+const getItems = () => {
+    const items = getRemoteItems()
+    return AsyncResult
+        .from(new Ok<GetItemsResult, ErrorType>({
+            path: REMOTES,
+            dirCount: items.length,
+            fileCount: 0,
+            items: addParent(items)
+                .concat({
+                    name: "Entferntes Gerät hinzufügen...",
+                    isNew: true
+                })
+        }
+        ))
+}
 
 const showRemote = async (dialog?: DialogHandle|null, item?: FolderViewItem) => {
 
@@ -105,20 +103,19 @@ const onEnter = (enterData: EnterData) =>
                 pathToSet: enterData.item.isParent ? ROOT : `remote/${enterData.item.ipAddress}/`
             } ))
 
-// const deleteItems = async (_: string, items: FolderViewItem[], dialog: DialogHandle | null) => {
-// 	const result = await dialog?.show({
-// 		text: `Möchtest Du ${items.length > 1 ? "die Einträge" : "den Eintrag"} löschen?`,
-// 		btnOk: true,
-// 		btnCancel: true,
-// 		defBtnOk: true
-// 	})
-//     if (result?.result == ResultType.Ok) {
-//         const remotes = getRemoteItems().filter(x => !items.find(n => n.name == x.name))
-//         localStorage.setItem("remotes", JSON.stringify(remotes))
-//     }
-//     return null
-// }
-
+const deleteItems = (_: string, items: FolderViewItem[], dialog: DialogHandle) => 
+    dialog.showDialog<Nothing, ErrorType>({
+        text: `Möchtest Du ${items.length > 1 ? "die Einträge" : "den Eintrag"} löschen?`,
+        btnOk: true,
+        btnCancel: true,
+        defBtnOk: true
+    }, res => {
+        if (res.result == ResultType.Ok) {
+            const remotes = getRemoteItems().filter(x => !items.find(n => n.name == x.name))
+            localStorage.setItem("remotes", JSON.stringify(remotes))
+        }
+        return new Ok<Nothing, ErrorType>(nothing)
+    })
 
 // const rename = async (_: string, item: FolderViewItem, dialog: DialogHandle | null) => {
 //     await showRemote(dialog, item)
@@ -147,8 +144,7 @@ export const getRemotesController = (controller: Controller | null): ControllerR
         extendedRename: () => AsyncResult.from(new Err<Controller, Nothing>(nothing)),
         renameAsCopy: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
         createFolder: () => AsyncResult.from(new Ok<string, ErrorType>("")),
-        // TODO deleteItems,
-        deleteItems: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
+        deleteItems,
         onSelectionChanged: () => { },
         cleanUp: () => { }
     }})
