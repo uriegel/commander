@@ -267,8 +267,7 @@ record GetFilesRequestResult(
     DirectoryItem[] Items,
     string Path,
     int DirCount,
-    int FileCount,
-    IOErrorType Error
+    int FileCount
 );
 
 record GetExtendedItems(

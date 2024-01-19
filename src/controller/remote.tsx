@@ -1,11 +1,11 @@
 import { TableColumns } from "virtual-table-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
-import { Controller, ControllerResult, ControllerType, OnEnterResult, formatDateTime, formatSize, sortItems } from "./controller"
+import { Controller, ControllerResult, ControllerType, OnEnterResult, addParent, formatDateTime, formatSize, sortItems } from "./controller"
 import { getSortFunction } from "./filesystem"
 import { REMOTES } from "./remotes"
 import { IconNameType } from "../enums"
-import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
+import { AsyncResult, Err, ErrorType, Nothing, Ok, jsonPost, nothing } from "functional-extensions"
 import { GetExtendedItemsResult, GetItemsResult, IOError } from "../requests/requests"
 
 export const REMOTE = "remote"
@@ -37,16 +37,6 @@ const getColumns = () => ({
 	renderRow
 } as TableColumns<FolderViewItem>)
 
-const getItems = () => AsyncResult.from(new Err<GetItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""}))
-// TODO
-// const getItems = async (path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean) => {
-// 	const res = await request<GetItemResult>("getremotefiles", {
-// 		path,
-// 		showHiddenItems: showHidden
-// 	})
-// 	return { ...res, items: addParent(sort(res.items, sortIndex, sortDescending)) }
-// }
-
 const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
 	sortItems(items, getSortFunction(sortIndex, sortDescending), true) 
 
@@ -57,7 +47,10 @@ export const getRemoteController = (controller: Controller | null): ControllerRe
         type: ControllerType.Remote, 
         id: REMOTE,
         getColumns,
-		getItems,
+		getItems: (id, path, showHiddenItems, sortIndex, sortDescending) => 
+			// TODO not ErrorType but GetItemsError
+			jsonPost<GetItemsResult, ErrorType>({ method: "getremotefiles", payload: { id, path, showHiddenItems } })
+				.map(ok => ({ ...ok, items: addParent(sortItems(ok.items, getSortFunction(sortIndex, sortDescending)))})),
 		updateItems: ()=>null,
 		getPath: () => REMOTE,
 		getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),

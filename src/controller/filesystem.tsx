@@ -90,14 +90,12 @@ export const createFileSystemController = (): Controller => {
 		getExtendedItems,
 		setExtendedItems,
 		cancelExtendedItems,
-		getItems: (id, path, showHidden, sortIndex, sortDescending, mount) => {
-			const res = getItems(id, path, showHidden, sortIndex, sortDescending, mount)
-			res.map(res => {
-				currentPath = res.path
-				return res
-			})
-			return res
-		},
+		getItems: (id, path, showHiddenItems, sortIndex, sortDescending, mount) => 
+			jsonPost<GetItemsResult, GetItemsError>({ method: "getfiles", payload: { id, path, showHiddenItems, mount } })
+				.map(ok => {
+					currentPath = ok.path
+					return { ...ok, items: addParent(sortItems(ok.items, getSortFunction(sortIndex, sortDescending))) }
+				}),
 		updateItems,
 		getPath: () => currentPath,
 		onEnter: ({ path, item, keys }) =>
@@ -136,10 +134,6 @@ const getRowClasses = (item: FolderViewItem) =>
 	item.isHidden
 		? ["hidden"]
 		: []
-
-const getItems = (id: string, path: string, showHiddenItems: boolean, sortIndex: number, sortDescending: boolean, mount: boolean) => 
-	jsonPost<GetItemsResult, GetItemsError>({ method: "getfiles", payload: { id, path, showHiddenItems, mount } })
-		.map(ok => ({ ...ok, items: addParent(sortItems(ok.items, getSortFunction(sortIndex, sortDescending))) }))
 
 const updateItems = (items: FolderViewItem[], showHidden: boolean, sortIndex: number, sortDescending: boolean, evt: DirectoryChangedEvent) => 
 	evt.type == DirectoryChangedType.Created && (!evt.item.isHidden || showHidden)

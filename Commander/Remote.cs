@@ -4,23 +4,26 @@ using CsTools.Extensions;
 using CsTools.HttpRequest;
 
 using static CsTools.HttpRequest.Core;
-using static AspNetExtensions.Core;
-using System.Text.Json;
 using CsTools.Async;
+using CsTools.Functional;
 
 static class Remote
 {
-    // public static Task<GetFilesRequestResult> GetFiles(GetFiles getFiles)
-    //     => (from n in Request.GetStringAsync(
-    //             getFiles
-    //                 .Path
-    //                 .GetIpAndPath()
-    //                 .GetFiles())
-    //         select (JsonSerializer
-    //                 .Deserialize<RemoteItem[]>(n, JsonWebDefaults) ?? [])
-    //                 .Select(ToDirectoryItem))
-    //                     .Select(n => n.Where(n => getFiles.ShowHiddenItems ? true : !n.IsHidden).ToArray()
-    //                     .ToFilesResult(getFiles.Path));
+    public static AsyncResult<GetFilesRequestResult, RequestError> GetFiles(GetFiles getFiles)
+        => getFiles
+            .Path
+            .GetIpAndPath()
+            .Adapt(ipPath =>
+                ipPath.GetRequest()
+                    .Post<GetRemoteFiles, RemoteItem[]>(new(
+                        "getfiles",
+                        new(ipPath.Path)))
+                    .Select(n => n
+                                    .Select(ToDirectoryItem)
+                                    .Where(n => getFiles.ShowHiddenItems || !n.IsHidden)
+                                    .ToArray()
+                                    .ToFilesResult(getFiles.Path)));
+                    
 
     // public static Task<IOResult> CopyItemsFromRemote(CopyItemsParam input)
     //     => CopyItemsFromRemote(input.Path.GetIpAndPath(), input.TargetPath, input.Items, input.Move)
@@ -30,14 +33,6 @@ static class Remote
     //     => CopyItemsToRemote(input.Path,  input.TargetPath.GetIpAndPath(), input.Items, input.Move)
     //             .Catch(MapExceptionToIOResult);
 
-    static Settings GetFiles(this IpAndPath ipAndPath)
-    => DefaultSettings with
-        {
-            Method = HttpMethod.Post,
-            BaseUrl = $"http://{ipAndPath.Ip}:8080",
-            Url = "/remote/getfiles",
-            AddContent = () => JsonContent.Create(new { Path = ipAndPath.Path })
-        };
 
     static Settings GetFile(this IpAndPath ipAndPath, string name) 
         => DefaultSettings with
@@ -72,8 +67,12 @@ static class Remote
                 item.IsHidden, 
                 item.Time.FromUnixTime()
             );
-    // static GetFilesRequestResult ToFilesResult(this DirectoryItem[] items, string path)
-    //     => new GetFilesRequestResult(items, path, items.Where(n => n.IsDirectory).Count(), items.Where(n => !n.IsDirectory).Count(), IOErrorType.NoError);
+
+    static JsonRequest GetRequest(this IpAndPath ipAndPath)
+        => new($"http://{ipAndPath.Ip}:8080/remote");
+
+    static GetFilesRequestResult ToFilesResult(this DirectoryItem[] items, string path)
+        => new GetFilesRequestResult(items, path, items.Where(n => n.IsDirectory).Count(), items.Where(n => !n.IsDirectory).Count());
 
     static IpAndPath GetIpAndPath(this string url)
         => new(url.StringBetween('/', '/'), "/" + url.SubstringAfter('/').SubstringAfter('/'));
@@ -197,3 +196,12 @@ record IpAndPath(
     string Ip,
     string Path
 );
+
+record GetRemoteFiles(string Path);
+
+// TODO CsTools.Core
+static class Mist
+{
+    public static TR Adapt<T, TR>(this T t, Func<T, TR> adapter)
+        => adapter(t);
+}
