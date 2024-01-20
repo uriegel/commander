@@ -14,8 +14,8 @@ static partial class CopyProcessor
         totalBytes += input.Items.Select(n => n.Size).Aggregate(0L, (a, b) => a + b);
         if (!startTime.HasValue)
             startTime = DateTime.Now;
-        Events.CopyStarted(input.Move);
-        input.Items.ForEach(n => InsertCopyItem(input.Path, input.TargetPath, input.Move, n));
+        Events.CopyStarted(input.JobType == JobType.Move || input.JobType == JobType.MoveFromRemote|| input.JobType == JobType.MoveToRemote);
+        input.Items.ForEach(n => InsertCopyItem(input.Path, input.TargetPath, input.JobType, n));
         return Ok<Nothing, RequestError>(nothing)
             .ToAsyncResult();
     }
@@ -109,8 +109,8 @@ static partial class CopyProcessor
                 currentBytes += job.Size;
             });
 
-    static void InsertCopyItem(string path, string targetPath, bool move, CopyItem item)
-        => jobs.Writer.TryWrite(new(move ? JobType.Move : JobType.Copy, path, targetPath, item.Size, item.Name, item.SubPath, false));
+    static void InsertCopyItem(string path, string targetPath, JobType jobType, CopyItem item)
+        => jobs.Writer.TryWrite(new(jobType, path, targetPath, item.Size, item.Name, item.SubPath, false));
 
     static void Clear()
     {

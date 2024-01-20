@@ -333,7 +333,7 @@ record CopyItemsParam(
     string Path,
     string TargetPath,
     CopyItem[] Items,
-    bool Move
+    JobType JobType
 );
 
 record OnEnterParam(

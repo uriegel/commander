@@ -10,18 +10,26 @@ import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-ex
 import { copyInfoFromRemote } from "./fromRemoteCopy"
 import { copyInfoToRemote } from "./toRemoteCopy"
 
+export enum JobType
+{
+    Copy,
+    Move,
+    CopyToRemote,
+    MoveToRemote, //?
+    CopyFromRemote,
+    MoveFromRemote //?
+}
+
 export interface CopyController {
     copy: () => AsyncResult<Nothing, ErrorType>
 }
 
-const getCopyFunction = (from: ControllerType, to: ControllerType) =>
+const getJobType = (from: ControllerType, to: ControllerType, move: boolean) =>
     from == ControllerType.Remote && to == ControllerType.FileSystem
-    // TODO copyFromRemote
-    ? copy
+    ? JobType.CopyFromRemote
     : from == ControllerType.FileSystem && to == ControllerType.Remote
-    // TODO copyToRemote
-    ? copy
-    : copy    
+    ? JobType.CopyToRemote
+    : move ? JobType.Move : JobType.Copy
 
 const getPreCopyFunction = (from: ControllerType, to: ControllerType) =>
     from == ControllerType.Remote && to == ControllerType.FileSystem
@@ -38,14 +46,14 @@ export const getCopyController = (move: boolean, dialog: DialogHandle, fromLeft:
     ? getFileSystemCopyController(move, dialog, fromLeft, fromController, toController, sourcePath, targetPath,
         items, targetItems?.filter(n => !n.isDirectory),
         getPreCopyFunction(fromController.type, toController.type),
-        getCopyFunction(fromController.type, toController.type))
+        (sourcePath: string, targetPath: string, items: CopyItem[]) => copy(sourcePath, targetPath, items, getJobType(fromController.type, toController.type, move)))
     : null
 }
 
 const getFileSystemCopyController = (move: boolean, dialog: DialogHandle, fromLeft: boolean, _: Controller, __: Controller,
             sourcePath: string, targetPath: string, items: FolderViewItem[], targetItems: FolderViewItem[],
-            copyInfo: (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean)=>AsyncResult<CopyItem[], ErrorType>,
-            copy: (sourcePath: string, targetPath: string, items: CopyItem[], move: boolean)=>AsyncResult<Nothing, ErrorType>): CopyController | null => ({
+            copyInfo: (sourcePath: string, targetPath: string, items: CopyItem[])=>AsyncResult<CopyItem[], ErrorType>,
+            copy: (sourcePath: string, targetPath: string, items: CopyItem[])=>AsyncResult<Nothing, ErrorType>): CopyController | null => ({
         copy: () => {
             const copyItems = items
                 .filter(n => n.isDirectory)
@@ -56,7 +64,7 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle, fromLe
                     time: n.time
                 }))
             
-            return copyInfo(sourcePath, targetPath, copyItems, move)
+            return copyInfo(sourcePath, targetPath, copyItems)
                 .bindAsync(infos => {
                     const fileItems = items
                         .filter(n => !n.isDirectory)
@@ -149,7 +157,7 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle, fromLe
                     }) 
                     .bindAsync(copyItems =>
                         copyItems.length > 0
-                        ? copy(sourcePath, targetPath, copyItems, move)
+                        ? copy(sourcePath, targetPath, copyItems)
                         : AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)))
         }
     })
