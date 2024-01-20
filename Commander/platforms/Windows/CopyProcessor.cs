@@ -48,13 +48,13 @@ static partial class CopyProcessor
                                         .ToArray();
             (await UacServer
                 .StartElevated()
-                .SideEffect(_ => sseClient = new CsTools.HttpRequest.SseClient<Events>("http://localhost:21000/commander/sse", 
+                .SideEffect(_ => sseClient = new SseClient<Events>("http://localhost:21000/commander/sse", 
                                                 e => Events.CopyProgressChanged(
                                                             new CopyProgress(e.CopyProgress!.FileName, e.CopyProgress.IsMove, totalCount, e.CopyProgress!.CurrentCount, 
                                                                 startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0,
                                                                 e.CopyProgress!.TotalFileBytes, e.CopyProgress!.CurrentFileBytes, totalBytes, e.CopyProgress!.CurrentBytes,
                                                                 false, false))))
-                .SelectError(_ => new CsTools.HttpRequest.RequestError(1099, "UAC not started"))
+                .SelectError(_ => new RequestError(1099, "UAC not started"))
                 .ToAsyncResult()
                 .BindAwait(_ => Requests.JsonRequest.Post<UacCopyItemsParam, Nothing>(new(
                     "commander/copyitems",
@@ -79,7 +79,7 @@ static partial class CopyProcessor
             await ProcessError(err);
     }
 
-    static CsTools.HttpRequest.SseClient<Events>? sseClient;
+    static SseClient<Events>? sseClient;
 }
 
 record UacCopyItemsParam(

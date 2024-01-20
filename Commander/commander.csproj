@@ -39,8 +39,8 @@
   </ItemGroup> 
 
   <ItemGroup Condition="'$(IsWindows)'=='true'">
-    <PackageReference Include="WebWindowNetCore.Windows" Version="5.6.0" />
-    <PackageReference Include="System.ServiceProcess.ServiceController" Version="7.0.1" />
+    <PackageReference Include="WebWindowNetCore.Windows" Version="5.6.2" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="8.0.0" />
     <Content Include="./kirk.ico" />
     <EmbeddedResource Include="./kirk.ico">
       <LogicalName>icon</LogicalName>
