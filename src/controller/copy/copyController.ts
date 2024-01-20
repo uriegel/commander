@@ -7,6 +7,8 @@ import { compareVersion, getItemsType, ItemsType } from "../filesystem"
 import { CopyItem, IOError } from "../../requests/requests"
 import { copy, copyInfo } from "./fileSystem"
 import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
+import { copyInfoFromRemote } from "./fromRemoteCopy"
+import { copyInfoToRemote } from "./toRemoteCopy"
 
 export interface CopyController {
     copy: () => AsyncResult<Nothing, ErrorType>
@@ -23,11 +25,9 @@ const getCopyFunction = (from: ControllerType, to: ControllerType) =>
 
 const getPreCopyFunction = (from: ControllerType, to: ControllerType) =>
     from == ControllerType.Remote && to == ControllerType.FileSystem
-    // TODO ? copyInfoFromRemote
-    ? copyInfo
+    ? copyInfoFromRemote
     : from == ControllerType.FileSystem && to == ControllerType.Remote
-    // TODO? copyInfoToRemote
-    ? copyInfo
+    ? copyInfoToRemote
     : copyInfo
 
 export const getCopyController = (move: boolean, dialog: DialogHandle, fromLeft: boolean, fromController: Controller, toController: Controller,
