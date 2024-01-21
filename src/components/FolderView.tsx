@@ -549,6 +549,7 @@ let internalDrag = false
 
 export default FolderView
 
+// TODO Collect all errors in list, show ! in StatusBar, When clicked on, a dialog is shown => delete all button
 // TODO CheckIsModified Windows not working (when cache is disabled)
 // TODO Ctrl+H as ToggleButton
 // TODO F3 as ToggleButton

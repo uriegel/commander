@@ -67,6 +67,9 @@ static partial class CopyProcessor
                     case JobType.Move:
                         result = Copy(job);
                         break;
+                    case JobType.CopyFromRemote:
+                        result = CopyFromRemote(job);
+                        break;
                     default:
                         break;
                 }
@@ -99,6 +102,20 @@ static partial class CopyProcessor
             .TryEnsureDirectoryExists()
             .SelectError(Directory.ErrorToRequestError)
             .SelectMany(target => Directory.Copy(job.Item, job.Path.AppendPath(job.SubPath), job.TargetPath.AppendPath(job.SubPath),
+                (c, t) => Events.CopyProgressChanged(
+                    new(job.Item, job.JobType == JobType.Move, totalCount, currentCount + 1, startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0, 
+                    t, c, totalBytes, currentBytes + c, false, false)),
+                job.JobType == JobType.Move, cancellationTokenSource.Token))
+            .SideEffectWhenOk(_ =>
+            {
+                currentCount++;
+                currentBytes += job.Size;
+            });
+
+    static Result<Nothing, RequestError> CopyFromRemote(Job job) 
+        => job.TargetPath
+            .AppendPath(job.SubPath)
+            .Pipe(target => Remote.CopyFrom(job.Item, job.Path.AppendPath(job.SubPath), job.TargetPath.AppendPath(job.SubPath),
                 (c, t) => Events.CopyProgressChanged(
                     new(job.Item, job.JobType == JobType.Move, totalCount, currentCount + 1, startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0, 
                     t, c, totalBytes, currentBytes + c, false, false)),

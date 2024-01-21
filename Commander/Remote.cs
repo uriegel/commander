@@ -6,6 +6,9 @@ using CsTools.HttpRequest;
 using static CsTools.HttpRequest.Core;
 using CsTools.Async;
 using CsTools.Functional;
+using CsTools;
+
+using static CsTools.Core;
 
 static class Remote
 {
@@ -13,7 +16,7 @@ static class Remote
         => getFiles
             .Path
             .GetIpAndPath()
-            .Adapt(ipPath =>
+            .Pipe(ipPath =>
                 ipPath.GetRequest()
                     .Post<GetRemoteFiles, RemoteItem[]>(new(
                         "getfiles",
@@ -23,16 +26,27 @@ static class Remote
                                     .Where(n => getFiles.ShowHiddenItems || !n.IsHidden)
                                     .ToArray()
                                     .ToFilesResult(getFiles.Path)));
-                    
 
-    // public static Task<IOResult> CopyItemsFromRemote(CopyItemsParam input)
-    //     => CopyItemsFromRemote(input.Path.GetIpAndPath(), input.TargetPath, input.Items, input.Move)
-    //             .Catch(MapExceptionToIOResult);
-
-    // public static Task<IOResult> CopyItemsToRemote(CopyItemsParam input)
-    //     => CopyItemsToRemote(input.Path,  input.TargetPath.GetIpAndPath(), input.Items, input.Move)
-    //             .Catch(MapExceptionToIOResult);
-
+    public static Result<Nothing, RequestError> CopyFrom(string name, string path, string targetPath, ProgressCallback cb, bool move, CancellationToken cancellationToken)
+        => Request
+            .Run(path.GetIpAndPath().GetFile(name), true)
+            .BindAwait(msg => msg.UseAwait(
+                msg => msg
+                    .Pipe(msg => msg.Content.Headers.ContentLength ?? 0)
+                    .Pipe(len =>
+                        File
+                            .Create(targetPath.AppendLinuxPath(name))
+                            .WithProgress((t, c) => cb(c, len))
+                            .UseAwait(target => msg.CopyToStream(target, cancellationToken))
+                    )
+                    .SideEffectWhenOk(msg => msg
+                        .GetHeaderLongValue("x-file-date")
+                        ?.SetLastWriteTime(targetPath.AppendLinuxPath(name)))
+            ))
+            .Select(_ => nothing)
+            .ToResult()
+            .Result;
+            // TODO OnError delete targetFile
 
     static Settings GetFile(this IpAndPath ipAndPath, string name) 
         => DefaultSettings with
@@ -46,7 +60,7 @@ static class Remote
                                 })
         };
 
-    static CsTools.HttpRequest.Settings PostFile(this IpAndPath ipAndPath, string name, Stream streamToPost, DateTime lastWriteTime) 
+    static Settings PostFile(this IpAndPath ipAndPath, string name, Stream streamToPost, DateTime lastWriteTime) 
         => DefaultSettings with
         {
             Method = HttpMethod.Post,
@@ -77,13 +91,6 @@ static class Remote
     static IpAndPath GetIpAndPath(this string url)
         => new(url.StringBetween('/', '/'), "/" + url.SubstringAfter('/').SubstringAfter('/'));
 
-    // static async Task<IOResult> CopyItemsFromRemote(IpAndPath ipAndPath, string targetPath, CopyItem[] items, bool move)
-    //     => await CopyItems(items.Length, 
-    //                     items
-    //                     .Select(n => n.Size)
-    //                     .Aggregate(0L, (a, b) => a + b), 
-    //                 ipAndPath, targetPath, items, move, Cancellation.Create());
-
     // static async Task<IOResult> CopyItemsToRemote(string sourcePath, IpAndPath ipAndPath, CopyItem[] items, bool move)
     //     => await CopyItems(items.Length, 
     //                 items
@@ -91,43 +98,6 @@ static class Remote
     //                     .Aggregate(0L, (a, b) => a + b), 
     //                 sourcePath, ipAndPath, items, move, Cancellation.Create());
 
-    // static async Task<IOResult> CopyItems(int totalCount, long totalSize, IpAndPath ipAndPath, string targetPath, CopyItem[] items, bool move, CancellationToken cancellationToken)
-    //     => (await items.ToAsyncEnumerable()
-    //         .SideEffect(_ => Events.CopyStarted())
-    //         .AggregateAwaitAsync(new FileCopyAggregateItem(0L, 0, DateTime.Now), async (fcai, n) =>
-    //         {
-    //             if (cancellationToken.IsCancellationRequested)
-    //                 return new(0, 0, DateTime.Now);
-    //             var targetFilename = targetPath.AppendLinuxPath(n.Name);
-    //             using var msg = await Request.RunAsync(ipAndPath.GetFile(n.Name), true);
-    //             using var targetFile = 
-    //                 File
-    //                     .Create(targetFilename)
-    //                     .WithProgress((t, c) => Events.CopyProgressChanged(new(
-    //                         n.Name, 
-    //                         totalCount,
-    //                         fcai.Count + 1, 
-    //                         (int)(DateTime.Now - fcai.StartTime).TotalSeconds,
-    //                         n.Size,
-    //                         c, 
-    //                         totalSize, 
-    //                         fcai.Bytes + c,
-    //                         false,
-    //                         false
-    //                     )));
-
-    //             await msg 
-    //                 .Content
-    //                 .ReadAsStream()
-    //                 .CopyToAsync(targetFile, cancellationToken);
-    //         msg
-    //             .GetHeaderLongValue("x-file-date")
-    //             ?.SideEffect(_ => targetFile.Close())
-    //              .SetLastWriteTime(targetFilename);
-    //             return new(fcai.Bytes + n.Size, fcai.Count + 1, fcai.StartTime);
-    //         }))
-    //         .SideEffect(_ => Events.CopyFinished())
-    //         .ToIOResult();
 
     // static async Task<IOResult> CopyItems(int totalCount, long totalSize, string sourcePath, IpAndPath ipAndPath, CopyItem[] items, bool move, CancellationToken cancellationToken)
     //     => (await items.ToAsyncEnumerable()
@@ -199,9 +169,3 @@ record IpAndPath(
 
 record GetRemoteFiles(string Path);
 
-// TODO CsTools.Core
-static class Mist
-{
-    public static TR Adapt<T, TR>(this T t, Func<T, TR> adapter)
-        => adapter(t);
-}
