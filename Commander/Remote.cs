@@ -10,6 +10,12 @@ using CsTools;
 
 using static CsTools.Core;
 
+// TODO: Delete File 
+// TODO: Delete Directory
+// TODO: CreateDirectory
+// TODO: Rename File
+// TODO: Rename Directory
+
 static class Remote
 {
     public static AsyncResult<GetFilesRequestResult, RequestError> GetFiles(GetFiles getFiles)

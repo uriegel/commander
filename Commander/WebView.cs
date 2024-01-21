@@ -58,10 +58,6 @@ static class Window
                 .JsonPost<RenameItemParam, Nothing, RequestError>("commander/renameascopy", Directory.RenameAsCopy)
                 .JsonPost("commander/close", Close)
                 .JsonPost<GetFiles, GetFilesRequestResult, RequestError>("commander/getremotefiles", Remote.GetFiles)
-                // TODO
-                // .JsonPost<CopyItemsParam, IOResult>("commander/copyitemsfromremote", Remote.CopyItemsFromRemote)
-                // .JsonPost<CopyItemsParam, IOResult>("commander/copyitemstoremote", Remote.CopyItemsToRemote)
-                
 #if Windows            
                 .JsonPost<Result<Credentials, RequestError>, Nothing, RequestError>("commander/sendcredentials", Directory.CredentialsReceived)            
                 .JsonPost("commander/cleanupservices", Services.CleanUp)            
