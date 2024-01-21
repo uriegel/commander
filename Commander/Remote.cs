@@ -68,10 +68,13 @@ static class Remote
             Method = HttpMethod.Post,
             BaseUrl = $"http://{ipAndPath.Ip}:8080",
             Url = $"/remote/postfile?path={ipAndPath.Path.AppendLinuxPath(name)}",
-            Timeout = 100_1000_000,
+            Timeout = 100_000_000,
             AddContent = () => new StreamContent(streamToPost, 8100)
-                                    .SideEffect(n => n.Headers.TryAddWithoutValidation("x-file-date", 
-                                                                                        (new DateTimeOffset(lastWriteTime).ToUnixTimeMilliseconds().ToString())))
+                                    .SideEffect(n => n  
+                                                        .Headers
+                                                        .TryAddWithoutValidation(
+                                                            "x-file-date", 
+                                                            new DateTimeOffset(lastWriteTime).ToUnixTimeMilliseconds().ToString()))
         };
 
     static DirectoryItem ToDirectoryItem(this RemoteItem item)
@@ -92,14 +95,6 @@ static class Remote
 
     static IpAndPath GetIpAndPath(this string url)
         => new(url.StringBetween('/', '/'), "/" + url.SubstringAfter('/').SubstringAfter('/'));
-
-    // static async Task<IOResult> CopyItemsToRemote(string sourcePath, IpAndPath ipAndPath, CopyItem[] items, bool move)
-    //     => await CopyItems(items.Length, 
-    //                 items
-    //                     .Select(n => n.Size)
-    //                     .Aggregate(0L, (a, b) => a + b), 
-    //                 sourcePath, ipAndPath, items, move, Cancellation.Create());
-
 
     // static async Task<IOResult> CopyItems(int totalCount, long totalSize, string sourcePath, IpAndPath ipAndPath, CopyItem[] items, bool move, CancellationToken cancellationToken)
     //     => (await items.ToAsyncEnumerable()
@@ -134,28 +129,15 @@ static class Remote
     static void SetLastWriteTime(this long unixTime, string targetFilename)
         => File.SetLastWriteTime(targetFilename, unixTime.FromUnixTime());
 
-    // TODO Exceptions
-    // TODO No action when another action is waiting because of connection lost
-    // static IOError MapExceptionToIOError(Exception e)
-    //     => e switch
-    //     {
-    //         UnauthorizedAccessException ue                     => IOError.AccessDenied,
-    //         _                                                  => IOError.Exn
-    //     };
-
-    // static IOResult MapExceptionToIOResult(Exception e)
-    //     => new(MapExceptionToIOError(e));
-
     static string AppendLinuxPath(this string path, string pathToAppend)
         => path.EndsWith('/')
             ? path + pathToAppend
             : path + '/' + pathToAppend;
 
     static Remote()
-    {
-        Client.Init(8, TimeSpan.FromDays(1));
-    }            
+        => Client.Init(8, TimeSpan.FromDays(1));
 }
+
 record RemoteItem(
     string Name,
     long Size,
