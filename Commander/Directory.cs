@@ -156,6 +156,15 @@ static partial class Directory
     public static bool IsDirectory(string path)
         => (File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory;
 
+    public static void SaveDelete(this string path)
+    {
+        try 
+        {
+             File.Delete(path);
+        }
+        catch {}
+    }
+        
     public static RequestError ErrorToRequestError(DirectoryError de)
         => de switch
         {
@@ -165,6 +174,7 @@ static partial class Directory
             DirectoryError.PathTooLong       => IOErrorType.PathTooLong.ToError(),
             _                                => IOErrorType.Exn.ToError()
         };
+       
     static RequestError MapExceptionToRequestError(Exception e)
         => e switch
         {

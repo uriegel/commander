@@ -30,23 +30,25 @@ static class Remote
     public static Result<Nothing, RequestError> CopyFrom(string name, string path, string targetPath, ProgressCallback cb, bool move, CancellationToken cancellationToken)
         => Request
             .Run(path.GetIpAndPath().GetFile(name), true)
-            .BindAwait(msg => msg.UseAwait(
-                msg => msg
-                    .Pipe(msg => msg.Content.Headers.ContentLength ?? 0)
-                    .Pipe(len =>
-                        File
-                            .Create(targetPath.AppendLinuxPath(name))
-                            .WithProgress((t, c) => cb(c, len))
-                            .UseAwait(target => msg.CopyToStream(target, cancellationToken))
-                    )
-                    .SideEffectWhenOk(msg => msg
-                        .GetHeaderLongValue("x-file-date")
-                        ?.SetLastWriteTime(targetPath.AppendLinuxPath(name)))
-            ))
+            .Pipe(res => targetPath.AppendLinuxPath(name)
+                .Pipe(targetName => 
+                    res.BindAwait(msg => msg.UseAwait(
+                        msg => msg
+                            .Pipe(msg => msg.Content.Headers.ContentLength ?? 0)
+                            .Pipe(len =>
+                                File
+                                    .Create(targetName)
+                                    .WithProgress((t, c) => cb(c, len))
+                                    .UseAwait(target => msg.CopyToStream(target, cancellationToken))
+                            )
+                            .SideEffectWhenOk(msg => msg
+                                .GetHeaderLongValue("x-file-date")
+                                ?.SetLastWriteTime(targetName))
+                            .SideEffectWhenError(_ => targetName.SaveDelete())
+            ))))
             .Select(_ => nothing)
             .ToResult()
             .Result;
-            // TODO OnError delete targetFile
 
     static Settings GetFile(this IpAndPath ipAndPath, string name) 
         => DefaultSettings with
