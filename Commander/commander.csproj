@@ -6,7 +6,6 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <PublishSingleFile>true</PublishSingleFile>
-    <SelfContained>false</SelfContained>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -15,6 +14,7 @@
       <OutputType>WinExe</OutputType>
       <TargetFramework>net8.0-windows</TargetFramework>
       <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+      <SelfContained>false</SelfContained>
       <DefineConstants>Windows</DefineConstants>
       <ApplicationIcon>kirk.ico</ApplicationIcon>
   </PropertyGroup> 
@@ -23,6 +23,7 @@
       <OutputType>Exe</OutputType>
       <TargetFramework>net8.0</TargetFramework>
       <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+      <SelfContained>true</SelfContained>
       <DefineConstants>Linux</DefineConstants>
   </PropertyGroup>
 
