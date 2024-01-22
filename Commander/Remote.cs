@@ -10,12 +10,13 @@ using CsTools;
 
 using static CsTools.Core;
 
+// TODO: CopyFileToRemote: copy to remote file "copytoremote", then rename it to the correct filename
 // TODO: Delete File 
 // TODO: Delete Directory
 // TODO: CreateDirectory
 // TODO: Rename File
 // TODO: Rename Directory
-
+// TODO: Copy Directories from local to remote
 static class Remote
 {
     public static AsyncResult<GetFilesRequestResult, RequestError> GetFiles(GetFiles getFiles)
@@ -56,6 +57,17 @@ static class Remote
             .ToResult()
             .Result;
 
+    public static Result<Nothing, RequestError> CopyTo(string name, string path, string targetPath, DateTime time, ProgressCallback cb, bool move, CancellationToken cancellationToken)
+        => File
+            .OpenRead(path.AppendPath(name))
+            .WithProgress((t, c) => cb(c, t))
+            .UseAwait(source =>
+                Request
+                    .Run(source.PostFile(targetPath.GetIpAndPath(), name, time), true))
+                    .Select(_ => nothing)
+            .ToResult()
+            .Result;
+
     static Settings GetFile(this IpAndPath ipAndPath, string name) 
         => DefaultSettings with
         {
@@ -68,7 +80,7 @@ static class Remote
                                 })
         };
 
-    static Settings PostFile(this IpAndPath ipAndPath, string name, Stream streamToPost, DateTime lastWriteTime) 
+    static Settings PostFile(this Stream streamToPost, IpAndPath ipAndPath, string name, DateTime lastWriteTime) 
         => DefaultSettings with
         {
             Method = HttpMethod.Post,
@@ -101,36 +113,6 @@ static class Remote
 
     static IpAndPath GetIpAndPath(this string url)
         => new(url.StringBetween('/', '/'), "/" + url.SubstringAfter('/').SubstringAfter('/'));
-
-    // static async Task<IOResult> CopyItems(int totalCount, long totalSize, string sourcePath, IpAndPath ipAndPath, CopyItem[] items, bool move, CancellationToken cancellationToken)
-    //     => (await items.ToAsyncEnumerable()
-    //         .SideEffect(_ => Events.CopyStarted())
-    //         .AggregateAwaitAsync(new FileCopyAggregateItem(0L, 0, DateTime.Now), async (fcai, n) =>
-    //         {
-    //             if (cancellationToken.IsCancellationRequested)
-    //                 return new(0, 0, DateTime.Now);
-    //             var sourceFilename = sourcePath.AppendPath(n.Name);
-    //             using var sourceFile = 
-    //                 File
-    //                     .OpenRead(sourceFilename)
-    //                     .WithProgress((t, c) => Events.CopyProgressChanged(new(
-    //                         n.Name, 
-    //                         totalCount,
-    //                         fcai.Count + 1, 
-    //                         (int)(DateTime.Now - fcai.StartTime).TotalSeconds,
-    //                         n.Size, 
-    //                         c, 
-    //                         totalSize, 
-    //                         fcai.Bytes + c,
-    //                         false,
-    //                         false
-    //                     )));
-    //             using var msg = await Request.RunAsync(ipAndPath.PostFile(n.Name, sourceFile, new DateTimeOffset(n.Time).UtcDateTime), true);
-
-    //             return new(fcai.Bytes + n.Size, fcai.Count + 1, fcai.StartTime);
-    //         }))
-    //         .SideEffect(_ => Events.CopyFinished())
-    //         .ToIOResult();
 
     static void SetLastWriteTime(this long unixTime, string targetFilename)
         => File.SetLastWriteTime(targetFilename, unixTime.FromUnixTime());

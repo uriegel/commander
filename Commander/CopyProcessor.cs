@@ -70,6 +70,9 @@ static partial class CopyProcessor
                     case JobType.CopyFromRemote:
                         result = CopyFromRemote(job);
                         break;
+                    case JobType.CopyToRemote:
+                        result = CopyToRemote(job);
+                        break;
                     default:
                         break;
                 }
@@ -126,8 +129,21 @@ static partial class CopyProcessor
                 currentBytes += job.Size;
             });
 
+    static Result<Nothing, RequestError> CopyToRemote(Job job) 
+        => job.TargetPath
+            .AppendPath(job.SubPath)
+            .Pipe(target => Remote.CopyTo(job.Item, job.Path.AppendPath(job.SubPath), job.TargetPath.AppendPath(job.SubPath), job.Time,
+                (c, t) => Events.CopyProgressChanged(
+                    new(job.Item, job.JobType == JobType.Move, totalCount, currentCount + 1, startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0, 
+                    t, c, totalBytes, currentBytes + c, false, false)), job.JobType == JobType.Move, cancellationTokenSource.Token))
+            .SideEffectWhenOk(_ =>
+            {
+                currentCount++;
+                currentBytes += job.Size;
+            });
+
     static void InsertCopyItem(string path, string targetPath, JobType jobType, CopyItem item)
-        => jobs.Writer.TryWrite(new(jobType, path, targetPath, item.Size, item.Name, item.SubPath, false));
+        => jobs.Writer.TryWrite(new(jobType, path, targetPath, item.Size, item.Name, item.SubPath, false, item.Time));
 
     static void Clear()
     {
@@ -207,7 +223,8 @@ record Job(
     long Size,
     string Item,
     string? SubPath,
-    bool IsCancelled
+    bool IsCancelled,
+    DateTime Time
 );
 
 
