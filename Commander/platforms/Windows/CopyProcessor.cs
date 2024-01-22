@@ -20,7 +20,7 @@ static partial class CopyProcessor
                     input.Move ? JobType.Move : JobType.Copy,
                     input.Path,
                     input.TargetPath,
-                    i.Size, i.Name, i.SubPath, false))
+                    i.Size, i.Name, i.SubPath, false, i.Time))
             ))
             .SideEffectWhenOk(_ => DeleteMovedDirs(input
                                                         .Items
