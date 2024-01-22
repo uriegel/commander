@@ -34,7 +34,7 @@ static class Remote
                                     .ToArray()
                                     .ToFilesResult(getFiles.Path)));
 
-    public static Result<Nothing, RequestError> CopyFrom(string name, string path, string targetPath, ProgressCallback cb, bool move, CancellationToken cancellationToken)
+    public static Result<Nothing, RequestError> CopyFrom(string name, string path, string targetPath, Action<long, long> cb, bool move, CancellationToken cancellationToken)
         => Request
             .Run(path.GetIpAndPath().GetFile(name), true)
             .Pipe(res => targetPath.AppendLinuxPath(name)
@@ -57,7 +57,7 @@ static class Remote
             .ToResult()
             .Result;
 
-    public static Result<Nothing, RequestError> CopyTo(string name, string path, string targetPath, DateTime time, ProgressCallback cb, bool move, CancellationToken cancellationToken)
+    public static Result<Nothing, RequestError> CopyTo(string name, string path, string targetPath, DateTime time, Action<long, long> cb, bool move, CancellationToken cancellationToken)
         => File
             .OpenRead(path.AppendPath(name))
             .WithProgress((t, c) => cb(c, t))
