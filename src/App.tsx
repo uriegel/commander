@@ -10,7 +10,6 @@ import './extensions/extensions'
 import Commander, { CommanderHandle } from './Commander'
 import WithDialog from 'web-dialog-react'
 
-// TODO in webview.d.ts
 declare const webViewGetWindowState: () => Promise<number>
 
 const App = () => {

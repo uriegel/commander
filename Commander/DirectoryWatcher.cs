@@ -2,7 +2,6 @@ using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using CsTools.Extensions;
 
-// TODO call with path = null when a Controller != FileSystemController is selected
 class DirectoryWatcher : IDisposable
 {
     public static void Initialize(string key, string? path)

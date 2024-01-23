@@ -9,7 +9,6 @@ import { ErrorType, Nothing, jsonPost } from "functional-extensions"
 import { progressChangedEvents, showProgressEvents } from "../requests/events"
 import { closeWindow } from "../requests/requests"
 
-// TODO in webview.d.ts
 declare const webViewMinimize: () => void
 declare const webViewRestore: () => void
 declare const webViewMaximize: () => void

@@ -272,7 +272,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             : columns
     }
 
-    // TODO changePathProps
     const changePath = (id: string, path: string, showHidden: boolean, latestPath?: string, mount?: boolean, fromBacklog?: boolean, checkPosition?: (checkItem: FolderViewItem)=>boolean) => {
         if (statusText)      
             controller.current.cancelExtendedItems(id)
@@ -550,7 +549,6 @@ let internalDrag = false
 export default FolderView
 
 // TODO Collect all errors in list, show ! in StatusBar, When clicked on, a dialog is shown => delete all button
-// TODO CheckIsModified Windows not working (when cache is disabled)
 // TODO Ctrl+H as ToggleButton
 // TODO F3 as ToggleButton
 // TODO Hamburger Menu with Help overview
@@ -589,40 +587,31 @@ export default FolderView
 // TODO remote delete files
 // TODO remote rename file
 // TODO remote move
-// TODO Error from getItems/tooltip from dialog-box-react
 // TODO Statusbar nowrap text-overflow ellipses
 // TODO Viewer: directory info
-// TODO Check windows webview: drop file/files/folder/folders
-// TODO https://github.com/MicrosoftEdge/WebView2Feedback/issues/2313
 // TODO Check gtk webview: drop file/files/folder/folders sudo apt install libwebkit2gtk-4.0-dev
 // TODO https://stackoverflow.com/questions/71581401/drag-a-file-from-my-gtk-app-to-another-app-not-the-other-way-around
-
 // TODO Drag n drop to outside (Linux) with Gtk feature (startDrag when leaving the app)
-
 
 // WindowsIdentity.RunImpersonated(userHandle, () =>
 // {
 //     // do whatever you want as this user.
 // });
 // or
-
 // var result = WindowsIdentity.RunImpersonated(userHandle, () =>
 // {
 //     // do whatever you want as this user.
 //     return result;
 // });
-
 // await WindowsIdentity.RunImpersonatedAsync(userHandle, async () =>
 // {
 //     // do whatever you want as this user.
 // });
 // or
-
 // var result = await WindowsIdentity.RunImpersonated(userHandle, async () =>
 // {
 //     // do whatever you want as this user.
 //     return result;
 // });
-
 // [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 // internal static extern bool LogonUser(String lpszUsername, String lpszDomain, String lpszPassword, int dwLogonType, int dwLogonProvider, out IntPtr phToken);

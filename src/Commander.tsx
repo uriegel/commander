@@ -25,7 +25,6 @@ import './extensions/extensions'
 import Credentials, { CredentialsProps } from './components/dialogparts/Credentials'
 import { Err, ErrorType, Ok, jsonPost } from 'functional-extensions'
 
-// TODO in webview.d.ts
 declare const webViewShowDevTools: () => void
 
 const ID_LEFT = "left"
