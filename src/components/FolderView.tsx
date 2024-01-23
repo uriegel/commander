@@ -557,8 +557,6 @@ export default FolderView
 // TODO Linux Error when closing
 // TODO Linux error handling Copy
 
-// TODO Windows SaveBounds: window gets smaller every time
-
 // TODO Drag n drop from outside copy hidden file
 
 // TODO GetNetShares (Windows)
