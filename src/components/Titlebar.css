@@ -63,3 +63,7 @@ body:focus-within .titlebar {
 .pieContainer.revealed {
     width: 20px;
 }
+
+.finished .progressPie .progressPieCircle {
+    stroke: gray;
+}

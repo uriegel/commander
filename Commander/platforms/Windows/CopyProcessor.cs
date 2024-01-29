@@ -53,7 +53,7 @@ static partial class CopyProcessor
                                                             new CopyProgress(e.CopyProgress!.FileName, e.CopyProgress.IsMove, totalCount, e.CopyProgress!.CurrentCount, 
                                                                 startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0,
                                                                 e.CopyProgress!.TotalFileBytes, e.CopyProgress!.CurrentFileBytes, totalBytes, e.CopyProgress!.CurrentBytes,
-                                                                false, false))))
+                                                                false, false, false))))
                 .SelectError(_ => new RequestError(1099, "UAC not started"))
                 .ToAsyncResult()
                 .BindAwait(_ => Requests.JsonRequest.Post<UacCopyItemsParam, Nothing>(new(

@@ -68,7 +68,8 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 	const [itemCount, setItemCount] = useState({dirCount: 0, fileCount: 0 })
 	const [progress, setProgress] = useState(0)
 	const [progressRevealed, setProgressRevealed] = useState(false)
-    const [totalMax, setTotalMax] = useState(0)
+	const [progressFinished, setProgressFinished] = useState(false)
+	const [totalMax, setTotalMax] = useState(0)
     const dialog = useContext(DialogContext)
 	
 	const filesDropSubscription = useRef<Subscription | null>(null)
@@ -77,9 +78,12 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 	
 	useEffect(() => {
 		const subscription = isWindows() ? progressChangedEvents.subscribe(e => {
-			if (e.isStarted)
+			if (e.isStarted) {
 				setProgressRevealed(true)
-			// TODO isFinished gray
+				setProgressFinished(false)
+			}
+			else if (e.isFinished)
+				setProgressFinished(true)
 			else if (e.isDisposed) {
 				setProgress(0)
 				setProgressRevealed(false)
@@ -268,7 +272,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 
 	return (
 		<>
-			<Titlebar progress={progress} progressRevealed={progressRevealed} totalSize={totalMax} 
+			<Titlebar progress={progress} progressFinished={progressFinished} progressRevealed={progressRevealed} totalSize={totalMax} 
 				menu={(
 				<Menu autoMode={autoMode} onMenuAction={onMenuAction} toggleAutoMode={toggleAutoModeDialog}
 				showHidden={showHidden} toggleShowHidden={toggleShowHiddenAndRefresh}

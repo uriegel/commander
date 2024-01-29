@@ -17,11 +17,12 @@ interface TitlebarProps {
     menu: JSX.Element
     isMaximized: boolean
     progress: number
+    progressFinished: boolean
     progressRevealed: boolean
     totalSize: number
 }
 
-const Titlebar = ({ menu, isMaximized, progress, progressRevealed, totalSize }: TitlebarProps) => {
+const Titlebar = ({ menu, isMaximized, progress, progressFinished, progressRevealed, totalSize }: TitlebarProps) => {
     
     const onMinimize = () => webViewMinimize()
     const onRestore = () => webViewRestore()
@@ -77,8 +78,7 @@ const Titlebar = ({ menu, isMaximized, progress, progressRevealed, totalSize }: 
             <div className="titlebarGrip">
                 <span>Commander</span>
             </div>
-            <div className={`pieContainer${progressRevealed ? " revealed" : ""}`} onClick={startProgressDialog}>
-                // TODO isFinished: gray color
+            <div className={`pieContainer${progressRevealed ? " revealed" : ""}${progressFinished ? " finished" : ""}`} onClick={startProgressDialog}>
                 <Pie progress={progress}/>
             </div>            
             <div className="titlebarButton" onClick={onMinimize}><span className="dash">&#x2012;</span></div>
