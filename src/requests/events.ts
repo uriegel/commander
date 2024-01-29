@@ -14,6 +14,7 @@ type CopyProgress = {
     totalBytes: number
     currentBytes: number
     isStarted: boolean
+    isDisposed: boolean
     isFinished: boolean
 }
 

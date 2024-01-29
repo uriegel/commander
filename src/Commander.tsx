@@ -79,7 +79,8 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 		const subscription = isWindows() ? progressChangedEvents.subscribe(e => {
 			if (e.isStarted)
 				setProgressRevealed(true)
-			else if (e.isFinished) {
+			// TODO isFinished gray
+			else if (e.isDisposed) {
 				setProgress(0)
 				setProgressRevealed(false)
 			}

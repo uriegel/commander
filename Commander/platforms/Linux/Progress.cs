@@ -91,7 +91,7 @@ static class Progress
                         .Fill()
                         .MoveTo(0, 0)
                         .Arc(0, 0, (w < h ? w : h) / 2.0, -Math.PI / 2.0, -Math.PI / 2.0 + Math.Max(progress, 0.01) * Math.PI * 2)
-                        .SourceRgb(0.3, 0.3, 0.3)
+                        .SourceRgb(rgbActive.Red, rgbActive.Green, rgbActive.Blue)
                         .Fill()
                     )
                 )
@@ -100,12 +100,19 @@ static class Progress
     public static void Show() => pop.Ref.Show();
 
     static void RevealControl(RevealerHandle revealer)
-    // TODO while copying color selected then 5s color gray
         => Events.CopyProgresses.Subscribe(n =>
             {
                 if (n.IsStarted)
+                {
+                    rgbActive = rgbFill;
                     revealer.RevealChild();
+                }
                 else if (n.IsFinished)
+                {
+                    rgbActive = rgbFillFinished;
+                    Gtk.Dispatch(() => drawingArea.Ref.QueueDraw());
+                }
+                else if (n.IsDisposed)
                     revealer.RevealChild(false);
                 else
                 {
@@ -130,12 +137,8 @@ static class Progress
                 }
             });
 
-    static float progress = 0.0f;
-    static int lastCopyTime;
-
     static readonly ObjectRef<RevealerHandle> revealer = new();
     static readonly ObjectRef<PopoverHandle> pop = new();
-    
     static readonly ObjectRef<DrawingAreaHandle> drawingArea = new();
     static readonly ObjectRef<ProgressBarHandle> progressBar = new();
     static readonly ObjectRef<ProgressBarHandle> totalProgressBar = new();
@@ -143,7 +146,16 @@ static class Progress
     static readonly ObjectRef<LabelHandle> CurrentName = new();
     static readonly ObjectRef<LabelHandle> FileCount = new();
     static readonly ObjectRef<LabelHandle> Duration = new();
-    static readonly ObjectRef<LabelHandle> TotalDuration = new();    
+    static readonly ObjectRef<LabelHandle> TotalDuration = new();
+    static readonly RGB rgbFill = new(0, 0, 255);
+    static readonly RGB rgbFillFinished = new(0.7f, 0.7f, 0.7f);
+
+    static RGB rgbActive = rgbFill;
+    static float progress = 0.0f;
+    static int lastCopyTime;
 }    
+
+record RGB(float Red, float Green, float Blue);
+
 
 #endif

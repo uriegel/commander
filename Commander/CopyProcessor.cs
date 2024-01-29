@@ -107,7 +107,7 @@ static partial class CopyProcessor
             .SelectMany(target => Directory.Copy(job.Item, job.Path.AppendPath(job.SubPath), job.TargetPath.AppendPath(job.SubPath),
                 (c, t) => Events.CopyProgressChanged(
                     new(job.Item, job.JobType == JobType.Move, totalCount, currentCount + 1, startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0, 
-                    t, c, totalBytes, currentBytes + c, false, false)),
+                    t, c, totalBytes, currentBytes + c, false, false, false)),
                 job.JobType == JobType.Move, cancellationTokenSource.Token))
             .SideEffectWhenOk(_ =>
             {
@@ -121,7 +121,7 @@ static partial class CopyProcessor
             .Pipe(target => Remote.CopyFrom(job.Item, job.Path.AppendPath(job.SubPath), job.TargetPath.AppendPath(job.SubPath),
                 (c, t) => Events.CopyProgressChanged(
                     new(job.Item, job.JobType == JobType.Move, totalCount, currentCount + 1, startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0, 
-                    t, c, totalBytes, currentBytes + c, false, false)),
+                    t, c, totalBytes, currentBytes + c, false, false, false)),
                 job.JobType == JobType.Move, cancellationTokenSource.Token))
             .SideEffectWhenOk(_ =>
             {
@@ -135,7 +135,7 @@ static partial class CopyProcessor
             .Pipe(target => Remote.CopyTo(job.Item, job.Path.AppendPath(job.SubPath), job.TargetPath.AppendPath(job.SubPath), job.Time,
                 (c, t) => Events.CopyProgressChanged(
                     new(job.Item, job.JobType == JobType.Move, totalCount, currentCount + 1, startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0, 
-                    t, c, totalBytes, currentBytes + c, false, false)), job.JobType == JobType.Move, cancellationTokenSource.Token))
+                    t, c, totalBytes, currentBytes + c, false, false, false)), job.JobType == JobType.Move, cancellationTokenSource.Token))
             .SideEffectWhenOk(_ =>
             {
                 currentCount++;

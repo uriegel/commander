@@ -15,7 +15,8 @@ record CopyProgress(
     long   TotalBytes,
     long   CurrentBytes,
     bool   IsStarted,
-    bool   IsFinished
+    bool   IsFinished,
+    bool   IsDisposed
 );
 
 record WindowState(bool Maximized);
@@ -73,14 +74,15 @@ record Events(
     public static void CopyStarted(bool move)
         => copyProgresses
             .SideEffect(_ => currentCopyId = GetCopyId())
-            .OnNext(new("", move, 0, 0, 0, 0, 0, 0, 0, true, false));
+            .OnNext(new("", move, 0, 0, 0, 0, 0, 0, 0, true, false, false));
 
     public static async void CopyFinished()
     {
         var thisCopyId = currentCopyId;
+        copyProgresses.OnNext(new("", false, 0, 0, 0, 0, 0, 0, 0, false, true, false));
         await Task.Delay(TimeSpan.FromSeconds(5));
         if (thisCopyId == currentCopyId)
-            copyProgresses.OnNext(new("", false, 0, 0, 0, 0, 0, 0, 0, false, true));
+            copyProgresses.OnNext(new("", false, 0, 0, 0, 0, 0, 0, 0, false, false, true));
     }        
 
     public static void WindowStateChanged(bool isMaximized)

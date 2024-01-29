@@ -35,9 +35,6 @@ const Titlebar = ({ menu, isMaximized, progress, progressRevealed, totalSize }: 
     const dialogOpen = useRef(false)
 
     const startProgressDialog = useCallback(() => {
-
-        console.log("show progress")
-
         const start = async () => {
             dialogOpen.current = true
             const res = await dialog.show({
@@ -81,6 +78,7 @@ const Titlebar = ({ menu, isMaximized, progress, progressRevealed, totalSize }: 
                 <span>Commander</span>
             </div>
             <div className={`pieContainer${progressRevealed ? " revealed" : ""}`} onClick={startProgressDialog}>
+                // TODO isFinished: gray color
                 <Pie progress={progress}/>
             </div>            
             <div className="titlebarButton" onClick={onMinimize}><span className="dash">&#x2012;</span></div>
