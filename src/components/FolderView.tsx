@@ -548,7 +548,6 @@ let internalDrag = false
 
 export default FolderView
 
-// TODO Remote delete files
 // TODO Collect all errors in list, show ! in StatusBar, When clicked on, a dialog is shown => delete all button
 // TODO Ctrl+H as ToggleButton
 // TODO F3 as ToggleButton

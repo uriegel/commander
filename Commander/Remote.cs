@@ -68,14 +68,22 @@ static class Remote
             .ToResult()
             .Result;
 
-    public static Result<Nothing, RequestError> Delete(DeleteItemsParam input)
-        => Request
-            .Run(input.Path
-                .GetIpAndPath()
-                .DeleteFile(input.Names))
-            .Select(_ => nothing)
-            .ToResult()
-            .Result;
+    public static AsyncResult<Nothing, RequestError> Delete(DeleteItemsParam input)
+        => input
+            .Names
+            .Aggregate(Ok<Nothing, RequestError>(nothing), (acc, n) =>
+                acc.SelectMany(_ => 
+                    Request
+                        .Run(
+                            input
+                                .Path
+                                .GetIpAndPath()
+                                .DeleteFile(n))
+                        .Select(_ => nothing)
+                        .ToResult()
+                        .Result
+                    ))
+                .ToAsyncResult();
 
     static Settings GetFile(this IpAndPath ipAndPath, string name) 
         => DefaultSettings with

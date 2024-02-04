@@ -132,6 +132,7 @@ export const progressChangedEvents = new BehaviorSubject<CopyProgress>({
     totalBytes: 0,
     currentBytes: 0,
     isStarted: false,
+    isDisposed: false,
     isFinished: false
 })
 
