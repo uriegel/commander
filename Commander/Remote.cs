@@ -29,10 +29,10 @@ static class Remote
                         "getfiles",
                         new(ipPath.Path)))
                     .Select(n => n
-                                    .Select(ToDirectoryItem)
-                                    .Where(n => getFiles.ShowHiddenItems || !n.IsHidden)
-                                    .ToArray()
-                                    .ToFilesResult(getFiles.Path)));
+                        .Select(ToDirectoryItem)
+                        .Where(n => getFiles.ShowHiddenItems || !n.IsHidden)
+                        .ToArray()
+                        .ToFilesResult(getFiles.Path)));
 
     public static Result<Nothing, RequestError> CopyFrom(string name, string path, string targetPath, Action<long, long> cb, bool move, CancellationToken cancellationToken)
         => Request
@@ -68,6 +68,15 @@ static class Remote
             .ToResult()
             .Result;
 
+    public static Result<Nothing, RequestError> Delete(DeleteItemsParam input)
+        => Request
+            .Run(input.Path
+                .GetIpAndPath()
+                .DeleteFile(input.Names))
+            .Select(_ => nothing)
+            .ToResult()
+            .Result;
+
     static Settings GetFile(this IpAndPath ipAndPath, string name) 
         => DefaultSettings with
         {
@@ -93,6 +102,15 @@ static class Remote
                                                         .TryAddWithoutValidation(
                                                             "x-file-date", 
                                                             new DateTimeOffset(lastWriteTime).ToUnixTimeMilliseconds().ToString()))
+        };
+
+    static Settings DeleteFile(this IpAndPath ipAndPath, string name) 
+        => DefaultSettings with
+        {
+            Method = HttpMethod.Delete,
+            BaseUrl = $"http://{ipAndPath.Ip}:8080",
+            Url = $"/remote/deletefile?path={ipAndPath.Path.AppendLinuxPath(name)}",
+            Timeout = 100_000_000,
         };
 
     static DirectoryItem ToDirectoryItem(this RemoteItem item)

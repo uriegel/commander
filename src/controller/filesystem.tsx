@@ -3,21 +3,13 @@ import { DialogHandle, ResultType } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
-import { Controller, ControllerResult, ControllerType, OnEnterResult, addParent, formatDateTime, formatSize, formatVersion, sortItems } from "./controller"
+import { Controller, ControllerResult, ControllerType, ItemsType, OnEnterResult, addParent, formatDateTime, formatSize, formatVersion, getItemsType, sortItems } from "./controller"
 import { GetExtendedItemsResult, GetItemsResult, IOError, Version } from "../requests/requests"
 import { ROOT } from "./root"
 import { extendedRename } from "./filesystemExtendedRename"
 import { IconNameType } from "../enums"
 import { AsyncResult, Err, ErrorType, Nothing, Ok, jsonPost, nothing } from "functional-extensions"
 import { DirectoryChangedEvent, DirectoryChangedType } from "../requests/events"
-
-export enum ItemsType {
-	Directories,
-	Directory,
-	Files,
-	File,
-	All
-}
 
 type GetItemsError = {
     status: number 
@@ -286,24 +278,6 @@ const createFolder = (path: string, item: FolderViewItem, dialog: DialogHandle) 
 	: new Err({ status: IOError.Canceled, statusText: "" }))
 		.bindAsync(name => jsonPost<Nothing, ErrorType>({ method: "createfolder", payload: { path, name } })
 							.map(() => name))
-
-export const getItemsType = (items: FolderViewItem[]): ItemsType => {
-	const dirs = items.filter(n => n.isDirectory)
-	const files = items.filter(n => !n.isDirectory)
-	return dirs.length == 0
-		? files.length > 1
-		? ItemsType.Files
-		: ItemsType.File
-		: dirs.length == 1
-		? files.length != 0
-		? ItemsType.All
-		: ItemsType.Directory
-		: dirs.length > 1
-		? files.length != 0
-		? ItemsType.All
-		: ItemsType.Directories
-		: ItemsType.All
-}
 
 const deleteItems = (path: string, items: FolderViewItem[], dialog: DialogHandle) => {
 

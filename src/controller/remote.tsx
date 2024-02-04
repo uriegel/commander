@@ -1,12 +1,13 @@
 import { TableColumns } from "virtual-table-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
-import { Controller, ControllerResult, ControllerType, OnEnterResult, addParent, formatDateTime, formatSize, sortItems } from "./controller"
+import { Controller, ControllerResult, ControllerType, ItemsType, OnEnterResult, addParent, formatDateTime, formatSize, getItemsType, sortItems } from "./controller"
 import { getSortFunction } from "./filesystem"
 import { REMOTES } from "./remotes"
 import { IconNameType } from "../enums"
 import { AsyncResult, Err, ErrorType, Nothing, Ok, jsonPost, nothing } from "functional-extensions"
 import { GetExtendedItemsResult, GetItemsResult, IOError } from "../requests/requests"
+import { DialogHandle, ResultType } from "web-dialog-react"
 
 export const REMOTE = "remote"
 
@@ -39,6 +40,29 @@ const getColumns = () => ({
 
 const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
 	sortItems(items, getSortFunction(sortIndex, sortDescending), true) 
+
+const deleteItems = (path: string, items: FolderViewItem[], dialog: DialogHandle) => {
+
+	const type = getItemsType(items)
+	if (type == ItemsType.Directory || type == ItemsType.Directories || type == ItemsType.All)
+		return AsyncResult.from<Nothing, ErrorType>(new Ok(nothing))
+	const text = type == ItemsType.File
+		? "Möchtest Du die Datei löschen?"
+		: type == ItemsType.Files
+		? "Möchtest Du die Dateien löschen?"		
+		: "Aktion nicht unterstützt"	
+	
+	return dialog.showDialog<Nothing, ErrorType>({
+			text,
+			btnOk: true,
+			btnCancel: true,
+			defBtnOk: true
+		}, res => res.result == ResultType.Ok
+		? new Ok(nothing)
+		: new Err({ status: IOError.Canceled, statusText: "" }))
+			.bindAsync(() => jsonPost<Nothing, ErrorType>({ method: "deleteitemsremote", payload: { path, names: items.map(n => n.name) }}))
+}
+	
 
 export const getRemoteController = (controller: Controller | null): ControllerResult => 
     controller?.type == ControllerType.Remote
@@ -83,7 +107,7 @@ export const getRemoteController = (controller: Controller | null): ControllerRe
 		extendedRename: () => AsyncResult.from(new Err<Controller, Nothing>(nothing)),
 		renameAsCopy: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
         createFolder: () => AsyncResult.from(new Ok<string, ErrorType>("")),
-        deleteItems: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
+        deleteItems,
 		onSelectionChanged: () => { },
 		cleanUp: () => { }
     }})

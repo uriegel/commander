@@ -54,6 +54,14 @@ export interface EnterData {
     items: FolderViewItem[]
 }
 
+export enum ItemsType {
+	Directories,
+	Directory,
+	Files,
+	File,
+	All
+}
+
 export interface Controller {
     type: ControllerType
     id: string
@@ -126,6 +134,24 @@ export const createEmptyController = (): Controller => ({
     onSelectionChanged: () => { },
     cleanUp: () => { }
 })
+
+export const getItemsType = (items: FolderViewItem[]): ItemsType => {
+	const dirs = items.filter(n => n.isDirectory)
+	const files = items.filter(n => !n.isDirectory)
+	return dirs.length == 0
+		? files.length > 1
+		? ItemsType.Files
+		: ItemsType.File
+		: dirs.length == 1
+		? files.length != 0
+		? ItemsType.All
+		: ItemsType.Directory
+		: dirs.length > 1
+		? files.length != 0
+		? ItemsType.All
+		: ItemsType.Directories
+		: ItemsType.All
+}
 
 export const addParent = (items: FolderViewItem[]) => 
     [{ name: "..", index: 0, isParent: true, isDirectory: true } as FolderViewItem]
