@@ -11,7 +11,6 @@ using CsTools;
 using static CsTools.Core;
 
 // TODO: CopyFileToRemote: copy to remote file "copytoremote", then rename it to the correct filename
-// TODO: Delete File 
 // TODO: Delete Directory
 // TODO: CreateDirectory
 // TODO: Rename File
