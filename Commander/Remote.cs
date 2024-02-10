@@ -10,7 +10,8 @@ using CsTools;
 
 using static CsTools.Core;
 
-// TODO: CopyFileToRemote: copy to remote file "copytoremote", then rename it to the correct filename
+// TODO: TODO in Android Commander Engine: CopyFileToRemote: copy to remote file "copytoremote", then rename it to the correct filename
+// TODO: TODO in Android Commander Engine: Delete Directory
 // TODO: Delete Directory
 // TODO: CreateDirectory
 // TODO: Rename File
