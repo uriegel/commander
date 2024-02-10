@@ -44,15 +44,15 @@ const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolea
 const deleteItems = (path: string, items: FolderViewItem[], dialog: DialogHandle) => {
 
 	const type = getItemsType(items)
-	if (type == ItemsType.Directories || type == ItemsType.All)
-		return AsyncResult.from<Nothing, ErrorType>(new Ok(nothing))
 	const text = type == ItemsType.File
 		? "Möchtest Du die Datei löschen?"
 		: type == ItemsType.Files
 		? "Möchtest Du die Dateien löschen?"		
 		: type == ItemsType.Directory
 		? "Möchtest Du das Verzeichnis löschen?"
-		: "Aktion nicht unterstützt"	
+		: type == ItemsType.Directories
+		? "Möchtest Du die Verzeichnisse löschen?"
+		: "Möchtest Du die Verzeichnisse und Dateien löschen?"	
 	
 	return dialog.showDialog<Nothing, ErrorType>({
 			text,
