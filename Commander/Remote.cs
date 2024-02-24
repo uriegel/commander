@@ -23,9 +23,7 @@ static class Remote
             .GetIpAndPath()
             .Pipe(ipPath =>
                 ipPath.GetRequest()
-                    .Post<GetRemoteFiles, RemoteItem[]>(new(
-                        "getfiles",
-                        new(ipPath.Path)))
+                    .Get<RemoteItem[]>($"getfiles{ipPath.Path}")
                     .Select(n => n
                         .Select(ToDirectoryItem)
                         .Where(n => getFiles.ShowHiddenItems || !n.IsHidden)
@@ -86,13 +84,13 @@ static class Remote
     static Settings GetFile(this IpAndPath ipAndPath, string name) 
         => DefaultSettings with
         {
-            Method = HttpMethod.Post,
+            Method = HttpMethod.Get,
             BaseUrl = $"http://{ipAndPath.Ip}:8080",
-            Url = "/remote/getfile",
-            AddContent = () => JsonContent.Create(new 
-                                { 
-                                    Path = ipAndPath.Path.AppendLinuxPath(name) 
-                                })
+            Url = $"/remote/getfile/{ipAndPath.Path.AppendLinuxPath(name)}",
+            // AddContent = () => JsonContent.Create(new 
+            //                     { 
+            //                         Path = ipAndPath.Path.AppendLinuxPath(name) 
+            //                     })
         };
 
     static Settings PostFile(this Stream streamToPost, IpAndPath ipAndPath, string name, DateTime lastWriteTime) 
@@ -130,7 +128,7 @@ static class Remote
             );
 
     static JsonRequest GetRequest(this IpAndPath ipAndPath)
-        => new($"http://{ipAndPath.Ip}:8080/remote");
+        => new($"http://{ipAndPath.Ip}:8080");
 
     static GetFilesRequestResult ToFilesResult(this DirectoryItem[] items, string path)
         => new GetFilesRequestResult(items, path, items.Where(n => n.IsDirectory).Count(), items.Where(n => !n.IsDirectory).Count());
@@ -163,5 +161,4 @@ record IpAndPath(
     string Path
 );
 
-record GetRemoteFiles(string Path);
 
