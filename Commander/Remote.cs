@@ -87,10 +87,6 @@ static class Remote
             Method = HttpMethod.Get,
             BaseUrl = $"http://{ipAndPath.Ip}:8080",
             Url = $"/remote/getfile/{ipAndPath.Path.AppendLinuxPath(name)}",
-            // AddContent = () => JsonContent.Create(new 
-            //                     { 
-            //                         Path = ipAndPath.Path.AppendLinuxPath(name) 
-            //                     })
         };
 
     static Settings PostFile(this Stream streamToPost, IpAndPath ipAndPath, string name, DateTime lastWriteTime) 
