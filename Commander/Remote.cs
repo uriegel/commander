@@ -59,7 +59,7 @@ static class Remote
             .WithProgress((t, c) => cb(c, t))
             .UseAwait(source =>
                 Request
-                    .Run(source.PostFile(targetPath.GetIpAndPath(), name, time), true))
+                    .Run(source.PutFile(targetPath.GetIpAndPath(), name, time), true))
                     .Select(_ => nothing)
             .ToResult()
             .Result;
@@ -89,12 +89,12 @@ static class Remote
             Url = $"/downloadfile/{ipAndPath.Path.AppendLinuxPath(name)}",
         };
 
-    static Settings PostFile(this Stream streamToPost, IpAndPath ipAndPath, string name, DateTime lastWriteTime) 
+    static Settings PutFile(this Stream streamToPost, IpAndPath ipAndPath, string name, DateTime lastWriteTime) 
         => DefaultSettings with
         {
-            Method = HttpMethod.Post,
+            Method = HttpMethod.Put,
             BaseUrl = $"http://{ipAndPath.Ip}:8080",
-            Url = $"/postfile/{ipAndPath.Path.AppendLinuxPath(name)}",
+            Url = $"/putfile/{ipAndPath.Path.AppendLinuxPath(name)}",
             Timeout = 100_000_000,
             AddContent = () => new StreamContent(streamToPost, 8100)
                                     .SideEffect(n => n  
