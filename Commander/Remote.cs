@@ -86,7 +86,7 @@ static class Remote
         {
             Method = HttpMethod.Get,
             BaseUrl = $"http://{ipAndPath.Ip}:8080",
-            Url = $"/getfile/{ipAndPath.Path.AppendLinuxPath(name)}",
+            Url = $"/downloadfile/{ipAndPath.Path.AppendLinuxPath(name)}",
         };
 
     static Settings PostFile(this Stream streamToPost, IpAndPath ipAndPath, string name, DateTime lastWriteTime) 
