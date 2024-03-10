@@ -109,7 +109,7 @@ static class Remote
         {
             Method = HttpMethod.Delete,
             BaseUrl = $"http://{ipAndPath.Ip}:8080",
-            Url = $"/remote/deletefile?path={ipAndPath.Path.AppendLinuxPath(name)}",
+            Url = $"/deletefile/{ipAndPath.Path.AppendLinuxPath(name)}",
             Timeout = 100_000_000,
         };
 
