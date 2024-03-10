@@ -94,7 +94,7 @@ static class Remote
         {
             Method = HttpMethod.Post,
             BaseUrl = $"http://{ipAndPath.Ip}:8080",
-            Url = $"/remote/postfile?path={ipAndPath.Path.AppendLinuxPath(name)}",
+            Url = $"/postfile/{ipAndPath.Path.AppendLinuxPath(name)}",
             Timeout = 100_000_000,
             AddContent = () => new StreamContent(streamToPost, 8100)
                                     .SideEffect(n => n  
