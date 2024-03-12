@@ -35,5 +35,8 @@
     "build Windows": "tsc && vite build && npm run wincopy",
     "copy": "cp dist/assets/*.js resources/script.js && cp dist/assets/*.css resources/style.css",
     "wincopy": "xcopy .\\dist\\assets\\*.js .\\resources\\script.js /y &&  copy .\\dist\\assets\\*.css .\\resources\\style.css /y"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
   }
 }
