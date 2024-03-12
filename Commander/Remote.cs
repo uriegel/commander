@@ -10,8 +10,7 @@ using CsTools;
 
 using static CsTools.Core;
 
-// TODO: CopyFileToRemote: copy to remote file "copytoremote", then rename it to the correct filename
-// TODO: Delete Directory
+// TODO: TODO in Android Commander Engine: CopyFileToRemote: copy to remote file "copytoremote", then rename it to the correct filename
 // TODO: CreateDirectory
 // TODO: Rename File
 // TODO: Rename Directory
@@ -24,9 +23,7 @@ static class Remote
             .GetIpAndPath()
             .Pipe(ipPath =>
                 ipPath.GetRequest()
-                    .Post<GetRemoteFiles, RemoteItem[]>(new(
-                        "getfiles",
-                        new(ipPath.Path)))
+                    .Get<RemoteItem[]>($"getfiles{ipPath.Path}")
                     .Select(n => n
                         .Select(ToDirectoryItem)
                         .Where(n => getFiles.ShowHiddenItems || !n.IsHidden)
@@ -62,7 +59,7 @@ static class Remote
             .WithProgress((t, c) => cb(c, t))
             .UseAwait(source =>
                 Request
-                    .Run(source.PostFile(targetPath.GetIpAndPath(), name, time), true))
+                    .Run(source.PutFile(targetPath.GetIpAndPath(), name, time), true))
                     .Select(_ => nothing)
             .ToResult()
             .Result;
@@ -87,21 +84,17 @@ static class Remote
     static Settings GetFile(this IpAndPath ipAndPath, string name) 
         => DefaultSettings with
         {
-            Method = HttpMethod.Post,
+            Method = HttpMethod.Get,
             BaseUrl = $"http://{ipAndPath.Ip}:8080",
-            Url = "/remote/getfile",
-            AddContent = () => JsonContent.Create(new 
-                                { 
-                                    Path = ipAndPath.Path.AppendLinuxPath(name) 
-                                })
+            Url = $"/downloadfile/{ipAndPath.Path.AppendLinuxPath(name)}",
         };
 
-    static Settings PostFile(this Stream streamToPost, IpAndPath ipAndPath, string name, DateTime lastWriteTime) 
+    static Settings PutFile(this Stream streamToPost, IpAndPath ipAndPath, string name, DateTime lastWriteTime) 
         => DefaultSettings with
         {
-            Method = HttpMethod.Post,
+            Method = HttpMethod.Put,
             BaseUrl = $"http://{ipAndPath.Ip}:8080",
-            Url = $"/remote/postfile?path={ipAndPath.Path.AppendLinuxPath(name)}",
+            Url = $"/putfile/{ipAndPath.Path.AppendLinuxPath(name)}",
             Timeout = 100_000_000,
             AddContent = () => new StreamContent(streamToPost, 8100)
                                     .SideEffect(n => n  
@@ -116,7 +109,7 @@ static class Remote
         {
             Method = HttpMethod.Delete,
             BaseUrl = $"http://{ipAndPath.Ip}:8080",
-            Url = $"/remote/deletefile?path={ipAndPath.Path.AppendLinuxPath(name)}",
+            Url = $"/deletefile/{ipAndPath.Path.AppendLinuxPath(name)}",
             Timeout = 100_000_000,
         };
 
@@ -131,7 +124,7 @@ static class Remote
             );
 
     static JsonRequest GetRequest(this IpAndPath ipAndPath)
-        => new($"http://{ipAndPath.Ip}:8080/remote");
+        => new($"http://{ipAndPath.Ip}:8080");
 
     static GetFilesRequestResult ToFilesResult(this DirectoryItem[] items, string path)
         => new GetFilesRequestResult(items, path, items.Where(n => n.IsDirectory).Count(), items.Where(n => !n.IsDirectory).Count());
@@ -164,5 +157,4 @@ record IpAndPath(
     string Path
 );
 
-record GetRemoteFiles(string Path);
 
