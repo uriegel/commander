@@ -1,4 +1,3 @@
-import * as R from "ramda"
 import { DialogHandle, Slide, ResultType, DialogResult } from "web-dialog-react"
 import CopyConflicts, { ConflictItem } from "../../components/dialogparts/CopyConflicts"
 import { FolderViewItem } from "../../components/FolderView"
@@ -6,7 +5,7 @@ import { Controller, ControllerType, ItemsType, getItemsType } from "../controll
 import { compareVersion } from "../filesystem"
 import { CopyItem, IOError } from "../../requests/requests"
 import { copy, copyInfo } from "./fileSystem"
-import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
+import { AsyncResult, Err, ErrorType, Nothing, Ok, mergeToDictionary, nothing } from "functional-extensions"
 import { copyInfoFromRemote } from "./fromRemoteCopy"
 import { copyInfoToRemote } from "./toRemoteCopy"
 
@@ -73,10 +72,10 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle, fromLe
                         .concat((infos ?? []).map(n => n.size || 0))
                         .reduce((a, c) => a + c, 0)
                         
-                    const targetItemsMap = R.mergeAll(
+                    const targetItemsMap = mergeToDictionary(
                         targetItems
                             .filter(n => !n.isDirectory)
-                            .map(ti => ({ [ti.name]: ti })))
+                            .map(ti => ({ key: ti.name, value: ti })))
     
                     const conflictFileItems = fileItems.map(n => {
                         const check = targetItemsMap[n.name]
@@ -170,7 +169,8 @@ const makeDialogResult = (res: DialogResult, fileItems: FolderViewItem[], infos:
     return new Ok<CopyItem[], ErrorType>(
         res.result == ResultType.Yes
         ? itemsToCopy
-        : R.without(
-            conflictItems.map(n => ({ name: n.name, size: n.size, time: n.time, subPath: n.subPath || undefined })),
-            itemsToCopy))
+        : itemsToCopy.diff(conflictItems
+            .map(n => ({ name: n.name, size: n.size, time: n.time, subPath: n.subPath || undefined }))
+        )
+    )
 }
