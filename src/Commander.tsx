@@ -14,7 +14,7 @@ import './themes/adwaitaDark.css'
 import './themes/windows.css'
 import './themes/windowsDark.css'
 import { isWindows } from './globals'
-import { copyErrorEvents, filesDropEvents, getCredentialsEvents, progressChangedEvents, } from './requests/events'
+import { copyErrorEvents, filesDropEvents, getCredentialsEvents, previewEvents, progressChangedEvents, } from './requests/events'
 import { getCopyController } from './controller/copy/copyController'
 import FileViewer from './components/FileViewer'
 import { SpecialKeys } from 'virtual-table-react'
@@ -23,7 +23,7 @@ import { Subscription } from 'rxjs'
 import { createFileSystemController } from './controller/filesystem'
 import './extensions/extensions'
 import Credentials, { CredentialsProps } from './components/dialogparts/Credentials'
-import { Err, ErrorType, Ok, jsonPost } from 'functional-extensions'
+import { Err, ErrorType, Nothing, Ok, jsonPost } from 'functional-extensions'
 
 declare const webViewShowDevTools: () => void
 
@@ -96,8 +96,14 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 		copyErrorSubscription.current?.unsubscribe()
 		copyErrorSubscription.current = copyErrorEvents.subscribe(err => showError(err, setErrorText, "Fehler beim Kopieren: "))
 
+		previewEvents.subscribe(setShowViewer)
+
 		return () => subscription?.unsubscribe()
 	}, [])
+
+	useEffect(() => {
+		jsonPost<Nothing, ErrorType>({ method: "setpreview", payload: { set: showViewer} })		
+	}, [showViewer])
 
 	const copyItemsToInactive = useCallback((inactive: FolderViewHandle | null, move: boolean, activeController: Controller,
 		activePath: string, itemsToCopy: FolderViewItem[], id?: string) => {

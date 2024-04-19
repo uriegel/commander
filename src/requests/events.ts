@@ -70,6 +70,7 @@ type CommanderEvent = {
     exifTime?: ExifTime
     extendedData?: ExtendedData
     showProgress?: boolean
+    preview?: boolean
 }
 
 const toCommanderEvent = (event: MessageEvent) =>
@@ -87,6 +88,10 @@ export const themeChangedEvents = commanderEvents
 export const windowStateChangedEvents = commanderEvents
     .pipe(filter(n => n.windowState != undefined))
     .pipe(map(n => n.windowState!.maximized))
+
+export const previewEvents = commanderEvents
+    .pipe(filter(n => n.preview != undefined))
+    .pipe(map(n => n.preview!))
 
 export const folderViewItemsChangedEvents = commanderEvents
     .pipe(filter(n => n.serviceItems != undefined))
