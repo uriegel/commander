@@ -1,5 +1,6 @@
 #if Linux
 
+using System.Security.Cryptography;
 using CsTools.Functional;
 using CsTools.HttpRequest;
 using GtkDotNet;
@@ -10,22 +11,25 @@ record SetPreviewParam(bool Set);
 
 static class TitleBar
 {
-    public static WidgetHandle New()
+    public static WidgetHandle New(ObjectRef<WebViewHandle> webView)
         => HeaderBar.New()
             .PackEnd(Progress.New())
             .PackEnd(ToggleButton
                         .New()
                         .Ref(togglePreview)
                         .IconName("gtk-print-preview")
-                        .OnClicked(OnTogglePreview));
+                        .OnClicked(() => OnTogglePreview(webView.Ref)));
 
     public static AsyncResult<Nothing, RequestError> SetPreview(SetPreviewParam param)
         => Ok<Nothing, RequestError>(0.ToNothing())
             .SideEffectWhenOk(_ => togglePreview.Ref.SetActive(param.Set))
             .ToAsyncResult();  
 
-    static void OnTogglePreview()
-        => Events.SendPreview(togglePreview.Ref.Active());
+    static void OnTogglePreview(WebViewHandle webView)
+    {
+        Events.SendPreview(togglePreview.Ref.Active());
+        webView.GrabFocus();
+    }
 
     static readonly ObjectRef<ToggleButtonHandle> togglePreview = new();
 }
@@ -33,4 +37,3 @@ static class TitleBar
 #endif
 
 // TODO Menu not fully synchronized when toggled here
-// TODO When toggled here set focus to commander
