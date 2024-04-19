@@ -96,7 +96,10 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 		copyErrorSubscription.current?.unsubscribe()
 		copyErrorSubscription.current = copyErrorEvents.subscribe(err => showError(err, setErrorText, "Fehler beim Kopieren: "))
 
-		previewEvents.subscribe(setShowViewer)
+		previewEvents.subscribe(set => {
+			setShowViewer(set)
+			showViewerRef.current = set
+		})
 
 		return () => subscription?.unsubscribe()
 	}, [])

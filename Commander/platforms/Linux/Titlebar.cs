@@ -13,12 +13,12 @@ static class TitleBar
 {
     public static WidgetHandle New(ObjectRef<WebViewHandle> webView)
         => HeaderBar.New()
-            .PackEnd(Progress.New())
             .PackEnd(ToggleButton
                         .New()
                         .Ref(togglePreview)
                         .IconName("gtk-print-preview")
-                        .OnClicked(() => OnTogglePreview(webView.Ref)));
+                        .OnClicked(() => OnTogglePreview(webView.Ref)))
+            .PackEnd(Progress.New());
 
     public static AsyncResult<Nothing, RequestError> SetPreview(SetPreviewParam param)
         => Ok<Nothing, RequestError>(0.ToNothing())
@@ -36,4 +36,3 @@ static class TitleBar
 
 #endif
 
-// TODO Menu not fully synchronized when toggled here
