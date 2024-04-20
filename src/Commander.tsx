@@ -75,6 +75,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 	const filesDropSubscription = useRef<Subscription | null>(null)
 	const getCredentialsSubscription = useRef<Subscription | null>(null)
 	const copyErrorSubscription = useRef<Subscription | null>(null)
+	const menuActionSubscription = useRef<Subscription | null>(null)
 	
 	useEffect(() => {
 		jsonPost<Nothing, ErrorType>({ method: "setpreview", payload: { set: showViewer} })		
@@ -189,6 +190,9 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 	}, [copyItemsToInactive])
 
 	const onMenuAction = useCallback(async (key: string) => {
+
+		console.log("Hallo")
+
 		if (key == "REFRESH") 
 			getActiveFolder()?.refresh()
 		else if (key == "END") 
@@ -249,7 +253,8 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 			showViewerRef.current = set
 		})
 
-		menuActionEvents.subscribe(onMenuAction)
+		menuActionSubscription.current?.unsubscribe()
+		menuActionSubscription.current = menuActionEvents.subscribe(onMenuAction)
 
 		return () => subscription?.unsubscribe()
 	}, [onMenuAction])
