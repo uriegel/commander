@@ -14,7 +14,7 @@ import './themes/adwaitaDark.css'
 import './themes/windows.css'
 import './themes/windowsDark.css'
 import { isWindows } from './globals'
-import { copyErrorEvents, filesDropEvents, getCredentialsEvents, previewEvents, progressChangedEvents, } from './requests/events'
+import { copyErrorEvents, filesDropEvents, getCredentialsEvents, menuActionEvents, previewEvents, progressChangedEvents, } from './requests/events'
 import { getCopyController } from './controller/copy/copyController'
 import FileViewer from './components/FileViewer'
 import { SpecialKeys } from 'virtual-table-react'
@@ -76,34 +76,6 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 	const getCredentialsSubscription = useRef<Subscription | null>(null)
 	const copyErrorSubscription = useRef<Subscription | null>(null)
 	
-	useEffect(() => {
-		const subscription = isWindows() ? progressChangedEvents.subscribe(e => {
-			if (e.isStarted) {
-				setProgressRevealed(true)
-				setProgressFinished(false)
-			}
-			else if (e.isFinished)
-				setProgressFinished(true)
-			else if (e.isDisposed) {
-				setProgress(0)
-				setProgressRevealed(false)
-			}
-			else 
-				setProgress(e.currentBytes/e.totalBytes)
-			setTotalMax(e.totalBytes)
-		}) : null
-
-		copyErrorSubscription.current?.unsubscribe()
-		copyErrorSubscription.current = copyErrorEvents.subscribe(err => showError(err, setErrorText, "Fehler beim Kopieren: "))
-
-		previewEvents.subscribe(set => {
-			setShowViewer(set)
-			showViewerRef.current = set
-		})
-
-		return () => subscription?.unsubscribe()
-	}, [])
-
 	useEffect(() => {
 		jsonPost<Nothing, ErrorType>({ method: "setpreview", payload: { set: showViewer} })		
 	}, [showViewer])
@@ -209,7 +181,14 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 	const onFocusLeft = () => activeFolderId.current = ID_LEFT
 	const onFocusRight = () => activeFolderId.current = ID_RIGHT
 
-	const onMenuAction = async (key: string) => {
+	const copyItems = useCallback(async (move: boolean) => {
+		const active = getActiveFolder()
+		const inactive = getInactiveFolder()
+		if (active && inactive)
+			copyItemsToInactive(inactive, move, active.getController(), active.getPath(), active.getSelectedItems(), active.id)
+	}, [copyItemsToInactive])
+
+	const onMenuAction = useCallback(async (key: string) => {
 		if (key == "REFRESH") 
 			getActiveFolder()?.refresh()
 		else if (key == "END") 
@@ -243,9 +222,39 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 			await copyItems(false)
 		else if (key == "MOVE")			
 			await copyItems(true)
-	}
+	}, [copyItems, dialog])
 
-    const onKeyDown = (evt: React.KeyboardEvent) => {
+	useEffect(() => {
+		const subscription = isWindows() ? progressChangedEvents.subscribe(e => {
+			if (e.isStarted) {
+				setProgressRevealed(true)
+				setProgressFinished(false)
+			}
+			else if (e.isFinished)
+				setProgressFinished(true)
+			else if (e.isDisposed) {
+				setProgress(0)
+				setProgressRevealed(false)
+			}
+			else 
+				setProgress(e.currentBytes/e.totalBytes)
+			setTotalMax(e.totalBytes)
+		}) : null
+
+		copyErrorSubscription.current?.unsubscribe()
+		copyErrorSubscription.current = copyErrorEvents.subscribe(err => showError(err, setErrorText, "Fehler beim Kopieren: "))
+
+		previewEvents.subscribe(set => {
+			setShowViewer(set)
+			showViewerRef.current = set
+		})
+
+		menuActionEvents.subscribe(onMenuAction)
+
+		return () => subscription?.unsubscribe()
+	}, [onMenuAction])
+
+	const onKeyDown = (evt: React.KeyboardEvent) => {
 		if (evt.code == "Tab" && !evt.shiftKey) {
 			getInactiveFolder()?.setFocus()
 			evt.preventDefault()
@@ -253,13 +262,6 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 		}
 	}
 	
-	const copyItems = async (move: boolean) => {
-		const active = getActiveFolder()
-		const inactive = getInactiveFolder()
-		if (active && inactive)
-			copyItemsToInactive(inactive, move, active.getController(), active.getPath(), active.getSelectedItems(), active.id)
-	}
-
 	const VerticalSplitView = () => (
 		<ViewSplit firstView={FolderLeft} secondView={FolderRight}></ViewSplit>
 	)

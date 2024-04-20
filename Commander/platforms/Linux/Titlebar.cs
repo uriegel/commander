@@ -44,17 +44,23 @@ static class TitleBar
             .PackEnd(Progress.New())
             .SideEffect(_ =>
                 app.AddActions([
-                    new("rename", () => Console.WriteLine("Rename"), "F2"),
-                    new("extendedrename", () => Console.WriteLine("Extended rename"), "<Ctrl>F2"),
-                    new("renameascopy", () => Console.WriteLine("Rename as copy"), "<Shift>F2"),
-                    new("copy", () => Console.WriteLine("copy"), "F5"),
-                    new("favorites", () => Console.WriteLine("Favorites"), "F1")
+                    new("rename", () => SendMenuAction(webView.Ref, "RENAME"), "F2"),
+                    new("extendedrename", () => SendMenuAction(webView.Ref, "EXTENDED_RENAME"), "<Ctrl>F2"),
+                    new("renameascopy", () => SendMenuAction(webView.Ref, "RENAME_AS_COPY"), "<Shift>F2"),
+                    new("copy", () => SendMenuAction(webView.Ref, "COPY"), "F5"),
+                    new("favorites", () => SendMenuAction(webView.Ref, "FAVORITES"), "F1")
                 ]));
 
     public static AsyncResult<Nothing, RequestError> SetPreview(SetPreviewParam param)
         => Ok<Nothing, RequestError>(0.ToNothing())
             .SideEffectWhenOk(_ => togglePreview.Ref.SetActive(param.Set))
             .ToAsyncResult();  
+
+    static void SendMenuAction(WebViewHandle webView, string action)
+    {
+        Events.SendMenuAction(action);
+        webView.GrabFocus();
+    }  
 
     static void OnTogglePreview(WebViewHandle webView)
     {

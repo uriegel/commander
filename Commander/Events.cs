@@ -56,7 +56,8 @@ record Events(
     ExifTime? ExifTime,
     ExtendedData? ExtendedData,
     RequestError? CopyError,
-    bool? Preview
+    bool? Preview,
+    string? MenuAction
 #if Windows
     , GetCredentials? GetCredentials = null
     , ServiceItem[]? ServiceItems = null
@@ -101,7 +102,10 @@ record Events(
         => Source.Send(DefaultEvents with { ExtendedData = extendedData });
 
     public static void SendPreview(bool active)
-        => Source.Send(DefaultEvents with { Preview= active });
+        => Source.Send(DefaultEvents with { Preview = active });
+
+    public static void SendMenuAction(string action)
+        => Source.Send(DefaultEvents with { MenuAction = action });
 
 #if Windows 
     public static void Credentials(string path)
@@ -119,7 +123,7 @@ record Events(
     public static void StartEvents()   
         => global::Theme.StartThemeDetection(n => Source.Send(ThemeChanged(n)));
 
-    static Events DefaultEvents { get; } = new(null, null, null, null, null, null, null, null, null);
+    static Events DefaultEvents { get; } = new(null, null, null, null, null, null, null, null, null, null);
 
     static Events ThemeChanged(string theme)
         => DefaultEvents with { Theme = theme };

@@ -71,6 +71,7 @@ type CommanderEvent = {
     extendedData?: ExtendedData
     showProgress?: boolean
     preview?: boolean
+    menuAction?: string
 }
 
 const toCommanderEvent = (event: MessageEvent) =>
@@ -92,6 +93,10 @@ export const windowStateChangedEvents = commanderEvents
 export const previewEvents = commanderEvents
     .pipe(filter(n => n.preview != undefined))
     .pipe(map(n => n.preview!))
+
+export const menuActionEvents = commanderEvents
+    .pipe(filter(n => n.menuAction != undefined))
+    .pipe(map(n => n.menuAction!))
 
 export const folderViewItemsChangedEvents = commanderEvents
     .pipe(filter(n => n.serviceItems != undefined))
