@@ -27,8 +27,12 @@ static class TitleBar
                                                         .AppendItem(MenuItem.New("Kopie _anlegen", "app.renameascopy"))))
                                                 .AppendItem(MenuItem.NewSection(null,
                                                     Menu.New()
-                                                        .AppendItem(MenuItem.New("_Kopieren", "app.copy"))))
-                                                )))
+                                                        .AppendItem(MenuItem.New("_Kopieren", "app.copy"))
+                                                        .AppendItem(MenuItem.New("_Verschieden", "app.move"))
+                                                        .AppendItem(MenuItem.New("_Löschen", "app.delete"))))
+                                                .AppendItem(MenuItem.NewSection(null,
+                                                    Menu.New()
+                                                        .AppendItem(MenuItem.New("_Ordner anlegen", "app.createfolder")))))))
                             .AppendItem(MenuItem.NewSection(null,
                                 Menu.New()
                                 .SubMenu("_Navigation", Menu.New()
@@ -48,6 +52,9 @@ static class TitleBar
                     new("extendedrename", () => SendMenuAction(webView.Ref, "EXTENDED_RENAME"), "<Ctrl>F2"),
                     new("renameascopy", () => SendMenuAction(webView.Ref, "RENAME_AS_COPY"), "<Shift>F2"),
                     new("copy", () => SendMenuAction(webView.Ref, "COPY"), "F5"),
+                    new("move", () => SendMenuAction(webView.Ref, "MOVE"), "F6"),
+                    new("delete", () => SendMenuAction(webView.Ref, "DELETE"), "Delete"),
+                    new("createfolder", () => SendMenuAction(webView.Ref, "CREATE_FOLDER"), "F7"),
                     new("favorites", () => SendMenuAction(webView.Ref, "FAVORITES"), "F1")
                 ]));
 
