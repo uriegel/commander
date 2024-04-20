@@ -38,7 +38,15 @@ static class TitleBar
                                 .SubMenu("_Navigation", Menu.New()
                                                 .AppendItem(MenuItem.NewSection(null,
                                                     Menu.New()
-                                                        .AppendItem(MenuItem.New("_Favoriten", "app.favorites")))))))))
+                                                        .AppendItem(MenuItem.New("_Favoriten", "app.favorites"))
+                                                        .AppendItem(MenuItem.New("_Gleichen Ordner öffnen", "app.adaptpath")))))))
+                            .AppendItem(MenuItem.NewSection(null,
+                                Menu.New()
+                                .SubMenu("_Selektion", Menu.New()
+                                                .AppendItem(MenuItem.NewSection(null,
+                                                    Menu.New()
+                                                        .AppendItem(MenuItem.New("_Alles", "app.selectall"))
+                                                        .AppendItem(MenuItem.New("_Selektion entfernen", "app.selectnone")))))))))
             .PackEnd(ToggleButton
                         .New()
                         .Ref(togglePreview)
@@ -55,7 +63,10 @@ static class TitleBar
                     new("move", () => SendMenuAction(webView.Ref, "MOVE"), "F6"),
                     new("delete", () => SendMenuAction(webView.Ref, "DELETE"), "Delete"),
                     new("createfolder", () => SendMenuAction(webView.Ref, "CREATE_FOLDER"), "F7"),
-                    new("favorites", () => SendMenuAction(webView.Ref, "FAVORITES"), "F1")
+                    new("favorites", () => SendMenuAction(webView.Ref, "FAVORITES"), "F1"),
+                    new("adaptpath", () => SendMenuAction(webView.Ref, "ADAPT_PATH"), "F9"),
+                    new("selectall", () => SendMenuAction(webView.Ref, "SEL_ALL")),
+                    new("selectnone", () => SendMenuAction(webView.Ref, "SEL_NONE"))
                 ]));
 
     public static AsyncResult<Nothing, RequestError> SetPreview(SetPreviewParam param)
