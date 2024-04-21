@@ -57,7 +57,6 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 	const folderLeft = useRef<FolderViewHandle>(null)
 	const folderRight = useRef<FolderViewHandle>(null)
 
-	const [autoMode, setAutoMode] = useState(false)
 	const [showHidden, setShowHidden] = useState(false)
 	const [showViewer, setShowViewer] = useState(false)
 	const showHiddenRef = useRef(false)
@@ -126,18 +125,6 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
         })
 	}, [dialog, copyItemsToInactive])
 
-	const setAndSaveAutoMode = (mode: boolean) => {
-		setAutoMode(mode)
-		localStorage.setItem("menuAutoHide", mode ? "true" : "false")
-	}
-
-	const toggleAutoModeDialog = async () => 
-		setAndSaveAutoMode(autoMode == false && ((await dialog.show({
-				text: "Soll das Menü verborgen werden? Aktivieren mit Alt-Taste",
-				btnOk: true,
-				btnCancel: true
-			}))?.result == ResultType.Ok))
-	
 	const toggleShowHiddenAndRefresh = () => {
 		showHiddenRef.current = !showHiddenRef.current
 		setShowHidden(showHiddenRef.current)
@@ -151,8 +138,6 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 	}
 
 	useEffect(() => {
-		if (!isWindows())
-			setAutoMode(localStorage.getItem("menuAutoHide") == "true")
 		folderLeft.current?.setFocus()
 	}, [])
 
@@ -190,9 +175,6 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 	}, [copyItemsToInactive])
 
 	const onMenuAction = useCallback(async (key: string) => {
-
-		console.log("Hallo")
-
 		if (key == "REFRESH") 
 			getActiveFolder()?.refresh()
 		else if (key == "END") 
@@ -288,12 +270,12 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 
 	return (
 		<>
-			<Titlebar progress={progress} progressFinished={progressFinished} progressRevealed={progressRevealed} totalSize={totalMax} 
+			{ isWindows() && (<Titlebar progress={progress} progressFinished={progressFinished} progressRevealed={progressRevealed} totalSize={totalMax} 
 				menu={(
-				<Menu autoMode={autoMode} onMenuAction={onMenuAction} toggleAutoMode={toggleAutoModeDialog}
+				<Menu autoMode={false} onMenuAction={onMenuAction} 
 				showHidden={showHidden} toggleShowHidden={toggleShowHiddenAndRefresh}
 				showViewer={showViewer} toggleShowViewer={toggleShowViewer} />
-			)} isMaximized ={isMaximized} />
+			)} isMaximized ={isMaximized} />) }
 			<ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
 			<Statusbar path={path.path} dirCount={itemCount.dirCount} fileCount={itemCount.fileCount}
 				errorText={errorText} setErrorText={setErrorText} statusText={statusText} />

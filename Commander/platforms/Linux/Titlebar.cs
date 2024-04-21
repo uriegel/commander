@@ -19,6 +19,9 @@ static class TitleBar
                         .Model(Menu.New()
                             .AppendItem(MenuItem.NewSection(null,
                                 Menu.New()
+                                .AppendItem(MenuItem.New("_Aktualisieren", "app.refresh"))))
+                            .AppendItem(MenuItem.NewSection(null,
+                                Menu.New()
                                 .SubMenu("_Datei", Menu.New()
                                                 .AppendItem(MenuItem.NewSection(null,
                                                     Menu.New()
@@ -32,16 +35,12 @@ static class TitleBar
                                                         .AppendItem(MenuItem.New("_Löschen", "app.delete"))))
                                                 .AppendItem(MenuItem.NewSection(null,
                                                     Menu.New()
-                                                        .AppendItem(MenuItem.New("_Ordner anlegen", "app.createfolder")))))))
-                            .AppendItem(MenuItem.NewSection(null,
-                                Menu.New()
+                                                        .AppendItem(MenuItem.New("_Ordner anlegen", "app.createfolder")))))
                                 .SubMenu("_Navigation", Menu.New()
                                                 .AppendItem(MenuItem.NewSection(null,
                                                     Menu.New()
                                                         .AppendItem(MenuItem.New("_Favoriten", "app.favorites"))
-                                                        .AppendItem(MenuItem.New("_Gleichen Ordner öffnen", "app.adaptpath")))))))
-                            .AppendItem(MenuItem.NewSection(null,
-                                Menu.New()
+                                                        .AppendItem(MenuItem.New("_Gleichen Ordner öffnen", "app.adaptpath")))))
                                 .SubMenu("_Selektion", Menu.New()
                                                 .AppendItem(MenuItem.NewSection(null,
                                                     Menu.New()
@@ -56,7 +55,12 @@ static class TitleBar
             .PackEnd(Progress.New())
             .SideEffect(_ =>
                 app.AddActions([
+                    new("refresh", () => SendMenuAction(webView.Ref, "REFRESH"), "<Ctrl>R"),
                     new("rename", () => SendMenuAction(webView.Ref, "RENAME"), "F2"),
+                    new("preview", () => {
+                        togglePreview.Ref.SetActive(!togglePreview.Ref.Active());
+                        Events.SendPreview(togglePreview.Ref.Active());                
+                    }, "F3"),
                     new("extendedrename", () => SendMenuAction(webView.Ref, "EXTENDED_RENAME"), "<Ctrl>F2"),
                     new("renameascopy", () => SendMenuAction(webView.Ref, "RENAME_AS_COPY"), "<Shift>F2"),
                     new("copy", () => SendMenuAction(webView.Ref, "COPY"), "F5"),
@@ -66,7 +70,8 @@ static class TitleBar
                     new("favorites", () => SendMenuAction(webView.Ref, "FAVORITES"), "F1"),
                     new("adaptpath", () => SendMenuAction(webView.Ref, "ADAPT_PATH"), "F9"),
                     new("selectall", () => SendMenuAction(webView.Ref, "SEL_ALL")),
-                    new("selectnone", () => SendMenuAction(webView.Ref, "SEL_NONE"))
+                    new("selectnone", () => SendMenuAction(webView.Ref, "SEL_NONE")),
+                    new("DEVTOOLS", () => SendMenuAction(webView.Ref, "SHOW_DEV_TOOLS"), "F12")
                 ]));
 
     public static AsyncResult<Nothing, RequestError> SetPreview(SetPreviewParam param)

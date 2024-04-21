@@ -1,9 +1,7 @@
 import Menubar, { MenuItemType } from 'menubar-react'
-import { isWindows } from '../globals'
 
 export interface MenuProps {
     autoMode: boolean
-    toggleAutoMode: ()=>void,
     showHidden: boolean,
     toggleShowHidden: ()=>void,
     showViewer: boolean,
@@ -11,7 +9,7 @@ export interface MenuProps {
     onMenuAction: (key: string)=>void
 }
 
-const Menu = ({ autoMode, toggleAutoMode, showHidden, toggleShowHidden, showViewer, toggleShowViewer,
+const Menu = ({ autoMode, showHidden, toggleShowHidden, showViewer, toggleShowViewer,
         onMenuAction }: MenuProps) => (
     <Menubar autoMode={autoMode} items={[{
         name: "_Datei",
@@ -122,12 +120,6 @@ const Menu = ({ autoMode, toggleAutoMode, showHidden, toggleShowHidden, showView
             shortcut: "F3"
         }, {
             type: MenuItemType.Separator
-        }, {
-            name: "_Menü verbergen",
-            checked: autoMode,
-            toggleChecked: toggleAutoMode,
-            type: MenuItemType.MenuCheckItem,
-            invisible: isWindows()
         }, {
             name: "_Vollbild",
             type: MenuItemType.MenuItem,

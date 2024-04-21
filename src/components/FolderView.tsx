@@ -548,8 +548,11 @@ let internalDrag = false
 
 export default FolderView
 
+// TODO ToggeButton hidden files Ctrl+H
+// TODO SHOW_FULLSCREEN
 // TODO Collect all errors in list, show ! in StatusBar, When clicked on, a dialog is shown => delete all button
-// TODO Hamburger Menu with Help overview Ctrl+H
+// TODO Hamburger Menu with Help overview
+
 // TODO Linux Error when closing
 // TODO Linux error handling Copy
 
