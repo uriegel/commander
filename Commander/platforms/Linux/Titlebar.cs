@@ -69,9 +69,9 @@ static class TitleBar
                     new("createfolder", () => SendMenuAction(webView.Ref, "CREATE_FOLDER"), "F7"),
                     new("favorites", () => SendMenuAction(webView.Ref, "FAVORITES"), "F1"),
                     new("adaptpath", () => SendMenuAction(webView.Ref, "ADAPT_PATH"), "F9"),
-                    new("selectall", () => SendMenuAction(webView.Ref, "SEL_ALL")),
-                    new("selectnone", () => SendMenuAction(webView.Ref, "SEL_NONE")),
-                    new("DEVTOOLS", () => SendMenuAction(webView.Ref, "SHOW_DEV_TOOLS"), "F12")
+                    new("selectall", () => SendMenuAction(webView.Ref, "SEL_ALL"), "KP_Add"),
+                    new("selectnone", () => SendMenuAction(webView.Ref, "SEL_NONE"), "KP_Subtract"),
+                    new("devtools", () => SendMenuAction(webView.Ref, "SHOW_DEV_TOOLS"), "F12"),
                 ]));
 
     public static AsyncResult<Nothing, RequestError> SetPreview(SetPreviewParam param)
