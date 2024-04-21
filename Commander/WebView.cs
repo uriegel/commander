@@ -58,13 +58,14 @@ static class Window
                 .JsonPost("commander/close", Close)
                 .JsonPost<GetFiles, GetFilesRequestResult, RequestError>("commander/getremotefiles", Remote.GetFiles)
                 .JsonPost<DeleteItemsParam, Nothing, RequestError>("commander/deleteitemsremote", Remote.Delete)
-                .JsonPost<SetPreviewParam, Nothing, RequestError>("commander/setpreview", TitleBar.SetPreview)
 #if Windows            
                 .JsonPost<Result<Credentials, RequestError>, Nothing, RequestError>("commander/sendcredentials", Directory.CredentialsReceived)            
                 .JsonPost("commander/cleanupservices", Services.CleanUp)            
                 .JsonPost("commander/getservices", Services.Get)            
                 .JsonPost<StartServicesParam, Nothing, RequestError>("commander/startservices", Services.Start)            
                 .JsonPost<StartServicesParam, Nothing, RequestError>("commander/stopservices", Services.Stop)  
+#else
+                .JsonPost<SetPreviewParam, Nothing, RequestError>("commander/setpreview", TitleBar.SetPreview)
 #endif            
                 .Build())
 #if DEBUG
