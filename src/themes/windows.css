@@ -18,7 +18,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-    :root .windowsDarkTheme {
+    :root .windowsTheme {
         --color: white;
         background-color: #2f2f2f;
         --drag-highlight: darkgreen;

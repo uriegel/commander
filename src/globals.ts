@@ -10,7 +10,7 @@ export const getPlatform = memoize(() => {
         : Platform.Linux
 })
 
-export const isWindows = memoize(() => navigator.platform.startsWith("win"))
+export const isWindows = memoize(() => navigator.platform.startsWith("Win"))
 
 function memoize<T>(funcToMemoize: () => T) {
     let memoized: T|null = null
