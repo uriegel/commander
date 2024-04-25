@@ -48,7 +48,6 @@ record ExifTime(
 );
 
 record Events(
-    string? Theme,
     CopyProgress? CopyProgress,
     WindowState? WindowState,
     FilesDrop? FilesDrop,
@@ -120,13 +119,7 @@ record Events(
 
     public static SseEventSource<Events> Source = SseEventSource<Events>.Create();   
 
-    public static void StartEvents()   
-        => global::Theme.StartThemeDetection(n => Source.Send(ThemeChanged(n)));
-
-    static Events DefaultEvents { get; } = new(null, null, null, null, null, null, null, null, null, null);
-
-    static Events ThemeChanged(string theme)
-        => DefaultEvents with { Theme = theme };
+    static Events DefaultEvents { get; } = new(null, null, null, null, null, null, null, null, null);
 
     static Events()
         => copyProgresses.Subscribe(n => Source.Send(DefaultEvents with { CopyProgress = n }));

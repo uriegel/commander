@@ -29,8 +29,6 @@ static class Window
 			.WithoutNativeTitlebar()
 			.OnFilesDrop(OnFilesDrop)
 			.OnWindowStateChanged(state => Events.WindowStateChanged(state == WebWindowNetCore.Data.WebWindowState.Maximized))
-			.QueryString(() => Platform.QueryString)
-            .OnStarted(() => new Thread(() => Events.StartEvents()).Start())
             .OnClosing(CopyProcessor.WantClose)
             .DebugUrl($"http://localhost:5173")
 			.ConfigureHttp(http => http

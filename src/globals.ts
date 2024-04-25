@@ -10,8 +10,7 @@ export const getPlatform = memoize(() => {
         : Platform.Linux
 })
 
-export const getTheme = memoize(() => new URLSearchParams(window.location.search).get("theme") || "adwaita")
-export const isWindows = memoize(() => getTheme().startsWith("windows"))
+export const isWindows = memoize(() => navigator.platform.startsWith("win"))
 
 function memoize<T>(funcToMemoize: () => T) {
     let memoized: T|null = null

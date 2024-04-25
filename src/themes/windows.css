@@ -1,18 +1,68 @@
-:root .windowsTheme {
-    --color: black;
-    --scaffolding-background-color: #eee;
-    --svg-image-path-color: black;
-    --restriction-background-color: white;
-    --exif-color: darkblue;
-    --selected-exif-color: yellow;
-    --vtr-background-color: transparent;
-    --titlebar-hover-color: lightgray;
+@media (prefers-color-scheme: light) {
+    :root .windowsTheme {
+        --color: black;
+        --scaffolding-background-color: #eee;
+        --svg-image-path-color: black;
+        --restriction-background-color: white;
+        --exif-color: darkblue;
+        --selected-exif-color: yellow;
+        --vtr-background-color: transparent;
+        --titlebar-hover-color: lightgray;
 
-    --vsr-grip-color : var(--scaffolding-background-color);
+        --vsr-grip-color : var(--scaffolding-background-color);
 
-    --mbr-menubar-background-color: var(--scaffolding-background-color);
-    --mbr-menubar-submenu-background-color: white;
-    --mbr-menubar-selected-background-color: var(--vtr-selected-background-color);
+        --mbr-menubar-background-color: var(--scaffolding-background-color);
+        --mbr-menubar-submenu-background-color: white;
+        --mbr-menubar-selected-background-color: var(--vtr-selected-background-color);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root .windowsDarkTheme {
+        --color: white;
+        background-color: #2f2f2f;
+        --drag-highlight: darkgreen;
+        --scaffolding-background-color: #181818;
+        --svg-image-path-color: var(--color);
+        --restriction-background-color: var(--scaffolding-background-color);
+        --exif-color: rgb(255, 255, 173);
+        --selected-exif-color: orange;
+        --titlebar-hover-color: gray;
+        
+        --vtr-color: white;
+        --vtr-background-color: transparent;
+        --vtr-selected-background-color: blue;
+        --vtr-scrollbar-grip-active-color: var(--vtr-selected-background-color);
+        --vtr-caption-color: #ddd;
+        --vtr-caption-background-color: #353535;
+        --vtr-caption-background-hover-color: #464646;
+        --vtr-caption-separator-color: #737373;
+    
+        --vsr-grip-color : var(--scaffolding-background-color);
+        --vsr-grip-hover-color : rgb(35, 35, 35);
+        --vsr-grip-active-color : rgb(65, 65, 65);    
+    
+        --mbr-menubar-color: white;
+        --mbr-menubar-background-color: var(--scaffolding-background-color);
+        --mbr-menubar-submenu-background-color: var(--scaffolding-background-color);
+        --mbr-menubar-selected-background-color: var(--vtr-selected-background-color);
+        --mbr-menubar-hover-color: darkblue;
+        --mbr-menubar-border-color: rgb(70, 70, 70);
+        --mbr-menubar-shadow-color: rgba(148, 148, 148, 0.2);
+        --mbr-menubar-selected-color: white;
+        --mbr-menubar-selected-background-color: var(--vtr-selected-background-color);
+        --mbr-menubar-separator-color: rgb(70, 70, 70);
+    
+        --wdr-main-color: white;
+        --wdr-main-background-color: #353535;
+        --wdr-button-background-color: #505050;
+        --wdr-button-color: white;
+        --wdr-button-hover-background-color: #4b4b4b;
+        --wdr-button-active-background-color: #242424;
+        --wdr-button-focus-color: blue;
+        --wdr-button-bordercolor: black;
+        --wdr-input-selection-color: #3584e4;
+    }    
 }
 
 .App.windowsTheme {

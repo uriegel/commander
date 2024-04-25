@@ -9,13 +9,11 @@ enum PlatformType
 
 static partial class Platform
 {
-    public static string QueryString { get; }
     public static PlatformType Value { get => getPlatform(); }
 
     static Platform()
     {
         getPlatform = Memoize(GetPlatform);
-        QueryString = $"?platform={(Value == PlatformType.Windows ? "windows" : "linux")}&theme={Theme.Get().GetThemeName()}";
     }
 
     static Func<PlatformType> getPlatform;

@@ -59,7 +59,6 @@ type ExtendedData = {
 }
 
 type CommanderEvent = {
-    theme?:        string
     copyProgress?: CopyProgress
     copyError: ErrorType
     windowState?: WindowState
@@ -81,10 +80,6 @@ const source = new EventSource("http://localhost:20000/commander/sse")
 
 const commanderEvents = fromEvent<MessageEvent>(source, 'message')
     .pipe(map(toCommanderEvent))
-
-export const themeChangedEvents = commanderEvents
-    .pipe(filter(n => n.theme != undefined))
-    .pipe(map(n => n.theme!))
 
 export const windowStateChangedEvents = commanderEvents
     .pipe(filter(n => n.windowState != undefined))

@@ -8,3 +8,8 @@ body {
 	height: 100vh;
 }
 
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: rgb(32, 32, 32);
+    } 
+}
