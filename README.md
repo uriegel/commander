@@ -3,8 +3,8 @@ A Norton Commander clone based on Electron (globally installed), C# and React
 
 ## Setup
 ```
+sudo apt install libadwaita-1-dev
 sudo apt install libgtk-4-dev
-sudo npm i -g electron
 npm i
 ```
 
@@ -36,8 +36,7 @@ on Windows start with elevated rights
 ## Legacy
 
 ### on Linux
-`sudo apt install libgtk-3-dev` (Gnome)
-
+`
 `sudo apt install gtk3-devel` (Fedora Gnome)
 
 `sudo apt install trash-cli`
