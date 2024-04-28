@@ -15,7 +15,9 @@
         --vtr-caption-background-hover-color: #e2e2e2;
         --vtr-caption-separator-color: var(--vtr-caption-color);
 
-        --vsr-grip-color : var(--scaffolding-background-color);
+        --vsr-grip-color: var(--scaffolding-background-color);
+        --vsr-grip-width: 2px;
+        --vsr-grip-padding: 3px;
 
         --mbr-menubar-background-color: var(--scaffolding-background-color);
         --mbr-menubar-submenu-background-color: var(--scaffolding-background-color);
@@ -65,11 +67,13 @@
         --vtr-caption-color: #ddd;
         --vtr-caption-background-color: #353535;
         --vtr-caption-background-hover-color: #464646;
-        --vtr-caption-separator-color: #737373;
+        --vtr-caption-separator-color: var(--scaffolding-background-color);
     
         --vsr-grip-color : var(--scaffolding-background-color);
         --vsr-grip-hover-color : #383838;
         --vsr-grip-active-color : #585858;    
+        --vsr-grip-width: 2px;
+        --vsr-grip-padding: 3px;
     
         --mbr-menubar-color: white;
         --mbr-menubar-background-color: var(--scaffolding-background-color);

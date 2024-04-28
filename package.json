@@ -21,7 +21,7 @@
     "react-progress-control": "^1.0.0",
     "rxjs": "^7.8.0",
     "typescript": "^5.2.2",
-    "view-split-react": "^1.0.1",
+    "view-split-react": "^1.1.0",
     "virtual-table-react": "^10.9.0",
     "vite": "^5.0.12",
     "web-dialog-react": "^4.1.0"
