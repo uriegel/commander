@@ -56,7 +56,8 @@ record Events(
     ExtendedData? ExtendedData,
     RequestError? CopyError,
     bool? Preview,
-    string? MenuAction
+    string? MenuAction,
+    bool? ShowHidden
 #if Windows
     , GetCredentials? GetCredentials = null
     , ServiceItem[]? ServiceItems = null
@@ -106,6 +107,9 @@ record Events(
     public static void SendMenuAction(string action)
         => Source.Send(DefaultEvents with { MenuAction = action });
 
+    public static void SendShowHidden(bool show)
+        => Source.Send(DefaultEvents with { ShowHidden = show });
+
 #if Windows 
     public static void Credentials(string path)
         => Source.Send(DefaultEvents with { GetCredentials = new(path) });
@@ -119,7 +123,7 @@ record Events(
 
     public static SseEventSource<Events> Source = SseEventSource<Events>.Create();   
 
-    static Events DefaultEvents { get; } = new(null, null, null, null, null, null, null, null, null);
+    static Events DefaultEvents { get; } = new(null, null, null, null, null, null, null, null, null, null);
 
     static Events()
         => copyProgresses.Subscribe(n => Source.Send(DefaultEvents with { CopyProgress = n }));

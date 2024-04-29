@@ -12,7 +12,7 @@ import './App.css'
 import './themes/adwaita.css'
 import './themes/windows.css'
 import { isWindows } from './globals'
-import { copyErrorEvents, filesDropEvents, getCredentialsEvents, menuActionEvents, previewEvents, progressChangedEvents, } from './requests/events'
+import { copyErrorEvents, filesDropEvents, getCredentialsEvents, menuActionEvents, previewEvents, progressChangedEvents, showHiddenEvents, } from './requests/events'
 import { getCopyController } from './controller/copy/copyController'
 import FileViewer from './components/FileViewer'
 import { SpecialKeys } from 'virtual-table-react'
@@ -231,6 +231,14 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 		previewEvents.subscribe(set => {
 			setShowViewer(set)
 			showViewerRef.current = set
+		})
+
+		showHiddenEvents.subscribe(set => {
+
+			showHiddenRef.current = set
+			setShowHidden(showHiddenRef.current)
+			folderLeft.current?.refresh(showHiddenRef.current)
+			folderRight.current?.refresh(showHiddenRef.current)
 		})
 
 		menuActionSubscription.current?.unsubscribe()

@@ -19,7 +19,8 @@ static class TitleBar
                         .Model(Menu.New()
                             .AppendItem(MenuItem.NewSection(null,
                                 Menu.New()
-                                .AppendItem(MenuItem.New("_Aktualisieren", "app.refresh"))))
+                                .AppendItem(MenuItem.New("_Aktualisieren", "app.refresh"))
+                                .AppendItem(MenuItem.New("_Versteckte Dateien", "app.showhidden"))))
                             .AppendItem(MenuItem.NewSection(null,
                                 Menu.New()
                                 .SubMenu("_Datei", Menu.New()
@@ -56,6 +57,7 @@ static class TitleBar
             .SideEffect(_ =>
                 app.AddActions([
                     new("refresh", () => SendMenuAction(webView.Ref, "REFRESH"), "<Ctrl>R"),
+                    new("showhidden", false, show => OnShowHidden(webView.Ref, show), "<Ctrl>H"),
                     new("rename", () => SendMenuAction(webView.Ref, "RENAME"), "F2"),
                     new("preview", () => {
                         togglePreview.Ref.SetActive(!togglePreview.Ref.Active());
@@ -82,6 +84,12 @@ static class TitleBar
     static void SendMenuAction(WebViewHandle webView, string action)
     {
         Events.SendMenuAction(action);
+        webView.GrabFocus();
+    }  
+
+    static void OnShowHidden(WebViewHandle webView, bool show)
+    {
+        Events.SendShowHidden(show);
         webView.GrabFocus();
     }  
 

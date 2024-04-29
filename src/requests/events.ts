@@ -71,6 +71,7 @@ type CommanderEvent = {
     showProgress?: boolean
     preview?: boolean
     menuAction?: string
+    showHidden?: boolean
 }
 
 const toCommanderEvent = (event: MessageEvent) =>
@@ -92,6 +93,10 @@ export const previewEvents = commanderEvents
 export const menuActionEvents = commanderEvents
     .pipe(filter(n => n.menuAction != undefined))
     .pipe(map(n => n.menuAction!))
+
+export const showHiddenEvents = commanderEvents
+    .pipe(filter(n => n.showHidden != undefined))
+    .pipe(map(n => n.showHidden!))
 
 export const folderViewItemsChangedEvents = commanderEvents
     .pipe(filter(n => n.serviceItems != undefined))
