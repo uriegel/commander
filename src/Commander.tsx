@@ -22,6 +22,7 @@ import { createFileSystemController } from './controller/filesystem'
 import './extensions/extensions'
 import Credentials, { CredentialsProps } from './components/dialogparts/Credentials'
 import { Err, ErrorType, Nothing, Ok, jsonPost } from 'functional-extensions'
+import LocationViewer from './components/LocationViewer'
 
 declare const webViewShowDevTools: () => void
 
@@ -268,7 +269,8 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 					.toLocaleLowerCase()
 		
 		return ext == ".jpg" || ext == ".png"
-			? (<PictureViewer path={path.path} latitude={path.latitude} longitude={path.longitude} />)
+			? (<LocationViewer latitude={path.latitude} longitude={path.longitude} />)
+			//? (<PictureViewer path={path.path} latitude={path.latitude} longitude={path.longitude} />)
 			: ext == ".mp3" || ext == ".mp4" || ext == ".mkv" || ext == ".wav"
 			? (<MediaPlayer path={path.path} />)
 			: ext == ".pdf"
