@@ -3,7 +3,6 @@ import { map, marker, tileLayer, Map as LMap, Marker } from "leaflet"
 import useResizeObserver from '@react-hook/resize-observer'
 import { useEffect, useRef } from "react"
 import './LocationViewer.css'
-import './LocationViewer.css'
 
 type LocationViewerProps = {
     latitude?: number
@@ -37,10 +36,8 @@ const LocationViewer = ({latitude, longitude }: LocationViewerProps) => {
         if (!first.current && longitude && latitude) {
             first.current = true
             myMap.current = map('map').setView([latitude, longitude], 13)
-            //tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             tileLayer('https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                maxZoom: 19
             }).addTo(myMap.current)
             locationMarker.current?.remove()
             locationMarker.current = marker([latitude, longitude]).addTo(myMap.current)

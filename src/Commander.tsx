@@ -23,6 +23,7 @@ import './extensions/extensions'
 import Credentials, { CredentialsProps } from './components/dialogparts/Credentials'
 import { Err, ErrorType, Nothing, Ok, jsonPost } from 'functional-extensions'
 import LocationViewer from './components/LocationViewer'
+import TrackViewer from './components/TrackViewer'
 
 declare const webViewShowDevTools: () => void
 
@@ -296,6 +297,8 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 			? (<MediaPlayer path={path.path} />)
 			: ext == ".pdf"
 			? (<FileViewer path={path.path} />)
+			: ext == ".gpx"
+			? (<TrackViewer path={path.path} />)
 			: (<div></div>)
 	}
 
