@@ -9,3 +9,12 @@
     top: 0px;    
     bottom: 0px;    
 }
+
+.bothViewer {
+    display: flex
+}
+
+.bothViewer>div {
+    flex-grow: 1;
+    width: 50%;
+}

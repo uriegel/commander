@@ -36,7 +36,10 @@ static class TitleBar
                                                         .AppendItem(MenuItem.New("_Löschen\t\t\t\t\t\t\tEntf", "app.delete"))))
                                                 .AppendItem(MenuItem.NewSection(null,
                                                     Menu.New()
-                                                        .AppendItem(MenuItem.New("_Ordner anlegen", "app.createfolder")))))
+                                                        .AppendItem(MenuItem.New("_Ordner anlegen", "app.createfolder"))))
+                                                .AppendItem(MenuItem.NewSection(null,
+                                                    Menu.New()
+                                                        .AppendItem(MenuItem.New("Vorschaumodus wechseln", "app.togglePreviewMode")))))
                                 .SubMenu("_Navigation", Menu.New()
                                                 .AppendItem(MenuItem.NewSection(null,
                                                     Menu.New()
@@ -63,6 +66,7 @@ static class TitleBar
                         togglePreview.Ref.SetActive(!togglePreview.Ref.Active());
                         Events.SendPreview(togglePreview.Ref.Active());                
                     }, "F3"),
+                    new("togglePreviewMode", () => SendMenuAction(webView.Ref, "TOGGLE_PREVIEW"), "<Ctrl>F3"),
                     new("extendedrename", () => SendMenuAction(webView.Ref, "EXTENDED_RENAME"), "<Ctrl>F2"),
                     new("renameascopy", () => SendMenuAction(webView.Ref, "RENAME_AS_COPY"), "<Shift>F2"),
                     new("copy", () => SendMenuAction(webView.Ref, "COPY"), "F5"),

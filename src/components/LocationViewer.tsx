@@ -50,7 +50,7 @@ const LocationViewer = ({latitude, longitude }: LocationViewerProps) => {
             //     myMap.fitBounds(e.target.getBounds())
             // }).addTo(myMap)
         }
-    }, [])
+    }, [longitude, latitude])
 
     return <div className="locationView" ref={root}>
         <div id="map" className="locationMap"></div>

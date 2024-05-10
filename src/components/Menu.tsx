@@ -119,6 +119,11 @@ const Menu = ({ autoMode, showHidden, toggleShowHidden, showViewer, toggleShowVi
             toggleChecked: toggleShowViewer,
             shortcut: "F3"
         }, {
+            name: "Vorschaumodus wechseln",
+            type: MenuItemType.MenuItem,
+            shortcut: "Strg+F3",
+            key: "TOGGLE_PREVIEW"
+        }, {
             type: MenuItemType.Separator
         }, {
             name: "_Vollbild",

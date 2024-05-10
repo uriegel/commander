@@ -26,6 +26,12 @@ import LocationViewer from './components/LocationViewer'
 
 declare const webViewShowDevTools: () => void
 
+enum PreviewMode {
+	Default,
+	Location,
+	Both
+}
+
 const ID_LEFT = "left"
 const ID_RIGHT = "right"
 
@@ -167,6 +173,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 
 	const onFocusLeft = () => activeFolderId.current = ID_LEFT
 	const onFocusRight = () => activeFolderId.current = ID_RIGHT
+	const [previewMode, setPreviewMode] = useState(PreviewMode.Default)
 
 	const copyItems = useCallback(async (move: boolean) => {
 		const active = getActiveFolder()
@@ -199,6 +206,12 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 			getActiveFolder()?.rename()
 		else if (key == "EXTENDED_RENAME")
 			getActiveFolder()?.extendedRename(dialog)
+		else if (key == "TOGGLE_PREVIEW")
+			setPreviewMode(previewMode == PreviewMode.Default
+				? PreviewMode.Location
+				: previewMode == PreviewMode.Location
+				? PreviewMode.Both
+				: PreviewMode.Default)
 		else if (key == "RENAME_AS_COPY")
 			getActiveFolder()?.renameAsCopy()
 		else if (key == "CREATE_FOLDER")
@@ -209,7 +222,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 			await copyItems(false)
 		else if (key == "MOVE")			
 			await copyItems(true)
-	}, [copyItems, dialog])
+	}, [copyItems, dialog, previewMode])
 
 	useEffect(() => {
 		const subscription = isWindows() ? progressChangedEvents.subscribe(e => {
@@ -269,8 +282,16 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 					.toLocaleLowerCase()
 		
 		return ext == ".jpg" || ext == ".png"
-			? (<LocationViewer latitude={path.latitude} longitude={path.longitude} />)
-			//? (<PictureViewer path={path.path} latitude={path.latitude} longitude={path.longitude} />)
+			? previewMode == PreviewMode.Default
+				? (<PictureViewer path={path.path} latitude={path.latitude} longitude={path.longitude} />)
+				: previewMode == PreviewMode.Location && path.latitude && path.longitude
+				? (<LocationViewer latitude={path.latitude} longitude={path.longitude} />)
+				: path.latitude && path.longitude
+				? <div className='bothViewer'>
+						<PictureViewer path={path.path} latitude={path.latitude} longitude={path.longitude} />
+						<LocationViewer latitude={path.latitude} longitude={path.longitude} />
+					</div>	
+				:(<PictureViewer path={path.path} latitude={path.latitude} longitude={path.longitude} />)
 			: ext == ".mp3" || ext == ".mp4" || ext == ".mkv" || ext == ".wav"
 			? (<MediaPlayer path={path.path} />)
 			: ext == ".pdf"
