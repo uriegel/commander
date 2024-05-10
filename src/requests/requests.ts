@@ -17,8 +17,14 @@ export type Version = {
     build: number
 }
 
+export type ExifData = {
+    dateTime?: string 
+    latitude?: number
+    longitude?: number
+}
+
 export type GetExtendedItemsResult = {
-    exifTimes: (string | null)[]
+    exifDatas: (ExifData | null)[]
     versions?: (Version | null)[]
     path: string
 }

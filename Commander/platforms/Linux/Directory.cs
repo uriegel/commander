@@ -220,7 +220,7 @@ static partial class Directory
 }
 
 record GetExtendedItemsResult(
-    DateTime?[] ExifTimes,
+    ExifData?[] ExifDatas,
     string Path
 );
 

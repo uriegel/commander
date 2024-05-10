@@ -187,16 +187,16 @@ static partial class Directory
     {
         extendedInfosCancellations = extendedInfosCancellations.Remove(id);
         extendedInfosCancellations = extendedInfosCancellations.Add(id, new());
-        DateTime? GetExifDate(string file)
+        ExifData? GetExifDate(string file)
         {
             if (extendedInfosCancellations
                     .GetValue(id)
                     ?.IsCancellationRequested == true)
                 return null;
-            return ExifReader.GetDateTime(path.AppendPath(file));
+            return ExifReader.GetExifData(path.AppendPath(file));
         }
 
-        DateTime? CheckGetExifDate(string item)
+        ExifData? CheckGetExifDate(string item)
             => item.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase) || item.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase)
                 ? GetExifDate(item)
                 : null;

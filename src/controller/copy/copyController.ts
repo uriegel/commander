@@ -85,11 +85,11 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle, fromLe
                                 iconPath: n.iconPath,
                                 size: n.size,
                                 time: n.time,
-                                exifDate: n.exifDate && check.exifDate ? n.exifDate : null,
+                                exifDate: n.exifData?.dateTime && check.exifData?.dateTime ? n.exifData?.dateTime : null,
                                 version: n.version,
                                 targetSize: check.size,
                                 targetTime: check.time,
-                                targetExifDate: n.exifDate && check.exifDate ? check.exifDate : null,
+                                targetExifDate: n.exifData?.dateTime && check.exifData?.dateTime ? check.exifData?.dateTime : null,
                                 targetVersion: check.version
                             } as ConflictItem
                             : undefined                

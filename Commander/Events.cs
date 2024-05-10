@@ -41,10 +41,10 @@ record DirectoryChangedEvent(
     string? OldName
 );
 
-record ExifTime(
+record ExifDataItem(
     string Path,
     string Name,
-    DateTime Exif
+    ExifData Exif
 );
 
 record Events(
@@ -52,7 +52,7 @@ record Events(
     WindowState? WindowState,
     FilesDrop? FilesDrop,
     DirectoryChangedEvent? DirectoryChanged,
-    ExifTime? ExifTime,
+    ExifDataItem? ExifData,
     ExtendedData? ExtendedData,
     RequestError? CopyError,
     bool? Preview,
@@ -95,8 +95,8 @@ record Events(
     public static void SendDirectoryChanged(string folderId, string? path, DirectoryChangedType type, DirectoryItem item, string? oldName = null)
         => Source.Send(DefaultEvents with { DirectoryChanged = new(folderId, path, type, item, oldName) });
 
-    public static void SendExif(string path, string name, DateTime exifTime)
-        => Source.Send(DefaultEvents with { ExifTime = new(path, name, exifTime) });
+    public static void SendExif(string path, string name, ExifData exifData)
+        => Source.Send(DefaultEvents with { ExifData = new(path, name, exifData) });
 
     public static void SendExtendedData(string path, string name, ExtendedData extendedData)
         => Source.Send(DefaultEvents with { ExtendedData = extendedData });

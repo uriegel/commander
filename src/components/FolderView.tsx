@@ -4,7 +4,7 @@ import VirtualTable, { OnSort, SelectableItem, SpecialKeys, TableColumns, Virtua
 import { checkController, Controller, createEmptyController, showError } from '../controller/controller'
 import { ROOT } from '../controller/root'
 import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
-import { Version } from '../requests/requests'
+import { ExifData, Version } from '../requests/requests'
 import { initializeHistory } from '../history'
 import { isWindows } from '../globals'
 import { DirectoryChangedType, exifTimeEvents, extendedDataEvents, folderViewItemsChangedEvents, getDirectoryChangedEvents } from '../requests/events'
@@ -28,7 +28,7 @@ export interface FolderViewItem extends SelectableItem {
     // FileSystem item
     iconPath?:    string
     time?:        string
-    exifDate?:    string
+    exifData?:    ExifData
     version?:     Version
     isHidden?:    boolean
     // Remotes item
@@ -72,7 +72,7 @@ interface FolderViewProp {
     id: string
     showHidden: boolean
     onFocus: () => void
-    onPathChanged: (path: string, isDir: boolean) => void
+    onPathChanged: (path: string, isDir: boolean, latitude?: number, longitude?: number) => void
     onItemsChanged: (count: ItemCount) => void
     onCopy: (move: boolean) => void
     onEnter: (item: FolderViewItem, keys: SpecialKeys) => void
@@ -354,7 +354,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     const onPositionChanged = useCallback(
-        (item: FolderViewItem) => onPathChanged(controller.current.appendPath(path, item.name), item.isDirectory == true),
+        (item: FolderViewItem) => onPathChanged(controller.current.appendPath(path, item.name),
+        item.isDirectory == true, item.exifData?.latitude, item.exifData?.longitude),
         [path, onPathChanged])         
 
     const onKeyDown = async (evt: React.KeyboardEvent) => {

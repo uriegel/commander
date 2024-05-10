@@ -30,6 +30,8 @@ const ID_RIGHT = "right"
 
 interface PathProp {
 	path: string
+	latitude?: number 
+	longitude?: number
 	isDirectory: boolean
 }
 
@@ -59,7 +61,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 	const [showViewer, setShowViewer] = useState(false)
 	const showHiddenRef = useRef(false)
 	const showViewerRef = useRef(false)
-	const [path, setPath] = useState<PathProp>({ path: "", isDirectory: false })
+	const [path, setPath] = useState<PathProp>({ path: "", latitude: undefined, longitude: undefined, isDirectory: false })
 	const [errorText, setErrorText] = useState<string | null>(null)
 	const [statusText, setStatusText] = useState<string | null>(null)
 	const [itemCount, setItemCount] = useState({dirCount: 0, fileCount: 0 })
@@ -140,7 +142,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 	}, [])
 
 	const onPathChanged = useCallback(
-		(path: string, isDirectory: boolean) => setPath({ path, isDirectory }
+		(path: string, isDirectory: boolean, latitude?: number, longitude?: number) => setPath({ path, isDirectory, latitude, longitude }
 	), [])
 
 	const onEnter = (item: FolderViewItem, keys: SpecialKeys) => {
@@ -266,7 +268,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 					.toLocaleLowerCase()
 		
 		return ext == ".jpg" || ext == ".png"
-			? (<PictureViewer path={path.path} />)
+			? (<PictureViewer path={path.path} latitude={path.latitude} longitude={path.longitude} />)
 			: ext == ".mp3" || ext == ".mp4" || ext == ".mkv" || ext == ".wav"
 			? (<MediaPlayer path={path.path} />)
 			: ext == ".pdf"

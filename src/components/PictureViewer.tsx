@@ -4,11 +4,15 @@ import { getViewerPath } from '../controller/controller'
 
 interface PictureViewerProps {
     path: string
+    latitude?: number
+    longitude?: number
 }
 
-const PictureViewer = ({ path }: PictureViewerProps) => {
+const PictureViewer = ({ path, latitude, longitude }: PictureViewerProps) => {
 
     const nocache = useRef(0)
+
+    console.log("PictureViewer", latitude, longitude)
 
     return (
         <div className='viewer'>

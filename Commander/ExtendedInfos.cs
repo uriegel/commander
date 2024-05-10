@@ -59,9 +59,9 @@ partial class ExtendedInfos : IDisposable
                             var extendedData = infos.GetExtendedData(infos.Path, name);
                             if (extendedData != null)
                                 Events.SendExtendedData(infos.Path, name, extendedData);
-                            var exif = ExifReader.GetDateTime(infos.Path.AppendPath(name));
-                            if (exif.HasValue)
-                                Events.SendExif(infos.Path, name, exif.Value);
+                            var exif = ExifReader.GetExifData(infos.Path.AppendPath(name));
+                            if (exif != null)
+                                Events.SendExif(infos.Path, name, exif);
                         }
                     }
                     catch {}

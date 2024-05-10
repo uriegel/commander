@@ -1,23 +1,36 @@
 using System.Globalization;
 using System.Text;
 
+record ExifData(
+    DateTime? DateTime,
+    double? Latitude,
+    double? Longitude
+);
+
 class ExifReader : IDisposable
 {
-    public static DateTime? GetDateTime(string path)
+    public static ExifData? GetExifData(string path)
     {
         try
         {
             using var reader = new ExifReader(path);
 
-            reader.GetTagValue<double>(ExifTags.GPSLatitude, out var ress);
-            reader.GetTagValue<double>(ExifTags.GPSLongitude, out var ress2);
+            var latitude = (double?)null;
+            var longitude = (double?)null;
+            var dateTime = (DateTime?)null;
 
+            if (reader.GetTagValue<double>(ExifTags.GPSLatitude, out var d))
+                latitude = d;
+            if (reader.GetTagValue<double>(ExifTags.GPSLongitude, out d))
+                longitude = d;
 
             if (reader.GetTagValue<DateTime>(ExifTags.DateTimeOriginal, out var res))
-                return res;
+                dateTime = res;
             else if (reader.GetTagValue(ExifTags.DateTime, out res))
-                return res;
-            else return null;
+                dateTime = res;
+            return latitude == null && longitude == null && dateTime == null
+                ? null
+                : new ExifData(dateTime, latitude, longitude);
         }
         catch 
         {

@@ -28,7 +28,7 @@ const renderBaseRow = (item: FolderViewItem) => [
 			? IconNameType.Folder
 			: IconNameType.File}
 		iconPath={item.iconPath} />),
-	(<span className={item.exifDate ? "exif" : "" } >{formatDateTime(item?.exifDate ?? item?.time)}</span>),
+	(<span className={item.exifData?.dateTime ? "exif" : "" } >{formatDateTime(item?.exifData?.dateTime ?? item?.time)}</span>),
 	formatSize(item.size)
 ]
 
@@ -182,15 +182,15 @@ const getExtendedItems = (id: string, path: string, items: FolderViewItem[]): As
 		}) 
 		: AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""}))
 
-const setExtendedItems = (items: FolderViewItem[], extended: GetExtendedItemsResult, sortColumn: number, sortDescending: boolean): FolderViewItem[] => 
-	sort(items.map((n, i) => !extended.exifTimes[i] && (extended.versions && !extended.versions[i])
+const setExtendedItems = (items: FolderViewItem[], extended: GetExtendedItemsResult, sortColumn: number, sortDescending: boolean): FolderViewItem[] =>
+	sort(items.map((n, i) => !extended.exifDatas[i] && (extended.versions && !extended.versions[i])
 		? n
-		: extended.exifTimes[i] && (extended.versions && !extended.versions[i])
-		? {...n, exifDate: extended.exifTimes[i] || undefined } 
-		: !extended.exifTimes[i] && (extended.versions && extended.versions[i])
-		? {...n, version: extended.versions[i] || undefined } 
-		: { ...n, version: (extended.versions && extended.versions[i] || undefined), exifDate: extended.exifTimes[i] || undefined }), sortColumn, sortDescending)
-		
+		: extended.exifDatas[i] && (extended.versions && !extended.versions[i])
+		? {...n, exifData: extended.exifDatas[i] || undefined }
+		: !extended.exifDatas[i] && (extended.versions && extended.versions[i])
+		? {...n, version: extended.versions[i] || undefined }
+		: { ...n, version: (extended.versions && extended.versions[i] || undefined), exifData: extended.exifDatas[i] || undefined }), sortColumn, sortDescending)
+
 const cancelExtendedItems = (id: string) => 
 	jsonPost<Nothing, ErrorType>({ method: "cancelextendeditems", payload: { id } })
 		
@@ -200,8 +200,8 @@ export const getSortFunction = (index: number, descending: boolean) => {
 		? (a: FolderViewItem, b: FolderViewItem) => a.name.localeCompare(b.name) 
 		: index == 1
 			? (a: FolderViewItem, b: FolderViewItem) => {	
-				const aa = a.exifDate ? a.exifDate : a.time || ""
-				const bb = b.exifDate ? b.exifDate : b.time || ""
+				const aa = a.exifData?.dateTime ? a.exifData?.dateTime : a.time || ""
+				const bb = b.exifData?.dateTime ? b.exifData?.dateTime : b.time || ""
 				return aa.localeCompare(bb) 
 			} 
 		: index == 2
