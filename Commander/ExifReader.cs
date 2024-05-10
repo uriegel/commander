@@ -8,6 +8,11 @@ class ExifReader : IDisposable
         try
         {
             using var reader = new ExifReader(path);
+
+            reader.GetTagValue<double>(ExifTags.GPSLatitude, out var ress);
+            reader.GetTagValue<double>(ExifTags.GPSLongitude, out var ress2);
+
+
             if (reader.GetTagValue<DateTime>(ExifTags.DateTimeOriginal, out var res))
                 return res;
             else if (reader.GetTagValue(ExifTags.DateTime, out res))
@@ -221,7 +226,7 @@ class ExifReader : IDisposable
                 if (numberOfComponents == 1)
                     result = (T)(object)ToURational(tagData);
                 else
-                    result = (T)(object)GetArray(tagData, fieldLength, ToURational);
+                    result = (T)(object)GetDoubleFromArray(tagData, fieldLength, ToURational);
                 return true;
             case 6:
                 if (numberOfComponents == 1)
@@ -430,6 +435,20 @@ class ExifReader : IDisposable
             convertedData.SetValue(converter(buffer), elementCount);
         }
         return convertedData;
+    }
+
+    static double GetDoubleFromArray<T>(byte[] data, int elementLengthBytes, ConverterMethod<T> converter)
+    {
+        var convertedData = Array.CreateInstance(typeof(T), data.Length / elementLengthBytes);
+        var buffer = new byte[elementLengthBytes];
+        for (int elementCount = 0; elementCount < data.Length / elementLengthBytes; elementCount++)
+        {
+            Array.Copy(data, elementCount * elementLengthBytes, buffer, 0, elementLengthBytes);
+            convertedData.SetValue(converter(buffer), elementCount);
+        }
+        return convertedData is double[] da
+            ? da[0] + da[1]/60 + da[2]/3600
+            : 0;
     }
 
     delegate T ConverterMethod<out T>(byte[] data);
