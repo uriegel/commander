@@ -1,4 +1,10 @@
+.trackViewContainer{
+    display: flex;
+    flex-direction: column;
+}
+
 .trackView {
+    flex-grow: 1;
     position: relative;
 }
 
