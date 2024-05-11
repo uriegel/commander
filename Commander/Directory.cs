@@ -350,6 +350,10 @@ record OnEnterParam(
     SpecialKeys? Keys
 );
 
+record GetTrackInfoParam(
+    string Path
+);
+
 enum IOErrorType {
     Unknown,
     AccessDenied,

@@ -5,6 +5,11 @@ import useResizeObserver from '@react-hook/resize-observer'
 import { useEffect, useRef } from "react"
 import './TrackViewer.css'
 import { getViewerPath } from '../controller/controller'
+import { ErrorType, jsonPost } from 'functional-extensions'
+
+type TrackInfo = {
+
+}
 
 type TrackViewerProps = {
     path: string
@@ -26,18 +31,6 @@ const TrackViewer = ({ path }: TrackViewerProps) => {
         }, 400);
     })
 
-    const getGpx = () => 
-        gpx.current = new GPX(getViewerPath(path), {
-            async: true,
-            marker_options: {
-                startIconUrl: 'http://localhost:20000/static/pinstart.png',
-                endIconUrl: 'http://localhost:20000/static/pinend.png',
-                shadowUrl: 'http://localhost:20000/static/pinshadow.png'
-              }
-        }).on('loaded', e => {
-            myMap.current?.fitBounds(e.target.getBounds())
-        }).addTo(myMap.current!)
-
     useEffect(() => {
         if (!first.current) {
             first.current = true
@@ -45,11 +38,19 @@ const TrackViewer = ({ path }: TrackViewerProps) => {
             tileLayer('https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png', {
                 maxZoom: 19
             }).addTo(myMap.current)
-            getGpx()
-        } else {
+        } else 
             gpx.current?.remove()
-            getGpx()
-        }
+        gpx.current = new GPX(getViewerPath(path), {
+            async: true,
+            marker_options: {
+                startIconUrl: 'http://localhost:20000/static/pinstart.png',
+                endIconUrl: 'http://localhost:20000/static/pinend.png',
+                shadowUrl: 'http://localhost:20000/static/pinshadow.png'
+                }
+        }).on('loaded', e => {
+            myMap.current?.fitBounds(e.target.getBounds())
+        }).addTo(myMap.current!)
+        jsonPost<TrackInfo, ErrorType>({ method: "gettrackinfo", payload: { path } })		
     }, [path])
 
     return <div className="trackView" ref={root}>
