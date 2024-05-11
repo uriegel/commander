@@ -61,13 +61,13 @@ static class TitleBar
                 app.AddActions([
                     new("refresh", () => SendMenuAction(webView.Ref, "REFRESH"), "<Ctrl>R"),
                     new("showhidden", false, show => OnShowHidden(webView.Ref, show), "<Ctrl>H"),
+                    new("extendedrename", () => SendMenuAction(webView.Ref, "EXTENDED_RENAME"), "<Ctrl>F2"),
                     new("rename", () => SendMenuAction(webView.Ref, "RENAME"), "F2"),
+                    new("togglePreviewMode", () => SendMenuAction(webView.Ref, "TOGGLE_PREVIEW"), "<Ctrl>F3"),
                     new("preview", () => {
                         togglePreview.Ref.SetActive(!togglePreview.Ref.Active());
                         Events.SendPreview(togglePreview.Ref.Active());                
                     }, "F3"),
-                    new("togglePreviewMode", () => SendMenuAction(webView.Ref, "TOGGLE_PREVIEW"), "<Ctrl>F3"),
-                    new("extendedrename", () => SendMenuAction(webView.Ref, "EXTENDED_RENAME"), "<Ctrl>F2"),
                     new("renameascopy", () => SendMenuAction(webView.Ref, "RENAME_AS_COPY"), "<Shift>F2"),
                     new("copy", () => SendMenuAction(webView.Ref, "COPY"), "F5"),
                     new("move", () => SendMenuAction(webView.Ref, "MOVE"), "F6"),
