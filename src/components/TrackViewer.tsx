@@ -22,9 +22,21 @@ const TrackViewer = ({ path }: TrackViewerProps) => {
     useResizeObserver(root, () => {
         clearTimeout(resizeTimer.current)
         resizeTimer.current = setTimeout(() => {
-            myMap.current?.invalidateSize({ debounceMoveend: true })    
-        }, 1000);
+            myMap.current?.invalidateSize({ debounceMoveend: true, animate: true })    
+        }, 400);
     })
+
+    const getGpx = () => 
+        gpx.current = new GPX(getViewerPath(path), {
+            async: true,
+            marker_options: {
+                startIconUrl: 'http://localhost:20000/static/pinstart.png',
+                endIconUrl: 'http://localhost:20000/static/pinend.png',
+                shadowUrl: 'http://localhost:20000/static/pinshadow.png'
+              }
+        }).on('loaded', e => {
+            myMap.current?.fitBounds(e.target.getBounds())
+        }).addTo(myMap.current!)
 
     useEffect(() => {
         if (!first.current) {
@@ -33,14 +45,10 @@ const TrackViewer = ({ path }: TrackViewerProps) => {
             tileLayer('https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png', {
                 maxZoom: 19
             }).addTo(myMap.current)
-            gpx.current = new GPX(getViewerPath(path), { async: true }).on('loaded', e => {
-                myMap.current?.fitBounds(e.target.getBounds())
-            }).addTo(myMap.current)
+            getGpx()
         } else {
             gpx.current?.remove()
-            gpx.current = new GPX(getViewerPath(path), { async: true }).on('loaded', e => {
-                myMap.current?.fitBounds(e.target.getBounds())
-            }).addTo(myMap.current!)
+            getGpx()
         }
     }, [path])
 

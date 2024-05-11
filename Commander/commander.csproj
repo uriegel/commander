@@ -27,7 +27,7 @@
       <DefineConstants>Linux</DefineConstants>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(Configuration)'=='Release'">
+  <ItemGroup>
     <EmbeddedResource Include="../resources/script.js">
       <LogicalName>webroot/script.js</LogicalName>
     </EmbeddedResource>
@@ -36,6 +36,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="../resources/index.html">
       <LogicalName>webroot/index.html</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../resources/pin-icon-start.png">
+      <LogicalName>webroot/pinstart.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../resources/pin-icon-end.png">
+      <LogicalName>webroot/pinend.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../resources/pin-shadow.png">
+      <LogicalName>webroot/pinshadow.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../resources/marker-icon-2x.png">
+      <LogicalName>webroot/marker-icon-2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../resources/marker-icon.png">
+      <LogicalName>webroot/marker-icon.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../resources/marker-shadow.png">
+      <LogicalName>webroot/marker-shadow.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup> 
 

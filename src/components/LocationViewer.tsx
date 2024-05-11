@@ -1,5 +1,5 @@
 import 'leaflet/dist/leaflet.css'
-import { map, marker, tileLayer, Map as LMap, Marker } from "leaflet"
+import { map, marker, tileLayer, Map as LMap, Marker, Icon } from "leaflet"
 import useResizeObserver from '@react-hook/resize-observer'
 import { useEffect, useRef } from "react"
 import './LocationViewer.css'
@@ -8,6 +8,8 @@ type LocationViewerProps = {
     latitude?: number
     longitude?: number
 }
+
+const myIcon = new Icon.Default({ imagePath: "http://localhost:20000/static/"})
 
 const LocationViewer = ({latitude, longitude }: LocationViewerProps) => {
 
@@ -20,15 +22,15 @@ const LocationViewer = ({latitude, longitude }: LocationViewerProps) => {
     useResizeObserver(root, () => {
         clearTimeout(resizeTimer.current)
         resizeTimer.current = setTimeout(() => {
-            myMap.current?.invalidateSize({ debounceMoveend: true })    
-        }, 1000);
+            myMap.current?.invalidateSize({ debounceMoveend: true, animate: true })    
+        }, 400);
     })
 
     useEffect(() => {
         if (first.current && longitude && latitude && myMap.current) {
             myMap.current?.setView([latitude, longitude], 13)
             locationMarker.current?.remove()
-            locationMarker.current = marker([latitude, longitude]).addTo(myMap.current)
+            locationMarker.current = marker([latitude, longitude], {icon: myIcon}).addTo(myMap.current)
         }
     }, [latitude, longitude])
 
@@ -40,12 +42,7 @@ const LocationViewer = ({latitude, longitude }: LocationViewerProps) => {
                 maxZoom: 19
             }).addTo(myMap.current)
             locationMarker.current?.remove()
-            locationMarker.current = marker([latitude, longitude]).addTo(myMap.current)
-
-            // const gpx = "/track.gpx"
-            // new GPX(gpx, { async: true }).on('loaded', e => {
-            //     myMap.fitBounds(e.target.getBounds())
-            // }).addTo(myMap)
+            locationMarker.current = marker([latitude, longitude], {icon: myIcon}).addTo(myMap.current)
         }
     }, [longitude, latitude])
 
