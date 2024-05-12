@@ -37,15 +37,6 @@
     <EmbeddedResource Include="../resources/index.html">
       <LogicalName>webroot/index.html</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="../resources/pin-icon-start.png">
-      <LogicalName>webroot/pinstart.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="../resources/pin-icon-end.png">
-      <LogicalName>webroot/pinend.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="../resources/pin-shadow.png">
-      <LogicalName>webroot/pinshadow.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="../resources/marker-icon-2x.png">
       <LogicalName>webroot/marker-icon-2x.png</LogicalName>
     </EmbeddedResource>
