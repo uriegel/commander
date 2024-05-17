@@ -130,7 +130,10 @@ static class Remote
         => new GetFilesRequestResult(items, path, items.Where(n => n.IsDirectory).Count(), items.Where(n => !n.IsDirectory).Count());
 
     static IpAndPath GetIpAndPath(this string url)
-        => new(url.StringBetween('/', '/'), "/" + url.SubstringAfter('/').SubstringAfter('/'));
+        => new(url.StringBetween('/', '/'),
+            url[7..].Contains('/')
+            ? "/" + url.SubstringAfter('/').SubstringAfter('/')
+            : "");
 
     static void SetLastWriteTime(this long unixTime, string targetFilename)
         => File.SetLastWriteTime(targetFilename, unixTime.FromUnixTime());

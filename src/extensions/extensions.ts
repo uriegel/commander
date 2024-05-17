@@ -25,7 +25,7 @@ String.prototype.getParentPath = function (): string {
 }
 
 String.prototype.appendPath = function (subPath: string): string {
-    return this.endsWith("/")
+    return this.endsWith("/") || subPath.startsWith('/')
         ? this + subPath
         : this + "/" + subPath
 }

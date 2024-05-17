@@ -98,7 +98,7 @@ const onEnter = (enterData: EnterData) =>
             ? startShowRemote(enterData.dialog, enterData.refresh)
             : {
                 processed: false, 
-                pathToSet: enterData.item.isParent ? ROOT : `remote/${enterData.item.ipAddress}/`
+                pathToSet: enterData.item.isParent ? ROOT : `remote/${enterData.item.ipAddress}`
             } ))
 
 const deleteItems = (_: string, items: FolderViewItem[], dialog: DialogHandle) => 
