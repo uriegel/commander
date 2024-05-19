@@ -58,7 +58,9 @@ static class RemoteDeleteProcessor
     {
         async Task<Nothing> Delete()
         {
-            // TODO cancellation
+            if (cancellationTokenSource.IsCancellationRequested)
+                return nothing;
+
             Events.RemoteDeleteChanged(new(job.Path.SubstringAfterLast('/'), totalCount, currentCount, 
                                             startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0, false, false, false));
             await Task.Delay(5000);
@@ -70,8 +72,6 @@ static class RemoteDeleteProcessor
 
         try
         {
-        // TODO perhaps not!   if (!cancellationTokenSource.IsCancellationRequested)
-        //         result = Delete(job);
             var res = Ok<Nothing, RequestError>(nothing);
             var ar = res.ToAsyncResult();
             return ar

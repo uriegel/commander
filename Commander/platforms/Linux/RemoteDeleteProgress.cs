@@ -64,7 +64,7 @@ static class DeleteProgress
                             Button.NewWithLabel("Abbrechen")
                             .OnClicked(() =>
                             {
-                                CopyProcessor.Cancel();
+                                RemoteDeleteProcessor.Cancel();
                                 revealer.Ref.RevealChild(false);
                             })
                         )
