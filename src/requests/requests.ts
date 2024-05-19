@@ -43,6 +43,7 @@ export enum IOError {
     Canceled,
     WrongCredentials,
     NoDiskSpace,
+    OperationInProgress,
     NoError,
     UacNotStarted = 1099
 }

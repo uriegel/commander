@@ -219,6 +219,10 @@ export const showError = (error: ErrorType, setError: (error: string)=>void, pre
             ? "Die Zugangsdaten sind falsch"
             : ioError === IOError.NoDiskSpace
             ? "Kein Speicherplatz mehr vorhanden"
+            : ioError === IOError.OperationInProgress                                                
+            ? "Es ist bereits eine Hintergrundaktion im Gange"
+            : ioError === IOError.Canceled
+            ? "Die Aktion wurde abgebrochen"
             : "Die Aktion konnte nicht ausgeführt werden"
 
     const getClientError = (error: ErrorType) => 

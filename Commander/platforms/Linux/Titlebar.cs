@@ -57,6 +57,7 @@ static class TitleBar
                         .Tooltip("Vorschau\tF3")
                         .OnClicked(() => OnTogglePreview(webView.Ref)))
             .PackEnd(Progress.New())
+            .PackEnd(DeleteProgress.New())
             .SideEffect(_ =>
                 app.AddActions([
                     new("refresh", () => SendMenuAction(webView.Ref, "REFRESH"), "<Ctrl>R"),

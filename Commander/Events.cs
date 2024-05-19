@@ -19,6 +19,15 @@ record CopyProgress(
     bool   IsDisposed
 );
 
+record RemoteDeleteProgress(
+    string FileName,
+    int    TotalCount,
+    int    CurrentCount,
+    bool   IsStarted,
+    bool   IsFinished,
+    bool   IsDisposed
+);
+
 record WindowState(bool Maximized);
 
 record FilesDrop(string Id, bool Move, string Path, DirectoryItem[] Items);
@@ -55,6 +64,7 @@ record Events(
     ExifDataItem? ExifData,
     ExtendedData? ExtendedData,
     RequestError? CopyError,
+    RequestError? DeleteError,
     bool? Preview,
     string? MenuAction,
     bool? ShowHidden
@@ -66,17 +76,18 @@ record Events(
 )
 {
     public static IObservable<CopyProgress> CopyProgresses { get => copyProgresses; }
+    public static IObservable<RemoteDeleteProgress> RemoteDeleteProgresses { get => remoteDeleteProgresses; }
+
+    public static void CopyStarted(bool move)
+        => copyProgresses
+            .SideEffect(_ => currentCopyId = GetCopyId())
+            .OnNext(new("", move, 0, 0, 0, 0, 0, 0, 0, true, false, false));
 
     public static void CopyProgressChanged(CopyProgress progress)
         => copyProgresses.OnNext(progress);
 
     public static void SendCopyError(RequestError error)
         => Source.Send(DefaultEvents with { CopyError = error });
-
-    public static void CopyStarted(bool move)
-        => copyProgresses
-            .SideEffect(_ => currentCopyId = GetCopyId())
-            .OnNext(new("", move, 0, 0, 0, 0, 0, 0, 0, true, false, false));
 
     public static async void CopyFinished()
     {
@@ -85,6 +96,26 @@ record Events(
         await Task.Delay(TimeSpan.FromSeconds(5));
         if (thisCopyId == currentCopyId)
             copyProgresses.OnNext(new("", false, 0, 0, 0, 0, 0, 0, 0, false, false, true));
+    }        
+
+    public static void RemoteDeleteStarted()
+        => remoteDeleteProgresses
+            .SideEffect(_ => currentDeleteId = GetCopyId())
+            .OnNext(new("", 0, 0, true, false, false));
+
+    public static void RemoteDeleteChanged(RemoteDeleteProgress progress)
+        => remoteDeleteProgresses.OnNext(progress);
+
+    public static void RemoteDeleteError(RequestError error)
+        => Source.Send(DefaultEvents with { DeleteError = error });
+
+    public static async void RemoteDeleteFinished()
+    {
+        var thisDeleteId = currentDeleteId;
+        remoteDeleteProgresses.OnNext(new("", 0, 0, false, true, false));
+        await Task.Delay(TimeSpan.FromSeconds(5));
+        if (thisDeleteId == currentDeleteId)
+            remoteDeleteProgresses.OnNext(new("", 0, 0, false, false, true));
     }        
 
     public static void WindowStateChanged(bool isMaximized)
@@ -123,12 +154,14 @@ record Events(
 
     public static SseEventSource<Events> Source = SseEventSource<Events>.Create();   
 
-    static Events DefaultEvents { get; } = new(null, null, null, null, null, null, null, null, null, null);
+    static Events DefaultEvents { get; } = new(null, null, null, null, null, null, null, null, null, null, null);
 
     static Events()
         => copyProgresses.Subscribe(n => Source.Send(DefaultEvents with { CopyProgress = n }));
 
     static readonly Func<int> GetCopyId = Incrementor.UseInt();
     static int currentCopyId;
+    static int currentDeleteId;
     static readonly Subject<CopyProgress> copyProgresses = new();
+    static readonly Subject<RemoteDeleteProgress> remoteDeleteProgresses = new();
 };

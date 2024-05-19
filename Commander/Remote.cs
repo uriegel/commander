@@ -31,55 +31,56 @@ static class Remote
                         .ToFilesResult(getFiles.Path)));
 
     public static Result<Nothing, RequestError> CopyFrom(string name, string path, string targetPath, Action<long, long> cb, bool move, CancellationToken cancellationToken)
-        => Request
-            .Run(path.GetIpAndPath().GetFile(name), true)
-            .Pipe(res => targetPath.AppendLinuxPath(name)
-                .Pipe(targetName => 
-                    res.BindAwait(msg => msg.UseAwait(
-                        msg => msg
-                            .Pipe(msg => msg.Content.Headers.ContentLength ?? 0)
-                            .Pipe(len =>
-                                File
-                                    .Create(targetName)
-                                    .WithProgress((t, c) => cb(c, len))
-                                    .UseAwait(target => msg.CopyToStream(target, cancellationToken))
-                            )
-                            .SideEffectWhenOk(msg => msg
-                                .GetHeaderLongValue("x-file-date")
-                                ?.SetLastWriteTime(targetName))
-                            .SideEffectWhenError(_ => targetName.SaveDelete())
-            ))))
-            .Select(_ => nothing)
-            .ToResult()
-            .Result;
+        => RemoteDeleteProcessor.IsProcessing() == false
+            ? Request
+                .Run(path.GetIpAndPath().GetFile(name), true)
+                .Pipe(res => targetPath.AppendLinuxPath(name)
+                    .Pipe(targetName => 
+                        res.BindAwait(msg => msg.UseAwait(
+                            msg => msg
+                                .Pipe(msg => msg.Content.Headers.ContentLength ?? 0)
+                                .Pipe(len =>
+                                    File
+                                        .Create(targetName)
+                                        .WithProgress((t, c) => cb(c, len))
+                                        .UseAwait(target => msg.CopyToStream(target, cancellationToken))
+                                )
+                                .SideEffectWhenOk(msg => msg
+                                    .GetHeaderLongValue("x-file-date")
+                                    ?.SetLastWriteTime(targetName))
+                                .SideEffectWhenError(_ => targetName.SaveDelete())
+                ))))
+                .Select(_ => nothing)
+                .ToResult()
+                .Result
+            : Error<Nothing, RequestError>(IOErrorType.OperationInProgress.ToError());
 
     public static Result<Nothing, RequestError> CopyTo(string name, string path, string targetPath, DateTime time, Action<long, long> cb, bool move, CancellationToken cancellationToken)
-        => File
-            .OpenRead(path.AppendPath(name))
-            .WithProgress((t, c) => cb(c, t))
-            .UseAwait(source =>
-                Request
-                    .Run(source.PutFile(targetPath.GetIpAndPath(), name, time), true))
-                    .Select(_ => nothing)
-            .ToResult()
-            .Result;
-
-    public static AsyncResult<Nothing, RequestError> Delete(DeleteItemsParam input)
-        => input
-            .Names
-            .Aggregate(Ok<Nothing, RequestError>(nothing), (acc, n) =>
-                acc.SelectMany(_ => 
+        => RemoteDeleteProcessor.IsProcessing() == false
+            ? File
+                .OpenRead(path.AppendPath(name))
+                .WithProgress((t, c) => cb(c, t))
+                .UseAwait(source =>
                     Request
-                        .Run(
-                            input
-                                .Path
-                                .GetIpAndPath()
-                                .DeleteFile(n))
+                        .Run(source.PutFile(targetPath.GetIpAndPath(), name, time), true))
                         .Select(_ => nothing)
-                        .ToResult()
-                        .Result
-                    ))
-                .ToAsyncResult();
+                .ToResult()
+                .Result
+            : Error<Nothing, RequestError>(IOErrorType.OperationInProgress.ToError());
+
+    // TODO delete enqueues Delete jobs, but only when not copying and vice versa. It checks in copy processor
+    // TODO RemoteDeleteProcessor deletes one job after another and sends progress
+    // TODO At first only for Linux version
+    // TODO Deletes only files!
+    public static AsyncResult<Nothing, RequestError> Delete(DeleteItemsParam input)
+        => CopyProcessor.IsProcessing() == false
+            ? RemoteDeleteProcessor
+                .AddItems(input
+                            .Names
+                            .Select(n => input.Path.AppendLinuxPath(n))
+                            .ToArray())
+            : Error<Nothing, RequestError>(IOErrorType.OperationInProgress.ToError())
+                 .ToAsyncResult();
 
     static Settings GetFile(this IpAndPath ipAndPath, string name) 
         => DefaultSettings with

@@ -367,7 +367,8 @@ enum IOErrorType {
     PathTooLong,
     Canceled,
     WrongCredentials,
-    NoDiskSpace
+    NoDiskSpace,
+    OperationInProgress
 }
 
 record IOResult(IOErrorType Type, string? Path = null);
@@ -393,6 +394,7 @@ static class IOErrorTypeExtensions
                                     IOErrorType.PathTooLong => "Path too long",
                                     IOErrorType.Canceled => "Canceled",
                                     IOErrorType.WrongCredentials => "Wrong credentials",
+                                    IOErrorType.OperationInProgress => "Operation in Progress",
                                     _ => "Unknown"
                                 });
 } 

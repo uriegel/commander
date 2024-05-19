@@ -28,10 +28,10 @@ static partial class CopyProcessor
     public static bool WantClose()
         => IsProcessing()
             .SideEffectIf(b => b,
-                _ => Progress.Show())
+                _ => Progress.Show()) 
                  == false;
 
-    static bool IsProcessing()
+    public static bool IsProcessing()
         => jobs.Reader.TryPeek(out var _) || totalCount > 0;
 
     static void PerformCancel()
