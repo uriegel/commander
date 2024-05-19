@@ -63,7 +63,8 @@ static class RemoteDeleteProcessor
 
             Events.RemoteDeleteChanged(new(job.Path.SubstringAfterLast('/'), totalCount, currentCount, 
                                             startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0, false, false, false));
-            await Task.Delay(5000);
+            await Remote.Delete(job.Path).ToAsync();
+            // TODO when error send error and cancel
             Interlocked.Increment(ref currentCount);
             Events.RemoteDeleteChanged(new(job.Path.SubstringAfterLast('/'), totalCount, currentCount, 
                                             startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0, false, false, false));

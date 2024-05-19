@@ -101,12 +101,18 @@ static class Remote
                                                             new DateTimeOffset(lastWriteTime).ToUnixTimeMilliseconds().ToString()))
         };
 
-    static Settings DeleteFile(this IpAndPath ipAndPath, string name) 
+    public static AsyncResult<Nothing, RequestError> Delete(string path)
+        => Request
+            .Run(path.GetIpAndPath().DeleteFile(), true)
+            .Select(m => nothing);
+
+
+    static Settings DeleteFile(this IpAndPath ipAndPath) 
         => DefaultSettings with
         {
             Method = HttpMethod.Delete,
             BaseUrl = $"http://{ipAndPath.Ip}:8080",
-            Url = $"/deletefile/{ipAndPath.Path.AppendLinuxPath(name)}",
+            Url = $"/deletefile/{ipAndPath.Path}",
             Timeout = 100_000_000,
         };
 
