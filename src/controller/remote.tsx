@@ -48,24 +48,21 @@ const deleteItems = (path: string, items: FolderViewItem[], dialog: DialogHandle
 		? "Möchtest Du die Datei löschen?"
 		: type == ItemsType.Files
 		? "Möchtest Du die Dateien löschen?"		
-		: type == ItemsType.Directory
-		? "Möchtest Du das Verzeichnis löschen?"
-		: type == ItemsType.Directories
-		? "Möchtest Du die Verzeichnisse löschen?"
-		: "Möchtest Du die Verzeichnisse und Dateien löschen?"	
+		: null
 	
-	return dialog.showDialog<Nothing, ErrorType>({
-			text,
-			btnOk: true,
-			btnCancel: true,
-			defBtnOk: true
-		}, res => res.result == ResultType.Ok
-		? new Ok(nothing)
-		: new Err({ status: IOError.Canceled, statusText: "" }))
-			.bindAsync(() => jsonPost<Nothing, ErrorType>({ method: "deleteitemsremote", payload: { path, names: items.map(n => n.name) }}))
+	return text != null
+		? dialog.showDialog<Nothing, ErrorType>({
+				text,
+				btnOk: true,
+				btnCancel: true,
+				defBtnOk: true
+			}, res => res.result == ResultType.Ok
+			? new Ok(nothing)
+			: new Err({ status: IOError.Canceled, statusText: "" }))
+			.bindAsync(() => jsonPost<Nothing, ErrorType>({ method: "deleteitemsremote", payload: { path, names: items.map(n => n.name) } }))
+		: AsyncResult.from(new Ok<Nothing, ErrorType>(nothing))
 }
 	
-
 export const getRemoteController = (controller: Controller | null): ControllerResult => 
     controller?.type == ControllerType.Remote
     ? ({ changed: false, controller })

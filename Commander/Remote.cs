@@ -68,10 +68,6 @@ static class Remote
                 .Result
             : Error<Nothing, RequestError>(IOErrorType.OperationInProgress.ToError());
 
-    // TODO delete enqueues Delete jobs, but only when not copying and vice versa. It checks in copy processor
-    // TODO RemoteDeleteProcessor deletes one job after another and sends progress
-    // TODO At first only for Linux version
-    // TODO Deletes only files!
     public static AsyncResult<Nothing, RequestError> Delete(DeleteItemsParam input)
         => CopyProcessor.IsProcessing() == false
             ? RemoteDeleteProcessor

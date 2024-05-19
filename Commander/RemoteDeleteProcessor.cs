@@ -54,8 +54,6 @@ static class RemoteDeleteProcessor
                                     e => ProcessError(e, job));
     }
 
-
-    // TODO Url escape (file with é)
     static AsyncResult<Nothing, RequestError> Process(DeleteJob job)
     {
         async Task<Nothing> Delete()
