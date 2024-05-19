@@ -23,6 +23,7 @@ record RemoteDeleteProgress(
     string FileName,
     int    TotalCount,
     int    CurrentCount,
+    int    DeleteTime,
     bool   IsStarted,
     bool   IsFinished,
     bool   IsDisposed
@@ -101,7 +102,7 @@ record Events(
     public static void RemoteDeleteStarted()
         => remoteDeleteProgresses
             .SideEffect(_ => currentDeleteId = GetCopyId())
-            .OnNext(new("", 0, 0, true, false, false));
+            .OnNext(new("", 0, 0, 0, true, false, false));
 
     public static void RemoteDeleteChanged(RemoteDeleteProgress progress)
         => remoteDeleteProgresses.OnNext(progress);
@@ -112,10 +113,10 @@ record Events(
     public static async void RemoteDeleteFinished()
     {
         var thisDeleteId = currentDeleteId;
-        remoteDeleteProgresses.OnNext(new("", 0, 0, false, true, false));
+        remoteDeleteProgresses.OnNext(new("", 0, 0, 0, false, true, false));
         await Task.Delay(TimeSpan.FromSeconds(5));
         if (thisDeleteId == currentDeleteId)
-            remoteDeleteProgresses.OnNext(new("", 0, 0, false, false, true));
+            remoteDeleteProgresses.OnNext(new("", 0, 0, 0, false, false, true));
     }        
 
     public static void WindowStateChanged(bool isMaximized)

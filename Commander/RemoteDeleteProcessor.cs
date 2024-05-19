@@ -22,8 +22,8 @@ static class RemoteDeleteProcessor
     public static bool WantClose()
         => IsProcessing()
             .SideEffectIf(b => b,
-                _ => Progress.Show()) // TODO DeleteProgress.Show
-                 == false;
+                _ => DeleteProgress.Show()) 
+                == false;
 
     public static void Cancel() => PerformCancel();
 
@@ -54,13 +54,19 @@ static class RemoteDeleteProcessor
                                     e => ProcessError(e, job));
     }
 
+
+    // TODO Url escape (file with é)
     static AsyncResult<Nothing, RequestError> Process(DeleteJob job)
     {
         async Task<Nothing> Delete()
         {
+            // TODO cancellation
+            Events.RemoteDeleteChanged(new(job.Path.SubstringAfterLast('/'), totalCount, currentCount, 
+                                            startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0, false, false, false));
             await Task.Delay(5000);
-            Interlocked.Decrement(ref currentCount);
-            Events.RemoteDeleteChanged(new(job.Path.SubstringAfterLast('/'), totalCount, currentCount, false, false, false));
+            Interlocked.Increment(ref currentCount);
+            Events.RemoteDeleteChanged(new(job.Path.SubstringAfterLast('/'), totalCount, currentCount, 
+                                            startTime.HasValue ? (int)(DateTime.Now - startTime.Value).TotalSeconds : 0, false, false, false));
             return nothing;
         }
 
@@ -137,16 +143,3 @@ record DeleteJob(
     bool IsCancelled
 );
 
-// TODO to CsTools
-
-static class NIXX
-{
-    public static string SubstringAfterLast(this string? str, char lastStartChar)
-    {
-        var posStart = str?.LastIndexOf(lastStartChar) + 1 ?? -1;
-        return posStart != -1 && posStart < str!.Length - 1
-        ? str[posStart..]
-        : "";
-    }
-
-}

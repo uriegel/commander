@@ -51,12 +51,6 @@ static class DeleteProgress
                                 .HAlign(Align.End), 2, 2, 1, 1)
                         )
                         .Append(
-                            ProgressBar.New()
-                            .Ref(progressBar)
-                            .ShowText()
-                            .Fraction(.0)
-                        )
-                        .Append(
                             Box.New(Orientation.Vertical)
                             .Append(Label.New("Gesamt:").HAlign(Align.Start))
                             .Append(
@@ -99,6 +93,7 @@ static class DeleteProgress
 
     public static void Show() => pop.Ref.Show();
 
+    // TODO Windows version
     static void RevealControl(RevealerHandle revealer)
         => Events.RemoteDeleteProgresses.Subscribe(n =>
             {
@@ -124,13 +119,13 @@ static class DeleteProgress
                         DeleteProgressTitle.Ref.Set($"Fortschritt beim Löschen ({n.CurrentCount})");
                         CurrentName.Ref.Set(n.FileName + " ");
                         FileCount.Ref.Set($"{n.CurrentCount}/{n.TotalCount}");
-                        // if (lastCopyTime != n.CopyTime)
-                        // {
-                        //     lastCopyTime = n.CopyTime;
-                        //     Duration.Ref.Set(n.CopyTime.FormatSeconds());
-                        //     if (n.CurrentBytes > 0)
-                        //         TotalDuration.Ref.Set($"{((int)(n.CopyTime * n.TotalBytes / n.CurrentBytes)).FormatSeconds()}");
-                        // }
+                        if (lastDeleteTime != n.DeleteTime)
+                        {
+                            lastDeleteTime = n.DeleteTime;
+                            Duration.Ref.Set(n.DeleteTime.FormatSeconds());
+                            if (n.CurrentCount > 0)
+                                TotalDuration.Ref.Set($"{((int)(n.DeleteTime * n.TotalCount / n.CurrentCount)).FormatSeconds()}");
+                        }
                     });
                 }
             });
@@ -150,7 +145,7 @@ static class DeleteProgress
 
     static RGB rgbActive = rgbFill;
     static float progress = 0.0f;
-    static int lastCopyTime;
+    static int lastDeleteTime;
 }    
 
 #endif
