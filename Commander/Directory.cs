@@ -321,6 +321,9 @@ record DeleteItemsParam(
     string[] Names
 );
 
+
+record CreateDirectoryParam(string Path);
+
 record CopyItem(
     string Name,
     bool? IsDirectory,

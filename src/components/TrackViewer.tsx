@@ -40,16 +40,11 @@ const TrackViewer = ({ path }: TrackViewerProps) => {
                 const trk = n.trackPoints?.map(n => [n.latitude!, n.longitude!])
                 if (trk) {
                     setTrack(trk)
-
-                    var maxLat = trk.reduce((prev, curr) => Math.max(prev, curr[0]), trk[0][0])
-                    var minLat = trk.reduce((prev, curr) => Math.min(prev, curr[0]), trk[0][0])
-                    var maxLng = trk.reduce((prev, curr) => Math.max(prev, curr[1]), trk[0][1])
-                    var minLng = trk.reduce((prev, curr) => Math.min(prev, curr[1]), trk[0][1])
-                    console.log("min", maxLat, minLat, maxLng, minLng)
-    
-                    myMap.current?.fitBounds([[maxLat, maxLng], [minLat, minLng]], {
-                        //padding: [20, 20]
-                    })
+                    const maxLat = trk.reduce((prev, curr) => Math.max(prev, curr[0]), trk[0][0])
+                    const minLat = trk.reduce((prev, curr) => Math.min(prev, curr[0]), trk[0][0])
+                    const maxLng = trk.reduce((prev, curr) => Math.max(prev, curr[1]), trk[0][1])
+                    const minLng = trk.reduce((prev, curr) => Math.min(prev, curr[1]), trk[0][1])
+                    myMap.current?.fitBounds([[maxLat, maxLng], [minLat, minLng]])
                 }
             }, e => console.error(e))
     }, [path])

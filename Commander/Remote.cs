@@ -10,8 +10,9 @@ using CsTools;
 
 using static CsTools.Core;
 
-// TODO: TODO in Android Commander Engine: CopyFileToRemote: copy to remote file "copytoremote", then rename it to the correct filename
-// TODO: CreateDirectory
+// TODO: gpx from remote: gettrackinfo from remote
+// TODO: range for remote
+// TODO: in Android Commander Engine: CopyFileToRemote: copy to remote file "copytoremote", then rename it to the correct filename
 // TODO: Rename File
 // TODO: Rename Directory
 // TODO: Copy Directories from local to remote
@@ -78,12 +79,25 @@ static class Remote
             : Error<Nothing, RequestError>(IOErrorType.OperationInProgress.ToError())
                  .ToAsyncResult();
 
+    public static AsyncResult<Nothing, RequestError> CreateDirectory(CreateDirectoryParam input)
+        => Request
+            .Run(input.Path.GetIpAndPath().PostCreateDirectory(), true)
+            .Select(m => nothing);
+
     static Settings GetFile(this IpAndPath ipAndPath, string name) 
         => DefaultSettings with
         {
             Method = HttpMethod.Get,
             BaseUrl = $"http://{ipAndPath.Ip}:8080",
             Url = $"/downloadfile/{ipAndPath.Path.AppendLinuxPath(name)}",
+        };
+
+    static Settings PostCreateDirectory(this IpAndPath ipAndPath) 
+        => DefaultSettings with
+        {
+            Method = HttpMethod.Post,
+            BaseUrl = $"http://{ipAndPath.Ip}:8080",
+            Url = $"/createdirectory/{ipAndPath.Path}",
         };
 
     static Settings PutFile(this Stream streamToPost, IpAndPath ipAndPath, string name, DateTime lastWriteTime) 
@@ -105,7 +119,6 @@ static class Remote
         => Request
             .Run(path.GetIpAndPath().DeleteFile(), true)
             .Select(m => nothing);
-
 
     static Settings DeleteFile(this IpAndPath ipAndPath) 
         => DefaultSettings with

@@ -44,14 +44,17 @@ const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolea
 const deleteItems = (path: string, items: FolderViewItem[], dialog: DialogHandle) => {
 
 	const type = getItemsType(items)
-	const text = type == ItemsType.File
+	const text = type == ItemsType.Directory
+		? "Möchtest Du das Verzeichnis löschen?"
+		: type == ItemsType.Directories
+		? "Möchtest Du die Verzeichnisse löschen?"
+		: type == ItemsType.File
 		? "Möchtest Du die Datei löschen?"
 		: type == ItemsType.Files
 		? "Möchtest Du die Dateien löschen?"		
-		: null
-	
-	return text != null
-		? dialog.showDialog<Nothing, ErrorType>({
+		: "Möchtest Du die Verzeichnisse und Dateien löschen?"	
+
+	return dialog.showDialog<Nothing, ErrorType>({
 				text,
 				btnOk: true,
 				btnCancel: true,
@@ -60,8 +63,20 @@ const deleteItems = (path: string, items: FolderViewItem[], dialog: DialogHandle
 			? new Ok(nothing)
 			: new Err({ status: IOError.Canceled, statusText: "" }))
 			.bindAsync(() => jsonPost<Nothing, ErrorType>({ method: "deleteitemsremote", payload: { path, names: items.map(n => n.name) } }))
-		: AsyncResult.from(new Ok<Nothing, ErrorType>(nothing))
 }
+
+const createFolder = (path: string, item: FolderViewItem, dialog: DialogHandle) => 
+	dialog.showDialog<string, ErrorType>({
+		text: "Neuen Ordner anlegen",
+		inputText: !item.isParent ? item.name : "",
+		btnOk: true,
+		btnCancel: true,
+		defBtnOk: true
+	}, res => res.result == ResultType.Ok && res.input
+	? new Ok(res.input)
+	: new Err({ status: IOError.Canceled, statusText: "" }))
+		.bindAsync(name => jsonPost<Nothing, ErrorType>({ method: "createdirectoryremote", payload: { path: path.appendPath(name) } })
+							.map(() => name))
 	
 export const getRemoteController = (controller: Controller | null): ControllerResult => 
     controller?.type == ControllerType.Remote
@@ -105,7 +120,7 @@ export const getRemoteController = (controller: Controller | null): ControllerRe
 		rename: () => AsyncResult.from(new Ok<string, ErrorType>("")),
 		extendedRename: () => AsyncResult.from(new Err<Controller, Nothing>(nothing)),
 		renameAsCopy: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
-        createFolder: () => AsyncResult.from(new Ok<string, ErrorType>("")),
+        createFolder,
         deleteItems,
 		onSelectionChanged: () => { },
 		cleanUp: () => { }
