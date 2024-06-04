@@ -267,11 +267,11 @@ record Version(
 );
 
 record GetExtendedItemsResult(
-    DateTime?[] ExifTimes,
+    ExifData?[] ExifDatas,
     Version?[]? Versions,
     string Path
 ) {
-    public GetExtendedItemsResult(DateTime?[] exifTimes, string path)
+    public GetExtendedItemsResult(ExifData?[] exifTimes, string path)
         : this(exifTimes, null, path) {}
 };
 

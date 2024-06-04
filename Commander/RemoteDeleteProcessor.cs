@@ -19,12 +19,6 @@ static class RemoteDeleteProcessor
             .ToAsyncResult();
     }
 
-    public static bool WantClose()
-        => IsProcessing()
-            .SideEffectIf(b => b,
-                _ => DeleteProgress.Show()) 
-                == false;
-
     public static void Cancel() => PerformCancel();
 
     public static bool IsProcessing()
