@@ -24,7 +24,7 @@ static class Remote
             .GetIpAndPath()
             .Pipe(ipPath =>
                 ipPath.GetRequest()
-                    .Get<RemoteItem[]>($"getfiles{ipPath.Path}")
+                    .Get<RemoteItem[]>($"getfiles{ipPath.Path}", true)
                     .Select(n => n
                         .Select(ToDirectoryItem)
                         .Where(n => getFiles.ShowHiddenItems || !n.IsHidden)

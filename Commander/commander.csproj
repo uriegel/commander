@@ -52,7 +52,7 @@
 
 
 <ItemGroup>
-  <PackageReference Include="CsTools" Version="7.16.2" />
+  <PackageReference Include="CsTools" Version="7.17.0" />
 </ItemGroup>
 
 
