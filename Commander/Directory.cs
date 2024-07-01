@@ -201,7 +201,7 @@ static partial class Directory
                 ? GetExifDate(item)
                 : null;
 
-        return Ok<GetExtendedItemsResult, GetFilesError>(new(items.Select(CheckGetExifDate).ToArray(), path))
+        return Ok<GetExtendedItemsResult, GetFilesError>(new(items.Select(CheckGetExifDate).ToArray(), null, path))
                     .ToAsyncResult();
     }
 
