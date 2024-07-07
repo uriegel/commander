@@ -13,7 +13,7 @@ using CsTools.HttpRequest;
 
 static partial class Directory
 {
-    public static AsyncResult<GetExtendedItemsResult, GetFilesError> GetExtendedItems(GetExtendedItems param)
+    public static AsyncResult<GetExtendedItemsResult, RequestError> GetExtendedItems(GetExtendedItems param)
         => GetExtendedItems(param.Id, param.Path, param.Items);
 
     public static AsyncResult<DirectoryInfo, RequestError> Validate(this DirectoryInfo info)

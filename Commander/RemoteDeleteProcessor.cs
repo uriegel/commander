@@ -95,7 +95,7 @@ static class RemoteDeleteProcessor
 
     static Task<DeleteJob[]> GetCurrentJobs()
     {
-        async IAsyncEnumerable<DeleteJob> GetCurrentJobs()
+        static async IAsyncEnumerable<DeleteJob> GetCurrentJobs()
         {
             while (true)
                 if (jobs.Reader.TryPeek(out var _) != false) 
@@ -115,7 +115,7 @@ static class RemoteDeleteProcessor
         Events.SendCopyError(err);
     }
 
-    static Task ProcessError(RequestError err, DeleteJob job)
+    static Task ProcessError(RequestError err, DeleteJob _)
         => ProcessError(err);
 
     static Task Bypass(Nothing _)

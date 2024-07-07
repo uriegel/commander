@@ -310,7 +310,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                             }, () => setStatusText(null))
                 },
                 err => {
-                    console.log("err", err)
+                    console.log("err", err, controller.current.getPath())
                     setPath(controller.current.getPath())
                     showError(err, setError)
                 }

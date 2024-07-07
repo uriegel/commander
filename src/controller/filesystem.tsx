@@ -11,12 +11,6 @@ import { IconNameType } from "../enums"
 import { AsyncResult, Err, ErrorType, Nothing, Ok, jsonPost, nothing } from "functional-extensions"
 import { DirectoryChangedEvent, DirectoryChangedType } from "../requests/events"
 
-type GetItemsError = {
-    status: number 
-    statusText: string
-    path:  string
-}
-
 const platform = getPlatform()
 const driveLength = platform == Platform.Windows ? 3: 1
 
@@ -83,7 +77,7 @@ export const createFileSystemController = (): Controller => {
 		setExtendedItems,
 		cancelExtendedItems,
 		getItems: (id, path, showHiddenItems, sortIndex, sortDescending, mount) => 
-			jsonPost<GetItemsResult, GetItemsError>({ method: "getfiles", payload: { id, path, showHiddenItems, mount } })
+			jsonPost<GetItemsResult, ErrorType>({ method: "getfiles", payload: { id, path, showHiddenItems, mount } })
 				.map(ok => {
 					currentPath = ok.path
 					return { ...ok, items: addParent(sortItems(ok.items, getSortFunction(sortIndex, sortDescending))) }

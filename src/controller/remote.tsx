@@ -78,51 +78,56 @@ const createFolder = (path: string, item: FolderViewItem, dialog: DialogHandle) 
 		.bindAsync(name => jsonPost<Nothing, ErrorType>({ method: "createdirectoryremote", payload: { path: path.appendPath(name) } })
 							.map(() => name))
 	
-export const getRemoteController = (controller: Controller | null): ControllerResult => 
-    controller?.type == ControllerType.Remote
-    ? ({ changed: false, controller })
-    : ({ changed: true, controller: { 
-        type: ControllerType.Remote, 
-        id: REMOTE,
-        getColumns,
-		getItems: (id, path, showHiddenItems, sortIndex, sortDescending) => 
-			// TODO not ErrorType but GetItemsError
-			jsonPost<GetItemsResult, ErrorType>({ method: "getremotefiles", payload: { id, path, showHiddenItems } })
-				.map(ok => ({ ...ok, items: addParent(sortItems(ok.items, getSortFunction(sortIndex, sortDescending)))})),
-		updateItems: ()=>null,
-		getPath: () => REMOTE,
-		getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
-		setExtendedItems: items => items,
-		cancelExtendedItems: () => { },
-		onEnter: ({ path, item }) => 
-			AsyncResult.from(new Ok<OnEnterResult, ErrorType>(
-				item.isParent && path.split("/").filter(n => n.length > 0).sideEffectForEach(n => console.log("Eintrag", n)).length - 1 == 1
-				?  ({
-					processed: false, 
-					pathToSet: REMOTES,
-					latestPath: path
-				}) 
-				: item.isParent
-				? ({
-					processed: false, 
-					pathToSet: path.getParentPath(),
-					latestPath: path.extractSubPath()
-				}) 
-				: item.isDirectory
-				? ({
-					processed: false, 
-					pathToSet: path.appendPath(item.name)
-				}) 
-				: { processed: true })),
-        sort,
-        itemsSelectable: true,
-        appendPath: (path: string, subPath: string) => path.appendPath(subPath),
-		rename: () => AsyncResult.from(new Ok<string, ErrorType>("")),
-		extendedRename: () => AsyncResult.from(new Err<Controller, Nothing>(nothing)),
-		renameAsCopy: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
-        createFolder,
-        deleteItems,
-		onSelectionChanged: () => { },
-		cleanUp: () => { }
-    }})
-
+export const getRemoteController = (controller: Controller | null): ControllerResult => {
+	let currentPath = ""
+	return controller?.type == ControllerType.Remote
+		? ({ changed: false, controller })
+		: ({
+			changed: true, controller: {
+				type: ControllerType.Remote,
+				id: REMOTE,
+				getColumns,
+				getItems: (id, path, showHiddenItems, sortIndex, sortDescending) =>
+					jsonPost<GetItemsResult, ErrorType>({ method: "getremotefiles", payload: { id, path, showHiddenItems } })
+						.map(ok => {
+							currentPath = ok.path
+							return { ...ok, items: addParent(sortItems(ok.items, getSortFunction(sortIndex, sortDescending))) }
+						}),
+				updateItems: () => null,
+				getPath: () => currentPath,
+				getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({ status: IOError.Canceled, statusText: "" })),
+				setExtendedItems: items => items,
+				cancelExtendedItems: () => { },
+				onEnter: ({ path, item }) =>
+					AsyncResult.from(new Ok<OnEnterResult, ErrorType>(
+						item.isParent && path.split("/").filter(n => n.length > 0).sideEffectForEach(n => console.log("Eintrag", n)).length - 1 == 1
+							? ({
+								processed: false,
+								pathToSet: REMOTES,
+								latestPath: path
+							})
+							: item.isParent
+								? ({
+									processed: false,
+									pathToSet: path.getParentPath(),
+									latestPath: path.extractSubPath()
+								})
+								: item.isDirectory
+									? ({
+										processed: false,
+										pathToSet: path.appendPath(item.name)
+									})
+									: { processed: true })),
+				sort,
+				itemsSelectable: true,
+				appendPath: (path: string, subPath: string) => path.appendPath(subPath),
+				rename: () => AsyncResult.from(new Ok<string, ErrorType>("")),
+				extendedRename: () => AsyncResult.from(new Err<Controller, Nothing>(nothing)),
+				renameAsCopy: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
+				createFolder,
+				deleteItems,
+				onSelectionChanged: () => { },
+				cleanUp: () => { }
+			}
+		})
+}

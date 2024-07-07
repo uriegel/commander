@@ -93,12 +93,6 @@ static class DeleteProgress
 
     public static void Show() => pop.Ref.Show();
 
-    public static bool WantClose()
-        => IsProcessing()
-            .SideEffectIf(b => b,
-                _ => DeleteProgress.Show()) 
-                == false;
-
     // TODO Windows version
     static void RevealControl(RevealerHandle revealer)
         => Events.RemoteDeleteProgresses.Subscribe(n =>

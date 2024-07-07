@@ -29,9 +29,10 @@ static class Remote
                         .Select(ToDirectoryItem)
                         .Where(n => getFiles.ShowHiddenItems || !n.IsHidden)
                         .ToArray()
-                        .ToFilesResult(getFiles.Path)));
+                        .ToFilesResult(getFiles.Path))
+                    .SelectError(ToFilesError));
 
-    public static Result<Nothing, RequestError> CopyFrom(string name, string path, string targetPath, Action<long, long> cb, bool move, CancellationToken cancellationToken)
+    public static Result<Nothing, RequestError> CopyFrom(string name, string path, string targetPath, Action<long, long> cb, bool _, CancellationToken cancellationToken)
         => RemoteDeleteProcessor.IsProcessing() == false
             ? Request
                 .Run(path.GetIpAndPath().GetFile(name), true)
@@ -56,7 +57,7 @@ static class Remote
                 .Result
             : Error<Nothing, RequestError>(IOErrorType.OperationInProgress.ToError());
 
-    public static Result<Nothing, RequestError> CopyTo(string name, string path, string targetPath, DateTime time, Action<long, long> cb, bool move, CancellationToken cancellationToken)
+    public static Result<Nothing, RequestError> CopyTo(string name, string path, string targetPath, DateTime time, Action<long, long> cb, bool _, CancellationToken __)
         => RemoteDeleteProcessor.IsProcessing() == false
             ? File
                 .OpenRead(path.AppendPath(name))
@@ -143,7 +144,7 @@ static class Remote
         => new($"http://{ipAndPath.Ip}:8080");
 
     static GetFilesRequestResult ToFilesResult(this DirectoryItem[] items, string path)
-        => new GetFilesRequestResult(items, path, items.Where(n => n.IsDirectory).Count(), items.Where(n => !n.IsDirectory).Count());
+        => new(items, path, items.Where(n => n.IsDirectory).Count(), items.Where(n => !n.IsDirectory).Count());
 
     static IpAndPath GetIpAndPath(this string url)
         => new(url.StringBetween('/', '/'),
@@ -161,6 +162,14 @@ static class Remote
 
     static Remote()
         => Client.Init(8, TimeSpan.FromDays(1));
+
+    static RequestError ToFilesError(RequestError re)
+        => re.Status switch
+        {
+            403 => new((int)DirectoryError.AccessDenied, re.StatusText),
+            404 => new((int)DirectoryError.DirectoryNotFound, re.StatusText),
+            _ => new(re.Status, re.StatusText)
+        };
 }
 
 record RemoteItem(

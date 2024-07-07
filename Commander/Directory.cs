@@ -13,7 +13,7 @@ using CsTools.HttpRequest;
 
 static partial class Directory
 {
-    public static AsyncResult<GetFilesResult, GetFilesError> GetFiles(GetFiles getFiles)
+    public static AsyncResult<GetFilesResult, RequestError> GetFiles(GetFiles getFiles)
         => getFiles
             .Path
             .If(getFiles.Mount == true,
@@ -22,10 +22,10 @@ static partial class Directory
             .Validate()
             .Bind(n => GetFiles(n, getFiles.ShowHiddenItems))
             .Select(n => n.SideEffect(n => DirectoryWatcher.Initialize(getFiles.Id, n.Path)))
-            .SelectError(e => new GetFilesError(getFiles.Path, e.Status, e.StatusText));
+            .SelectError(e => new RequestError(e.Status, e.StatusText));
 
-    public static AsyncResult<Nothing, GetFilesError> CancelExtendedItems(CancelExtendedItems cancelExtendedItems)
-        => Ok<Nothing, GetFilesError>(nothing)
+    public static AsyncResult<Nothing, RequestError> CancelExtendedItems(CancelExtendedItems cancelExtendedItems)
+        => Ok<Nothing, RequestError>(nothing)
             .SideEffect(_ => extendedInfosCancellations.GetValue(cancelExtendedItems.Id)?.Cancel())
             .ToAsyncResult();
     
@@ -179,11 +179,11 @@ static partial class Directory
         {
             IOException ioe when ioe.HResult == 13 => IOErrorType.AccessDenied.ToError(),
             IOException ioe when ioe.HResult == -2147024891 => IOErrorType.AccessDenied.ToError(),
-            UnauthorizedAccessException ue => IOErrorType.AccessDenied.ToError(),
+            UnauthorizedAccessException => IOErrorType.AccessDenied.ToError(),
             _ => IOErrorType.Exn.ToError()
         };
 
-    static AsyncResult<GetExtendedItemsResult, GetFilesError> GetExtendedItems(string id, string path, string[] items)
+    static AsyncResult<GetExtendedItemsResult, RequestError> GetExtendedItems(string id, string path, string[] items)
     {
         extendedInfosCancellations = extendedInfosCancellations.Remove(id);
         extendedInfosCancellations = extendedInfosCancellations.Add(id, new());
@@ -201,7 +201,7 @@ static partial class Directory
                 ? GetExifDate(item)
                 : null;
 
-        return Ok<GetExtendedItemsResult, GetFilesError>(new(items.Select(CheckGetExifDate).ToArray(), null, path))
+        return Ok<GetExtendedItemsResult, RequestError>(new(items.Select(CheckGetExifDate).ToArray(), path))
                     .ToAsyncResult();
     }
 
@@ -268,9 +268,6 @@ record GetFilesResult(
     int DirCount,
     int FileCount
 );
-
-record GetFilesError(string Path, int Status, string StatusText) 
-    : RequestError(Status, StatusText);
 
 record GetFilesRequestResult(
     DirectoryItem[] Items,
