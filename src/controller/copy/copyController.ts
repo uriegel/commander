@@ -38,8 +38,8 @@ const getPreCopyFunction = (from: ControllerType, to: ControllerType) =>
     : copyInfo
 
 export const getCopyController = (move: boolean, dialog: DialogHandle, fromLeft: boolean, fromController: Controller, toController: Controller,
-    sourcePath: string, targetPath: string, items: FolderViewItem[], targetItems: FolderViewItem[]): CopyController|null => {
-    return fromController.type == ControllerType.FileSystem && toController.type == ControllerType.FileSystem
+        sourcePath: string, targetPath: string, items: FolderViewItem[], targetItems: FolderViewItem[]): CopyController|null => 
+    fromController.type == ControllerType.FileSystem && toController.type == ControllerType.FileSystem
         || fromController.type == ControllerType.Remote && toController.type == ControllerType.FileSystem
         || fromController.type == ControllerType.FileSystem && toController.type == ControllerType.Remote
     ? getFileSystemCopyController(move, dialog, fromLeft, fromController, toController, sourcePath, targetPath,
@@ -47,7 +47,6 @@ export const getCopyController = (move: boolean, dialog: DialogHandle, fromLeft:
         getPreCopyFunction(fromController.type, toController.type),
         (sourcePath: string, targetPath: string, items: CopyItem[]) => copy(sourcePath, targetPath, items, getJobType(fromController.type, toController.type, move)))
     : null
-}
 
 const getFileSystemCopyController = (move: boolean, dialog: DialogHandle, fromLeft: boolean, _: Controller, __: Controller,
             sourcePath: string, targetPath: string, items: FolderViewItem[], targetItems: FolderViewItem[],

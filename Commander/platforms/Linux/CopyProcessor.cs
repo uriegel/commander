@@ -7,7 +7,7 @@ static partial class CopyProcessor
 {
     public static void Cancel() => PerformCancel();
 
-    static Task ProcessError(RequestError err, Job job)
+    static Task ProcessError(RequestError err, Job _)
         => ProcessError(err);
 
 }
