@@ -121,17 +121,24 @@ const getRowClasses = (item: FolderViewItem) =>
 		? ["hidden"]
 		: []
 
-const updateItems = (items: FolderViewItem[], showHidden: boolean, sortIndex: number, sortDescending: boolean, evt: DirectoryChangedEvent) => 
-	evt.type == DirectoryChangedType.Created && (!evt.item.isHidden || showHidden)
+const renameItem = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean, evt: DirectoryChangedEvent) => 
+	sort((items.findIndex(n => n.name == evt.oldName) >= 0
+			? items.filter(n => n.name != evt.item.name)
+			: items)
+		.map(n => n.name == evt.oldName 
+			? { ...n, name: evt.item.name, size: evt.item.size, time: evt.item.time, isHidden: evt.item.isHidden }
+			: n),
+		sortIndex, sortDescending)
+
+const updateItems = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean, evt: DirectoryChangedEvent) => 
+	evt.type == DirectoryChangedType.Created
 		? sort([...items, evt.item], sortIndex, sortDescending) 
-		: evt.type == DirectoryChangedType.Changed && (!evt.item.isHidden || showHidden)
-		? items.map(n => n.name == evt.item.name ? { ...n, size: evt.item.size, time: evt.item.time } : n)  
+		: evt.type == DirectoryChangedType.Changed
+		? items.map(n => n.name == evt.item.name ? { ...n, size: evt.item.size, time: evt.item.time, isHidden: evt.item.isHidden } : n)  
 		: evt.type == DirectoryChangedType.Deleted
 		? items.filter(n => n.name != evt.item.name)
 		: evt.type == DirectoryChangedType.Renamed
-		? items.map(n => n.name == evt.oldName
-			? { ...n, name: evt.item.name, size: evt.item.size, time: evt.item.time }
-			: n) 
+		? renameItem(items, sortIndex, sortDescending, evt)
 		: null
 
 // TODO GetRoot

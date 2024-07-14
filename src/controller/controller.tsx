@@ -67,7 +67,7 @@ export interface Controller {
     id: string
     getColumns: ()=>TableColumns<FolderViewItem>
     getItems: (id: string, path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean, mount: boolean, dialog: DialogHandle) => AsyncResult<GetItemsResult, ErrorType>
-    updateItems: (items: FolderViewItem[], showHidden: boolean, sortIndex: number, sortDescending: boolean, evt: DirectoryChangedEvent)=>FolderViewItem[]|null
+    updateItems: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean, evt: DirectoryChangedEvent)=>FolderViewItem[]|null
     getPath(): string
     getExtendedItems: (id: string, path: string, items: FolderViewItem[]) => AsyncResult<GetExtendedItemsResult, ErrorType>
     setExtendedItems: (items: FolderViewItem[], extended: GetExtendedItemsResult, sortIndex: number, sortDescending: boolean) => FolderViewItem[]

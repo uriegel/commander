@@ -24,18 +24,24 @@ class DirectoryWatcher : IDisposable
                 : null;        
         if (fsw != null)
         {
-            new Thread(_ => RunRename())
+            new Thread(_ => RunChange())
             {
                 IsBackground = true
             }.Start();
-            fsw.Created += (s, e) 
-                => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Created, CreateItem(Path.AppendPath(e.Name)));
-            fsw.Changed += (s, e) => { if (e.Name != null) renameQueue = renameQueue.Add(e.Name)
-                .SideEffect(_ => renameEvent.Set()); };
-            fsw.Renamed += (s, e)
-                => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Renamed, CreateItem(Path.AppendPath(e.Name)), e.OldName);
             fsw.Deleted += (s, e)
-                => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Deleted, new DirectoryItem(e.Name ?? "", 0, false, null, false, DateTime.MinValue));
+                => SafeEvent(() => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Deleted, 
+                                                new DirectoryItem(e.Name ?? "", 0, false, null, false, DateTime.MinValue)));
+            fsw.Created += (s, e) 
+                => SafeEvent(() => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Created, CreateItem(Path.AppendPath(e.Name))));
+            fsw.Changed += (s, e) => 
+            { 
+                if (e.Name != null) 
+                    changeQueue = changeQueue
+                                    .Add(e.Name)
+                                    .SideEffect(_ => renameEvent.Set()); 
+            };
+            fsw.Renamed += (s, e)
+                => SafeEvent(() => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Renamed, CreateItem(Path.AppendPath(e.Name)), e.OldName));
         }
     }
 
@@ -57,7 +63,16 @@ class DirectoryWatcher : IDisposable
             ? DirectoryItem.CreateDirItem(new DirectoryInfo(fullName))
             : DirectoryItem.CreateFileItem(new FileInfo(fullName));
 
-    void RunRename()            
+    static void SafeEvent(Action action)
+    {
+        try 
+        {
+            action();
+        }
+        catch {}
+    }
+
+    void RunChange()            
     {
         while (true)
         {
@@ -65,9 +80,9 @@ class DirectoryWatcher : IDisposable
             {
                 renameEvent.WaitOne();
                 renameEvent.Reset();
-                var items = Interlocked.Exchange(ref renameQueue, []).ToArray();
                 if (DateTime.Now < lastRenameUpdate + RENAME_DELAY)
                     Thread.Sleep(lastRenameUpdate + RENAME_DELAY - DateTime.Now);
+                var items = Interlocked.Exchange(ref changeQueue, []).ToArray();
                 lastRenameUpdate = DateTime.Now;
                 items.ForEach(n =>
                 {
@@ -87,7 +102,7 @@ class DirectoryWatcher : IDisposable
     readonly ManualResetEvent renameEvent = new(false);
     readonly ExtendedInfos? extendedInfos;
     DateTime lastRenameUpdate = DateTime.MinValue;
-    ImmutableHashSet<string> renameQueue = [];
+    ImmutableHashSet<string> changeQueue = [];
 
     #region IDisposable
 

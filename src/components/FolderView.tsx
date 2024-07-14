@@ -181,7 +181,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         directoryChangedSubscription.current = getDirectoryChangedEvents(id).subscribe(e => {
             const selected = refItems.current[virtualTable.current?.getPosition() || 0].name
             const newItems = controller.current.getPath() == e.path
-                ? controller.current.updateItems(refItems.current, showHidden, sortIndex.current, sortDescending.current, e)
+                ? controller.current.updateItems(refItems.current, sortIndex.current, sortDescending.current, e)
                 : null
             if (newItems) {
                 const newPos = e.type != DirectoryChangedType.Deleted || selected != e.item.name
@@ -219,7 +219,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             }
         }) 
 
-    }, [id, showHidden, controller, setItems])
+    }, [id, controller, setItems])
 
     const withSelectedItem = <T,>(withSelected: (item: FolderViewItem) => T) => {
         const items = getSelectedItems()

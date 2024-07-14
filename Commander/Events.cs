@@ -125,7 +125,9 @@ record Events(
         => Source.Send(DefaultEvents with { FilesDrop = filesDrop });
 
     public static void SendDirectoryChanged(string folderId, string? path, DirectoryChangedType type, DirectoryItem item, string? oldName = null)
-        => Source.Send(DefaultEvents with { DirectoryChanged = new(folderId, path, type, item, oldName) });
+        => Source.Send((DefaultEvents with { DirectoryChanged = new(folderId, path, type, item, oldName) }).SideEffect(i => 
+            Console.WriteLine($"{i.DirectoryChanged}")
+        ));
 
     public static void SendExif(string path, string name, ExifData exifData)
         => Source.Send(DefaultEvents with { ExifData = new(path, name, exifData) });
