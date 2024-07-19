@@ -1,8 +1,16 @@
 .trackView {
     display: flex;
     flex-direction: column;
+    position: relative
 }
 
 .track {
     flex-grow: 1;
+}
+
+.trackPopup {
+    position: absolute;
+    right: 20px;
+    background-color: aliceblue;
+    z-index: 20000;
 }

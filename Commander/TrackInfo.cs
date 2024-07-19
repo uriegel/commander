@@ -13,7 +13,9 @@ record TrackPoint(
     double Latitude,
     double Longitude,
     double Elevation,
-    string? Time
+    string? Time,
+    double Heartrate,
+    float Velocity
 );
 
 //[XmlRoot(ElementName = "gpx", Namespace = "http://www.topografix.com/GPX/1/0")]
@@ -24,6 +26,12 @@ public class XmlTrackInfo
     public XmlTrack? Track;
 }
 
+public class Info
+{
+    [XmlElement("date")]
+    public string? Date;
+}
+
 public class XmlTrack
 {
     [XmlElement("name")]
@@ -31,6 +39,9 @@ public class XmlTrack
     
     [XmlElement("desc")]
     public string? Description;
+
+    [XmlElement("info")]
+    public Info? Info;
 
     [XmlElement("trkseg")]
     public XmlTrackSegment? TrackSegment;
@@ -54,6 +65,12 @@ public class XmlTrackPoint
 
     [XmlElement("time")]
     public string? Time;
+
+    [XmlElement("speed")]
+    public float? Speed;
+
+    [XmlElement("heartrate")]
+    public int? HeartRate;
 }
 
 
@@ -64,6 +81,7 @@ static class TrackInfo {
         var serializer = new XmlSerializer(typeof(XmlTrackInfo));
         using var stream = File.OpenRead(param.Path);
         var xmlTrackInfo = serializer.Deserialize(stream) as XmlTrackInfo;
+        var old = xmlTrackInfo?.Track?.Info?.Date != null && DateTime.Parse(xmlTrackInfo?.Track?.Info?.Date!) < new DateTime(2021, 1, 1);
         var trackInfo = new TrackInfoData(
             xmlTrackInfo?.Track?.Name, 
             xmlTrackInfo?.Track?.Description, 
@@ -71,7 +89,7 @@ static class TrackInfo {
                 ?.Track
                 ?.TrackSegment
                 ?.TrackPoints
-                ?.Select(n => new TrackPoint(n.Latitude, n.Longitude, n.Elevation, n.Time))
+                ?.Select(n => new TrackPoint(n.Latitude, n.Longitude, n.Elevation, n.Time, n.HeartRate ?? 0, old ? n.Speed ?? 0 : (n.Speed  ?? 0) * 3.6f))
                 .ToArray());
         return Ok<TrackInfoData, RequestError>(trackInfo).ToAsyncResult();
     }
