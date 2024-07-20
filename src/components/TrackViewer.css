@@ -14,3 +14,6 @@
     background-color: aliceblue;
     z-index: 20000;
 }
+.bottom {
+    bottom: 10px;
+}

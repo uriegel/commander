@@ -10,6 +10,10 @@ import { LatLngExpression } from 'leaflet'
 type TrackInfo = {
     name?: string
     description?: string
+    distance: number,
+    duration: number,
+    averageSpeed: number,
+    averageHeartRate: number,
     trackPoints?: TrackPoint[] 
 }
 
@@ -36,6 +40,11 @@ const TrackViewer = ({ path }: TrackViewerProps) => {
     const [position, setPosition] = useState(0)
     const [heartRate, setHeartRate] = useState(0)
     const [velocity, setVelocity] = useState(0)
+    const [averageVelocity, setAverageVelocity] = useState(0)
+    const [averageHeartRate, setAverageHeartRate] = useState(0)
+    const [distance, setDistance] = useState(0)
+    const [duration, setDuration] = useState(0)
+
     
     useEffect(() => {
         jsonPost<TrackInfo, ErrorType>({ method: "gettrackinfo", payload: { path } })
@@ -44,6 +53,10 @@ const TrackViewer = ({ path }: TrackViewerProps) => {
                 setPointCount(n.trackPoints?.length ?? 0)
                 if (n.trackPoints)
                     setTrackPoints(n.trackPoints)
+                setAverageVelocity(n.averageSpeed)
+                setAverageHeartRate(n.averageHeartRate)
+                setDistance(n.distance)
+                setDuration(n.duration)
                 const trk = n.trackPoints?.map(n => [n.latitude!, n.longitude!])
                 if (trk) {
                     setTrack(trk)
@@ -74,9 +87,15 @@ const TrackViewer = ({ path }: TrackViewerProps) => {
                 <Polyline pathOptions={{ fillColor: 'red', color: 'blue' }}
                     positions={track as LatLngExpression[]}/>
             </MapContainer>
-            <div className="trackPopup">
-                <p>{velocity.toFixed(1)} km/h</p>
-                <p>❤️ {heartRate}</p>
+            <div className="trackPopup bottom">
+                <div>{velocity.toFixed(1)} km/h</div>
+                <div>❤️ {heartRate}</div>
+            </div>
+            <div className="trackPopup ">
+                <div>{distance.toFixed(1)} km</div>
+                <div>{duration}</div>
+                <div>Ø {averageVelocity.toFixed(1)} km/h</div>
+                <div>Ø❤️ {averageHeartRate}</div>
             </div>
             <input type="range" min="1" max={pointCount} value={position} onChange={n => onPosition(Number.parseInt(n.target.value)-1)}></input>
         </div>

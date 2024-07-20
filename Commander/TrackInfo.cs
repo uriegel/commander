@@ -6,6 +6,10 @@ using static CsTools.Core;
 record TrackInfoData(
     string? Name,
     string? Description,
+    float Distance,
+    int Duration,
+    float AverageSpeed,
+    int AverageHeartRate,
     TrackPoint[]? TrackPoints
 );
 
@@ -14,7 +18,7 @@ record TrackPoint(
     double Longitude,
     double Elevation,
     string? Time,
-    double Heartrate,
+    int Heartrate,
     float Velocity
 );
 
@@ -30,6 +34,12 @@ public class Info
 {
     [XmlElement("date")]
     public string? Date;
+    [XmlElement("distance")]
+    public float Distance;
+    [XmlElement("duration")]
+    public int Duration;
+    [XmlElement("averageSpeed")]
+    public float AverageSpeed;
 }
 
 public class XmlTrack
@@ -77,7 +87,6 @@ public class XmlTrackPoint
 static class TrackInfo {
     public static AsyncResult<TrackInfoData, RequestError> Get(GetTrackInfoParam param) 
     {
-
         var serializer = new XmlSerializer(typeof(XmlTrackInfo));
         using var stream = File.OpenRead(param.Path);
         var xmlTrackInfo = serializer.Deserialize(stream) as XmlTrackInfo;
@@ -85,12 +94,21 @@ static class TrackInfo {
         var trackInfo = new TrackInfoData(
             xmlTrackInfo?.Track?.Name, 
             xmlTrackInfo?.Track?.Description, 
+            xmlTrackInfo?.Track?.Info?.Distance ?? 0,
+            xmlTrackInfo?.Track?.Info?.Duration ?? 0,
+            xmlTrackInfo?.Track?.Info?.AverageSpeed ?? 0,
+            (int)(xmlTrackInfo
+                ?.Track
+                ?.TrackSegment
+                ?.TrackPoints
+                ?.Select(n => n.HeartRate)
+                ?.Average() ?? 0),
             xmlTrackInfo
                 ?.Track
                 ?.TrackSegment
                 ?.TrackPoints
                 ?.Select(n => new TrackPoint(n.Latitude, n.Longitude, n.Elevation, n.Time, n.HeartRate ?? 0, old ? n.Speed ?? 0 : (n.Speed  ?? 0) * 3.6f))
-                .ToArray());
+                    .ToArray());
         return Ok<TrackInfoData, RequestError>(trackInfo).ToAsyncResult();
     }
 }
