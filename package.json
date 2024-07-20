@@ -19,7 +19,7 @@
     "eslint": "^8.56.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
-    "functional-extensions": "^1.9.15",
+    "functional-extensions": "^1.9.17",
     "menubar-react": "^2.1.0",
     "react-progress-control": "^1.0.0",
     "rxjs": "^7.8.0",

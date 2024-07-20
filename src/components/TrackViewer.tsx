@@ -42,6 +42,8 @@ const TrackViewer = ({ path }: TrackViewerProps) => {
     const [velocity, setVelocity] = useState(0)
     const [averageVelocity, setAverageVelocity] = useState(0)
     const [averageHeartRate, setAverageHeartRate] = useState(0)
+    const [maxVelocity, setMaxVelocity] = useState(0)
+    const [maxHeartRate, setMaxHeartRate] = useState(0)
     const [distance, setDistance] = useState(0)
     const [duration, setDuration] = useState(0)
 
@@ -64,6 +66,8 @@ const TrackViewer = ({ path }: TrackViewerProps) => {
                     const minLat = trk.reduce((prev, curr) => Math.min(prev, curr[0]), trk[0][0])
                     const maxLng = trk.reduce((prev, curr) => Math.max(prev, curr[1]), trk[0][1])
                     const minLng = trk.reduce((prev, curr) => Math.min(prev, curr[1]), trk[0][1])
+                    setMaxVelocity(n.trackPoints?.max(t => t.velocity ?? 0) ?? 0)
+                    setMaxHeartRate(n.trackPoints?.max(t => t.heartrate ?? 0)?? 0)
                     myMap.current?.fitBounds([[maxLat, maxLng], [minLat, minLng]])
                 }
             }, e => console.error(e))
@@ -77,6 +81,18 @@ const TrackViewer = ({ path }: TrackViewerProps) => {
         setPosition(pos)
         setHeartRate(trackPoints[pos].heartrate ?? 0)
         setVelocity(trackPoints[pos].velocity ?? 0)
+    }
+
+    const onMaxHeartRate = () => {
+        var i = trackPoints.findIndex(n => n.heartrate == maxHeartRate)
+        if (i != -1)
+            onPosition(i)
+    }
+
+    const onMaxVelocity = () => {
+        var i = trackPoints.findIndex(n => n.velocity == maxVelocity)
+        if (i != -1)
+            onPosition(i)
     }
 
     return (
@@ -95,7 +111,9 @@ const TrackViewer = ({ path }: TrackViewerProps) => {
                 <div>{distance.toFixed(1)} km</div>
                 <div>{duration}</div>
                 <div>Ø {averageVelocity.toFixed(1)} km/h</div>
+                <div className="button" onClick={() => onMaxVelocity()}>Max {maxVelocity.toFixed(1)} km/h</div>
                 <div>Ø❤️ {averageHeartRate}</div>
+                <div className="button" onClick={() => onMaxHeartRate()}>Max❤️ {maxHeartRate}</div>
             </div>
             <input type="range" min="1" max={pointCount} value={position} onChange={n => onPosition(Number.parseInt(n.target.value)-1)}></input>
         </div>
