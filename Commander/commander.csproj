@@ -48,14 +48,6 @@
     </EmbeddedResource>
   </ItemGroup> 
 
-
-
-
-<ItemGroup>
-  <PackageReference Include="CsTools" Version="7.17.0" />
-</ItemGroup>
-
-
   <ItemGroup Condition="'$(IsWindows)'=='true'">
     <PackageReference Include="WebWindowNetCore.Windows" Version="5.6.6" />
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="8.0.0" />
@@ -66,7 +58,7 @@
   </ItemGroup> 
 
   <ItemGroup Condition="'$(IsLinux)'=='true'">
-    <PackageReference Include="WebWindowNetCore.Linux" Version="6.1.1" />
+    <PackageReference Include="WebWindowNetCore.Linux" Version="6.1.2" />
     <EmbeddedResource Include="./kirk.png">
       <LogicalName>icon</LogicalName>
     </EmbeddedResource>
