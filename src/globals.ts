@@ -3,14 +3,14 @@ export enum Platform {
     Linux
 }
 
+export const isWindows = memoize(() => navigator.platform.startsWith("Win"))
+
 export const getPlatform = memoize(() => {
-    const platform = new URLSearchParams(window.location.search).get("platform")
-    return platform == "windows"
+    //const platform = new URLSearchParams(window.location.search).get("platform")
+    return isWindows () // "windows"
         ? Platform.Windows
         : Platform.Linux
 })
-
-export const isWindows = memoize(() => navigator.platform.startsWith("Win"))
 
 function memoize<T>(funcToMemoize: () => T) {
     let memoized: T|null = null
