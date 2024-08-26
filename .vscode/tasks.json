@@ -11,7 +11,7 @@
             "type": "npm",
             "script": "build Windows",
         }, {
-            "label": "buildCs",
+            "label": "buildFs",
             "command": "dotnet",
             "type": "shell",
             "args": [
@@ -27,7 +27,7 @@
             },
             "problemMatcher": "$msCompile"
         }, {
-            "label": "buildCsRelease",
+            "label": "buildFsRelease",
             "command": "dotnet",
             "type": "shell",
             "args": [
@@ -44,17 +44,17 @@
             "label": "buildRelease",
             "group": "build",
             "dependsOrder": "sequence",
-            "dependsOn": ["buildReact", "buildCsRelease"]
+            "dependsOn": ["buildReact", "buildFsRelease"]
         }, {
             "label": "buildRelease Windows",
             "group": "build",
             "dependsOrder": "sequence",
-            "dependsOn": ["buildReact Windows", "buildCsRelease"]
+            "dependsOn": ["buildReact Windows", "buildFsRelease"]
         }, {
             "label": "build",
             "group": "build",
             "dependsOrder": "sequence",
-            "dependsOn": ["prepare", "buildCs"]
+            "dependsOn": ["prepare", "buildFs"]
         }            
     ]
 }
