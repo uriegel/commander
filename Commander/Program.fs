@@ -17,5 +17,10 @@ WebView()
 #if DEBUG    
     .DevTools()
 #endif
+#if Linux
+    .TitleBar(Titlebar.create)
+#endif    
+#if Windows
+#endif
     .Run()
     |> ignore

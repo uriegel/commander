@@ -1,12 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows> 
-		<IsOSX Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</IsOSX> 
-		<IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>  
+    <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows>
+    <IsOSX Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</IsOSX>
+    <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
     <PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(IsWindows)'=='true'">
     <OutputType>WinExe</OutputType>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
@@ -14,29 +12,25 @@
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <DefineConstants>Windows</DefineConstants>
     <SelfContained>false</SelfContained>
-  </PropertyGroup> 
-
+  </PropertyGroup>
   <PropertyGroup Condition="'$(IsLinux)'=='true'">
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
     <DefineConstants>Linux</DefineConstants>
-  </PropertyGroup> 
-
+  </PropertyGroup>
   <ItemGroup Condition="'$(IsWindows)'=='true'">
     <Content Include="./kirk.ico" />
     <EmbeddedResource Include="./kirk.ico">
       <LogicalName>icon</LogicalName>
     </EmbeddedResource>
-  </ItemGroup> 
-
+  </ItemGroup>
   <ItemGroup Condition="'$(IsLinux)'=='true'">
     <EmbeddedResource Include="./kirk.png">
       <LogicalName>icon</LogicalName>
     </EmbeddedResource>
-  </ItemGroup> 
-
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="../resources/script.js">
       <LogicalName>webroot/script.js</LogicalName>
@@ -47,15 +41,12 @@
     <EmbeddedResource Include="../resources/index.html">
       <LogicalName>webroot/index.html</LogicalName>
     </EmbeddedResource>
-  </ItemGroup> 
-
-
-  <ItemGroup>
-    <Compile Include="Program.fs" />
-  </ItemGroup> 
-
-  <ItemGroup>
-    <PackageReference Include="WebWindowNetCore" Version="10.0.1" />
   </ItemGroup>
-
+  <ItemGroup>
+    <Compile Include="Titlebar.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="WebWindowNetCore" Version="10.0.4" />
+  </ItemGroup>
 </Project>
