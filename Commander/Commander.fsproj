@@ -38,7 +38,25 @@
   </ItemGroup> 
 
   <ItemGroup>
+    <EmbeddedResource Include="../resources/script.js">
+      <LogicalName>webroot/script.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../resources/style.css">
+      <LogicalName>webroot/style.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../resources/index.html">
+      <LogicalName>webroot/index.html</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup> 
+
+
+  <ItemGroup>
     <Compile Include="Program.fs" />
+  </ItemGroup> 
+
+  <ItemGroup>
+    <PackageReference Include="WebWindowNetCore" Version="10.0.0" />
+    <PackageReference Include="FSharp.Core" Version="8.0.400" />
   </ItemGroup>
 
 </Project>
