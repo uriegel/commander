@@ -24,8 +24,9 @@ import Credentials, { CredentialsProps } from './components/dialogparts/Credenti
 import { Err, ErrorType, Nothing, Ok, jsonPost } from 'functional-extensions'
 import LocationViewer from './components/LocationViewer'
 import TrackViewer from './components/TrackViewer'
+import { WebViewType } from './webview.ts'
 
-declare const webViewShowDevTools: () => void
+declare var WebView: WebViewType
 
 enum PreviewMode {
 	Default,
@@ -193,7 +194,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 		else if (key == "SEL_NONE")
 			getActiveFolder()?.selectNone()
 		else if (key == "SHOW_DEV_TOOLS")
-			webViewShowDevTools()
+			WebView.showDevTools()
 		// TODO
 		// else if (key == "SHOW_FULLSCREEN")
 		// 	await request("showfullscreen")
