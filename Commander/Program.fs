@@ -15,8 +15,7 @@ WebView()
     .CorsDomains([|"http://localhost:5173"|])
     .CorsCache(TimeSpan.FromSeconds(20))    
     .SaveBounds()
-    // TODO 
-    //.DefaultContextMenuDisabled()
+    .DefaultContextMenuDisabled()
 #if DEBUG    
     .DevTools()
 #endif
@@ -25,3 +24,6 @@ WebView()
 #endif    
     .Run()
     |> ignore
+
+// TODO Windows: Maximized started => maximize control is active
+// TODO Windows: Maximized started => Borders are not OK
