@@ -43,7 +43,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TitlebarWindows.fs" />
     <Compile Include="TitlebarLinux.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

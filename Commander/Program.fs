@@ -15,6 +15,7 @@ WebView()
     .CorsDomains([|"http://localhost:5173"|])
     .CorsCache(TimeSpan.FromSeconds(20))    
     .SaveBounds()
+    // TODO 
     //.DefaultContextMenuDisabled()
 #if DEBUG    
     .DevTools()
@@ -22,8 +23,5 @@ WebView()
 #if Linux
     .TitleBar(Titlebar.create)
 #endif    
-#if Windows
-    .OnFormCreating(Titlebar.create)
-#endif
     .Run()
     |> ignore
