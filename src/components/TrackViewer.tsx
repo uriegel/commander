@@ -84,13 +84,13 @@ const TrackViewer = ({ path }: TrackViewerProps) => {
     }
 
     const onMaxHeartRate = () => {
-        var i = trackPoints.findIndex(n => n.heartrate == maxHeartRate)
+        const i = trackPoints.findIndex(n => n.heartrate == maxHeartRate)
         if (i != -1)
             onPosition(i)
     }
 
     const onMaxVelocity = () => {
-        var i = trackPoints.findIndex(n => n.velocity == maxVelocity)
+        const i = trackPoints.findIndex(n => n.velocity == maxVelocity)
         if (i != -1)
             onPosition(i)
     }

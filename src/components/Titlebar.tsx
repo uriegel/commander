@@ -6,7 +6,7 @@ import { DialogContext, ResultType } from "web-dialog-react"
 import "functional-extensions"
 import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { ErrorType, Nothing, jsonPost } from "functional-extensions"
-import { progressChangedEvents, showProgressEvents } from "../requests/events"
+import { progressChangedEvents } from "../requests/events"
 import { WebViewType } from '../webview.ts'
 
 declare var WebView: WebViewType
@@ -56,10 +56,10 @@ const Titlebar = ({ menu, progress, progressFinished, progressRevealed, totalSiz
         WebView.initializeNoTitlebar()
 	}, [])
 
-    useEffect(() => {
-        const subscription = showProgressEvents.subscribe(() => startProgressDialog())
-        return () => subscription.unsubscribe()
-	}, [startProgressDialog])
+    // useEffect(() => {
+    //     const subscription = showProgressEvents.subscribe(() => startProgressDialog())
+    //     return () => subscription.unsubscribe()
+	// }, [startProgressDialog])
 
     useEffect(() => {
         if (dialogOpen.current)

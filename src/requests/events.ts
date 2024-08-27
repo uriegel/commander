@@ -77,59 +77,53 @@ type CommanderEvent = {
 const toCommanderEvent = (event: MessageEvent) =>
     JSON.parse(event.data) as CommanderEvent
 
-const source = new EventSource("http://localhost:20000/commander/sse")
+// const commanderEvents = fromEvent<MessageEvent>(source, 'message')
+//     .pipe(map(toCommanderEvent))
 
-const commanderEvents = fromEvent<MessageEvent>(source, 'message')
-    .pipe(map(toCommanderEvent))
+// export const previewEvents = commanderEvents
+//     .pipe(filter(n => n.preview != undefined))
+//     .pipe(map(n => n.preview!))
 
-export const windowStateChangedEvents = commanderEvents
-    .pipe(filter(n => n.windowState != undefined))
-    .pipe(map(n => n.windowState!.maximized))
+// export const menuActionEvents = commanderEvents
+//     .pipe(filter(n => n.menuAction != undefined))
+//     .pipe(map(n => n.menuAction!))
 
-export const previewEvents = commanderEvents
-    .pipe(filter(n => n.preview != undefined))
-    .pipe(map(n => n.preview!))
+// export const showHiddenEvents = commanderEvents
+//     .pipe(filter(n => n.showHidden != undefined))
+//     .pipe(map(n => n.showHidden!))
 
-export const menuActionEvents = commanderEvents
-    .pipe(filter(n => n.menuAction != undefined))
-    .pipe(map(n => n.menuAction!))
+// export const folderViewItemsChangedEvents = commanderEvents
+//     .pipe(filter(n => n.serviceItems != undefined))
+//     .pipe(map(n => n.serviceItems!))
 
-export const showHiddenEvents = commanderEvents
-    .pipe(filter(n => n.showHidden != undefined))
-    .pipe(map(n => n.showHidden!))
+// export const filesDropEvents = commanderEvents
+//     .pipe(filter(n => n.filesDrop != undefined))
+//     .pipe(map(n => n.filesDrop!))
 
-export const folderViewItemsChangedEvents = commanderEvents
-    .pipe(filter(n => n.serviceItems != undefined))
-    .pipe(map(n => n.serviceItems!))
+// export const getCredentialsEvents = commanderEvents
+//     .pipe(filter(n => n.getCredentials != undefined))
+//     .pipe(map(n => n.getCredentials!))
 
-export const filesDropEvents = commanderEvents
-    .pipe(filter(n => n.filesDrop != undefined))
-    .pipe(map(n => n.filesDrop!))
+// export const getDirectoryChangedEvents = (folderId: string) =>
+//     commanderEvents
+//         .pipe(filter(n => n.directoryChanged != undefined && n.directoryChanged.folderId == folderId))
+//         .pipe(map(n => n.directoryChanged!))
 
-export const getCredentialsEvents = commanderEvents
-    .pipe(filter(n => n.getCredentials != undefined))
-    .pipe(map(n => n.getCredentials!))
-
-export const getDirectoryChangedEvents = (folderId: string) =>
-    commanderEvents
-        .pipe(filter(n => n.directoryChanged != undefined && n.directoryChanged.folderId == folderId))
-        .pipe(map(n => n.directoryChanged!))
-
-export const exifTimeEvents = commanderEvents
-    .pipe(filter(n => n.exifTime != undefined))
-    .pipe(map(n => n.exifTime!))
+// export const exifTimeEvents = commanderEvents
+//     .pipe(filter(n => n.exifTime != undefined))
+//     .pipe(map(n => n.exifTime!))
     
-export const extendedDataEvents = commanderEvents
-    .pipe(filter(n => n.extendedData != undefined))
-    .pipe(map(n => n.extendedData!))
+// export const extendedDataEvents = commanderEvents
+//     .pipe(filter(n => n.extendedData != undefined))
+//     .pipe(map(n => n.extendedData!))
 
-export const copyErrorEvents = commanderEvents
-    .pipe(filter(n => n.copyError != undefined))
-    .pipe(map(n => n.copyError!))
+// export const copyErrorEvents = commanderEvents
+//     .pipe(filter(n => n.copyError != undefined))
+//     .pipe(map(n => n.copyError!))
 
-export const showProgressEvents = commanderEvents
-    .pipe(filter(n => n.showProgress == true))
-    .pipe(map(() => true))
+// export const showProgressEvents = commanderEvents
+//     .pipe(filter(n => n.showProgress == true))
+//     .pipe(map(() => true))
 
 export const progressChangedEvents = new BehaviorSubject<CopyProgress>({
     fileName: "",
@@ -156,7 +150,7 @@ export const startUacEvents = () => {
         .subscribe(progressChangedEvents)
 }
 
-commanderEvents
-    .pipe(filter(n => n.copyProgress != undefined))
-    .pipe(map(n => n.copyProgress!))
-    .subscribe(progressChangedEvents)
+// commanderEvents
+//     .pipe(filter(n => n.copyProgress != undefined))
+//     .pipe(map(n => n.copyProgress!))
+//     .subscribe(progressChangedEvents)

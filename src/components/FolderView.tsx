@@ -7,7 +7,7 @@ import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
 import { ExifData, Version } from '../requests/requests'
 import { initializeHistory } from '../history'
 import { isWindows } from '../globals'
-import { DirectoryChangedType, exifTimeEvents, extendedDataEvents, folderViewItemsChangedEvents, getDirectoryChangedEvents } from '../requests/events'
+//import { DirectoryChangedType } from '../requests/events'
 import { Subscription } from 'rxjs'
 import { ServiceStartMode, ServiceStatus } from '../enums'
 import { DialogContext, DialogHandle } from 'web-dialog-react'
@@ -142,7 +142,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const history = useRef(initializeHistory())
     const dragEnterRefs = useRef(0)
 
-    const subscription = useRef<Subscription | null>(null)
+    //const subscription = useRef<Subscription | null>(null)
     const refItems = useRef(items)
     const directoryChangedSubscription = useRef<Subscription | null>(null)
     const exifTimeSubscription = useRef<Subscription | null>(null)
@@ -159,65 +159,65 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         }
     }, [onItemsChanged])
 
-    const onActualizedItems = useCallback((actualizedItems: FolderViewItem[]) => {
-        const newItems = items.map(n => {
-            const changedItem = actualizedItems.find(i => i.name == n.name)
-            return changedItem
-                ? changedItem
-                : n
-        })
-        setItems(newItems)
-    }, [items, setItems])
+    // const onActualizedItems = useCallback((actualizedItems: FolderViewItem[]) => {
+    //     const newItems = items.map(n => {
+    //         const changedItem = actualizedItems.find(i => i.name == n.name)
+    //         return changedItem
+    //             ? changedItem
+    //             : n
+    //     })
+    //     setItems(newItems)
+    // }, [items, setItems])
 
-    useEffect(() => {
-        if (isWindows()) {
-            subscription.current?.unsubscribe()
-            subscription.current = folderViewItemsChangedEvents.subscribe(onActualizedItems)
-        }
-    }, [onActualizedItems])
+    // useEffect(() => {
+    //     if (isWindows()) {
+    //         subscription.current?.unsubscribe()
+    //         subscription.current = folderViewItemsChangedEvents.subscribe(onActualizedItems)
+    //     }
+    // }, [onActualizedItems])
     
     useEffect(() => {
         directoryChangedSubscription.current?.unsubscribe()
-        directoryChangedSubscription.current = getDirectoryChangedEvents(id).subscribe(e => {
-            const selected = refItems.current[virtualTable.current?.getPosition() || 0].name
-            const newItems = controller.current.getPath() == e.path
-                ? controller.current.updateItems(refItems.current, sortIndex.current, sortDescending.current, e)
-                : null
-            if (newItems) {
-                const newPos = e.type != DirectoryChangedType.Deleted || selected != e.item.name
-                    ? newItems.findIndex(n => n.name == selected)
-                    : 0
-                const dirs = e.type == DirectoryChangedType.Deleted || e.type == DirectoryChangedType.Created
-                    ? newItems.filter(n => n.isDirectory).length - 1
-                    : undefined
-                const files = dirs != undefined
-                    ? newItems.length - dirs - 1
-                    : undefined
-                setItems(newItems, dirs, files)
-                if (newPos != -1)
-                    virtualTable.current?.setPosition(newPos, newItems)
-            }
-        })
+        // directoryChangedSubscription.current = getDirectoryChangedEvents(id).subscribe(e => {
+        //     const selected = refItems.current[virtualTable.current?.getPosition() || 0].name
+        //     const newItems = controller.current.getPath() == e.path
+        //         ? controller.current.updateItems(refItems.current, sortIndex.current, sortDescending.current, e)
+        //         : null
+        //     if (newItems) {
+        //         const newPos = e.type != DirectoryChangedType.Deleted || selected != e.item.name
+        //             ? newItems.findIndex(n => n.name == selected)
+        //             : 0
+        //         const dirs = e.type == DirectoryChangedType.Deleted || e.type == DirectoryChangedType.Created
+        //             ? newItems.filter(n => n.isDirectory).length - 1
+        //             : undefined
+        //         const files = dirs != undefined
+        //             ? newItems.length - dirs - 1
+        //             : undefined
+        //         setItems(newItems, dirs, files)
+        //         if (newPos != -1)
+        //             virtualTable.current?.setPosition(newPos, newItems)
+        //     }
+        // })
 
         exifTimeSubscription.current?.unsubscribe()
-        exifTimeSubscription.current = exifTimeEvents.subscribe(e => {
-            if (e.path == controller.current.getPath()) {
-                const newItems = refItems.current.map(n => n.name == e.name
-                    ? { ...n, exifDate: e.exif } as FolderViewItem
-                    : n as FolderViewItem)
-                setItems(controller.current.sort(newItems, sortIndex.current, sortDescending.current))
-            }
-        }) 
+        // exifTimeSubscription.current = exifTimeEvents.subscribe(e => {
+        //     if (e.path == controller.current.getPath()) {
+        //         const newItems = refItems.current.map(n => n.name == e.name
+        //             ? { ...n, exifDate: e.exif } as FolderViewItem
+        //             : n as FolderViewItem)
+        //         setItems(controller.current.sort(newItems, sortIndex.current, sortDescending.current))
+        //     }
+        // }) 
 
         extendedDataSubscription.current?.unsubscribe()
-        extendedDataSubscription.current = extendedDataEvents.subscribe(e => {
-            if (e.path == controller.current.getPath()) {
-                const newItems = refItems.current.map(n => n.name == e.name
-                    ? { ...n, version: e.version } as FolderViewItem
-                    : n as FolderViewItem)
-                setItems(controller.current.sort(newItems, sortIndex.current, sortDescending.current))
-            }
-        }) 
+        // extendedDataSubscription.current = extendedDataEvents.subscribe(e => {
+        //     if (e.path == controller.current.getPath()) {
+        //         const newItems = refItems.current.map(n => n.name == e.name
+        //             ? { ...n, version: e.version } as FolderViewItem
+        //             : n as FolderViewItem)
+        //         setItems(controller.current.sort(newItems, sortIndex.current, sortDescending.current))
+        //     }
+        // }) 
 
     }, [id, controller, setItems])
 

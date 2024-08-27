@@ -1,27 +1,26 @@
 import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import ViewSplit from 'view-split-react'
-import { DialogContext, ResultType } from 'web-dialog-react' 
+import { DialogContext } from 'web-dialog-react' 
 import FolderView, { FolderViewHandle, FolderViewItem } from './components/FolderView'
 import Menu from './components/Menu'
 import Statusbar from './components/Statusbar'
 import { Controller, showError } from './controller/controller'
 import PictureViewer from './components/PictureViewer'
 import MediaPlayer from './components/MediaPlayer'
-import { IOError, closeWindow } from './requests/requests'
+import { closeWindow } from './requests/requests'
 import './App.css'
 import './themes/adwaita.css'
 import './themes/windows.css'
 import { isWindows } from './globals'
-import { copyErrorEvents, filesDropEvents, getCredentialsEvents, menuActionEvents, previewEvents, progressChangedEvents, showHiddenEvents, } from './requests/events'
+//import { copyErrorEvents, filesDropEvents, getCredentialsEvents, menuActionEvents, previewEvents, progressChangedEvents, showHiddenEvents, } from './requests/events'
 import { getCopyController } from './controller/copy/copyController'
 import FileViewer from './components/FileViewer'
 import { SpecialKeys } from 'virtual-table-react'
 import Titlebar from './components/Titlebar'
-import { Subscription } from 'rxjs'
-import { createFileSystemController } from './controller/filesystem'
+//import { createFileSystemController } from './controller/filesystem'
 import './extensions/extensions'
-import Credentials, { CredentialsProps } from './components/dialogparts/Credentials'
-import { Err, ErrorType, Nothing, Ok, jsonPost } from 'functional-extensions'
+//import Credentials, { CredentialsProps } from './components/dialogparts/Credentials'
+import { ErrorType, Nothing, jsonPost } from 'functional-extensions'
 import LocationViewer from './components/LocationViewer'
 import TrackViewer from './components/TrackViewer'
 import { WebViewType } from './webview.ts'
@@ -44,20 +43,19 @@ interface PathProp {
 	isDirectory: boolean
 }
 
-type CredentialsResult = {
-    name: string
-    password: string
-}
+// type CredentialsResult = {
+//     name: string
+//     password: string
+// }
 
 export type CommanderHandle = {
     onKeyDown: (evt: React.KeyboardEvent)=>void
 }
 
 type CommanderProps = {
-    isMaximized: boolean
 }
 
-const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, ref) => {
+const Commander = forwardRef<CommanderHandle, CommanderProps>(({}, ref) => {
 
     useImperativeHandle(ref, () => ({
         onKeyDown
@@ -74,16 +72,16 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 	const [errorText, setErrorText] = useState<string | null>(null)
 	const [statusText, setStatusText] = useState<string | null>(null)
 	const [itemCount, setItemCount] = useState({dirCount: 0, fileCount: 0 })
-	const [progress, setProgress] = useState(0)
-	const [progressRevealed, setProgressRevealed] = useState(false)
-	const [progressFinished, setProgressFinished] = useState(false)
-	const [totalMax, setTotalMax] = useState(0)
+	const [progress] = useState(0)
+	const [progressRevealed] = useState(false)
+	const [progressFinished] = useState(false)
+	const [totalMax] = useState(0)
     const dialog = useContext(DialogContext)
 	
-	const filesDropSubscription = useRef<Subscription | null>(null)
-	const getCredentialsSubscription = useRef<Subscription | null>(null)
-	const copyErrorSubscription = useRef<Subscription | null>(null)
-	const menuActionSubscription = useRef<Subscription | null>(null)
+	// const filesDropSubscription = useRef<Subscription | null>(null)
+	// const getCredentialsSubscription = useRef<Subscription | null>(null)
+	// const copyErrorSubscription = useRef<Subscription | null>(null)
+	// const menuActionSubscription = useRef<Subscription | null>(null)
 	
 	useEffect(() => {
 		jsonPost<Nothing, ErrorType>({ method: "setpreview", payload: { set: showViewer} })		
@@ -102,36 +100,36 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 	}, [dialog])
 
 	useEffect(() => {
-		const copyItemsFromFileSystem = async (id: string, path: string,  items: FolderViewItem[], move: boolean) => {
-			const inactive = id == ID_LEFT ? folderLeft.current : folderRight.current
-			copyItemsToInactive(inactive, move, createFileSystemController(), path, items, id)
-		}
+		// const copyItemsFromFileSystem = async (id: string, path: string,  items: FolderViewItem[], move: boolean) => {
+		// 	const inactive = id == ID_LEFT ? folderLeft.current : folderRight.current
+		// 	copyItemsToInactive(inactive, move, createFileSystemController(), path, items, id)
+		// }
 
-		filesDropSubscription.current?.unsubscribe()
-		filesDropSubscription.current = filesDropEvents.subscribe(filesDrop => 
-			copyItemsFromFileSystem(filesDrop.id, filesDrop.path, filesDrop.items, filesDrop.move))
+		// filesDropSubscription.current?.unsubscribe()
+		// filesDropSubscription.current = filesDropEvents.subscribe(filesDrop => 
+		// 	copyItemsFromFileSystem(filesDrop.id, filesDrop.path, filesDrop.items, filesDrop.move))
 		
-		getCredentialsSubscription.current?.unsubscribe()
-		getCredentialsSubscription.current = getCredentialsEvents.subscribe(getCredentials => {
-			let name = ""
-			let password = ""
-            dialog.showDialog<CredentialsResult, ErrorType>({
-                text: "Bitte Zugangsdaten eingeben:",
-                extension: Credentials,
-                extensionProps: { name, password },
-                onExtensionChanged: (e: CredentialsProps) => {
-                    name = e.name
-                    password = e.password
-                },
-                btnOk: true,
-                btnCancel: true,
-                defBtnOk: true
-            }, res => res.result == ResultType.Ok
-                ? new Ok({ name, password, path: getCredentials.path })
-                : new Err({ status: IOError.Canceled, statusText: "" }))
-                .toResult()
-                .then(res => jsonPost<CredentialsResult, ErrorType>({ method: "sendcredentials", payload: res }))
-        })
+		// getCredentialsSubscription.current?.unsubscribe()
+		// getCredentialsSubscription.current = getCredentialsEvents.subscribe(getCredentials => {
+		// 	let name = ""
+		// 	let password = ""
+        //     dialog.showDialog<CredentialsResult, ErrorType>({
+        //         text: "Bitte Zugangsdaten eingeben:",
+        //         extension: Credentials,
+        //         extensionProps: { name, password },
+        //         onExtensionChanged: (e: CredentialsProps) => {
+        //             name = e.name
+        //             password = e.password
+        //         },
+        //         btnOk: true,
+        //         btnCancel: true,
+        //         defBtnOk: true
+        //     }, res => res.result == ResultType.Ok
+        //         ? new Ok({ name, password, path: getCredentials.path })
+        //         : new Err({ status: IOError.Canceled, statusText: "" }))
+        //         .toResult()
+        //         .then(res => jsonPost<CredentialsResult, ErrorType>({ method: "sendcredentials", payload: res }))
+        // })
 	}, [dialog, copyItemsToInactive])
 
 	const toggleShowHiddenAndRefresh = () => {
@@ -226,44 +224,44 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 			await copyItems(true)
 	}, [copyItems, dialog, previewMode])
 
-	useEffect(() => {
-		const subscription = isWindows() ? progressChangedEvents.subscribe(e => {
-			if (e.isStarted) {
-				setProgressRevealed(true)
-				setProgressFinished(false)
-			}
-			else if (e.isFinished)
-				setProgressFinished(true)
-			else if (e.isDisposed) {
-				setProgress(0)
-				setProgressRevealed(false)
-			}
-			else 
-				setProgress(e.currentBytes/e.totalBytes)
-			setTotalMax(e.totalBytes)
-		}) : null
+	// useEffect(() => {
+	// 	const subscription = isWindows() ? progressChangedEvents.subscribe(e => {
+	// 		if (e.isStarted) {
+	// 			setProgressRevealed(true)
+	// 			setProgressFinished(false)
+	// 		}
+	// 		else if (e.isFinished)
+	// 			setProgressFinished(true)
+	// 		else if (e.isDisposed) {
+	// 			setProgress(0)
+	// 			setProgressRevealed(false)
+	// 		}
+	// 		else 
+	// 			setProgress(e.currentBytes/e.totalBytes)
+	// 		setTotalMax(e.totalBytes)
+	// 	}) : null
 
-		copyErrorSubscription.current?.unsubscribe()
-		copyErrorSubscription.current = copyErrorEvents.subscribe(err => showError(err, setErrorText, "Fehler beim Kopieren: "))
+	// 	copyErrorSubscription.current?.unsubscribe()
+	// 	copyErrorSubscription.current = copyErrorEvents.subscribe(err => showError(err, setErrorText, "Fehler beim Kopieren: "))
 
-		previewEvents.subscribe(set => {
-			setShowViewer(set)
-			showViewerRef.current = set
-		})
+	// 	previewEvents.subscribe(set => {
+	// 		setShowViewer(set)
+	// 		showViewerRef.current = set
+	// 	})
 
-		showHiddenEvents.subscribe(set => {
+	// 	showHiddenEvents.subscribe(set => {
 
-			showHiddenRef.current = set
-			setShowHidden(showHiddenRef.current)
-			folderLeft.current?.refresh(showHiddenRef.current)
-			folderRight.current?.refresh(showHiddenRef.current)
-		})
+	// 		showHiddenRef.current = set
+	// 		setShowHidden(showHiddenRef.current)
+	// 		folderLeft.current?.refresh(showHiddenRef.current)
+	// 		folderRight.current?.refresh(showHiddenRef.current)
+	// 	})
 
-		menuActionSubscription.current?.unsubscribe()
-		menuActionSubscription.current = menuActionEvents.subscribe(onMenuAction)
+	// 	menuActionSubscription.current?.unsubscribe()
+	// 	menuActionSubscription.current = menuActionEvents.subscribe(onMenuAction)
 
-		return () => subscription?.unsubscribe()
-	}, [onMenuAction])
+	// 	return () => subscription?.unsubscribe()
+	// }, [onMenuAction])
 
 	const onKeyDown = (evt: React.KeyboardEvent) => {
 		if (evt.code == "Tab" && !evt.shiftKey) {
@@ -310,7 +308,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({isMaximized}, re
 				<Menu autoMode={false} onMenuAction={onMenuAction} 
 				showHidden={showHidden} toggleShowHidden={toggleShowHiddenAndRefresh}
 				showViewer={showViewer} toggleShowViewer={toggleShowViewer} />
-			)} isMaximized ={isMaximized} />) }
+			)} />) }
 			<ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
 			<Statusbar path={path.path} dirCount={itemCount.dirCount} fileCount={itemCount.fileCount}
 				errorText={errorText} setErrorText={setErrorText} statusText={statusText} />
