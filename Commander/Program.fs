@@ -1,7 +1,6 @@
 ﻿open System
 open System.Drawing
 open WebWindowNetCore
-open Native
 
 WebView()
     .AppId("de.uriegel.commander")
@@ -16,6 +15,7 @@ WebView()
     .CorsCache(TimeSpan.FromSeconds(20))    
     .SaveBounds()
     .DefaultContextMenuDisabled()
+    .AddRequest("getroot", Root.get)
 #if DEBUG    
     .DevTools()
 #endif

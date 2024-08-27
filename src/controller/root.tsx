@@ -117,7 +117,7 @@ export const getRootController = (controller: Controller | null): ControllerResu
     }})
 
 const getItems = () => 
-    jsonPost<GetRootResult, ErrorType>({ method: "getroot" })
+    jsonPost<GetRootResult, ErrorType>({ method: "getroot", payload: { } })
         .map(items => {
             const pos = items.findIndex(n => !n.isMounted)
             const extendedItems = items

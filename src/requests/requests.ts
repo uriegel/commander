@@ -1,7 +1,7 @@
 import { FolderViewItem } from "../components/FolderView"
 import { ErrorType, Nothing, jsonPost, setBaseUrl } from "functional-extensions"
 
-setBaseUrl("http://localhost:20000/commander")
+setBaseUrl("http://localhost:2222/requests")
 
 export type GetItemsResult = {
     items: FolderViewItem[]
