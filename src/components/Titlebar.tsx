@@ -7,28 +7,17 @@ import "functional-extensions"
 import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { ErrorType, Nothing, jsonPost } from "functional-extensions"
 import { progressChangedEvents, showProgressEvents } from "../requests/events"
-import { closeWindow } from "../requests/requests"
-
-declare const webViewMinimize: () => void
-declare const webViewRestore: () => void
-declare const webViewMaximize: () => void
 
 interface TitlebarProps {
     menu: JSX.Element
-    isMaximized: boolean
     progress: number
     progressFinished: boolean
     progressRevealed: boolean
     totalSize: number
 }
 
-const Titlebar = ({ menu, isMaximized, progress, progressFinished, progressRevealed, totalSize }: TitlebarProps) => {
+const Titlebar = ({ menu, progress, progressFinished, progressRevealed, totalSize }: TitlebarProps) => {
     
-    const onMinimize = () => webViewMinimize()
-    const onRestore = () => webViewRestore()
-    const onMaximize = () => webViewMaximize()
-    const onClose = () => closeWindow()
-
     const dialog = useContext(DialogContext)
 
     const [move, setMove] = useState(false)
@@ -73,7 +62,7 @@ const Titlebar = ({ menu, isMaximized, progress, progressFinished, progressRevea
 
     return  isWindows()        
         ? (<div className="titlebar">
-            <img src="http://localhost:20000/commander/getfavicon"/>
+            <img alt="favicon" src="http://localhost:20000/commander/getfavicon"/>
             {menu}
             <div className="titlebarGrip">
                 <span>Commander</span>
@@ -81,13 +70,10 @@ const Titlebar = ({ menu, isMaximized, progress, progressFinished, progressRevea
             <div className={`pieContainer${progressRevealed ? " revealed" : ""}${progressFinished ? " finished" : ""}`} onClick={startProgressDialog}>
                 <Pie progress={progress}/>
             </div>            
-            <div className="titlebarButton" onClick={onMinimize}><span className="dash">&#x2012;</span></div>
-            {
-                isMaximized
-                ? (<div className="titlebarButton" onClick={onRestore}><span>&#10697;</span></div>)
-                : (<div className="titlebarButton" onClick={onMaximize}><span>&#9744;</span></div>)
-            }
-            <div className={"titlebarButton close"} onClick={onClose}><span>&#10005;</span></div>
+            <div className="titlebarButton" id="$MINIMIZE$"><span className="dash">&#x2012;</span></div>
+            <div className="titlebarButton" id="$RESTORE$"><span>&#10697;</span></div>  
+            <div className="titlebarButton" id="$MAXIMIZE$"><span>&#9744;</span></div>
+            <div className={"titlebarButton close"} id="$CLOSE$"><span>&#10005;</span></div>
             
             </div>)
         : menu

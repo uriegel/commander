@@ -15,7 +15,7 @@ WebView()
     .CorsDomains([|"http://localhost:5173"|])
     .CorsCache(TimeSpan.FromSeconds(20))    
     .SaveBounds()
-    .DefaultContextMenuDisabled()
+    //.DefaultContextMenuDisabled()
 #if DEBUG    
     .DevTools()
 #endif
