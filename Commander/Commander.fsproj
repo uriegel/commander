@@ -48,6 +48,6 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="WebWindowNetCore" Version="10.0.7" />
+    <PackageReference Include="WebWindowNetCore" Version="10.0.8" />
   </ItemGroup>
 </Project>

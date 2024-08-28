@@ -1,5 +1,5 @@
-#if Linux
 module Titlebar
+#if Linux
 open GtkDotNet
 open GtkDotNet.SafeHandles
 open GtkDotNet
