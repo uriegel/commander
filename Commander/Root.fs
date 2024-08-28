@@ -1,4 +1,5 @@
 module Root
+open Types
 
 type Empty = { Nil: int }
 
@@ -13,9 +14,11 @@ type RootItem = {
 
 let get (_: Empty) = 
     task {
-        return [
-            { Name = "home"; Description = "Das home"; Size = 23; MountPoint = "~"; IsMounted = true; DriveType = "drive" }
-        ]
-    }
+        return { 
+            Ok = Some [
+                { Name = "home"; Description = "Das home"; Size = 23; MountPoint = "~"; IsMounted = true; DriveType = "drive" }
+            ]
+            Error = None}
+        }
 
    

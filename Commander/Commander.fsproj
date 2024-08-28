@@ -43,6 +43,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Types.fs" />
     <Compile Include="Root.fs" />
     <Compile Include="TitlebarLinux.fs" />
     <Compile Include="Program.fs" />

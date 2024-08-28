@@ -25,5 +25,9 @@ WebView()
     .Run()
     |> ignore
 
-// TODO Windows: Maximized started => maximize control is active
-// TODO Windows: Maximized started => Borders are not OK
+// TODO Root Linux
+// TODO pathinput light dark Windows
+// TODO Root Windows, 
+// TODO not fetch or jsonpost but WebView.request with AsyncResult as result
+// TODO Files Linux
+// TODO Files Windows
