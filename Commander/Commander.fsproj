@@ -44,7 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Types.fs" />
-    <Compile Include="Root.fs" />
+    <Compile Include="RootLinux.fs" />
     <Compile Include="TitlebarLinux.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

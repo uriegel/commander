@@ -25,9 +25,9 @@ WebView()
     .Run()
     |> ignore
 
-// TODO Root Linux
 // TODO pathinput light dark Windows
-// TODO Root Windows, 
+// TODO Root Windows
+// TODO send Result or AsyncResult
 // TODO not fetch or jsonpost but WebView.request with AsyncResult as result
 // TODO Files Linux
 // TODO Files Windows
