@@ -26,8 +26,6 @@ WebView()
     .Run()
     |> ignore
 
-// TODO windows mount version
-// TODO Windows WebWindowNetCore with FSharpTools
 // TODO Refresh
 // TODO ShowHidden in UI: send event to javascript
 // TODO ShowIcons
