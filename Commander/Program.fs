@@ -17,6 +17,7 @@ WebView()
     .SaveBounds()
     .DefaultContextMenuDisabled()
     .AddRequest("getroot", Root.get)
+    .AddRequest("getfiles", Directory.getFiles)
 #if DEBUG    
     .DevTools()
 #endif

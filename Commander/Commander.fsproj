@@ -46,6 +46,7 @@
     <Compile Include="Types.fs" />
     <Compile Include="RootWindows.fs" />
     <Compile Include="RootLinux.fs" />
+    <Compile Include="Directory.fs" />
     <Compile Include="TitlebarLinux.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
