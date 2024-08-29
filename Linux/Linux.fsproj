@@ -11,7 +11,6 @@
   <ItemGroup>
     <PackageReference Include="FSharpTools" Version="10.2.6" />
     <PackageReference Include="Gtk4DotNet" Version="6.5.3" />
-    <PackageReference Include="FSharpTools" Version="10.2.6" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Model\Model.fsproj" />

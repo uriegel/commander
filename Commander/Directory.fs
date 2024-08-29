@@ -78,7 +78,7 @@ let getFiles (input: GetFiles) =
             // TODO |> Validate
             |> Result.map (fun (info: FileSystemInfo) -> {
                                                                         Items = info.Items |> Array.map getDirectoryItem |> Array.filter filterHidden
-                                                                        Path = path 
+                                                                        Path = info.Path 
                                                                     })  
             |> Result.map(getFilesResult path)
             |> toJsonResult

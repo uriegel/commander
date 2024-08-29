@@ -47,7 +47,7 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="WebWindowNetCore" Version="10.0.8" />
+    <PackageReference Include="WebWindowNetCore" Version="10.0.9" />
   </ItemGroup>
   <ItemGroup Condition="'$(IsLinux)'=='true'">
     <ProjectReference Include="..\Linux\Linux.fsproj" />
