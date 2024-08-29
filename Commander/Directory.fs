@@ -51,12 +51,23 @@ let getFiles (input: GetFiles) =
                     }
         | _ -> failwith "Either Directory nor File"
 
+    let getFilesResult path (items: DirectoryItem array) = 
+        {
+            Items = items
+            Path = path
+            DirCount = items |> Seq.filter (fun i -> i.IsDirectory) |> Seq.length
+            FileCount = items |> Seq.filter (fun i -> not i.IsDirectory) |> Seq.length
+        }
+
+
     task {
-        return 
         // TODO if input.Mount = Some true then 
         //     mount ()
+        return 
             Directory.getFileSystemInfos input.Path
             // |> Validate
             |> Result.map (fun infos -> infos |> Array.map getDirectoryItem)  
+            |> Result.map(getFilesResult input.Path)
             |> toJsonResult
     }
+

@@ -36,7 +36,7 @@ module Root =
                     Name = "~" 
                     Description = "home"
                     Size = 0
-                    MountPoint = "/home/uwe"
+                    MountPoint = Directory.getHomeDir ()
                     IsMounted = true
                     DriveType = "" 
                 }
