@@ -64,14 +64,19 @@ let getFiles (input: GetFiles) =
             FileCount = items.Items |> Seq.filter (fun i -> not i.IsDirectory) |> Seq.length
         }
 
+    let filterHidden (info: DirectoryItem) = 
+        input.ShowHiddenItems || not info.IsHidden
 
     task {
         // TODO if input.Mount = Some true then 
         //     mount ()
         return 
             Directory.getFileSystemInfo input.Path
-            // |> Validate
-            |> Result.map (fun (info: FileSystemInfo) -> { Items = info.Items |> Array.map getDirectoryItem; Path = info.Path })  
+            // TODO |> Validate
+            |> Result.map (fun (info: FileSystemInfo) -> {
+                                                                        Items = info.Items |> Array.map getDirectoryItem |> Array.filter filterHidden
+                                                                        Path = info.Path 
+                                                                    })  
             |> Result.map(getFilesResult input.Path)
             |> toJsonResult
     }

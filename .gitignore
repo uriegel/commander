@@ -16,3 +16,9 @@ resources/script.js
 resources/style.css
 build
 dist
+Model/bin
+Model/obj
+Windows/bin
+Windows/obj
+Linux/bin
+Linux/obj

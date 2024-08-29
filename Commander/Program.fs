@@ -27,8 +27,11 @@ WebView()
     .Run()
     |> ignore
 
+// TODO Model assembly -> Windows assembly Linux assembly -> Commander
 // TODO if input.Mount = Some true then 
-// TODO ShowHidden
+// TODO Refresh
+// TODO ShowHidden in UI: send event to javascript
+// TODO ShowIcons
 // TODO FileSystemWatcher
 // TODO Exif datas
 // TODO send Result or AsyncResult (access denied)

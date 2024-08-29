@@ -1,8 +1,12 @@
-module Titlebar
-#if Linux
+﻿module Titlebar
 open GtkDotNet
 open GtkDotNet.SafeHandles
-open GtkDotNet
+
+let onShowHidden (webView: WebViewHandle) show = 
+    // TODO send events to javascript
+    //Events.SendShowHidden(show);
+    webView.GrabFocus();
+  
 
 let create (app: ApplicationHandle) (window: WindowHandle) (webview: ObjectRef<WebViewHandle>) =
     let headerBar = 
@@ -54,7 +58,7 @@ let create (app: ApplicationHandle) (window: WindowHandle) (webview: ObjectRef<W
 
     app.AddActions([
                 // new("refresh", () => SendMenuAction(webView.Ref, "REFRESH"), "<Ctrl>R"),
-                // new("showhidden", false, show => OnShowHidden(webView.Ref, show), "<Ctrl>H"),
+        GtkAction("showhidden", false, (fun show -> onShowHidden webview.Ref show), "<Ctrl>H")
                 // new("extendedrename", () => SendMenuAction(webView.Ref, "EXTENDED_RENAME"), "<Ctrl>F2"),
                 // new("rename", () => SendMenuAction(webView.Ref, "RENAME"), "F2"),
                 // new("togglePreviewMode", () => SendMenuAction(webView.Ref, "TOGGLE_PREVIEW"), "<Ctrl>F3"),
@@ -71,10 +75,10 @@ let create (app: ApplicationHandle) (window: WindowHandle) (webview: ObjectRef<W
                 // new("adaptpath", () => SendMenuAction(webView.Ref, "ADAPT_PATH"), "F9"),
                 // new("selectall", () => SendMenuAction(webView.Ref, "SEL_ALL"), "KP_Add"),
                 // new("selectnone", () => SendMenuAction(webView.Ref, "SEL_NONE"), "KP_Subtract"),
-        GtkAction("devtools", (fun () -> webview.Ref.GetInspector().Show()), "F12")
+        GtkAction("devtools", (fun () -> webview.Ref.GetInspector().Show()), "<Shift><Ctrl>I")
     ]) |> ignore
     headerBar :> WidgetHandle
-#endif    
+
                 
 
 
