@@ -1,7 +1,6 @@
 ﻿open System
 open System.Drawing
 open WebWindowNetCore
-open Native
 
 WebView()
     .AppId("de.uriegel.commander")
