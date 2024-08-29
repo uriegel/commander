@@ -26,12 +26,13 @@ WebView()
     .Run()
     |> ignore
 
-// TODO Model assembly -> Windows assembly Linux assembly -> Commander
-// TODO if input.Mount = Some true then 
+// TODO windows mount version
+// TODO Windows WebWindowNetCore with FSharpTools
 // TODO Refresh
 // TODO ShowHidden in UI: send event to javascript
 // TODO ShowIcons
 // TODO FileSystemWatcher
+// TODO Windows: ctrl shift I
 // TODO Exif datas
 // TODO send Result or AsyncResult (access denied)
 // TODO not fetch or jsonpost but WebView.request with AsyncResult as result

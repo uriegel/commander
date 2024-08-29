@@ -68,16 +68,19 @@ let getFiles (input: GetFiles) =
         input.ShowHiddenItems || not info.IsHidden
 
     task {
-        // TODO if input.Mount = Some true then 
-        //     mount ()
+        let path = 
+            if input.Mount = Some true then 
+                Directory.mount input.Path
+            else
+                input.Path
         return 
-            Directory.getFileSystemInfo input.Path
+            Directory.getFileSystemInfo path
             // TODO |> Validate
             |> Result.map (fun (info: FileSystemInfo) -> {
                                                                         Items = info.Items |> Array.map getDirectoryItem |> Array.filter filterHidden
-                                                                        Path = info.Path 
+                                                                        Path = path 
                                                                     })  
-            |> Result.map(getFilesResult input.Path)
+            |> Result.map(getFilesResult path)
             |> toJsonResult
     }
 
