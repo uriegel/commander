@@ -6,7 +6,9 @@ let onShowHidden (webView: WebViewHandle) show =
     // TODO send events to javascript
     //Events.SendShowHidden(show);
     webView.GrabFocus();
-  
+
+let sendMenuAction (webView: WebViewHandle) cmd = 
+    ()
 
 let create (app: ApplicationHandle) (window: WindowHandle) (webview: ObjectRef<WebViewHandle>) =
     let headerBar = 
@@ -57,7 +59,7 @@ let create (app: ApplicationHandle) (window: WindowHandle) (webview: ObjectRef<W
                 // .PackEnd(DeleteProgress.New())
 
     app.AddActions([
-                // new("refresh", () => SendMenuAction(webView.Ref, "REFRESH"), "<Ctrl>R"),
+        GtkAction("refresh", (fun () -> sendMenuAction webview.Ref "REFRESH"), "<Ctrl>R")
         GtkAction("showhidden", false, (fun show -> onShowHidden webview.Ref show), "<Ctrl>H")
                 // new("extendedrename", () => SendMenuAction(webView.Ref, "EXTENDED_RENAME"), "<Ctrl>F2"),
                 // new("rename", () => SendMenuAction(webView.Ref, "RENAME"), "F2"),
