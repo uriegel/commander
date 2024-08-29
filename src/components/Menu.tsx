@@ -136,7 +136,7 @@ const Menu = ({ autoMode, showHidden, toggleShowHidden, showViewer, toggleShowVi
             name: "_Entwicklerwerkzeuge",
             type: MenuItemType.MenuItem,
             key: "SHOW_DEV_TOOLS",
-            shortcut: "F12"
+            shortcut: "Strg+Shift+I"
         }]
         }]} onAction={onMenuAction} />
 )
