@@ -12,7 +12,7 @@ import './App.css'
 import './themes/adwaita.css'
 import './themes/windows.css'
 import { isWindows } from './globals'
-//import { copyErrorEvents, filesDropEvents, getCredentialsEvents, menuActionEvents, previewEvents, progressChangedEvents, showHiddenEvents, } from './requests/events'
+import { copyErrorEvents, filesDropEvents, getCredentialsEvents, menuActionEvents, previewEvents, progressChangedEvents, showHiddenEvents, } from './requests/events'
 import { getCopyController } from './controller/copy/copyController'
 import FileViewer from './components/FileViewer'
 import { SpecialKeys } from 'virtual-table-react'
@@ -24,6 +24,7 @@ import { ErrorType, Nothing, jsonPost } from 'functional-extensions'
 import LocationViewer from './components/LocationViewer'
 import TrackViewer from './components/TrackViewer'
 import { WebViewType } from './webview.ts'
+import { Subscription } from 'rxjs'
 
 declare var WebView: WebViewType
 
@@ -81,7 +82,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({}, ref) => {
 	// const filesDropSubscription = useRef<Subscription | null>(null)
 	// const getCredentialsSubscription = useRef<Subscription | null>(null)
 	// const copyErrorSubscription = useRef<Subscription | null>(null)
-	// const menuActionSubscription = useRef<Subscription | null>(null)
+	const menuActionSubscription = useRef<Subscription | null>(null)
 	
 	useEffect(() => {
 		jsonPost<Nothing, ErrorType>({ method: "setpreview", payload: { set: showViewer} })		
@@ -249,16 +250,15 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({}, ref) => {
 	// 		showViewerRef.current = set
 	// 	})
 
-	// 	showHiddenEvents.subscribe(set => {
+	 	showHiddenEvents.subscribe(set => {
+	 		showHiddenRef.current = set
+	 		setShowHidden(showHiddenRef.current)
+	 		folderLeft.current?.refresh(showHiddenRef.current)
+	 		folderRight.current?.refresh(showHiddenRef.current)
+	 	})
 
-	// 		showHiddenRef.current = set
-	// 		setShowHidden(showHiddenRef.current)
-	// 		folderLeft.current?.refresh(showHiddenRef.current)
-	// 		folderRight.current?.refresh(showHiddenRef.current)
-	// 	})
-
-	// 	menuActionSubscription.current?.unsubscribe()
-	// 	menuActionSubscription.current = menuActionEvents.subscribe(onMenuAction)
+	 	menuActionSubscription.current?.unsubscribe()
+	 	menuActionSubscription.current = menuActionEvents.subscribe(onMenuAction)
 
 	// 	return () => subscription?.unsubscribe()
 	// }, [onMenuAction])

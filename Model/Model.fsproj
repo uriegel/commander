@@ -4,6 +4,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Events.fs" />
     <Compile Include="Types.fs" />
   </ItemGroup>
 </Project>

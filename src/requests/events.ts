@@ -1,7 +1,10 @@
-import { BehaviorSubject, filter, fromEvent, map } from 'rxjs'
+import { BehaviorSubject, filter, fromEvent, map, Subject } from 'rxjs'
 import { FolderViewItem } from '../components/FolderView'
 import { Version } from './requests'
 import { ErrorType } from 'functional-extensions'
+import { WebViewType } from '../webview'
+
+declare var WebView: WebViewType
 
 type CopyProgress = {
     fileName: string
@@ -74,8 +77,14 @@ type CommanderEvent = {
     showHidden?: boolean
 }
 
-const toCommanderEvent = (event: MessageEvent) =>
-    JSON.parse(event.data) as CommanderEvent
+export const menuActionEvents = new Subject<string>()
+export const showHiddenEvents = new Subject<boolean>()
+
+WebView.registerEvents<string>("MenuAction", d => menuActionEvents.next(d))
+WebView.registerEvents<boolean>("ShowHidden", d => showHiddenEvents.next(d))
+
+// const toCommanderEvent = (event: MessageEvent) =>
+//     JSON.parse(event.data) as CommanderEvent
 
 // const commanderEvents = fromEvent<MessageEvent>(source, 'message')
 //     .pipe(map(toCommanderEvent))
@@ -84,13 +93,7 @@ const toCommanderEvent = (event: MessageEvent) =>
 //     .pipe(filter(n => n.preview != undefined))
 //     .pipe(map(n => n.preview!))
 
-// export const menuActionEvents = commanderEvents
-//     .pipe(filter(n => n.menuAction != undefined))
-//     .pipe(map(n => n.menuAction!))
 
-// export const showHiddenEvents = commanderEvents
-//     .pipe(filter(n => n.showHidden != undefined))
-//     .pipe(map(n => n.showHidden!))
 
 // export const folderViewItemsChangedEvents = commanderEvents
 //     .pipe(filter(n => n.serviceItems != undefined))
@@ -140,15 +143,15 @@ export const progressChangedEvents = new BehaviorSubject<CopyProgress>({
     isFinished: false
 })
 
-export const startUacEvents = () => {
-    const source = new EventSource("http://localhost:21000/commander/sse")
-    const commanderEvents = fromEvent<MessageEvent>(source, 'message')
-        .pipe(map(toCommanderEvent))
-    commanderEvents
-        .pipe(filter(n => n.copyProgress != undefined))
-        .pipe(map(n => n.copyProgress!))
-        .subscribe(progressChangedEvents)
-}
+// export const startUacEvents = () => {
+//     const source = new EventSource("http://localhost:21000/commander/sse")
+//     const commanderEvents = fromEvent<MessageEvent>(source, 'message')
+//         .pipe(map(toCommanderEvent))
+//     commanderEvents
+//         .pipe(filter(n => n.copyProgress != undefined))
+//         .pipe(map(n => n.copyProgress!))
+//         .subscribe(progressChangedEvents)
+// }
 
 // commanderEvents
 //     .pipe(filter(n => n.copyProgress != undefined))

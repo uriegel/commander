@@ -2,13 +2,15 @@
 open GtkDotNet
 open GtkDotNet.SafeHandles
 
-let onShowHidden (webView: WebViewHandle) show = 
-    // TODO send events to javascript
-    //Events.SendShowHidden(show);
-    webView.GrabFocus();
+let onShowHidden (webView: WebViewHandle) (show: bool) = 
+    Events.events.TryFind "ShowHidden"
+    |> Option.iter (fun send -> send show)
+    webView.GrabFocus()
 
 let sendMenuAction (webView: WebViewHandle) cmd = 
-    ()
+    Events.events.TryFind "MenuAction"
+    |> Option.iter (fun send -> send cmd)
+    webView.GrabFocus()
 
 let create (app: ApplicationHandle) (window: WindowHandle) (webview: ObjectRef<WebViewHandle>) =
     let headerBar = 

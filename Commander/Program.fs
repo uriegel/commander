@@ -17,6 +17,11 @@ WebView()
     .DefaultContextMenuDisabled()
     .AddRequest("getroot", Root.get)
     .AddRequest("getfiles", Directory.getFiles)
+    .OnEventSink(
+        fun id webview -> Events.onEventSink id (
+            fun d -> webview.SendEvent.Invoke(id, d)
+        )
+    )
 #if DEBUG    
     .DevTools()
 #endif
@@ -26,8 +31,7 @@ WebView()
     .Run()
     |> ignore
 
-// TODO Refresh
-// TODO ShowHidden in UI: send event to javascript
+// TODO ShowHidden: 2 times leads to crash becase delegate is disposed
 // TODO ShowIcons
 // TODO FileSystemWatcher
 // TODO Exif datas
