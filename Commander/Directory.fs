@@ -27,9 +27,14 @@ type GetFilesResult = {
     FileCount: int
 }
 
+type DirectoryItemInfo = {
+    Path: string
+    Items: DirectoryItem array
+}
+
 let getFiles (input: GetFiles) = 
 
-    let getDirectoryItem (info: FileSystemInfo) = 
+    let getDirectoryItem (info: IO.FileSystemInfo) = 
         match info with
         | :? DirectoryInfo as di -> 
                     {
@@ -51,12 +56,12 @@ let getFiles (input: GetFiles) =
                     }
         | _ -> failwith "Either Directory nor File"
 
-    let getFilesResult path (items: DirectoryItem array) = 
+    let getFilesResult path (items: DirectoryItemInfo) = 
         {
-            Items = items
-            Path = path
-            DirCount = items |> Seq.filter (fun i -> i.IsDirectory) |> Seq.length
-            FileCount = items |> Seq.filter (fun i -> not i.IsDirectory) |> Seq.length
+            Items = items.Items
+            Path = items.Path
+            DirCount = items.Items |> Seq.filter (fun i -> i.IsDirectory) |> Seq.length
+            FileCount = items.Items |> Seq.filter (fun i -> not i.IsDirectory) |> Seq.length
         }
 
 
@@ -64,9 +69,9 @@ let getFiles (input: GetFiles) =
         // TODO if input.Mount = Some true then 
         //     mount ()
         return 
-            Directory.getFileSystemInfos input.Path
+            Directory.getFileSystemInfo input.Path
             // |> Validate
-            |> Result.map (fun infos -> infos |> Array.map getDirectoryItem)  
+            |> Result.map (fun (info: FileSystemInfo) -> { Items = info.Items |> Array.map getDirectoryItem; Path = info.Path })  
             |> Result.map(getFilesResult input.Path)
             |> toJsonResult
     }

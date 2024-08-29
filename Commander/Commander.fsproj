@@ -52,6 +52,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="WebWindowNetCore" Version="10.0.8" />
-    <PackageReference Include="FSharpTools" Version="10.2.5" />
+    <PackageReference Include="FSharpTools" Version="10.2.6" />
   </ItemGroup>
 </Project>

@@ -27,7 +27,11 @@ WebView()
     .Run()
     |> ignore
 
-// TODO send Result or AsyncResult
+// TODO if input.Mount = Some true then 
+// TODO ShowHidden
+// TODO FileSystemWatcher
+// TODO Exif datas
+// TODO send Result or AsyncResult (access denied)
 // TODO not fetch or jsonpost but WebView.request with AsyncResult as result
-// TODO Files Linux
 // TODO Files Windows
+// TODO File versions
