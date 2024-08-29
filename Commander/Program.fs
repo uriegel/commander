@@ -1,6 +1,7 @@
 ﻿open System
 open System.Drawing
 open WebWindowNetCore
+open Native
 
 WebView()
     .AppId("de.uriegel.commander")
@@ -25,8 +26,6 @@ WebView()
     .Run()
     |> ignore
 
-// TODO pathinput light dark Windows
-// TODO Root Windows
 // TODO send Result or AsyncResult
 // TODO not fetch or jsonpost but WebView.request with AsyncResult as result
 // TODO Files Linux
