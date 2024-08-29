@@ -1,6 +1,8 @@
 module Directory 
 open System
+open System.IO
 open FSharpTools
+open Types
 
 type GetFiles = {
     Id: string 
@@ -13,7 +15,7 @@ type DirectoryItem = {
     Name: string
     Size: int64
     IsDirectory: bool
-    IconPath: string
+    IconPath: string option
     IsHidden: bool
     Time: DateTime
 }
@@ -26,8 +28,35 @@ type GetFilesResult = {
 }
 
 let getFiles (input: GetFiles) = 
+
+    let getDirectoryItem (info: FileSystemInfo) = 
+        match info with
+        | :? DirectoryInfo as di -> 
+                    {
+                        Name = di.Name
+                        Size = 0
+                        IsDirectory = true
+                        IconPath = None
+                        IsHidden = (di.Attributes &&& FileAttributes.Hidden) = FileAttributes.Hidden
+                        Time = di.LastWriteTime
+                    }
+        | :? FileInfo as fi ->
+                    {
+                        Name = fi.Name
+                        Size = fi.Length
+                        IsDirectory = false
+                        IconPath = None// TODO Directory.GetIconPath(info),
+                        IsHidden = (fi.Attributes &&& FileAttributes.Hidden) = FileAttributes.Hidden
+                        Time = fi.LastWriteTime
+                    }
+        | _ -> failwith "Either Directory nor File"
+
     task {
+        return 
         // TODO if input.Mount = Some true then 
         //     mount ()
-        Directory.getFileSystemInfos input.Path
+            Directory.getFileSystemInfos input.Path
+            // |> Validate
+            |> Result.map (fun infos -> infos |> Array.map getDirectoryItem)  
+            |> toJsonResult
     }
