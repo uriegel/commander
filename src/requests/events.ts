@@ -1,7 +1,7 @@
-import { BehaviorSubject, filter, fromEvent, map, Subject } from 'rxjs'
+import { BehaviorSubject, Subject } from 'rxjs'
 import { FolderViewItem } from '../components/FolderView'
-import { Version } from './requests'
-import { ErrorType } from 'functional-extensions'
+//import { Version } from './requests'
+//import { ErrorType } from 'functional-extensions'
 import { WebViewType } from '../webview'
 
 declare var WebView: WebViewType
@@ -21,18 +21,14 @@ type CopyProgress = {
     isFinished: boolean
 }
 
-type WindowState = {
-    maximized: boolean
-}
+// type FilesDrop = {
+//     id: string
+//     path: string
+//     items: FolderViewItem[]
+//     move: boolean
+// }
 
-type FilesDrop = {
-    id: string
-    path: string
-    items: FolderViewItem[]
-    move: boolean
-}
-
-type GetCredentials = { path: string }
+// type GetCredentials = { path: string }
 
 export enum DirectoryChangedType {
     Created,
@@ -49,33 +45,33 @@ export type DirectoryChangedEvent = {
     oldName?: string
 }
 
-type ExifTime = {
-    path: string,
-    name: string,
-    exif: string
-}
+// type ExifTime = {
+//     path: string,
+//     name: string,
+//     exif: string
+// }
 
-type ExtendedData = {
-    path: string,
-    name: string,
-    version: Version
-}
+// type ExtendedData = {
+//     path: string,
+//     name: string,
+//     version: Version
+// }
 
-type CommanderEvent = {
-    copyProgress?: CopyProgress
-    copyError: ErrorType
-    windowState?: WindowState
-    serviceItems?: FolderViewItem[]
-    filesDrop?: FilesDrop
-    getCredentials?: GetCredentials
-    directoryChanged?: DirectoryChangedEvent
-    exifTime?: ExifTime
-    extendedData?: ExtendedData
-    showProgress?: boolean
-    preview?: boolean
-    menuAction?: string
-    showHidden?: boolean
-}
+// type CommanderEvent = {
+//     copyProgress?: CopyProgress
+//     copyError: ErrorType
+//     windowState?: WindowState
+//     serviceItems?: FolderViewItem[]
+//     filesDrop?: FilesDrop
+//     getCredentials?: GetCredentials
+//     directoryChanged?: DirectoryChangedEvent
+//     exifTime?: ExifTime
+//     extendedData?: ExtendedData
+//     showProgress?: boolean
+//     preview?: boolean
+//     menuAction?: string
+//     showHidden?: boolean
+// }
 
 export const menuActionEvents = new Subject<string>()
 export const showHiddenEvents = new Subject<boolean>()

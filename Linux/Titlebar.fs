@@ -9,7 +9,7 @@ let onShowHidden (webView: WebViewHandle) (show: bool) =
 
 let sendMenuAction (webView: WebViewHandle) cmd = 
     Events.events.TryFind "MenuAction"
-    |> Option.iter (fun send -> send cmd)
+    |> Option.iter (fun send -> send "REFRESH")
     webView.GrabFocus()
 
 let create (app: ApplicationHandle) (window: WindowHandle) (webview: ObjectRef<WebViewHandle>) =

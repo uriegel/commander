@@ -12,7 +12,8 @@ import './App.css'
 import './themes/adwaita.css'
 import './themes/windows.css'
 import { isWindows } from './globals'
-import { copyErrorEvents, filesDropEvents, getCredentialsEvents, menuActionEvents, previewEvents, progressChangedEvents, showHiddenEvents, } from './requests/events'
+//import { copyErrorEvents, filesDropEvents, getCredentialsEvents, menuActionEvents, previewEvents, progressChangedEvents, showHiddenEvents, } from './requests/events'
+import { menuActionEvents, showHiddenEvents, } from './requests/events'
 import { getCopyController } from './controller/copy/copyController'
 import FileViewer from './components/FileViewer'
 import { SpecialKeys } from 'virtual-table-react'
@@ -250,18 +251,18 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({}, ref) => {
 	// 		showViewerRef.current = set
 	// 	})
 
-	 	showHiddenEvents.subscribe(set => {
-	 		showHiddenRef.current = set
-	 		setShowHidden(showHiddenRef.current)
-	 		folderLeft.current?.refresh(showHiddenRef.current)
-	 		folderRight.current?.refresh(showHiddenRef.current)
-	 	})
+	showHiddenEvents.subscribe(set => {
+		setShowHidden(set)
+	})
 
-	 	menuActionSubscription.current?.unsubscribe()
-	 	menuActionSubscription.current = menuActionEvents.subscribe(onMenuAction)
+	useEffect(() => {
+		folderLeft.current?.refresh(showHidden)
+		folderRight.current?.refresh(showHidden)
+	}, [showHidden])
 
-	// 	return () => subscription?.unsubscribe()
-	// }, [onMenuAction])
+
+	menuActionSubscription.current?.unsubscribe()
+	menuActionSubscription.current = menuActionEvents.subscribe(onMenuAction)
 
 	const onKeyDown = (evt: React.KeyboardEvent) => {
 		if (evt.code == "Tab" && !evt.shiftKey) {

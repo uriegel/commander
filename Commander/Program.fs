@@ -31,7 +31,6 @@ WebView()
     .Run()
     |> ignore
 
-// TODO ShowHidden: 2 times leads to crash becase delegate is disposed
 // TODO ShowIcons
 // TODO FileSystemWatcher
 // TODO Exif datas
