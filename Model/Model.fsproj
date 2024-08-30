@@ -4,7 +4,11 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Start.fs" />
     <Compile Include="Events.fs" />
     <Compile Include="Types.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FSharpTools" Version="10.2.7" />
   </ItemGroup>
 </Project>

@@ -4,16 +4,16 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Requests.fs" />
     <Compile Include="Directory.fs" />
     <Compile Include="Root.fs" />
     <Compile Include="Titlebar.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FSharpTools" Version="10.2.6" />
+    <PackageReference Include="Giraffe" Version="7.0.1" />
     <PackageReference Include="Gtk4DotNet" Version="6.5.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Model\Model.fsproj" />
   </ItemGroup>
-
 </Project>

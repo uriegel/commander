@@ -65,7 +65,7 @@ let create (app: ApplicationHandle) (window: WindowHandle) (webview: ObjectRef<W
         GtkAction("showhidden", false, (fun show -> onShowHidden webview.Ref show), "<Ctrl>H")
                 // new("extendedrename", () => SendMenuAction(webView.Ref, "EXTENDED_RENAME"), "<Ctrl>F2"),
                 // new("rename", () => SendMenuAction(webView.Ref, "RENAME"), "F2"),
-                // new("togglePreviewMode", () => SendMenuAction(webView.Ref, "TOGGLE_PREVIEW"), "<Ctrl>F3"),
+        GtkAction("togglePreviewMode", (fun () -> sendMenuAction webview.Ref "TOGGLE_PREVIEW"), "<Ctrl>F3")
                 // new("preview", () => {
                 //     togglePreview.Ref.SetActive(!togglePreview.Ref.Active());
                 //     Events.SendPreview(togglePreview.Ref.Active());                
@@ -75,10 +75,10 @@ let create (app: ApplicationHandle) (window: WindowHandle) (webview: ObjectRef<W
                 // new("move", () => SendMenuAction(webView.Ref, "MOVE"), "F6"),
                 // new("delete", () => SendMenuAction(webView.Ref, "DELETE")),
                 // new("createfolder", () => SendMenuAction(webView.Ref, "CREATE_FOLDER"), "F7"),
-                // new("favorites", () => SendMenuAction(webView.Ref, "FAVORITES"), "F1"),
-                // new("adaptpath", () => SendMenuAction(webView.Ref, "ADAPT_PATH"), "F9"),
-                // new("selectall", () => SendMenuAction(webView.Ref, "SEL_ALL"), "KP_Add"),
-                // new("selectnone", () => SendMenuAction(webView.Ref, "SEL_NONE"), "KP_Subtract"),
+        GtkAction("favorites", (fun () -> sendMenuAction webview.Ref "FAVORITES"), "F1")
+        GtkAction("adaptpath", (fun () -> sendMenuAction webview.Ref "ADAPT_PATH"), "F9")
+        GtkAction("selectall", (fun () -> sendMenuAction webview.Ref "SEL_ALL"), "KP_Add")
+        GtkAction("selectnone", (fun () -> sendMenuAction webview.Ref "SEL_NONE"), "KP_Subtract")
         GtkAction("devtools", (fun () -> webview.Ref.GetInspector().Show()), "<Shift><Ctrl>I")
     ]) |> ignore
     headerBar :> WidgetHandle

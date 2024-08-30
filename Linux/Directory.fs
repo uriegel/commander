@@ -1,5 +1,6 @@
 module Directory
 open FSharpTools
+open System.IO
 
 /// <summary>
 /// Returns a substring beween 2 strings 'startStr' and 'endStr'
@@ -19,3 +20,10 @@ let mount path =
     |> Option.defaultValue path 
     |> String.trim
     
+let getIconPath (info: FileInfo) =
+    match 
+        info.Extension
+        |> Option.checkNull 
+        with
+        | Some ext when ext.Length > 0 -> ext
+        | _ -> ".noextension"

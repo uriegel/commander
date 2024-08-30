@@ -1,6 +1,7 @@
 ﻿open System
 open System.Drawing
 open WebWindowNetCore
+open Requests
 
 WebView()
     .AppId("de.uriegel.commander")
@@ -17,6 +18,7 @@ WebView()
     .DefaultContextMenuDisabled()
     .AddRequest("getroot", Root.get)
     .AddRequest("getfiles", Directory.getFiles)
+    .Requests([getIcon])
     .OnEventSink(
         fun id webview -> Events.onEventSink id (
             fun d -> webview.SendEvent.Invoke(id, d)
@@ -31,7 +33,6 @@ WebView()
     .Run()
     |> ignore
 
-// TODO ShowIcons
 // TODO FileSystemWatcher
 // TODO Exif datas
 // TODO send Result or AsyncResult (access denied)

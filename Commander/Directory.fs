@@ -50,7 +50,7 @@ let getFiles (input: GetFiles) =
                         Name = fi.Name
                         Size = fi.Length
                         IsDirectory = false
-                        IconPath = None// TODO Directory.GetIconPath(info),
+                        IconPath = Some <| Directory.getIconPath fi
                         IsHidden = (fi.Attributes &&& FileAttributes.Hidden) = FileAttributes.Hidden
                         Time = fi.LastWriteTime
                     }
