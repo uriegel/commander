@@ -437,8 +437,10 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         onItemsChanged(itemCount.current)
     }, [items, onFocus, onPositionChanged, onItemsChanged]) 
 
-    const refresh = (forceShowHidden?: boolean, checkPosition?: (checkItem: FolderViewItem)=>boolean) =>
-        changePath(id, path, forceShowHidden == undefined ? showHidden : forceShowHidden, undefined, undefined, undefined, checkPosition)
+    const refresh = (forceShowHidden?: boolean, checkPosition?: (checkItem: FolderViewItem) => boolean) => {
+        if (path)
+            changePath(id, path, forceShowHidden == undefined ? showHidden : forceShowHidden, undefined, undefined, undefined, checkPosition)
+    }
 
     const rename = () => 
         withSelectedItem(item => {
