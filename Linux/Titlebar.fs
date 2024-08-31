@@ -80,7 +80,7 @@ let create (app: ApplicationHandle) (window: WindowHandle) (webview: ObjectRef<W
                         .New()
                         .Ref(togglePreviewButton)
                         //.IconName("gtk-print-preview") // TODO Icon
-                        .IconName("mail-mark-read")
+                        .IconName("x-office-presentation")
                         .Tooltip("Vorschau\tF3")
                         .OnClicked(togglePreview webview.Ref false)
             )

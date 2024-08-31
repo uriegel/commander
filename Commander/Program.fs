@@ -33,7 +33,6 @@ WebView()
     .Run()
     |> ignore
 
-// TODO Crash when changing preview items rapidly: Deadlock? not when serving preview from another process
 // TODO GetTrackInfo
 // TODO FileSystemWatcher
 // TODO Exif datas
