@@ -2,10 +2,16 @@
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Requests.fs" />
     <Compile Include="Directory.fs" />
     <Compile Include="Root.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ClrWinApi" Version="2.4.1" />
+    <PackageReference Include="Giraffe" Version="7.0.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Model\Model.fsproj" />

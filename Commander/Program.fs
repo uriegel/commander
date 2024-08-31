@@ -33,7 +33,6 @@ WebView()
     .Run()
     |> ignore
 
-// TODO Windows icons
 // TODO Crash when changing preview items rapidly
 // TODO GetTrackInfo
 // TODO FileSystemWatcher
