@@ -93,7 +93,7 @@ export interface ControllerResult {
 export const getViewerPath = (path: string) => 
     path.startsWith("remote")
     ? `http://${path.stringBetween("/", "/")}:8080/getfile/${path.substringAfter("/").substringAfter("/")}`
-    : `http://localhost:20000/commander/file?path=${path}`
+    : `http://localhost:2222/requests/file?path=${path}`
 
 export const checkController = (path: string, controller: Controller | null): ControllerResult => 
     checkNewController(

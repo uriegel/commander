@@ -60,7 +60,6 @@ export type DirectoryChangedEvent = {
 // type CommanderEvent = {
 //     copyProgress?: CopyProgress
 //     copyError: ErrorType
-//     windowState?: WindowState
 //     serviceItems?: FolderViewItem[]
 //     filesDrop?: FilesDrop
 //     getCredentials?: GetCredentials
@@ -68,28 +67,15 @@ export type DirectoryChangedEvent = {
 //     exifTime?: ExifTime
 //     extendedData?: ExtendedData
 //     showProgress?: boolean
-//     preview?: boolean
-//     menuAction?: string
-//     showHidden?: boolean
 // }
 
 export const menuActionEvents = new Subject<string>()
 export const showHiddenEvents = new Subject<boolean>()
+export const showPreviewEvents = new Subject<boolean>()
 
-WebView.registerEvents<string>("MenuAction", d => menuActionEvents.next(d))
-WebView.registerEvents<boolean>("ShowHidden", d => showHiddenEvents.next(d))
-
-// const toCommanderEvent = (event: MessageEvent) =>
-//     JSON.parse(event.data) as CommanderEvent
-
-// const commanderEvents = fromEvent<MessageEvent>(source, 'message')
-//     .pipe(map(toCommanderEvent))
-
-// export const previewEvents = commanderEvents
-//     .pipe(filter(n => n.preview != undefined))
-//     .pipe(map(n => n.preview!))
-
-
+WebView.registerEvents<string>("MenuAction", cmd => menuActionEvents.next(cmd))
+WebView.registerEvents<boolean>("ShowHidden", hidden => showHiddenEvents.next(hidden))
+WebView.registerEvents<boolean>("Preview", preview => showPreviewEvents.next(preview))
 
 // export const folderViewItemsChangedEvents = commanderEvents
 //     .pipe(filter(n => n.serviceItems != undefined))
@@ -149,7 +135,3 @@ export const progressChangedEvents = new BehaviorSubject<CopyProgress>({
 //         .subscribe(progressChangedEvents)
 // }
 
-// commanderEvents
-//     .pipe(filter(n => n.copyProgress != undefined))
-//     .pipe(map(n => n.copyProgress!))
-//     .subscribe(progressChangedEvents)

@@ -18,7 +18,7 @@ WebView()
     .DefaultContextMenuDisabled()
     .AddRequest("getroot", Root.get)
     .AddRequest("getfiles", Directory.getFiles)
-    .Requests([getIcon])
+    .Requests([getIcon; getFile])
     .OnEventSink(
         fun id webview -> Events.onEventSink id (
             fun d -> webview.SendEvent.Invoke(id, d)
@@ -33,6 +33,9 @@ WebView()
     .Run()
     |> ignore
 
+// TODO Windows icons
+// TODO Crash when changing preview items rapidly
+// TODO GetTrackInfo
 // TODO FileSystemWatcher
 // TODO Exif datas
 // TODO send Result or AsyncResult (access denied)
