@@ -85,10 +85,6 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({}, ref) => {
 	// const copyErrorSubscription = useRef<Subscription | null>(null)
 	const menuActionSubscription = useRef<Subscription | null>(null)
 	
-	// useEffect(() => {
-	// 	jsonPost<Nothing, ErrorType>({ method: "setpreview", payload: { set: showViewer} })		
-	// }, [showViewer])
-
 	const copyItemsToInactive = useCallback((inactive: FolderViewHandle | null, move: boolean, activeController: Controller,
 		activePath: string, itemsToCopy: FolderViewItem[], id?: string) => {
 		const controller = inactive && getCopyController(move, dialog, id == ID_LEFT, activeController, inactive.getController(),
