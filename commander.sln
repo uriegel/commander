@@ -11,6 +11,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Linux", "Linux\Linux.fsproj
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Model", "Model\Model.fsproj", "{C43B7279-7D13-408F-97D6-7B00E39D8CF9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tracks", "Tracks\Tracks.csproj", "{95AB73D0-46F5-406C-8C60-E3EDE03928F3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{C43B7279-7D13-408F-97D6-7B00E39D8CF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C43B7279-7D13-408F-97D6-7B00E39D8CF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C43B7279-7D13-408F-97D6-7B00E39D8CF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95AB73D0-46F5-406C-8C60-E3EDE03928F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95AB73D0-46F5-406C-8C60-E3EDE03928F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95AB73D0-46F5-406C-8C60-E3EDE03928F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95AB73D0-46F5-406C-8C60-E3EDE03928F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

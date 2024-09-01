@@ -18,6 +18,7 @@ WebView()
     .DefaultContextMenuDisabled()
     .AddRequest("getroot", Root.get)
     .AddRequest("getfiles", Directory.getFiles)
+    .AddRequest("gettrackinfo", getTrackInfo)
     .Requests([getIcon; getFile])
     .OnEventSink(
         fun id webview -> Events.onEventSink id (
@@ -33,7 +34,6 @@ WebView()
     .Run()
     |> ignore
 
-// TODO GetTrackInfo
 // TODO FileSystemWatcher
 // TODO Exif datas
 // TODO send Result or AsyncResult (access denied)

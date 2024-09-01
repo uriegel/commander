@@ -43,7 +43,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TrackInfo.fs" />
     <Compile Include="Directory.fs" />
     <Compile Include="Requests.fs" />
     <Compile Include="Program.fs" />
@@ -56,5 +55,8 @@
   </ItemGroup>
   <ItemGroup Condition="'$(IsWindows)'=='true'">
     <ProjectReference Include="..\Windows\Windows.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tracks\Tracks.csproj" />
   </ItemGroup>
 </Project>
