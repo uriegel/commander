@@ -35,7 +35,11 @@ let createDirectoryItem (info: DirectoryInfo) =
 let createFileItem (info: FileInfo) getIconPath =
     {
         Name = info.Name
-        Size = info.Length
+        Size = 
+            try 
+                info.Length
+            with 
+            | _ -> 0
         IsDirectory = false
         IconPath = Some <| getIconPath info
         IsHidden = (info.Attributes &&& FileAttributes.Hidden) = FileAttributes.Hidden

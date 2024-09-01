@@ -32,14 +32,16 @@ let changeDelay = TimeSpan.FromMilliseconds 200
 // TODO to FSharpTools
 // TODO catch exceptions
 let isDirectory (path: string) = 
-    File.GetAttributes (path) |> hasFlag FileAttributes.Directory 
+    try 
+        File.GetAttributes (path) |> hasFlag FileAttributes.Directory 
+    with
+    | _ -> false
+
 let monitor = obj()
 let mutable private watchers = Map.empty<string, DirectoryWatcher> 
 
 let private createWatcher id (path: string) = 
     let fsw = new FileSystemWatcher (path)
-    let renameEvent = new SemaphoreSlim (0, 1)
-    let mutable finished = false
     fsw.NotifyFilter <- NotifyFilters.CreationTime 
                         ||| NotifyFilters.DirectoryName
                         ||| NotifyFilters.FileName
@@ -98,9 +100,10 @@ let private createWatcher id (path: string) =
             )
         )
 
-    fsw.Created.Add <| sendCreatedEvent
-    fsw.Deleted.Add <| sendDeletedEvent
-    fsw.Renamed.Add <| sendRenamedEvent
+    // TODO Exif data and version
+    let createdSubscription = fsw.Created |> Observable.subscribe sendCreatedEvent
+    let deletedSubscription = fsw.Deleted |> Observable.subscribe sendDeletedEvent
+    let renamedSubscription = fsw.Renamed |> Observable.subscribe sendRenamedEvent
     let changedSubscription = 
         fsw.Changed
         |> Observable.filter (fun n -> n.Name <> null)
@@ -112,10 +115,10 @@ let private createWatcher id (path: string) =
         Id = id
         Path = path
         Dispose = (fun () -> 
-            finished <- true
+            createdSubscription.Dispose ()
+            deletedSubscription.Dispose ()
+            renamedSubscription.Dispose ()
             changedSubscription.Dispose ()
-            renameEvent.Release () |> ignore
-            renameEvent.Dispose ()
             fsw.Dispose ()
         )
     }
