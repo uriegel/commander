@@ -1,4 +1,4 @@
-import { BehaviorSubject, Subject } from 'rxjs'
+import { BehaviorSubject, filter, Subject } from 'rxjs'
 import { FolderViewItem } from '../components/FolderView'
 //import { Version } from './requests'
 //import { ErrorType } from 'functional-extensions'
@@ -63,7 +63,6 @@ export type DirectoryChangedEvent = {
 //     serviceItems?: FolderViewItem[]
 //     filesDrop?: FilesDrop
 //     getCredentials?: GetCredentials
-//     directoryChanged?: DirectoryChangedEvent
 //     exifTime?: ExifTime
 //     extendedData?: ExtendedData
 //     showProgress?: boolean
@@ -72,10 +71,16 @@ export type DirectoryChangedEvent = {
 export const menuActionEvents = new Subject<string>()
 export const showHiddenEvents = new Subject<boolean>()
 export const showPreviewEvents = new Subject<boolean>()
+export const directoryChangedEvents = new Subject<DirectoryChangedEvent>()
+
+export const getDirectoryChangedEvents = (folderId: string) =>
+    directoryChangedEvents
+        .pipe(filter(n => n.folderId == folderId))
 
 WebView.registerEvents<string>("MenuAction", cmd => menuActionEvents.next(cmd))
 WebView.registerEvents<boolean>("ShowHidden", hidden => showHiddenEvents.next(hidden))
 WebView.registerEvents<boolean>("Preview", preview => showPreviewEvents.next(preview))
+WebView.registerEvents<DirectoryChangedEvent>("DirectoryChanged", e => directoryChangedEvents.next(e))
 
 // export const folderViewItemsChangedEvents = commanderEvents
 //     .pipe(filter(n => n.serviceItems != undefined))
@@ -89,10 +94,6 @@ WebView.registerEvents<boolean>("Preview", preview => showPreviewEvents.next(pre
 //     .pipe(filter(n => n.getCredentials != undefined))
 //     .pipe(map(n => n.getCredentials!))
 
-// export const getDirectoryChangedEvents = (folderId: string) =>
-//     commanderEvents
-//         .pipe(filter(n => n.directoryChanged != undefined && n.directoryChanged.folderId == folderId))
-//         .pipe(map(n => n.directoryChanged!))
 
 // export const exifTimeEvents = commanderEvents
 //     .pipe(filter(n => n.exifTime != undefined))

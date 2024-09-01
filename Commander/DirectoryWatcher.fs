@@ -1,19 +1,33 @@
 module DirectoryWatcher
 open System.IO
 open System.Threading
+open Types
+open FSharpTools
+open FSharpTools.EnumExtensions
 
 type DirectoryChangedType = 
-    | Created
-    | Changed
-    | Renamed
-    | Deleted
+    | Created = 0
+    | Changed = 1
+    | Renamed = 2
+    | Deleted = 3
 
+type DirectoryChangedEvent = {
+    FolderId: string
+    Path: string option
+    Type: DirectoryChangedType 
+    Item: DirectoryItem 
+    OldName: string option
+}
 
 type DirectoryWatcher = {
     Id: string
     Path: string
     Dispose: unit->unit
 }
+
+// TODO to FSharpTools
+let isDirectory (path: string) = 
+    File.GetAttributes (path) |> hasFlag FileAttributes.Directory 
 
 let monitor = obj()
 let mutable private watchers = Map.empty<string, DirectoryWatcher> 
@@ -31,13 +45,49 @@ let private createWatcher id (path: string) =
                         ||| NotifyFilters.LastWrite
                         ||| NotifyFilters.Size
     fsw.EnableRaisingEvents <- true
+
+    let createItem fullName =
+        if isDirectory fullName then
+            createDirectoryItem (DirectoryInfo(fullName))
+        else
+            createFileItem (FileInfo(fullName)) Directory.getIconPath
+
+    let sendCreatedEvent (e: FileSystemEventArgs) =
+        Events.events.TryFind "DirectoryChanged"
+        |> Option.iter (fun send -> send {
+            FolderId = id
+            Path = Some path
+            Type = DirectoryChangedType.Created
+            Item = createItem <| Directory.combinePathes [| path; e.Name |]
+            OldName = None
+        })
+
+    let sendRenamedEvent (e: RenamedEventArgs) =
+        Events.events.TryFind "DirectoryChanged"
+        |> Option.iter (fun send -> send {
+            FolderId = id
+            Path = Some path
+            Type = DirectoryChangedType.Renamed
+            Item = createItem <| Directory.combinePathes [| path; e.Name |]
+            OldName = Some e.OldName
+        })
+
+    let sendDeletedEvent (e: FileSystemEventArgs) =
+        Events.events.TryFind "DirectoryChanged"
+        |> Option.iter (fun send -> send {
+            FolderId = id
+            Path = Some path
+            Type = DirectoryChangedType.Deleted
+            Item = { Name = e.Name; Size = 0; IsDirectory = false; IconPath = None; IsHidden = false; Time = System.DateTime.MinValue }
+            OldName = None
+        })
+
     // TODO run Changed
-    // TODO perhaps with sso because of performance
     // TODO check thread is stopping
-    fsw.Changed.Add <| sendEvent Changed
-    fsw.Created.Add <| sendEvent Created
-    fsw.Deleted.Add <| sendEvent Deleted
-    fsw.Renamed.Add <| sendEvent Renamed
+    fsw.Changed.Add <| sendEvent DirectoryChangedType.Changed
+    fsw.Created.Add <| sendCreatedEvent
+    fsw.Deleted.Add <| sendDeletedEvent
+    fsw.Renamed.Add <| sendRenamedEvent
     
     {
         Id = id

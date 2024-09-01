@@ -12,15 +12,6 @@ type GetFiles = {
     Mount: bool option
 }
 
-type DirectoryItem = {
-    Name: string
-    Size: int64
-    IsDirectory: bool
-    IconPath: string option
-    IsHidden: bool
-    Time: DateTime
-}
-
 type GetFilesResult = {
     Items: DirectoryItem array
     Path: string
@@ -37,24 +28,8 @@ let getFiles (input: GetFiles) =
 
     let getDirectoryItem (info: IO.FileSystemInfo) = 
         match info with
-        | :? DirectoryInfo as di -> 
-                    {
-                        Name = di.Name
-                        Size = 0
-                        IsDirectory = true
-                        IconPath = None
-                        IsHidden = (di.Attributes &&& FileAttributes.Hidden) = FileAttributes.Hidden
-                        Time = di.LastWriteTime
-                    }
-        | :? FileInfo as fi ->
-                    {
-                        Name = fi.Name
-                        Size = fi.Length
-                        IsDirectory = false
-                        IconPath = Some <| Directory.getIconPath fi
-                        IsHidden = (fi.Attributes &&& FileAttributes.Hidden) = FileAttributes.Hidden
-                        Time = fi.LastWriteTime
-                    }
+        | :? DirectoryInfo as di -> createDirectoryItem di
+        | :? FileInfo as fi -> createFileItem fi Directory.getIconPath
         | _ -> failwith "Either Directory nor File"
 
     let getFilesResult path (items: DirectoryItemInfo) = 

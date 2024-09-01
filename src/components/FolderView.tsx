@@ -7,11 +7,11 @@ import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
 import { ExifData, Version } from '../requests/requests'
 import { initializeHistory } from '../history'
 import { isWindows } from '../globals'
-//import { DirectoryChangedType } from '../requests/events'
 import { Subscription } from 'rxjs'
 import { ServiceStartMode, ServiceStatus } from '../enums'
 import { DialogContext, DialogHandle } from 'web-dialog-react'
 import { nothing } from 'functional-extensions'
+import { getDirectoryChangedEvents, DirectoryChangedType } from '../requests/events'
 
 declare const webViewDropFiles: (id: string, move: boolean, paths: FileList)=>void
 declare const webViewDragStart: (path: string, fileList: string[]) => void
@@ -178,26 +178,26 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     
     useEffect(() => {
         directoryChangedSubscription.current?.unsubscribe()
-        // directoryChangedSubscription.current = getDirectoryChangedEvents(id).subscribe(e => {
-        //     const selected = refItems.current[virtualTable.current?.getPosition() || 0].name
-        //     const newItems = controller.current.getPath() == e.path
-        //         ? controller.current.updateItems(refItems.current, sortIndex.current, sortDescending.current, e)
-        //         : null
-        //     if (newItems) {
-        //         const newPos = e.type != DirectoryChangedType.Deleted || selected != e.item.name
-        //             ? newItems.findIndex(n => n.name == selected)
-        //             : 0
-        //         const dirs = e.type == DirectoryChangedType.Deleted || e.type == DirectoryChangedType.Created
-        //             ? newItems.filter(n => n.isDirectory).length - 1
-        //             : undefined
-        //         const files = dirs != undefined
-        //             ? newItems.length - dirs - 1
-        //             : undefined
-        //         setItems(newItems, dirs, files)
-        //         if (newPos != -1)
-        //             virtualTable.current?.setPosition(newPos, newItems)
-        //     }
-        // })
+        directoryChangedSubscription.current = getDirectoryChangedEvents(id).subscribe(e => {
+            const selected = refItems.current[virtualTable.current?.getPosition() || 0].name
+            const newItems = controller.current.getPath() == e.path
+                ? controller.current.updateItems(refItems.current, sortIndex.current, sortDescending.current, e)
+                : null
+            if (newItems) {
+                const newPos = e.type != DirectoryChangedType.Deleted || selected != e.item.name
+                    ? newItems.findIndex(n => n.name == selected)
+                    : 0
+                const dirs = e.type == DirectoryChangedType.Deleted || e.type == DirectoryChangedType.Created
+                    ? newItems.filter(n => n.isDirectory).length - 1
+                    : undefined
+                const files = dirs != undefined
+                    ? newItems.length - dirs - 1
+                    : undefined
+                setItems(newItems, dirs, files)
+                if (newPos != -1)
+                    virtualTable.current?.setPosition(newPos, newItems)
+            }
+        })
 
         exifTimeSubscription.current?.unsubscribe()
         // exifTimeSubscription.current = exifTimeEvents.subscribe(e => {
