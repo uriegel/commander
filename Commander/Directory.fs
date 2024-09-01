@@ -2,6 +2,7 @@ module Directory
 open System
 open System.IO
 open FSharpTools
+open FSharpTools.Functional
 open Types
 
 type GetFiles = {
@@ -79,7 +80,9 @@ let getFiles (input: GetFiles) =
             |> Result.map (fun (info: FileSystemInfo) -> {
                                                                         Items = info.Items |> Array.map getDirectoryItem |> Array.filter filterHidden
                                                                         Path = info.Path 
-                                                                    })  
+                                                                    }
+                                                                    |> sideEffect (fun n -> DirectoryWatcher.install input.Id n.Path)
+                                                                    )  
             |> Result.map(getFilesResult path)
             |> toJsonResult
     }

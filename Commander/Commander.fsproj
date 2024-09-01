@@ -43,6 +43,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DirectoryWatcher.fs" />
     <Compile Include="Directory.fs" />
     <Compile Include="Requests.fs" />
     <Compile Include="Program.fs" />
