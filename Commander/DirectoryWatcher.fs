@@ -1,9 +1,11 @@
 module DirectoryWatcher
+open System
 open System.IO
 open System.Threading
 open Types
 open FSharpTools
 open FSharpTools.EnumExtensions
+open FSharp.Control.Reactive
 
 type DirectoryChangedType = 
     | Created = 0
@@ -25,34 +27,14 @@ type DirectoryWatcher = {
     Dispose: unit->unit
 }
 
+let changeDelay = TimeSpan.FromMilliseconds 200
+
 // TODO to FSharpTools
+// TODO catch exceptions
 let isDirectory (path: string) = 
     File.GetAttributes (path) |> hasFlag FileAttributes.Directory 
-
 let monitor = obj()
 let mutable private watchers = Map.empty<string, DirectoryWatcher> 
-
-let sendEvent changedType (e: FileSystemEventArgs) =
-    ()
-
-[<TailCall>]
-let rec checkChanged (finished: unit->bool) (renameEvent: SemaphoreSlim) = 
-    async {
-        try
-            if finished() then
-                ()
-            else
-                do! renameEvent.WaitAsync () |> Async.AwaitTask
-                if finished() then
-                    printfn "Finischiert"
-                    ()
-                else
-                    printfn "Eine Änderung"
-                    do! checkChanged finished renameEvent
-        with
-        | _ -> ()
-    }   
-
 
 let private createWatcher id (path: string) = 
     let fsw = new FileSystemWatcher (path)
@@ -101,20 +83,37 @@ let private createWatcher id (path: string) =
             OldName = None
         })
 
-    checkChanged (fun () -> finished) renameEvent |> Async.Start
+    let sendChangdEvents (es: string seq) =
+        Events.events.TryFind "DirectoryChanged"
+        |> Option.iter (fun send -> 
+            es 
+            |> Seq.iter (fun e ->
+                send {
+                    FolderId = id
+                    Path = Some path
+                    Type = DirectoryChangedType.Changed
+                    Item = createItem <| Directory.combinePathes [| path; e |]
+                    OldName = None
+                }
+            )
+        )
 
-    // TODO run Changed
-    // TODO check thread is stopping
-    fsw.Changed.Add <| sendEvent DirectoryChangedType.Changed
     fsw.Created.Add <| sendCreatedEvent
     fsw.Deleted.Add <| sendDeletedEvent
     fsw.Renamed.Add <| sendRenamedEvent
+    let changedSubscription = 
+        fsw.Changed
+        |> Observable.filter (fun n -> n.Name <> null)
+        |> Observable.map (fun n -> n.Name)
+        |> Observable.bufferSpan changeDelay
+        |> Observable.subscribe sendChangdEvents
     
     {
         Id = id
         Path = path
         Dispose = (fun () -> 
             finished <- true
+            changedSubscription.Dispose ()
             renameEvent.Release () |> ignore
             renameEvent.Dispose ()
             fsw.Dispose ()
@@ -135,7 +134,7 @@ let install id path =
                 |> Option.map checkExchangeWatcher
                 |> Option.defaultWith (fun () -> createWatcher id path))
 
-    lock monitor (fun () -> watchers <- watchers.Change(id, exchangeWatcher))
+    lock monitor (fun () -> watchers <- watchers.Change(id, exchangeWatcher))    
      
 
 
