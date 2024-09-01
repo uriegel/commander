@@ -1,4 +1,13 @@
 module DirectoryWatcher
+open System.IO
+open System.Threading
+
+type DirectoryChangedType = 
+    | Created
+    | Changed
+    | Renamed
+    | Deleted
+
 
 type DirectoryWatcher = {
     Id: string
@@ -9,11 +18,34 @@ type DirectoryWatcher = {
 let monitor = obj()
 let mutable private watchers = Map.empty<string, DirectoryWatcher> 
 
+let sendEvent changedType (e: FileSystemEventArgs) =
+    ()
+
+
 let private createWatcher id (path: string) = 
+    let fsw = new FileSystemWatcher (path)
+    let renameEvent = new  ManualResetEvent(false)
+    fsw.NotifyFilter <- NotifyFilters.CreationTime 
+                        ||| NotifyFilters.DirectoryName
+                        ||| NotifyFilters.FileName
+                        ||| NotifyFilters.LastWrite
+                        ||| NotifyFilters.Size
+    fsw.EnableRaisingEvents <- true
+    // TODO run Changed
+    // TODO perhaps with sso because of performance
+    // TODO check thread is stopping
+    fsw.Changed.Add <| sendEvent Changed
+    fsw.Created.Add <| sendEvent Created
+    fsw.Deleted.Add <| sendEvent Deleted
+    fsw.Renamed.Add <| sendEvent Renamed
+    
     {
         Id = id
         Path = path
-        Dispose = (fun () -> ())
+        Dispose = (fun () -> 
+            renameEvent.Dispose ()
+            fsw.Dispose ()
+        )
     }
 
 let install id path = 
