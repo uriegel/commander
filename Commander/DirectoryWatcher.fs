@@ -35,10 +35,29 @@ let mutable private watchers = Map.empty<string, DirectoryWatcher>
 let sendEvent changedType (e: FileSystemEventArgs) =
     ()
 
+[<TailCall>]
+let rec checkChanged (finished: unit->bool) (renameEvent: SemaphoreSlim) = 
+    async {
+        try
+            if finished() then
+                ()
+            else
+                do! renameEvent.WaitAsync () |> Async.AwaitTask
+                if finished() then
+                    printfn "Finischiert"
+                    ()
+                else
+                    printfn "Eine Änderung"
+                    do! checkChanged finished renameEvent
+        with
+        | _ -> ()
+    }   
+
 
 let private createWatcher id (path: string) = 
     let fsw = new FileSystemWatcher (path)
-    let renameEvent = new  ManualResetEvent(false)
+    let renameEvent = new SemaphoreSlim (0, 1)
+    let mutable finished = false
     fsw.NotifyFilter <- NotifyFilters.CreationTime 
                         ||| NotifyFilters.DirectoryName
                         ||| NotifyFilters.FileName
@@ -82,6 +101,8 @@ let private createWatcher id (path: string) =
             OldName = None
         })
 
+    checkChanged (fun () -> finished) renameEvent |> Async.Start
+
     // TODO run Changed
     // TODO check thread is stopping
     fsw.Changed.Add <| sendEvent DirectoryChangedType.Changed
@@ -93,6 +114,8 @@ let private createWatcher id (path: string) =
         Id = id
         Path = path
         Dispose = (fun () -> 
+            finished <- true
+            renameEvent.Release () |> ignore
             renameEvent.Dispose ()
             fsw.Dispose ()
         )
