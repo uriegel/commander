@@ -104,9 +104,9 @@ let getExtendedInfos (input: GetExtendedItems) =
                     |> getDateValue ExifTag.DateTimeOriginal
                     |> Option.orElse (reader |> getDateValue ExifTag.DateTime)
                 let lat =                  
-                    reader.GetTagValue ExifTag.GPSLatitude |> Option.checkNull |> Option.map(fun o -> o :?> double) 
+                    reader.getTagValue<double> ExifTag.GPSLatitude
                 let lon =                  
-                    reader.GetTagValue ExifTag.GPSLongitude |> Option.checkNull |> Option.map(fun o -> o :?> double) 
+                    reader.getTagValue<double> ExifTag.GPSLongitude
                 if date.IsNone && lat.IsNone && lon.IsNone then
                     None
                 else

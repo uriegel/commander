@@ -204,12 +204,17 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({}, ref) => {
 			getActiveFolder()?.rename()
 		else if (key == "EXTENDED_RENAME")
 			getActiveFolder()?.extendedRename(dialog)
-		else if (key == "TOGGLE_PREVIEW")
+		else if (key == "TOGGLE_PREVIEW") {
+
+
+			console.log("vorschau", previewMode)
 			setPreviewMode(previewMode == PreviewMode.Default
 				? PreviewMode.Location
 				: previewMode == PreviewMode.Location
-				? PreviewMode.Both
-				: PreviewMode.Default)
+					? PreviewMode.Both
+					: PreviewMode.Default)
+			
+		}
 		else if (key == "RENAME_AS_COPY")
 			getActiveFolder()?.renameAsCopy()
 		else if (key == "CREATE_FOLDER")
