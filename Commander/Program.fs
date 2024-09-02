@@ -36,7 +36,6 @@ WebView()
     .Run()
     |> ignore
 
-// TODO Exif datas: retrieve lat and lon (exception)
 // TODO send Result or AsyncResult (access denied)
 // TODO not fetch or jsonpost but WebView.request with AsyncResult as result
 // TODO Files Windows
