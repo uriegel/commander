@@ -19,6 +19,8 @@ WebView()
     .AddRequest("getroot", Root.get)
     .AddRequest("getfiles", Directory.getFiles)
     .AddRequest("gettrackinfo", getTrackInfo)
+    .AddRequest("getextendeditems", Directory.getExtendedInfos)
+    .AddRequest("cancelextendeditems", Directory.cancelExtendedInfos)
     .Requests([getIcon; getFile])
     .OnEventSink(
         fun id webview -> Events.onEventSink id (
@@ -34,7 +36,7 @@ WebView()
     .Run()
     |> ignore
 
-// TODO Exif datas
+// TODO Exif datas: retrieve lat and lon (exception)
 // TODO send Result or AsyncResult (access denied)
 // TODO not fetch or jsonpost but WebView.request with AsyncResult as result
 // TODO Files Windows

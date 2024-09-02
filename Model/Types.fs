@@ -2,7 +2,7 @@
 open System
 open System.IO
 
-type Empty = { Nil: int }
+type Empty = { Nil: int option }
 type JsonResult<'a, 'b> = { Ok: 'a option; Err: 'b option }
 
 [<CLIMutable>]

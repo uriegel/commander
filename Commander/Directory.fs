@@ -4,6 +4,8 @@ open System.IO
 open FSharpTools
 open FSharpTools.Functional
 open Types
+open System.Threading
+open FSharpTools.ExifReader
 
 type GetFiles = {
     Id: string 
@@ -23,6 +25,28 @@ type DirectoryItemInfo = {
     Path: string
     Items: DirectoryItem array
 }
+
+type GetExtendedItems = {
+    Id: string
+    Items: string []
+    Path: string
+}
+
+type CancelExtendedItems = {
+    Id: string
+}
+
+type ExifData = {
+    DateTime: DateTime option
+    Latitude: double option
+    Longitude: double option
+}
+
+type GetExtendedItemsResult = {
+    ExifDatas: ExifData option array
+    Path: string
+}
+
 
 let getFiles (input: GetFiles) = 
 
@@ -62,3 +86,63 @@ let getFiles (input: GetFiles) =
             |> toJsonResult
     }
 
+let mutable private extendedInfoCancellations = Map.empty<string, CancellationTokenSource>
+
+let getExtendedInfos (input: GetExtendedItems) = 
+    extendedInfoCancellations.TryFind(input.Id)
+    |> Option.iter (fun c -> c.Cancel())
+    let cancel = new CancellationTokenSource()
+    extendedInfoCancellations <- extendedInfoCancellations.Add(input.Id, cancel)
+
+    let getExifDate (name: string) = 
+        if cancel.IsCancellationRequested then
+            None
+        else
+            let fillExif (reader: Reader) = 
+                let date = 
+                    reader 
+                    |> getDateValue ExifTag.DateTimeOriginal
+                    |> Option.orElse (reader |> getDateValue ExifTag.DateTime)
+                let lat =                  
+                    reader.GetTagValue ExifTag.GPSLatitude |> Option.checkNull |> Option.map(fun o -> o :?> double) 
+                let lon =                  
+                    reader.GetTagValue ExifTag.GPSLongitude |> Option.checkNull |> Option.map(fun o -> o :?> double) 
+                if date.IsNone && lat.IsNone && lon.IsNone then
+                    None
+                else
+                    Some
+                        {
+                            DateTime = date
+                            Latitude = lat
+                            Longitude = lon
+                        }
+
+            let readExif path = 
+                path
+                |> getExif
+                |> Option.bind fillExif
+
+            if name.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase) || name.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase) then
+                input.Path
+                |> Directory.attachSubPath name
+                |> readExif
+            else
+                None
+
+    task {
+        return {
+            Ok = Some { ExifDatas = (input.Items |> Array.map getExifDate); Path = input.Path }
+            Err = None
+        }
+    }
+
+let cancelExtendedInfos (input: CancelExtendedItems) = 
+    extendedInfoCancellations.TryFind(input.Id)
+    |> Option.iter (fun c -> c.Cancel())
+
+    task {
+        return {
+            Ok = Some { Nil = None}
+            Err = None
+        }
+    }
