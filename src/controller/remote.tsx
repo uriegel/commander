@@ -5,8 +5,8 @@ import { Controller, ControllerResult, ControllerType, ItemsType, OnEnterResult,
 import { getSortFunction } from "./filesystem"
 import { REMOTES } from "./remotes"
 import { IconNameType } from "../enums"
-import { AsyncResult, Err, ErrorType, Nothing, Ok, jsonPost, nothing } from "functional-extensions"
-import { GetExtendedItemsResult, GetItemsResult, IOError } from "../requests/requests"
+import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
+import { GetExtendedItemsResult, GetItemsResult, IOError, webViewRequest } from "../requests/requests"
 import { DialogHandle, ResultType } from "web-dialog-react"
 
 export const REMOTE = "remote"
@@ -62,7 +62,7 @@ const deleteItems = (path: string, items: FolderViewItem[], dialog: DialogHandle
 			}, res => res.result == ResultType.Ok
 			? new Ok(nothing)
 			: new Err({ status: IOError.Canceled, statusText: "" }))
-			.bindAsync(() => jsonPost<Nothing, ErrorType>({ method: "deleteitemsremote", payload: { path, names: items.map(n => n.name) } }))
+			.bindAsync(() => webViewRequest<Nothing, ErrorType>("deleteitemsremote", { path, names: items.map(n => n.name) }))
 }
 
 const createFolder = (path: string, item: FolderViewItem, dialog: DialogHandle) => 
@@ -75,7 +75,7 @@ const createFolder = (path: string, item: FolderViewItem, dialog: DialogHandle) 
 	}, res => res.result == ResultType.Ok && res.input
 	? new Ok(res.input)
 	: new Err({ status: IOError.Canceled, statusText: "" }))
-		.bindAsync(name => jsonPost<Nothing, ErrorType>({ method: "createdirectoryremote", payload: { path: path.appendPath(name) } })
+		.bindAsync(name => webViewRequest<Nothing, ErrorType>("createdirectoryremote", { path: path.appendPath(name) })
 							.map(() => name))
 	
 export const getRemoteController = (controller: Controller | null): ControllerResult => {
@@ -88,7 +88,7 @@ export const getRemoteController = (controller: Controller | null): ControllerRe
 				id: REMOTE,
 				getColumns,
 				getItems: (id, path, showHiddenItems, sortIndex, sortDescending) =>
-					jsonPost<GetItemsResult, ErrorType>({ method: "getremotefiles", payload: { id, path, showHiddenItems } })
+					webViewRequest<GetItemsResult, ErrorType>("getremotefiles", { id, path, showHiddenItems })
 						.map(ok => {
 							currentPath = ok.path
 							return { ...ok, items: addParent(sortItems(ok.items, getSortFunction(sortIndex, sortDescending))) }

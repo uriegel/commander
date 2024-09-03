@@ -3,9 +3,9 @@ import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
 import { Controller, ControllerResult, ControllerType, OnEnterResult, addParent, sortItems } from "./controller"
 import { ROOT } from "./root"
-import { GetExtendedItemsResult, GetItemsResult, IOError } from "../requests/requests"
+import { GetExtendedItemsResult, GetItemsResult, IOError, webViewRequest } from "../requests/requests"
 import { IconNameType, ServiceStartMode, ServiceStatus } from "../enums"
-import { AsyncResult, Err, ErrorType, Nothing, Ok, jsonPost, nothing } from "functional-extensions"
+import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
 
 export const SERVICES = "services"
 
@@ -55,7 +55,7 @@ const getColumns = () => ({
 } as TableColumns<FolderViewItem>)
 
 const getItems = (_: string, __: string, ___: boolean, sortIndex: number, sortDescending: boolean) => 
-    jsonPost<ServiceItem[], ErrorType>({ method: "getservices" })
+    webViewRequest<ServiceItem[], ErrorType>("getservices")
         .map(items => ({
             path: SERVICES,
             dirCount: items.length,
@@ -104,7 +104,7 @@ const createController = (): ControllerResult => ({
                 ? AsyncResult.from(new Ok<Nothing, ErrorType>(nothing))
                 : stop(selectedItems),
         onSelectionChanged: () => { },
-        cleanUp: () => jsonPost<Nothing, ErrorType>({ method: "cleanupservices"})
+        cleanUp: () => webViewRequest<Nothing, ErrorType>("cleanupservices")
     }
 })
 
@@ -134,19 +134,15 @@ const getRowClasses = (item: FolderViewItem) =>
     : []
 
 const start = (selectedItems: FolderViewItem[]) => 
-    jsonPost<Nothing, ErrorType>({
-        method: "startservices",
-        payload: {
+    webViewRequest<Nothing, ErrorType>("startservices", {
             items: selectedItems
                 .filter(n => n.status == ServiceStatus.Stopped)
                 .map(n => n.name)
-        }})
+        })
       
 const stop = (selectedItems: FolderViewItem[]) => 
-    jsonPost<Nothing, ErrorType>({
-        method: "stopservices",
-        payload: {
+    webViewRequest<Nothing, ErrorType>("stopservices", {
             items: selectedItems
                 .filter(n => n.status == ServiceStatus.Running)
                 .map(n => n.name)
-        }})
+        })

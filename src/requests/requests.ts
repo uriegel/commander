@@ -1,8 +1,6 @@
 import { FolderViewItem } from "../components/FolderView"
-import { AsyncResult, Err, ErrorType, jsonPost, Ok, Result, setBaseUrl } from "functional-extensions"
+import { AsyncResult, Err, ErrorType, Ok, Result } from "functional-extensions"
 import { WebViewType } from "../webview"
-
-setBaseUrl("http://localhost:2222/requests")
 
 declare var WebView: WebViewType
 
@@ -66,15 +64,12 @@ type ResultType = {
     err: any
 }
 
-export const webviewRequest = <T, E extends ErrorType>(method: string, payload?: any) => {
-    
-    let request = async () => {
+export const webViewRequest = <T, E extends ErrorType>(method: string, payload?: any) => {
+    let request = async () : Promise<Result<T, E>> => {
         const ret = await WebView.request(method, payload || {}) as ResultType
-        if (ret.ok)
-            return new Ok<T, E>(ret.ok) as Result<T, E>
-        else
-        return new Err<T, E>(ret.err) as Result<T, E>
+        return ret.ok
+            ? new Ok<T, E>(ret.ok) 
+            : new Err<T, E>(ret.err)
     }
-    new AsyncResult<T, E>(request())
+    return  new AsyncResult<T, E>(request())
 }
-	

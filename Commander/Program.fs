@@ -37,6 +37,6 @@ WebView()
     |> ignore
 
 // TODO send Result or AsyncResult (access denied)
-// TODO not fetch or jsonpost but WebView.request with AsyncResult as result
+// TODO Do not use fetch but new webRequest for fetching
 // TODO Files Windows
 // TODO File versions

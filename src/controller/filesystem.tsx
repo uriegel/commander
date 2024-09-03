@@ -4,11 +4,11 @@ import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, ItemsType, OnEnterResult, addParent, formatDateTime, formatSize, formatVersion, getItemsType, sortItems } from "./controller"
-import { GetExtendedItemsResult, GetItemsResult, IOError, Version } from "../requests/requests"
+import { GetExtendedItemsResult, GetItemsResult, IOError, Version, webViewRequest } from "../requests/requests"
 import { ROOT } from "./root"
 import { extendedRename } from "./filesystemExtendedRename"
 import { IconNameType } from "../enums"
-import { AsyncResult, Err, ErrorType, Nothing, Ok, jsonPost, nothing } from "functional-extensions"
+import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
 import { DirectoryChangedEvent, DirectoryChangedType } from "../requests/events"
 
 const platform = getPlatform()
@@ -64,7 +64,7 @@ export const getFileSystemController = (controller: Controller|null): Controller
 })
 
 const onFileEnter = (path: string, keys?: SpecialKeys) => 
-	jsonPost<Nothing, ErrorType>({ method: "onenter", payload: { path, keys } })
+	webViewRequest<Nothing, ErrorType>("onenter", { path, keys })
 	.map(() => ({ processed: true }) as OnEnterResult)
 		
 export const createFileSystemController = (): Controller => {
@@ -77,7 +77,7 @@ export const createFileSystemController = (): Controller => {
 		setExtendedItems,
 		cancelExtendedItems,
 		getItems: (id, path, showHiddenItems, sortIndex, sortDescending, mount) => 
-			jsonPost<GetItemsResult, ErrorType>({ method: "getfiles", payload: { id, path, showHiddenItems, mount } })
+			webViewRequest<GetItemsResult, ErrorType>("getfiles", { id, path, showHiddenItems, mount })
 				.map(ok => {
 					currentPath = ok.path
 					return { ...ok, items: addParent(sortItems(ok.items, getSortFunction(sortIndex, sortDescending))) }
@@ -173,13 +173,10 @@ const checkExtendedItems =
 
 const getExtendedItems = (id: string, path: string, items: FolderViewItem[]): AsyncResult<GetExtendedItemsResult, ErrorType> => 
 	checkExtendedItems(items)
-		? jsonPost<GetExtendedItemsResult, ErrorType>({
-			method: "getextendeditems",
-			payload: {
-				id,
-				items: (items as FolderViewItem[]).map(n => n.name),
-				path
-			}
+		? webViewRequest<GetExtendedItemsResult, ErrorType>("getextendeditems", {
+			id,
+			items: (items as FolderViewItem[]).map(n => n.name),
+			path
 		}) 
 		: AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""}))
 
@@ -193,7 +190,7 @@ const setExtendedItems = (items: FolderViewItem[], extended: GetExtendedItemsRes
 		: { ...n, version: (extended.versions && extended.versions[i] || undefined), exifData: extended.exifDatas[i] || undefined }), sortColumn, sortDescending)
 
 const cancelExtendedItems = (id: string) => 
-	jsonPost<Nothing, ErrorType>({ method: "cancelextendeditems", payload: { id } })
+	webViewRequest<Nothing, ErrorType>("cancelextendeditems", { id })
 		
 export const getSortFunction = (index: number, descending: boolean) => {
 	const ascDesc = (sortResult: number) => descending ? -sortResult : sortResult
@@ -236,7 +233,7 @@ const rename = (path: string, item: FolderViewItem, dialog: DialogHandle) => {
 	}, res => res.result == ResultType.Ok && res.input
 		? new Ok(res.input)
 		: new Err({ status: IOError.Canceled, statusText: "" }))
-		.bindAsync(newName => jsonPost<Nothing, ErrorType>({ method: "renameitem", payload: { path, name: item.name, newName } })
+		.bindAsync(newName => webViewRequest<Nothing, ErrorType>("renameitem", { path, name: item.name, newName })
 								.map(() => newName))
 }
 
@@ -259,11 +256,11 @@ const renameAsCopy = (path: string, item: FolderViewItem, dialog: DialogHandle) 
 			}, res => res.result == ResultType.Ok
 				? new Ok<string, ErrorType>(res.input ?? "")
 				: new Err<string, ErrorType>({ status: IOError.Canceled, statusText: "" }))
-			.bindAsync(newName => jsonPost<Nothing, ErrorType>({method: "renameascopy", payload: {
+			.bindAsync(newName => webViewRequest<Nothing, ErrorType>("renameascopy", {
 				path,
 				name: item.name,
 				newName
-			}}))
+			}))
 		: AsyncResult.from(new Ok<Nothing, ErrorType>(nothing))
 }
 
@@ -277,7 +274,7 @@ const createFolder = (path: string, item: FolderViewItem, dialog: DialogHandle) 
 	}, res => res.result == ResultType.Ok && res.input
 	? new Ok(res.input)
 	: new Err({ status: IOError.Canceled, statusText: "" }))
-		.bindAsync(name => jsonPost<Nothing, ErrorType>({ method: "createfolder", payload: { path, name } })
+		.bindAsync(name => webViewRequest<Nothing, ErrorType>("createfolder", { path, name })
 							.map(() => name))
 
 const deleteItems = (path: string, items: FolderViewItem[], dialog: DialogHandle) => {
@@ -301,7 +298,7 @@ const deleteItems = (path: string, items: FolderViewItem[], dialog: DialogHandle
 		}, res => res.result == ResultType.Ok
 		? new Ok(nothing)
 		: new Err({ status: IOError.Canceled, statusText: "" }))
-			.bindAsync(() => jsonPost<Nothing, ErrorType>({ method: "deleteitems", payload: { path, names: items.map(n => n.name) }}))
+			.bindAsync(() => webViewRequest<Nothing, ErrorType>("deleteitems", { path, names: items.map(n => n.name) }))
 }
 
 export const compareVersion = (versionLeft?: Version, versionRight?: Version) =>

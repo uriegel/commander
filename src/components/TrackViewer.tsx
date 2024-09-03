@@ -4,8 +4,9 @@ import useResizeObserver from '@react-hook/resize-observer'
 import { Map as LMap } from "leaflet"
 import { MapContainer, Marker, Polyline, TileLayer } from 'react-leaflet'
 import { useEffect, useRef, useState } from 'react'
-import { ErrorType, jsonPost } from 'functional-extensions'
+import { ErrorType } from 'functional-extensions'
 import { LatLngExpression } from 'leaflet'
+import { webViewRequest } from '../requests/requests'
 
 type TrackInfo = {
     name?: string
@@ -49,7 +50,7 @@ const TrackViewer = ({ path }: TrackViewerProps) => {
 
     
     useEffect(() => {
-        jsonPost<TrackInfo, ErrorType>({ method: "gettrackinfo", payload: { path } })
+        webViewRequest<TrackInfo, ErrorType>("gettrackinfo", { path })
             .match(n => {
                 setPosition(0)
                 setPointCount(n.trackPoints?.length ?? 0)

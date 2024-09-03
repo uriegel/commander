@@ -4,8 +4,8 @@ import { FolderViewItem } from "../components/FolderView"
 import { DialogHandle, ResultType } from "web-dialog-react"
 import ExtendedRename from "../components/dialogparts/ExtendedRename"
 import { createFileSystemController } from "./filesystem"
-import { Err, ErrorType, Nothing, Ok, jsonPost, nothing } from "functional-extensions"
-import { IOError } from "../requests/requests"
+import { Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
+import { IOError, webViewRequest } from "../requests/requests"
 
 export interface ExtendedRenameProps {
     prefix: string
@@ -103,15 +103,12 @@ const rename = (enterData: EnterData) => {
             .map(n => n.isSelected ? n.newName?.toLowerCase() ?? "" : n.name.toLowerCase())
             ?? []
         if (new Set(testItems).size == testItems.length) {
-            jsonPost<Nothing, ErrorType>({
-                method: "renameitems",
-                payload: {
+            webViewRequest<Nothing, ErrorType>("renameitems", {
                     path: enterData.path,
                     items: enterData.selectedItems.map(n => ({
                         name: n.name,
                         newName: n.newName!
                     }))
-                }
             }).match(
                 enterData.refresh,
                 e => showError(e, enterData.setError))

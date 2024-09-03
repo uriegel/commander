@@ -5,9 +5,10 @@ import CopyProgress from "./dialogparts/CopyProgress"
 import { DialogContext, ResultType } from "web-dialog-react"
 import "functional-extensions"
 import { useCallback, useContext, useEffect, useRef, useState } from "react"
-import { ErrorType, Nothing, jsonPost } from "functional-extensions"
+import { ErrorType, Nothing} from "functional-extensions"
 import { progressChangedEvents } from "../requests/events"
 import { WebViewType } from '../webview.ts'
+import { webViewRequest } from "../requests/requests.ts"
 
 declare var WebView: WebViewType
 
@@ -41,7 +42,7 @@ const Titlebar = ({ menu, progress, progressFinished, progressRevealed, totalSiz
             })
             dialogOpen.current = false
             if (res?.result == ResultType.Ok)
-                jsonPost<Nothing, ErrorType>({ method: "cancelCopy" })
+                webViewRequest<Nothing, ErrorType>("cancelCopy")
         }
 
         start()
