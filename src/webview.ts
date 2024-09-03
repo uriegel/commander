@@ -7,5 +7,6 @@ export declare type WebViewType = {
     dropFiles: (id: string, move: boolean, droppedFiles: string[]) => void,
     setDroppedFilesEventHandler: (success: boolean) => void
     getRequestUrl: () => string
+    closeWindow(): () => void
 }
 

@@ -74,6 +74,3 @@ export const webViewRequest = <T, E extends ErrorType>(method: string, payload?:
     return  new AsyncResult<T, E>(request())
 }
 
-export const closeWindow = () => 
-    webViewRequest<Nothing, ErrorType>("close")
-
