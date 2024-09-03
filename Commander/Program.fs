@@ -36,7 +36,7 @@ WebView()
     .Run()
     |> ignore
 
+// TODO closeWindow as Request
 // TODO send Result or AsyncResult (access denied)
-// TODO Do not use fetch but new webRequest for fetching
 // TODO Files Windows
 // TODO File versions

@@ -9,6 +9,9 @@ import New from '../svg/New'
 import Service from '../svg/Service'
 import Favorite from '../svg/Favorite'
 import { IconNameType } from '../enums'
+import { WebViewType } from '../webview'
+
+declare var WebView: WebViewType
 
 interface IconNameProps {
     namePart: string
@@ -20,7 +23,7 @@ const IconName = ({ namePart, type, iconPath }: IconNameProps) =>
     (<span> { type == IconNameType.Folder
         ? (<Folder />)
         : type == IconNameType.File
-        ? (<img className="iconImage" src={`http://localhost:2222/requests/geticon?path=${iconPath}`} alt="" />)
+        ? (<img className="iconImage" src={`${WebView.getRequestUrl()}geticon?path=${iconPath}`} alt="" />)
         : type == IconNameType.Root
         ? (<Drive />)
         : type == IconNameType.Home

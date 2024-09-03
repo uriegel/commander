@@ -1,5 +1,5 @@
 import { FolderViewItem } from "../components/FolderView"
-import { AsyncResult, Err, ErrorType, Ok, Result } from "functional-extensions"
+import { AsyncResult, Err, ErrorType, Nothing, Ok, Result } from "functional-extensions"
 import { WebViewType } from "../webview"
 
 declare var WebView: WebViewType
@@ -73,3 +73,7 @@ export const webViewRequest = <T, E extends ErrorType>(method: string, payload?:
     }
     return  new AsyncResult<T, E>(request())
 }
+
+export const closeWindow = () => 
+    webViewRequest<Nothing, ErrorType>("close")
+

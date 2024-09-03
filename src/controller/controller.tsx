@@ -11,6 +11,9 @@ import { SERVICES, getServicesController } from "./services"
 import { Platform, getPlatform } from "../globals"
 import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
 import { DirectoryChangedEvent } from "../requests/events"
+import { WebViewType } from "../webview"
+
+declare var WebView: WebViewType
 
 const dateFormat = Intl.DateTimeFormat("de-DE", {
     year: "numeric",
@@ -93,7 +96,7 @@ export interface ControllerResult {
 export const getViewerPath = (path: string) => 
     path.startsWith("remote")
     ? `http://${path.stringBetween("/", "/")}:8080/getfile/${path.substringAfter("/").substringAfter("/")}`
-    : `http://localhost:2222/requests/file?path=${path}`
+    : `${WebView.getRequestUrl()}file?path=${path}`
 
 export const checkController = (path: string, controller: Controller | null): ControllerResult => 
     checkNewController(

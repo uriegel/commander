@@ -24,6 +24,7 @@ import LocationViewer from './components/LocationViewer'
 import TrackViewer from './components/TrackViewer'
 import { WebViewType } from './webview.ts'
 import { Subscription } from 'rxjs'
+import { closeWindow } from './requests/requests.ts'
 
 declare var WebView: WebViewType
 
@@ -182,8 +183,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({}, ref) => {
 		if (key == "REFRESH") 
 			getActiveFolder()?.refresh()
 		else if (key == "END") 
-			// TODO check windows
-			window.close()
+			closeWindow()
 		else if (key == "SEL_ALL")
 			getActiveFolder()?.selectAll()
 		else if (key == "SEL_NONE")
