@@ -36,6 +36,4 @@ WebView()
     .Run()
     |> ignore
 
-// TODO send Result or AsyncResult (access denied)
-// TODO Files Windows
 // TODO File versions

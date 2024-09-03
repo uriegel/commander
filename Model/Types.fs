@@ -5,6 +5,35 @@ open System.IO
 type Empty = { Nil: int option }
 type JsonResult<'a, 'b> = { Ok: 'a option; Err: 'b option }
 
+type IOError = 
+    | Unknown = 0
+    | AccessDenied = 1
+    | AlreadyExists = 2
+    | FileNotFound = 3
+    | DeleteToTrashNotPossible = 4
+    | Exn = 5
+    | NetNameNotFound = 6
+    | PathNotFound = 7
+    | NotSupported = 8
+    | PathTooLong = 9
+    | Canceled = 10
+    | WrongCredentials = 11
+    | NoDiskSpace = 12
+    | OperationInProgress = 13
+    | NoError = 14
+    | UacNotStarted = 1099
+
+type ErrorType = {
+    status: IOError
+    statusText: string option
+}
+
+let exceptionToError (exn: exn) =
+    match exn with
+    | :? UnauthorizedAccessException as uae -> { status = IOError.AccessDenied; statusText = Some uae.Message }
+    | :? DirectoryNotFoundException as dnfe -> { status = IOError.PathNotFound; statusText = Some dnfe.Message }
+    | e -> { status = IOError.Exn; statusText = Some e.Message }
+
 [<CLIMutable>]
 type FileRequest = { Path: string }
 

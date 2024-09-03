@@ -83,6 +83,8 @@ let getFiles (input: GetFiles) =
                                                                     |> sideEffect (fun n -> DirectoryWatcher.install input.Id n.Path)
                                                                     )  
             |> Result.map(getFilesResult path)
+            // TODO map error
+            |> Result.mapError exceptionToError
             |> toJsonResult
     }
 
