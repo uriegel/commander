@@ -1,7 +1,10 @@
 import { FolderViewItem } from "../components/FolderView"
-import { ErrorType, Nothing, jsonPost, setBaseUrl } from "functional-extensions"
+import { AsyncResult, Err, ErrorType, jsonPost, Ok, Result, setBaseUrl } from "functional-extensions"
+import { WebViewType } from "../webview"
 
 setBaseUrl("http://localhost:2222/requests")
+
+declare var WebView: WebViewType
 
 export type GetItemsResult = {
     items: FolderViewItem[]
@@ -48,9 +51,6 @@ export enum IOError {
     UacNotStarted = 1099
 }
 
-export const closeWindow = () => 
-    jsonPost<Nothing, ErrorType>({ method: "close" })
-
 export type CopyItem = {
     name: string
     subPath?: string
@@ -61,6 +61,20 @@ export type CopyItem = {
     targetTime?: string | undefined
 }
 
+type ResultType = {
+    ok: any
+    err: any
+}
 
-
+export const webviewRequest = <T, E extends ErrorType>(method: string, payload?: any) => {
+    
+    let request = async () => {
+        const ret = await WebView.request(method, payload || {}) as ResultType
+        if (ret.ok)
+            return new Ok<T, E>(ret.ok) as Result<T, E>
+        else
+        return new Err<T, E>(ret.err) as Result<T, E>
+    }
+    new AsyncResult<T, E>(request())
+}
 	

@@ -7,7 +7,6 @@ import Statusbar from './components/Statusbar'
 import { Controller, showError } from './controller/controller'
 import PictureViewer from './components/PictureViewer'
 import MediaPlayer from './components/MediaPlayer'
-import { closeWindow } from './requests/requests'
 import './App.css'
 import './themes/adwaita.css'
 import './themes/windows.css'
@@ -21,7 +20,7 @@ import Titlebar from './components/Titlebar'
 //import { createFileSystemController } from './controller/filesystem'
 import './extensions/extensions'
 //import Credentials, { CredentialsProps } from './components/dialogparts/Credentials'
-import { ErrorType, Nothing, jsonPost } from 'functional-extensions'
+//import { ErrorType, Nothing, jsonPost } from 'functional-extensions'
 import LocationViewer from './components/LocationViewer'
 import TrackViewer from './components/TrackViewer'
 import { WebViewType } from './webview.ts'
@@ -184,7 +183,8 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({}, ref) => {
 		if (key == "REFRESH") 
 			getActiveFolder()?.refresh()
 		else if (key == "END") 
-			closeWindow()
+			// TODO check windows
+			window.close()
 		else if (key == "SEL_ALL")
 			getActiveFolder()?.selectAll()
 		else if (key == "SEL_NONE")

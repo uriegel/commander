@@ -3,12 +3,12 @@ import IconName from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, EnterData, formatSize, OnEnterResult} from "./controller"
 import { REMOTES } from "./remotes"
-import { GetExtendedItemsResult, IOError } from "../requests/requests"
+import { webviewRequest, GetExtendedItemsResult, IOError } from "../requests/requests"
 import "functional-extensions"
 import { SERVICES } from "./services"
 import { FAVORITES } from "./favorites"
 import { IconNameType } from "../enums"
-import { AsyncResult, Err, ErrorType, jsonPost, nothing, Nothing, Ok } from "functional-extensions"
+import { AsyncResult, Err, ErrorType, nothing, Nothing, Ok } from "functional-extensions"
 
 export const ROOT = "root"
 const platform = getPlatform()
@@ -76,7 +76,7 @@ const getLinuxColumns = () => ({
 
 const onWindowsEnter = (enterData: EnterData) => 
     enterData.keys.alt
-    ? jsonPost<OnEnterResult, ErrorType>({ method: "onenter", payload: { path: enterData.item.name, keys: enterData.keys } })
+    ? webviewRequest<OnEnterResult, ErrorType>("onenter", { path: enterData.item.name, keys: enterData.keys } )
         .map(() => ({ processed: true }))
     : AsyncResult.from(new Ok<OnEnterResult, ErrorType>({
         processed: false, 
@@ -117,7 +117,7 @@ export const getRootController = (controller: Controller | null): ControllerResu
     }})
 
 const getItems = () => 
-    jsonPost<GetRootResult, ErrorType>({ method: "getroot", payload: { } })
+    webviewRequest<GetRootResult, ErrorType>("getroot")
         .map(items => {
             const pos = items.findIndex(n => !n.isMounted)
             const extendedItems = items
