@@ -35,3 +35,9 @@ WebView()
 #endif    
     .Run()
     |> ignore
+
+// TODO open file 
+// TODO open file Windows openWith/Properties 
+// TODO Rename
+// TODO Delete
+// TODO CreateDir

@@ -6,7 +6,7 @@ open FSharpTools
 open Types
 open Start
 
-let sendIcon fileRequest = 
+let sendIcon (fileRequest: FileRequest) = 
     let append ext a = a + ext
     let directory = sprintf "/usr/share/icons/%s/16x16/mimetypes" "Adwaita"
     match
