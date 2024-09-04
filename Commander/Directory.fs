@@ -36,18 +36,6 @@ type CancelExtendedItems = {
     Id: string
 }
 
-type ExifData = {
-    DateTime: DateTime option
-    Latitude: double option
-    Longitude: double option
-}
-
-type GetExtendedItemsResult = {
-    ExifDatas: ExifData option array
-    Path: string
-}
-
-
 let getFiles (input: GetFiles) = 
 
     let getDirectoryItem (info: IO.FileSystemInfo) = 
@@ -96,9 +84,9 @@ let getExtendedInfos (input: GetExtendedItems) =
     let cancel = new CancellationTokenSource()
     extendedInfoCancellations <- extendedInfoCancellations.Add(input.Id, cancel)
 
-    let getExifDate (name: string) = 
+    let getExtendedData (name: string) = 
         if cancel.IsCancellationRequested then
-            None
+            { ExifData = None; Version = None }
         else
             let fillExif (reader: Reader) = 
                 let date = 
@@ -112,12 +100,11 @@ let getExtendedInfos (input: GetExtendedItems) =
                 if date.IsNone && lat.IsNone && lon.IsNone then
                     None
                 else
-                    Some
-                        {
-                            DateTime = date
-                            Latitude = lat
-                            Longitude = lon
-                        }
+                    Some {
+                        DateTime = date
+                        Latitude = lat
+                        Longitude = lon
+                    }
 
             let readExif path = 
                 path
@@ -128,12 +115,18 @@ let getExtendedInfos (input: GetExtendedItems) =
                 input.Path
                 |> Directory.attachSubPath name
                 |> readExif
-            else
-                None
+                |> (fun n -> { ExifData = n; Version = None})
+            elif name.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase) || name.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase) then
+                input.Path
+                |> Directory.attachSubPath name
+                |> Directory.getAdditionalInfo 
+                |> (fun n -> { ExifData = None; Version = n })
+            else 
+                { ExifData = None; Version = None }
 
     task {
         return {
-            Ok = Some { ExifDatas = (input.Items |> Array.map getExifDate); Path = input.Path }
+            Ok = Some { ExtendedItems = (input.Items |> Array.map getExtendedData); Path = input.Path }
             Err = None
         }
     }

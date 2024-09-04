@@ -181,13 +181,13 @@ const getExtendedItems = (id: string, path: string, items: FolderViewItem[]): As
 		: AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""}))
 
 const setExtendedItems = (items: FolderViewItem[], extended: GetExtendedItemsResult, sortColumn: number, sortDescending: boolean): FolderViewItem[] =>
-	sort(items.map((n, i) => !extended.exifDatas[i] && (extended.versions && !extended.versions[i])
+	sort(items.map((n, i) => !extended.extendedItems[i].exifData && !extended.extendedItems[i].version
 		? n
-		: extended.exifDatas[i] && (extended.versions && !extended.versions[i])
-		? {...n, exifData: extended.exifDatas[i] || undefined }
-		: !extended.exifDatas[i] && (extended.versions && extended.versions[i])
-		? {...n, version: extended.versions[i] || undefined }
-		: { ...n, version: (extended.versions && extended.versions[i] || undefined), exifData: extended.exifDatas[i] || undefined }), sortColumn, sortDescending)
+		: extended.extendedItems[i].exifData && !extended.extendedItems[i].version
+		? {...n, exifData: extended.extendedItems[i].exifData || undefined }
+		: !extended.extendedItems[i].exifData && extended.extendedItems[i].version
+		? {...n, version: extended.extendedItems[i].version || undefined }
+		: { ...n, version: extended.extendedItems[i].version || undefined, exifData: extended.extendedItems[i].exifData || undefined }), sortColumn, sortDescending)
 
 const cancelExtendedItems = (id: string) => 
 	webViewRequest<Nothing, ErrorType>("cancelextendeditems", { id })

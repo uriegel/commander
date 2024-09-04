@@ -27,3 +27,6 @@ let getIconPath (info: FileInfo) =
         with
         | Some ext when ext.Length > 0 -> ext
         | _ -> ".noextension"
+
+let getAdditionalInfo path
+    = None

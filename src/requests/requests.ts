@@ -1,5 +1,5 @@
 import { FolderViewItem } from "../components/FolderView"
-import { AsyncResult, Err, ErrorType, Nothing, Ok, Result } from "functional-extensions"
+import { AsyncResult, Err, ErrorType, Ok, Result } from "functional-extensions"
 import { WebViewType } from "../webview"
 
 declare var WebView: WebViewType
@@ -24,9 +24,13 @@ export type ExifData = {
     longitude?: number
 }
 
+export type ExtendedItem = {
+    exifData?: ExifData
+    version?: Version
+}
+
 export type GetExtendedItemsResult = {
-    exifDatas: (ExifData | null)[]
-    versions?: (Version | null)[]
+    extendedItems: ExtendedItem[]
     path: string
 }
 
@@ -65,7 +69,7 @@ type ResultType = {
 }
 
 export const webViewRequest = <T, E extends ErrorType>(method: string, payload?: any) => {
-    let request = async () : Promise<Result<T, E>> => {
+    const request = async () : Promise<Result<T, E>> => {
         const ret = await WebView.request(method, payload || {}) as ResultType
         return ret.ok
             ? new Ok<T, E>(ret.ok) 

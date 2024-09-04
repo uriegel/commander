@@ -51,6 +51,29 @@ type DirectoryItem = {
     Time: DateTime
 }
 
+type ExifData = {
+    DateTime: DateTime option
+    Latitude: double option
+    Longitude: double option
+}
+
+type Version = {
+    Major: int
+    Minor: int
+    Patch: int
+    Build: int
+}
+
+type ExtendedItem = {
+    ExifData: ExifData option 
+    Version: Version option
+}
+
+type GetExtendedItemsResult = {
+    ExtendedItems: ExtendedItem array
+    Path: string
+}
+
 let createDirectoryItem (info: DirectoryInfo) =
     {
         Name = info.Name
@@ -74,3 +97,4 @@ let createFileItem (info: FileInfo) getIconPath =
         IsHidden = (info.Attributes &&& FileAttributes.Hidden) = FileAttributes.Hidden
         Time = info.LastWriteTime
     }
+

@@ -35,5 +35,3 @@ WebView()
 #endif    
     .Run()
     |> ignore
-
-// TODO File versions
