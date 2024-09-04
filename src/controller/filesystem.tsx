@@ -65,7 +65,11 @@ export const getFileSystemController = (controller: Controller|null): Controller
 
 const onFileEnter = (path: string, keys?: SpecialKeys) => 
 	webViewRequest<Nothing, ErrorType>("onenter", { path, keys })
-	.map(() => ({ processed: true }) as OnEnterResult)
+		.map(() => ({ processed: true }) as OnEnterResult)
+	
+const onShowDirectory = (path: string) => 
+	webViewRequest<Nothing, ErrorType>("onshowdir", { path })
+		.map(() => ({ processed: true }) as OnEnterResult)		
 		
 export const createFileSystemController = (): Controller => {
 	let currentPath = ""
@@ -97,6 +101,8 @@ export const createFileSystemController = (): Controller => {
 				pathToSet: ROOT,
 				latestPath: path
 			}))
+			: item.isDirectory && keys.ctrl
+			? onShowDirectory(path.appendPath(item.name))
 			: item.isDirectory && !keys.alt
 			? AsyncResult.from(new Ok<OnEnterResult, ErrorType>({
 				processed: false,

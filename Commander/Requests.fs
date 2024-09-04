@@ -4,7 +4,7 @@ open Microsoft.AspNetCore.Http
 open Giraffe
 open Types
 open Tracks
-
+open RequestResult
 
 let getIcon: HttpFunc->HttpContext->HttpFuncResult =
     route "/requests/geticon" >=> bindQuery<FileRequest> None Requests.sendIcon
@@ -18,10 +18,4 @@ let getFile: HttpFunc->HttpContext->HttpFuncResult =
     route "/requests/file" >=> bindQuery<FileRequest> None getFile
 
 let getTrackInfo (input: FileRequest) =
-    let trackInfo = TrackInfo.Get input.Path
-    task {
-        return {
-            Ok = Some trackInfo
-            Err = None
-        }
-    }
+    returnReqVal <|TrackInfo.Get input.Path

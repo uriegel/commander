@@ -1,6 +1,7 @@
 ﻿module Root
-open Types
 open System.IO
+open Types
+open RequestResult
 
 type RootItem = {
     Name: string
@@ -9,8 +10,7 @@ type RootItem = {
     IsMounted: bool
 }
 
-let get (_: Empty) = task {
-
+let get (_: Empty) = 
     let createRootItem (driveInfo: DriveInfo) = 
         {
             Name = driveInfo.Name
@@ -22,15 +22,10 @@ let get (_: Empty) = task {
     let appendServiceItem items = 
         Seq.append items [| { Name = "services"; Description = None; Size = None; IsMounted = true } |]
 
-    return  {
-            Ok = Some
-                    (DriveInfo.GetDrives ()
+    returnReqVal (DriveInfo.GetDrives ()
                     |> Seq.map createRootItem
                     |> Seq.sortBy (fun item -> (not item.IsMounted, item.Name))
                     |> appendServiceItem
                     |> Seq.toArray)
-            Err = None
-        }
-}
 
 

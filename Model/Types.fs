@@ -28,6 +28,18 @@ type ErrorType = {
     statusText: string option
 }
 
+type SpecialKeys = {
+    Alt: bool
+    Ctrl: bool
+    Shift: bool
+}
+
+type OnEnterParam = {
+    Path: string
+    Keys: SpecialKeys option
+}
+
+
 let exceptionToError (exn: exn) =
     match exn with
     | :? UnauthorizedAccessException as uae -> { status = IOError.AccessDenied; statusText = Some uae.Message }

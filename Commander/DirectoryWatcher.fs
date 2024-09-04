@@ -1,11 +1,10 @@
 module DirectoryWatcher
 open System
 open System.IO
-open System.Threading
 open Types
 open FSharpTools
-open FSharpTools.EnumExtensions
 open FSharp.Control.Reactive
+open FSharpTools.Directory
 
 type DirectoryChangedType = 
     | Created = 0
@@ -28,14 +27,6 @@ type DirectoryWatcher = {
 }
 
 let changeDelay = TimeSpan.FromMilliseconds 200
-
-// TODO to FSharpTools
-// TODO catch exceptions
-let isDirectory (path: string) = 
-    try 
-        File.GetAttributes (path) |> hasFlag FileAttributes.Directory 
-    with
-    | _ -> false
 
 let monitor = obj()
 let mutable private watchers = Map.empty<string, DirectoryWatcher> 

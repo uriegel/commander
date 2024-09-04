@@ -1,11 +1,12 @@
 module Directory 
 open System
 open System.IO
+open System.Threading
 open FSharpTools
+open FSharpTools.ExifReader
 open FSharpTools.Functional
 open Types
-open System.Threading
-open FSharpTools.ExifReader
+open RequestResult
 
 type GetFiles = {
     Id: string 
@@ -124,20 +125,9 @@ let getExtendedInfos (input: GetExtendedItems) =
             else 
                 { ExifData = None; Version = None }
 
-    task {
-        return {
-            Ok = Some { ExtendedItems = (input.Items |> Array.map getExtendedData); Path = input.Path }
-            Err = None
-        }
-    }
+    returnReqVal { ExtendedItems = (input.Items |> Array.map getExtendedData); Path = input.Path }
 
 let cancelExtendedInfos (input: CancelExtendedItems) = 
     extendedInfoCancellations.TryFind(input.Id)
     |> Option.iter (fun c -> c.Cancel())
-
-    task {
-        return {
-            Ok = Some { Nil = None}
-            Err = None
-        }
-    }
+    returnReqNone ()
