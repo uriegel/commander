@@ -42,6 +42,12 @@
     <EmbeddedResource Include="../resources/index.html">
       <LogicalName>webroot/index.html</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="../resources/marker-icon.png">
+      <LogicalName>webroot/marker-icon.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../resources/marker-shadow.png">
+      <LogicalName>webroot/marker-shadow.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DirectoryWatcher.fs" />
