@@ -77,11 +77,21 @@ export const getDirectoryChangedEvents = (folderId: string) =>
     directoryChangedEvents
         .pipe(filter(n => n.folderId == folderId))
 
-WebView.registerEvents<string>("MenuAction", cmd => menuActionEvents.next(cmd))
-WebView.registerEvents<boolean>("ShowHidden", hidden => showHiddenEvents.next(hidden))
-WebView.registerEvents<boolean>("Preview", preview => showPreviewEvents.next(preview))
-WebView.registerEvents<DirectoryChangedEvent>("DirectoryChanged", e => directoryChangedEvents.next(e))
+const initialize = async () => {
+    WebView.registerEvents<string>("MenuAction", cmd => menuActionEvents.next(cmd))
+    WebView.registerEvents<boolean>("ShowHidden", hidden => showHiddenEvents.next(hidden))
+    WebView.registerEvents<boolean>("Preview", preview => showPreviewEvents.next(preview))
+    WebView.registerEvents<DirectoryChangedEvent>("DirectoryChanged", e => directoryChangedEvents.next(e))
+}
+try {
+    if (WebView)
+        initialize()
+} catch {  }
 
+export function onWebViewLoaded() {
+    initialize()
+}
+        
 // export const folderViewItemsChangedEvents = commanderEvents
 //     .pipe(filter(n => n.serviceItems != undefined))
 //     .pipe(map(n => n.serviceItems!))
