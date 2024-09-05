@@ -12,7 +12,7 @@ import './themes/adwaita.css'
 import './themes/windows.css'
 import { isWindows } from './globals'
 //import { copyErrorEvents, filesDropEvents, getCredentialsEvents,  progressChangedEvents } from './requests/events'
-import { menuActionEvents, showHiddenEvents, showPreviewEvents, } from './requests/events'
+import { menuActionEvents, showHiddenEvents, showPreviewEvents } from './requests/events'
 import { getCopyController } from './controller/copy/copyController'
 import FileViewer from './components/FileViewer'
 import { SpecialKeys } from 'virtual-table-react'
@@ -203,15 +203,11 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>(({}, ref) => {
 		else if (key == "EXTENDED_RENAME")
 			getActiveFolder()?.extendedRename(dialog)
 		else if (key == "TOGGLE_PREVIEW") {
-
-
-			console.log("vorschau", previewMode)
 			setPreviewMode(previewMode == PreviewMode.Default
 				? PreviewMode.Location
 				: previewMode == PreviewMode.Location
 					? PreviewMode.Both
 					: PreviewMode.Default)
-			
 		}
 		else if (key == "RENAME_AS_COPY")
 			getActiveFolder()?.renameAsCopy()

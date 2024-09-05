@@ -38,7 +38,6 @@ WebView()
     .Run()
     |> ignore
 
-// TODO Release version: WebView.registerEvents("MenuAction", e => av.next(e)); on root
 // TODO Rename
 // TODO Delete
 // TODO CreateDir
