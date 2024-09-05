@@ -67,6 +67,7 @@ Exec=/usr/share/applications/commander
 Name=Commander
 Comment=File Commander
 Icon=/usr/share/applications/commander.png
+StartupWMClass=de.uriegel.commander
 ```
 
 ```gsettings get org.gnome.shell favorite-apps```
