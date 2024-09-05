@@ -321,10 +321,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         controller.current.onEnter({ path, item, keys, dialog, setError, refresh, selectedItems: getSelectedItems(), items, otherPath })
         .map(res => {
             if (!res.processed && res.pathToSet) 
-                if (keys.ctrl)
-                    openDirectory
-                else
-                    changePath(id, res.pathToSet, showHidden, res.latestPath, res.mount)
+                changePath(id, res.pathToSet, showHidden, res.latestPath, res.mount)
             return nothing;
         })
         .match(() => {},
