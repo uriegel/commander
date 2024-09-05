@@ -39,7 +39,6 @@ type OnEnterParam = {
     Keys: SpecialKeys option
 }
 
-
 let exceptionToError (exn: exn) =
     match exn with
     | :? UnauthorizedAccessException as uae -> { status = IOError.AccessDenied; statusText = Some uae.Message }

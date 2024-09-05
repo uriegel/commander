@@ -38,7 +38,6 @@ WebView()
     .Run()
     |> ignore
 
-// TODO open file Windows openWith/Properties showDirectory
 // TODO Rename
 // TODO Delete
 // TODO CreateDir
