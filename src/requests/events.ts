@@ -4,7 +4,7 @@ import { FolderViewItem } from '../components/FolderView'
 //import { ErrorType } from 'functional-extensions'
 import { WebViewType } from '../webview'
 
-declare var WebView: WebViewType
+declare const WebView: WebViewType
 
 type CopyProgress = {
     fileName: string
@@ -86,12 +86,17 @@ const initialize = () => {
 try {
     if (WebView)
         initialize()
-} catch {  }
+} catch (_) { console.log("Initializing web view after loading") }
 
 function onWebViewLoaded() {
     initialize()
 }
-(window as any).onWebViewLoaded = onWebViewLoaded
+
+interface IWindow {
+    onWebViewLoaded: (cb: () => void)=>void
+}
+
+(window as unknown as IWindow).onWebViewLoaded = onWebViewLoaded
         
 // export const folderViewItemsChangedEvents = commanderEvents
 //     .pipe(filter(n => n.serviceItems != undefined))

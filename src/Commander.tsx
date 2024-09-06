@@ -25,7 +25,7 @@ import TrackViewer from './components/TrackViewer'
 import { WebViewType } from './webview.ts'
 import { Subscription } from 'rxjs'
 
-declare var WebView: WebViewType
+declare const WebView: WebViewType
 
 enum PreviewMode {
 	Default,
@@ -52,10 +52,9 @@ export type CommanderHandle = {
     onKeyDown: (evt: React.KeyboardEvent)=>void
 }
 
-type CommanderProps = {
-}
+type CommanderProps = object
 
-const Commander = forwardRef<CommanderHandle, CommanderProps>(({}, ref) => {
+const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 
     useImperativeHandle(ref, () => ({
         onKeyDown

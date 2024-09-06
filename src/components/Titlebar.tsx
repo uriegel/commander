@@ -10,7 +10,7 @@ import { progressChangedEvents } from "../requests/events"
 import { WebViewType } from '../webview.ts'
 import { webViewRequest } from "../requests/requests.ts"
 
-declare var WebView: WebViewType
+declare const WebView: WebViewType
 
 interface TitlebarProps {
     menu: JSX.Element

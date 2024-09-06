@@ -15,7 +15,7 @@ WebView()
     .CorsDomains([|"http://localhost:5173"|])
     .CorsCache(TimeSpan.FromSeconds(20))    
     .SaveBounds()
-    //.DefaultContextMenuDisabled()
+    .DefaultContextMenuDisabled()
     .AddRequest("getroot", Root.get)
     .AddRequest("getfiles", Directory.getFiles)
     .AddRequest("gettrackinfo", getTrackInfo)
@@ -29,9 +29,9 @@ WebView()
             fun d -> webview.SendEvent.Invoke(id, d)
         )
     )
-//#if DEBUG    
+#if DEBUG    
     .DevTools()
-//#endif
+#endif
 #if Linux
     .TitleBar(Titlebar.create)
 #endif    

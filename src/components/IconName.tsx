@@ -11,7 +11,7 @@ import Favorite from '../svg/Favorite'
 import { IconNameType } from '../enums'
 import { WebViewType } from '../webview'
 
-declare var WebView: WebViewType
+declare const WebView: WebViewType
 
 interface IconNameProps {
     namePart: string

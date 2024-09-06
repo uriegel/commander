@@ -13,7 +13,8 @@ import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-ex
 import { DirectoryChangedEvent } from "../requests/events"
 import { WebViewType } from "../webview"
 
-declare var WebView: WebViewType
+// eslint-disable-next-line react-refresh/only-export-components
+declare const WebView: WebViewType
 
 const dateFormat = Intl.DateTimeFormat("de-DE", {
     year: "numeric",

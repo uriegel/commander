@@ -2,7 +2,7 @@ import { FolderViewItem } from "../components/FolderView"
 import { AsyncResult, Err, ErrorType, Ok, Result } from "functional-extensions"
 import { WebViewType } from "../webview"
 
-declare var WebView: WebViewType
+declare const WebView: WebViewType
 
 export type GetItemsResult = {
     items: FolderViewItem[]
@@ -63,14 +63,14 @@ export type CopyItem = {
     targetTime?: string | undefined
 }
 
-type ResultType = {
-    ok: any
-    err: any
+type ResultType<T, E extends ErrorType> = {
+    ok: T
+    err: E
 }
 
-export const webViewRequest = <T, E extends ErrorType>(method: string, payload?: any) => {
+export const webViewRequest = <T, E extends ErrorType>(method: string, payload?: object) => {
     const request = async () : Promise<Result<T, E>> => {
-        const ret = await WebView.request(method, payload || {}) as ResultType
+        const ret = await WebView.request(method, payload || {}) as ResultType<T, E>
         return ret.ok
             ? new Ok<T, E>(ret.ok) 
             : new Err<T, E>(ret.err)
