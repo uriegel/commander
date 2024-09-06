@@ -41,8 +41,10 @@ type OnEnterParam = {
 
 let exceptionToError (exn: exn) =
     match exn with
-    | :? UnauthorizedAccessException as uae -> { status = IOError.AccessDenied; statusText = Some uae.Message }
     | :? DirectoryNotFoundException as dnfe -> { status = IOError.PathNotFound; statusText = Some dnfe.Message }
+    | :? UnauthorizedAccessException as uae -> { status = IOError.AccessDenied; statusText = Some uae.Message }
+    | :? IOException as ioe when ioe.HResult = 13 -> { status = IOError.AccessDenied; statusText = Some ioe.Message }
+    | :? IOException as ioe when ioe.HResult = -2147024891 -> { status = IOError.AccessDenied; statusText = Some ioe.Message }
     | e -> { status = IOError.Exn; statusText = Some e.Message }
 
 [<CLIMutable>]

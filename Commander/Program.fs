@@ -23,6 +23,8 @@ WebView()
     .AddRequest("cancelextendeditems", Directory.cancelExtendedInfos)
     .AddRequest("onenter", Directory.onEnter)
     .AddRequest("onshowdir", Directory.onEnter)
+    .AddRequest("renameitem", Directory.renameItem)
+    .AddRequest("deleteitems", Directory.deleteItems)
     .Requests([getIcon; getFile])
     .OnEventSink(
         fun id webview -> Events.onEventSink id (

@@ -79,7 +79,6 @@ let create (app: ApplicationHandle) (window: WindowHandle) (webview: ObjectRef<W
             .PackEnd(ToggleButton
                         .New()
                         .Ref(togglePreviewButton)
-                        //.IconName("gtk-print-preview") // TODO Icon
                         .IconName("x-office-presentation")
                         .Tooltip("Vorschau\tF3")
                         .OnClicked(togglePreview webview.Ref false)
@@ -91,13 +90,13 @@ let create (app: ApplicationHandle) (window: WindowHandle) (webview: ObjectRef<W
         GtkAction("refresh", (fun () -> sendMenuAction webview.Ref "REFRESH"), "<Ctrl>R")
         GtkAction("showhidden", false, onShowHidden webview.Ref, "<Ctrl>H")
                 // new("extendedrename", () => SendMenuAction(webView.Ref, "EXTENDED_RENAME"), "<Ctrl>F2"),
-                // new("rename", () => SendMenuAction(webView.Ref, "RENAME"), "F2"),
+        GtkAction("rename", (fun () -> sendMenuAction webview.Ref "RENAME"), "F2")
         GtkAction("togglePreviewMode", (fun () -> sendMenuAction webview.Ref "TOGGLE_PREVIEW"), "<Ctrl>F3")
         GtkAction("preview", togglePreview webview.Ref true, "F3")
                 // new("renameascopy", () => SendMenuAction(webView.Ref, "RENAME_AS_COPY"), "<Shift>F2"),
                 // new("copy", () => SendMenuAction(webView.Ref, "COPY"), "F5"),
                 // new("move", () => SendMenuAction(webView.Ref, "MOVE"), "F6"),
-                // new("delete", () => SendMenuAction(webView.Ref, "DELETE")),
+        GtkAction("delete", (fun () -> sendMenuAction webview.Ref "DELETE"))                
                 // new("createfolder", () => SendMenuAction(webView.Ref, "CREATE_FOLDER"), "F7"),
         GtkAction("favorites", (fun () -> sendMenuAction webview.Ref "FAVORITES"), "F1")
         GtkAction("adaptpath", (fun () -> sendMenuAction webview.Ref "ADAPT_PATH"), "F9")

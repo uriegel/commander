@@ -9,6 +9,21 @@ let returnReqVal a =
         }
     }
 
+let returnReqResult a = 
+    let res = 
+        match a with
+        | Ok ok -> {
+                Ok = Some ok
+                Err = None
+            }
+        | Error err -> {
+                Ok = None
+                Err = Some err
+            }
+    task {
+        return res
+    }
+
 let returnReqNone () = 
     task {
         return {
