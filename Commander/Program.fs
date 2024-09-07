@@ -40,6 +40,5 @@ WebView()
     .Run()
     |> ignore
 
-// TODO Rename
-// TODO Delete
+// TODO Delete: mapError (Access denied)
 // TODO CreateDir

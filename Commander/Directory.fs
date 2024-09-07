@@ -149,7 +149,7 @@ let renameItem (input: RenameItemParam) =
     |> returnReqResult 
 
 let deleteItems (input: DeleteItemsParam) = 
-    //returnReqVal <| Directory.move (input.Path |> Directory.attachSubPath input.Name, input.Path |> Directory.attachSubPath input.NewName)
-    returnReqNone ()
+    Directory.deleteItems input.Path input.Names 
+    |> returnReqTaskResult
 
  
