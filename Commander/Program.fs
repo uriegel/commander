@@ -42,3 +42,9 @@ WebView()
 
 // TODO Delete: mapError (Access denied)
 // TODO CreateDir
+
+// TODO UAC: call Commander with params:
+//              start program (Windows shellexecute, Linux runCmd)    
+//              GetParams from binary utf8 stream (Windows?)
+//              GetResult to binary utf8 stream
+//              GetEvents to binary utf8 stream

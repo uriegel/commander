@@ -11,27 +11,6 @@ let csNothingResultToResult (csResult: CsTools.Functional.Result<CsTools.Functio
     csResultToResult csResult
     |> Result.map (fun _ -> ())
 
-let fromIOError ioError=
-    {
-        status = ioError
-        statusText = 
-            Some 
-                (match ioError with
-                | IOError.AccessDenied -> "Access denied"
-                | IOError.AlreadyExists -> "Already exists"
-                | IOError.FileNotFound -> "File not found"
-                | IOError.DeleteToTrashNotPossible -> "Delete to trash not possible"
-                | IOError.Exn -> "Exception"
-                | IOError.NetNameNotFound -> "Net name not found"
-                | IOError.PathNotFound -> "Path not found"
-                | IOError.NotSupported -> "Not supported"
-                | IOError.PathTooLong -> "Path too long"
-                | IOError.Canceled -> "Canceled"
-                | IOError.WrongCredentials -> "Wrong credentials"
-                | IOError.OperationInProgress -> "Operation in Progress"
-                | _ -> "Unknown")
-    }
-
 let gerrorToError (g: GError) = 
     match g with
     | :? FileError as fe when fe.Error = FileError.ErrorType.AccessDenied -> Types.IOError.AccessDenied

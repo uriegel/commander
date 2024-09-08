@@ -1,4 +1,5 @@
 module Directory
+open System
 open System.Diagnostics
 open System.IO
 open FSharpTools
@@ -48,3 +49,24 @@ let onEnter (param: OnEnterParam) =
         proc.StartInfo.UseShellExecute <- true
         proc.Start() |> ignore
     returnReqNone ()
+
+let deleteItems path names  = 
+    let deleteItems path names  = 
+        let mutable fileOperation = ShFileOPStruct()
+        fileOperation.Func <- FileFuncFlags.DELETE
+        fileOperation.From <- String.Join("\U00000000", names |> Array.map (Directory.combine2Pathes path)) + "\U00000000\U00000000"
+        fileOperation.Flags <- FileOpFlags.NOCONFIRMATION 
+                                ||| FileOpFlags.NOERRORUI
+                                ||| FileOpFlags.NOCONFIRMMKDIR
+                                ||| FileOpFlags.SILENT
+                                ||| FileOpFlags.ALLOWUNDO
+        match Api.SHFileOperation fileOperation with
+        | 0 -> Ok ()
+        | 2 -> Error IOError.FileNotFound
+        | 0x78 -> Error IOError.AccessDenied
+        | _ -> Error IOError.Exn
+    task {
+        return 
+            deleteItems path names
+            |> Result.mapError fromIOError    
+    }

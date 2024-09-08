@@ -44,6 +44,6 @@ let deleteItems path names  =
         |> Seq.map deleteItem
         |> Seq.tryFind Result.isError
         |> mapError
-        |> Result.mapError fromIOError
+        |> Result.mapError RequestResult.fromIOError
 
     Gtk.Dispatch(deleteItems)
