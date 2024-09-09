@@ -53,6 +53,7 @@
     <Compile Include="DirectoryWatcher.fs" />
     <Compile Include="Directory.fs" />
     <Compile Include="Requests.fs" />
+    <Compile Include="WebView.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

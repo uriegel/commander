@@ -5,6 +5,7 @@
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Elevated.fs" />
     <Compile Include="Requests.fs" />
     <Compile Include="Directory.fs" />
     <Compile Include="Root.fs" />
