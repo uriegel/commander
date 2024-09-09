@@ -9,6 +9,7 @@
     <Compile Include="Directory.fs" />
     <Compile Include="Root.fs" />
     <Compile Include="Titlebar.fs" />
+    <Compile Include="Elevated.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Giraffe" Version="7.0.1" />

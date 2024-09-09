@@ -7,6 +7,7 @@ open FSharpTools.ExifReader
 open FSharpTools.Functional
 open Types
 open RequestResult
+open FSharpTools.TaskResult
 
 type GetFiles = {
     Id: string 
@@ -146,10 +147,10 @@ let cancelExtendedInfos (input: CancelExtendedItems) =
 let renameItem (input: RenameItemParam) = 
     Directory.move (input.Path |> Directory.attachSubPath input.Name, input.Path |> Directory.attachSubPath input.NewName)
     |> Result.mapError exceptionToError
-    |> returnReqResult 
+    |> toTaskResult
 
 let deleteItems (input: DeleteItemsParam) = 
     Directory.deleteItems input.Path input.Names 
-    |> returnReqTaskResult
+    |> toTaskResultAwait
 
  

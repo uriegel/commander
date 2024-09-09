@@ -25,7 +25,7 @@ let returnReqResult a =
         return res
     }
 
-let returnReqTaskResult (resTask: Task<Result<Unit, ErrorType>>) = 
+let returnReqTaskResult (resTask: Task<Result<'a, ErrorType>>) = 
     task {
         let! res = resTask
         return 
@@ -67,4 +67,9 @@ let fromIOError ioError=
                 | IOError.WrongCredentials -> "Wrong credentials"
                 | IOError.OperationInProgress -> "Operation in Progress"
                 | _ -> "Unknown")
+    }
+
+let toTask a =
+    task {
+        return a
     }
