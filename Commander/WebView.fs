@@ -27,8 +27,8 @@ let run () =
         .AddRequest("cancelextendeditems", Directory.cancelExtendedInfos)
         .AddRequest("onenter", Directory.onEnter)
         .AddRequest("onshowdir", Directory.onEnter)
-        .AddRequest("renameitem", tryElevatedOnAccessDenied Directory.renameItem)
-        .AddRequest("deleteitems", tryElevatedOnAccessDenied Directory.deleteItems)
+        .AddRequest("renameitem", tryElevatedOnAccessDenied "renameItem" Directory.renameItem)
+        .AddRequest("deleteitems", tryElevatedOnAccessDenied "deleteItems" Directory.deleteItems)
         .Requests([getIcon; getFile])
         .OnEventSink(
             fun id webview -> Events.onEventSink id (

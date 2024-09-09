@@ -8,6 +8,7 @@
     <Compile Include="Events.fs" />
     <Compile Include="Types.fs" />
     <Compile Include="RequestResult.fs" />
+    <Compile Include="Directory.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FSharpTools" Version="10.3.0" />

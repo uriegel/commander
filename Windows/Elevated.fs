@@ -1,16 +1,23 @@
 module Elevated
 open System
+open System.Diagnostics
+open System.IO
+open System.IO.Pipes
 open System.Threading.Tasks
+open FSharpTools
+open FSharpTools.TaskResult
+open Giraffe
 open Types
 open RequestResult
-open FSharpTools.TaskResult
-open System.Diagnostics
-open System.IO.Pipes
-open System.IO
 
-let tryElevatedOnAccessDenied<'a, 'b> (func: 'a->TaskResult<'b, ErrorType>) (input: 'a) : Task<JsonResult<'b, ErrorType>> = 
+let private pipeName = "$$$commanderPipe$$$"
 
-    let pipeName = "$$$commanderPipe$$$"
+let serializer = WebWindowNetCore.CustomJsonSerializer() :> Json.ISerializer
+
+let tryElevatedOnAccessDenied<'a, 'b> 
+        (method: string)
+        (func: 'a->TaskResult<'b, ErrorType>) 
+        (input: 'a): Task<JsonResult<'b, ErrorType>> = 
 
     let startElevatedProcess () =
         let startInfo = new ProcessStartInfo()
@@ -32,15 +39,15 @@ let tryElevatedOnAccessDenied<'a, 'b> (func: 'a->TaskResult<'b, ErrorType>) (inp
         use writer = new StreamWriter(pipeServer)
         writer.AutoFlush <- true
         // Send data to the elevated process
-        writer.WriteLine("Hello from the parent process!")
+        writer.WriteLine(method)
+        writer.WriteLine(serializer.SerializeToString(input))
         // Receive response from the elevated process
-        let response = reader.ReadLine()
-        ()
+        serializer.Deserialize<JsonResult<'b, ErrorType>>(reader.ReadLine())
+        |> fromJsonResult
 
     let tryElevatedOnAccessDenied (e: ErrorType) = 
         if e.status = IOError.AccessDenied then
             runElevated ()
-            Error e
         else
             Error e
 
@@ -56,7 +63,16 @@ let runServer pipeName =
     use reader = new StreamReader(pipeClient)
     use writer = new StreamWriter(pipeClient)
     writer.AutoFlush <- true
-    // Read data sent by the parent process
-    let input = reader.ReadLine()
-    // Send a response back to the parent process
-    writer.WriteLine("Hello from the elevated process!")
+    let res =
+        match reader.ReadLine() with
+        | "renameItem" -> 
+            let param = serializer.Deserialize<RenameItemParam> (reader.ReadLine())
+            Directory.renameItem param
+        | "deleteItems" -> 
+            let param = serializer.Deserialize<DeleteItemsParam> (reader.ReadLine())
+            Directory.deleteItems param
+        | _ -> failwith "method not supported"
+        |> TaskResult.toResult
+    let res = res.Result |> toJsonResult
+    let resstr = serializer.SerializeToString res
+    writer.WriteLine(resstr)

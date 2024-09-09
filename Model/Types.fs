@@ -39,6 +39,17 @@ type OnEnterParam = {
     Keys: SpecialKeys option
 }
 
+type RenameItemParam = {
+    Path: string
+    Name: string
+    NewName: string
+}
+
+type DeleteItemsParam = {
+    Path: string
+    Names: string array
+}
+
 let exceptionToError (exn: exn) =
     match exn with
     | :? DirectoryNotFoundException as dnfe -> { status = IOError.PathNotFound; statusText = Some dnfe.Message }
@@ -54,6 +65,15 @@ let toJsonResult (result: Result<'a, 'b>) =
     match result with
     | Ok ok -> { Ok = Some ok; Err = None }
     | Error err -> { Ok = None; Err = Some err } 
+
+let fromJsonResult (result: JsonResult<'a, 'b>) = 
+    if result.Err.IsNone then
+        if result.Ok.IsSome then
+            Ok result.Ok.Value
+        else
+            Ok (() :> obj :?> 'a)
+    else
+        Error result.Err.Value
 
 type DirectoryItem = {
     Name: string

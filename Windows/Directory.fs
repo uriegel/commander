@@ -2,11 +2,12 @@ module Directory
 open System
 open System.Diagnostics
 open System.IO
+open System.Runtime.InteropServices
 open FSharpTools
+open FSharpTools.TaskResult
+open ClrWinApi
 open Types
 open RequestResult
-open ClrWinApi
-open System.Runtime.InteropServices
 
 let mount path = path
 
@@ -50,7 +51,7 @@ let onEnter (param: OnEnterParam) =
         proc.Start() |> ignore
     returnReqNone ()
 
-let deleteItems path names  = 
+let doDeleteItems path names  = 
     let deleteItems path names  = 
         let mutable fileOperation = ShFileOPStruct()
         fileOperation.Func <- FileFuncFlags.DELETE
@@ -70,3 +71,7 @@ let deleteItems path names  =
             deleteItems path names
             |> Result.mapError fromIOError    
     }
+
+let deleteItems (input: DeleteItemsParam) = 
+    doDeleteItems input.Path input.Names 
+    |> toTaskResultAwait

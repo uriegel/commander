@@ -38,17 +38,6 @@ type CancelExtendedItems = {
     Id: string
 }
 
-type RenameItemParam = {
-    Path: string
-    Name: string
-    NewName: string
-}
-
-type DeleteItemsParam = {
-    Path: string
-    Names: string array
-}
-
 let getFiles (input: GetFiles) = 
 
     let getDirectoryItem (info: IO.FileSystemInfo) = 
@@ -144,13 +133,5 @@ let cancelExtendedInfos (input: CancelExtendedItems) =
     |> Option.iter (fun c -> c.Cancel())
     returnReqNone ()
 
-let renameItem (input: RenameItemParam) = 
-    Directory.move (input.Path |> Directory.attachSubPath input.Name, input.Path |> Directory.attachSubPath input.NewName)
-    |> Result.mapError exceptionToError
-    |> toTaskResult
-
-let deleteItems (input: DeleteItemsParam) = 
-    Directory.deleteItems input.Path input.Names 
-    |> toTaskResultAwait
 
  
