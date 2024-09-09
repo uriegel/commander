@@ -4,7 +4,10 @@ open Types
 open RequestResult
 open FSharpTools.TaskResult
 
-let tryElevatedOnAccessDenied<'a, 'b> (func: 'a->TaskResult<'b, ErrorType>) (input: 'a) : Task<JsonResult<'b, ErrorType>> = 
+let tryElevatedOnAccessDenied<'a, 'b> 
+        (method: string)
+        (func: 'a->TaskResult<'b, ErrorType>)
+        (input: 'a) : Task<JsonResult<'b, ErrorType>> = 
 
     let tryElevatedOnAccessDenied (e: ErrorType) = Error e
 

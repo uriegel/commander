@@ -2,6 +2,7 @@ module Directory
 open System.IO
 open FSharpTools
 open FSharpTools.String
+open FSharpTools.TaskResult
 open Types
 open RequestResult
 open GtkDotNet
@@ -27,7 +28,7 @@ let onEnter (param: OnEnterParam) =
     Process.runCmd "xdg-open" (sprintf "\"%s\"" param.Path) |> ignore
     returnReqNone ()
 
-let deleteItems path names  = 
+let doDeleteItems path names  = 
     let deleteItems name =    
         let deleteItem name = 
             let filePath = path |> Directory.attachSubPath name
@@ -47,3 +48,7 @@ let deleteItems path names  =
         |> Result.mapError RequestResult.fromIOError
 
     Gtk.Dispatch(deleteItems)
+
+let deleteItems (input: DeleteItemsParam) = 
+    doDeleteItems input.Path input.Names 
+    |> toTaskResultAwait
