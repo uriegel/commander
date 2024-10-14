@@ -7,6 +7,7 @@ mod linux;
 use std::{thread, time::Duration};
 
 use serde::{Deserialize, Serialize};
+use include_dir::include_dir;
 
 use webview_app::{application::Application, request::{self, request_blocking, Request}, webview::WebView};
 
@@ -39,7 +40,8 @@ fn on_activate(app: &Application)->WebView {
         .save_bounds()
         .title("Commander".to_string())
         .devtools(true)
-        .debug_url("http://localhost:5173/".to_string())
+//        .debug_url("http://localhost:5173/".to_string())
+        .webroot(include_dir!("website/dist"))
         .default_contextmenu_disabled()
         .without_native_titlebar();
 
@@ -99,6 +101,5 @@ fn cmd2(request: &Request, id: String) {
 
 // TODO Linux Titlebar
 // TODO Windows Beenden form menu minimizes the window
-// TODO Release  version via res scheme
 // TODO README describe npm init in sub folder webroot
 // TODO README describe debugging
