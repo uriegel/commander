@@ -8,3 +8,7 @@ fn main() {
         "commander.gresource",
     );
 }
+
+#[cfg(target_os = "windows")]    
+fn main() {
+}

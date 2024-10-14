@@ -28,15 +28,20 @@ pub struct Outputs {
 }
 
 fn on_activate(app: &Application)->WebView {
-    let webview = WebView::builder(app)
+    let webview_builder = WebView::builder(app)
         .save_bounds()
+        .title("Commander".to_string())
         .devtools(true)
         .debug_url("http://localhost:5173/".to_string())
         .default_contextmenu_disabled()
-        .with_builder("/de/uriegel/commander/window.ui".to_string(), |builder| {
-            println!("Builder is ready")
-        })
-        .build();
+        .without_native_titlebar();
+
+    #[cfg(target_os = "linux")]    
+    let webview_builder = webview_builder.with_builder("/de/uriegel/commander/window.ui".to_string(), |builder| {
+        println!("Builder is ready")
+    });
+    
+    let webview = webview_builder.build();
     
     webview.connect_request(|request, id, cmd: String, json| {
         match cmd.as_str() {
