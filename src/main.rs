@@ -93,6 +93,9 @@ fn cmd2(request: &Request, id: String) {
 
 // TODO Linux Titlebar
 // TODO Windows Titlebar wrong button behavior
+// TODO Release  version via res scheme
+// TODO README describe npm init in sub folder webroot
+// TODO README describe debugging
 /*
 module Titlebar
 open GtkDotNet
