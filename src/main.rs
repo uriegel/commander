@@ -29,11 +29,13 @@ pub struct Outputs {
 
 fn on_activate(app: &Application)->WebView {
     let webview = WebView::builder(app)
-        .title("Commander".to_string())
         .save_bounds()
         .devtools(true)
         .debug_url("http://localhost:5173/".to_string())
         .default_contextmenu_disabled()
+        .with_builder("/de/uriegel/commander/window.ui".to_string(), |builder| {
+            println!("Builder is ready")
+        })
         .build();
     
     webview.connect_request(|request, id, cmd: String, json| {
@@ -48,7 +50,12 @@ fn on_activate(app: &Application)->WebView {
 }
 
 fn main() {
-    Application::new("de.uriegel.hello")
+
+    #[cfg(target_os = "linux")]        
+    gtk::gio::resources_register_include!("commander.gresource")
+        .expect("Failed to register resources.");
+
+    Application::new("de.uriegel.commander")
     .on_activate(on_activate)
     .run();
 }
