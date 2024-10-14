@@ -4,9 +4,13 @@
 #[cfg(target_os = "linux")]
 mod linux;
 
+#[cfg(target_os = "windows")]
 mod httpserver;
 
-use std::{sync::{Arc, Mutex}, thread, time::Duration};
+use std::{thread, time::Duration};
+
+#[cfg(target_os = "windows")]
+use std::sync::{Arc, Mutex};
 
 use serde::{Deserialize, Serialize};
 use include_dir::include_dir;
@@ -41,6 +45,7 @@ pub const HTTP_PORT: u32 = 8000;
 
 fn on_activate(app: &Application)->WebView {
     let dir = include_dir!("website/dist");
+    #[cfg(target_os = "windows")]
     let arc_dir = Some(Arc::new(Mutex::new(dir.clone())));
 
     let webview_builder = WebView::builder(app)
@@ -55,7 +60,7 @@ fn on_activate(app: &Application)->WebView {
 
     #[cfg(target_os = "linux")]    
     let webview_builder = webview_builder
-        .with_builder("/de/uriegel/commander/window.ui".to_string(), move|builder| HeaderBar::new(builder, arc_dir.clone()));
+        .with_builder("/de/uriegel/commander/window.ui".to_string(), move|builder| HeaderBar::new(builder));
     #[cfg(target_os = "windows")]
     httpserver::httpserver::HttpServerBuilder::new()
         .port(HTTP_PORT)

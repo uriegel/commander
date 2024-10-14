@@ -1,16 +1,11 @@
-use std::sync::{Arc, Mutex};
-
 use gtk::prelude::*;
 use gtk::{ApplicationWindow, gio::ActionEntry, Builder};
-use include_dir::Dir;
 use webkit6::prelude::*;
-
-use crate::httpserver::httpserver::HttpServerBuilder;
 
 pub struct HeaderBar;
 
 impl HeaderBar {
-    pub fn new(builder: &Builder, dir: Option<Arc<Mutex<Dir<'static>>>>) {
+    pub fn new(builder: &Builder) {
         let window: ApplicationWindow = builder.object("window").unwrap();
         let app = window.application().unwrap();
         let webview: webkit6::WebView = builder.object("webview").unwrap();
@@ -23,11 +18,10 @@ impl HeaderBar {
         app.set_accels_for_action("app.devtools", &["<Ctrl><Shift>I"]);
         app.add_action_entries([action]);
 
-        HttpServerBuilder::new()
-            .port(HTTP_PORT)
-            .build()
-            .run(dir.clone());
-
+        // HttpServerBuilder::new()
+        //     .port(HTTP_PORT)
+        //     .build()
+        //     .run(dir.clone());
     }
 }
 
