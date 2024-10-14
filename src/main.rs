@@ -92,6 +92,7 @@ fn cmd2(request: &Request, id: String) {
 }
 
 // TODO Linux Titlebar
+// TODO Windows Titlebar wrong button behavior
 /*
 module Titlebar
 open GtkDotNet
