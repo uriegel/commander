@@ -24,7 +24,7 @@ impl HeaderBar {
         app.add_action_entries([action]);
 
         HttpServerBuilder::new()
-            .port(7890)
+            .port(HTTP_PORT)
             .build()
             .run(dir.clone());
 

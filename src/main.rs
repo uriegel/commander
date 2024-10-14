@@ -37,6 +37,8 @@ pub struct Outputs {
     pub outputs: Vec<Output>
 }
 
+pub const HTTP_PORT: u32 = 8000;
+
 fn on_activate(app: &Application)->WebView {
     let dir = include_dir!("website/dist");
     let arc_dir = Some(Arc::new(Mutex::new(dir.clone())));
@@ -45,15 +47,20 @@ fn on_activate(app: &Application)->WebView {
         .save_bounds()
         .title("Commander".to_string())
         .devtools(true)
-//        .debug_url("http://localhost:5173/".to_string())
+        .debug_url("http://localhost:5173/".to_string())
         .webroot(dir.clone())
-        .url("http://localhost:5173/".to_string())
+        .url(format!("http://localhost:{HTTP_PORT}/webroot/index.html"))
         .default_contextmenu_disabled()
         .without_native_titlebar();
 
     #[cfg(target_os = "linux")]    
     let webview_builder = webview_builder
         .with_builder("/de/uriegel/commander/window.ui".to_string(), move|builder| HeaderBar::new(builder, arc_dir.clone()));
+    #[cfg(target_os = "windows")]
+    httpserver::httpserver::HttpServerBuilder::new()
+        .port(HTTP_PORT)
+        .build()
+        .run(arc_dir);
 
     let webview = webview_builder.build();
     
