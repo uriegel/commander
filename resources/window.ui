@@ -58,6 +58,53 @@
             <attribute name="action">app.delete</attribute>
           </item>
         </section>
+        <section>
+          <item>
+            <attribute name="label">_Ordner anlegen</attribute>
+            <attribute name="action">app.createfolder</attribute>
+          </item>
+        </section>
+        <section>
+          <item>
+            <attribute name="label">Vorschaumodus wechseln</attribute>
+            <attribute name="action">app.togglePreviewMode</attribute>
+          </item>
+        </section>
+      </submenu>
+      <submenu>
+        <attribute name="label">_Navigation</attribute>
+        <section>
+          <item>
+            <attribute name="label">_Favoriten</attribute>
+            <attribute name="action">app.favorites</attribute>
+          </item>
+          <item>
+            <attribute name="label">_Gleichen Ordner öffnen</attribute>
+            <attribute name="action">app.adaptpath</attribute>
+          </item>
+        </section>
+      </submenu>
+      <submenu>
+        <attribute name="label">_Selektion</attribute>
+        <section>
+          <item>
+            <attribute name="label">_Alles</attribute>
+            <attribute name="action">app.selectall</attribute>
+          </item>
+          <item>
+            <attribute name="label">_Selektion entfernen</attribute>
+            <attribute name="action">app.selectnone</attribute>
+          </item>
+        </section>
+      </submenu>
+      <submenu>
+        <attribute name="label">_Ansicht</attribute>
+        <section>
+          <item>
+            <attribute name="label">_Entwicklerwerkzeuge</attribute>
+            <attribute name="action">app.devtools</attribute>
+          </item>
+        </section>
       </submenu>
     </section>
   </menu>  
