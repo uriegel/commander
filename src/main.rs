@@ -4,7 +4,9 @@
 #[cfg(target_os = "linux")]
 mod linux;
 
-use std::{thread, time::Duration};
+mod httpserver;
+
+use std::{sync::{Arc, Mutex}, thread, time::Duration};
 
 use serde::{Deserialize, Serialize};
 use include_dir::include_dir;
@@ -36,18 +38,22 @@ pub struct Outputs {
 }
 
 fn on_activate(app: &Application)->WebView {
+    let dir = include_dir!("website/dist");
+    let arc_dir = Some(Arc::new(Mutex::new(dir.clone())));
+
     let webview_builder = WebView::builder(app)
         .save_bounds()
         .title("Commander".to_string())
         .devtools(true)
 //        .debug_url("http://localhost:5173/".to_string())
-        .webroot(include_dir!("website/dist"))
+        .webroot(dir.clone())
+        .url("http://localhost:5173/".to_string())
         .default_contextmenu_disabled()
         .without_native_titlebar();
 
     #[cfg(target_os = "linux")]    
     let webview_builder = webview_builder
-        .with_builder("/de/uriegel/commander/window.ui".to_string(), |builder| HeaderBar::new(builder));
+        .with_builder("/de/uriegel/commander/window.ui".to_string(), move|builder| HeaderBar::new(builder, arc_dir.clone()));
 
     let webview = webview_builder.build();
     
@@ -103,3 +109,5 @@ fn cmd2(request: &Request, id: String) {
 // TODO Windows Beenden form menu minimizes the window
 // TODO README describe npm init in sub folder webroot
 // TODO README describe debugging
+// TODO fs_extra::copy_items_with_progress
+// TODO Trash: https://docs.rs/trash/latest/trash/
