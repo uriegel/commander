@@ -92,7 +92,7 @@ fn cmd2(request: &Request, id: String) {
 }
 
 // TODO Linux Titlebar
-// TODO Windows Titlebar wrong button behavior
+// TODO Windows Beenden form menu minimizes the window
 // TODO Release  version via res scheme
 // TODO README describe npm init in sub folder webroot
 // TODO README describe debugging
