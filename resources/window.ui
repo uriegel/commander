@@ -4,34 +4,6 @@
   <!-- interface-name ui.ui -->
   <requires lib="gtk" version="4.6"/>
   <requires lib="webkitgtk" version="6.0"/>
-  <menu id="main-menu">
-    <submenu>
-      <attribute name="label" translatable="yes">_Filter</attribute>
-      <item>
-        <attribute name="label" translatable="yes">_All</attribute>
-        <attribute name="action">win.filter</attribute>
-        <attribute name="target">All</attribute>
-      </item>
-      <item>
-        <attribute name="label" translatable="yes">_Open</attribute>
-        <attribute name="action">win.filter</attribute>
-        <attribute name="target">Open</attribute>
-      </item>
-      <item>
-        <attribute name="label" translatable="yes">_Done</attribute>
-        <attribute name="action">win.filter</attribute>
-        <attribute name="target">Done</attribute>
-      </item>
-    </submenu>
-    <item>
-      <attribute name="label" translatable="yes">_Remove Done Tasks</attribute>
-      <attribute name="action">win.remove-done-tasks</attribute>
-    </item>
-    <item>
-      <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
-      <attribute name="action">win.show-help-overlay</attribute>
-    </item>
-  </menu>  
   <object class="GtkApplicationWindow" id="window">
     <property name="title">Commander</property>
     <property name="titlebar">
@@ -48,4 +20,45 @@
       <object class="WebKitWebView" id="webview" type-func="webkit_web_view_get_type"/>
     </child>
   </object>
+  <menu id="main-menu">
+    <section>
+      <item>
+        <attribute name="label">_Aktualisieren</attribute>
+        <attribute name="action">app.refresh</attribute>
+      </item>
+      <item>
+        <attribute name="label">_Versteckte Dateien</attribute>
+        <attribute name="action">app.showhidden</attribute>
+      </item>
+    </section>
+    <section>
+      <submenu>
+        <attribute name="label">_Datei</attribute>
+        <section>
+          <item>
+            <attribute name="label">_Umbenennen</attribute>
+            <attribute name="action">app.rename</attribute>
+          </item>
+          <item>
+            <attribute name="label">Kopie _anlegen</attribute>
+            <attribute name="action">app.renameascopy</attribute>
+          </item>
+        </section>
+        <section>
+          <item>
+            <attribute name="label">_Kopieren</attribute>
+            <attribute name="action">app.copy</attribute>
+          </item>
+          <item>
+            <attribute name="label">_Verschieden</attribute>
+            <attribute name="action">app.move</attribute>
+          </item>
+          <item>
+            <attribute name="label">_Löschen              Entf</attribute>
+            <attribute name="action">app.delete</attribute>
+          </item>
+        </section>
+      </submenu>
+    </section>
+  </menu>  
 </interface>
