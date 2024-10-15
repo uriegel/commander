@@ -23,7 +23,6 @@ interface RootItem {
 
 type GetRootResult = RootItem[]
 
-
 const renderWindowsRow = (item: FolderViewItem) => [
     (<IconName namePart={item.name} type={
         item.name == REMOTES
