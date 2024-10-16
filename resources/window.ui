@@ -14,6 +14,23 @@
             <property name="menu-model">main-menu</property>
           </object>
         </child>      
+        <child type="end">
+          <object class="GtkToggleButton">
+            <property name="icon-name">x-office-presentation</property>
+          </object>
+        </child>
+        <child type="end">
+          <object class="GtkRevealer">
+            <property name="transition-type">slide-left</property>
+            <child>
+              <object class="GtkMenuButton">
+                <child>
+                  <object class="GtkDrawingArea"/>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
       </object>
     </property>
     <child>
@@ -99,6 +116,18 @@
       </submenu>
       <submenu>
         <attribute name="label">_Ansicht</attribute>
+        <section>
+          <item>
+            <attribute name="label">_Vorschaumodus _wechseln</attribute>
+            <attribute name="action">app.changepreview</attribute>
+          </item>
+        </section>
+        <section>
+          <item>
+            <attribute name="label">_Vollbild</attribute>
+            <attribute name="action">app.fullscreen</attribute>
+          </item>
+        </section>
         <section>
           <item>
             <attribute name="label">_Entwicklerwerkzeuge</attribute>
