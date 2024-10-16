@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-webview_app = "1.0.0-beta.18"
+webview_app = "1.0.0-beta.19"
 serde = { version = "1.0.210", features = ["derive"] }
 serde_json = "1.0.128"
 include_dir = "0.7.4"
@@ -13,6 +13,11 @@ dirs = "3.0"
 [target.'cfg(target_os="linux")'.dependencies]
 gtk = { version = "0.9.1", package = "gtk4", features = ["v4_14"]}
 webkit6 = "0.4.0"
+
+[target.'cfg(target_os="windows")'.dependencies]
+winapi = { version = "0.3", features = [
+    "winuser", "winnt", "fileapi", "shellapi", "errhandlingapi", "ioapiset", "winioctl", "winver", "handleapi"
+]}
 
 [target.'cfg(target_os="linux")'.build-dependencies]
 glib-build-tools = "0.20.0"

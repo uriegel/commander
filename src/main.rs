@@ -3,7 +3,8 @@
 
 #[cfg(target_os = "linux")]
 mod linux;
-
+#[cfg(target_os = "windows")]
+mod windows;
 #[cfg(target_os = "windows")]
 mod httpserver;
 mod requests;
@@ -63,8 +64,6 @@ fn main() {
 }
 
 // TODO Linux Titlebar
-// TODO Windows Root items
-// TODO Windows Beenden form menu minimizes the window
 // TODO README describe npm init in sub folder webroot
 // TODO README describe debugging
 // TODO fs_extra::copy_items_with_progress
