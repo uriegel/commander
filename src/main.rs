@@ -63,6 +63,7 @@ fn main() {
     .run();
 }
 
+// TODO Windows Ico and Window icon
 // TODO README describe npm init in sub folder webroot
 // TODO README describe debugging
 // TODO fs_extra::copy_items_with_progress
