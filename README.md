@@ -1,18 +1,30 @@
 # Commander
-A Norton Commander clone based on Electron (globally installed), C# and React
+A Norton Commander clone based on rust crate webview_app (Webview2 on Windows, WebkitGtk6 on Linux), rust and React
+
+## Prerequisites on Linux (Fedora)
+* ```sudo dnf install gtk4-devel```
+* ```sudo dnf install webkitgtk6.0-devel```
+* ```sudo dnf install libadwaita-devel```
+
+## Prerequisites on Linux (Ubuntu)
+* ```sudo apt install libgtk-4-dev```
+* ```sudo apt install libwebkitgtk-6.0-dev```
+* ```sudo apt install libadwaita-1-dev```
 
 ## Setup
+
 ```
-sudo apt install libadwaita-1-dev
-sudo apt install libgtk-4-dev
-npm i
+cd website
+npm install
 ```
 
 ## Debug
 
-Start npm script `start react-scripts start`
+Start npm script `build` (Package.json in /website)
 
-Press F5 (`Debug` oder `Debug Windows`)
+Start npm script `dev` (Package.json in /website)
+
+Press F5
 
 ```npm install -g react-devtools```
 
@@ -20,11 +32,21 @@ Start devtools:
 
 ```react-devtools```
 
-## Build
+### Build
 
 Start npm script `build` or `build Windows`
  
 Press `StartCtrl+Shift+B` and run `buildRelease`. `Commander/bin/Release/net6.0/linux-x64/publish/Commander` is a single file executable containing all but `electron` and `.NET runtime 6.0`.
+
+## Release
+
+start npm script `build` (Package.json in /website)
+
+run 
+
+```
+cargo build --release
+```
 
 ## Run as admin
 on Linux type
@@ -33,27 +55,14 @@ sudo -E ./commander
 ```
 
 on Windows start with elevated rights
-## Legacy
 
-### on Linux
-`
-`sudo apt install gtk3-devel` (Fedora Gnome)
-
-`sudo apt install trash-cli`
+## Hints for Linux
 
 Asp.NET is using FileSystemWatcher, in Debugger you have to increase
 
 `echo fs.inotify.max_user_instances=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p`
 
-## Build
-
-run npm scripts `tsc` and `build`
-
-`dotnet publish -c Release`
-
-either with .NET included or not: `SelfContained` = true or false in `commander.fsproj`
-
-## Install as launcher on Linux:
+### Install as launcher on Linux:
 
 Copy commander.desktop (or the contained adapted version) to /usr/share/applications.
 
@@ -70,4 +79,3 @@ Icon=/usr/share/applications/commander.png
 StartupWMClass=de.uriegel.commander
 ```
 
-```gsettings get org.gnome.shell favorite-apps```
