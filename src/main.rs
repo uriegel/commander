@@ -63,6 +63,7 @@ fn main() {
     .run();
 }
 
+// TODO Windows replace winapi with windows.rs
 // TODO Windows Ico and Window icon
 // TODO fs_extra::copy_items_with_progress
 // TODO Trash: https://docs.rs/trash/latest/trash/
