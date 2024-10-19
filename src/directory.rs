@@ -1,9 +1,12 @@
-use std::{fs::read_dir, os::unix::fs::MetadataExt, time::UNIX_EPOCH};
+use std::{fs::read_dir, os::time::UNIX_EPOCH};
 
 use chrono::{DateTime, Local, Utc};
 use serde::{Deserialize, Serialize};
 
-use crate::{linux::directory::is_hidden, requests::ItemsResult};
+use crate::requests::ItemsResult;
+
+#[cfg(target_os = "windows")]
+use crate::windows::directory::MetaDataExt;
 
 #[derive(Debug)]
 #[derive(Deserialize)]
@@ -20,7 +23,7 @@ pub struct GetFiles {
 #[serde(rename_all = "camelCase")]
 pub struct DirectoryItem {
     name: String,
-    size: u64,
+    size: usize,
     is_directory: bool,
     icon_path: Option<String>,
     is_hidden: bool,
@@ -54,7 +57,7 @@ pub fn get_files(input: GetFiles)->ItemsResult<GetFilesResult> {
             DirectoryItem {
                 is_hidden: is_hidden(&name.as_str(), &meta),
                 is_directory,
-                size: meta.size(),
+                size: meta.filesize(),
                 time: DateTime::from_timestamp_millis(meta.mtime_nsec()/1_000_000), 
                 icon_path: get_icon_path_of_file(&name, is_directory).map(|s|s.to_string()),
                 name

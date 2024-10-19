@@ -3,6 +3,7 @@ use std::slice::from_raw_parts;
 use winapi::um::winnt::PWSTR;
 
 pub mod root;
+pub mod directory;
 
 fn to_wstring(value: &str) -> Vec<u16> {
     use std::os::windows::ffi::OsStrExt;
