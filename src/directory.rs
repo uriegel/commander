@@ -19,7 +19,7 @@ pub struct GetFiles {
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DirectoryItem {
-    name: String, // TODO &str?
+    name: String,
     size: u64,
     is_directory: bool,
     icon_path: Option<String>,
