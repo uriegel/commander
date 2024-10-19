@@ -64,9 +64,7 @@ fn main() {
     .run();
 }
 
-// TODO Windows is_hidden controlling 
-// TODO Windows addin: COTaskMemPWSTR replacing with stack ptr
-// TODO Windows addin: CallJavascript (for events)
+// TODO Linux addin: CallJavascript (for events)
 // TODO Linux is_hidden controlling 
 // TODO Linux focus webview
 // TODO get icons
