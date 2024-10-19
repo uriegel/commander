@@ -8,6 +8,7 @@ mod windows;
 #[cfg(target_os = "windows")]
 mod httpserver;
 mod requests;
+mod directory;
 
 #[cfg(target_os = "windows")]
 use std::sync::{Arc, Mutex};
@@ -62,6 +63,12 @@ fn main() {
     .on_activate(on_activate)
     .run();
 }
+
+// TODO DateTime wrong
+// TODO is_hidden supressing
+// TODO is_hidden controlling
+// TODO sort order dirs (lexical)
+// TODO get icons
 
 // TODO Windows replace winapi with windows.rs
 // TODO Windows Ico and Window icon

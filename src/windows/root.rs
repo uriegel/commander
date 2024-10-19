@@ -42,12 +42,6 @@ pub struct RootItem {
 pub struct ErrorItem {
     pub kind: i32
 }
-#[derive(Debug)]
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ItemsResult {
-    ok: Vec<RootItem>
-}
 
 pub fn get_root()->ItemsResult {
     get_drives()

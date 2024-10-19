@@ -2,6 +2,8 @@ use std::{iter::Take, process::Command};
 
 use serde::Serialize;
 
+use crate::requests::ItemsResult;
+
 #[derive(Debug)]
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -14,14 +16,7 @@ pub struct RootItem {
     pub drive_type: String,
 }
 
-#[derive(Debug)]
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ItemsResult {
-    ok: Vec<RootItem>
-}
-
-pub fn get_root()->ItemsResult {
+pub fn get_root()->ItemsResult<Vec<RootItem>> {
     let output = Command::new("lsblk")
         .arg("--bytes")
         .arg("--output")

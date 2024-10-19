@@ -23,7 +23,8 @@ const IconName = ({ namePart, type, iconPath }: IconNameProps) =>
     (<span> { type == IconNameType.Folder
         ? (<Folder />)
         : type == IconNameType.File
-        ? (<img className="iconImage" src={`${WebView.getRequestUrl()}geticon?path=${iconPath}`} alt="" />)
+    //? (<img className="iconImage" src={`${WebView.getRequestUrl()}geticon?path=${iconPath}`} alt="" />) TODO!!!!!!!!!!!!!!!!!!!!
+        ? (<img className="iconImage" src={`geticon?path=${iconPath}`} alt="" />)
         : type == IconNameType.Root
         ? (<Drive />)
         : type == IconNameType.Home
