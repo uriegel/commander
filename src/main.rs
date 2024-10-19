@@ -64,7 +64,7 @@ fn main() {
     .run();
 }
 
-// TODO Windows version
+// TODO normalize path
 // TODO sort order dirs (lexical)
 // TODO is_hidden supressing
 // TODO is_hidden controlling
