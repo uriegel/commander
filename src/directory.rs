@@ -3,7 +3,7 @@ use std::{fs::{canonicalize, read_dir}, time::UNIX_EPOCH};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
-use crate::requests::ItemsResult;
+use crate::{requests::ItemsResult, windows::directory::StringExt};
 
 #[cfg(target_os = "windows")]
 use crate::windows::directory::is_hidden;
@@ -73,7 +73,10 @@ pub fn get_files(input: GetFiles)->ItemsResult<GetFilesResult> {
     let dir_count = items.iter().filter(|i|i.is_directory).count();
     ItemsResult {
         ok: GetFilesResult {
-            path: canonicalize(&input.path).ok().map(|p|p.to_string_lossy().to_string()).unwrap_or(input.path),
+            path: canonicalize(&input.path)
+                    .ok()
+                    .map(|p|p.to_string_lossy().to_string().clean_path())
+                    .unwrap_or(input.path),
             dir_count,
             file_count: items.len() - dir_count, 
             items,
