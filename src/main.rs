@@ -70,6 +70,7 @@ fn main() {
 // TODO get icons
 // TODO /boot/loader/entries  => panic: access denied
 // TODO no // on linux status bar in root
+// TODO extended item
 
 // TODO Windows replace winapi with windows.rs
 // TODO Windows Ico and Window icon
