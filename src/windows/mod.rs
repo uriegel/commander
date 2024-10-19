@@ -1,6 +1,6 @@
 use std::slice::from_raw_parts;
 
-use windows::core::PWSTR;
+use winapi::um::winnt::PWSTR;
 
 pub mod root;
 pub mod directory;
@@ -16,8 +16,8 @@ fn to_wstring(value: &str) -> Vec<u16> {
 
 unsafe fn pwstr_to_string(ptr: PWSTR) -> String {
     let len = (0_usize..)
-        .find(|&n| *ptr.0.offset(n as isize) == 0)
+        .find(|&n| *ptr.offset(n as isize) == 0)
         .expect("Couldn't find null terminator");
-    let array: &[u16] = from_raw_parts(ptr.0, len);
+    let array: &[u16] = from_raw_parts(ptr, len);
     String::from_utf16_lossy(array)
 }
