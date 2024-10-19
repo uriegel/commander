@@ -64,7 +64,6 @@ fn main() {
     .run();
 }
 
-// TODO sort order dirs (lexical)
 // TODO is_hidden supressing
 // TODO is_hidden controlling
 // TODO focus webview
