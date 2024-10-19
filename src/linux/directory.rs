@@ -5,3 +5,12 @@ pub fn is_hidden(name: &str, _: &Metadata)->bool {
 }
 // TODO: str < 1 or 2?
 
+pub trait StringExt {
+    fn clean_path(&self) -> String;
+}
+
+impl StringExt for String {
+    fn clean_path(&self) -> String {
+        self.clone()
+    }
+}

@@ -3,12 +3,12 @@ use std::{fs::{canonicalize, read_dir}, time::UNIX_EPOCH};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
-use crate::{requests::ItemsResult, windows::directory::StringExt};
+use crate::requests::ItemsResult;
 
 #[cfg(target_os = "windows")]
-use crate::windows::directory::is_hidden;
+use crate::windows::directory::{is_hidden, StringExt};
 #[cfg(target_os = "linux")]
-use crate::linux::directory::is_hidden;
+use crate::linux::directory::{is_hidden, StringExt};
 
 #[derive(Debug)]
 #[derive(Deserialize)]
