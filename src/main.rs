@@ -64,10 +64,12 @@ fn main() {
     .run();
 }
 
-// TODO DateTime wrong
+// TODO DateTime wrong perhaps filetime, see javascript
+// TODO Windows version
+// TODO sort order dirs (lexical)
 // TODO is_hidden supressing
 // TODO is_hidden controlling
-// TODO sort order dirs (lexical)
+// TODO focus webview
 // TODO get icons
 
 // TODO Windows replace winapi with windows.rs
