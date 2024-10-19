@@ -84,7 +84,7 @@ export const createFileSystemController = (): Controller => {
 			webViewRequest<GetItemsResult, ErrorType>("getfiles", { id, path, showHiddenItems, mount })
 				.map(ok => {
 					currentPath = ok.path
-					return { ...ok, items: addParent(sortItems(ok.items, getSortFunction(sortIndex, sortDescending))) }
+					return { ...ok, items: addParent(sortItems(ok.items, getSortFunction(sortIndex, sortDescending), true)) }
 				}),
 		updateItems,
 		getPath: () => currentPath,
@@ -156,7 +156,7 @@ const updateItems = (items: FolderViewItem[], sortIndex: number, sortDescending:
 // 		})
 
 const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
-	sortItems(items, getSortFunction(sortIndex, sortDescending)) 
+	sortItems(items, getSortFunction(sortIndex, sortDescending), true) 
 
 const checkExtendedItemsWindows = (items: FolderViewItem[]) => 
 	items.find(n => {
