@@ -68,6 +68,7 @@ pub fn get_files(input: GetFiles)->ItemsResult<GetFilesResult> {
                 name
             }
         })
+        .filter(|item| input.show_hidden_items || !item.is_hidden )
         .collect();
     let dir_count = items.iter().filter(|i|i.is_directory).count();
     ItemsResult {

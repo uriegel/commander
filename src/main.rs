@@ -64,9 +64,11 @@ fn main() {
     .run();
 }
 
-// TODO is_hidden supressing
-// TODO is_hidden controlling
-// TODO focus webview
+// TODO Windows is_hidden controlling 
+// TODO Windows addin: COTaskMemPWSTR replacing with stack ptr
+// TODO Windows addin: CallJavascript (for events)
+// TODO Linux is_hidden controlling 
+// TODO Linux focus webview
 // TODO get icons
 // TODO /boot/loader/entries  => panic: access denied
 // TODO no // on linux status bar in root
