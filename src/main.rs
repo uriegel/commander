@@ -64,7 +64,6 @@ fn main() {
     .run();
 }
 
-// TODO DateTime wrong perhaps filetime, see javascript
 // TODO Windows version
 // TODO sort order dirs (lexical)
 // TODO is_hidden supressing
