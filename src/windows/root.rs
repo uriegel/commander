@@ -12,7 +12,7 @@ use winapi::um::{
         }
     };
 
-use crate::windows::{pwstr_to_string, to_wstring};
+use crate::{requests::ItemsResult, windows::{pwstr_to_string, to_wstring}};
 
 #[derive(Debug)]
 #[derive(Copy, Clone, PartialEq)]
@@ -43,11 +43,7 @@ pub struct ErrorItem {
     pub kind: i32
 }
 
-pub fn get_root()->ItemsResult {
-    get_drives()
-}
-
-fn get_drives()->ItemsResult {
+pub fn get_root()->ItemsResult<Vec<RootItem>> {
     unsafe {
         let mut buffer: Vec<u16> = Vec::with_capacity(500);
         let size = GetLogicalDriveStringsW(500, buffer.as_mut_ptr());

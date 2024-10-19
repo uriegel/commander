@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use crate::requests::ItemsResult;
 
 #[cfg(target_os = "windows")]
-use crate::windows::directory::MetaDataExt;
+use crate::windows::directory::is_hidden;
 #[cfg(target_os = "linux")]
 use crate::linux::directory::is_hidden;
 

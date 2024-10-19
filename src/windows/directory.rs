@@ -5,12 +5,3 @@ pub fn is_hidden(_: &str, metadata: &Metadata)->bool {
     attrs & 2 == 2
 }
 
-pub trait MetaDataExt {
-    fn filesize(&self) -> usize;
-}
-
-impl MetaDataExt for Metadata {
-    fn filesize(&self) -> usize {
-        self.len() as usize
-    }
-}
