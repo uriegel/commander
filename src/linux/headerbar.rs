@@ -1,8 +1,10 @@
-use gtk::prelude::*;
-use gtk::{ApplicationWindow, gio::ActionEntry, Builder};
 use webkit6::prelude::*;
+use webkit6::{
+    gtk::{ApplicationWindow, gio::ActionEntry, Builder},
+    gio::Cancellable
+};
 
-pub struct HeaderBar;
+pub struct HeaderBar {}
 
 impl HeaderBar {
     pub fn new(builder: &Builder) {
@@ -10,13 +12,35 @@ impl HeaderBar {
         let app = window.application().unwrap();
         let webview: webkit6::WebView = builder.object("webview").unwrap();
 
-        let action = ActionEntry::builder("devtools")
-            .activate(move |_, _, _| {
-                webview.inspector().unwrap().show();
+        let webview_clone = webview.clone();
+        let action_devtools = ActionEntry::builder("devtools")
+            .activate(move |_, _, _|{
+                webview_clone.inspector().unwrap().show();
+                webview_clone.grab_focus();
             })
             .build();
         app.set_accels_for_action("app.devtools", &["<Ctrl><Shift>I"]);
-        app.add_action_entries([action]);
+
+        let webview_clone = webview.clone();
+        let action_show_hidden = ActionEntry::builder("showhidden")
+            .state(false.to_variant())
+            .activate(move |_, action, _| {
+                match action.state() {
+                    Some(state) => {
+                        if let Some(state) = state.get::<bool>() {
+                            action.set_state(&(!state).to_variant());                        
+                            webview_clone.evaluate_javascript(&format!("showHidden({})", if state { "false"} else { "true" }), None, None, None::<&Cancellable>, |_|{});
+                            webview_clone.grab_focus();
+                        }
+                    },
+                    _ => { }
+                }
+            })
+            .build();
+        app.set_accels_for_action("app.showhidden", &["<Ctrl>H"]);
+        
+        app.add_action_entries([action_devtools]);
+        app.add_action_entries([action_show_hidden]);
 
         // HttpServerBuilder::new()
         //     .port(HTTP_PORT)
@@ -31,11 +55,6 @@ open GtkDotNet
 open GtkDotNet.SafeHandles
 
 let togglePreviewButton = ObjectRef<ToggleButtonHandle>()  
-
-let onShowHidden (webView: WebViewHandle) (show: bool) = 
-    Events.events.TryFind "ShowHidden"
-    |> Option.iter (fun send -> send show)
-    webView.GrabFocus()
 
 let sendMenuAction (webView: WebViewHandle) cmd = 
     Events.events.TryFind "MenuAction"
@@ -70,7 +89,6 @@ let create (app: ApplicationHandle) (window: WindowHandle) (webview: ObjectRef<W
 
     app.AddActions([
         GtkAction("refresh", (fun () -> sendMenuAction webview.Ref "REFRESH"), "<Ctrl>R")
-        GtkAction("showhidden", false, onShowHidden webview.Ref, "<Ctrl>H")
                 // new("extendedrename", () => SendMenuAction(webView.Ref, "EXTENDED_RENAME"), "<Ctrl>F2"),
         GtkAction("rename", (fun () -> sendMenuAction webview.Ref "RENAME"), "F2")
         GtkAction("togglePreviewMode", (fun () -> sendMenuAction webview.Ref "TOGGLE_PREVIEW"), "<Ctrl>F3")

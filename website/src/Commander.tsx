@@ -22,10 +22,11 @@ import './extensions/extensions'
 //import Credentials, { CredentialsProps } from './components/dialogparts/Credentials'
 import LocationViewer from './components/LocationViewer'
 import TrackViewer from './components/TrackViewer'
-import { WebViewType } from './webview.ts'
+import { WebViewType, WebViewEvents } from './webview.ts'
 import { Subscription } from 'rxjs'
 
 declare const WebView: WebViewType
+declare const webViewEvents: WebViewEvents
 
 enum PreviewMode {
 	Default,
@@ -75,7 +76,9 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 	const [progressRevealed] = useState(false)
 	const [progressFinished] = useState(false)
 	const [totalMax] = useState(0)
-    const dialog = useContext(DialogContext)
+	const dialog = useContext(DialogContext)
+	
+	webViewEvents.registerShowHidden(setShowHidden)
 	
 	// const filesDropSubscription = useRef<Subscription | null>(null)
 	// const getCredentialsSubscription = useRef<Subscription | null>(null)

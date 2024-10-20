@@ -10,3 +10,6 @@ export declare type WebViewType = {
     closeWindow(): () => void
 }
 
+export declare type WebViewEvents = {
+    registerShowHidden: (fun: (show: boolean)=>void)=>void
+}

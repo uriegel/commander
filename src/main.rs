@@ -64,15 +64,14 @@ fn main() {
     .run();
 }
 
-// TODO Linux addin: CallJavascript (for events)
-// TODO Linux is_hidden controlling 
-// TODO Linux focus webview
 // TODO get icons
+// TODO extended items
+// TODO viewer
+// TODO viewer gps info
+
 // TODO /boot/loader/entries  => panic: access denied
 // TODO no // on linux status bar in root
-// TODO extended item
 
-// TODO Windows replace winapi with windows.rs
 // TODO Windows Ico and Window icon
 // TODO fs_extra::copy_items_with_progress
 // TODO Trash: https://docs.rs/trash/latest/trash/
