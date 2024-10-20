@@ -5,7 +5,6 @@
 mod linux;
 #[cfg(target_os = "windows")]
 mod windows;
-#[cfg(target_os = "windows")]
 mod httpserver;
 mod requests;
 mod directory;
@@ -32,7 +31,7 @@ fn on_activate(app: &Application)->WebView {
         .save_bounds()
         .title("Commander".to_string())
         .devtools(true)
-        .debug_url("http://localhost:5173/".to_string())
+        .debug_url("http://localhost:5173/?port=8000".to_string()) // TODO 
         .webroot(dir.clone())
         .url(format!("http://localhost:{HTTP_PORT}/webroot/index.html"))
         .default_contextmenu_disabled()
@@ -41,11 +40,16 @@ fn on_activate(app: &Application)->WebView {
     #[cfg(target_os = "linux")]    
     let webview_builder = webview_builder
         .with_builder("/de/uriegel/commander/window.ui".to_string(), move|builder| HeaderBar::new(builder));
+
     #[cfg(target_os = "windows")]
+    let webroot = arc_dir;
+    #[cfg(target_os = "linux")]
+    let webroot = None;
+
     httpserver::httpserver::HttpServerBuilder::new()
         .port(HTTP_PORT)
         .build()
-        .run(arc_dir);
+        .run(webroot);
 
     let webview = webview_builder.build();
     
@@ -64,7 +68,7 @@ fn main() {
     .run();
 }
 
-// TODO get icons
+// TODO get icons with custom get request, linux with python script
 // TODO extended items
 // TODO viewer
 // TODO viewer gps info

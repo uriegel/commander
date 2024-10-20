@@ -10,6 +10,7 @@ import Service from '../svg/Service'
 import Favorite from '../svg/Favorite'
 import { IconNameType } from '../enums'
 import { WebViewType } from '../webview'
+import { getPort } from '../globals'
 
 declare const WebView: WebViewType
 
@@ -23,8 +24,7 @@ const IconName = ({ namePart, type, iconPath }: IconNameProps) =>
     (<span> { type == IconNameType.Folder
         ? (<Folder />)
         : type == IconNameType.File
-    //? (<img className="iconImage" src={`${WebView.getRequestUrl()}geticon?path=${iconPath}`} alt="" />) TODO!!!!!!!!!!!!!!!!!!!!
-        ? (<img className="iconImage" src={`geticon?path=${iconPath}`} alt="" />)
+        ? (<img className="iconImage" src={`http://localhost:${getPort()}/geticon?path=${iconPath}`} alt="" />) 
         : type == IconNameType.Root
         ? (<Drive />)
         : type == IconNameType.Home
