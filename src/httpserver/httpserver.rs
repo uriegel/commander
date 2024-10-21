@@ -89,19 +89,8 @@ fn handle_connection(stream: TcpStream, webroot: Option<Arc<Mutex<Dir<'static>>>
                 route_get_webroot(writer, &path[9..], webroot),
             (_, path) if path.starts_with("/geticon") => {
                 let icon_path = get_icon(&path[14..]);
-                if icon_path.len() > 0 {
-                    let payload = fs::read(icon_path.clone()).unwrap();
-                    send_bytes(writer, &icon_path, payload.as_slice(), "HTTP/1.1 200 OK")
-                } else {
-                    let icon_path = get_icon("");
-                    if icon_path.len() > 0 {
-                        let payload = fs::read(icon_path.clone()).unwrap();
-                        send_bytes(writer, &icon_path, payload.as_slice(), "HTTP/1.1 200 OK")
-                    } else {
-                        route_not_found(writer)  
-                    }
-                        
-                }
+                let payload = fs::read(icon_path.clone()).unwrap();
+                send_bytes(writer, &icon_path, payload.as_slice(), "HTTP/1.1 200 OK")
             },
             (_, _) => route_not_found(writer)
         };

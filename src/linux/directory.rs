@@ -7,14 +7,23 @@ pub fn is_hidden(name: &str, _: &Metadata)->bool {
 }
 
 pub fn get_icon(path: &str)->String {
-    let geticon_py = get_geticon_py();
-
-    let output = Command::new("python")
+   
+    fn run_cmd(path: &str)->String {
+        let geticon_py = get_geticon_py();
+        let output = Command::new("python")
         .arg(geticon_py)
         .arg(path)
         .output()
         .unwrap();
-    String::from_utf8(output.stdout).unwrap().trim().to_string()
+        String::from_utf8(output.stdout).unwrap().trim().to_string()
+    }
+
+    let icon = run_cmd(path);
+    if icon.len() > 0 {
+        icon
+    } else {
+        run_cmd("")
+    }
 }
 
 pub trait StringExt {
