@@ -10,8 +10,7 @@ use crate::windows::directory::{is_hidden, StringExt};
 #[cfg(target_os = "linux")]
 use crate::linux::directory::{is_hidden, StringExt};
 
-#[derive(Debug)]
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GetFiles {
     pub id: String,
@@ -20,8 +19,7 @@ pub struct GetFiles {
     pub mount: bool
 }
 
-#[derive(Debug)]
-#[derive(Serialize)]
+#[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DirectoryItem {
     name: String,
@@ -32,8 +30,7 @@ pub struct DirectoryItem {
     time: Option<DateTime<Utc>>
 }
 
-#[derive(Debug)]
-#[derive(Serialize)]
+#[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GetFilesResult {
     items: Vec<DirectoryItem>,
