@@ -3,6 +3,7 @@ use std::{fs, io::{BufRead, BufReader, BufWriter, Write}, net::{TcpListener, Tcp
 
 use include_dir::Dir;
 
+#[cfg(target_os = "linux")]
 use crate::linux::directory::get_icon;
 
 use super::{html, threadpool::ThreadPool};

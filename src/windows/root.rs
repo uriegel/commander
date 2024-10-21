@@ -1,9 +1,7 @@
 use serde::Serialize;
 use windows::{
-    core::PCWSTR, Win32::{
-        Storage::FileSystem::{
-            GetDiskFreeSpaceExW, GetDriveTypeW, GetLogicalDriveStringsW, GetVolumeInformationW 
-        }
+    core::PCWSTR, Win32::Storage::FileSystem::{
+        GetDiskFreeSpaceExW, GetDriveTypeW, GetLogicalDriveStringsW, GetVolumeInformationW 
     }
 };
 
