@@ -5,6 +5,12 @@ pub fn is_hidden(name: &str, _: &Metadata)->bool {
 }
 // TODO: str < 1 or 2?
 
+pub fn get_icon(path: &str)->String {
+    let a = path;
+    let s = a;
+    "nix".to_string()
+}
+
 pub trait StringExt {
     fn clean_path(&self) -> String;
 }

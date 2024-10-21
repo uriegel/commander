@@ -3,6 +3,8 @@ use std::{io::{BufRead, BufReader, BufWriter, Write}, net::{TcpListener, TcpStre
 
 use include_dir::Dir;
 
+use crate::linux::directory::get_icon;
+
 use super::{html, threadpool::ThreadPool};
 
 #[derive(Clone)]
@@ -90,6 +92,10 @@ fn route_get(writer: BufWriter<&TcpStream>, request_line: &String, webroot: Opti
     match (webroot, path) {
         (Some(webroot), path) if path.starts_with("/webroot") =>
             route_get_webroot(writer, &path[9..], webroot),
+        (_, path) if path.starts_with("/geticon") => {
+            get_icon(&path[14..]);
+            route_not_found(writer)
+        },
         (_, _) => route_not_found(writer)
     };
 }

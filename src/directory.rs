@@ -86,10 +86,11 @@ pub fn get_files(input: GetFiles)->ItemsResult<GetFilesResult> {
 }
 
 fn get_extension(name: &str)->Option<&str> {
-    if !name.starts_with('.') {
-        name.rsplit_once('.').map(|(_, e)|e)
-    } else {
-        None
+    match name.rfind('.') {
+        Some(idx) if idx > 0 => {
+            Some(&name[idx..])
+        },
+        _ => None
     }
 }
 
