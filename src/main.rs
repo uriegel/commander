@@ -10,6 +10,7 @@ mod windows;
 mod httpserver;
 mod requests;
 mod directory;
+mod error;
 
 #[cfg(target_os = "windows")]
 use std::sync::{Arc, Mutex};

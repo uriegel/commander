@@ -1,8 +1,9 @@
 use core::str;
-use std::{fs, io::{BufRead, BufReader, BufWriter, Write}, net::{TcpListener, TcpStream}, sync::{Arc, Mutex}, thread};
+use std::{io::{BufRead, BufReader, BufWriter, Write}, net::{TcpListener, TcpStream}, sync::{Arc, Mutex}, thread};
 
 use include_dir::Dir;
 
+use crate::error::Error;
 #[cfg(target_os = "linux")]
 use crate::linux::directory::get_icon;
 
@@ -73,15 +74,20 @@ fn handle_connection(stream: TcpStream, webroot: Option<Arc<Mutex<Dir<'static>>>
         }
         let request_line = &headers[0];
 
-        match request_line {
+        let result = match request_line {
             request_line if request_line.starts_with("GET") => {
-                route_get(buf_writer, request_line, webroot.clone());    
+                route_get(buf_writer, request_line, webroot.clone())
             },
             _ => route_not_found(buf_writer)
         };
+
+        match result {
+            Err(err) => println!("{}", err),
+            _ => ()
+        };
     }
 
-    fn route_get(writer: BufWriter<&TcpStream>, request_line: &String, webroot: Option<Arc<Mutex<Dir<'static>>>>) {
+    fn route_get(writer: BufWriter<&TcpStream>, request_line: &String, webroot: Option<Arc<Mutex<Dir<'static>>>>)->Result<(), Error> {
         let pos = request_line[4..].find(" ").unwrap_or(0);
         let path = request_line[4..pos + 4].to_string();
 
@@ -89,41 +95,41 @@ fn handle_connection(stream: TcpStream, webroot: Option<Arc<Mutex<Dir<'static>>>
             (Some(webroot), path) if path.starts_with("/webroot") =>
                 route_get_webroot(writer, &path[9..], webroot),
             (_, path) if path.starts_with("/geticon") => {
-                let icon_path = get_icon(&path[14..]);
-                let payload = fs::read(icon_path.clone()).unwrap();
-                send_bytes(writer, &icon_path, payload.as_slice(), "HTTP/1.1 200 OK")
+                let (icon_ext, icon) = get_icon(&path[14..])?;
+                send_bytes(writer, &icon_ext, icon.as_slice(), "HTTP/1.1 200 OK")
             },
             (_, _) => route_not_found(writer)
-        };
+        }
     }
 
-    fn route_get_webroot(writer: BufWriter<&TcpStream>, path: &str, webroot: Arc<Mutex<Dir<'static>>>) {
+    fn route_get_webroot(writer: BufWriter<&TcpStream>, path: &str, webroot: Arc<Mutex<Dir<'static>>>)->Result<(), Error> {
         match webroot
                 .lock()
-                .unwrap()
-                .get_file(path) 
+                .map_err(|err|Error::new(&format!("{}", err)))
+                ?.get_file(path) 
                 .map(|file| file.contents()) {
             Some(bytes) => {
-                send_bytes(writer, path, bytes, "HTTP/1.1 200 OK");
+                send_bytes(writer, path, bytes, "HTTP/1.1 200 OK")
             },
             None => route_not_found(writer)
-        };    
+        }
     }
 
-    fn route_not_found(writer: BufWriter<&TcpStream>) {
-        send_html(writer, &html::not_found(), "HTTP/1.1 404 NOT FOUND"); 
+    fn route_not_found(writer: BufWriter<&TcpStream>)->Result<(), Error> {
+        send_html(writer, &html::not_found(), "HTTP/1.1 404 NOT FOUND")
     }
 
-    fn send_html(mut writer: BufWriter<&TcpStream>, html: &str, status_line: &str) {
+    fn send_html(mut writer: BufWriter<&TcpStream>, html: &str, status_line: &str)->Result<(), Error> {
         let length = html.len();
         
         let response = format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{html}");
-        writer.write_all(response.as_bytes()).unwrap();
-        writer.flush().unwrap();
+        writer.write_all(response.as_bytes())?;
+        writer.flush()?;
+        Ok(())
     }
 }
 
-fn send_bytes(mut writer: BufWriter<&TcpStream>, path: &str, payload: &[u8], status_line: &str) {
+fn send_bytes(mut writer: BufWriter<&TcpStream>, path: &str, payload: &[u8], status_line: &str)->Result<(), Error> {
     let length = payload.len();
     
     let content_type = match path {
@@ -134,7 +140,8 @@ fn send_bytes(mut writer: BufWriter<&TcpStream>, path: &str, payload: &[u8], sta
     };
 
     let response = format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n");
-    writer.write_all(response.as_bytes()).unwrap();
-    writer.write_all(payload).unwrap();
-    writer.flush().unwrap();
+    writer.write_all(response.as_bytes())?;
+    writer.write_all(payload)?;
+    writer.flush()?;
+    Ok(())
 }
