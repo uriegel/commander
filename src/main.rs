@@ -1,6 +1,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 // Allows console to show up in debug build but not release build.
 
+pub static APP_ID: &str = "de.uriegel.commander";
+
 #[cfg(target_os = "linux")]
 mod linux;
 #[cfg(target_os = "windows")]
@@ -63,7 +65,7 @@ fn main() {
     gtk::gio::resources_register_include!("commander.gresource")
         .expect("Failed to register resources.");
 
-    Application::new("de.uriegel.commander")
+    Application::new(APP_ID)
     .on_activate(on_activate)
     .run();
 }
