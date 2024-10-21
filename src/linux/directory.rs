@@ -1,4 +1,4 @@
-use std::fs::Metadata;
+use std::{fs::Metadata, process::Command};
 
 use super::iconresolver::get_geticon_py;
 
@@ -8,7 +8,13 @@ pub fn is_hidden(name: &str, _: &Metadata)->bool {
 
 pub fn get_icon(path: &str)->String {
     let geticon_py = get_geticon_py();
-    "nix".to_string()
+
+    let output = Command::new("python")
+        .arg(geticon_py)
+        .arg(path)
+        .output()
+        .unwrap();
+    String::from_utf8(output.stdout).unwrap().trim().to_string()
 }
 
 pub trait StringExt {

@@ -70,7 +70,7 @@ fn main() {
     .run();
 }
 
-// TODO get icons with custom get request, linux with python script
+// TODO get icons Windows with systemicons
 // TODO extended items
 // TODO viewer
 // TODO viewer gps info

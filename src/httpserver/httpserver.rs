@@ -1,5 +1,5 @@
 use core::str;
-use std::{io::{BufRead, BufReader, BufWriter, Write}, net::{TcpListener, TcpStream}, sync::{Arc, Mutex}, thread};
+use std::{fs, io::{BufRead, BufReader, BufWriter, Write}, net::{TcpListener, TcpStream}, sync::{Arc, Mutex}, thread};
 
 use include_dir::Dir;
 
@@ -88,8 +88,20 @@ fn handle_connection(stream: TcpStream, webroot: Option<Arc<Mutex<Dir<'static>>>
             (Some(webroot), path) if path.starts_with("/webroot") =>
                 route_get_webroot(writer, &path[9..], webroot),
             (_, path) if path.starts_with("/geticon") => {
-                get_icon(&path[14..]);
-                route_not_found(writer)
+                let icon_path = get_icon(&path[14..]);
+                if icon_path.len() > 0 {
+                    let payload = fs::read(icon_path.clone()).unwrap();
+                    send_bytes(writer, &icon_path, payload.as_slice(), "HTTP/1.1 200 OK")
+                } else {
+                    let icon_path = get_icon("");
+                    if icon_path.len() > 0 {
+                        let payload = fs::read(icon_path.clone()).unwrap();
+                        send_bytes(writer, &icon_path, payload.as_slice(), "HTTP/1.1 200 OK")
+                    } else {
+                        route_not_found(writer)  
+                    }
+                        
+                }
             },
             (_, _) => route_not_found(writer)
         };
@@ -102,7 +114,7 @@ fn handle_connection(stream: TcpStream, webroot: Option<Arc<Mutex<Dir<'static>>>
                 .get_file(path) 
                 .map(|file| file.contents()) {
             Some(bytes) => {
-                send_html_bytes(writer, path, bytes, "HTTP/1.1 200 OK");
+                send_bytes(writer, path, bytes, "HTTP/1.1 200 OK");
             },
             None => route_not_found(writer)
         };    
@@ -119,20 +131,20 @@ fn handle_connection(stream: TcpStream, webroot: Option<Arc<Mutex<Dir<'static>>>
         writer.write_all(response.as_bytes()).unwrap();
         writer.flush().unwrap();
     }
+}
 
-    fn send_html_bytes(mut writer: BufWriter<&TcpStream>, path: &str, html: &[u8], status_line: &str) {
-        let length = html.len();
-        
-        let content_type = match path {
-            path if path.ends_with(".html") => "text/html",
-            path if path.ends_with(".css") => "text/css",
-            path if path.ends_with(".js") => "text/javascript",
-            _ => "text/plain",
-        };
+fn send_bytes(mut writer: BufWriter<&TcpStream>, path: &str, payload: &[u8], status_line: &str) {
+    let length = payload.len();
+    
+    let content_type = match path {
+        path if path.ends_with(".html") => "text/html",
+        path if path.ends_with(".css") => "text/css",
+        path if path.ends_with(".js") => "text/javascript",
+        _ => "text/plain",
+    };
 
-        let response = format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n");
-        writer.write_all(response.as_bytes()).unwrap();
-        writer.write_all(html).unwrap();
-        writer.flush().unwrap();
-    }
+    let response = format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n");
+    writer.write_all(response.as_bytes()).unwrap();
+    writer.write_all(payload).unwrap();
+    writer.flush().unwrap();
 }
