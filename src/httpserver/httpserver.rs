@@ -3,10 +3,10 @@ use std::{io::{BufRead, BufReader, BufWriter, Write}, net::{TcpListener, TcpStre
 
 use include_dir::Dir;
 
-use crate::error::Error;
 #[cfg(target_os = "linux")]
 use crate::linux::directory::get_icon;
-
+#[cfg(target_os = "windows")]
+use crate::{error::Error, windows::directory::get_icon};
 use super::{html, threadpool::ThreadPool};
 
 #[derive(Clone)]

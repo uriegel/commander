@@ -71,7 +71,6 @@ fn main() {
     .run();
 }
 
-// TODO get icons Windows with systemicons
 // TODO extended items
 // TODO viewer
 // TODO viewer gps info
@@ -80,5 +79,6 @@ fn main() {
 // TODO no // on linux status bar in root
 
 // TODO Windows Ico and Window icon
+// TODO get icons Windows: systemicons does not show executable file icons
 // TODO fs_extra::copy_items_with_progress
 // TODO Trash: https://docs.rs/trash/latest/trash/

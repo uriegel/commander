@@ -1,8 +1,15 @@
 use std::{fs::Metadata, os::windows::fs::MetadataExt};
 
+use crate::error::Error;
+
 pub fn is_hidden(_: &str, metadata: &Metadata)->bool {
     let attrs = metadata.file_attributes();
     attrs & 2 == 2
+}
+
+pub fn get_icon(path: &str)->Result<(String, Vec<u8>), Error> {
+    let icon = systemicons::get_icon(path, 16)?;
+    Ok(("icon.png".to_string(), icon))
 }
 
 pub trait StringExt {

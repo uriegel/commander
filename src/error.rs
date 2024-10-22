@@ -34,3 +34,12 @@ impl From<FromUtf8Error> for Error {
         }
     }
 }
+
+#[cfg(target_os = "windows")]
+impl From<systemicons::Error> for Error {
+    fn from(error: systemicons::Error) -> Self {
+        Error {
+            message: error.message,
+        }
+    }
+}
