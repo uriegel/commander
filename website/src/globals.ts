@@ -13,7 +13,8 @@ export const getPlatform = memoize(() => {
 })
 
 export const getPort = memoize(() => {
-    let ret = new URLSearchParams(window.location.search).get("port")
+    // TODO let ret = new URLSearchParams(window.location.search).get("port")
+    let ret = 8000
     console.log("Port", ret)
     return ret
 })
