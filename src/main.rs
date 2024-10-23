@@ -11,6 +11,7 @@ mod httpserver;
 mod requests;
 mod directory;
 mod error;
+mod extended_items;
 
 #[cfg(target_os = "windows")]
 use std::sync::{Arc, Mutex};
@@ -72,6 +73,7 @@ fn main() {
 }
 
 // TODO extended items
+// TODO cancel extended items
 // TODO viewer
 // TODO viewer gps info
 
@@ -79,6 +81,5 @@ fn main() {
 // TODO no // on linux status bar in root
 
 // TODO Windows Ico and Window icon
-// TODO get icons Windows: systemicons does not show executable file icons
 // TODO fs_extra::copy_items_with_progress
 // TODO Trash: https://docs.rs/trash/latest/trash/
