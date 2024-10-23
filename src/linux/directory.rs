@@ -8,6 +8,10 @@ pub fn is_hidden(name: &str, _: &Metadata)->bool {
     name.as_bytes()[0] == b'.' && name.as_bytes()[1] != b'.'
 }
 
+pub fn get_icon_path(name: &str, _path: &str)->Option<String> {
+    get_extension(name).to_string()
+}
+
 pub fn get_icon(path: &str)->Result<(String, Vec<u8>), Error> {
    
     fn run_cmd(path: &str)->Result<String, Error> {

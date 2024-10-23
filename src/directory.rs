@@ -6,9 +6,9 @@ use serde::{Deserialize, Serialize};
 use crate::requests::ItemsResult;
 
 #[cfg(target_os = "windows")]
-use crate::windows::directory::{is_hidden, StringExt};
+use crate::windows::directory::{is_hidden, StringExt, get_icon_path};
 #[cfg(target_os = "linux")]
-use crate::linux::directory::{is_hidden, StringExt};
+use crate::linux::directory::{is_hidden, StringExt, get_icon_path};
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -40,6 +40,11 @@ pub struct GetFilesResult {
 }
 
 pub fn get_files(input: GetFiles)->ItemsResult<GetFilesResult> {
+    let path = canonicalize(&input.path)
+        .ok()
+        .map(|p|p.to_string_lossy().to_string().clean_path())
+        .unwrap_or_else(||input.path.clone());
+    
     let items: Vec<DirectoryItem> = read_dir(&input.path)
         .unwrap()
         .filter_map(|file|file.ok())
@@ -61,7 +66,7 @@ pub fn get_files(input: GetFiles)->ItemsResult<GetFilesResult> {
                             .ok()
                             .and_then(|t|t.duration_since(UNIX_EPOCH).ok())
                             .map(|d|DateTime::from_timestamp_nanos(d.as_nanos() as i64)), 
-                icon_path: get_icon_path_of_file(&name, is_directory).map(|s|s.to_string()),
+                icon_path: get_icon_path_of_file(&name, &path, is_directory).map(|s|s.to_string()),
                 name
             }
         })
@@ -70,10 +75,7 @@ pub fn get_files(input: GetFiles)->ItemsResult<GetFilesResult> {
     let dir_count = items.iter().filter(|i|i.is_directory).count();
     ItemsResult {
         ok: GetFilesResult {
-            path: canonicalize(&input.path)
-                    .ok()
-                    .map(|p|p.to_string_lossy().to_string().clean_path())
-                    .unwrap_or(input.path),
+            path,
             dir_count,
             file_count: items.len() - dir_count, 
             items,
@@ -82,7 +84,7 @@ pub fn get_files(input: GetFiles)->ItemsResult<GetFilesResult> {
     
 }
 
-fn get_extension(name: &str)->Option<&str> {
+pub fn get_extension(name: &str)->Option<&str> {
     match name.rfind('.') {
         Some(idx) if idx > 0 => {
             Some(&name[idx..])
@@ -91,14 +93,11 @@ fn get_extension(name: &str)->Option<&str> {
     }
 }
 
-fn get_icon_path(name: &str)->Option<&str> {
-    get_extension(name)
-}
-
-fn get_icon_path_of_file(name: &str, is_directory: bool)->Option<&str> {
+fn get_icon_path_of_file(name: &str, path: &str, is_directory: bool)->Option<String> {
     if !is_directory {
-        get_icon_path(name)
+        get_icon_path(name, path)
     } else {
         None
     }
 }
+
