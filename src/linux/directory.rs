@@ -17,7 +17,7 @@ pub fn get_icon(path: &str)->Result<(String, Vec<u8>), Error> {
    
     fn run_cmd(path: &str)->Result<String, Error> {
         let geticon_py = get_geticon_py();
-        let output = Command::new("python")
+        let output = Command::new("python3")
             .arg(geticon_py)
             .arg(path)
             .output()

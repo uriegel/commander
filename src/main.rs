@@ -62,7 +62,6 @@ fn on_activate(app: &Application)->WebView {
 }
 
 fn main() {
-
     #[cfg(target_os = "linux")]        
     gtk::gio::resources_register_include!("commander.gresource")
         .expect("Failed to register resources.");
