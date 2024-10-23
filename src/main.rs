@@ -71,8 +71,8 @@ fn main() {
     .run();
 }
 
-// TODO extended items
 // TODO cancel extended items
+// TODO Windows version
 // TODO viewer
 // TODO viewer gps info
 
