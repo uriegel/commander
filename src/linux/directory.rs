@@ -1,6 +1,7 @@
 use std::{fs::{self, Metadata}, process::Command};
 
 use crate::error::Error;
+use crate::directory::get_extension;
 
 use super::iconresolver::get_geticon_py;
 
@@ -9,7 +10,7 @@ pub fn is_hidden(name: &str, _: &Metadata)->bool {
 }
 
 pub fn get_icon_path(name: &str, _path: &str)->Option<String> {
-    get_extension(name).to_string()
+    get_extension(name).map(|e|e.to_string())
 }
 
 pub fn get_icon(path: &str)->Result<(String, Vec<u8>), Error> {

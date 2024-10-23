@@ -71,7 +71,6 @@ fn main() {
     .run();
 }
 
-// TODO windows exe icon: path to exe
 // TODO extended items
 // TODO viewer
 // TODO viewer gps info
