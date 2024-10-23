@@ -7,7 +7,7 @@ use crate::error::Error;
 #[cfg(target_os = "linux")]
 use crate::linux::directory::get_icon;
 #[cfg(target_os = "windows")]
-use crate::{error::Error, windows::directory::get_icon};
+use crate::windows::directory::get_icon;
 use super::{html, threadpool::ThreadPool};
 
 #[derive(Clone)]
