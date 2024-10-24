@@ -73,6 +73,7 @@ fn main() {
 
 // TODO cancel extended items
 // TODO Windows version
+// TODO Windows Icon crach when resolution is 125%: https://stackoverflow.com/questions/2289894/how-can-i-save-hicon-to-an-ico-file
 // TODO viewer
 // TODO viewer gps info
 
