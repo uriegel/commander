@@ -1,12 +1,12 @@
-use std::{fs::File, io::BufReader, path::PathBuf};
+use std::{fs::File, io::BufReader, path::PathBuf, sync::mpsc::Receiver};
 
 use chrono::{DateTime, Local, TimeZone};
 use exif::{Field, In, Tag, Value};
 use serde::{Deserialize, Serialize};
 
-use crate::requests::ItemsResult;
+use crate::{cancellations::get_cancellation, requests::{Empty, ItemsResult}};
 
-pub fn get_extended_items(input: GetExtendedItems)->ItemsResult<GetExtendedItemsResult> {
+pub fn get_extended_items(input: GetExtendedItems, cancel: Receiver<bool>)->ItemsResult<GetExtendedItemsResult> {
     let path = input.path.clone(); 
     ItemsResult {
         ok: GetExtendedItemsResult {
@@ -14,12 +14,22 @@ pub fn get_extended_items(input: GetExtendedItems)->ItemsResult<GetExtendedItems
             extended_items: input
                             .items
                             .iter()
+                            .take_while(|_|!cancel.try_recv().ok().unwrap_or(false))
                             .map(|n| ExtendedItem { 
                                                 exif_data: get_exif_data(&input, n),
                                                 version: None
                                             })
                             .collect()
         }
+    }
+}
+
+pub fn cancel_extended_items(input: CancelExtendedItems)->ItemsResult<Empty> {
+    let cancellation = get_cancellation().lock().unwrap();
+    let snd = cancellation.as_ref();
+    snd.inspect(|snd|{let _ = snd.send(true);});
+    ItemsResult {
+        ok: Empty {}
     }
 }
 
@@ -84,6 +94,12 @@ pub struct ExifData {
     date_time: Option<DateTime<Local>>,
     latitude: Option<f64>,
     longitude: Option<f64>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CancelExtendedItems {
+    id: String    
 }
 
 trait FieldExt {

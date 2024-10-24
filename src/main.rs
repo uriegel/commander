@@ -12,6 +12,7 @@ mod requests;
 mod directory;
 mod error;
 mod extended_items;
+mod cancellations;
 
 #[cfg(target_os = "windows")]
 use std::sync::{Arc, Mutex};
@@ -71,7 +72,7 @@ fn main() {
     .run();
 }
 
-// TODO cancel extended items
+// TODO cancellation: replace option with hashmap with key: struct id, enum type
 // TODO Windows version
 // TODO viewer
 // TODO viewer gps info
