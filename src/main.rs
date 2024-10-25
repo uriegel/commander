@@ -73,7 +73,39 @@ fn main() {
 }
 
 // TODO Windows version
-// TODO Windows Icon crach when resolution is 125%: https://stackoverflow.com/questions/2289894/how-can-i-save-hicon-to-an-ico-file
+
+/*
+ let schrott = string_to_pcwstr(&"c:\\windows\\explorer.exe");
+    let size = unsafe { GetFileVersionInfoSizeW(PCWSTR(schrott.as_ptr()), None) };
+    let mut buffer = vec![0u8; size as usize];
+    let res = unsafe { GetFileVersionInfoW(PCWSTR(schrott.as_ptr()), 0, size, buffer.as_mut_ptr() as *mut c_void) };
+    res.unwrap();
+//    let mut versch = VS_FIXEDFILEINFO::default();
+//    let mut value_ptr: *mut c_void = &mut versch as *mut _ as *mut c_void;
+    let mut size:u32 = 0;
+
+    let mut value_ptr: *mut c_void = ptr::null_mut();
+
+
+    let aschabe = string_to_pcwstr(&"\\");
+    let success = unsafe { VerQueryValueW(buffer.as_ptr() as *mut c_void, PCWSTR(aschabe.as_ptr()), &mut value_ptr, &mut size) };
+
+        
+    if success.as_bool() && !value_ptr.is_null() {
+
+        let versch = unsafe { &*(value_ptr as *const VS_FIXEDFILEINFO) };
+
+        // Now `versch` contains the fixed file version information
+        println!("File version: {}.{}.{}.{}",
+            (versch.dwFileVersionMS >> 16) & 0xffff,
+            versch.dwFileVersionMS & 0xffff,
+            (versch.dwFileVersionLS >> 16) & 0xffff,
+            versch.dwFileVersionLS & 0xffff);
+    } else {
+        eprintln!("Failed to query fixed file info.");
+    }
+*/
+
 // TODO viewer
 // TODO viewer gps info
 
