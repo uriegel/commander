@@ -115,6 +115,6 @@ fn main() {
 // TODO /boot/loader/entries  => panic: access denied
 // TODO no // on linux status bar in root
 
-// TODO Windows Ico and Window icon
+// TODO Windows icon
 // TODO fs_extra::copy_items_with_progress
 // TODO Trash: https://docs.rs/trash/latest/trash/
