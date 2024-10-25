@@ -72,8 +72,7 @@ fn main() {
     .run();
 }
 
-// TODO Windows version
-
+// TODO Windows version info
 /*
  let schrott = string_to_pcwstr(&"c:\\windows\\explorer.exe");
     let size = unsafe { GetFileVersionInfoSizeW(PCWSTR(schrott.as_ptr()), None) };
@@ -106,8 +105,11 @@ fn main() {
     }
 */
 
+
 // TODO viewer
 // TODO viewer gps info
+
+// TODO Windows icons best with ver 9.0.0, but crash on windows 125%, test with labtop. some exe icons are invisible with 16px
 
 // TODO /boot/loader/entries  => panic: access denied
 // TODO no // on linux status bar in root

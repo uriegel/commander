@@ -17,7 +17,7 @@ pub fn get_icon_path(name: &str, path: &str)->Option<String> {
 }
 
 pub fn get_icon(path: &str)->Result<(String, Vec<u8>), Error> {
-    let icon = systemicons::get_icon(&path.replace("%20", " "), 32)?;
+    let icon = systemicons::get_icon(&path.replace("%20", " "), 16)?;
     Ok(("icon.png".to_string(), icon))
 }
 
