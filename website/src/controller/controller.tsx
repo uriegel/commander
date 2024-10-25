@@ -125,7 +125,7 @@ export const createEmptyController = (): Controller => ({
     getPath: () => "empty",
     getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
     setExtendedItems: items => items,
-    cancelExtendedItems: () => { },
+    cancelExtendedItems: async () => { },
     onEnter: () => AsyncResult.from(new Ok<OnEnterResult, ErrorType>({ processed: true })),
     sort: (items: FolderViewItem[]) => items,
     itemsSelectable: false,

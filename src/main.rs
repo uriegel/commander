@@ -72,7 +72,7 @@ fn main() {
     .run();
 }
 
-// TODO cancellation: replace option with hashmap with key: struct id, enum type
+// TODO Cancellation: Statustext controlling when folders changed too fast 
 // TODO Windows version
 // TODO viewer
 // TODO viewer gps info
