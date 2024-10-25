@@ -1,7 +1,7 @@
 use serde::Serialize;
 use webview_app::request::{get_input, get_output, request_blocking, Request};
 
-use crate::{directory::get_files, extended_items::get_extended_items};
+use crate::{directory::get_files, extended_items::{cancel_extended_items, get_extended_items}};
 #[cfg(target_os = "linux")]
 use crate::linux::root::get_root;
 #[cfg(target_os = "windows")]
@@ -13,6 +13,7 @@ pub fn on_request(request: &Request, id: String, cmd: String, json: String)->boo
             "getroot" => get_output(&get_root()),
             "getfiles" => get_output(&get_files(get_input(&json))),
             "getextendeditems" => get_output(&get_extended_items(get_input(&json))),
+            "cancelextendeditems" => get_output(&cancel_extended_items(get_input(&json))),
             _ => get_output(&Empty {})
         }
     });

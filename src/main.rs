@@ -12,6 +12,7 @@ mod requests;
 mod directory;
 mod error;
 mod extended_items;
+mod cancellations;
 
 #[cfg(target_os = "windows")]
 use std::sync::{Arc, Mutex};
@@ -71,7 +72,6 @@ fn main() {
     .run();
 }
 
-// TODO cancel extended items
 // TODO Windows version
 // TODO Windows Icon crach when resolution is 125%: https://stackoverflow.com/questions/2289894/how-can-i-save-hicon-to-an-ico-file
 // TODO viewer

@@ -1,12 +1,14 @@
-use std::{fs::File, io::BufReader, path::PathBuf};
+use std::{fs::File, io::BufReader, path::PathBuf, sync::mpsc::{channel, Sender, TryRecvError}};
 
 use chrono::{DateTime, Local, TimeZone};
 use exif::{Field, In, Tag, Value};
 use serde::{Deserialize, Serialize};
 
-use crate::requests::ItemsResult;
+use crate::{cancellations::{get_cancellation, CancellationKey}, requests::{Empty, ItemsResult}};
 
 pub fn get_extended_items(input: GetExtendedItems)->ItemsResult<GetExtendedItemsResult> {
+    let (snd, rcv) = channel::<bool>();
+    change_cancellation(input.id.clone(), snd);
     let path = input.path.clone(); 
     ItemsResult {
         ok: GetExtendedItemsResult {
@@ -14,6 +16,10 @@ pub fn get_extended_items(input: GetExtendedItems)->ItemsResult<GetExtendedItems
             extended_items: input
                             .items
                             .iter()
+                            .take_while(|_|match rcv.try_recv() {
+                                        Err(TryRecvError::Empty) => true,
+                                        _ => false
+                                    })
                             .map(|n| ExtendedItem { 
                                                 exif_data: get_exif_data(&input, n),
                                                 version: None
@@ -21,6 +27,21 @@ pub fn get_extended_items(input: GetExtendedItems)->ItemsResult<GetExtendedItems
                             .collect()
         }
     }
+}
+
+pub fn cancel_extended_items(input: CancelExtendedItems)->ItemsResult<Empty> {
+    let cancellation = get_cancellation().lock().unwrap();
+    let cancel = cancellation.get(&CancellationKey::extended_item(input.id));
+    cancel.inspect(|snd|{let _ = snd.send(true);});
+    ItemsResult {
+        ok: Empty {}
+    }
+}
+
+fn change_cancellation(id: String, sender: Sender<bool>) {
+    let mut cancellation = get_cancellation().lock().unwrap();
+    let cancel = cancellation.insert(CancellationKey::extended_item(id), sender);
+    cancel.inspect(|snd|{let _ = snd.send(true);});
 }
 
 fn get_exif_data(input: &GetExtendedItems, item: &String) -> Option<ExifData> {
@@ -84,6 +105,12 @@ pub struct ExifData {
     date_time: Option<DateTime<Local>>,
     latitude: Option<f64>,
     longitude: Option<f64>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CancelExtendedItems {
+    id: String    
 }
 
 trait FieldExt {
