@@ -29,6 +29,7 @@ pub fn on_request(request: &Request, id: String, cmd: String, json: String)->boo
 
 fn change_cancellation(sender: Sender<bool>) {
     let mut snd = get_cancellation().lock().unwrap();
+    snd.as_ref().inspect(|s|{ let _ = s.send(true);});
     *snd = Some(sender);
 }
 

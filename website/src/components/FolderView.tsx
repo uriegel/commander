@@ -273,8 +273,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     const changePath = (id: string, path: string, showHidden: boolean, latestPath?: string, mount?: boolean, fromBacklog?: boolean, checkPosition?: (checkItem: FolderViewItem)=>boolean) => {
-        if (statusText)      
-            controller.current.cancelExtendedItems(id)
+        controller.current.cancelExtendedItems(id)
         restrictionView.current?.reset()
         const controllerChanged = checkController(path, controller.current)
         controllerChanged.controller

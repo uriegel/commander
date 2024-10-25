@@ -75,7 +75,7 @@ export interface Controller {
     getPath(): string
     getExtendedItems: (id: string, path: string, items: FolderViewItem[]) => AsyncResult<GetExtendedItemsResult, ErrorType>
     setExtendedItems: (items: FolderViewItem[], extended: GetExtendedItemsResult, sortIndex: number, sortDescending: boolean) => FolderViewItem[]
-    cancelExtendedItems: (id: string)=>void,
+    cancelExtendedItems: (id: string)=>Promise<void>,
     onEnter: (data: EnterData) => AsyncResult<OnEnterResult, ErrorType> 
     sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => FolderViewItem[]
     itemsSelectable: boolean
