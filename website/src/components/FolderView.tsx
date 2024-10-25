@@ -81,9 +81,8 @@ interface FolderViewProp {
     setStatusText: (text: string|null)=>void
 }
 
-const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
-    { id, showHidden, onFocus, onPathChanged, onItemsChanged, onCopy, onEnter, setError, setStatusText, statusText },
-    ref) => {
+const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({ id, showHidden, onFocus, onPathChanged, onItemsChanged,
+        onCopy, onEnter, setError, setStatusText, statusText }, ref) => {
 
     useImperativeHandle(ref, () => ({
         id,
@@ -133,6 +132,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const sortIndex = useRef(0)
     const sortDescending = useRef(false)
     const itemCount = useRef({ fileCount: 0, dirCount: 0 })
+    const extendedItemsPendingRefCount = useRef(0)
     
     const [items, setStateItems] = useState([] as FolderViewItem[])
     const [path, setPath] = useState("")
@@ -288,10 +288,10 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     setItems(res.items, res.dirCount, res.fileCount)
                     const pos =
                         latestPath
-                        ? res.items.findIndex(n => n.name == latestPath)
-                        : checkPosition
-                        ? res.items.findIndex(n => checkPosition(n))
-                        : 0
+                            ? res.items.findIndex(n => n.name == latestPath)
+                            : checkPosition
+                                ? res.items.findIndex(n => checkPosition(n))
+                                : 0
                     virtualTable.current?.setInitialPosition(pos, res.items.length)
                     refPath.current = res.path
                     localStorage.setItem(`${id}-lastPath`, res.path)
@@ -299,14 +299,19 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                         history.current?.set(res.path)
                     
                     setStatusText("Erweiterte Infos werden abgerufen...")
+                    extendedItemsPendingRefCount.current++
                     controller.current
                         .getExtendedItems(id, res.path, res.items)
                         .match(
                             ok => {
-                                setStatusText(null)
+                                if (--extendedItemsPendingRefCount.current == 0)
+                                    setStatusText(null)
                                 if (ok.path == refPath.current)
-                                    setItems(controller.current.setExtendedItems(res.items, ok, sortIndex.current, sortDescending.current))    
-                            }, () => setStatusText(null))
+                                    setItems(controller.current.setExtendedItems(res.items, ok, sortIndex.current, sortDescending.current))
+                            }, () => {
+                                if (--extendedItemsPendingRefCount.current == 0)
+                                    setStatusText(null)
+                            })
                 },
                 err => {
                     console.log("err", err, controller.current.getPath())

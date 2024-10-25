@@ -72,7 +72,6 @@ fn main() {
     .run();
 }
 
-// TODO Cancellation: Statustext controlling when folders changed too fast 
 // TODO Windows version
 // TODO viewer
 // TODO viewer gps info

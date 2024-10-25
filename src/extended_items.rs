@@ -1,4 +1,4 @@
-use std::{fs::File, io::BufReader, path::PathBuf, sync::mpsc::{channel, Sender, TryRecvError}, thread, time::Duration};
+use std::{fs::File, io::BufReader, path::PathBuf, sync::mpsc::{channel, Sender, TryRecvError}};
 
 use chrono::{DateTime, Local, TimeZone};
 use exif::{Field, In, Tag, Value};
@@ -16,22 +16,10 @@ pub fn get_extended_items(input: GetExtendedItems)->ItemsResult<GetExtendedItems
             extended_items: input
                             .items
                             .iter()
-                            .take_while(|i|
-                                {
-
-
-                                    // TODO
-                                    println!("Event {}", i);
-                                    thread::sleep(Duration::from_millis(500));
-
-
-                                    match rcv.try_recv() {
+                            .take_while(|_|match rcv.try_recv() {
                                         Err(TryRecvError::Empty) => true,
                                         _ => false
-                                    }
-
-                                
-        })
+                                    })
                             .map(|n| ExtendedItem { 
                                                 exif_data: get_exif_data(&input, n),
                                                 version: None

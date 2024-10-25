@@ -13,10 +13,10 @@ use crate::linux::directory::{is_hidden, StringExt, get_icon_path};
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GetFiles {
-    pub id: String,
+    //pub id: String,
     pub path: String,
     pub show_hidden_items: bool,
-    pub mount: bool
+    //pub mount: bool
 }
 
 #[derive(Debug, Serialize)]
