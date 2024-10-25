@@ -77,12 +77,12 @@ interface FolderViewProp {
     onCopy: (move: boolean) => void
     onEnter: (item: FolderViewItem, keys: SpecialKeys) => void
     setError: (error: string) => void
-    statusText: string | null
+    //statusText: string | null
     setStatusText: (text: string|null)=>void
 }
 
 const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({ id, showHidden, onFocus, onPathChanged, onItemsChanged,
-        onCopy, onEnter, setError, setStatusText, statusText }, ref) => {
+        onCopy, onEnter, setError, setStatusText  }, ref) => {
 
     useImperativeHandle(ref, () => ({
         id,

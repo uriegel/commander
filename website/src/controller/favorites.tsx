@@ -86,7 +86,7 @@ export const getFavoritesController = (controller: Controller | null): Controlle
         getPath: () => FAVORITES,
         getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
         setExtendedItems: items => items,
-        cancelExtendedItems: () => { },
+        cancelExtendedItems: async () => { },
         onEnter,
         sort: (items: FolderViewItem[]) => items,
         itemsSelectable: false,

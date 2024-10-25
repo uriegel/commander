@@ -97,7 +97,7 @@ export const getRemoteController = (controller: Controller | null): ControllerRe
 				getPath: () => currentPath,
 				getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({ status: IOError.Canceled, statusText: "" })),
 				setExtendedItems: items => items,
-				cancelExtendedItems: () => { },
+				cancelExtendedItems: async () => { },
 				onEnter: ({ path, item }) =>
 					AsyncResult.from(new Ok<OnEnterResult, ErrorType>(
 						item.isParent && path.split("/").filter(n => n.length > 0).sideEffectForEach(n => console.log("Eintrag", n)).length - 1 == 1

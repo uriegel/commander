@@ -101,7 +101,7 @@ export const getRootController = (controller: Controller | null): ControllerResu
         updateItems: ()=>null,
         getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
         setExtendedItems: items => items,
-        cancelExtendedItems: () => { },
+        cancelExtendedItems: async () => { },
         onEnter: platform == Platform.Windows ? onWindowsEnter : onLinuxEnter,
         sort: (items: FolderViewItem[]) => items,
         itemsSelectable: false,

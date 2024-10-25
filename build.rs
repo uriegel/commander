@@ -11,4 +11,5 @@ fn main() {
 
 #[cfg(target_os = "windows")]    
 fn main() {
+    static_vcruntime::metabuild();
 }

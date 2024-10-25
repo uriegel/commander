@@ -157,12 +157,12 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 	const FolderLeft = () => (
 		<FolderView ref={folderLeft} id={ID_LEFT} onFocus={onFocusLeft} onCopy={copyItems} setError={setErrorText}
 			onPathChanged={onPathChanged} showHidden={showHidden} onItemsChanged={setItemCount} onEnter={onEnter}
-			statusText={statusText} setStatusText={setStatusText} />
+			setStatusText={setStatusText} />
 	)
 	const FolderRight = () => (
 		<FolderView ref={folderRight} id={ID_RIGHT} onFocus={onFocusRight} onCopy={copyItems} setError={setErrorText}
 			onPathChanged={onPathChanged} showHidden={showHidden} onItemsChanged={setItemCount} onEnter={onEnter}
-			statusText={statusText} setStatusText={setStatusText} />
+			setStatusText={setStatusText} />
 	)
 
 	const activeFolderId = useRef("left")

@@ -195,8 +195,9 @@ const setExtendedItems = (items: FolderViewItem[], extended: GetExtendedItemsRes
 		? {...n, version: extended.extendedItems[i].version || undefined }
 		: { ...n, version: extended.extendedItems[i].version || undefined, exifData: extended.extendedItems[i].exifData || undefined }), sortColumn, sortDescending)
 
-const cancelExtendedItems = (id: string) => 
-	webViewRequest<Nothing, ErrorType>("cancelextendeditems", { id })
+const cancelExtendedItems = async (id: string) => {
+	await webViewRequest<Nothing, ErrorType>("cancelextendeditems", { id })
+}
 		
 export const getSortFunction = (index: number, descending: boolean) => {
 	const ascDesc = (sortResult: number) => descending ? -sortResult : sortResult
