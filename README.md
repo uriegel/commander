@@ -18,6 +18,10 @@ cd website
 npm install
 ```
 
+### On Windows
+
+Copy ```resources/kirk.png``` to ```website/public/images/kirk.png``` on Windows
+
 ## Debug
 
 Start npm script `build` (Package.json in /website)

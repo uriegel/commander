@@ -70,7 +70,7 @@ const Titlebar = ({ menu, progress, progressFinished, progressRevealed, totalSiz
 
     return  isWindows()        
         ? (<div className="titlebar">
-            <img alt="" id="$FAVICON$"/>
+            <img alt="" src="/webroot/images/kirk.png"/>
             {menu}
             <div className="titlebarGrip">
                 <span id="$TITLE$"></span>

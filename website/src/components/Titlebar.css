@@ -12,6 +12,7 @@ body:focus-within .titlebar {
 
 .titlebar>img {
     height: 32px;
+    width: 32px;
 }
 
 .titlebarGrip {
