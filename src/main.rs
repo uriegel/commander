@@ -36,9 +36,10 @@ fn on_activate(app: &Application)->WebView {
         .save_bounds()
         .title("Commander".to_string())
         .devtools(true)
-        .debug_url("http://localhost:5173/?port=8000".to_string()) // TODO 
         .webroot(dir.clone())
+        .debug_url("http://localhost:5173".to_string()) 
         .url(format!("http://localhost:{HTTP_PORT}/webroot/index.html"))
+        .query_string(format!("?port={HTTP_PORT}"))
         .default_contextmenu_disabled()
         .without_native_titlebar();
 

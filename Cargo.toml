@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-webview_app = "1.0.0-beta.33"
+webview_app = "1.0.0-beta.34"
 serde = { version = "1.0.213", features = ["derive"] }
 serde_json = "1.0.132"
 include_dir = "0.7.4"

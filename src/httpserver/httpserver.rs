@@ -93,8 +93,10 @@ fn handle_connection(stream: TcpStream, webroot: Option<Arc<Mutex<Dir<'static>>>
         let path = request_line[4..pos + 4].to_string();
 
         match (webroot, path) {
-            (Some(webroot), path) if path.starts_with("/webroot") =>
-                route_get_webroot(writer, &path[9..], webroot),
+            (Some(webroot), path) if path.starts_with("/webroot") => {
+                let end_pos = path.find('?');
+                route_get_webroot(writer, if let Some(end_pos) = end_pos { &path[9..end_pos] } else { &path[9..] }, webroot)
+            },
             (_, path) if path.starts_with("/geticon") => {
                 let (icon_ext, icon) = get_icon(&path[14..])?;
                 send_bytes(writer, &icon_ext, icon.as_slice(), "HTTP/1.1 200 OK")

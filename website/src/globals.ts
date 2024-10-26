@@ -12,12 +12,9 @@ export const getPlatform = memoize(() => {
         : Platform.Linux
 })
 
-export const getPort = memoize(() => {
-    // TODO let ret = new URLSearchParams(window.location.search).get("port")
-    let ret = 8000
-    console.log("Port", ret)
-    return ret
-})
+export const getPort = memoize(() =>
+    new URLSearchParams(window.location.search).get("port")
+)
 
 function memoize<T>(funcToMemoize: () => T) {
     let memoized: T|null = null
