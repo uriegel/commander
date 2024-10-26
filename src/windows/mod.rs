@@ -1,8 +1,11 @@
+use std::iter::once;
+
 pub mod root;
 pub mod directory;
+pub mod version;
 
 pub fn string_to_pcwstr(x: &str) -> Vec<u16> {
-    x.encode_utf16().chain(std::iter::once(0)).collect()
+    x.encode_utf16().chain(once(0)).collect()
 }
 
 pub fn string_from_pcwstr(pwcstr: &[u16]) -> String {

@@ -37,6 +37,10 @@ pub fn get_icon(path: &str)->Result<(String, Vec<u8>), Error> {
     Ok((icon_path.clone(), icon))
 }
 
+pub fn get_version(input: &GetExtendedItems, item: &String) -> Option<Version> {
+    None
+}
+
 pub trait StringExt {
     fn clean_path(&self) -> String;
 }
@@ -46,3 +50,4 @@ impl StringExt for String {
         self.clone()
     }
 }
+

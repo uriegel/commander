@@ -4,7 +4,7 @@ use chrono::{DateTime, Local, TimeZone};
 use exif::{Field, In, Tag, Value};
 use serde::{Deserialize, Serialize};
 
-use crate::{cancellations::{get_cancellation, CancellationKey}, requests::{Empty, ItemsResult}};
+use crate::{cancellations::{get_cancellation, CancellationKey}, requests::{Empty, ItemsResult}, windows::version::get_version};
 
 pub fn get_extended_items(input: GetExtendedItems)->ItemsResult<GetExtendedItemsResult> {
     let (snd, rcv) = channel::<bool>();
@@ -22,7 +22,7 @@ pub fn get_extended_items(input: GetExtendedItems)->ItemsResult<GetExtendedItems
                                     })
                             .map(|n| ExtendedItem { 
                                                 exif_data: get_exif_data(&input, n),
-                                                version: None
+                                                version: get_version(&input, n),
                                             })
                             .collect()
         }
@@ -96,7 +96,10 @@ pub struct ExtendedItem {
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Version {
-
+    pub major: u32,
+    pub minor: u32,
+    pub patch: u32,
+    pub build: u32,
 }
 
 #[derive(Debug, Serialize)]
