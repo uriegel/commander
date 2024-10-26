@@ -4,7 +4,12 @@ use chrono::{DateTime, Local, TimeZone};
 use exif::{Field, In, Tag, Value};
 use serde::{Deserialize, Serialize};
 
-use crate::{cancellations::{get_cancellation, CancellationKey}, requests::{Empty, ItemsResult}, windows::version::get_version};
+use crate::{cancellations::{get_cancellation, CancellationKey}, requests::{Empty, ItemsResult}};
+
+#[cfg(target_os = "windows")]
+use crate::windows::version::get_version;
+#[cfg(target_os = "linux")]
+use crate::linux::directory::get_version;
 
 pub fn get_extended_items(input: GetExtendedItems)->ItemsResult<GetExtendedItemsResult> {
     let (snd, rcv) = channel::<bool>();

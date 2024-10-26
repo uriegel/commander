@@ -3,22 +3,22 @@
 
 pub static APP_ID: &str = "de.uriegel.commander";
 
-#[cfg(target_os = "linux")]
-mod linux;
-#[cfg(target_os = "windows")]
-mod windows;
-mod httpserver;
-mod requests;
+mod cancellations;
 mod directory;
 mod error;
 mod extended_items;
-mod cancellations;
+mod httpserver;
+#[cfg(target_os = "linux")]
+mod linux;
+mod requests;
+#[cfg(target_os = "windows")]
+mod windows;
 
 #[cfg(target_os = "windows")]
 use std::sync::{Arc, Mutex};
 
-use requests::on_request;
 use include_dir::include_dir;
+use requests::on_request;
 
 use webview_app::{application::Application, webview::WebView};
 
@@ -27,7 +27,7 @@ use linux::headerbar::HeaderBar;
 
 pub const HTTP_PORT: u32 = 8000;
 
-fn on_activate(app: &Application)->WebView {
+fn on_activate(app: &Application) -> WebView {
     let dir = include_dir!("website/dist");
     #[cfg(target_os = "windows")]
     let arc_dir = Some(Arc::new(Mutex::new(dir.clone())));
@@ -37,15 +37,17 @@ fn on_activate(app: &Application)->WebView {
         .title("Commander".to_string())
         .devtools(true)
         .webroot(dir.clone())
-        .debug_url("http://localhost:5173".to_string()) 
+        .debug_url("http://localhost:5173".to_string())
         .url(format!("http://localhost:{HTTP_PORT}/webroot/index.html"))
         .query_string(format!("?port={HTTP_PORT}"))
         .default_contextmenu_disabled()
         .without_native_titlebar();
 
-    #[cfg(target_os = "linux")]    
-    let webview_builder = webview_builder
-        .with_builder("/de/uriegel/commander/window.ui".to_string(), move|builder| HeaderBar::new(builder));
+    #[cfg(target_os = "linux")]
+    let webview_builder = webview_builder.with_builder(
+        "/de/uriegel/commander/window.ui".to_string(),
+        move |builder| HeaderBar::new(builder),
+    );
 
     #[cfg(target_os = "windows")]
     let webroot = arc_dir;
@@ -58,13 +60,13 @@ fn on_activate(app: &Application)->WebView {
         .run(webroot);
 
     let webview = webview_builder.build();
-    
+
     webview.connect_request(on_request);
     webview
 }
 
 fn main() {
-    #[cfg(target_os = "linux")]        
+    #[cfg(target_os = "linux")]
     gtk::gio::resources_register_include!("commander.gresource")
         .expect("Failed to register resources.");
 

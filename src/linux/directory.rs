@@ -1,6 +1,6 @@
 use std::{fs::{self, Metadata}, process::Command};
 
-use crate::error::Error;
+use crate::{error::Error, extended_items::{GetExtendedItems, Version}};
 use crate::directory::get_extension;
 
 use super::iconresolver::get_geticon_py;
@@ -37,7 +37,7 @@ pub fn get_icon(path: &str)->Result<(String, Vec<u8>), Error> {
     Ok((icon_path.clone(), icon))
 }
 
-pub fn get_version(input: &GetExtendedItems, item: &String) -> Option<Version> {
+pub fn get_version(_: &GetExtendedItems, _: &String) -> Option<Version> {
     None
 }
 
