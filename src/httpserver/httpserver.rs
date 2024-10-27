@@ -3,7 +3,7 @@ use std::{io::{BufRead, BufReader, BufWriter, Write}, net::{TcpListener, TcpStre
 
 use include_dir::Dir;
 
-use crate::{directory::get_file, error::Error};
+use crate::{directory::get_file, error::Error, str::StrExt};
 #[cfg(target_os = "linux")]
 use crate::linux::directory::get_icon;
 #[cfg(target_os = "windows")]
@@ -139,14 +139,13 @@ fn handle_connection(stream: TcpStream, webroot: Option<Arc<Mutex<Dir<'static>>>
 fn send_bytes(mut writer: BufWriter<&TcpStream>, path: &str, payload: &[u8], status_line: &str)->Result<(), Error> {
     let length = payload.len();
     
-    // TODO compare_lowercase
     let content_type = match path {
-        path if path.ends_with(".html") => "text/html",
-        path if path.ends_with(".css") => "text/css",
-        path if path.ends_with(".js") => "text/javascript",
-        path if path.ends_with(".jpg") => "image/jpg",
-        path if path.ends_with(".png") => "image/png",
-        path if path.ends_with(".pdf") => "application/pdf",
+        path if path.ext_is(".html") => "text/html",
+        path if path.ext_is(".css") => "text/css",
+        path if path.ext_is(".js") => "text/javascript",
+        path if path.ext_is(".jpg") => "image/jpg",
+        path if path.ext_is(".png") => "image/png",
+        path if path.ext_is(".pdf") => "application/pdf",
         _ => "text/plain",
     };
 

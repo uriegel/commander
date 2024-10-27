@@ -1,4 +1,6 @@
-use gtk::glib;
+use std::time::Duration;
+
+use gtk::glib::{self, spawn_future_local, timeout_future};
 use gtk::glib::clone;
 use webkit6::prelude::*;
 use webkit6::{
@@ -16,8 +18,13 @@ impl HeaderBar {
 
         let action_devtools = ActionEntry::builder("devtools")
             .activate(clone!(#[weak]webview, move |_, _, _|{
-                webview.inspector().unwrap().show();
+                let inspector = webview.inspector().unwrap();
+                inspector.show();
                 webview.grab_focus();
+                spawn_future_local(async move {
+                    timeout_future(Duration::from_millis(600)).await;
+                    inspector.detach();           
+                });
             }))
             .build();
         app.set_accels_for_action("app.devtools", &["<Ctrl><Shift>I"]);

@@ -8,9 +8,10 @@ mod directory;
 mod error;
 mod extended_items;
 mod httpserver;
+mod str;
+mod requests;
 #[cfg(target_os = "linux")]
 mod linux;
-mod requests;
 #[cfg(target_os = "windows")]
 mod windows;
 
