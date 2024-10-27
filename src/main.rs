@@ -10,6 +10,7 @@ mod extended_items;
 mod httpserver;
 mod str;
 mod requests;
+mod requests_http;
 #[cfg(target_os = "linux")]
 mod linux;
 #[cfg(target_os = "windows")]

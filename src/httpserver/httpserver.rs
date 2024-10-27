@@ -3,11 +3,7 @@ use std::{io::{BufRead, BufReader, BufWriter, Read, Write}, net::{TcpListener, T
 
 use include_dir::Dir;
 
-use crate::{directory::get_file, error::Error, str::StrExt};
-#[cfg(target_os = "linux")]
-use crate::linux::directory::get_icon;
-#[cfg(target_os = "windows")]
-use crate::windows::directory::get_icon;
+use crate::{error::Error, requests_http::route_get, str::StrExt};
 use super::{html, threadpool::ThreadPool};
 
 #[derive(Clone)]
@@ -17,6 +13,37 @@ pub struct HttpServer {
 
 pub struct HttpServerBuilder {
     port: u32
+}
+
+pub fn route_not_found(writer: BufWriter<&TcpStream>)->Result<(), Error> {
+    send_html(writer, &html::not_found(), "HTTP/1.1 404 NOT FOUND")
+}
+
+pub fn send_bytes(mut writer: BufWriter<&TcpStream>, path: &str, payload: &[u8], status_line: &str)->Result<(), Error> {
+    let length = payload.len();
+    let content_type = get_content_type(path);
+    let response = format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n");
+    writer.write_all(response.as_bytes())?;
+    writer.write_all(payload)?;
+    writer.flush()?;
+    Ok(())
+}
+
+pub fn send_stream(mut writer: BufWriter<&TcpStream>, path: &str, mut stream: impl Read, len: u64, status_line: &str)->Result<(), Error> {
+    let content_type = get_content_type(path);
+    let response = format!("{status_line}\r\nContent-Length: {len}\r\nContent-Type: {content_type}\r\n\r\n");
+    writer.write_all(response.as_bytes())?;
+
+    let mut buf = [0u8; 8192];
+    loop {
+        let read = stream.read(&mut buf)?;
+        writer.write_all(&buf)?;    
+        if read < buf.len() {
+            break
+        }
+    }
+    writer.flush()?;
+    Ok(())
 }
 
 impl HttpServerBuilder {
@@ -87,87 +114,6 @@ fn handle_connection(stream: TcpStream, webroot: Option<Arc<Mutex<Dir<'static>>>
             _ => ()
         };
     }
-
-    fn route_get(writer: BufWriter<&TcpStream>, request_line: &String, webroot: Option<Arc<Mutex<Dir<'static>>>>)->Result<(), Error> {
-        let pos = request_line[4..].find(" ").unwrap_or(0);
-        let path = request_line[4..pos + 4].to_string();
-
-        match (webroot, path) {
-            (Some(webroot), path) if path.starts_with("/webroot") => {
-                let end_pos = path.find('?');
-                route_get_webroot(writer, if let Some(end_pos) = end_pos { &path[9..end_pos] } else { &path[9..] }, webroot)
-            },
-            (_, path) if path.starts_with("/geticon") => {
-                match get_icon(&path[14..]) {
-                    Ok((icon_ext, icon)) => send_bytes(writer, &icon_ext, icon.as_slice(), "HTTP/1.1 200 OK"),
-                    _ => route_not_found(writer)
-                }
-            },
-            (_, path) if path.starts_with("/getfile") => {
-                match get_file(&path[14..]) {
-                    Ok((ext, file)) => {
-                        let size = file.metadata()?.len();
-                        send_stream(writer, &ext, file, size, "HTTP/1.1 200 OK")
-                    },
-                    _ => route_not_found(writer)
-                }
-            },
-            (_, _) => route_not_found(writer)
-        }
-    }
-
-    fn route_get_webroot(writer: BufWriter<&TcpStream>, path: &str, webroot: Arc<Mutex<Dir<'static>>>)->Result<(), Error> {
-        match webroot
-                .lock()
-                .map_err(|err|Error::new(&format!("{}", err)))
-                ?.get_file(path) 
-                .map(|file| file.contents()) {
-            Some(bytes) => {
-                send_bytes(writer, path, bytes, "HTTP/1.1 200 OK")
-            },
-            None => route_not_found(writer)
-        }
-    }
-
-    fn route_not_found(writer: BufWriter<&TcpStream>)->Result<(), Error> {
-        send_html(writer, &html::not_found(), "HTTP/1.1 404 NOT FOUND")
-    }
-
-    fn send_html(mut writer: BufWriter<&TcpStream>, html: &str, status_line: &str)->Result<(), Error> {
-        let length = html.len();
-        
-        let response = format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{html}");
-        writer.write_all(response.as_bytes())?;
-        writer.flush()?;
-        Ok(())
-    }
-}
-
-fn send_bytes(mut writer: BufWriter<&TcpStream>, path: &str, payload: &[u8], status_line: &str)->Result<(), Error> {
-    let length = payload.len();
-    let content_type = get_content_type(path);
-    let response = format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n");
-    writer.write_all(response.as_bytes())?;
-    writer.write_all(payload)?;
-    writer.flush()?;
-    Ok(())
-}
-
-fn send_stream(mut writer: BufWriter<&TcpStream>, path: &str, mut stream: impl Read, len: u64, status_line: &str)->Result<(), Error> {
-    let content_type = get_content_type(path);
-    let response = format!("{status_line}\r\nContent-Length: {len}\r\nContent-Type: {content_type}\r\n\r\n");
-    writer.write_all(response.as_bytes())?;
-
-    let mut buf = [0u8; 8192];
-    loop {
-        let read = stream.read(&mut buf)?;
-        writer.write_all(&buf)?;    
-        if read < buf.len() {
-            break
-        }
-    }
-    writer.flush()?;
-    Ok(())
 }
 
 fn get_content_type(path: &str)->&str {
@@ -181,4 +127,13 @@ fn get_content_type(path: &str)->&str {
         path if path.ext_is(".mp4") => "video/mp4",
         _ => "text/plain"
     }
+}
+
+fn send_html(mut writer: BufWriter<&TcpStream>, html: &str, status_line: &str)->Result<(), Error> {
+    let length = html.len();
+    
+    let response = format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{html}");
+    writer.write_all(response.as_bytes())?;
+    writer.flush()?;
+    Ok(())
 }
