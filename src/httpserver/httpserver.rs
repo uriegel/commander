@@ -146,6 +146,7 @@ fn send_bytes(mut writer: BufWriter<&TcpStream>, path: &str, payload: &[u8], sta
         path if path.ends_with(".js") => "text/javascript",
         path if path.ends_with(".jpg") => "image/jpg",
         path if path.ends_with(".png") => "image/png",
+        path if path.ends_with(".pdf") => "application/pdf",
         _ => "text/plain",
     };
 

@@ -93,6 +93,7 @@ pub fn get_extension(name: &str)->Option<&str> {
     }
 }
 
+// TODO %20 url decode
 // TODO panic must be returned: 404 not found
 // TODO buffered with fixed buffer
 // TODO if modified since? if necessary
