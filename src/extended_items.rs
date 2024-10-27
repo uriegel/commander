@@ -73,15 +73,26 @@ fn exif_data(file: &PathBuf)->Option<ExifData> {
     
     let l = exif.get_field(Tag::GPSLatitude, In::PRIMARY);
     let latitude = l.and_then(|l| if let exif::Value::Rational(vec) = &l.value {
-        Some(vec[0].to_f64())
+        gps_to_decimal(vec)
     } else { None });
 
     let l = exif.get_field(Tag::GPSLongitude, In::PRIMARY);
     let longitude = l.and_then(|l| if let exif::Value::Rational(vec) = &l.value {
-        Some(vec[0].to_f64())
+        gps_to_decimal(vec)
     } else { None });
 
     date_time.map(|date_time|ExifData { date_time: Some(date_time), latitude, longitude })
+}
+
+fn gps_to_decimal(rationals: &[exif::Rational]) -> Option<f64> {
+    if rationals.len() >= 3 {
+        let degrees = rationals[0].to_f64();
+        let minutes = rationals[1].to_f64();
+        let seconds = rationals[2].to_f64();
+        Some(degrees + minutes / 60.0 + seconds / 3600.0)
+    } else {
+        None
+    }
 }
 
 #[derive(Debug, Deserialize)]

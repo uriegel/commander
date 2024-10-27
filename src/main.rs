@@ -77,7 +77,6 @@ fn main() {
     .run();
 }
 
-// TODO viewer gps info
 // TODO viewer tracks (xml)
 // TODO viewer mp3 und mp4
 
