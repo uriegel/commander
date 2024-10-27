@@ -6,7 +6,7 @@ use crate::{directory::get_file, error::Error, httpserver::httpserver::{route_no
 #[cfg(target_os = "linux")]
 use crate::linux::directory::get_icon;
 #[cfg(target_os = "windows")]
-use crate::linux::directory::get_icon;
+use crate::windows::directory::get_icon;
 
 pub fn route_get(writer: BufWriter<&TcpStream>, request_line: &String, webroot: Option<Arc<Mutex<Dir<'static>>>>)->Result<(), Error> {
     let pos = request_line[4..].find(" ").unwrap_or(0);
