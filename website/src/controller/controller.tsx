@@ -8,7 +8,7 @@ import { getRootController, ROOT } from "./root"
 import { getRemoteController } from "./remote"
 import { FAVORITES, getFavoritesController } from "./favorites"
 import { SERVICES, getServicesController } from "./services"
-import { Platform, getPlatform } from "../globals"
+import { Platform, getPlatform, getPort } from "../globals"
 import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
 import { DirectoryChangedEvent } from "../requests/events"
 import { WebViewType } from "../webview"
@@ -97,7 +97,7 @@ export interface ControllerResult {
 export const getViewerPath = (path: string) => 
     path.startsWith("remote")
     ? `http://${path.stringBetween("/", "/")}:8080/getfile/${path.substringAfter("/").substringAfter("/")}`
-    : `${WebView.getRequestUrl()}file?path=${path}`
+    : `http://localhost${getPort()}/getfile?path=${path}`
 
 export const checkController = (path: string, controller: Controller | null): ControllerResult => 
     checkNewController(

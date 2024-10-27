@@ -79,6 +79,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 	const dialog = useContext(DialogContext)
 	
 	webViewEvents.registerShowHidden(setShowHidden)
+	webViewEvents.registerShowPreview(setShowViewer)
 	
 	// const filesDropSubscription = useRef<Subscription | null>(null)
 	// const getCredentialsSubscription = useRef<Subscription | null>(null)

@@ -11,5 +11,6 @@ export declare type WebViewType = {
 }
 
 export declare type WebViewEvents = {
-    registerShowHidden: (fun: (show: boolean)=>void)=>void
+    registerShowHidden: (fun: (show: boolean) => void) => void
+    registerShowPreview: (fun: (show: boolean)=>void)=>void
 }
