@@ -11,6 +11,7 @@ mod httpserver;
 mod str;
 mod requests;
 mod requests_http;
+mod tracks;
 #[cfg(target_os = "linux")]
 mod linux;
 #[cfg(target_os = "windows")]
@@ -79,6 +80,8 @@ fn main() {
 
 // TODO viewer tracks (xml)
 // TODO viewer mp3 und mp4
+
+// File watcher
 
 // TODO Windows icons best with ver 9.0.0, but crash on windows 125%, test with labtop. some exe icons are invisible with 16px
 
