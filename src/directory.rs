@@ -1,7 +1,8 @@
-use std::{fs::{canonicalize, read_dir, File}, io::Read, time::UNIX_EPOCH};
+use std::{fs::{canonicalize, read_dir, File}, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use urlencoding::decode;
 
 use crate::{error::Error, requests::ItemsResult};
 
@@ -93,18 +94,12 @@ pub fn get_extension(name: &str)->Option<&str> {
     }
 }
 
-// TODO %20 url decode
-// TODO panic must be returned: 404 not found
-// TODO buffered with fixed buffer
-// TODO if modified since? if necessary
-pub fn get_file(path: &str)->Result<(String, Vec<u8>), Error> {
+pub fn get_file(path: &str)->Result<(String, File), Error> {
     let pos_end = path.find('?');
     let path = if let Some(pos_end) = pos_end { &path[..pos_end] } else { path };
-    let mut file = File::open(path)?;
-    let mut bytes = Vec::new();
-    file.read_to_end(&mut bytes)?;
-    println!("path: {}", path);
-    Ok((path.to_string(), bytes))
+    let path = decode(path)?.to_string();
+    let file = File::open(&path)?;
+    Ok((path, file))
 }
 
 fn get_icon_path_of_file(name: &str, path: &str, is_directory: bool)->Option<String> {

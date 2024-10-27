@@ -1,5 +1,5 @@
 use core::str;
-use std::{io::{BufRead, BufReader, BufWriter, Write}, net::{TcpListener, TcpStream}, sync::{Arc, Mutex}, thread};
+use std::{io::{BufRead, BufReader, BufWriter, Read, Write}, net::{TcpListener, TcpStream}, sync::{Arc, Mutex}, thread};
 
 use include_dir::Dir;
 
@@ -44,7 +44,7 @@ impl HttpServer {
             let webroot = webroot.clone();
             if let Ok(stream) = stream {
                 pool.execute(move|| {
-                    handle_connection(stream, webroot);     
+                    let _ = handle_connection(stream, webroot).inspect_err(|e|eprintln!("Error http: {}", e));     
                 });
             } else {
                 break;
@@ -53,8 +53,8 @@ impl HttpServer {
     }
 }
 
-fn handle_connection(stream: TcpStream, webroot: Option<Arc<Mutex<Dir<'static>>>>) {
-    stream.set_nodelay(true).unwrap(); // disables Nagle algorithm
+fn handle_connection(stream: TcpStream, webroot: Option<Arc<Mutex<Dir<'static>>>>)->Result<(), Error> {
+    let _ = stream.set_nodelay(true); // disables Nagle algorithm
     loop {
         let mut buf_reader = BufReader::new(&stream);
         let buf_writer = BufWriter::new(&stream);
@@ -62,7 +62,7 @@ fn handle_connection(stream: TcpStream, webroot: Option<Arc<Mutex<Dir<'static>>>
         let mut headers: Vec<String> = Vec::new();
         loop {
             let mut str = String::new();
-            buf_reader.read_line(&mut str).unwrap();
+            buf_reader.read_line(&mut str)?;
             str = str.trim().to_string();
             if str.len() == 0 {
                 break;
@@ -71,7 +71,7 @@ fn handle_connection(stream: TcpStream, webroot: Option<Arc<Mutex<Dir<'static>>>
         }
 
         if headers.len() == 0  { 
-            return 
+            return Ok(())
         }
         let request_line = &headers[0];
 
@@ -98,12 +98,19 @@ fn handle_connection(stream: TcpStream, webroot: Option<Arc<Mutex<Dir<'static>>>
                 route_get_webroot(writer, if let Some(end_pos) = end_pos { &path[9..end_pos] } else { &path[9..] }, webroot)
             },
             (_, path) if path.starts_with("/geticon") => {
-                let (icon_ext, icon) = get_icon(&path[14..])?;
-                send_bytes(writer, &icon_ext, icon.as_slice(), "HTTP/1.1 200 OK")
+                match get_icon(&path[14..]) {
+                    Ok((icon_ext, icon)) => send_bytes(writer, &icon_ext, icon.as_slice(), "HTTP/1.1 200 OK"),
+                    _ => route_not_found(writer)
+                }
             },
             (_, path) if path.starts_with("/getfile") => {
-                let (ext, file) = get_file(&path[14..])?;
-                send_bytes(writer, &ext, file.as_slice(), "HTTP/1.1 200 OK")
+                match get_file(&path[14..]) {
+                    Ok((ext, file)) => {
+                        let size = file.metadata()?.len();
+                        send_stream(writer, &ext, file, size, "HTTP/1.1 200 OK")
+                    },
+                    _ => route_not_found(writer)
+                }
             },
             (_, _) => route_not_found(writer)
         }
@@ -138,20 +145,40 @@ fn handle_connection(stream: TcpStream, webroot: Option<Arc<Mutex<Dir<'static>>>
 
 fn send_bytes(mut writer: BufWriter<&TcpStream>, path: &str, payload: &[u8], status_line: &str)->Result<(), Error> {
     let length = payload.len();
-    
-    let content_type = match path {
+    let content_type = get_content_type(path);
+    let response = format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n");
+    writer.write_all(response.as_bytes())?;
+    writer.write_all(payload)?;
+    writer.flush()?;
+    Ok(())
+}
+
+fn send_stream(mut writer: BufWriter<&TcpStream>, path: &str, mut stream: impl Read, len: u64, status_line: &str)->Result<(), Error> {
+    let content_type = get_content_type(path);
+    let response = format!("{status_line}\r\nContent-Length: {len}\r\nContent-Type: {content_type}\r\n\r\n");
+    writer.write_all(response.as_bytes())?;
+
+    let mut buf = [0u8; 8192];
+    loop {
+        let read = stream.read(&mut buf)?;
+        writer.write_all(&buf)?;    
+        if read < buf.len() {
+            break
+        }
+    }
+    writer.flush()?;
+    Ok(())
+}
+
+fn get_content_type(path: &str)->&str {
+    match path {
         path if path.ext_is(".html") => "text/html",
         path if path.ext_is(".css") => "text/css",
         path if path.ext_is(".js") => "text/javascript",
         path if path.ext_is(".jpg") => "image/jpg",
         path if path.ext_is(".png") => "image/png",
         path if path.ext_is(".pdf") => "application/pdf",
-        _ => "text/plain",
-    };
-
-    let response = format!("{status_line}\r\nContent-Length: {length}\r\nContent-Type: {content_type}\r\n\r\n");
-    writer.write_all(response.as_bytes())?;
-    writer.write_all(payload)?;
-    writer.flush()?;
-    Ok(())
+        path if path.ext_is(".mp4") => "video/mp4",
+        _ => "text/plain"
+    }
 }
