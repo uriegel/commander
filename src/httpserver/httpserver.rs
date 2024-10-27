@@ -3,7 +3,7 @@ use std::{io::{BufRead, BufReader, BufWriter, Write}, net::{TcpListener, TcpStre
 
 use include_dir::Dir;
 
-use crate::error::Error;
+use crate::{directory::get_file, error::Error};
 #[cfg(target_os = "linux")]
 use crate::linux::directory::get_icon;
 #[cfg(target_os = "windows")]
@@ -101,6 +101,10 @@ fn handle_connection(stream: TcpStream, webroot: Option<Arc<Mutex<Dir<'static>>>
                 let (icon_ext, icon) = get_icon(&path[14..])?;
                 send_bytes(writer, &icon_ext, icon.as_slice(), "HTTP/1.1 200 OK")
             },
+            (_, path) if path.starts_with("/getfile") => {
+                let (ext, file) = get_file(&path[14..])?;
+                send_bytes(writer, &ext, file.as_slice(), "HTTP/1.1 200 OK")
+            },
             (_, _) => route_not_found(writer)
         }
     }
@@ -135,10 +139,13 @@ fn handle_connection(stream: TcpStream, webroot: Option<Arc<Mutex<Dir<'static>>>
 fn send_bytes(mut writer: BufWriter<&TcpStream>, path: &str, payload: &[u8], status_line: &str)->Result<(), Error> {
     let length = payload.len();
     
+    // TODO compare_lowercase
     let content_type = match path {
         path if path.ends_with(".html") => "text/html",
         path if path.ends_with(".css") => "text/css",
         path if path.ends_with(".js") => "text/javascript",
+        path if path.ends_with(".jpg") => "image/jpg",
+        path if path.ends_with(".png") => "image/png",
         _ => "text/plain",
     };
 
