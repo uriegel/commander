@@ -5,7 +5,11 @@ let webViewEvents = {
     },
     registerShowPreview: (fun)=>{
         showPreviewFunc = fun    
+    },
+    registerMenuAction: (fun) =>{
+        menuActionFunc = fun    
     }
+
 }
 
 var showHiddenFunc = () => {}
@@ -16,4 +20,9 @@ function showHidden(show) {
 var showPreviewFunc = () => {}
 function showPreview(show) {
     showPreviewFunc(show)
+}
+
+var menuActionFunc = () => {}
+function menuAction(cmd) {
+    menuActionFunc(cmd)
 }

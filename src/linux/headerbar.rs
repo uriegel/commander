@@ -29,7 +29,7 @@ impl HeaderBar {
             .build();
         app.set_accels_for_action("app.devtools", &["<Ctrl><Shift>I"]);
         app.add_action_entries([action_devtools]);
-
+    
         let action_show_hidden = ActionEntry::builder("showhidden")
             .state(false.to_variant())
             .activate(clone!(#[weak]webview, move |_, action, _|{ 
@@ -45,7 +45,61 @@ impl HeaderBar {
             .build();
         app.set_accels_for_action("app.showhidden", &["<Ctrl>H"]);
         app.add_action_entries([action_show_hidden]);
-        
+    
+       let action_refresh = ActionEntry::builder("refresh")
+            .activate(clone!(#[weak]webview, move |_, _, _|{
+                webview.evaluate_javascript("menuAction('REFRESH')", None, None, None::<&Cancellable>, |_|{});
+                webview.grab_focus();
+            }))
+            .build();
+        app.set_accels_for_action("app.refresh", &["<Ctrl>R"]);
+        app.add_action_entries([action_refresh]);
+
+        let action_favorites = ActionEntry::builder("favorites")
+            .activate(clone!(#[weak]webview, move |_, _, _|{
+                webview.evaluate_javascript("menuAction('FAVORITES')", None, None, None::<&Cancellable>, |_|{});
+                webview.grab_focus();
+            }))
+            .build();
+        app.set_accels_for_action("app.favorites", &["F1"]);
+        app.add_action_entries([action_favorites]);
+
+        let action_adapt_path = ActionEntry::builder("adaptpath")
+            .activate(clone!(#[weak]webview, move |_, _, _|{
+                webview.evaluate_javascript("menuAction('ADAPT_PATH')", None, None, None::<&Cancellable>, |_|{});
+                webview.grab_focus();
+            }))
+            .build();
+        app.set_accels_for_action("app.adaptpath", &["F9"]);
+        app.add_action_entries([action_adapt_path]);
+
+        let action_select_all = ActionEntry::builder("selectall")
+            .activate(clone!(#[weak]webview, move |_, _, _|{
+                webview.evaluate_javascript("menuAction('SEL_ALL')", None, None, None::<&Cancellable>, |_|{});
+                webview.grab_focus();
+            }))
+            .build();
+        app.set_accels_for_action("app.selectall", &["KP_Add"]);
+        app.add_action_entries([action_select_all]);
+
+        let action_select_none = ActionEntry::builder("selectnone")
+            .activate(clone!(#[weak]webview, move |_, _, _|{
+                webview.evaluate_javascript("menuAction('SEL_NONE')", None, None, None::<&Cancellable>, |_|{});
+                webview.grab_focus();
+            }))
+            .build();
+        app.set_accels_for_action("app.selectnone", &["KP_Subtract"]);
+        app.add_action_entries([action_select_none]);
+
+        let action_toggle_preview = ActionEntry::builder("togglePreviewMode")
+            .activate(clone!(#[weak]webview, move |_, _, _|{
+                webview.evaluate_javascript("menuAction('TOGGLE_PREVIEW')", None, None, None::<&Cancellable>, |_|{});
+                webview.grab_focus();
+            }))
+            .build();
+        app.set_accels_for_action("app.togglePreviewMode", &["<Ctrl>F3"]);
+        app.add_action_entries([action_toggle_preview]);
+
         let action_show_preview = ActionEntry::builder("showpreview")
             .state(false.to_variant())
             .activate(clone!(#[weak]webview, move |_, action, _|{ 
@@ -65,18 +119,11 @@ impl HeaderBar {
 }
 
 /*
-    app.AddActions([
-        GtkAction("refresh", (fun () -> sendMenuAction webview.Ref "REFRESH"), "<Ctrl>R")
-                // new("extendedrename", () => SendMenuAction(webView.Ref, "EXTENDED_RENAME"), "<Ctrl>F2"),
+        // new("extendedrename", () => SendMenuAction(webView.Ref, "EXTENDED_RENAME"), "<Ctrl>F2"),
         GtkAction("rename", (fun () -> sendMenuAction webview.Ref "RENAME"), "F2")
                 // new("renameascopy", () => SendMenuAction(webView.Ref, "RENAME_AS_COPY"), "<Shift>F2"),
                 // new("copy", () => SendMenuAction(webView.Ref, "COPY"), "F5"),
                 // new("move", () => SendMenuAction(webView.Ref, "MOVE"), "F6"),
         GtkAction("delete", (fun () -> sendMenuAction webview.Ref "DELETE"))                
                 // new("createfolder", () => SendMenuAction(webView.Ref, "CREATE_FOLDER"), "F7"),
-        GtkAction("favorites", (fun () -> sendMenuAction webview.Ref "FAVORITES"), "F1")
-        GtkAction("adaptpath", (fun () -> sendMenuAction webview.Ref "ADAPT_PATH"), "F9")
-        GtkAction("selectall", (fun () -> sendMenuAction webview.Ref "SEL_ALL"), "KP_Add")
-        GtkAction("selectnone", (fun () -> sendMenuAction webview.Ref "SEL_NONE"), "KP_Subtract")
-    ]) |> ignore
- */
+*/

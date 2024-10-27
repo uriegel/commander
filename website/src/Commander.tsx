@@ -12,7 +12,7 @@ import './themes/adwaita.css'
 import './themes/windows.css'
 import { isWindows } from './globals'
 //import { copyErrorEvents, filesDropEvents, getCredentialsEvents,  progressChangedEvents } from './requests/events'
-import { menuActionEvents, showHiddenEvents, showPreviewEvents } from './requests/events'
+import { showHiddenEvents, showPreviewEvents } from './requests/events'
 import { getCopyController } from './controller/copy/copyController'
 import FileViewer from './components/FileViewer'
 import { SpecialKeys } from 'virtual-table-react'
@@ -23,7 +23,6 @@ import './extensions/extensions'
 import LocationViewer from './components/LocationViewer'
 import TrackViewer from './components/TrackViewer'
 import { WebViewType, WebViewEvents } from './webview.ts'
-import { Subscription } from 'rxjs'
 
 declare const WebView: WebViewType
 declare const webViewEvents: WebViewEvents
@@ -84,8 +83,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 	// const filesDropSubscription = useRef<Subscription | null>(null)
 	// const getCredentialsSubscription = useRef<Subscription | null>(null)
 	// const copyErrorSubscription = useRef<Subscription | null>(null)
-	const menuActionSubscription = useRef<Subscription | null>(null)
-	
+		
 	const copyItemsToInactive = useCallback((inactive: FolderViewHandle | null, move: boolean, activeController: Controller,
 		activePath: string, itemsToCopy: FolderViewItem[], id?: string) => {
 		const controller = inactive && getCopyController(move, dialog, id == ID_LEFT, activeController, inactive.getController(),
@@ -224,6 +222,8 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 			await copyItems(true)
 	}, [copyItems, dialog, previewMode])
 
+	webViewEvents.registerMenuAction(onMenuAction)
+
 	// useEffect(() => {
 	// 	const subscription = isWindows() ? progressChangedEvents.subscribe(e => {
 	// 		if (e.isStarted) {
@@ -257,10 +257,6 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 		folderLeft.current?.refresh(showHidden)
 		folderRight.current?.refresh(showHidden)
 	}, [showHidden])
-
-
-	menuActionSubscription.current?.unsubscribe()
-	menuActionSubscription.current = menuActionEvents.subscribe(onMenuAction)
 
 	const onKeyDown = (evt: React.KeyboardEvent) => {
 		if (evt.code == "Tab" && !evt.shiftKey) {

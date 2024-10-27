@@ -70,10 +70,18 @@ fn exif_data(file: &PathBuf)->Option<ExifData> {
         Tag::DateTimeOriginal, In::PRIMARY)
             .or_else(||exif.get_field(Tag::DateTime, In::PRIMARY));
     let date_time = dt.and_then(|v| v.to_date_time());
-    date_time.map(|date_time|ExifData { date_time: Some(date_time), latitude: None, longitude: None })
-        // TODO
-        //Tag::GPSDestLongitude
-        //Tag::GPSDestLatitude
+    
+    let l = exif.get_field(Tag::GPSLatitude, In::PRIMARY);
+    let latitude = l.and_then(|l| if let exif::Value::Rational(vec) = &l.value {
+        Some(vec[0].to_f64())
+    } else { None });
+
+    let l = exif.get_field(Tag::GPSLongitude, In::PRIMARY);
+    let longitude = l.and_then(|l| if let exif::Value::Rational(vec) = &l.value {
+        Some(vec[0].to_f64())
+    } else { None });
+
+    date_time.map(|date_time|ExifData { date_time: Some(date_time), latitude, longitude })
 }
 
 #[derive(Debug, Deserialize)]
