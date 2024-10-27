@@ -86,7 +86,6 @@ fn main() {
 // TODO /boot/loader/entries  => panic: access denied
 // TODO no // on linux status bar in root
 
-// TODO Ctrl+Shift+I in menubar-react
 // TODO suppress developer tools in menus in release version
 
 // TODO fs_extra::copy_items_with_progress
