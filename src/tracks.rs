@@ -14,7 +14,7 @@ pub struct GetTrackInfo {
 #[serde(rename_all = "camelCase")]
 pub struct TrackInfoData {
     name: Option<String>,
-    description: Option<String>,
+    //description: Option<String>,
     distance: f64,
     duration: i32,
     average_speed: f64,
@@ -41,7 +41,7 @@ pub fn get_track_info(input: GetTrackInfo)->Result<TrackInfoData, Error> {
     let info: XmlTrackInfo = quick_xml::de::from_reader(buf_reader)?;
     let res = TrackInfoData {
         name: info.trk.clone().and_then(|i|i.name),
-        description: info.trk.clone().and_then(|i|i.desc),
+  //      description: info.trk.clone().and_then(|i|i.desc),
         distance: info.trk.clone().and_then(|i|i.info.and_then(|i|i.distance)).unwrap_or(0.0),
         duration: info.trk.clone().and_then(|i|i.info.and_then(|i|i.duration)).unwrap_or(0),
         average_speed: info.trk.clone().and_then(|i|i.info.and_then(|i|i.average_speed)).unwrap_or(0.0),
@@ -83,7 +83,7 @@ struct XmlTrackInfo {
 #[derive(Debug, Clone, Deserialize)]
 struct XmlTrack {
     name: Option<String>,
-    desc: Option<String>,
+//    desc: Option<String>,
     info: Option<XmlInfo>,
     trkseg: Option<XmlTrackSegment>}
 
