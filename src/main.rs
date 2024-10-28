@@ -78,8 +78,7 @@ fn main() {
     .run();
 }
 
-// TODO viewer tracks (xml): old versions
-// TODO viewer mp3 und mp4
+// TODO viewer mp3 und mp4 Range
 
 // TODO Mount drives (Linux)
 // TODO File watcher

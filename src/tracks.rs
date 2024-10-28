@@ -1,6 +1,6 @@
 use std::{fs::File, io::BufReader};
 
-use chrono::{DateTime, Local};
+use chrono::{DateTime, Local, NaiveDate};
 use serde::{Deserialize, Serialize};
 
 use crate::error::Error;
@@ -35,14 +35,15 @@ struct TrackPoint {
 }
 
 pub fn get_track_info(input: GetTrackInfo)->Result<TrackInfoData, Error> {
-    println!("GTI {}", input.path);
     let file = File::open(input.path)?;
     println!("Xml opened");
     let buf_reader = BufReader::new(file);
     let info: XmlTrackInfo = quick_xml::de::from_reader(buf_reader)?;
     let old_version = info.trk.clone().and_then(|i|
         i.info.and_then(|i|
-            i.date.map(|d|d < Local::now()))).unwrap_or(false);
+            i.date.map(|d|d < DateTime::<Local>::from_naive_utc_and_offset(
+                NaiveDate::from_ymd_opt(2021, 1, 1).unwrap().into(), *Local::now().offset())
+            ))).unwrap_or(true);
     let res = TrackInfoData {
         name: info.trk.clone().and_then(|i|i.name),
   //      description: info.trk.clone().and_then(|i|i.desc),
@@ -52,7 +53,7 @@ pub fn get_track_info(input: GetTrackInfo)->Result<TrackInfoData, Error> {
         average_heart_rate: info
             .trk.clone()
                 .and_then(|i|i
-                    .trkseg
+                    .trkseg 
                     .and_then(|i|i
                         .trkpt
                         .map(|pts|pts.iter().map(|i|i.heartrate.unwrap_or(0)).sum::<i32>() / pts.len() as i32))).unwrap_or(0),
