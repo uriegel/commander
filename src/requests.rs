@@ -14,7 +14,13 @@ pub fn on_request(request: &Request, id: String, cmd: String, json: String)->boo
             "getfiles" => get_output(&get_files(get_input(&json))),
             "getextendeditems" => get_output(&get_extended_items(get_input(&json))),
             "cancelextendeditems" => get_output(&cancel_extended_items(get_input(&json))),
-            "gettrackinfo" => get_output(&get_track_info(get_input(&json))),
+            "gettrackinfo" => match get_track_info(get_input(&json)) {
+                Ok(ok) => get_output(&ItemsResult {ok}),
+                Err(err) => {
+                    println!("Could not get track info: {}", err);
+                    get_output(&ItemsErrorResult {err: ErrorType { status: 3001, status_text: "Could not parse xml track".to_string() }})
+                }
+            },
             _ => get_output(&Empty {})
         }
     });
@@ -28,7 +34,21 @@ pub struct ItemsResult<T> {
     pub ok: T
 }
 
+#[derive(Debug)]
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct ItemsErrorResult {
+    pub err: ErrorType
+}
+
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Empty {}
 
+#[derive(Debug)]
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct ErrorType {
+    status: i32,
+    status_text: String
+}

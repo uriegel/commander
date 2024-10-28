@@ -2,7 +2,7 @@ use std::{fs::File, io::BufReader};
 
 use serde::{Deserialize, Serialize};
 
-use crate::requests::ItemsResult;
+use crate::error::Error;
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -33,12 +33,12 @@ struct TrackPoint {
     velocity: f64
 }
 
-pub fn get_track_info(input: GetTrackInfo)->ItemsResult<TrackInfoData> {
+pub fn get_track_info(input: GetTrackInfo)->Result<TrackInfoData, Error> {
     println!("GTI {}", input.path);
-    let file = File::open(input.path).unwrap();
+    let file = File::open(input.path)?;
     println!("Xml opened");
     let buf_reader = BufReader::new(file);
-    let info: XmlTrackInfo = quick_xml::de::from_reader(buf_reader).unwrap();
+    let info: XmlTrackInfo = quick_xml::de::from_reader(buf_reader)?;
     let res = TrackInfoData {
         name: info.trk.clone().and_then(|i|i.name),
         description: info.trk.clone().and_then(|i|i.desc),
@@ -72,9 +72,7 @@ pub fn get_track_info(input: GetTrackInfo)->ItemsResult<TrackInfoData> {
                     )))
     };
 
-    ItemsResult {
-        ok: res
-    }
+    Ok(res)
 }
 
 #[derive(Debug, Deserialize)]

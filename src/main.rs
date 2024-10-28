@@ -78,6 +78,7 @@ fn main() {
     .run();
 }
 
+// TODO 2015 tracks 1st
 // TODO viewer tracks (xml): old versions
 // TODO viewer mp3 und mp4
 
@@ -87,7 +88,7 @@ fn main() {
 // TODO Windows icons best with ver 9.0.0, but crash on windows 125%, test with labtop. some exe icons are invisible with 16px
 
 // TODO /boot/loader/entries  => panic: access denied
-// TODO no // on linux status bar in root
+// TODO no // on linux status bar in root   
 
 // TODO suppress developer tools in menus in release version
 

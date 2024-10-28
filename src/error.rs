@@ -1,5 +1,7 @@
 use std::{fmt::{Display, Formatter, Result}, string::FromUtf8Error};
 
+use quick_xml::DeError;
+
 #[derive(Debug)]
 pub struct Error {
     message: String
@@ -29,6 +31,14 @@ impl From<std::io::Error> for Error {
 
 impl From<FromUtf8Error> for Error {
     fn from(error: FromUtf8Error) -> Self {
+        Error {
+            message: error.to_string(),
+        }
+    }
+}
+
+impl From<DeError> for Error {
+    fn from(error: DeError) -> Self {
         Error {
             message: error.to_string(),
         }
