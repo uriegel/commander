@@ -78,8 +78,6 @@ fn main() {
     .run();
 }
 
-// TODO viewer mp3 und mp4 Range
-
 // TODO Mount drives (Linux)
 // TODO File watcher
 

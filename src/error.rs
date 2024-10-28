@@ -1,4 +1,4 @@
-use std::{fmt::{Display, Formatter, Result}, string::FromUtf8Error};
+use std::{fmt::{Display, Formatter, Result}, num::ParseIntError, string::FromUtf8Error};
 
 use quick_xml::DeError;
 
@@ -39,6 +39,14 @@ impl From<FromUtf8Error> for Error {
 
 impl From<DeError> for Error {
     fn from(error: DeError) -> Self {
+        Error {
+            message: error.to_string(),
+        }
+    }
+}
+
+impl From<ParseIntError> for Error {
+    fn from(error: ParseIntError) -> Self {
         Error {
             message: error.to_string(),
         }

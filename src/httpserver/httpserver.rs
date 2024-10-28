@@ -1,10 +1,10 @@
 use core::str;
-use std::{io::{BufRead, BufReader, BufWriter, Read, Write}, net::{TcpListener, TcpStream}, sync::{Arc, Mutex}, thread};
+use std::{io::{BufRead, BufReader, BufWriter, Read, Seek, Write}, net::{TcpListener, TcpStream}, sync::{Arc, Mutex}, thread};
 
 use include_dir::Dir;
 
-use crate::{error::Error, requests_http::route_get, str::StrExt};
-use super::{html, threadpool::ThreadPool};
+use crate::{error::Error, httpserver::range::send_range, requests_http::route_get, str::StrExt};
+use super::{html, request::Request, threadpool::ThreadPool};
 
 #[derive(Clone)]
 pub struct HttpServer {
@@ -29,20 +29,29 @@ pub fn send_bytes(mut writer: BufWriter<&TcpStream>, path: &str, payload: &[u8],
     Ok(())
 }
 
-pub fn send_stream(mut writer: BufWriter<&TcpStream>, path: &str, mut stream: impl Read, len: u64, status_line: &str)->Result<(), Error> {
+pub fn send_stream(request: &mut Request, path: &str, stream: impl Read+Seek, len: u64, status_line: &str)->Result<(), Error> {
     let content_type = get_content_type(path);
+    if content_type.starts_with("audio") || content_type.starts_with("video") {
+        send_range(request, stream, len, status_line, content_type)?;
+    } else {
+        send_complete_stream(request, stream, len, status_line, content_type)?;
+    }
+    Ok(())
+}
+
+pub fn send_complete_stream(request: &mut Request, mut stream: impl Read+Seek, len: u64, status_line: &str, content_type: &str)->Result<(), Error> {
     let response = format!("{status_line}\r\nContent-Length: {len}\r\nContent-Type: {content_type}\r\n\r\n");
-    writer.write_all(response.as_bytes())?;
+    request.writer.write_all(response.as_bytes())?;
 
     let mut buf = [0u8; 8192];
     loop {
         let read = stream.read(&mut buf)?;
-        writer.write_all(&buf)?;    
+        request.writer.write_all(&buf)?;    
         if read < buf.len() {
             break
         }
     }
-    writer.flush()?;
+    request.writer.flush()?;
     Ok(())
 }
 
@@ -104,7 +113,11 @@ fn handle_connection(stream: TcpStream, webroot: Option<Arc<Mutex<Dir<'static>>>
 
         let result = match request_line {
             request_line if request_line.starts_with("GET") => {
-                route_get(buf_writer, request_line, webroot.clone())
+                route_get(Request {
+                    writer: buf_writer,
+                    request_line,
+                    headers: &headers 
+                }, webroot.clone())
             },
             _ => route_not_found(buf_writer)
         };
@@ -125,6 +138,8 @@ fn get_content_type(path: &str)->&str {
         path if path.ext_is(".png") => "image/png",
         path if path.ext_is(".pdf") => "application/pdf",
         path if path.ext_is(".mp4") => "video/mp4",
+        path if path.ext_is(".mkv") => "video/mkv",
+        path if path.ext_is(".mp3") => "audio/mp3",
         _ => "text/plain"
     }
 }
