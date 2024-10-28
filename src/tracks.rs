@@ -1,5 +1,6 @@
 use std::{fs::File, io::BufReader};
 
+use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 
 use crate::error::Error;
@@ -39,6 +40,9 @@ pub fn get_track_info(input: GetTrackInfo)->Result<TrackInfoData, Error> {
     println!("Xml opened");
     let buf_reader = BufReader::new(file);
     let info: XmlTrackInfo = quick_xml::de::from_reader(buf_reader)?;
+    let old_version = info.trk.clone().and_then(|i|
+        i.info.and_then(|i|
+            i.date.map(|d|d < Local::now()))).unwrap_or(false);
     let res = TrackInfoData {
         name: info.trk.clone().and_then(|i|i.name),
   //      description: info.trk.clone().and_then(|i|i.desc),
@@ -65,13 +69,12 @@ pub fn get_track_info(input: GetTrackInfo)->Result<TrackInfoData, Error> {
                             longitude: pt.lon.unwrap_or(0.0),
                             latitude: pt.lat.unwrap_or(0.0),
                             elevation: 0.0,
-                            velocity: pt.speed.unwrap_or(0.0),
+                            velocity: if old_version { pt.speed.unwrap_or(0.0) } else { pt.speed.unwrap_or(0.0) * 3.6 },
                             heartrate: pt.heartrate.unwrap_or(0),
                             time: pt.time.clone()
                         }).collect()
                     )))
     };
-
     Ok(res)
 }
 
@@ -89,7 +92,7 @@ struct XmlTrack {
 
 #[derive(Debug, Clone, Deserialize)]
 struct XmlInfo {
-    //date: Option<String>,
+    date: Option<DateTime<Local>>,
     distance: Option<f64>,
     duration: Option<i32>,
     #[serde(rename = "averageSpeed")]
