@@ -78,7 +78,7 @@ fn main() {
     .run();
 }
 
-// TODO viewer tracks (xml): Average heart rate
+// TODO viewer tracks (xml): old versions
 // TODO viewer mp3 und mp4
 
 // TODO Mount drives (Linux)

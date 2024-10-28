@@ -45,7 +45,13 @@ pub fn get_track_info(input: GetTrackInfo)->ItemsResult<TrackInfoData> {
         distance: info.trk.clone().and_then(|i|i.info.and_then(|i|i.distance)).unwrap_or(0.0),
         duration: info.trk.clone().and_then(|i|i.info.and_then(|i|i.duration)).unwrap_or(0),
         average_speed: info.trk.clone().and_then(|i|i.info.and_then(|i|i.average_speed)).unwrap_or(0.0),
-        average_heart_rate: 0, // TODO
+        average_heart_rate: info
+            .trk.clone()
+                .and_then(|i|i
+                    .trkseg
+                    .and_then(|i|i
+                        .trkpt
+                        .map(|pts|pts.iter().map(|i|i.heartrate.unwrap_or(0)).sum::<i32>() / pts.len() as i32))).unwrap_or(0),
         track_points: 
             info
             .trk
