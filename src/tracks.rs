@@ -44,7 +44,7 @@ pub fn get_track_info(input: GetTrackInfo)->ItemsResult<TrackInfoData> {
         description: info.trk.clone().and_then(|i|i.desc),
         distance: info.trk.clone().and_then(|i|i.info.and_then(|i|i.distance)).unwrap_or(0.0),
         duration: info.trk.clone().and_then(|i|i.info.and_then(|i|i.duration)).unwrap_or(0),
-        average_speed: info.trk.clone().and_then(|i|i.info.and_then(|i|i.averageSpeed)).unwrap_or(0.0),
+        average_speed: info.trk.clone().and_then(|i|i.info.and_then(|i|i.average_speed)).unwrap_or(0.0),
         average_heart_rate: 0, // TODO
         track_points: 
             info
@@ -85,10 +85,11 @@ struct XmlTrack {
 
 #[derive(Debug, Clone, Deserialize)]
 struct XmlInfo {
-    date: Option<String>,
+    //date: Option<String>,
     distance: Option<f64>,
     duration: Option<i32>,
-    averageSpeed: Option<f64>,
+    #[serde(rename = "averageSpeed")]
+    average_speed: Option<f64>,
 }
 
 #[derive(Debug, Clone, Deserialize)]

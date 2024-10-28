@@ -78,10 +78,10 @@ fn main() {
     .run();
 }
 
-// TODO viewer tracks (xml)
+// TODO viewer tracks (xml): Average heart rate
 // TODO viewer mp3 und mp4
 
-// File watcher
+// TODO File watcher
 
 // TODO Windows icons best with ver 9.0.0, but crash on windows 125%, test with labtop. some exe icons are invisible with 16px
 
