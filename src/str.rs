@@ -1,3 +1,5 @@
+#[allow(dead_code)]
+
 pub trait StrExt {
     fn ext_is(&self, s: &str) -> bool;
     //fn split_at_str<'a >(&'a self, pat: &'a str) -> Option<(&'a str, &'a str)>;

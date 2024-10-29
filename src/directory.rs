@@ -4,12 +4,12 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use urlencoding::decode;
 
-use crate::{error::Error, linux::directory::mount, requests::ItemsResult};
+use crate::{error::Error, requests::ItemsResult};
 
 #[cfg(target_os = "windows")]
 use crate::windows::directory::{is_hidden, StringExt, get_icon_path};
 #[cfg(target_os = "linux")]
-use crate::linux::directory::{is_hidden, StringExt, get_icon_path};
+use crate::linux::directory::{is_hidden, StringExt, get_icon_path, mount};
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
