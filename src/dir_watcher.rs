@@ -1,7 +1,12 @@
 use std::{collections::HashMap, path::Path, sync::{Arc, Mutex, Once}};
 
 use async_channel::{Receiver, Sender};
-use notify::{Event, EventHandler, INotifyWatcher, RecursiveMode, Watcher};
+use notify::{Event, EventHandler, RecursiveMode, Watcher};
+
+#[cfg(target_os = "linux")]
+use notify::INotifyWatcher;
+#[cfg(target_os = "windows")]
+use notify::ReadDirectoryChangesWatcher;
 
 pub fn add_dir_watching(id: &str, path: &str) {
     let mut watchers = get_watchers().lock().unwrap();
@@ -11,7 +16,10 @@ pub fn add_dir_watching(id: &str, path: &str) {
 }
 
 struct DirWatcher {
-    _watcher: INotifyWatcher
+    #[cfg(target_os = "linux")]
+    _watcher: INotifyWatcher,
+    #[cfg(target_os = "windows")]
+    _watcher: ReadDirectoryChangesWatcher
 }   
 
 impl DirWatcher {
