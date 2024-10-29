@@ -78,7 +78,6 @@ fn main() {
     .run();
 }
 
-// TODO Mount drives (Linux)
 // TODO File watcher
 
 // TODO Windows icons best with ver 9.0.0, but crash on windows 125%, test with labtop. some exe icons are invisible with 16px

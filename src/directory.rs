@@ -4,7 +4,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use urlencoding::decode;
 
-use crate::{error::Error, requests::ItemsResult};
+use crate::{error::Error, linux::directory::mount, requests::ItemsResult};
 
 #[cfg(target_os = "windows")]
 use crate::windows::directory::{is_hidden, StringExt, get_icon_path};
@@ -17,7 +17,8 @@ pub struct GetFiles {
     //pub id: String,
     pub path: String,
     pub show_hidden_items: bool,
-    //pub mount: bool
+    #[cfg(target_os = "linux")]
+    pub mount: bool
 }
 
 #[derive(Debug, Serialize)]
@@ -45,8 +46,11 @@ pub fn get_files(input: GetFiles)->ItemsResult<GetFilesResult> {
         .ok()
         .map(|p|p.to_string_lossy().to_string().clean_path())
         .unwrap_or_else(||input.path.clone());
+
+    #[cfg(target_os = "linux")]
+    let path = if input.mount { mount(&path) } else { path };
     
-    let items: Vec<DirectoryItem> = read_dir(&input.path)
+    let items: Vec<DirectoryItem> = read_dir(&path)
         .unwrap()
         .filter_map(|file|file.ok())
         .filter_map(|file| {

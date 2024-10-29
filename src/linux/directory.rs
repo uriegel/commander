@@ -1,6 +1,6 @@
 use std::{fs::{self, Metadata}, process::Command};
 
-use crate::{error::Error, extended_items::{GetExtendedItems, Version}};
+use crate::{error::Error, extended_items::{GetExtendedItems, Version}, str::StrExt};
 use crate::directory::get_extension;
 
 use super::iconresolver::get_geticon_py;
@@ -39,6 +39,22 @@ pub fn get_icon(path: &str)->Result<(String, Vec<u8>), Error> {
 
 pub fn get_version(_: &GetExtendedItems, _: &String) -> Option<Version> {
     None
+}
+
+pub fn mount(path: &str)->String {
+    Command::new("udisksctl")
+        .arg("mount")
+        .arg("-b")
+        .arg(format!("/dev/{path}"))
+        .output()
+        .inspect_err(|e|println!("Could not mount: {e}"))
+        .ok()
+        .and_then(|output|String::from_utf8(output.stdout).ok())
+        .as_deref()
+        .and_then(|output| output.substr_after(" at "))
+        .map(|s|s.trim())
+        .unwrap_or(path)
+        .to_string()
 }
 
 pub trait StringExt {
