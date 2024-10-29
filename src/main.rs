@@ -12,6 +12,7 @@ mod str;
 mod requests;
 mod requests_http;
 mod tracks;
+mod dir_watcher;
 #[cfg(target_os = "linux")]
 mod linux;
 #[cfg(target_os = "windows")]
