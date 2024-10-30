@@ -4,7 +4,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use urlencoding::decode;
 
-use crate::{dir_watcher::add_dir_watching, error::Error, requests::ItemsResult};
+use crate::{error::Error, requests::ItemsResult};
 
 #[cfg(target_os = "windows")]
 use crate::windows::directory::{is_hidden, StringExt, get_icon_path};
@@ -14,7 +14,7 @@ use crate::linux::directory::{is_hidden, StringExt, get_icon_path, mount};
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GetFiles {
-    pub id: String,
+    //pub id: String,
     pub path: String,
     pub show_hidden_items: bool,
     #[cfg(target_os = "linux")]
@@ -78,8 +78,6 @@ pub fn get_files(input: GetFiles)->ItemsResult<GetFilesResult> {
         .filter(|item| input.show_hidden_items || !item.is_hidden )
         .collect();
     let dir_count = items.iter().filter(|i|i.is_directory).count();
-
-    add_dir_watching(&input.id, &path);
 
     ItemsResult {
         ok: GetFilesResult {
