@@ -78,7 +78,11 @@ fn main() {
     .run();
 }
 
-// TODO File watcher
+// TODO CreateFolder
+// TODO Trash
+// TODO Rename
+// TODO Copy
+// TODO Move
 
 // TODO /boot/loader/entries  => panic: access denied
 // TODO no // on linux status bar in root   
