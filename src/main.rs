@@ -34,21 +34,22 @@ fn on_activate(app: &Application) -> WebView {
     let dir = include_dir!("website/dist");
     #[cfg(target_os = "windows")]
     let arc_dir = Some(Arc::new(Mutex::new(dir.clone())));
-
+    let url = format!("http://localhost:{HTTP_PORT}/webroot/index.html");
+    let query = format!("?port={HTTP_PORT}");
     let webview_builder = WebView::builder(app)
         .save_bounds()
-        .title("Commander".to_string())
+        .title("Commander")
         .devtools(true)
         .webroot(dir.clone())
-        .debug_url("http://localhost:5173".to_string())
-        .url(format!("http://localhost:{HTTP_PORT}/webroot/index.html"))
-        .query_string(format!("?port={HTTP_PORT}"))
+        .debug_url("http://localhost:5173")
+        .url(&url)
+        .query_string(&query)
         .default_contextmenu_disabled()
         .without_native_titlebar();
 
     #[cfg(target_os = "linux")]
     let webview_builder = webview_builder.with_builder(
-        "/de/uriegel/commander/window.ui".to_string(),
+        "/de/uriegel/commander/window.ui",
         move |builder| HeaderBar::new(builder),
     );
 
