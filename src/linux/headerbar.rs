@@ -64,6 +64,15 @@ impl HeaderBar {
         app.set_accels_for_action("app.favorites", &["F1"]);
         app.add_action_entries([action_favorites]);
 
+        let action_rename = ActionEntry::builder("rename")
+            .activate(clone!(#[weak]webview, move |_, _, _|{
+                webview.evaluate_javascript("menuAction('RENAME')", None, None, None::<&Cancellable>, |_|{});
+                webview.grab_focus();
+            }))
+            .build();
+        app.set_accels_for_action("app.rename", &["F2"]);
+        app.add_action_entries([action_rename]);
+
         let action_create_folder = ActionEntry::builder("createfolder")
             .activate(clone!(#[weak]webview, move |_, _, _|{
                 webview.evaluate_javascript("menuAction('CREATE_FOLDER')", None, None, None::<&Cancellable>, |_|{});
@@ -81,6 +90,15 @@ impl HeaderBar {
             .build();
         app.set_accels_for_action("app.adaptpath", &["F9"]);
         app.add_action_entries([action_adapt_path]);
+
+        let action_delete = ActionEntry::builder("delete")
+            .activate(clone!(#[weak]webview, move |_, _, _|{
+                webview.evaluate_javascript("menuAction('DELETE')", None, None, None::<&Cancellable>, |_|{});
+                webview.grab_focus();
+            }))
+            .build();
+        app.set_accels_for_action("app.delete", &["Delete"]);
+        app.add_action_entries([action_delete]);
 
         let action_select_all = ActionEntry::builder("selectall")
             .activate(clone!(#[weak]webview, move |_, _, _|{
@@ -129,10 +147,7 @@ impl HeaderBar {
 
 /*
         // new("extendedrename", () => SendMenuAction(webView.Ref, "EXTENDED_RENAME"), "<Ctrl>F2"),
-        GtkAction("rename", (fun () -> sendMenuAction webview.Ref "RENAME"), "F2")
                 // new("renameascopy", () => SendMenuAction(webView.Ref, "RENAME_AS_COPY"), "<Shift>F2"),
                 // new("copy", () => SendMenuAction(webView.Ref, "COPY"), "F5"),
                 // new("move", () => SendMenuAction(webView.Ref, "MOVE"), "F6"),
-        GtkAction("delete", (fun () -> sendMenuAction webview.Ref "DELETE"))                
-                
 */

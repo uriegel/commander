@@ -3,6 +3,7 @@ use std::{fs::{canonicalize, create_dir, read_dir, File}, path::PathBuf, time::U
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use urlencoding::decode;
+use trash::delete_all;
 
 use crate::{error::Error, requests::RequestError};
 
@@ -26,6 +27,13 @@ pub struct GetFiles {
 pub struct CreateFolder {
     pub path: String,
     pub name: String,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DeleteItems {
+    pub path: String,
+    pub names: Vec<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -113,6 +121,12 @@ pub fn get_file(path: &str)->Result<(String, File), Error> {
 pub fn create_folder(input: CreateFolder)->Result<(), RequestError> {
     let new_path = PathBuf::from(input.path).join(input.name);
     create_dir(new_path)?;
+    Ok(())
+}
+
+pub fn delete_items(input: DeleteItems)->Result<(), RequestError> {
+    println!("delete {:?}", input);
+    delete_all(input.names.iter().map(|n|PathBuf::from(&input.path).join(n)))?;
     Ok(())
 }
 

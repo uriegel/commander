@@ -79,8 +79,6 @@ fn main() {
     .run();
 }
 
-// TODO CreateFolder Windows
-// TODO Trash
 // TODO Rename
 // TODO Copy
 // TODO Move
@@ -91,4 +89,3 @@ fn main() {
 // TODO suppress developer tools in menus in release version
 
 // TODO fs_extra::copy_items_with_progress
-// TODO Trash: https://docs.rs/trash/latest/trash/

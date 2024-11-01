@@ -72,7 +72,7 @@
             <attribute name="action">app.move</attribute>
           </item>
           <item>
-            <attribute name="label">_Löschen              Entf</attribute>
+            <attribute name="label">_Löschen</attribute>
             <attribute name="action">app.delete</attribute>
           </item>
         </section>

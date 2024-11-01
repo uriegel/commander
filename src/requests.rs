@@ -5,7 +5,7 @@ use serde::Serialize;
 use serde_repr::Serialize_repr;
 use webview_app::request::{get_input, get_output, request_blocking, Request};
 
-use crate::{cancellations::CancellationKey, directory::{create_folder, get_files}, extended_items::{
+use crate::{cancellations::CancellationKey, directory::{create_folder, delete_items, get_files}, extended_items::{
     cancel_extended_items, get_extended_items
 }, tracks::get_track_info};
 #[cfg(target_os = "linux")]
@@ -21,6 +21,7 @@ pub fn on_request(request: &Request, id: String, cmd: String, json: String)->boo
             "getextendeditems" => from_result(get_extended_items(get_input(&json))),
             "cancelextendeditems" => from_result(cancel_extended_items(get_input(&json))),
             "createfolder" => from_result(create_folder(get_input(&json))),
+            "deleteitems" => from_result(delete_items(get_input(&json))),
             "gettrackinfo" => from_result(get_track_info(get_input(&json))),
             _ => from_result(Ok::<(), RequestError>(()))
         }
@@ -62,6 +63,20 @@ impl From<FromUtf8Error> for RequestError {
     fn from(error: FromUtf8Error) -> Self {
         eprintln!("Utf8 error occured: {}", error);
         RequestError { status: ErrorType::Unknown }
+    }
+}
+
+impl From<trash::Error> for RequestError {
+    fn from(error: trash::Error) -> Self {
+        let status = match &error {
+            trash::Error::FileSystem { source, .. } if source.kind() == std::io::ErrorKind::PermissionDenied => ErrorType::AccessDenied,
+            trash::Error::FileSystem { source, .. } if source.kind() == std::io::ErrorKind::NotFound => ErrorType::FileNotFound,
+            _ => ErrorType::Unknown,
+        };
+        eprintln!("Trash error occured: {}", error);
+        RequestError {
+            status
+        }
     }
 }
 
