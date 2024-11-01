@@ -1,5 +1,9 @@
+use std::f64::consts::PI;
+use std::sync::{Arc, Mutex};
+use std::thread;
 use std::time::Duration;
 
+use async_channel::Sender;
 use gtk::glib::{self, spawn_future_local, timeout_future};
 use gtk::glib::clone;
 use webkit6::prelude::*;
@@ -67,6 +71,23 @@ impl HeaderBar {
         let action_rename = ActionEntry::builder("rename")
             .activate(clone!(#[weak]webview, move |_, _, _|{
                 webview.evaluate_javascript("menuAction('RENAME')", None, None, None::<&Cancellable>, |_|{});
+
+
+
+                // TODO TEST Revealer progress
+                std::thread::spawn(|| {
+                    thread::sleep(Duration::from_secs(5));
+                    let sender = get_sender().lock().unwrap();
+                    let _ = sender.send_blocking(Progress::Start);
+                    thread::sleep(Duration::from_secs(5));
+                    let _ = sender.send_blocking(Progress::Stop);
+                    thread::sleep(Duration::from_secs(5));
+                    let _ = sender.send_blocking(Progress::Drop);
+                });
+
+
+
+
                 webview.grab_focus();
             }))
             .build();
@@ -142,8 +163,62 @@ impl HeaderBar {
             .build();
         app.set_accels_for_action("app.showpreview", &["F3"]);
         app.add_action_entries([action_show_preview]);
+
+        let (sender, receiver) = async_channel::unbounded();
+        set_progress_sender(sender);
+        let revealer: gtk::Revealer = builder.object("revealer").unwrap();
+        let progress_area: gtk::DrawingArea = builder.object("progressarea").unwrap();
+        let progress = 0.4;
+        progress_area.set_draw_func(move|_, c, w, h|{
+            c.set_antialias(gtk::cairo::Antialias::Best);
+            c.set_line_join(gtk::cairo::LineJoin::Miter);
+            c.set_line_cap(gtk::cairo::LineCap::Round);
+            c.translate(w as f64 / 2.0, h as f64 /2.0);
+            let _ = c.stroke_preserve();
+            c.arc_negative(0.0, 0.0, (if w < h {w} else {h}) as f64 / 2.0, -PI/2.0, -PI/2.0 + f64::max(progress, 0.01)*PI*2.0);
+            c.line_to(0.0, 0.0);
+            c.set_source_rgb(0.7, 0.7, 0.7);
+            let _ = c.fill();
+            c.move_to(0.0, 0.0);
+            c.arc(0.0, 0.0, (if w < h {w} else {h}) as f64 / 2.0, -PI/2.0, -PI/2.0 + f64::max(progress, 0.01)*PI*2.0);
+            c.set_source_rgb(0.0, 0.0, 1.0);
+            let _ = c.fill();
+        });
+
+        glib::spawn_future_local(clone!(
+            #[weak] revealer, 
+            #[weak] progress_area, 
+            async move {
+                while let Ok(progress) = receiver.recv().await {
+                    match progress {
+                        Progress::Start => revealer.set_reveal_child(true),    
+                        Progress::Stop => {
+                            progress_area.queue_draw();
+                        },    
+                        Progress::Drop => revealer.set_reveal_child(false),    
+                    }
+                }
+            }));        
     }
 }
+
+enum Progress {
+    Start,
+    Stop,
+    Drop
+}
+
+fn set_progress_sender(snd: Sender<Progress>) {
+    unsafe { PROGRESS_SENDER = Some(Arc::new(Mutex::new(snd))) };
+}
+
+fn get_sender()->&'static Arc<Mutex<Sender<Progress>>> {
+    unsafe {
+        PROGRESS_SENDER.as_ref().unwrap()        
+    }
+}
+
+static mut PROGRESS_SENDER: Option<Arc<Mutex<Sender<Progress>>>> = None;
 
 /*
         // new("extendedrename", () => SendMenuAction(webView.Ref, "EXTENDED_RENAME"), "<Ctrl>F2"),

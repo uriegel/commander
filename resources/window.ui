@@ -21,12 +21,12 @@
           </object>
         </child>
         <child type="end">
-          <object class="GtkRevealer">
+          <object class="GtkRevealer" id="revealer">
             <property name="transition-type">slide-left</property>
             <child>
               <object class="GtkMenuButton">
                 <child>
-                  <object class="GtkDrawingArea"/>
+                  <object class="GtkDrawingArea" id="progressarea"/>
                 </child>
               </object>
             </child>
