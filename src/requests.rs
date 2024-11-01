@@ -69,11 +69,14 @@ impl From<FromUtf8Error> for RequestError {
 impl From<trash::Error> for RequestError {
     fn from(error: trash::Error) -> Self {
         let status = match &error {
+            #[cfg(target_os = "linux")]
             trash::Error::FileSystem { source, .. } if source.kind() == std::io::ErrorKind::PermissionDenied => ErrorType::AccessDenied,
+            #[cfg(target_os = "linux")]
             trash::Error::FileSystem { source, .. } if source.kind() == std::io::ErrorKind::NotFound => ErrorType::FileNotFound,
+            #[cfg(target_os = "windows")]
+            trash::Error::Os { code, .. } if *code as u32 == 0x80070002 => ErrorType::FileNotFound,
             _ => ErrorType::Unknown,
         };
-        eprintln!("Trash error occured: {}", error);
         RequestError {
             status
         }
