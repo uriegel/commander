@@ -79,7 +79,6 @@ fn main() {
     .run();
 }
 
-// TODO Track-pngs for Release version
 // TODO CreateFolder
 // TODO Trash
 // TODO Rename

@@ -31,6 +31,7 @@ pub struct RequestError {
 }
 
 // TODO RequestError
+#[derive(Debug, Serialize)]
 pub enum ErrorType {
     Unknown,
     AccessDenied,
@@ -48,32 +49,29 @@ pub enum ErrorType {
     UacNotStarted = 1099
 }
 
-#[derive(Debug)]
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-struct ErrorType {
-    status: i32,
-    status_text: String
-}
-
-#[derive(Debug)]
-#[derive(Serialize)]
+#[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct ItemsResult<T> {
     ok: T
 }
 
-#[derive(Debug)]
-#[derive(Serialize)]
+#[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct ItemsErrorResult {
-    err: ErrorType
+    err: ItemsError
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct ItemsError {
+    status: ErrorType,
+    status_text: String
 }
 
 fn from_result<T, E>(result: Result<T, E>)->String 
 where T: Serialize{
     match result {
         Ok(ok) => get_output(&ItemsResult { ok }),
-        Err(err) => get_output(&ItemsErrorResult { err: ErrorType { status: 5, status_text: "".to_string() } }),
+        Err(err) => get_output(&ItemsErrorResult { err: ItemsError { status: ErrorType::AccessDenied, status_text: "".to_string() } }),
     }
 }
