@@ -1,4 +1,4 @@
-use std::{fs::{canonicalize, read_dir, File}, time::UNIX_EPOCH};
+use std::{fs::{canonicalize, create_dir, read_dir, File}, path::PathBuf, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -110,7 +110,9 @@ pub fn get_file(path: &str)->Result<(String, File), Error> {
     Ok((path, file))
 }
 
-pub fn create_folder(input: CreateFolder)->Result<(), Error> {
+pub fn create_folder(input: CreateFolder)->Result<(), RequestError> {
+    let new_path = PathBuf::from(input.path).join(input.name);
+    create_dir(new_path)?;
     Ok(())
 }
 

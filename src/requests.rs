@@ -5,7 +5,7 @@ use serde::Serialize;
 use serde_repr::Serialize_repr;
 use webview_app::request::{get_input, get_output, request_blocking, Request};
 
-use crate::{cancellations::CancellationKey, directory::get_files, extended_items::{cancel_extended_items, get_extended_items}, tracks::get_track_info};
+use crate::{cancellations::CancellationKey, directory::{create_folder, get_files}, extended_items::{cancel_extended_items, get_extended_items}, tracks::get_track_info};
 #[cfg(target_os = "linux")]
 use crate::linux::root::get_root;
 #[cfg(target_os = "windows")]
@@ -18,6 +18,7 @@ pub fn on_request(request: &Request, id: String, cmd: String, json: String)->boo
             "getfiles" => from_result(get_files(get_input(&json))),
             "getextendeditems" => from_result(get_extended_items(get_input(&json))),
             "cancelextendeditems" => from_result(cancel_extended_items(get_input(&json))),
+            "createfolder" => from_result(create_folder(get_input(&json))),
             "gettrackinfo" => from_result(get_track_info(get_input(&json))),
             _ => from_result(Ok::<(), RequestError>(()))
         }
@@ -113,4 +114,3 @@ where T: Serialize{
         Err(err) => get_output(&ItemsErrorResult { err }),
     }
 }
-
