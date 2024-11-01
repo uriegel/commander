@@ -4,43 +4,40 @@ use chrono::{DateTime, Local, TimeZone};
 use exif::{Field, In, Tag, Value};
 use serde::{Deserialize, Serialize};
 
-use crate::{cancellations::{get_cancellation, CancellationKey}, requests::{Empty, ItemsResult}};
+use crate::{cancellations::{get_cancellation, CancellationKey}, requests::RequestError};
 
 #[cfg(target_os = "windows")]
 use crate::windows::version::get_version;
 #[cfg(target_os = "linux")]
 use crate::linux::directory::get_version;
 
-pub fn get_extended_items(input: GetExtendedItems)->ItemsResult<GetExtendedItemsResult> {
+pub fn get_extended_items(input: GetExtendedItems)->Result<GetExtendedItemsResult, RequestError> {
     let (snd, rcv) = channel::<bool>();
     change_cancellation(input.id.clone(), snd);
     let path = input.path.clone(); 
-    ItemsResult {
-        ok: GetExtendedItemsResult {
-            path,
-            extended_items: input
-                            .items
-                            .iter()
-                            .take_while(|_|match rcv.try_recv() {
-                                        Err(TryRecvError::Empty) => true,
-                                        _ => false
-                                    })
-                            .map(|n| ExtendedItem { 
-                                                exif_data: get_exif_data(&input, n),
-                                                version: get_version(&input, n),
-                                            })
-                            .collect()
-        }
-    }
+    Ok(GetExtendedItemsResult {
+        path,
+        extended_items: input
+                        .items
+                        .iter()
+                        .take_while(|_|match rcv.try_recv() {
+                                    Err(TryRecvError::Empty) => true,
+                                    _ => false
+                                })
+                        .map(|n| ExtendedItem { 
+                                            exif_data: get_exif_data(&input, n),
+                                            version: get_version(&input, n),
+                                        })
+                        .collect()
+    })
 }
 
-pub fn cancel_extended_items(input: CancelExtendedItems)->ItemsResult<Empty> {
+pub fn cancel_extended_items(input: CancelExtendedItems)->Result<(), RequestError> {
     let cancellation = get_cancellation().lock().unwrap();
     let cancel = cancellation.get(&CancellationKey::extended_item(input.id));
     cancel.inspect(|snd|{let _ = snd.send(true);});
-    ItemsResult {
-        ok: Empty {}
-    }
+    // TODO RequestError
+    Ok(())
 }
 
 fn change_cancellation(id: String, sender: Sender<bool>) {

@@ -4,7 +4,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use urlencoding::decode;
 
-use crate::{error::Error, requests::ItemsResult};
+use crate::{error::Error, requests::RequestError};
 
 #[cfg(target_os = "windows")]
 use crate::windows::directory::{is_hidden, StringExt, get_icon_path};
@@ -19,6 +19,13 @@ pub struct GetFiles {
     pub show_hidden_items: bool,
     #[cfg(target_os = "linux")]
     pub mount: bool
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateFolder {
+    pub path: String,
+    pub name: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -41,7 +48,7 @@ pub struct GetFilesResult {
     file_count: usize,
 }
 
-pub fn get_files(input: GetFiles)->ItemsResult<GetFilesResult> {
+pub fn get_files(input: GetFiles)->Result<GetFilesResult, RequestError> {
     let path = canonicalize(&input.path)
         .ok()
         .map(|p|p.to_string_lossy().to_string().clean_path())
@@ -79,15 +86,13 @@ pub fn get_files(input: GetFiles)->ItemsResult<GetFilesResult> {
         .collect();
     let dir_count = items.iter().filter(|i|i.is_directory).count();
 
-    ItemsResult {
-        ok: GetFilesResult {
-            path,
-            dir_count,
-            file_count: items.len() - dir_count, 
-            items,
-        }
-    }
-    
+    // TODO RequestError
+    Ok(GetFilesResult {
+        path,
+        dir_count,
+        file_count: items.len() - dir_count, 
+        items,
+    })
 }
 
 pub fn get_extension(name: &str)->Option<&str> {
@@ -105,6 +110,10 @@ pub fn get_file(path: &str)->Result<(String, File), Error> {
     let path = decode(path)?.to_string();
     let file = File::open(&path)?;
     Ok((path, file))
+}
+
+pub fn create_folder(input: CreateFolder)->Result<(), Error> {
+    Ok(())
 }
 
 fn get_icon_path_of_file(name: &str, path: &str, is_directory: bool)->Option<String> {

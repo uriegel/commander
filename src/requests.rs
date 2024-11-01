@@ -10,40 +10,23 @@ use crate::windows::root::get_root;
 pub fn on_request(request: &Request, id: String, cmd: String, json: String)->bool {
     request_blocking(request, id, move || {
         match cmd.as_str() {
-            "getroot" => get_output(&get_root()),
-            "getfiles" => get_output(&get_files(get_input(&json))),
-            "getextendeditems" => get_output(&get_extended_items(get_input(&json))),
-            "cancelextendeditems" => get_output(&cancel_extended_items(get_input(&json))),
-            "gettrackinfo" => match get_track_info(get_input(&json)) {
-                Ok(ok) => get_output(&ItemsResult {ok}),
-                Err(err) => {
-                    println!("Could not get track info: {}", err);
-                    get_output(&ItemsErrorResult {err: ErrorType { status: 3001, status_text: "Could not parse xml track".to_string() }})
-                }
-            },
-            _ => get_output(&Empty {})
+            "getroot" => from_result(get_root()),
+            "getfiles" => from_result(get_files(get_input(&json))),
+            "getextendeditems" => from_result(get_extended_items(get_input(&json))),
+            "cancelextendeditems" => from_result(cancel_extended_items(get_input(&json))),
+            "gettrackinfo" => from_result(get_track_info(get_input(&json))),
+            // RequestError
+            // Err(err) => {
+            //     println!("Could not get track info: {}", err);
+            //     get_output(&ItemsErrorResult {err: ErrorType { status: 3001, status_text: "Could not parse xml track".to_string() }})
+            // }
+            _ => from_result(Ok::<(), RequestError>(()))
         }
     });
     true
 }
 
-#[derive(Debug)]
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ItemsResult<T> {
-    pub ok: T
-}
-
-#[derive(Debug)]
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-struct ItemsErrorResult {
-    pub err: ErrorType
-}
-
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Empty {}
+pub struct RequestError {}
 
 #[derive(Debug)]
 #[derive(Serialize)]
@@ -51,4 +34,26 @@ pub struct Empty {}
 struct ErrorType {
     status: i32,
     status_text: String
+}
+
+#[derive(Debug)]
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct ItemsResult<T> {
+    ok: T
+}
+
+#[derive(Debug)]
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct ItemsErrorResult {
+    err: ErrorType
+}
+
+fn from_result<T, E>(result: Result<T, E>)->String 
+where T: Serialize{
+    match result {
+        Ok(ok) => get_output(&ItemsResult { ok }),
+        Err(err) => get_output(&ItemsErrorResult { err: ErrorType { status: 5, status_text: "".to_string() } }),
+    }
 }

@@ -64,6 +64,15 @@ impl HeaderBar {
         app.set_accels_for_action("app.favorites", &["F1"]);
         app.add_action_entries([action_favorites]);
 
+        let action_create_folder = ActionEntry::builder("createfolder")
+            .activate(clone!(#[weak]webview, move |_, _, _|{
+                webview.evaluate_javascript("menuAction('CREATE_FOLDER')", None, None, None::<&Cancellable>, |_|{});
+                webview.grab_focus();
+            }))
+            .build();
+        app.set_accels_for_action("app.createfolder", &["F7"]);
+        app.add_action_entries([action_create_folder]);
+
         let action_adapt_path = ActionEntry::builder("adaptpath")
             .activate(clone!(#[weak]webview, move |_, _, _|{
                 webview.evaluate_javascript("menuAction('ADAPT_PATH')", None, None, None::<&Cancellable>, |_|{});
@@ -125,5 +134,5 @@ impl HeaderBar {
                 // new("copy", () => SendMenuAction(webView.Ref, "COPY"), "F5"),
                 // new("move", () => SendMenuAction(webView.Ref, "MOVE"), "F6"),
         GtkAction("delete", (fun () -> sendMenuAction webview.Ref "DELETE"))                
-                // new("createfolder", () => SendMenuAction(webView.Ref, "CREATE_FOLDER"), "F7"),
+                
 */

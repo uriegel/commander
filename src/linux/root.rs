@@ -2,7 +2,7 @@ use std::{iter::Take, process::Command};
 
 use serde::Serialize;
 
-use crate::requests::ItemsResult;
+use crate::requests::RequestError;
 
 #[derive(Debug)]
 #[derive(Serialize)]
@@ -16,7 +16,7 @@ pub struct RootItem {
     pub drive_type: String,
 }
 
-pub fn get_root()->ItemsResult<Vec<RootItem>> {
+pub fn get_root()->Result<Vec<RootItem>, RequestError> {
     let output = Command::new("lsblk")
         .arg("--bytes")
         .arg("--output")
@@ -75,8 +75,9 @@ pub fn get_root()->ItemsResult<Vec<RootItem>> {
             b.is_mounted.cmp(&a.is_mounted)
                 .then(get_root_sort_name(&a.name).cmp(get_root_sort_name(&b.name)))
         });
-        ItemsResult { ok: items }
+        Ok(items)
     } else {
+        // TODO RequestError with ?
         panic!("No command return");
     }
 }
