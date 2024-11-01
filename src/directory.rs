@@ -58,8 +58,7 @@ pub fn get_files(input: GetFiles)->Result<GetFilesResult, RequestError> {
     let path = if input.mount { mount(&path) } else { path };
     
     let items: Vec<DirectoryItem> = read_dir(&path)
-        .unwrap()
-        .filter_map(|file|file.ok())
+        ?.filter_map(|file|file.ok())
         .filter_map(|file| {
             if let Ok(metadata) = file.metadata() {
                 Some((file, metadata))
@@ -68,7 +67,7 @@ pub fn get_files(input: GetFiles)->Result<GetFilesResult, RequestError> {
             }
         })
         .map(|(entry, meta)| {
-            let name = entry.file_name().to_str().unwrap().to_string();
+            let name = entry.file_name().to_str().unwrap_or_default().to_string();
             let is_directory = meta.is_dir();
             DirectoryItem {
                 is_hidden: is_hidden(&name.as_str(), &meta),
@@ -86,7 +85,6 @@ pub fn get_files(input: GetFiles)->Result<GetFilesResult, RequestError> {
         .collect();
     let dir_count = items.iter().filter(|i|i.is_directory).count();
 
-    // TODO RequestError /boot/loader/entries  => panic: access denied
     Ok(GetFilesResult {
         path,
         dir_count,

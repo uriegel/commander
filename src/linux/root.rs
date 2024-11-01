@@ -21,9 +21,9 @@ pub fn get_root()->Result<Vec<RootItem>, RequestError> {
         .arg("--bytes")
         .arg("--output")
         .arg("SIZE,NAME,LABEL,MOUNTPOINT,FSTYPE")
-        .output().unwrap();
+        .output()?;
     if output.status.success() {
-        let lines = String::from_utf8(output.stdout).unwrap();
+        let lines = String::from_utf8(output.stdout)?;
         let lines = lines.lines().collect();
         let lines: Vec<&str> = lines;
         let first_line = lines[0];
@@ -77,8 +77,7 @@ pub fn get_root()->Result<Vec<RootItem>, RequestError> {
         });
         Ok(items)
     } else {
-        // TODO RequestError with ?
-        panic!("No command return");
+        Err(RequestError::unknown())
     }
 }
 

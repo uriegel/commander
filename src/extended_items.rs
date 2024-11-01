@@ -33,10 +33,9 @@ pub fn get_extended_items(input: GetExtendedItems)->Result<GetExtendedItemsResul
 }
 
 pub fn cancel_extended_items(input: CancelExtendedItems)->Result<(), RequestError> {
-    let cancellation = get_cancellation().lock().unwrap();
+    let cancellation = get_cancellation().lock()?;
     let cancel = cancellation.get(&CancellationKey::extended_item(input.id));
     cancel.inspect(|snd|{let _ = snd.send(true);});
-    // TODO RequestError
     Ok(())
 }
 

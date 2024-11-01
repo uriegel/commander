@@ -1,7 +1,11 @@
+use std::{collections::HashMap, string::FromUtf8Error, sync::{MutexGuard, PoisonError}};
+
+use quick_xml::DeError;
 use serde::Serialize;
+use serde_repr::Serialize_repr;
 use webview_app::request::{get_input, get_output, request_blocking, Request};
 
-use crate::{directory::get_files, extended_items::{cancel_extended_items, get_extended_items}, tracks::get_track_info};
+use crate::{cancellations::CancellationKey, directory::get_files, extended_items::{cancel_extended_items, get_extended_items}, tracks::get_track_info};
 #[cfg(target_os = "linux")]
 use crate::linux::root::get_root;
 #[cfg(target_os = "windows")]
@@ -15,38 +19,79 @@ pub fn on_request(request: &Request, id: String, cmd: String, json: String)->boo
             "getextendeditems" => from_result(get_extended_items(get_input(&json))),
             "cancelextendeditems" => from_result(cancel_extended_items(get_input(&json))),
             "gettrackinfo" => from_result(get_track_info(get_input(&json))),
-            // TODO RequestError
-            // Err(err) => {
-            //     println!("Could not get track info: {}", err);
-            //     get_output(&ItemsErrorResult {err: ErrorType { status: 3001, status_text: "Could not parse xml track".to_string() }})
-            // }
             _ => from_result(Ok::<(), RequestError>(()))
         }
     });
     true
 }
 
-pub struct RequestError {
-    status: ErrorType
+impl From<std::io::Error> for RequestError {
+    fn from(error: std::io::Error) -> Self {
+        let status = match error.kind() {
+            std::io::ErrorKind::PermissionDenied => ErrorType::AccessDenied,
+            std::io::ErrorKind::AlreadyExists => ErrorType::AlreadyExists,
+            std::io::ErrorKind::NotFound => ErrorType::FileNotFound,
+            std::io::ErrorKind::OutOfMemory => ErrorType::NoDiskSpace,
+            std::io::ErrorKind::Unsupported => ErrorType::NotSupported,
+            _ => ErrorType::Unknown
+        };
+        RequestError {
+            status
+        }
+    }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 }
 
-// TODO RequestError
+impl From<DeError> for RequestError {
+    fn from(error: DeError) -> Self {
+        eprintln!("Deserialize error: {}", error.to_string());
+        RequestError { status: ErrorType::Unknown }
+    }
+}
+
+impl From<PoisonError<MutexGuard<'_, HashMap<CancellationKey, std::sync::mpsc::Sender<bool>>>>> for RequestError {
+    fn from(error: PoisonError<MutexGuard<'_, HashMap<CancellationKey, std::sync::mpsc::Sender<bool>>>>) -> Self {
+        eprintln!("Error occured while acquiring lock: {}", error);
+        RequestError { status: ErrorType::Unknown }
+    }
+}
+
+impl From<FromUtf8Error> for RequestError {
+    fn from(error: FromUtf8Error) -> Self {
+        eprintln!("Utf8 error occured: {}", error);
+        RequestError { status: ErrorType::Unknown }
+    }
+}
+
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RequestError {
+    status: ErrorType,
+    //status_text: String
+}
+
+impl RequestError {
+    pub fn unknown()->Self {
+        Self {status: ErrorType::Unknown }
+    }
+}
+
+#[derive(Debug, Serialize_repr)]
+#[repr(u32)]
 pub enum ErrorType {
-    Unknown,
-    AccessDenied,
-    AlreadyExists,
-    FileNotFound,
-    DeleteToTrashNotPossible,
-    NetNameNotFound,
-    PathNotFound,
-    NotSupported,
-    PathTooLong,
-    Canceled,
-    WrongCredentials,
-    NoDiskSpace,
-    OperationInProgress,
-    UacNotStarted = 1099
+    Unknown = 0,
+    AccessDenied = 1,
+    AlreadyExists = 2,
+    FileNotFound = 3,
+    // DeleteToTrashNotPossible,
+    // NetNameNotFound,
+    // PathNotFound,
+    NotSupported = 7,
+    // PathTooLong,
+    // Canceled,
+    // WrongCredentials,
+    NoDiskSpace = 11,
+    // OperationInProgress,
+    // UacNotStarted = 1099
 }
 
 #[derive(Debug, Serialize)]
@@ -58,20 +103,14 @@ struct ItemsResult<T> {
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct ItemsErrorResult {
-    err: ItemsError
+    err: RequestError
 }
 
-#[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
-struct ItemsError {
-    status: ErrorType,
-    status_text: String
-}
-
-fn from_result<T, E>(result: Result<T, E>)->String 
+fn from_result<T>(result: Result<T, RequestError>)->String 
 where T: Serialize{
     match result {
         Ok(ok) => get_output(&ItemsResult { ok }),
-        Err(err) => get_output(&ItemsErrorResult { err: ItemsError { status: ErrorType::AccessDenied, status_text: "".to_string() } }),
+        Err(err) => get_output(&ItemsErrorResult { err }),
     }
 }
+

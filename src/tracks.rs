@@ -3,7 +3,7 @@ use std::{fs::File, io::BufReader};
 use chrono::{DateTime, Local, NaiveDate};
 use serde::{Deserialize, Serialize};
 
-use crate::error::Error;
+use crate::requests::RequestError;
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -34,7 +34,7 @@ struct TrackPoint {
     velocity: f64
 }
 
-pub fn get_track_info(input: GetTrackInfo)->Result<TrackInfoData, Error> {
+pub fn get_track_info(input: GetTrackInfo)->Result<TrackInfoData, RequestError> {
     let file = File::open(input.path)?;
     let buf_reader = BufReader::new(file);
     let info: XmlTrackInfo = quick_xml::de::from_reader(buf_reader)?;
