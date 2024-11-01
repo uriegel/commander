@@ -1,11 +1,13 @@
-use std::{collections::HashMap, string::FromUtf8Error, sync::{MutexGuard, PoisonError}};
+use std::{any::TypeId, collections::HashMap, string::FromUtf8Error, sync::{MutexGuard, PoisonError}};
 
 use quick_xml::DeError;
 use serde::Serialize;
 use serde_repr::Serialize_repr;
 use webview_app::request::{get_input, get_output, request_blocking, Request};
 
-use crate::{cancellations::CancellationKey, directory::{create_folder, get_files}, extended_items::{cancel_extended_items, get_extended_items}, tracks::get_track_info};
+use crate::{cancellations::CancellationKey, directory::{create_folder, get_files}, extended_items::{
+    cancel_extended_items, get_extended_items
+}, tracks::get_track_info};
 #[cfg(target_os = "linux")]
 use crate::linux::root::get_root;
 #[cfg(target_os = "windows")]
@@ -107,9 +109,14 @@ struct ItemsErrorResult {
     err: RequestError
 }
 
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct Empty {}
+
 fn from_result<T>(result: Result<T, RequestError>)->String 
-where T: Serialize{
+where T: Serialize + 'static, {
     match result {
+        Ok(_) if (TypeId::of::<()>() == TypeId::of::<T>()) => get_output(&ItemsResult { ok: Empty {} }),
         Ok(ok) => get_output(&ItemsResult { ok }),
         Err(err) => get_output(&ItemsErrorResult { err }),
     }
