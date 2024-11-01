@@ -15,7 +15,7 @@ pub fn on_request(request: &Request, id: String, cmd: String, json: String)->boo
             "getextendeditems" => from_result(get_extended_items(get_input(&json))),
             "cancelextendeditems" => from_result(cancel_extended_items(get_input(&json))),
             "gettrackinfo" => from_result(get_track_info(get_input(&json))),
-            // RequestError
+            // TODO RequestError
             // Err(err) => {
             //     println!("Could not get track info: {}", err);
             //     get_output(&ItemsErrorResult {err: ErrorType { status: 3001, status_text: "Could not parse xml track".to_string() }})
@@ -26,7 +26,27 @@ pub fn on_request(request: &Request, id: String, cmd: String, json: String)->boo
     true
 }
 
-pub struct RequestError {}
+pub struct RequestError {
+    status: ErrorType
+}
+
+// TODO RequestError
+pub enum ErrorType {
+    Unknown,
+    AccessDenied,
+    AlreadyExists,
+    FileNotFound,
+    DeleteToTrashNotPossible,
+    NetNameNotFound,
+    PathNotFound,
+    NotSupported,
+    PathTooLong,
+    Canceled,
+    WrongCredentials,
+    NoDiskSpace,
+    OperationInProgress,
+    UacNotStarted = 1099
+}
 
 #[derive(Debug)]
 #[derive(Serialize)]

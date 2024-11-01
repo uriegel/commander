@@ -60,7 +60,7 @@ const getItems = (_: string, __: string, ___: boolean, sortIndex: number, sortDe
             path: SERVICES,
             dirCount: items.length,
             fileCount: 0,
-            error: IOError.NoError,
+            error: IOError.Unknown,
             items: addParent(sort(items, sortIndex, sortDescending))
         } as GetItemsResult))
 

@@ -76,7 +76,7 @@ const showRemote = (dialog: DialogHandle, item?: FolderViewItem) => {
             localStorage.setItem("remotes", JSON.stringify(items))
             return new Ok<string, ErrorType>(name)
         } else
-            return new Err<string, ErrorType>({ status: IOError.Exn, statusText: "" })
+            return new Err<string, ErrorType>({ status: IOError.Canceled, statusText: "" })
     })
 }
 

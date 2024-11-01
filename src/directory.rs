@@ -86,7 +86,7 @@ pub fn get_files(input: GetFiles)->Result<GetFilesResult, RequestError> {
         .collect();
     let dir_count = items.iter().filter(|i|i.is_directory).count();
 
-    // TODO RequestError
+    // TODO RequestError /boot/loader/entries  => panic: access denied
     Ok(GetFilesResult {
         path,
         dir_count,

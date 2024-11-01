@@ -40,7 +40,6 @@ export enum IOError {
     AlreadyExists,
     FileNotFound,
     DeleteToTrashNotPossible,
-    Exn,
     NetNameNotFound,
     PathNotFound,
     NotSupported,
@@ -49,7 +48,6 @@ export enum IOError {
     WrongCredentials,
     NoDiskSpace,
     OperationInProgress,
-    NoError,
     UacNotStarted = 1099
 }
 

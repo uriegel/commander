@@ -79,13 +79,14 @@ fn main() {
     .run();
 }
 
+// TODO Track-pngs for Release version
 // TODO CreateFolder
 // TODO Trash
 // TODO Rename
 // TODO Copy
 // TODO Move
+// TODO connect android
 
-// TODO /boot/loader/entries  => panic: access denied
 // TODO no // on linux status bar in root   
 
 // TODO suppress developer tools in menus in release version

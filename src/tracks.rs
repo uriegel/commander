@@ -36,7 +36,6 @@ struct TrackPoint {
 
 pub fn get_track_info(input: GetTrackInfo)->Result<TrackInfoData, Error> {
     let file = File::open(input.path)?;
-    println!("Xml opened");
     let buf_reader = BufReader::new(file);
     let info: XmlTrackInfo = quick_xml::de::from_reader(buf_reader)?;
     let old_version = info.trk.clone().and_then(|i|

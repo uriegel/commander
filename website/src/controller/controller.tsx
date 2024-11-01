@@ -11,10 +11,6 @@ import { SERVICES, getServicesController } from "./services"
 import { Platform, getPlatform, getPort } from "../globals"
 import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
 import { DirectoryChangedEvent } from "../requests/events"
-import { WebViewType } from "../webview"
-
-// eslint-disable-next-line react-refresh/only-export-components
-declare const WebView: WebViewType
 
 const dateFormat = Intl.DateTimeFormat("de-DE", {
     year: "numeric",

@@ -9,10 +9,7 @@ import New from '../svg/New'
 import Service from '../svg/Service'
 import Favorite from '../svg/Favorite'
 import { IconNameType } from '../enums'
-import { WebViewType } from '../webview'
 import { getPort } from '../globals'
-
-declare const WebView: WebViewType
 
 interface IconNameProps {
     namePart: string

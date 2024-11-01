@@ -86,7 +86,7 @@ const initialize = () => {
 try {
     if (WebView)
         initialize()
-} catch (_) { console.log("Initializing web view after loading") }
+} catch { console.log("Initializing web view after loading") }
 
 function onWebViewLoaded() {
     initialize()
