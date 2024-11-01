@@ -1,3 +1,4 @@
+#[allow(dead_code)]
 use std::{any::TypeId, collections::HashMap, string::FromUtf8Error, sync::{MutexGuard, PoisonError}};
 
 use quick_xml::DeError;
