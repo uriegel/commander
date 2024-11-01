@@ -5,7 +5,7 @@ use windows::{
     }
 };
 
-use crate::{requests::ItemsResult, windows::{string_from_pcwstr, string_to_pcwstr}};
+use crate::{requests::RequestError, windows::{string_from_pcwstr, string_to_pcwstr}};
 
 #[derive(Debug)]
 #[derive(Copy, Clone, PartialEq)]
@@ -34,7 +34,7 @@ pub struct ErrorItem {
     pub kind: i32
 }
 
-pub fn get_root()->ItemsResult<Vec<RootItem>> {
+pub fn get_root()->Result<Vec<RootItem>, RequestError> {
     let mut drives: [u16; 512] = [0; 512];
     let len = unsafe { GetLogicalDriveStringsW(Some(&mut drives)) };
     let drives_string = String::from_utf16_lossy(&drives[..len as usize]);
@@ -99,17 +99,15 @@ pub fn get_root()->ItemsResult<Vec<RootItem>> {
 //             }
 //         }
         
-    ItemsResult {
-        ok: drives.iter().map(|&item| {
-            let name = item.to_string();
-            RootItem { 
-                name: name.clone(),
-                description: get_drive_description(&name),
-                size: get_volume_size(&name),
-                is_mounted: true
-            }
-        }).collect::<Vec<RootItem>>()
-    }
+    Ok(drives.iter().map(|&item| {
+        let name = item.to_string();
+        RootItem { 
+            name: name.clone(),
+            description: get_drive_description(&name),
+            size: get_volume_size(&name),
+            is_mounted: true
+        }
+    }).collect::<Vec<RootItem>>())
 }
 
 // TODO 3.2.22 rust neon
