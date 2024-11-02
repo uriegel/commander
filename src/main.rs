@@ -13,21 +13,25 @@ mod requests;
 mod requests_http;
 mod request_error;
 mod tracks;
+use include_dir::include_dir;
+#[cfg(target_os = "linux")]
+use linux::headerbar::HeaderBar;
+#[cfg(target_os = "linux")]
+use gtk::prelude::StaticTypeExt;
+#[cfg(target_os = "linux")]
+use linux::progress_display::ProgressDisplay;
+
+#[cfg(target_os = "windows")]
+use std::sync::{Arc, Mutex};
+
 #[cfg(target_os = "linux")]
 mod linux;
 #[cfg(target_os = "windows")]
 mod windows;
 
-#[cfg(target_os = "windows")]
-use std::sync::{Arc, Mutex};
-
-use include_dir::include_dir;
 use requests::on_request;
 
 use webview_app::{application::Application, webview::WebView};
-
-#[cfg(target_os = "linux")]
-use linux::headerbar::HeaderBar;
 
 pub const HTTP_PORT: u32 = 8000;
 
@@ -64,6 +68,8 @@ fn on_activate(app: &Application) -> WebView {
         .build()
         .run(webroot);
 
+    #[cfg(target_os = "linux")]
+    ProgressDisplay::ensure_type();        
     let webview = webview_builder.build();
 
     webview.connect_request(on_request);

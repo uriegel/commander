@@ -36,6 +36,18 @@ Start devtools:
 
 ```react-devtools```
 
+Gtk4 Inspector
+
+```sudo dnf install dconf-editor```
+
+Then open it
+
+```org/gtk/settings/debug/enavle-inspector-keybinding```
+
+Then in Commander:
+
+press ```F10``` and then ```Ctrl+Shift+D```
+
 ### Build
 
 Start npm script `build` or `build Windows`

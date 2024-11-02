@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<interface>
+    <template class="ProgressDisplay" parent="GtkBox">
+        <child>
+            <object class="GtkRevealer" id="revealer">
+            <property name="transition-type">slide-left</property>
+            <child>
+                <object class="GtkMenuButton">
+                <child>
+                    <object class="GtkDrawingArea" id="progressarea"/>
+                </child>
+                </object>
+            </child>
+            </object>
+        </child>
+    </template>
+</interface>

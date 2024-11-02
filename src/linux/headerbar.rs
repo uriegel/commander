@@ -12,6 +12,8 @@ use webkit6::{
     gio::Cancellable
 };
 
+use super::progress_display::ProgressDisplay;
+
 pub struct HeaderBar {}
 
 impl HeaderBar {
@@ -201,39 +203,40 @@ impl HeaderBar {
 
         let (sender, receiver) = async_channel::unbounded();
         set_progress_sender(sender);
-        let revealer: gtk::Revealer = builder.object("revealer").unwrap();
-        let progress_area: gtk::DrawingArea = builder.object("progressarea").unwrap();
-        let progress = 0.4;
-        progress_area.set_draw_func(move|_, c, w, h|{
-            c.set_antialias(gtk::cairo::Antialias::Best);
-            c.set_line_join(gtk::cairo::LineJoin::Miter);
-            c.set_line_cap(gtk::cairo::LineCap::Round);
-            c.translate(w as f64 / 2.0, h as f64 /2.0);
-            let _ = c.stroke_preserve();
-            c.arc_negative(0.0, 0.0, (if w < h {w} else {h}) as f64 / 2.0, -PI/2.0, -PI/2.0 + f64::max(progress, 0.01)*PI*2.0);
-            c.line_to(0.0, 0.0);
-            c.set_source_rgb(0.7, 0.7, 0.7);
-            let _ = c.fill();
-            c.move_to(0.0, 0.0);
-            c.arc(0.0, 0.0, (if w < h {w} else {h}) as f64 / 2.0, -PI/2.0, -PI/2.0 + f64::max(progress, 0.01)*PI*2.0);
-            c.set_source_rgb(0.0, 0.0, 1.0);
-            let _ = c.fill();
-        });
+        let progress_display: ProgressDisplay = builder.object("progressdisplay").unwrap();
+        let affe = progress_display.clone();
+        //let progress_area: gtk::DrawingArea = builder.object("progressarea").unwrap();
+        // let progress = 0.4;
+        // progress_area.set_draw_func(move|_, c, w, h|{
+        //     c.set_antialias(gtk::cairo::Antialias::Best);
+        //     c.set_line_join(gtk::cairo::LineJoin::Miter);
+        //     c.set_line_cap(gtk::cairo::LineCap::Round);
+        //     c.translate(w as f64 / 2.0, h as f64 /2.0);
+        //     let _ = c.stroke_preserve();
+        //     c.arc_negative(0.0, 0.0, (if w < h {w} else {h}) as f64 / 2.0, -PI/2.0, -PI/2.0 + f64::max(progress, 0.01)*PI*2.0);
+        //     c.line_to(0.0, 0.0);
+        //     c.set_source_rgb(0.7, 0.7, 0.7);
+        //     let _ = c.fill();
+        //     c.move_to(0.0, 0.0);
+        //     c.arc(0.0, 0.0, (if w < h {w} else {h}) as f64 / 2.0, -PI/2.0, -PI/2.0 + f64::max(progress, 0.01)*PI*2.0);
+        //     c.set_source_rgb(0.0, 0.0, 1.0);
+        //     let _ = c.fill();
+        // });
 
-        glib::spawn_future_local(clone!(
-            #[weak] revealer, 
-            #[weak] progress_area, 
-            async move {
-                while let Ok(progress) = receiver.recv().await {
-                    match progress {
-                        Progress::Start => revealer.set_reveal_child(true),    
-                        Progress::Stop => {
-                            progress_area.queue_draw();
-                        },    
-                        Progress::Drop => revealer.set_reveal_child(false),    
-                    }
-                }
-            }));        
+        // glib::spawn_future_local(clone!(
+        //     #[weak] revealer, 
+        //     #[weak] progress_area, 
+        //     async move {
+        //         while let Ok(progress) = receiver.recv().await {
+        //             match progress {
+        //                 Progress::Start => revealer.set_reveal_child(true),    
+        //                 Progress::Stop => {
+        //                     progress_area.queue_draw();
+        //                 },    
+        //                 Progress::Drop => revealer.set_reveal_child(false),    
+        //             }
+        //         }
+        //     }));        
     }
 }
 
