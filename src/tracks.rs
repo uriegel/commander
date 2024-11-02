@@ -3,7 +3,7 @@ use std::{fs::File, io::BufReader};
 use chrono::{DateTime, Local, NaiveDate};
 use serde::{Deserialize, Serialize};
 
-use crate::requests::RequestError;
+use crate::request_error::RequestError;
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]

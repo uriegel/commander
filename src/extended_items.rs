@@ -4,7 +4,7 @@ use chrono::{DateTime, Local, TimeZone};
 use exif::{Field, In, Tag, Value};
 use serde::{Deserialize, Serialize};
 
-use crate::{cancellations::{get_cancellation, CancellationKey}, requests::RequestError};
+use crate::{cancellations::{get_cancellation, CancellationKey}, request_error::RequestError };
 
 #[cfg(target_os = "windows")]
 use crate::windows::version::get_version;

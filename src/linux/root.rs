@@ -2,7 +2,7 @@ use std::{iter::Take, process::Command};
 
 use serde::Serialize;
 
-use crate::requests::RequestError;
+use crate::request_error::RequestError;
 
 #[derive(Debug)]
 #[derive(Serialize)]

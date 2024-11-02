@@ -11,6 +11,7 @@ mod httpserver;
 mod str;
 mod requests;
 mod requests_http;
+mod request_error;
 mod tracks;
 #[cfg(target_os = "linux")]
 mod linux;

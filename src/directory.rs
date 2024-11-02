@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use urlencoding::decode;
 use trash::delete_all;
 
-use crate::{error::Error, requests::RequestError};
+use crate::{error::Error, request_error::RequestError};
 
 #[cfg(target_os = "windows")]
 use crate::windows::directory::{is_hidden, StringExt, get_icon_path};
