@@ -5,7 +5,7 @@ use windows::{
     }
 };
 
-use crate::{requests::RequestError, windows::{string_from_pcwstr, string_to_pcwstr}};
+use crate::{request_error::RequestError, windows::{string_from_pcwstr, string_to_pcwstr}};
 
 #[derive(Debug)]
 #[derive(Copy, Clone, PartialEq)]

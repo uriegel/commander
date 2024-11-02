@@ -1,5 +1,3 @@
-#[allow(dead_code)]
-
 use webview_app::request::{get_input, request_blocking, Request};
 
 use crate::{directory::{create_folder, delete_items, get_files, rename_item}, extended_items::{
