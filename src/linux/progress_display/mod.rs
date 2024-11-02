@@ -1,5 +1,5 @@
 use glib::Object;
-use gtk::{glib, Accessible, Buildable, ConstraintTarget, Orientable, Widget};
+use gtk::{glib, subclass::prelude::ObjectSubclassIsExt, Accessible, Buildable, ConstraintTarget, Orientable, Widget};
 
 mod imp;
 
@@ -11,7 +11,16 @@ glib::wrapper! {
 
 impl ProgressDisplay {
     pub fn new() -> Self {
-        Object::builder().build()
+        Object::builder()
+        .build()
+    }
+
+	pub fn reveal(&self) {
+        let inner = self.imp();
+        inner.revealer.set_reveal_child(true);
+        // self.connect_number_notify(|button| {
+        //     println!("The current number of `button_1` is {}.", button.number());
+        // });
     }
 }
 

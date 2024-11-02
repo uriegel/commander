@@ -1,9 +1,19 @@
-use gtk::{glib, CompositeTemplate};
+use std::cell::Cell;
+
+use gtk::glib::Properties;
+use gtk::{glib, CompositeTemplate, Revealer};
+use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 
-#[derive(Default, CompositeTemplate)]
+#[derive(Default, CompositeTemplate, Properties)]
+#[properties(wrapper_type = super::ProgressDisplay)]
 #[template(resource = "/de/uriegel/commander/progress_display.ui")]
- pub struct ProgressDisplay;
+pub struct ProgressDisplay {
+	#[template_child]
+    pub revealer: TemplateChild<Revealer>,	
+	#[property(get, set)]
+    number: Cell<i32>,	
+}
 
 #[glib::object_subclass]
 impl ObjectSubclass for ProgressDisplay {
@@ -21,7 +31,32 @@ impl ObjectSubclass for ProgressDisplay {
 }
 
 // Trait shared by all GObjects
-impl ObjectImpl for ProgressDisplay {}
+#[glib::derived_properties]
+impl ObjectImpl for ProgressDisplay {
+
+	fn constructed(&self) {
+		self.parent_constructed();
+
+        // Access the wrapper type from the implementation struct
+		let wrapper: &super::ProgressDisplay = unsafe { &*(self as *const _ as *const super::ProgressDisplay) };
+
+
+		wrapper.connect_number_notify(|obj| {
+            let number = obj.number();
+            println!("Number changed to: {}", number);
+        });
+        // Connect to notify signal for the 'number' property
+        // wrapper.connect_notify(Some("number"), move |obj, _| {
+        //     let number = obj.number();
+        //     println!("Number changed to: {}", number);
+        // });
+    }	
+		
+	// 	// self.connect_number_notify(|button| {
+    //     //     println!("The current number of `button_1` is {}.", button.number());
+    //     // });
+	// }
+}
 
 // Trait shared by all widgets
 impl WidgetImpl for ProgressDisplay {}
