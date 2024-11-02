@@ -6,7 +6,7 @@ use serde::Serialize;
 use serde_repr::Serialize_repr;
 use webview_app::request::{get_input, get_output, request_blocking, Request};
 
-use crate::{cancellations::CancellationKey, directory::{create_folder, delete_items, get_files}, extended_items::{
+use crate::{cancellations::CancellationKey, directory::{create_folder, delete_items, get_files, rename_item}, extended_items::{
     cancel_extended_items, get_extended_items
 }, tracks::get_track_info};
 #[cfg(target_os = "linux")]
@@ -23,6 +23,7 @@ pub fn on_request(request: &Request, id: String, cmd: String, json: String)->boo
             "cancelextendeditems" => from_result(cancel_extended_items(get_input(&json))),
             "createfolder" => from_result(create_folder(get_input(&json))),
             "deleteitems" => from_result(delete_items(get_input(&json))),
+            "renameitem" => from_result(rename_item(get_input(&json))),
             "gettrackinfo" => from_result(get_track_info(get_input(&json))),
             _ => from_result(Ok::<(), RequestError>(()))
         }

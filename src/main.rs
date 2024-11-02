@@ -79,9 +79,11 @@ fn main() {
     .run();
 }
 
-// TODO Rename
 // TODO Copy
 // TODO Move
+// TODO Rename as copy
+// TODO Rename items (extended rename)
+
 // TODO connect android
 
 // TODO no // on linux status bar in root   

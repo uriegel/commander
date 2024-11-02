@@ -68,10 +68,52 @@ impl HeaderBar {
         app.set_accels_for_action("app.favorites", &["F1"]);
         app.add_action_entries([action_favorites]);
 
+        let action_show_preview = ActionEntry::builder("showpreview")
+            .state(false.to_variant())
+            .activate(clone!(#[weak]webview, move |_, action, _|{ 
+                action.state().inspect(|state|{
+                    if let Some(state) = state.get::<bool>() {
+                        action.set_state(&(!state).to_variant());                        
+                        webview.evaluate_javascript(&format!("showPreview({})", if state { "false"} else { "true" }), None, None, None::<&Cancellable>, |_|{});
+                        webview.grab_focus();
+                    }
+                });
+            })
+            )
+            .build();
+        app.set_accels_for_action("app.showpreview", &["F3"]);
+        app.add_action_entries([action_show_preview]);
+
+        let action_toggle_preview = ActionEntry::builder("togglePreviewMode")
+            .activate(clone!(#[weak]webview, move |_, _, _|{
+                webview.evaluate_javascript("menuAction('TOGGLE_PREVIEW')", None, None, None::<&Cancellable>, |_|{});
+                webview.grab_focus();
+            }))
+            .build();
+        app.set_accels_for_action("app.togglePreviewMode", &["<Ctrl>F3"]);
+        app.add_action_entries([action_toggle_preview]);
+
         let action_rename = ActionEntry::builder("rename")
             .activate(clone!(#[weak]webview, move |_, _, _|{
                 webview.evaluate_javascript("menuAction('RENAME')", None, None, None::<&Cancellable>, |_|{});
+                webview.grab_focus();
+            }))
+            .build();
+        app.set_accels_for_action("app.rename", &["F2"]);
+        app.add_action_entries([action_rename]);
 
+        let action_extended_rename = ActionEntry::builder("extendedrename")
+            .activate(clone!(#[weak]webview, move |_, _, _|{
+                webview.evaluate_javascript("menuAction('EXTENDED_RENAME')", None, None, None::<&Cancellable>, |_|{});
+                webview.grab_focus();
+            }))
+            .build();
+        app.set_accels_for_action("app.extendedrename", &["<Ctrl>F2"]);
+        app.add_action_entries([action_extended_rename]);
+
+        let action_rename_as_copy = ActionEntry::builder("renameascopy")
+            .activate(clone!(#[weak]webview, move |_, _, _|{
+                webview.evaluate_javascript("menuAction('RENAME_AS_COPY')", None, None, None::<&Cancellable>, |_|{});
 
 
                 // TODO TEST Revealer progress
@@ -91,8 +133,26 @@ impl HeaderBar {
                 webview.grab_focus();
             }))
             .build();
-        app.set_accels_for_action("app.rename", &["F2"]);
-        app.add_action_entries([action_rename]);
+        app.set_accels_for_action("app.renameascopy", &["<Shift>F2"]);
+        app.add_action_entries([action_rename_as_copy]);
+
+        let action_copy = ActionEntry::builder("copy")
+            .activate(clone!(#[weak]webview, move |_, _, _|{
+                webview.evaluate_javascript("menuAction('COPY')", None, None, None::<&Cancellable>, |_|{});
+                webview.grab_focus();
+            }))
+            .build();
+        app.set_accels_for_action("app.copy", &["F5"]);
+        app.add_action_entries([action_copy]);
+
+        let action_move = ActionEntry::builder("move")
+            .activate(clone!(#[weak]webview, move |_, _, _|{
+                webview.evaluate_javascript("menuAction('MOVE')", None, None, None::<&Cancellable>, |_|{});
+                webview.grab_focus();
+            }))
+            .build();
+        app.set_accels_for_action("app.move", &["F6"]);
+        app.add_action_entries([action_move]);
 
         let action_create_folder = ActionEntry::builder("createfolder")
             .activate(clone!(#[weak]webview, move |_, _, _|{
@@ -138,31 +198,6 @@ impl HeaderBar {
             .build();
         app.set_accels_for_action("app.selectnone", &["KP_Subtract"]);
         app.add_action_entries([action_select_none]);
-
-        let action_toggle_preview = ActionEntry::builder("togglePreviewMode")
-            .activate(clone!(#[weak]webview, move |_, _, _|{
-                webview.evaluate_javascript("menuAction('TOGGLE_PREVIEW')", None, None, None::<&Cancellable>, |_|{});
-                webview.grab_focus();
-            }))
-            .build();
-        app.set_accels_for_action("app.togglePreviewMode", &["<Ctrl>F3"]);
-        app.add_action_entries([action_toggle_preview]);
-
-        let action_show_preview = ActionEntry::builder("showpreview")
-            .state(false.to_variant())
-            .activate(clone!(#[weak]webview, move |_, action, _|{ 
-                action.state().inspect(|state|{
-                    if let Some(state) = state.get::<bool>() {
-                        action.set_state(&(!state).to_variant());                        
-                        webview.evaluate_javascript(&format!("showPreview({})", if state { "false"} else { "true" }), None, None, None::<&Cancellable>, |_|{});
-                        webview.grab_focus();
-                    }
-                });
-            })
-            )
-            .build();
-        app.set_accels_for_action("app.showpreview", &["F3"]);
-        app.add_action_entries([action_show_preview]);
 
         let (sender, receiver) = async_channel::unbounded();
         set_progress_sender(sender);
@@ -219,10 +254,3 @@ fn get_sender()->&'static Arc<Mutex<Sender<Progress>>> {
 }
 
 static mut PROGRESS_SENDER: Option<Arc<Mutex<Sender<Progress>>>> = None;
-
-/*
-        // new("extendedrename", () => SendMenuAction(webView.Ref, "EXTENDED_RENAME"), "<Ctrl>F2"),
-                // new("renameascopy", () => SendMenuAction(webView.Ref, "RENAME_AS_COPY"), "<Shift>F2"),
-                // new("copy", () => SendMenuAction(webView.Ref, "COPY"), "F5"),
-                // new("move", () => SendMenuAction(webView.Ref, "MOVE"), "F6"),
-*/

@@ -68,7 +68,7 @@
             <attribute name="action">app.copy</attribute>
           </item>
           <item>
-            <attribute name="label">_Verschieden</attribute>
+            <attribute name="label">_Verschieben</attribute>
             <attribute name="action">app.move</attribute>
           </item>
           <item>

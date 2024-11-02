@@ -1,4 +1,4 @@
-use std::{fs::{canonicalize, create_dir, read_dir, File}, path::PathBuf, time::UNIX_EPOCH};
+use std::{fs::{canonicalize, create_dir, read_dir, rename, File}, path::PathBuf, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -34,6 +34,14 @@ pub struct CreateFolder {
 pub struct DeleteItems {
     pub path: String,
     pub names: Vec<String>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RenameItem {
+    pub path: String,
+    pub name: String,
+    pub new_name: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -125,8 +133,14 @@ pub fn create_folder(input: CreateFolder)->Result<(), RequestError> {
 }
 
 pub fn delete_items(input: DeleteItems)->Result<(), RequestError> {
-    println!("delete {:?}", input);
     delete_all(input.names.iter().map(|n|PathBuf::from(&input.path).join(n)))?;
+    Ok(())
+}
+
+pub fn rename_item(input: RenameItem)->Result<(), RequestError> {
+    let path = PathBuf::from(&input.path).join(input.name);
+    let new_path = PathBuf::from(input.path).join(input.new_name);
+    rename(path, new_path)?;
     Ok(())
 }
 
