@@ -80,6 +80,10 @@ fn main() {
     .run();
 }
 
+// TODO ProgressControl as custom element with separate .ui file
+// TODO TEST control it with accelerators
+// TODO Add MenuButton with PopOver to the control, popover ui also in the separate .ui
+
 // TODO Copy
 // TODO Move
 // TODO Rename as copy
