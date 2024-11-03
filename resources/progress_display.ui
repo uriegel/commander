@@ -1,75 +1,104 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.92.1 -->
 <interface>
-    <template class="ProgressDisplay" parent="GtkBox">
+  <!-- interface-name progress_display.ui -->
+  <requires lib="gtk" version="4.12"/>
+  <template class="ProgressDisplay" parent="GtkBox">
+    <child>
+      <object class="GtkRevealer" id="revealer">
+        <property name="transition-type">slide-left</property>
         <child>
-            <object class="GtkRevealer" id="revealer">
-            <property name="transition-type">slide-left</property>
-            <child>
-                <object class="GtkMenuButton">
+          <object class="GtkMenuButton">
+            <property name="popover">
+              <object class="GtkPopover">
                 <child>
-                    <object class="GtkDrawingArea" id="progress_area"/>
-                </child>
-                    <property name="popover">
-                    <object class="GtkPopover">
+                  <object class="GtkBox">
+                    <property name="margin-bottom">20</property>
+                    <property name="margin-end">20</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-top">20</property>
+                    <property name="orientation">vertical</property>
+                    <property name="width-request">400</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="halign">start</property>
+                        <property name="label">Fortschritt beim Kopieren</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkGrid">
                         <child>
-                        <object class="GtkBox">
-                            <property name="orientation">vertical</property>
-                            <property name="width-request">400</property>
-                            <child>
-                            <object class="GtkLabel">
-                                <property name="halign">start</property>
-                                <property name="label">Fortschritt beim Kopieren</property>
-                            </object>
-                            </child>
-                            <child>
-                            <object class="GtkGrid">
-                                <child>
-                                <object class="GtkLabel">
-                                    <property name="halign">start</property>
-                                    <layout>
-                                        <property name="column">0</property>
-                                        <property name="row">0</property>
-                                    </layout>
-                                </object>
-                                </child>
-                                <child>
-                                <object class="GtkLabel">
-                                    <property name="halign">start</property>
-                                    <layout>
-                                        <property name="column">2</property>
-                                        <property name="row">0</property>
-                                    </layout>
-                                </object>
-                                </child>
-                                <child>
-                                <object class="GtkLabel">
-                                    <property name="label">Dauer: </property>
-                                    <property name="halign">start</property>
-                                    <layout>
-                                        <property name="column">0</property>
-                                        <property name="row">1</property>
-                                    </layout>
-                                </object>
-                                </child>
-                                <child>
-                                <object class="GtkLabel">
-                                    <property name="label">Geschätzte Dauer: </property>
-                                    <property name="halign">start</property>
-                                    <layout>
-                                        <property name="column">0</property>
-                                        <property name="row">2</property>
-                                    </layout>
-                                </object>
-                                </child>
-                            </object>
-                            </child>
-                        </object>
+                          <object class="GtkLabel">
+                            <property name="halign">start</property>
+                            <layout>
+                              <property name="column">0</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
                         </child>
-                    </object>
-                    </property>
-                </object>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="halign">start</property>
+                            <layout>
+                              <property name="column">2</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="halign">start</property>
+                            <property name="label">Dauer: </property>
+                            <layout>
+                              <property name="column">0</property>
+                              <property name="row">1</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="halign">start</property>
+                            <property name="label">Geschätzte Dauer: </property>
+                            <layout>
+                              <property name="column">0</property>
+                              <property name="row">2</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkProgressBar">
+                        <property name="show-text">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="halign">start</property>
+                            <property name="label">Gesamt:</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkProgressBar" id="progress_bar_total">
+                            <property name="show-text">True</property>
+                            <property name="fraction">0.7</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </property>
+            <child>
+              <object class="GtkDrawingArea" id="progress_area"/>
             </child>
-            </object>
+          </object>
         </child>
-    </template>
+      </object>
+    </child>
+  </template>
 </interface>

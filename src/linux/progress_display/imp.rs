@@ -1,7 +1,7 @@
 use std::time::Duration;
 use std::{cell::Cell, f64::consts::PI};
 use gtk::glib::{clone, spawn_future_local, timeout_future, Properties};
-use gtk::{glib, CompositeTemplate, DrawingArea, Revealer};
+use gtk::{glib, CompositeTemplate, DrawingArea, ProgressBar, Revealer};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 
@@ -13,6 +13,8 @@ pub struct ProgressDisplay {
     pub revealer: TemplateChild<Revealer>,	
 	#[template_child]
     pub progress_area: TemplateChild<DrawingArea>,	
+	#[template_child]
+    pub progress_bar_total: TemplateChild<ProgressBar>,	
 	#[property(get, set)]
     total_progress: Cell<f64>,	
 	#[property(get, set)]
@@ -60,6 +62,11 @@ impl ObjectImpl for ProgressDisplay {
             }
             pd.imp().progress_area.queue_draw()
         });
+
+        self.obj()
+            .bind_property::<ProgressBar>("total_progress", self.progress_bar_total.as_ref(), "fraction")
+            .sync_create()
+            .build();
 
         let pd = self.obj().clone();
         self.progress_area.set_draw_func(move|_, c, w, h|{
