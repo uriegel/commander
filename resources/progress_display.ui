@@ -29,7 +29,7 @@
                     <child>
                       <object class="GtkGrid">
                         <child>
-                          <object class="GtkLabel">
+                          <object class="GtkLabel" id="current_name_label">
                             <property name="halign">start</property>
                             <layout>
                               <property name="column">0</property>

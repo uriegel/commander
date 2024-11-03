@@ -125,27 +125,46 @@ impl HeaderBar {
                     let size:u64 = 2222;
                     let frame_duration = Duration::from_millis(40);
                     let mut now = Local::now();
-                    let mut progress = Progresses { total: Progress { current: 0, total: size*count}, current: Progress { current: 0, total: size }, ..Progresses::default() };
                     for i in 0..count {
+                        let file_name = match i {
+                            0 => "Ein erste Datei.png".to_string(),
+                            1 => "Die 2. Datei.jpg".to_string(),
+                            _ => "Die letzte Datei.htm".to_string(),
+                        };
                         for j in 0..size {
                             if Local::now() > now + frame_duration {
                                 now = Local::now();
-                                progress = Progresses { 
+                                let progress = Progresses { 
                                     total: Progress { 
-                                        current: j+i*size, ..progress.total 
+                                        current: j+i*size,
+                                        total: size*count 
                                     }, 
                                     current: Progress {
-                                        current: j, ..progress.current 
+                                        current: j, 
+                                        total: size
                                     },
-                                    ..progress 
+                                    current_name: file_name.clone(),
+                                    current_count : j as i32,
+                                    total_count: size as i32
                                 };
                                 let _ = sender.send_blocking(progress);
                             }
                             thread::sleep(Duration::from_millis(5));
                         }
-                        progress = Progresses { total: Progress { current: progress.total.total, ..progress.total }, ..progress };
+                        let progress = Progresses { 
+                            total: Progress { 
+                                current: size*count,
+                                total: size*count 
+                            }, 
+                            current: Progress {
+                                current: size, 
+                                total: size
+                            },
+                            current_name: "".to_string(),
+                            current_count : size as i32,
+                            total_count: size as i32
+                        };
                         let _ = sender.send_blocking(progress);
-                        // TODO Send 3 files with names, popup
                     }
                 });
 
@@ -235,17 +254,19 @@ impl HeaderBar {
     }
 }
 
-#[derive(Default, Clone, Copy)]
+#[derive(Default)]
 struct Progress {
     current: u64,
     total: u64    
 }
 
-#[derive(Default, Clone, Copy)]
+#[derive(Default)]
 struct Progresses {
     current: Progress,
     total: Progress,
-    //current_name: String
+    current_name: String,
+    total_count: i32,
+    current_count: i32
 }
 
 impl Progresses {
@@ -254,6 +275,7 @@ impl Progresses {
         display.set_total_progress(total_progress);
         let progress = self.current.current as f64 / self.current.total as f64;
         display.set_current_progress(progress);
+        display.set_current_name(self.current_name.clone());
     }
 }
 

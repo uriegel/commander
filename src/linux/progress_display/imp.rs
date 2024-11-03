@@ -1,7 +1,8 @@
+use std::cell::RefCell;
 use std::time::Duration;
 use std::{cell::Cell, f64::consts::PI};
 use gtk::glib::{clone, spawn_future_local, timeout_future, Properties};
-use gtk::{glib, CompositeTemplate, DrawingArea, ProgressBar, Revealer};
+use gtk::{glib, CompositeTemplate, DrawingArea, Label, ProgressBar, Revealer};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 
@@ -17,12 +18,24 @@ pub struct ProgressDisplay {
     pub progress_bar_total: TemplateChild<ProgressBar>,	
 	#[template_child]
     pub progress_bar_current: TemplateChild<ProgressBar>,	
+	#[template_child]
+    pub current_name_label: TemplateChild<Label>,	
+	// #[template_child]
+    // pub total_count_label: TemplateChild<Label>,	
+	// #[template_child]
+    // pub current_count_label: TemplateChild<Label>,	
     #[property(get, set)]
     total_progress: Cell<f64>,	
 	#[property(get, set)]
     current_progress: Cell<f64>,	
 	#[property(get, set)]
-    is_active: Cell<bool>
+    is_active: Cell<bool>,
+    #[property(get, set)]
+    current_name: RefCell<String>,	
+    #[property(get, set)]
+    total_count: Cell<i32>,	
+    #[property(get, set)]
+    current_count: Cell<i32>,	
 }
 
 #[glib::object_subclass]
@@ -71,6 +84,10 @@ impl ObjectImpl for ProgressDisplay {
             .build();
         self.obj()
             .bind_property::<ProgressBar>("current_progress", self.progress_bar_current.as_ref(), "fraction")
+            .sync_create()
+            .build();
+        self.obj()
+            .bind_property::<Label>("current_name", self.current_name_label.as_ref(), "label")
             .sync_create()
             .build();
 
