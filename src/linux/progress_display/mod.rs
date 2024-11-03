@@ -1,5 +1,5 @@
 use glib::Object;
-use gtk::{glib, subclass::prelude::ObjectSubclassIsExt, Accessible, Buildable, ConstraintTarget, Orientable, Widget};
+use gtk::{glib, Accessible, Buildable, ConstraintTarget, Orientable, Widget};
 
 mod imp;
 
