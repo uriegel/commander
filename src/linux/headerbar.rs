@@ -133,8 +133,9 @@ impl HeaderBar {
                         }
                         thread::sleep(Duration::from_millis(5));
                     }
-                    // TODO Send end, color change in revealer
-                    // TODO 10 s later reveal = false
+                    progress = Progresses { total: Progress { current: progress.total.total, ..progress.total }, ..progress };
+                    let _ = sender.send_blocking(progress);
+                    // TODO Send 3 files with names, popup
                 });
 
 
