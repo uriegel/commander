@@ -20,10 +20,10 @@ pub struct ProgressDisplay {
     pub progress_bar_current: TemplateChild<ProgressBar>,	
 	#[template_child]
     pub current_name_label: TemplateChild<Label>,	
-	// #[template_child]
-    // pub total_count_label: TemplateChild<Label>,	
-	// #[template_child]
-    // pub current_count_label: TemplateChild<Label>,	
+	#[template_child]
+    pub count_label: TemplateChild<Label>,	
+	#[template_child]
+    pub total_count_label: TemplateChild<Label>,	
     #[property(get, set)]
     total_progress: Cell<f64>,	
 	#[property(get, set)]
@@ -89,6 +89,17 @@ impl ObjectImpl for ProgressDisplay {
         self.obj()
             .bind_property::<Label>("current_name", self.current_name_label.as_ref(), "label")
             .sync_create()
+            .build();
+        self.obj()
+            .bind_property::<Label>("current_count", self.count_label.as_ref(), "label")
+            .sync_create()
+            .build();
+        self.obj()
+            .bind_property::<Label>("total_count", self.total_count_label.as_ref(), "label")
+            .transform_to(|_, count: i32| {
+                Some(format!("/{}", count))
+            })
+           .sync_create()
             .build();
 
         let pd = self.obj().clone();

@@ -28,6 +28,7 @@
                     </child>
                     <child>
                       <object class="GtkGrid">
+                        <property name="halign">fill</property>
                         <child>
                           <object class="GtkLabel" id="current_name_label">
                             <property name="halign">start</property>
@@ -38,8 +39,18 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkLabel">
-                            <property name="halign">start</property>
+                          <object class="GtkLabel" id="count_label">
+                            <property name="halign">end</property>
+                            <property name="hexpand">true</property>
+                            <layout>
+                              <property name="column">1</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="total_count_label">
+                            <property name="halign">end</property>
                             <layout>
                               <property name="column">2</property>
                               <property name="row">0</property>

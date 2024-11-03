@@ -118,7 +118,9 @@ impl HeaderBar {
                 // webview.evaluate_javascript("menuAction('RENAME_AS_COPY')", None, None, None::<&Cancellable>, |_|{});
 
 
-                // TODO TEST Revealer progress
+                // TODO TEST Revealer progress: total bytes
+                // TODO TEST Revealer progress: remaining time
+                // TODO TEST Revealer progress: time
                 std::thread::spawn(|| {
                     let sender = get_sender().lock().unwrap();
                     let count = 3;
@@ -144,8 +146,8 @@ impl HeaderBar {
                                         total: size
                                     },
                                     current_name: file_name.clone(),
-                                    current_count : j as i32,
-                                    total_count: size as i32
+                                    current_count : i as i32,
+                                    total_count: count as i32
                                 };
                                 let _ = sender.send_blocking(progress);
                             }
@@ -161,8 +163,8 @@ impl HeaderBar {
                                 total: size
                             },
                             current_name: "".to_string(),
-                            current_count : size as i32,
-                            total_count: size as i32
+                            current_count : (count-1) as i32,
+                            total_count: count as i32
                         };
                         let _ = sender.send_blocking(progress);
                     }
@@ -276,6 +278,8 @@ impl Progresses {
         let progress = self.current.current as f64 / self.current.total as f64;
         display.set_current_progress(progress);
         display.set_current_name(self.current_name.clone());
+        display.set_current_count(self.current_count + 1);
+        display.set_total_count(self.total_count);
     }
 }
 
