@@ -95,6 +95,9 @@ fn main() {
 // TODO Rename as copy
 // TODO Rename items (extended rename)
 
+// TODO delay on loaded?
+// TODO Background color (dark, react not connected)
+
 // TODO connect android
 
 // TODO no // on linux status bar in root   

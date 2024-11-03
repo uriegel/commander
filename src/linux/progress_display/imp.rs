@@ -37,25 +37,12 @@ impl ObjectImpl for ProgressDisplay {
 	fn constructed(&self) {
 		self.parent_constructed();
 
-        // Access the wrapper type from the implementation struct
-		let wrapper: &super::ProgressDisplay = unsafe { &*(self as *const _ as *const super::ProgressDisplay) };
-
-
-		wrapper.connect_number_notify(|obj| {
-            let number = obj.number();
-            println!("Number changed to: {}", number);
+        self.obj().connect_number_notify(|pd| {
+            let number = pd.number();
+            println!("Number changed to from inner: {}", number);
+            pd.imp().revealer.set_reveal_child(true);
         });
-        // Connect to notify signal for the 'number' property
-        // wrapper.connect_notify(Some("number"), move |obj, _| {
-        //     let number = obj.number();
-        //     println!("Number changed to: {}", number);
-        // });
     }	
-		
-	// 	// self.connect_number_notify(|button| {
-    //     //     println!("The current number of `button_1` is {}.", button.number());
-    //     // });
-	// }
 }
 
 // Trait shared by all widgets

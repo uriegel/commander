@@ -229,7 +229,6 @@ impl HeaderBar {
                     match progress {
                         Progress::Start => {
                             progress_display.set_number(4);
-                            progress_display.reveal();
                         },
                         Progress::Stop => {
 //                            progress_area.queue_draw();
