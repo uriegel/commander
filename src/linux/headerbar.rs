@@ -121,21 +121,32 @@ impl HeaderBar {
                 // TODO TEST Revealer progress
                 std::thread::spawn(|| {
                     let sender = get_sender().lock().unwrap();
+                    let count = 3;
                     let size:u64 = 2222;
                     let frame_duration = Duration::from_millis(40);
                     let mut now = Local::now();
-                    let mut progress = Progresses { total: Progress { current: 0, total: size}, ..Progresses::default() };
-                    for i in 0..size {
-                        if Local::now() > now + frame_duration {
-                            now = Local::now();
-                            progress = Progresses { total: Progress { current: i, ..progress.total }, ..progress };
-                            let _ = sender.send_blocking(progress);
+                    let mut progress = Progresses { total: Progress { current: 0, total: size*count}, current: Progress { current: 0, total: size }, ..Progresses::default() };
+                    for i in 0..count {
+                        for j in 0..size {
+                            if Local::now() > now + frame_duration {
+                                now = Local::now();
+                                progress = Progresses { 
+                                    total: Progress { 
+                                        current: j+i*size, ..progress.total 
+                                    }, 
+                                    current: Progress {
+                                        current: j, ..progress.current 
+                                    },
+                                    ..progress 
+                                };
+                                let _ = sender.send_blocking(progress);
+                            }
+                            thread::sleep(Duration::from_millis(5));
                         }
-                        thread::sleep(Duration::from_millis(5));
+                        progress = Progresses { total: Progress { current: progress.total.total, ..progress.total }, ..progress };
+                        let _ = sender.send_blocking(progress);
+                        // TODO Send 3 files with names, popup
                     }
-                    progress = Progresses { total: Progress { current: progress.total.total, ..progress.total }, ..progress };
-                    let _ = sender.send_blocking(progress);
-                    // TODO Send 3 files with names, popup
                 });
 
 
@@ -232,15 +243,17 @@ struct Progress {
 
 #[derive(Default, Clone, Copy)]
 struct Progresses {
-    _current: Progress,
+    current: Progress,
     total: Progress,
     //current_name: String
 }
 
 impl Progresses {
     fn display_progress(&self, display: &ProgressDisplay) {
-        let progress = self.total.current as f64 / self.total.total as f64;
-        display.set_total_progress(progress);
+        let total_progress = self.total.current as f64 / self.total.total as f64;
+        display.set_total_progress(total_progress);
+        let progress = self.current.current as f64 / self.current.total as f64;
+        display.set_current_progress(progress);
     }
 }
 

@@ -68,7 +68,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkProgressBar">
+                      <object class="GtkProgressBar" id="progress_bar_current">
                         <property name="show-text">True</property>
                       </object>
                     </child>

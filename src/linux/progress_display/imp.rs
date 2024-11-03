@@ -15,7 +15,9 @@ pub struct ProgressDisplay {
     pub progress_area: TemplateChild<DrawingArea>,	
 	#[template_child]
     pub progress_bar_total: TemplateChild<ProgressBar>,	
-	#[property(get, set)]
+	#[template_child]
+    pub progress_bar_current: TemplateChild<ProgressBar>,	
+    #[property(get, set)]
     total_progress: Cell<f64>,	
 	#[property(get, set)]
     current_progress: Cell<f64>,	
@@ -65,6 +67,10 @@ impl ObjectImpl for ProgressDisplay {
 
         self.obj()
             .bind_property::<ProgressBar>("total_progress", self.progress_bar_total.as_ref(), "fraction")
+            .sync_create()
+            .build();
+        self.obj()
+            .bind_property::<ProgressBar>("current_progress", self.progress_bar_current.as_ref(), "fraction")
             .sync_create()
             .build();
 
