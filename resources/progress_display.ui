@@ -9,6 +9,64 @@
                 <child>
                     <object class="GtkDrawingArea" id="progress_area"/>
                 </child>
+                    <property name="popover">
+                    <object class="GtkPopover">
+                        <child>
+                        <object class="GtkBox">
+                            <property name="orientation">vertical</property>
+                            <property name="width-request">400</property>
+                            <child>
+                            <object class="GtkLabel">
+                                <property name="halign">start</property>
+                                <property name="label">Fortschritt beim Kopieren</property>
+                            </object>
+                            </child>
+                            <child>
+                            <object class="GtkGrid">
+                                <child>
+                                <object class="GtkLabel">
+                                    <property name="halign">start</property>
+                                    <layout>
+                                        <property name="column">0</property>
+                                        <property name="row">0</property>
+                                    </layout>
+                                </object>
+                                </child>
+                                <child>
+                                <object class="GtkLabel">
+                                    <property name="halign">start</property>
+                                    <layout>
+                                        <property name="column">2</property>
+                                        <property name="row">0</property>
+                                    </layout>
+                                </object>
+                                </child>
+                                <child>
+                                <object class="GtkLabel">
+                                    <property name="label">Dauer: </property>
+                                    <property name="halign">start</property>
+                                    <layout>
+                                        <property name="column">0</property>
+                                        <property name="row">1</property>
+                                    </layout>
+                                </object>
+                                </child>
+                                <child>
+                                <object class="GtkLabel">
+                                    <property name="label">Geschätzte Dauer: </property>
+                                    <property name="halign">start</property>
+                                    <layout>
+                                        <property name="column">0</property>
+                                        <property name="row">2</property>
+                                    </layout>
+                                </object>
+                                </child>
+                            </object>
+                            </child>
+                        </object>
+                        </child>
+                    </object>
+                    </property>
                 </object>
             </child>
             </object>
