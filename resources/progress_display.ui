@@ -18,6 +18,7 @@
                     <property name="margin-start">20</property>
                     <property name="margin-top">20</property>
                     <property name="orientation">vertical</property>
+                    <property name="spacing">20</property>
                     <property name="width-request">400</property>
                     <child>
                       <object class="GtkLabel">
@@ -84,9 +85,13 @@
                         <child>
                           <object class="GtkProgressBar" id="progress_bar_total">
                             <property name="show-text">True</property>
-                            <property name="fraction">0.7</property>
                           </object>
                         </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton">
+                        <property name="label">Abbrechen</property>
                       </object>
                     </child>
                   </object>
