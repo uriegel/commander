@@ -1,6 +1,9 @@
-use std::{fs::{self, Metadata}, process::Command};
+use std::{fs::{self, Metadata}, path::PathBuf, process::Command};
 
-use crate::{error::Error, extended_items::{GetExtendedItems, Version}, str::StrExt};
+use gtk::gio::{prelude::*, Cancellable, FileCopyFlags};
+use gtk::gio::File;
+
+use crate::{directory::CopyItems, error::Error, extended_items::{GetExtendedItems, Version}, request_error::RequestError, str::StrExt};
 use crate::directory::get_extension;
 
 use super::iconresolver::get_geticon_py;
@@ -56,6 +59,25 @@ pub fn mount(path: &str)->String {
         .unwrap_or(path)
         .to_string()
 }
+
+// TODO move files
+// TODO Windows version
+// TODO correct options
+// TODO Progress Linux
+// TODO Progress Windows
+// TODO Error handling
+pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
+    for item in input.items {
+        let source_file = File::for_path(PathBuf::from(&input.path).join(&item));
+        let target_file = File::for_path(PathBuf::from(&input.target_path).join(&item));
+        source_file.copy(&target_file, FileCopyFlags::OVERWRITE, None::<&Cancellable>, Some(&mut |s, t| {
+            println!("Progress {}, {}", s, t);
+        }))?;
+
+    }
+    Ok(())
+}
+
 
 pub trait StringExt {
     fn clean_path(&self) -> String;

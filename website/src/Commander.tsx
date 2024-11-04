@@ -92,7 +92,11 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 			controller
 				.copy()
 				.match(
-					() => { },
+					() => {
+						inactive.refresh()
+						if (move)
+							getActiveFolder()?.refresh()
+					},
 					e => showError(e, setErrorText))
 	}, [dialog])
 

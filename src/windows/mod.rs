@@ -3,6 +3,7 @@ use std::iter::once;
 pub mod root;
 pub mod directory;
 pub mod version;
+pub mod error;
 
 pub fn string_to_pcwstr(x: &str) -> Vec<u16> {
     x.encode_utf16().chain(once(0)).collect()

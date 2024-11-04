@@ -1,9 +1,6 @@
-use std::{fs::{canonicalize, create_dir, read_dir, rename, File}, path::{Path, PathBuf}, time::UNIX_EPOCH};
+use std::{fs::{canonicalize, create_dir, read_dir, rename, File}, path::PathBuf, time::UNIX_EPOCH};
 
-use gtk::gio::prelude::*;
 use chrono::{DateTime, Utc};
-use fs_extra::{dir::CopyOptions};
-use gtk::gio::{Cancellable, FileCopyFlags};
 use serde::{Deserialize, Serialize};
 use urlencoding::decode;
 use trash::delete_all;
@@ -70,9 +67,9 @@ pub struct GetFilesResult {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CopyItems {
-    path: String,
-    target_path: String,
-    items: Vec<String>
+    pub path: String,
+    pub target_path: String,
+    pub items: Vec<String>
 }
 
 pub fn get_files(input: GetFiles)->Result<GetFilesResult, RequestError> {
@@ -152,35 +149,6 @@ pub fn rename_item(input: RenameItem)->Result<(), RequestError> {
     let path = PathBuf::from(&input.path).join(input.name);
     let new_path = PathBuf::from(input.path).join(input.new_name);
     rename(path, new_path)?;
-    Ok(())
-}
-
-// TODO Linux version with gio
-// TODO refresh view after copying (one file?)
-// TODO Adapt datetime (and file attributes? and executable) when copied
-// TODO Windows version
-// TODO Check adapt datetime (and file attributes? and executable) when moved 
-// TODO Check different drives adapt datetime (and file attributes?) when moved 
-// TODO correct options
-// TODO Progress Linux
-// TODO Progress Windows
-pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
-
-    let items: Vec<PathBuf> = 
-        input
-            .items
-            .iter()
-            .map(|n|PathBuf::from(&input.path).join(n))
-            .collect();
-
-    for item in items {
-        let file = gtk::gio::File::for_path(item);
-        let res = file.copy(&gtk::gio::File::for_path(PathBuf::from(&input.target_path).join("mist")), FileCopyFlags::OVERWRITE, None::<&Cancellable>, None);
-        println!("Der Fäler {:?}", res);
-    }
-    // let affe = copy_items_with_progress(items.as_slice(), input.target_path, &CopyOptions::default(), |t| {
-    //     fs_extra::dir::TransitProcessResult::ContinueOrAbort
-    // });
     Ok(())
 }
 

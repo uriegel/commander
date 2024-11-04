@@ -12,7 +12,7 @@ use crate::cancellations::CancellationKey;
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RequestError {
-    status: ErrorType,
+    pub status: ErrorType,
     //status_text: String
 }
 
