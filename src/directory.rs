@@ -1,6 +1,7 @@
-use std::{fs::{canonicalize, create_dir, read_dir, rename, File}, path::PathBuf, time::UNIX_EPOCH};
+use std::{fs::{canonicalize, create_dir, read_dir, rename, File}, path::{Path, PathBuf}, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
+use fs_extra::{copy_items_with_progress, dir::CopyOptions};
 use serde::{Deserialize, Serialize};
 use urlencoding::decode;
 use trash::delete_all;
@@ -152,7 +153,19 @@ pub fn rename_item(input: RenameItem)->Result<(), RequestError> {
     Ok(())
 }
 
+// TODO refresh view after copying (one file?)
+// TODO Adapt datetime and file attributes when copied
+// TODO correct options
 pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
+    let items: Vec<PathBuf> = 
+        input
+            .items
+            .iter()
+            .map(|n|PathBuf::from(&input.path).join(n))
+            .collect();
+    let affe = copy_items_with_progress(items.as_slice(), input.target_path, &CopyOptions::default(), |t| {
+        fs_extra::dir::TransitProcessResult::ContinueOrAbort
+    });
     Ok(())
 }
 
