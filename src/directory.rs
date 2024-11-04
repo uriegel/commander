@@ -154,8 +154,12 @@ pub fn rename_item(input: RenameItem)->Result<(), RequestError> {
 }
 
 // TODO refresh view after copying (one file?)
-// TODO Adapt datetime and file attributes when copied
+// TODO Adapt datetime (and file attributes? and executable) when copied
+// TODO Check adapt datetime (and file attributes? and executable) when moved 
+// TODO Check different drives adapt datetime (and file attributes?) when moved 
 // TODO correct options
+// TODO Progress Linux
+// TODO Progress Windows
 pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     let items: Vec<PathBuf> = 
         input
