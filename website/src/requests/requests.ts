@@ -67,7 +67,12 @@ type ResultType<T, E extends ErrorType> = {
 }
 
 export const webViewRequest = <T, E extends ErrorType>(method: string, payload?: object) => {
-    const request = async () : Promise<Result<T, E>> => {
+    const request = async (): Promise<Result<T, E>> => {
+        
+
+        let af = JSON.stringify(payload)
+        console.log("Jetzt", af)
+
         const ret = await WebView.request(method, payload || {}) as ResultType<T, E>
         return ret.ok
             ? new Ok<T, E>(ret.ok) 

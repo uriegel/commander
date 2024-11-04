@@ -2,6 +2,7 @@ use std::{fs::{canonicalize, create_dir, read_dir, rename, File}, path::PathBuf,
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use serde_repr::Deserialize_repr;
 use urlencoding::decode;
 use trash::delete_all;
 
@@ -62,6 +63,36 @@ pub struct GetFilesResult {
     path: String,
     dir_count: usize,
     file_count: usize,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CopyItem {
+    pub name: String,
+    pub is_directory: bool,
+    pub size: i64,
+    pub time: DateTime<Utc>,
+    pub sub_path: Option<String>
+}
+
+#[derive(Debug, Deserialize_repr)]
+#[repr(u32)]
+pub enum JobType {
+    Copy = 0,
+    Move = 1,
+    CopyToRemote = 2,
+    MoveToRemote = 3,
+    CopyFromRemote = 4,
+    MoveFromRemote = 5,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CopyItemsInfo {
+    pub path: String,
+    pub target_path: String,
+    pub items: Vec<CopyItem>,
+    //pub job_type: JobType
 }
 
 pub fn get_files(input: GetFiles)->Result<GetFilesResult, RequestError> {
@@ -144,6 +175,10 @@ pub fn rename_item(input: RenameItem)->Result<(), RequestError> {
     Ok(())
 }
 
+pub fn get_copy_items_info(input: CopyItemsInfo) -> Result<(), RequestError> {
+    Ok(())
+}
+
 fn get_icon_path_of_file(name: &str, path: &str, is_directory: bool)->Option<String> {
     if !is_directory {
         get_icon_path(name, path)
@@ -151,4 +186,3 @@ fn get_icon_path_of_file(name: &str, path: &str, is_directory: bool)->Option<Str
         None
     }
 }
-

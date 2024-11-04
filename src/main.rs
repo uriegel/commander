@@ -86,8 +86,11 @@ fn main() {
     .run();
 }
 
-// TODO Copy
+// TODO Copy Step 1: copy items without flattening directory
+// TODO Copy Step 1: cancel F5 when copying is active
+// TODO Copy Step 1: Cancel copy: error in ProgresstransitResponse
 // TODO Move
+
 // TODO Rename as copy
 // TODO Rename items (extended rename)
 
@@ -100,4 +103,5 @@ fn main() {
 
 // TODO suppress developer tools in menus in release version
 
-// TODO fs_extra::copy_items_with_progress
+// TODO Copy Step 2: F5 when copying is active: queue jobs and recalculate bounds for progress dialog
+// TODO Copy Step 3: Check if flatten source targets ad show conflicts
