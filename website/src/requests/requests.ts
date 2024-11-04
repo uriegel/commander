@@ -56,9 +56,9 @@ export type CopyItem = {
     subPath?: string
     isDirectory?: boolean | undefined
     size: number | undefined
-    time: string | undefined
-    targetSize?: number | undefined
-    targetTime?: string | undefined
+    //time: string | undefined
+    //targetSize?: number | undefined
+    //targetTime?: string | undefined
 }
 
 type ResultType<T, E extends ErrorType> = {

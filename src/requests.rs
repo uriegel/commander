@@ -1,6 +1,6 @@
 use webview_app::request::{get_input, request_blocking, Request};
 
-use crate::{directory::{create_folder, delete_items, get_copy_items_info, get_files, rename_item}, extended_items::{
+use crate::{directory::{create_folder, delete_items, get_files, rename_item}, extended_items::{
     cancel_extended_items, get_extended_items
 }, request_error::{from_result, RequestError}, tracks::get_track_info};
 #[cfg(target_os = "linux")]
@@ -19,7 +19,6 @@ pub fn on_request(request: &Request, id: String, cmd: String, json: String)->boo
             "deleteitems" => from_result(delete_items(get_input(&json))),
             "renameitem" => from_result(rename_item(get_input(&json))),
             "gettrackinfo" => from_result(get_track_info(get_input(&json))),
-            "copyitemsinfo" => from_result(get_copy_items_info(get_input(&json))),
             _ => from_result(Ok::<(), RequestError>(()))
         }
     });

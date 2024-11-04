@@ -49,121 +49,205 @@ export const getCopyController = (move: boolean, dialog: DialogHandle, fromLeft:
     : null
 
 const getFileSystemCopyController = (move: boolean, dialog: DialogHandle, fromLeft: boolean, _: Controller, __: Controller,
-            sourcePath: string, targetPath: string, items: FolderViewItem[], targetItems: FolderViewItem[],
-            copyInfo: (sourcePath: string, targetPath: string, items: CopyItem[])=>AsyncResult<CopyItem[], ErrorType>,
-            copy: (sourcePath: string, targetPath: string, items: CopyItem[])=>AsyncResult<Nothing, ErrorType>): CopyController | null => ({
-        copy: () => {
-            const copyItems = items
-                .filter(n => n.isDirectory)
-                .map(n => ({
+        sourcePath: string, targetPath: string, items: FolderViewItem[], targetItems: FolderViewItem[],
+        copyInfo: (sourcePath: string, targetPath: string, items: CopyItem[])=>AsyncResult<CopyItem[], ErrorType>,
+        copy: (sourcePath: string, targetPath: string, items: CopyItem[])=>AsyncResult<Nothing, ErrorType>): CopyController | null => ({
+    copy: () => {
+        const fileItems = items
+            .filter(n => !n.isDirectory)
+        const totalSize = fileItems
+            .map(n => n.size || 0)
+            .reduce((a, c) => a + c, 0)
+                    
+        const targetItemsMap = mergeToDictionary(
+            targetItems
+                .filter(n => !n.isDirectory)
+                .map(ti => ({ key: ti.name, value: ti })))
+
+        const conflictFileItems = fileItems.map(n => {
+            const check = targetItemsMap[n.name]
+            return check
+                ? {
                     name: n.name,
-                    isDirectory: true,
+                    iconPath: n.iconPath,
                     size: n.size,
-                    time: n.time
-                }))
+                    time: n.time,
+                    exifDate: n.exifData?.dateTime && check.exifData?.dateTime ? n.exifData?.dateTime : null,
+                    version: n.version,
+                    targetSize: check.size,
+                    targetTime: check.time,
+                    targetExifDate: n.exifData?.dateTime && check.exifData?.dateTime ? check.exifData?.dateTime : null,
+                    targetVersion: check.version
+                } as ConflictItem
+                : undefined                
+        }).filter(n => n != undefined) as ConflictItem[]
+        const conflictItems = conflictFileItems //dirInfos ? conflictFileItems.concat(dirInfos) : conflictFileItems
+
+        const copyText = conflictItems.length > 0
+            ? move ? "Verschieben" : "Kopieren"
+            : move ? "verschieben" : "kopieren"
+        const type = getItemsType(items)
+        const text = conflictItems.length > 0 
+            ? `Einträge überschreiben beim ${copyText}?`
+            : type == ItemsType.Directory
+            ? `Möchtest Du das Verzeichnis ${copyText}?`
+            : type == ItemsType.Directories
+            ? `Möchtest Du die Verzeichnisse ${copyText}?`
+            : type == ItemsType.File
+            ? `Möchtest Du die Datei ${copyText}?`
+            : type == ItemsType.Files
+            ? `Möchtest Du die Dateien ${copyText}?`
+            : `Möchtest Du die Verzeichnisse und Dateien ${copyText}?`
+
+        const filterNoOverwrite = (item: ConflictItem) =>
+        (item.exifDate && item.targetExifDate
+            ? item.exifDate < item.targetExifDate
+            : (item.time ?? "") < (item.targetTime ?? ""))
+        && compareVersion(item.version, item.targetVersion) < 0
+
+        const defNo = conflictItems.length > 0
+            && conflictItems
+                .filter(filterNoOverwrite)
+                .length > 0
+        return dialog.showDialog({
+                text: `${text} (${totalSize?.byteCountToString()})`,   
+                slide: fromLeft ? Slide.Left : Slide.Right,
+                extension: conflictItems.length ? CopyConflicts : undefined,
+                extensionProps: conflictItems, 
+                fullscreen: conflictItems.length > 0,
+                btnYes: conflictItems.length > 0,
+                btnNo: conflictItems.length > 0,
+                btnOk: conflictItems.length == 0,
+                btnCancel: true,
+                defBtnYes: !defNo && conflictItems.length > 0,
+                defBtnNo: defNo
+            }, res => res.result != ResultType.Cancel 
+                ? makeDialogResult(res, fileItems, [], conflictItems)
+                : new Err<CopyItem[], ErrorType>({ status: IOError.Canceled, statusText: "" })
+        )
+        .bindAsync(copyItems =>
+            copyItems.length > 0
+            ? copy(sourcePath, targetPath, copyItems)
+            : AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)))
+    }
+})
+
+// const getFileSystemCopyController = (move: boolean, dialog: DialogHandle, fromLeft: boolean, _: Controller, __: Controller,
+//             sourcePath: string, targetPath: string, items: FolderViewItem[], targetItems: FolderViewItem[],
+//             copyInfo: (sourcePath: string, targetPath: string, items: CopyItem[])=>AsyncResult<CopyItem[], ErrorType>,
+//             copy: (sourcePath: string, targetPath: string, items: CopyItem[])=>AsyncResult<Nothing, ErrorType>): CopyController | null => ({
+//         copy: () => {
+//             const copyItems = items
+//                 .filter(n => n.isDirectory)
+//                 .map(n => ({
+//                     name: n.name,
+//                     isDirectory: true,
+//                     size: n.size,
+//                     time: n.time
+//                 }))
             
-            return copyInfo(sourcePath, targetPath, copyItems)
-                .bindAsync(infos => {
-                    const fileItems = items
-                        .filter(n => !n.isDirectory)
-                    const totalSize = fileItems
-                        .map(n => n.size || 0)
-                        .concat((infos ?? []).map(n => n.size || 0))
-                        .reduce((a, c) => a + c, 0)
+//             return copyInfo(sourcePath, targetPath, copyItems)
+//                 .bindAsync(infos => {
+//                     const fileItems = items
+//                         .filter(n => !n.isDirectory)
+//                     const totalSize = fileItems
+//                         .map(n => n.size || 0)
+//                         .concat((infos ?? []).map(n => n.size || 0))
+//                         .reduce((a, c) => a + c, 0)
                         
-                    const targetItemsMap = mergeToDictionary(
-                        targetItems
-                            .filter(n => !n.isDirectory)
-                            .map(ti => ({ key: ti.name, value: ti })))
+//                     const targetItemsMap = mergeToDictionary(
+//                         targetItems
+//                             .filter(n => !n.isDirectory)
+//                             .map(ti => ({ key: ti.name, value: ti })))
     
-                    const conflictFileItems = fileItems.map(n => {
-                        const check = targetItemsMap[n.name]
-                        return check
-                            ? {
-                                name: n.name,
-                                iconPath: n.iconPath,
-                                size: n.size,
-                                time: n.time,
-                                exifDate: n.exifData?.dateTime && check.exifData?.dateTime ? n.exifData?.dateTime : null,
-                                version: n.version,
-                                targetSize: check.size,
-                                targetTime: check.time,
-                                targetExifDate: n.exifData?.dateTime && check.exifData?.dateTime ? check.exifData?.dateTime : null,
-                                targetVersion: check.version
-                            } as ConflictItem
-                            : undefined                
-                    }).filter(n => n != undefined) as ConflictItem[]
+//                     const conflictFileItems = fileItems.map(n => {
+//                         const check = targetItemsMap[n.name]
+//                         return check
+//                             ? {
+//                                 name: n.name,
+//                                 iconPath: n.iconPath,
+//                                 size: n.size,
+//                                 time: n.time,
+//                                 exifDate: n.exifData?.dateTime && check.exifData?.dateTime ? n.exifData?.dateTime : null,
+//                                 version: n.version,
+//                                 targetSize: check.size,
+//                                 targetTime: check.time,
+//                                 targetExifDate: n.exifData?.dateTime && check.exifData?.dateTime ? check.exifData?.dateTime : null,
+//                                 targetVersion: check.version
+//                             } as ConflictItem
+//                             : undefined                
+//                     }).filter(n => n != undefined) as ConflictItem[]
 
-                    const dirInfos = infos
-                                    .filter(n => n.targetSize != null)
-                                    .map(n => ({
-                                        name: n.name,
-                                        iconPath: undefined,
-                                        subPath: n.subPath,
-                                        size: n.size,
-                                        time: n.time,
-                                        exifDate: undefined,
-                                        version: undefined,
-                                        targetSize: n.targetSize,
-                                        targetTime: n.targetTime,
-                                        targetExifDate: undefined,
-                                        targetVersion: undefined
-                                    })) as ConflictItem[]
-                    const conflictItems = dirInfos ? conflictFileItems.concat(dirInfos) : conflictFileItems
+//                     const dirInfos = infos
+//                                     .filter(n => n.targetSize != null)
+//                                     .map(n => ({
+//                                         name: n.name,
+//                                         iconPath: undefined,
+//                                         subPath: n.subPath,
+//                                         size: n.size,
+//                                         time: n.time,
+//                                         exifDate: undefined,
+//                                         version: undefined,
+//                                         targetSize: n.targetSize,
+//                                         targetTime: n.targetTime,
+//                                         targetExifDate: undefined,
+//                                         targetVersion: undefined
+//                                     })) as ConflictItem[]
+//                     const conflictItems = dirInfos ? conflictFileItems.concat(dirInfos) : conflictFileItems
 
-                    const copyText = conflictItems.length > 0
-                        ? move ? "Verschieben" : "Kopieren"
-                        : move ? "verschieben" : "kopieren"
-                    const type = getItemsType(items)
-                    const text = conflictItems.length > 0 
-                        ? `Einträge überschreiben beim ${copyText}?`
-                        : type == ItemsType.Directory
-                        ? `Möchtest Du das Verzeichnis ${copyText}?`
-                        : type == ItemsType.Directories
-                        ? `Möchtest Du die Verzeichnisse ${copyText}?`
-                        : type == ItemsType.File
-                        ? `Möchtest Du die Datei ${copyText}?`
-                        : type == ItemsType.Files
-                        ? `Möchtest Du die Dateien ${copyText}?`
-                        : `Möchtest Du die Verzeichnisse und Dateien ${copyText}?`
+//                     const copyText = conflictItems.length > 0
+//                         ? move ? "Verschieben" : "Kopieren"
+//                         : move ? "verschieben" : "kopieren"
+//                     const type = getItemsType(items)
+//                     const text = conflictItems.length > 0 
+//                         ? `Einträge überschreiben beim ${copyText}?`
+//                         : type == ItemsType.Directory
+//                         ? `Möchtest Du das Verzeichnis ${copyText}?`
+//                         : type == ItemsType.Directories
+//                         ? `Möchtest Du die Verzeichnisse ${copyText}?`
+//                         : type == ItemsType.File
+//                         ? `Möchtest Du die Datei ${copyText}?`
+//                         : type == ItemsType.Files
+//                         ? `Möchtest Du die Dateien ${copyText}?`
+//                         : `Möchtest Du die Verzeichnisse und Dateien ${copyText}?`
 
-                    const filterNoOverwrite = (item: ConflictItem) =>
-                    (item.exifDate && item.targetExifDate
-                        ? item.exifDate < item.targetExifDate
-                        : (item.time ?? "") < (item.targetTime ?? ""))
-                    && compareVersion(item.version, item.targetVersion) < 0
+//                     const filterNoOverwrite = (item: ConflictItem) =>
+//                     (item.exifDate && item.targetExifDate
+//                         ? item.exifDate < item.targetExifDate
+//                         : (item.time ?? "") < (item.targetTime ?? ""))
+//                     && compareVersion(item.version, item.targetVersion) < 0
     
-                    const defNo = conflictItems.length > 0
-                        && conflictItems
-                            .filter(filterNoOverwrite)
-                            .length > 0
-                    return dialog.showDialog({
-                        text: `${text} (${totalSize?.byteCountToString()})`,   
-                        slide: fromLeft ? Slide.Left : Slide.Right,
-                        extension: conflictItems.length ? CopyConflicts : undefined,
-                        extensionProps: conflictItems, 
-                        fullscreen: conflictItems.length > 0,
-                        btnYes: conflictItems.length > 0,
-                        btnNo: conflictItems.length > 0,
-                        btnOk: conflictItems.length == 0,
-                        btnCancel: true,
-                        defBtnYes: !defNo && conflictItems.length > 0,
-                        defBtnNo: defNo
-                    }, res => res.result != ResultType.Cancel 
-                        ? makeDialogResult(res, fileItems, infos, conflictItems)
-                        : new Err<CopyItem[], ErrorType>({ status: IOError.Canceled, statusText: "" }))
-                    }) 
-                    .bindAsync(copyItems =>
-                        copyItems.length > 0
-                        ? copy(sourcePath, targetPath, copyItems)
-                        : AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)))
-        }
-    })
+//                     const defNo = conflictItems.length > 0
+//                         && conflictItems
+//                             .filter(filterNoOverwrite)
+//                             .length > 0
+//                     return dialog.showDialog({
+//                         text: `${text} (${totalSize?.byteCountToString()})`,   
+//                         slide: fromLeft ? Slide.Left : Slide.Right,
+//                         extension: conflictItems.length ? CopyConflicts : undefined,
+//                         extensionProps: conflictItems, 
+//                         fullscreen: conflictItems.length > 0,
+//                         btnYes: conflictItems.length > 0,
+//                         btnNo: conflictItems.length > 0,
+//                         btnOk: conflictItems.length == 0,
+//                         btnCancel: true,
+//                         defBtnYes: !defNo && conflictItems.length > 0,
+//                         defBtnNo: defNo
+//                     }, res => res.result != ResultType.Cancel 
+//                         ? makeDialogResult(res, fileItems, infos, conflictItems)
+//                         : new Err<CopyItem[], ErrorType>({ status: IOError.Canceled, statusText: "" }))
+//                     }) 
+//                     .bindAsync(copyItems =>
+//                         copyItems.length > 0
+//                         ? copy(sourcePath, targetPath, copyItems)
+//                         : AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)))
+//         }
+//     })
 
 const makeDialogResult = (res: DialogResult, fileItems: FolderViewItem[], infos: CopyItem[], conflictItems: ConflictItem[]) => {
     const itemsToCopy = fileItems
         .map(n => ({ name: n.name, size: n.size, time: n.time, subPath: undefined }) as CopyItem)
-        .concat((infos?? []).map(n => ({ name: n.name, size: n.size, time: n.time, subPath: n.subPath || undefined })))
+        .concat((infos?? []).map(n => ({ name: n.name, size: n.size, subPath: n.subPath || undefined })))
 
     return new Ok<CopyItem[], ErrorType>(
         res.result == ResultType.Yes

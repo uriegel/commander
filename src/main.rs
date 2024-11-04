@@ -86,7 +86,8 @@ fn main() {
     .run();
 }
 
-// TODO Copy Step 1: copy items without flattening directory
+// TODO Copy Step 1: copy items without directory
+// TODO Copy Step 1: copy items with directories (overwrite yes/no)
 // TODO Copy Step 1: cancel F5 when copying is active
 // TODO Copy Step 1: Cancel copy: error in ProgresstransitResponse
 // TODO Move
