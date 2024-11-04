@@ -66,10 +66,10 @@ pub struct GetFilesResult {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct CopyItem {
-    pub name: String,
-    pub is_directory: bool,
-    pub sub_path: Option<String>
+pub struct CopyItems {
+    path: String,
+    target_path: String,
+    items: Vec<String>
 }
 
 pub fn get_files(input: GetFiles)->Result<GetFilesResult, RequestError> {
@@ -149,6 +149,10 @@ pub fn rename_item(input: RenameItem)->Result<(), RequestError> {
     let path = PathBuf::from(&input.path).join(input.name);
     let new_path = PathBuf::from(input.path).join(input.new_name);
     rename(path, new_path)?;
+    Ok(())
+}
+
+pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     Ok(())
 }
 

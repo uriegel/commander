@@ -51,15 +51,15 @@ export enum IOError {
     UacNotStarted = 1099
 }
 
-export type CopyItem = {
-    name: string
-    subPath?: string
-    isDirectory?: boolean | undefined
-    size: number | undefined
-    //time: string | undefined
-    //targetSize?: number | undefined
-    //targetTime?: string | undefined
-}
+// export type CopyItem = {
+//     name: string
+//     subPath?: string
+//     isDirectory?: boolean | undefined
+//     size: number | undefined
+//     //time: string | undefined
+//     //targetSize?: number | undefined
+//     //targetTime?: string | undefined
+// }
 
 type ResultType<T, E extends ErrorType> = {
     ok: T
@@ -68,11 +68,6 @@ type ResultType<T, E extends ErrorType> = {
 
 export const webViewRequest = <T, E extends ErrorType>(method: string, payload?: object) => {
     const request = async (): Promise<Result<T, E>> => {
-        
-
-        let af = JSON.stringify(payload)
-        console.log("Jetzt", af)
-
         const ret = await WebView.request(method, payload || {}) as ResultType<T, E>
         return ret.ok
             ? new Ok<T, E>(ret.ok) 

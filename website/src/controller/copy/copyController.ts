@@ -3,11 +3,11 @@ import CopyConflicts, { ConflictItem } from "../../components/dialogparts/CopyCo
 import { FolderViewItem } from "../../components/FolderView"
 import { Controller, ControllerType, ItemsType, getItemsType } from "../controller"
 import { compareVersion } from "../filesystem"
-import { CopyItem, IOError } from "../../requests/requests"
-import { copy, copyInfo } from "./fileSystem"
+import { IOError } from "../../requests/requests"
+import { copy } from "./fileSystem"
 import { AsyncResult, Err, ErrorType, Nothing, Ok, mergeToDictionary, nothing } from "functional-extensions"
-import { copyInfoFromRemote } from "./fromRemoteCopy"
-import { copyInfoToRemote } from "./toRemoteCopy"
+//import { copyInfoFromRemote } from "./fromRemoteCopy"
+//import { copyInfoToRemote } from "./toRemoteCopy"
 
 export enum JobType
 {
@@ -30,12 +30,12 @@ const getJobType = (from: ControllerType, to: ControllerType, move: boolean) =>
     ? JobType.CopyToRemote
     : move ? JobType.Move : JobType.Copy
 
-const getPreCopyFunction = (from: ControllerType, to: ControllerType) =>
-    from == ControllerType.Remote && to == ControllerType.FileSystem
-    ? copyInfoFromRemote
-    : from == ControllerType.FileSystem && to == ControllerType.Remote
-    ? copyInfoToRemote
-    : copyInfo
+// const getPreCopyFunction = (from: ControllerType, to: ControllerType) =>
+//     from == ControllerType.Remote && to == ControllerType.FileSystem
+//     ? copyInfoFromRemote
+//     : from == ControllerType.FileSystem && to == ControllerType.Remote
+//     ? copyInfoToRemote
+//     : copyInfo
 
 export const getCopyController = (move: boolean, dialog: DialogHandle, fromLeft: boolean, fromController: Controller, toController: Controller,
         sourcePath: string, targetPath: string, items: FolderViewItem[], targetItems: FolderViewItem[]): CopyController|null => 
@@ -44,14 +44,14 @@ export const getCopyController = (move: boolean, dialog: DialogHandle, fromLeft:
         || fromController.type == ControllerType.FileSystem && toController.type == ControllerType.Remote
     ? getFileSystemCopyController(move, dialog, fromLeft, fromController, toController, sourcePath, targetPath,
         items, targetItems?.filter(n => !n.isDirectory),
-        getPreCopyFunction(fromController.type, toController.type),
-        (sourcePath: string, targetPath: string, items: CopyItem[]) => copy(sourcePath, targetPath, items, getJobType(fromController.type, toController.type, move)))
+        //getPreCopyFunction(fromController.type, toController.type),
+        (sourcePath: string, targetPath: string, items: string[]) => copy(sourcePath, targetPath, items, getJobType(fromController.type, toController.type, move)))
     : null
 
 const getFileSystemCopyController = (move: boolean, dialog: DialogHandle, fromLeft: boolean, _: Controller, __: Controller,
         sourcePath: string, targetPath: string, items: FolderViewItem[], targetItems: FolderViewItem[],
-        copyInfo: (sourcePath: string, targetPath: string, items: CopyItem[])=>AsyncResult<CopyItem[], ErrorType>,
-        copy: (sourcePath: string, targetPath: string, items: CopyItem[])=>AsyncResult<Nothing, ErrorType>): CopyController | null => ({
+        //copyInfo: (sourcePath: string, targetPath: string, items: string[])=>AsyncResult<string[], ErrorType>,
+        copy: (sourcePath: string, targetPath: string, items: string[])=>AsyncResult<Nothing, ErrorType>): CopyController | null => ({
     copy: () => {
         const fileItems = items
             .filter(n => !n.isDirectory)
@@ -123,7 +123,7 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle, fromLe
                 defBtnNo: defNo
             }, res => res.result != ResultType.Cancel 
                 ? makeDialogResult(res, fileItems, [], conflictItems)
-                : new Err<CopyItem[], ErrorType>({ status: IOError.Canceled, statusText: "" })
+                : new Err<string[], ErrorType>({ status: IOError.Canceled, statusText: "" })
         )
         .bindAsync(copyItems =>
             copyItems.length > 0
@@ -244,16 +244,13 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle, fromLe
 //         }
 //     })
 
-const makeDialogResult = (res: DialogResult, fileItems: FolderViewItem[], infos: CopyItem[], conflictItems: ConflictItem[]) => {
+const makeDialogResult = (res: DialogResult, fileItems: FolderViewItem[], infos: string[], conflictItems: ConflictItem[]) => {
     const itemsToCopy = fileItems
-        .map(n => ({ name: n.name, size: n.size, time: n.time, subPath: undefined }) as CopyItem)
-        .concat((infos?? []).map(n => ({ name: n.name, size: n.size, subPath: n.subPath || undefined })))
-
-    return new Ok<CopyItem[], ErrorType>(
+        .map(n => n.name)
+        .concat(infos?? [])
+    return new Ok<string[], ErrorType>(
         res.result == ResultType.Yes
         ? itemsToCopy
-        : itemsToCopy.diff(conflictItems
-            .map(n => ({ name: n.name, size: n.size, time: n.time, subPath: n.subPath || undefined }))
-        )
-    )
+        : itemsToCopy.diff(
+                conflictItems.map(n => n.name)))
 }
