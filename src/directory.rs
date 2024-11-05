@@ -163,10 +163,13 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     });
 
     for item in input.items {
+
+        // TODO send filename, current_size, total_size
+
         let source_file = PathBuf::from(&input.path).join(&item);
         let target_file = PathBuf::from(&input.target_path).join(&item);
         if input.move_ {
-            move_item(&source_file, &target_file)?;
+            move_item(&source_file, &target_file)?; // TODO send file progress
         } else {
             copy_item(&source_file, &target_file)?;
         }
