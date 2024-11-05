@@ -1,9 +1,5 @@
-use std::sync::{Arc, Mutex};
-use std::thread;
 use std::time::Duration;
 
-use async_channel::Sender;
-use chrono::Local;
 use gtk::glib::{self, spawn_future_local, timeout_future};
 use gtk::glib::clone;
 use webkit6::prelude::*;
@@ -11,6 +7,8 @@ use webkit6::{
     gtk::{ApplicationWindow, gio::ActionEntry, Builder},
     gio::Cancellable
 };
+
+use crate::progresses::set_progress_sender;
 
 use super::progress_display::ProgressDisplay;
 
@@ -115,64 +113,7 @@ impl HeaderBar {
 
         let action_rename_as_copy = ActionEntry::builder("renameascopy")
             .activate(clone!(#[weak]webview, move |_, _, _|{
-                // webview.evaluate_javascript("menuAction('RENAME_AS_COPY')", None, None, None::<&Cancellable>, |_|{});
-
-
-                // TODO TEST Revealer progress: total bytes
-                // TODO TEST Revealer progress: remaining time
-                // TODO TEST Revealer progress: time
-                std::thread::spawn(|| {
-                    let sender = get_sender().lock().unwrap();
-                    let count = 3;
-                    let size:u64 = 2222;
-                    let frame_duration = Duration::from_millis(40);
-                    let mut now = Local::now();
-                    for i in 0..count {
-                        let file_name = match i {
-                            0 => "Ein erste Datei.png".to_string(),
-                            1 => "Die 2. Datei.jpg".to_string(),
-                            _ => "Die letzte Datei.htm".to_string(),
-                        };
-                        for j in 0..size {
-                            if Local::now() > now + frame_duration {
-                                now = Local::now();
-                                let progress = Progresses { 
-                                    total: Progress { 
-                                        current: j+i*size,
-                                        total: size*count 
-                                    }, 
-                                    current: Progress {
-                                        current: j, 
-                                        total: size
-                                    },
-                                    current_name: file_name.clone(),
-                                    current_count : i as i32,
-                                    total_count: count as i32
-                                };
-                                let _ = sender.send_blocking(progress);
-                            }
-                            thread::sleep(Duration::from_millis(5));
-                        }
-                        let progress = Progresses { 
-                            total: Progress { 
-                                current: size*count,
-                                total: size*count 
-                            }, 
-                            current: Progress {
-                                current: size, 
-                                total: size
-                            },
-                            current_name: "".to_string(),
-                            current_count : (count-1) as i32,
-                            total_count: count as i32
-                        };
-                        let _ = sender.send_blocking(progress);
-                    }
-                });
-
-
-
-
+                webview.evaluate_javascript("menuAction('RENAME_AS_COPY')", None, None, None::<&Cancellable>, |_|{});
                 webview.grab_focus();
             }))
             .build();
@@ -256,42 +197,3 @@ impl HeaderBar {
     }
 }
 
-#[derive(Default)]
-struct Progress {
-    current: u64,
-    total: u64    
-}
-
-#[derive(Default)]
-struct Progresses {
-    current: Progress,
-    total: Progress,
-    current_name: String,
-    total_count: i32,
-    current_count: i32
-}
-
-impl Progresses {
-    fn display_progress(&self, display: &ProgressDisplay) {
-        let total_progress = self.total.current as f64 / self.total.total as f64;
-        display.set_total_progress(total_progress);
-        let progress = self.current.current as f64 / self.current.total as f64;
-        display.set_current_progress(progress);
-        display.set_current_name(self.current_name.clone());
-        display.set_current_count(self.current_count + 1);
-        display.set_total_count(self.total_count);
-    }
-}
-
-
-fn set_progress_sender(snd: Sender<Progresses>) {
-    unsafe { PROGRESS_SENDER = Some(Arc::new(Mutex::new(snd))) };
-}
-
-fn get_sender()->&'static Arc<Mutex<Sender<Progresses>>> {
-    unsafe {
-        PROGRESS_SENDER.as_ref().unwrap()        
-    }
-}
-
-static mut PROGRESS_SENDER: Option<Arc<Mutex<Sender<Progresses>>>> = None;

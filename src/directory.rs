@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use urlencoding::decode;
 use trash::delete_all;
 
-use crate::{error::Error, request_error::RequestError};
+use crate::{error::Error, progresses::ProgressControl, request_error::RequestError};
 
 #[cfg(target_os = "windows")]
 use crate::windows::directory::{is_hidden, StringExt, get_icon_path, copy_item, move_item};
@@ -154,29 +154,40 @@ pub fn rename_item(input: RenameItem)->Result<(), RequestError> {
 }
 
 pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
-    let total_size = input.items.iter().fold(0u64,|curr, item|{
-        let meta = metadata(PathBuf::from(&input.path).join(&item))
+    let items: Vec<(&String, u64)> = input.items.iter().map(|item|
+        (item, metadata(PathBuf::from(&input.path).join(&item))
             .ok()
             .map(|m| m.len())
-            .unwrap_or_default();
-        meta + curr
-    });
+            .unwrap_or_default()))
+            .collect();
+    
+    let progress_control = ProgressControl::new(items.iter().fold(0u64, |curr, (_, i)|i + curr), input.items.len() as u32);
 
-    for item in input.items {
+    items.iter().fold(ProgressFiles::default(), |curr, (item, size)| {
+        let pf = ProgressFiles { index: curr.index + 1, file: item, size: curr.size + size };
 
-        // TODO send filename, current_size, total_size
+        progress_control.send_file(pf.file, pf.size, pf.index + 1);
 
         let source_file = PathBuf::from(&input.path).join(&item);
         let target_file = PathBuf::from(&input.target_path).join(&item);
         if input.move_ {
-            move_item(&source_file, &target_file)?; // TODO send file progress
+            move_item(&source_file, &target_file).unwrap(); // TODO try_fold error as result // TODO send file progress
         } else {
-            copy_item(&source_file, &target_file)?;
+            copy_item(&source_file, &target_file).unwrap();
         }
-    }
+
+
+        pf
+    });
     Ok(())
 }
 
+#[derive(Default)]
+struct ProgressFiles<'a> {
+    index: u32,
+    file: &'a str,
+    size: u64
+}
 
 fn get_icon_path_of_file(name: &str, path: &str, is_directory: bool)->Option<String> {
     if !is_directory {
@@ -185,3 +196,4 @@ fn get_icon_path_of_file(name: &str, path: &str, is_directory: bool)->Option<Str
         None
     }
 }
+
