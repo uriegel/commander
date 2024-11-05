@@ -1,12 +1,12 @@
 use webview_app::request::{get_input, request_blocking, Request};
 
-use crate::{directory::{create_folder, delete_items, get_files, rename_item}, extended_items::{
+use crate::{directory::{copy_items, create_folder, delete_items, get_files, rename_item}, extended_items::{
     cancel_extended_items, get_extended_items
 }, request_error::{from_result, RequestError}, tracks::get_track_info};
 #[cfg(target_os = "linux")]
-use crate::linux::{root::get_root, directory::copy_items};
+use crate::linux::root::get_root;
 #[cfg(target_os = "windows")]
-use crate::windows::{root::get_root, directory::copy_items};
+use crate::windows::root::get_root;
 
 pub fn on_request(request: &Request, id: String, cmd: String, json: String)->bool {
     request_blocking(request, id, move || {

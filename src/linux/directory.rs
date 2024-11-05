@@ -3,7 +3,7 @@ use std::{fs::{self, Metadata}, path::PathBuf, process::Command};
 use gtk::gio::{prelude::*, Cancellable, FileCopyFlags};
 use gtk::gio::File;
 
-use crate::{directory::CopyItems, error::Error, extended_items::{GetExtendedItems, Version}, request_error::RequestError, str::StrExt};
+use crate::{error::Error, extended_items::{GetExtendedItems, Version}, request_error::RequestError, str::StrExt};
 use crate::directory::get_extension;
 
 use super::iconresolver::get_geticon_py;
@@ -60,29 +60,26 @@ pub fn mount(path: &str)->String {
         .to_string()
 }
 
-// TODO Windows version
-// TODO correct options
 // TODO Progress Linux
 // TODO Progress Windows
 // TODO Error handling
 // TODO lock copy operation (on UI)
 // TODO cancel copy operation
 // TODO can close: Ok cancel
-pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
-    for item in input.items {
-        let source_file = File::for_path(PathBuf::from(&input.path).join(&item));
-        let target_file = File::for_path(PathBuf::from(&input.target_path).join(&item));
-        if input.move_ {
-            source_file.move_(&target_file, FileCopyFlags::OVERWRITE, None::<&Cancellable>, Some(&mut |s, t| {
-                println!("Progress {}, {}", s, t);
-            }))?;
-        } else {
-            source_file.copy(&target_file, FileCopyFlags::OVERWRITE, None::<&Cancellable>, Some(&mut |s, t| {
-                println!("Progress {}, {}", s, t);
-            }))?;
-        }
-    }
-    Ok(())
+pub fn copy_item(source: &PathBuf, target: &PathBuf)->Result<(), RequestError> {
+    File::for_path(source).copy(&File::for_path(target), FileCopyFlags::OVERWRITE, 
+            None::<&Cancellable>, Some(&mut |s, t| {
+            println!("Progress {}, {}", s, t);
+    }))?;// TODO Dropper for progress
+    Ok(()) // TODO Dropper for progress
+}
+
+pub fn move_item(source: &PathBuf, target: &PathBuf)->Result<(), RequestError> {
+    File::for_path(source).move_(&File::for_path(target), FileCopyFlags::OVERWRITE, 
+            None::<&Cancellable>, Some(&mut |s, t| {
+            println!("Progress {}, {}", s, t);
+    }))?;// TODO Dropper for progress
+    Ok(()) // TODO Dropper for progress
 }
 
 pub trait StringExt {

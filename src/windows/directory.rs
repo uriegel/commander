@@ -32,7 +32,7 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
         let target_file = string_to_pcwstr(&PathBuf::from(&input.target_path).join(&item).to_string_lossy());
         if input.move_ {
             unsafe { MoveFileWithProgressW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), None, None, 
-                MOVEFILE_COPY_ALLOWED | MOVEFILE_REPLACE_EXISTING)?; }
+                MOVEFILE_COPY_ALLOWED | MOVEFILE_REPLACE_EXISTING)?; } // TODO Dropper for progress
         } else {
             unsafe { CopyFileExW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), None, None, None, 0)?; }
         }

@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use urlencoding::decode;
 use trash::delete_all;
 
-use crate::{error::Error, request_error::RequestError};
+use crate::{error::Error, linux::directory::{copy_item, move_item}, request_error::RequestError};
 
 #[cfg(target_os = "windows")]
 use crate::windows::directory::{is_hidden, StringExt, get_icon_path};
@@ -152,6 +152,20 @@ pub fn rename_item(input: RenameItem)->Result<(), RequestError> {
     rename(path, new_path)?;
     Ok(())
 }
+
+pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
+    for item in input.items {
+        let source_file = PathBuf::from(&input.path).join(&item);
+        let target_file = PathBuf::from(&input.target_path).join(&item);
+        if input.move_ {
+            move_item(&source_file, &target_file)?;
+        } else {
+            copy_item(&source_file, &target_file)?;
+        }
+    }
+    Ok(())
+}
+
 
 fn get_icon_path_of_file(name: &str, path: &str, is_directory: bool)->Option<String> {
     if !is_directory {
