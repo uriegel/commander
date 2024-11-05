@@ -161,24 +161,24 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
             .unwrap_or_default()))
             .collect();
     
-    let progress_control = ProgressControl::new(items.iter().fold(0u64, |curr, (_, i)|i + curr), input.items.len() as u32);
+    let progress_control = ProgressControl::new(
+        items.iter().fold(0u64, |curr, (_, i)|i + curr), 
+        input.items.len() as u32);
 
-    items.iter().fold(ProgressFiles::default(), |curr, (item, size)| {
-        let pf = ProgressFiles { index: curr.index + 1, file: item, size: curr.size + size };
+    items.iter().try_fold(ProgressFiles::default(), |curr, (item, size)| {
+        let progress_files = ProgressFiles { index: curr.index + 1, file: item, size: curr.size + size };
 
-        progress_control.send_file(pf.file, pf.size, pf.index + 1);
+        progress_control.send_file(progress_files.file, progress_files.size, progress_files.index + 1);
 
         let source_file = PathBuf::from(&input.path).join(&item);
         let target_file = PathBuf::from(&input.target_path).join(&item);
         if input.move_ {
-            move_item(&source_file, &target_file).unwrap(); // TODO try_fold error as result // TODO send file progress
+            move_item(&source_file, &target_file)?; // TODO send file progress
         } else {
-            copy_item(&source_file, &target_file).unwrap();
+            copy_item(&source_file, &target_file)?;
         }
-
-
-        pf
-    });
+        Ok::<_, RequestError>(progress_files)
+    })?;
     Ok(())
 }
 

@@ -64,29 +64,29 @@ impl Progresses {
 }
 
 #[derive(Default)]
-struct FilesProgressStart {
-    total_size: u64,
-    total_files: u32,
+pub struct FilesProgressStart {
+    pub total_size: u64,
+    pub total_files: u32,
 }
 
 
 #[derive(Default)]
-struct FilesProgress {
-    progress: f64,
-    current_name: String,
-    current_files: u32
+pub struct FilesProgress {
+    pub progress: f64,
+    pub current_name: String,
+    pub current_files: u32
 }
 
 #[derive(Default)]
-struct FileProgress {
-    current: Progress,
-    total: Progress,
+pub struct FileProgress {
+    pub current: Progress,
+    pub total: Progress,
 }
 
 #[derive(Default)]
-struct Progress {
-    current: u64,
-    total: u64    
+pub struct Progress {
+    pub current: u64,
+    pub total: u64    
 }
 
 fn get_sender()->&'static Arc<Mutex<Sender<Progresses>>> {
