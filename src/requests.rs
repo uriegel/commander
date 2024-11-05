@@ -6,7 +6,7 @@ use crate::{directory::{create_folder, delete_items, get_files, rename_item}, ex
 #[cfg(target_os = "linux")]
 use crate::linux::{root::get_root, directory::copy_items};
 #[cfg(target_os = "windows")]
-use crate::windows::root::get_root;
+use crate::windows::{root::get_root, directory::copy_items};
 
 pub fn on_request(request: &Request, id: String, cmd: String, json: String)->bool {
     request_blocking(request, id, move || {

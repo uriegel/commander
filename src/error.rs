@@ -4,7 +4,7 @@ use quick_xml::DeError;
 
 #[derive(Debug)]
 pub struct Error {
-    message: String
+    pub message: String
 }
 
 impl Error {

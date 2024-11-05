@@ -1,6 +1,10 @@
 use std::{fs::Metadata, os::windows::fs::MetadataExt, path::PathBuf};
 
-use crate::{directory::get_extension, error::Error};
+use windows::{core::PCWSTR, Win32::Storage::FileSystem::{CopyFileExW, MoveFileWithProgressW, MOVEFILE_COPY_ALLOWED, MOVEFILE_REPLACE_EXISTING, MOVE_FILE_FLAGS}};
+
+use crate::{directory::{get_extension, CopyItems}, error::Error, request_error::RequestError};
+
+use super::string_to_pcwstr;
 
 pub fn is_hidden(_: &str, metadata: &Metadata)->bool {
     let attrs = metadata.file_attributes();
@@ -19,6 +23,21 @@ pub fn get_icon_path(name: &str, path: &str)->Option<String> {
 pub fn get_icon(path: &str)->Result<(String, Vec<u8>), Error> {
     let icon = systemicons::get_icon(&path.replace("%20", " "), 16)?;
     Ok(("icon.png".to_string(), icon))
+}
+
+pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
+    for item in input.items {
+        let source_file = string_to_pcwstr(&PathBuf::from(&input.path).join(&item).to_string_lossy());
+        // TODO remove write protection on target
+        let target_file = string_to_pcwstr(&PathBuf::from(&input.target_path).join(&item).to_string_lossy());
+        if input.move_ {
+            unsafe { MoveFileWithProgressW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), None, None, 
+                MOVEFILE_COPY_ALLOWED | MOVEFILE_REPLACE_EXISTING)?; }
+        } else {
+            unsafe { CopyFileExW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), None, None, None, 0)?; }
+        }
+    }
+    Ok(())
 }
 
 pub trait StringExt {

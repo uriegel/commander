@@ -85,7 +85,6 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     Ok(())
 }
 
-
 pub trait StringExt {
     fn clean_path(&self) -> String;
 }
