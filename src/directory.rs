@@ -69,7 +69,8 @@ pub struct GetFilesResult {
 pub struct CopyItems {
     pub path: String,
     pub target_path: String,
-    pub items: Vec<String>
+    pub items: Vec<String>,
+    pub move_: bool
 }
 
 pub fn get_files(input: GetFiles)->Result<GetFilesResult, RequestError> {

@@ -85,19 +85,23 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 	// const copyErrorSubscription = useRef<Subscription | null>(null)
 		
 	const copyItemsToInactive = useCallback((inactive: FolderViewHandle | null, move: boolean, activeController: Controller,
-		activePath: string, itemsToCopy: FolderViewItem[], id?: string) => {
+			activePath: string, itemsToCopy: FolderViewItem[], id?: string) => {
 		const controller = inactive && getCopyController(move, dialog, id == ID_LEFT, activeController, inactive.getController(),
 			activePath, inactive.getPath(), itemsToCopy, inactive.getItems())
-		if (controller)
+		if (controller) {
+			const inactivePath = inactive.getPath()
+			const activeFolder = getActiveFolder()
 			controller
 				.copy()
 				.match(
 					() => {
-						inactive.refresh()
-						if (move)
+						if (inactivePath == inactive.getPath()) 
+							inactive.refresh()
+						if (move && activePath == activeFolder?.getPath())
 							getActiveFolder()?.refresh()
 					},
 					e => showError(e, setErrorText))
+		}
 	}, [dialog])
 
 	useEffect(() => {

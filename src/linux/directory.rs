@@ -60,20 +60,27 @@ pub fn mount(path: &str)->String {
         .to_string()
 }
 
-// TODO move files
 // TODO Windows version
 // TODO correct options
 // TODO Progress Linux
 // TODO Progress Windows
 // TODO Error handling
+// TODO lock copy operation (on UI)
+// TODO cancel copy operation
+// TODO can close: Ok cancel
 pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     for item in input.items {
         let source_file = File::for_path(PathBuf::from(&input.path).join(&item));
         let target_file = File::for_path(PathBuf::from(&input.target_path).join(&item));
-        source_file.copy(&target_file, FileCopyFlags::OVERWRITE, None::<&Cancellable>, Some(&mut |s, t| {
-            println!("Progress {}, {}", s, t);
-        }))?;
-
+        if input.move_ {
+            source_file.move_(&target_file, FileCopyFlags::OVERWRITE, None::<&Cancellable>, Some(&mut |s, t| {
+                println!("Progress {}, {}", s, t);
+            }))?;
+        } else {
+            source_file.copy(&target_file, FileCopyFlags::OVERWRITE, None::<&Cancellable>, Some(&mut |s, t| {
+                println!("Progress {}, {}", s, t);
+            }))?;
+        }
     }
     Ok(())
 }

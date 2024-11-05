@@ -14,6 +14,6 @@ export const copy = (sourcePath: string, targetPath: string, items: string[], jo
             path: sourcePath,
             targetPath: targetPath,
             items,
-            jobType
+            move: jobType == JobType.Move
     })
 
