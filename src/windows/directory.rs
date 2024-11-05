@@ -1,8 +1,8 @@
 use std::{fs::Metadata, os::windows::fs::MetadataExt, path::PathBuf};
 
-use windows::{core::PCWSTR, Win32::Storage::FileSystem::{CopyFileExW, MoveFileWithProgressW, MOVEFILE_COPY_ALLOWED, MOVEFILE_REPLACE_EXISTING, MOVE_FILE_FLAGS}};
+use windows::{core::PCWSTR, Win32::Storage::FileSystem::{CopyFileExW, MoveFileWithProgressW, MOVEFILE_COPY_ALLOWED, MOVEFILE_REPLACE_EXISTING}};
 
-use crate::{directory::{get_extension, CopyItems}, error::Error, request_error::RequestError};
+use crate::{directory::get_extension, error::Error, request_error::RequestError};
 
 use super::string_to_pcwstr;
 
@@ -25,18 +25,20 @@ pub fn get_icon(path: &str)->Result<(String, Vec<u8>), Error> {
     Ok(("icon.png".to_string(), icon))
 }
 
-pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
-    for item in input.items {
-        let source_file = string_to_pcwstr(&PathBuf::from(&input.path).join(&item).to_string_lossy());
-        // TODO remove write protection on target
-        let target_file = string_to_pcwstr(&PathBuf::from(&input.target_path).join(&item).to_string_lossy());
-        if input.move_ {
-            unsafe { MoveFileWithProgressW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), None, None, 
-                MOVEFILE_COPY_ALLOWED | MOVEFILE_REPLACE_EXISTING)?; } // TODO Dropper for progress
-        } else {
-            unsafe { CopyFileExW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), None, None, None, 0)?; }
-        }
-    }
+pub fn copy_item(source: &PathBuf, target: &PathBuf)->Result<(), RequestError> {
+    let source_file = string_to_pcwstr(&source.to_string_lossy());
+    // TODO remove write protection on target
+    let target_file = string_to_pcwstr(&target.to_string_lossy());
+    unsafe { CopyFileExW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), None, None, None, 0)?; }
+    Ok(())
+}
+
+pub fn move_item(source: &PathBuf, target: &PathBuf)->Result<(), RequestError> {
+    let source_file = string_to_pcwstr(&source.to_string_lossy());
+    // TODO remove write protection on target
+    let target_file = string_to_pcwstr(&target.to_string_lossy());
+    unsafe { MoveFileWithProgressW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), None, None, 
+        MOVEFILE_COPY_ALLOWED | MOVEFILE_REPLACE_EXISTING)?; } // TODO Dropper for progress
     Ok(())
 }
 
