@@ -24,6 +24,8 @@ pub struct ProgressDisplay {
     pub count_label: TemplateChild<Label>,	
 	#[template_child]
     pub total_count_label: TemplateChild<Label>,	
+	#[template_child]
+    pub size_label: TemplateChild<Label>,	
     #[property(get, set)]
     total_progress: Cell<f64>,	
 	#[property(get, set)]
@@ -36,6 +38,8 @@ pub struct ProgressDisplay {
     total_count: Cell<i32>,	
     #[property(get, set)]
     current_count: Cell<i32>,	
+    #[property(get, set)]
+    size: Cell<u64>,	
 }
 
 #[glib::object_subclass]
@@ -98,6 +102,13 @@ impl ObjectImpl for ProgressDisplay {
             .bind_property::<Label>("total_count", self.total_count_label.as_ref(), "label")
             .transform_to(|_, count: i32| {
                 Some(format!("/{}", count))
+            })
+           .sync_create()
+            .build();
+        self.obj()
+            .bind_property::<Label>("size", self.size_label.as_ref(), "label")
+            .transform_to(|_, count: u64| {
+                Some(format!("({})", count)) // TODO Bytes format
             })
            .sync_create()
             .build();

@@ -10,6 +10,7 @@ pub struct ProgressFiles<'a> {
     pub file: &'a str,
     current_bytes: u64,
     current_size: u64,
+    // TODO timestamp last conztol updated
 }
 
 impl<'a> ProgressFiles<'a> {
@@ -33,15 +34,14 @@ pub fn set_progress_sender(snd: Sender<Progresses>) {
 
 #[derive(Debug, Clone, Copy)]
 pub struct ProgressControl {
-    total_size: u64,
-    count: u32
+    total_size: u64
 }
 
 impl ProgressControl {
     pub fn new(total_size: u64, total_files: u32)->Self {
         let sender = get_sender().lock().unwrap();
         let _ = sender.send_blocking(Progresses::Start(FilesProgressStart {total_files, total_size }));
-        Self { total_size, count: total_files }
+        Self { total_size }
     }
 
     pub fn send_file(&self, file: &str, current_size: u64, current_count: u32) {
@@ -76,6 +76,7 @@ impl Progresses {
         match self {
             Progresses::Start(start) => {
                 display.set_total_count(start.total_files as i32);        
+                display.set_size(start.total_size);
                 display.set_total_progress(0.0);
             } 
             Progresses::Files(files) => {

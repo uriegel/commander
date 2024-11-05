@@ -21,9 +21,18 @@
                     <property name="spacing">20</property>
                     <property name="width-request">400</property>
                     <child>
-                      <object class="GtkLabel">
+                      <object class="GtkBox">
                         <property name="halign">start</property>
-                        <property name="label">Fortschritt beim Kopieren</property>
+                        <child> 
+                          <object class="GtkLabel">
+                            <property name="label">Fortschritt beim Kopieren</property>
+                          </object>
+                        </child>
+                        <child> 
+                          <object class="GtkLabel" id="size_label">
+                            <property name="margin-start">10</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
