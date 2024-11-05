@@ -1,4 +1,4 @@
-use std::{fs::{canonicalize, create_dir, read_dir, rename, File}, path::PathBuf, time::UNIX_EPOCH};
+use std::{fs::{canonicalize, create_dir, metadata, read_dir, rename, File}, path::PathBuf, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -154,6 +154,14 @@ pub fn rename_item(input: RenameItem)->Result<(), RequestError> {
 }
 
 pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
+    let total_size = input.items.iter().fold(0u64,|curr, item|{
+        let meta = metadata(PathBuf::from(&input.path).join(&item))
+            .ok()
+            .map(|m| m.len())
+            .unwrap_or_default();
+        meta + curr
+    });
+
     for item in input.items {
         let source_file = PathBuf::from(&input.path).join(&item);
         let target_file = PathBuf::from(&input.target_path).join(&item);
