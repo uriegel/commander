@@ -4,10 +4,34 @@ use async_channel::Sender;
 
 use crate::linux::progress_display::ProgressDisplay;
 
+#[derive(Default, Clone, Copy)]
+pub struct ProgressFiles<'a> {
+    pub index: u32,
+    pub file: &'a str,
+    current_bytes: u64,
+    current_size: u64,
+}
+
+impl<'a> ProgressFiles<'a> {
+    pub fn get_current_bytes(&self)->u64 {
+        self.current_bytes - self.current_size
+    }
+
+    pub fn get_next(&self, file: &'a str, file_size: u64)->Self {
+        ProgressFiles { 
+            index: self.index + 1, 
+            file, 
+            current_bytes: self.current_bytes + file_size,  
+            current_size: file_size,
+        }        
+    }
+}
+
 pub fn set_progress_sender(snd: Sender<Progresses>) {
     unsafe { PROGRESS_SENDER = Some(Arc::new(Mutex::new(snd))) };
 }
 
+#[derive(Debug, Clone, Copy)]
 pub struct ProgressControl {
     total_size: u64,
     count: u32
@@ -30,6 +54,14 @@ impl ProgressControl {
         // TODO file progress
         println!("kopiere... {}, {}, {}", file, current_size, current_count);
     }
+
+    pub fn send_progress(&self, current: u64, total: u64, total_current: u64) {
+        let sender = get_sender().lock().unwrap();
+        let _ = sender.send_blocking(Progresses::File(FileProgress { 
+            current: Progress { current, total }, 
+            total: Progress { current: current + total_current , total: self.total_size } 
+        }));
+    }
 }
 
 // TODO debounce 40ms before sending via channel (or via SendJavscript in Windows)
@@ -47,19 +79,17 @@ impl Progresses {
                 display.set_total_progress(0.0);
             } 
             Progresses::Files(files) => {
-                display.set_current_count((files.current_files as i32) + 1);        
+                display.set_current_count(files.current_files as i32);        
                 display.set_current_name(files.current_name.clone());
                 display.set_total_progress(files.progress);
             } 
-            _ => {}
+            Progresses::File(file) => {
+                let total_progress = file.total.current as f64 / file.total.total as f64;
+                display.set_total_progress(total_progress);
+                let progress = file.current.current as f64 / file.current.total as f64;
+                display.set_current_progress(progress);
+            } 
         }
-        // let total_progress = self.total.current as f64 / self.total.total as f64;
-        // display.set_total_progress(total_progress);
-        // let progress = self.current.current as f64 / self.current.total as f64;
-        // display.set_current_progress(progress);
-        // display.set_current_name(self.current_name.clone());
-        // display.set_current_count(self.current_count + 1);
-        // display.set_total_count(self.total_count);
     }
 }
 

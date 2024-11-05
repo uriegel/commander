@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use urlencoding::decode;
 use trash::delete_all;
 
-use crate::{error::Error, progresses::ProgressControl, request_error::RequestError};
+use crate::{error::Error, progresses::{ProgressControl, ProgressFiles}, request_error::RequestError};
 
 #[cfg(target_os = "windows")]
 use crate::windows::directory::{is_hidden, StringExt, get_icon_path, copy_item, move_item};
@@ -165,28 +165,25 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
         items.iter().fold(0u64, |curr, (_, i)|i + curr), 
         input.items.len() as u32);
 
-    items.iter().try_fold(ProgressFiles::default(), |curr, (item, size)| {
-        let progress_files = ProgressFiles { index: curr.index + 1, file: item, size: curr.size + size };
+    items.iter().try_fold(ProgressFiles::default(), |curr, (file, file_size)| {
+        let progress_files = curr.get_next(file, *file_size);
+        progress_control.send_file(progress_files.file, progress_files.get_current_bytes(), progress_files.index);
 
-        progress_control.send_file(progress_files.file, progress_files.size, progress_files.index + 1);
-
-        let source_file = PathBuf::from(&input.path).join(&item);
-        let target_file = PathBuf::from(&input.target_path).join(&item);
-        if input.move_ {
-            move_item(&source_file, &target_file)?; // TODO send file progress
+        let source_file = PathBuf::from(&input.path).join(&file);
+        let target_file = PathBuf::from(&input.target_path).join(&file);
+        if !input.move_ {
+            copy_item(&source_file, &target_file, move |s, t|{
+                progress_control.send_progress(s as u64, t as u64, progress_files.get_current_bytes());
+            })?;
         } else {
-            copy_item(&source_file, &target_file)?;
+            move_item(&source_file, &target_file, move |s, t|{
+                progress_control.send_progress(s as u64, t as u64, progress_files.get_current_bytes());
+            })?;
         }
+        // TODO Dropper for progress, show error
         Ok::<_, RequestError>(progress_files)
     })?;
     Ok(())
-}
-
-#[derive(Default)]
-struct ProgressFiles<'a> {
-    index: u32,
-    file: &'a str,
-    size: u64
 }
 
 fn get_icon_path_of_file(name: &str, path: &str, is_directory: bool)->Option<String> {

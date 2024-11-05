@@ -60,26 +60,25 @@ pub fn mount(path: &str)->String {
         .to_string()
 }
 
-// TODO Progress Linux
+// TODO Progress total size
+// TODO Progress times
 // TODO Progress Windows
 // TODO Error handling
 // TODO lock copy operation (on UI)
 // TODO cancel copy operation
 // TODO can close: Ok cancel
-pub fn copy_item(source: &PathBuf, target: &PathBuf)->Result<(), RequestError> {
+pub fn copy_item<F>(source: &PathBuf, target: &PathBuf, mut cb: F)->Result<(), RequestError> 
+where F: FnMut(i64, i64) {
     File::for_path(source).copy(&File::for_path(target), FileCopyFlags::OVERWRITE, 
-            None::<&Cancellable>, Some(&mut |s, t| {
-            println!("Progress {}, {}", s, t);
-    }))?;// TODO Dropper for progress
-    Ok(()) // TODO Dropper for progress
+            None::<&Cancellable>, Some(&mut cb))?;
+    Ok(())
 }
 
-pub fn move_item(source: &PathBuf, target: &PathBuf)->Result<(), RequestError> {
+pub fn move_item<F>(source: &PathBuf, target: &PathBuf, mut cb: F)->Result<(), RequestError> 
+where F: FnMut(i64, i64) {
     File::for_path(source).move_(&File::for_path(target), FileCopyFlags::OVERWRITE, 
-            None::<&Cancellable>, Some(&mut |s, t| {
-            println!("Progress {}, {}", s, t);
-    }))?;// TODO Dropper for progress
-    Ok(()) // TODO Dropper for progress
+            None::<&Cancellable>, Some(&mut cb))?;
+    Ok(())
 }
 
 pub trait StringExt {
