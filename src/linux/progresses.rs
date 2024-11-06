@@ -1,3 +1,7 @@
+use crate::progresses::Progresses;
+
+use super::progress_display::ProgressDisplay;
+
 impl Progresses {
     pub fn display_progress(&self, display: &ProgressDisplay) {
         match self {
