@@ -1,6 +1,6 @@
-use std::{fs::Metadata, os::windows::fs::MetadataExt, path::PathBuf};
+use std::{ffi::c_void, fs::Metadata, os::windows::fs::MetadataExt, path::PathBuf};
 
-use windows::{core::PCWSTR, Win32::Storage::FileSystem::{CopyFileExW, MoveFileWithProgressW, MOVEFILE_COPY_ALLOWED, MOVEFILE_REPLACE_EXISTING}};
+use windows::{core::PCWSTR, Win32::{Foundation::LPARAM, Storage::FileSystem::{CopyFileExW, MoveFileWithProgressW, LPPROGRESS_ROUTINE_CALLBACK_REASON, MOVEFILE_COPY_ALLOWED, MOVEFILE_REPLACE_EXISTING}}};
 
 use crate::{directory::get_extension, error::Error, request_error::RequestError};
 
@@ -30,7 +30,7 @@ where F: FnMut(i64, i64) {
     let source_file = string_to_pcwstr(&source.to_string_lossy());
     // TODO remove write protection on target
     let target_file = string_to_pcwstr(&target.to_string_lossy());
-    unsafe { CopyFileExW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), None, None, None, 0)?; }
+    unsafe { CopyFileExW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), Some(progress_callback), None, None, 0)?; }
     Ok(())
 }
 
@@ -40,8 +40,24 @@ where F: FnMut(i64, i64) {
     // TODO remove write protection on target
     let target_file = string_to_pcwstr(&target.to_string_lossy());
     unsafe { MoveFileWithProgressW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), None, None, 
-        MOVEFILE_COPY_ALLOWED | MOVEFILE_REPLACE_EXISTING)?; } // TODO Dropper for progress
+        MOVEFILE_COPY_ALLOWED | MOVEFILE_REPLACE_EXISTING)?; } 
     Ok(())
+}
+
+extern "system" fn progress_callback(
+    _total_file_size: i64,
+    _total_bytes_transferred: i64,
+    _stream_size: i64,
+    _stream_bytes_transferred: i64,
+    _dw_stream_number: u32,
+    _dw_callback_reason: LPPROGRESS_ROUTINE_CALLBACK_REASON,
+    _h_source_file: windows::Win32::Foundation::HANDLE,
+    _h_destination_file: windows::Win32::Foundation::HANDLE,
+    _lp_data: *const c_void,
+) -> u32 {
+    // Insert your custom logic here
+    println!("Progress callback triggered! {} {}", _total_bytes_transferred, _total_file_size);
+    0
 }
 
 pub trait StringExt {
