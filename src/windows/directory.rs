@@ -25,7 +25,8 @@ pub fn get_icon(path: &str)->Result<(String, Vec<u8>), Error> {
     Ok(("icon.png".to_string(), icon))
 }
 
-pub fn copy_item(source: &PathBuf, target: &PathBuf)->Result<(), RequestError> {
+pub fn copy_item<F>(source: &PathBuf, target: &PathBuf, mut cb: F)->Result<(), RequestError> 
+where F: FnMut(i64, i64) {
     let source_file = string_to_pcwstr(&source.to_string_lossy());
     // TODO remove write protection on target
     let target_file = string_to_pcwstr(&target.to_string_lossy());
@@ -33,7 +34,8 @@ pub fn copy_item(source: &PathBuf, target: &PathBuf)->Result<(), RequestError> {
     Ok(())
 }
 
-pub fn move_item(source: &PathBuf, target: &PathBuf)->Result<(), RequestError> {
+pub fn move_item<F>(source: &PathBuf, target: &PathBuf, mut cb: F)->Result<(), RequestError> 
+where F: FnMut(i64, i64) {
     let source_file = string_to_pcwstr(&source.to_string_lossy());
     // TODO remove write protection on target
     let target_file = string_to_pcwstr(&target.to_string_lossy());
