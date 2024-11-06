@@ -91,7 +91,10 @@ fn main() {
 // TODO Copy Step 1: copy items with directories (overwrite yes/no)
 // TODO Copy Step 1: cancel F5 when copying is active
 // TODO Copy Step 1: Cancel copy: error in ProgresstransitResponse
-// TODO Move
+
+// TODO Systemicons 9.11 are broken 
+
+// TODO Apostrohes in path leads to panic in webview (Linux)
 
 // TODO Rename as copy
 // TODO Rename items (extended rename)
