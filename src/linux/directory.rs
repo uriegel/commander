@@ -1,9 +1,9 @@
-use std::{fs::{self, Metadata}, path::PathBuf, process::Command};
+use std::{fs::{self, metadata, Metadata}, path::PathBuf, process::Command};
 
 use gtk::gio::{prelude::*, Cancellable, FileCopyFlags};
 use gtk::gio::File;
 
-use crate::{error::Error, extended_items::{GetExtendedItems, Version}, request_error::RequestError, str::StrExt};
+use crate::{directory::CopyItems, error::Error, extended_items::{GetExtendedItems, Version}, progresses::{ProgressControl, ProgressFiles}, request_error::RequestError, str::StrExt};
 use crate::directory::get_extension;
 
 use super::iconresolver::get_geticon_py;
@@ -60,6 +60,41 @@ pub fn mount(path: &str)->String {
         .to_string()
 }
 
+pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
+    let items: Vec<(&String, u64)> = input.items.iter().map(|item|
+        (item, metadata(PathBuf::from(&input.path).join(&item))
+            .ok()
+            .map(|m| m.len())
+            .unwrap_or_default()))
+            .collect();
+    
+    let progress_control = ProgressControl::new(
+        items.iter().fold(0u64, |curr, (_, i)|i + curr), 
+        input.items.len() as u32);
+
+    items.iter().try_fold(ProgressFiles::default(), |curr, (file, file_size)| {
+        let progress_files = curr.get_next(file, *file_size);
+        progress_control.send_file(progress_files.file, progress_files.get_current_bytes(), progress_files.index);
+
+        let source_file = PathBuf::from(&input.path).join(&file);
+        let target_file = PathBuf::from(&input.target_path).join(&file);
+        if !input.move_ {
+            File::for_path(source_file).copy(&File::for_path(target_file), FileCopyFlags::OVERWRITE, 
+                None::<&Cancellable>, Some(&mut move |s, t|
+                    progress_control.send_progress(s as u64, t as u64, progress_files.get_current_bytes())
+            ))?;
+        } else {
+            File::for_path(source_file).move_(&File::for_path(target_file), FileCopyFlags::OVERWRITE, 
+                None::<&Cancellable>, Some(&mut move |s, t|
+                    progress_control.send_progress(s as u64, t as u64, progress_files.get_current_bytes())
+            ))?;
+        }
+        // TODO Dropper for progress, show error
+        Ok::<_, RequestError>(progress_files)
+    })?;
+    Ok(())
+}
+
 // TODO Progress total size
 // TODO Progress times
 // TODO Progress Windows
@@ -67,19 +102,6 @@ pub fn mount(path: &str)->String {
 // TODO lock copy operation (on UI)
 // TODO cancel copy operation
 // TODO can close: Ok cancel
-pub fn copy_item<F>(source: &PathBuf, target: &PathBuf, mut cb: F)->Result<(), RequestError> 
-where F: FnMut(i64, i64) {
-    File::for_path(source).copy(&File::for_path(target), FileCopyFlags::OVERWRITE, 
-            None::<&Cancellable>, Some(&mut cb))?;
-    Ok(())
-}
-
-pub fn move_item<F>(source: &PathBuf, target: &PathBuf, mut cb: F)->Result<(), RequestError> 
-where F: FnMut(i64, i64) {
-    File::for_path(source).move_(&File::for_path(target), FileCopyFlags::OVERWRITE, 
-            None::<&Cancellable>, Some(&mut cb))?;
-    Ok(())
-}
 
 pub trait StringExt {
     fn clean_path(&self) -> String;

@@ -1,16 +1,16 @@
-use std::{fs::{canonicalize, create_dir, metadata, read_dir, rename, File}, path::PathBuf, time::UNIX_EPOCH};
+use std::{fs::{canonicalize, create_dir, read_dir, rename, File}, path::PathBuf, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use urlencoding::decode;
 use trash::delete_all;
 
-use crate::{error::Error, progresses::{ProgressControl, ProgressFiles}, request_error::RequestError};
+use crate::{error::Error, request_error::RequestError};
 
 #[cfg(target_os = "windows")]
 use crate::windows::directory::{is_hidden, StringExt, get_icon_path, copy_item, move_item};
 #[cfg(target_os = "linux")]
-use crate::linux::directory::{is_hidden, StringExt, get_icon_path, mount, copy_item, move_item};
+use crate::linux::directory::{is_hidden, StringExt, get_icon_path, mount};
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -153,38 +153,6 @@ pub fn rename_item(input: RenameItem)->Result<(), RequestError> {
     Ok(())
 }
 
-pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
-    let items: Vec<(&String, u64)> = input.items.iter().map(|item|
-        (item, metadata(PathBuf::from(&input.path).join(&item))
-            .ok()
-            .map(|m| m.len())
-            .unwrap_or_default()))
-            .collect();
-    
-    let progress_control = ProgressControl::new(
-        items.iter().fold(0u64, |curr, (_, i)|i + curr), 
-        input.items.len() as u32);
-
-    items.iter().try_fold(ProgressFiles::default(), |curr, (file, file_size)| {
-        let progress_files = curr.get_next(file, *file_size);
-        progress_control.send_file(progress_files.file, progress_files.get_current_bytes(), progress_files.index);
-
-        let source_file = PathBuf::from(&input.path).join(&file);
-        let target_file = PathBuf::from(&input.target_path).join(&file);
-        if !input.move_ {
-            copy_item(&source_file, &target_file, move |s, t|{
-                progress_control.send_progress(s as u64, t as u64, progress_files.get_current_bytes());
-            })?;
-        } else {
-            move_item(&source_file, &target_file, move |s, t|{
-                progress_control.send_progress(s as u64, t as u64, progress_files.get_current_bytes());
-            })?;
-        }
-        // TODO Dropper for progress, show error
-        Ok::<_, RequestError>(progress_files)
-    })?;
-    Ok(())
-}
 
 fn get_icon_path_of_file(name: &str, path: &str, is_directory: bool)->Option<String> {
     if !is_directory {
