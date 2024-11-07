@@ -1,8 +1,8 @@
-use std::{ffi::c_void, fs::Metadata, os::windows::fs::MetadataExt, path::PathBuf};
+use std::{ffi::c_void, fs::{metadata, Metadata}, os::windows::fs::MetadataExt, path::PathBuf};
 
-use windows::{core::PCWSTR, Win32::{Foundation::LPARAM, Storage::FileSystem::{CopyFileExW, MoveFileWithProgressW, LPPROGRESS_ROUTINE_CALLBACK_REASON, MOVEFILE_COPY_ALLOWED, MOVEFILE_REPLACE_EXISTING}}};
+use windows::{core::PCWSTR, Win32::Storage::FileSystem::{CopyFileExW, MoveFileWithProgressW, LPPROGRESS_ROUTINE_CALLBACK_REASON, MOVEFILE_COPY_ALLOWED, MOVEFILE_REPLACE_EXISTING}};
 
-use crate::{directory::get_extension, error::Error, request_error::RequestError};
+use crate::{directory::{get_extension, CopyItems}, error::Error, progresses::ProgressFiles, request_error::RequestError};
 
 use super::string_to_pcwstr;
 
@@ -25,22 +25,38 @@ pub fn get_icon(path: &str)->Result<(String, Vec<u8>), Error> {
     Ok(("icon.png".to_string(), icon))
 }
 
-pub fn copy_item<F>(source: &PathBuf, target: &PathBuf, mut cb: F)->Result<(), RequestError> 
-where F: FnMut(i64, i64) {
-    let source_file = string_to_pcwstr(&source.to_string_lossy());
-    // TODO remove write protection on target
-    let target_file = string_to_pcwstr(&target.to_string_lossy());
-    unsafe { CopyFileExW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), Some(progress_callback), None, None, 0)?; }
-    Ok(())
-}
+pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
+    let items: Vec<(&String, u64)> = input.items.iter().map(|item|
+        (item, metadata(PathBuf::from(&input.path).join(&item))
+            .ok()
+            .map(|m| m.len())
+            .unwrap_or_default()))
+            .collect();
+    
+    let total_size = items.iter().fold(0u64, |curr, (_, i)|i + curr);
+    let total_files = input.items.len() as u32;
+    // TODO SendScript total_size, total_files
 
-pub fn move_item<F>(source: &PathBuf, target: &PathBuf, mut cb: F)->Result<(), RequestError> 
-where F: FnMut(i64, i64) {
-    let source_file = string_to_pcwstr(&source.to_string_lossy());
-    // TODO remove write protection on target
-    let target_file = string_to_pcwstr(&target.to_string_lossy());
-    unsafe { MoveFileWithProgressW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), None, None, 
-        MOVEFILE_COPY_ALLOWED | MOVEFILE_REPLACE_EXISTING)?; } 
+    items.iter().try_fold(ProgressFiles::default(), |curr, (file, file_size)| {
+        let progress_files = curr.get_next(file, *file_size);
+        // TODO progress_control.send_file(progress_files.file, progress_files.get_current_bytes(), progress_files.index);
+
+        let source_file = PathBuf::from(&input.path).join(&file);
+        let target_file = PathBuf::from(&input.target_path).join(&file);
+        // TODO remove write protection on target
+        if !input.move_ {
+            let source_file = string_to_pcwstr(&source_file.to_string_lossy());
+            let target_file = string_to_pcwstr(&target_file.to_string_lossy());
+            unsafe { CopyFileExW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), Some(progress_callback), None, None, 0)?; }
+        } else {
+            let source_file = string_to_pcwstr(&source_file.to_string_lossy());
+            let target_file = string_to_pcwstr(&target_file.to_string_lossy());
+            unsafe { MoveFileWithProgressW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), None, None, 
+                MOVEFILE_COPY_ALLOWED | MOVEFILE_REPLACE_EXISTING)?; }
+        }
+        // TODO Dropper for progress, show error
+        Ok::<_, RequestError>(progress_files)
+    })?;
     Ok(())
 }
 
