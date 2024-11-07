@@ -42,29 +42,37 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
         total_size
     };
     WebView::execute_javascript(&format!("progresses({})", serde_json::to_string(&ps)?)); 
-
+    // TODO1 display values
+    // TODO3 Start when finished but revealed
     items.iter().try_fold(ProgressFiles::default(), |curr, (file, file_size)| {
         let progress_files = curr.get_next(file, *file_size);
-        // TODO progress_control.send_file(progress_files.file, progress_files.get_current_bytes(), progress_files.index);
+        // TODO4 progress_control.send_file(progress_files.file, progress_files.get_current_bytes(), progress_files.index);
 
         let source_file = PathBuf::from(&input.path).join(&file);
         let target_file = PathBuf::from(&input.target_path).join(&file);
         // TODO remove write protection on target
-        if !input.move_ {
-            let source_file = string_to_pcwstr(&source_file.to_string_lossy());
-            let target_file = string_to_pcwstr(&target_file.to_string_lossy());
-            unsafe { CopyFileExW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), Some(progress_callback), None, None, 0)?; }
-        } else {
-            let source_file = string_to_pcwstr(&source_file.to_string_lossy());
-            let target_file = string_to_pcwstr(&target_file.to_string_lossy());
-            unsafe { MoveFileWithProgressW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), None, None, 
-                MOVEFILE_COPY_ALLOWED | MOVEFILE_REPLACE_EXISTING)?; }
-        }
-        // TODO Dropper for progress, show error
+        let res = copy_item(source_file, target_file, input.move_);
+        // TODO2 set finished, starttimeout, set vanished
+        res?;
         Ok::<_, RequestError>(progress_files)
     })?;
     Ok(())
 }
+
+fn copy_item(source_file: PathBuf, target_file: PathBuf, move_: bool)->Result<(), RequestError> {
+    if !move_ {
+        let source_file = string_to_pcwstr(&source_file.to_string_lossy());
+        let target_file = string_to_pcwstr(&target_file.to_string_lossy());
+        unsafe { CopyFileExW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), Some(progress_callback), None, None, 0)?; }
+    } else {
+        let source_file = string_to_pcwstr(&source_file.to_string_lossy());
+        let target_file = string_to_pcwstr(&target_file.to_string_lossy());
+        unsafe { MoveFileWithProgressW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), None, None, 
+            MOVEFILE_COPY_ALLOWED | MOVEFILE_REPLACE_EXISTING)?; }
+    }    
+    Ok(())
+}
+
 
 extern "system" fn progress_callback(
     _total_file_size: i64,
