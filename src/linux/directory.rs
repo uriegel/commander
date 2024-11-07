@@ -3,10 +3,10 @@ use std::{fs::{self, metadata, Metadata}, path::PathBuf, process::Command};
 use gtk::gio::{prelude::*, Cancellable, FileCopyFlags};
 use gtk::gio::File;
 
-use crate::{directory::CopyItems, error::Error, extended_items::{GetExtendedItems, Version}, progresses::{ProgressControl, ProgressFiles}, request_error::RequestError, str::StrExt};
+use crate::{directory::CopyItems, error::Error, extended_items::{GetExtendedItems, Version}, progresses::ProgressFiles, request_error::RequestError, str::StrExt};
 use crate::directory::get_extension;
 
-use super::iconresolver::get_geticon_py;
+use super::{iconresolver::get_geticon_py, progresses::ProgressControl};
 
 pub fn is_hidden(name: &str, _: &Metadata)->bool {
     name.as_bytes()[0] == b'.' && name.as_bytes()[1] != b'.'

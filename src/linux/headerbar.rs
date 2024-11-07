@@ -8,9 +8,8 @@ use webkit6::{
     gio::Cancellable
 };
 
-use crate::progresses::set_progress_sender;
-
 use super::progress_display::ProgressDisplay;
+use super::progresses::set_progress_sender;
 
 pub struct HeaderBar {}
 

@@ -1,4 +1,6 @@
-use crate::progresses::Progresses;
+use std::sync::{Arc, Mutex};
+
+use async_channel::Sender;
 
 use super::progress_display::ProgressDisplay;
 
