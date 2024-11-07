@@ -6,6 +6,13 @@ import { WebViewType } from '../webview'
 
 declare const WebView: WebViewType
 
+type ProgressStart = {
+    totalFiles: number
+    totalSize: number
+}
+
+export type Progress = ProgressStart
+
 type CopyProgress = {
     fileName: string
     isMove: boolean

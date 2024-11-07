@@ -12,7 +12,7 @@ import './themes/adwaita.css'
 import './themes/windows.css'
 import { isWindows } from './globals'
 //import { copyErrorEvents, filesDropEvents, getCredentialsEvents,  progressChangedEvents } from './requests/events'
-import { showHiddenEvents, showPreviewEvents } from './requests/events'
+import { Progress, showHiddenEvents, showPreviewEvents } from './requests/events'
 import { getCopyController } from './controller/copy/copyController'
 import FileViewer from './components/FileViewer'
 import { SpecialKeys } from 'virtual-table-react'
@@ -72,8 +72,8 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 	const [statusText, setStatusText] = useState<string | null>(null)
 	const [itemCount, setItemCount] = useState({dirCount: 0, fileCount: 0 })
 	const [progress] = useState(0)
-	const [progressRevealed] = useState(false)
-	const [progressFinished] = useState(false)
+	const [progressRevealed, setProgressRevealed] = useState(false)
+	const [progressFinished, setProgressFinished] = useState(false)
 	const [totalMax] = useState(0)
 	const dialog = useContext(DialogContext)
 	
@@ -230,14 +230,18 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 			await copyItems(true)
 	}, [copyItems, dialog, previewMode])
 
+	const onProgress = (p: Progress) => {
+		console.log("Hanbe einen Progess", p)
+
+		setProgressRevealed(true)
+		setProgressFinished(false)
+	}
+
 	webViewEvents.registerMenuAction(onMenuAction)
+	webViewEvents.registerProgresses(onProgress)
 
 	// useEffect(() => {
 	// 	const subscription = isWindows() ? progressChangedEvents.subscribe(e => {
-	// 		if (e.isStarted) {
-	// 			setProgressRevealed(true)
-	// 			setProgressFinished(false)
-	// 		}
 	// 		else if (e.isFinished)
 	// 			setProgressFinished(true)
 	// 		else if (e.isDisposed) {

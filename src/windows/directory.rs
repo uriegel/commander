@@ -1,5 +1,7 @@
 use std::{ffi::c_void, fs::{metadata, Metadata}, os::windows::fs::MetadataExt, path::PathBuf};
 
+use serde::Serialize;
+use webview_app::webview::WebView;
 use windows::{core::PCWSTR, Win32::Storage::FileSystem::{CopyFileExW, MoveFileWithProgressW, LPPROGRESS_ROUTINE_CALLBACK_REASON, MOVEFILE_COPY_ALLOWED, MOVEFILE_REPLACE_EXISTING}};
 
 use crate::{directory::{get_extension, CopyItems}, error::Error, progresses::ProgressFiles, request_error::RequestError};
@@ -35,7 +37,11 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     
     let total_size = items.iter().fold(0u64, |curr, (_, i)|i + curr);
     let total_files = input.items.len() as u32;
-    // TODO SendScript total_size, total_files
+    let ps = ProgressStart {
+        total_files,
+        total_size
+    };
+    WebView::execute_javascript(&format!("progresses({})", serde_json::to_string(&ps)?)); 
 
     items.iter().try_fold(ProgressFiles::default(), |curr, (file, file_size)| {
         let progress_files = curr.get_next(file, *file_size);
@@ -88,4 +94,11 @@ impl StringExt for String {
             self.clone()
         }
     }
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct ProgressStart {
+    total_files: u32,
+    total_size: u64
 }

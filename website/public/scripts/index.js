@@ -8,8 +8,10 @@ let webViewEvents = {
     },
     registerMenuAction: (fun) =>{
         menuActionFunc = fun    
+    },
+    registerProgresses: (fun) => {
+        progressesFunc = fun
     }
-
 }
 
 var showHiddenFunc = () => {}
@@ -25,4 +27,9 @@ function showPreview(show) {
 var menuActionFunc = () => {}
 function menuAction(cmd) {
     menuActionFunc(cmd)
+}
+
+var progressesFunc = () => { }
+function progresses(p) {
+    progressesFunc(p)
 }

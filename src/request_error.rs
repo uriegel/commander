@@ -80,6 +80,13 @@ impl From<PoisonError<MutexGuard<'_, HashMap<CancellationKey, std::sync::mpsc::S
     }
 }
 
+impl From<serde_json::Error> for RequestError {
+    fn from(error: serde_json::Error) -> Self {
+        eprintln!("JSON error occured: {}", error);
+        RequestError { status: ErrorType::Unknown }
+    }
+}
+
 impl From<FromUtf8Error> for RequestError {
     fn from(error: FromUtf8Error) -> Self {
         eprintln!("Utf8 error occured: {}", error);
