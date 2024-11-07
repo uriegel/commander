@@ -74,7 +74,8 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 	const [progress] = useState(0)
 	const [progressRevealed, setProgressRevealed] = useState(false)
 	const [progressFinished, setProgressFinished] = useState(false)
-	const [totalMax] = useState(0)
+	const [totalMax, setTotalMax] = useState(0)
+	const progressFinisher = useRef(0)
 	const dialog = useContext(DialogContext)
 	
 	webViewEvents.registerShowHidden(setShowHidden)
@@ -230,12 +231,22 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 			await copyItems(true)
 	}, [copyItems, dialog, previewMode])
 
-	const onProgress = (p: Progress) => {
-		console.log("Hanbe einen Progess", p)
-
-		setProgressRevealed(true)
-		setProgressFinished(false)
-	}
+	const onProgress = useCallback((p: Progress) => {
+		switch (p.kind) {
+			case "start":
+				console.log("start progress", progressFinisher.current)
+				clearTimeout(progressFinisher.current)
+				setProgressRevealed(true)
+				setProgressFinished(false)
+				setTotalMax(p.totalSize)
+				break
+			case "finished":
+				setProgressFinished(true)
+				progressFinisher.current = setTimeout(() => setProgressRevealed(false), 10_000)
+				console.log("finished progress", progressFinisher.current)
+				break
+		}
+	}, [progressFinisher])
 
 	webViewEvents.registerMenuAction(onMenuAction)
 	webViewEvents.registerProgresses(onProgress)

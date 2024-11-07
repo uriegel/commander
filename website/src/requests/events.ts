@@ -7,11 +7,19 @@ import { WebViewType } from '../webview'
 declare const WebView: WebViewType
 
 type ProgressStart = {
+    kind: "start",
     totalFiles: number
     totalSize: number
 }
 
-export type Progress = ProgressStart
+type ProgressFinished = {
+    kind: "finished",
+    finished: true
+}
+
+export type Progress =
+    ProgressStart
+    | ProgressFinished
 
 type CopyProgress = {
     fileName: string

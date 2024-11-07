@@ -38,6 +38,7 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     let total_size = items.iter().fold(0u64, |curr, (_, i)|i + curr);
     let total_files = input.items.len() as u32;
     let ps = ProgressStart {
+        kind: "start",
         total_files,
         total_size
     };
@@ -53,6 +54,7 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
         // TODO remove write protection on target
         let res = copy_item(source_file, target_file, input.move_);
         // TODO2 set finished, starttimeout, set vanished
+        WebView::execute_javascript(&format!("progresses({})", serde_json::to_string(&ProgressFinished { kind: "finished" })?)); 
         res?;
         Ok::<_, RequestError>(progress_files)
     })?;
@@ -106,7 +108,15 @@ impl StringExt for String {
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
-struct ProgressStart {
+struct ProgressStart<'a> {
+    kind: &'a str,
     total_files: u32,
     total_size: u64
 }
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct ProgressFinished<'a> {
+    kind: &'a str,
+}
+
