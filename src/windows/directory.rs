@@ -53,8 +53,9 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
 fn copy(input: &CopyItems, items: Vec<(&String, u64)>)->Result<(), RequestError> {
     items.iter().try_fold(ProgressFiles::default(), |curr, (file, file_size)| {
         let progress_files = curr.get_next(file, *file_size);
-        // TODO2 progress_control.send_file(progress_files.file, progress_files.get_current_bytes(), progress_files.index);
-        // TODO3 combineLatest
+        // TODO2 send events after 40ms
+        // TODO3 progress_control.send_file(progress_files.file, progress_files.get_current_bytes(), progress_files.index);
+        // TODO4 combineLatest
         let source_file = PathBuf::from(&input.path).join(&file);
         let target_file = PathBuf::from(&input.target_path).join(&file);
         // TODO remove write protection on target
