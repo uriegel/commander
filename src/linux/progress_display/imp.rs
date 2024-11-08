@@ -116,7 +116,7 @@ impl ObjectImpl for ProgressDisplay {
         let pd = self.obj().clone();
         self.progress_area.set_draw_func(move|_, c, w, h|{
             let progress = pd.total_progress();
-            let fill_color = if progress == 1.0 { RGB { red: 0.7, green: 0.7, blue: 0.7 }} else { RGB { red: 0.0, green: 0.0, blue: 1.0}};
+            let fill_color = if progress == 1.0 { RGB { red: 0.7, green: 0.7, blue: 0.7 }} else { RGB { red: 0.25, green: 0.63, blue: 0.89}};
 
             c.set_antialias(gtk::cairo::Antialias::Best);
             c.set_line_join(gtk::cairo::LineJoin::Miter);
@@ -125,7 +125,9 @@ impl ObjectImpl for ProgressDisplay {
             let _ = c.stroke_preserve();
             c.arc_negative(0.0, 0.0, (if w < h {w} else {h}) as f64 / 2.0, -PI/2.0, -PI/2.0 + f64::max(progress, 0.01)*PI*2.0);
             c.line_to(0.0, 0.0);
-            c.set_source_rgb(0.7, 0.7, 0.7);
+            //c.set_source_rgb(0.7, 0.7, 0.7);
+            c.set_source_rgb(1.0, 1.0, 1.0);
+            //c.set_source_rgb(0.2, 0.2, 0.2);// TODO dark theme
             let _ = c.fill();
             c.move_to(0.0, 0.0);
             c.arc(0.0, 0.0, (if w < h {w} else {h}) as f64 / 2.0, -PI/2.0, -PI/2.0 + f64::max(progress, 0.01)*PI*2.0);
