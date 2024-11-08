@@ -12,7 +12,7 @@ import './themes/adwaita.css'
 import './themes/windows.css'
 import { isWindows } from './globals'
 //import { copyErrorEvents, filesDropEvents, getCredentialsEvents,  progressChangedEvents } from './requests/events'
-import { disposedProgress, finishedProgress, showHiddenEvents, showPreviewEvents, startProgress } from './requests/events'
+import { showHiddenEvents, showPreviewEvents } from './requests/events'
 import { getCopyController } from './controller/copy/copyController'
 import FileViewer from './components/FileViewer'
 import { SpecialKeys } from 'virtual-table-react'
@@ -23,7 +23,6 @@ import './extensions/extensions'
 import LocationViewer from './components/LocationViewer'
 import TrackViewer from './components/TrackViewer'
 import { WebViewType, WebViewEvents } from './webview.ts'
-import { Subscription } from 'rxjs'
 
 declare const WebView: WebViewType
 declare const webViewEvents: WebViewEvents
@@ -72,10 +71,6 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 	const [errorText, setErrorText] = useState<string | null>(null)
 	const [statusText, setStatusText] = useState<string | null>(null)
 	const [itemCount, setItemCount] = useState({dirCount: 0, fileCount: 0 })
-	const [progress] = useState(0)
-	const [progressRevealed, setProgressRevealed] = useState(false)
-	const [progressFinished, setProgressFinished] = useState(false)
-	const [totalMax, setTotalMax] = useState(0)
 	const dialog = useContext(DialogContext)
 	
 	webViewEvents.registerShowHidden(setShowHidden)
@@ -233,28 +228,6 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 
 	webViewEvents.registerMenuAction(onMenuAction)
 	
-	useEffect(() => {
-		const startProgressSubscription = isWindows() ? startProgress.subscribe(e => {
-			setProgressRevealed(true)
-			setProgressFinished(false)
-			setTotalMax(e.totalSize)
-		}) : null
-		const finishedProgressSubscription = isWindows() ? finishedProgress.subscribe(() => {
-			setProgressFinished(true)
-		}) : null
-		const disposedProgressSubscription = isWindows() ? disposedProgress.subscribe(() => {
-			setProgressRevealed(false)
-		}) : null
-		return () => {
-			startProgressSubscription?.unsubscribe()
-			finishedProgressSubscription?.unsubscribe()
-			disposedProgressSubscription?.unsubscribe()
-		}
-	// 			setProgress(e.currentBytes/e.totalBytes)
-	// 		setTotalMax(e.totalBytes)
-    //     const subscription = progressChangedEvents.subscribe(e => setMove(e.isMove))
-	}, [])
-
 	// 	copyErrorSubscription.current?.unsubscribe()
 	// 	copyErrorSubscription.current = copyErrorEvents.subscribe(err => showError(err, setErrorText, "Fehler beim Kopieren: "))
 
@@ -312,8 +285,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 
 	return (
 		<>
-			{ isWindows() && (<Titlebar progress={progress} progressFinished={progressFinished} progressRevealed={progressRevealed} totalSize={totalMax} 
-				menu={(
+			{ isWindows() && (<Titlebar menu={(
 				<Menu autoMode={false} onMenuAction={onMenuAction} 
 				showHidden={showHidden} toggleShowHidden={toggleShowHiddenAndRefresh}
 				showViewer={showViewer} toggleShowViewer={toggleShowViewer} />

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import "./CopyProgress.css"
-import { fileProgress, startProgress } from "../../requests/events"
+import { progressFileEvents, progressStartEvents } from "../Titlebar"
 
 const secondsToTime = (timeInSecs: number) => {
     const secs = timeInSecs % 60
@@ -9,36 +9,30 @@ const secondsToTime = (timeInSecs: number) => {
 }
 
 const CopyProgress = () => {
-// TODO get all progresses from parent, here no subscriptions
-    const [totalCount, setTotalCount] = useState(0)
-    const [currentCount, setCurrentCount] = useState(0)
     const [currentTime, _setCurrentTime] = useState(0)
     const [value, _setValue] = useState(0)
     const [max, _setMax] = useState(0)
-    const [totalValue, setTotalValue] = useState(0)
+    const [totalCount, setTotalCount] = useState(0)
     const [totalMax, setTotalMax] = useState(0)
     const [fileName, setFileName] = useState("")
+    const [currentCount, setCurrentCount] = useState(0)
+    const [totalValue, setTotalValue] = useState(0)
 
     useEffect(() => {
-        const startSubscription = startProgress.subscribe(e => {
-            console.log("WaRUN?", e)
+        const startEvents = progressStartEvents.subscribe(e => {
             setTotalCount(e.totalFiles)
             setTotalMax(e.totalSize)
         })
-        const fileSubscription = fileProgress.subscribe(e => {
+        const fileEvents = progressFileEvents.subscribe(e => {
             setFileName(e.fileName)
             setCurrentCount(e.currentFile)
             setTotalValue(e.currentBytes)
-    //         setCurrentTime(e.copyTime)
-    //         setMax(e.totalFileBytes)
-    //         setValue(e.currentFileBytes)
-    //         setTotalValue(e.currentBytes)
         })
         return () => {
-            startSubscription.unsubscribe()
-            fileSubscription.unsubscribe()
+            startEvents.unsubscribe()
+            fileEvents.unsubscribe()
         }
-	}, [])
+    }, [])
 
     return (
         <div className='copyProgress'>

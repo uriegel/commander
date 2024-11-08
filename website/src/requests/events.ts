@@ -1,4 +1,4 @@
-import { BehaviorSubject, filter, Subject } from 'rxjs'
+import { filter, Subject } from 'rxjs'
 import { FolderViewItem } from '../components/FolderView'
 //import { Version } from './requests'
 //import { ErrorType } from 'functional-extensions'
@@ -118,13 +118,13 @@ interface IWindow {
 //         .pipe(map(n => n.copyProgress!))
 //         .subscribe(progressChangedEvents)
 // }
-type ProgressStart = {
+export type ProgressStart = {
     kind: "start",
     totalFiles: number
     totalSize: number
 }
 
-type ProgressFile = {
+export type ProgressFile = {
     kind: "file",
     fileName: string
     currentFile: number
