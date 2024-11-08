@@ -7,21 +7,6 @@ declare const webViewEvents: WebViewEvents
 
 declare const WebView: WebViewType
 
-// type CopyProgress = {
-//     fileName: string
-//     isMove: boolean
-//     totalCount: number
-//     currentCount: number
-//     copyTime: number
-//     totalFileBytes: number
-//     currentFileBytes: number
-//     totalBytes: number
-//     currentBytes: number
-//     isStarted: boolean
-//     isDisposed: boolean
-//     isFinished: boolean
-// }
-
 // type FilesDrop = {
 //     id: string
 //     path: string
@@ -124,25 +109,6 @@ interface IWindow {
 //     .pipe(filter(n => n.copyError != undefined))
 //     .pipe(map(n => n.copyError!))
 
-// export const showProgressEvents = commanderEvents
-//     .pipe(filter(n => n.showProgress == true))
-//     .pipe(map(() => true))
-
-// export const progressChangedEvents = new BehaviorSubject<CopyProgress>({
-//     fileName: "",
-//     isMove: false,
-//     totalCount: 0,
-//     currentCount: 0,
-//     copyTime: 0,
-//     totalFileBytes: 0,
-//     currentFileBytes: 0,
-//     totalBytes: 0,
-//     currentBytes: 0,
-//     isStarted: false,
-//     isDisposed: false,
-//     isFinished: false
-// })
-
 // export const startUacEvents = () => {
 //     const source = new EventSource("http://localhost:21000/commander/sse")
 //     const commanderEvents = fromEvent<MessageEvent>(source, 'message')
@@ -158,6 +124,13 @@ type ProgressStart = {
     totalSize: number
 }
 
+type ProgressFile = {
+    kind: "file",
+    fileName: string
+    currentFile: number
+    currentBytes: number
+}
+
 type ProgressFinished = {
     kind: "finished",
 }
@@ -166,17 +139,22 @@ type ProgressDisposed = {
     kind: "disposed",
 }
 
-type ProgressInitialized = {
-    kind: "initialized",
-}
+// type CopyProgress = {
+//
+//     isMove: boolean
+//     copyTime: number
+// currentFileBytes
+//     totalFileBytes: number
+//     : number
+// }
 
 export type Progress =
     | ProgressStart
+    | ProgressFile
     | ProgressFinished
     | ProgressDisposed
-    | ProgressInitialized
 
-const progressChangedEvents = new BehaviorSubject<Progress>({kind: "initialized"})
+const progressChangedEvents = new Subject<Progress>()
 let progressesDropper = 0
 webViewEvents.registerProgresses((p: Progress) => {
     switch (p.kind) {
@@ -194,25 +172,11 @@ webViewEvents.registerProgresses((p: Progress) => {
 
 export const startProgress = progressChangedEvents
     .pipe(filter(n => n.kind == "start"))
+export const fileProgress = progressChangedEvents
+    .pipe(filter(n => n.kind == "file"))
 export const finishedProgress = progressChangedEvents
     .pipe(filter(n => n.kind == "finished"))
 export const disposedProgress = progressChangedEvents
     .pipe(filter(n => n.kind == "disposed"))
-// export const nextFileProgress = progressChangedEvents
-//     .pipe(filter(n => n.kind == "disposed"))
-
-//const onProgress = (p: Progress) => {
-    // switch (p.kind) {
-    //     case "start":
-    //         console.log("start progress", progressFinisher.current)
-    //         clearTimeout(progressFinisher.current)
-    //         setProgressRevealed(true)
-    //         setProgressFinished(false)
-    //         setTotalMax(p.totalSize)
-    //         break
-    //     case "finished":
-    //         setProgressFinished(true)
-    //         break
-    // }
 
 

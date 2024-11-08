@@ -43,8 +43,6 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
         total_size
     };
     WebView::execute_javascript(&format!("progresses({})", serde_json::to_string(&ps)?)); 
-    // TODO1 display values
-
     let res = copy(&input, items);
     WebView::execute_javascript(&format!("progresses({})", serde_json::to_string(&ProgressFinished { kind: "finished" })?)); 
     res
@@ -53,12 +51,17 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
 fn copy(input: &CopyItems, items: Vec<(&String, u64)>)->Result<(), RequestError> {
     items.iter().try_fold(ProgressFiles::default(), |curr, (file, file_size)| {
         let progress_files = curr.get_next(file, *file_size);
-        // TODO2 send events after 40ms
-        // TODO3 progress_control.send_file(progress_files.file, progress_files.get_current_bytes(), progress_files.index);
-        // TODO4 combineLatest
+        // TODO5 combineLatest
         let source_file = PathBuf::from(&input.path).join(&file);
         let target_file = PathBuf::from(&input.target_path).join(&file);
         // TODO remove write protection on target
+        let ps = ProgressFile {
+            kind: "file",
+            file_name: file,
+            current_bytes: progress_files.get_current_bytes(),
+            current_file: progress_files.index
+        };
+        WebView::execute_javascript(&format!("progresses({})", serde_json::to_string(&ps)?)); 
         let res = copy_item(source_file, target_file, input.move_);
         res?;
         Ok::<_, RequestError>(progress_files)
@@ -91,7 +94,8 @@ extern "system" fn progress_callback(
     _h_destination_file: windows::Win32::Foundation::HANDLE,
     _lp_data: *const c_void,
 ) -> u32 {
-    // Insert your custom logic here
+    // TODO3 send events after 40ms
+    // TODO4  progress_control.send_file(progress_files.file, progress_files.get_current_bytes(), progress_files.index);
     println!("Progress callback triggered! {} {}", _total_bytes_transferred, _total_file_size);
     0
 }
@@ -116,6 +120,15 @@ struct ProgressStart<'a> {
     kind: &'a str,
     total_files: u32,
     total_size: u64
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct ProgressFile<'a> {
+    kind: &'a str,
+    file_name: &'a str,
+    current_file: u32,
+    current_bytes: u64
 }
 
 #[derive(Debug, Serialize)]

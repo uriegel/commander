@@ -1,5 +1,6 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import "./CopyProgress.css"
+import { fileProgress, startProgress } from "../../requests/events"
 
 const secondsToTime = (timeInSecs: number) => {
     const secs = timeInSecs % 60
@@ -8,29 +9,36 @@ const secondsToTime = (timeInSecs: number) => {
 }
 
 const CopyProgress = () => {
-
-    const [totalCount, _setTotalCount] = useState(0)
-    const [currentCount, _setCurrentCount] = useState(0)
+// TODO get all progresses from parent, here no subscriptions
+    const [totalCount, setTotalCount] = useState(0)
+    const [currentCount, setCurrentCount] = useState(0)
     const [currentTime, _setCurrentTime] = useState(0)
     const [value, _setValue] = useState(0)
     const [max, _setMax] = useState(0)
-    const [totalValue, _setTotalValue] = useState(0)
-    const [totalMax, _setTotalMax] = useState(0)
-    const [fileName, _setFileName] = useState("")
+    const [totalValue, setTotalValue] = useState(0)
+    const [totalMax, setTotalMax] = useState(0)
+    const [fileName, setFileName] = useState("")
 
-    // useEffect(() => {
-    //     const subscription = progressChangedEvents.subscribe(e => {
-    //         setTotalCount(e.totalCount)
-    //         setCurrentCount(e.currentCount)
+    useEffect(() => {
+        const startSubscription = startProgress.subscribe(e => {
+            console.log("WaRUN?", e)
+            setTotalCount(e.totalFiles)
+            setTotalMax(e.totalSize)
+        })
+        const fileSubscription = fileProgress.subscribe(e => {
+            setFileName(e.fileName)
+            setCurrentCount(e.currentFile)
+            setTotalValue(e.currentBytes)
     //         setCurrentTime(e.copyTime)
     //         setMax(e.totalFileBytes)
     //         setValue(e.currentFileBytes)
-    //         setTotalMax(e.totalBytes)
     //         setTotalValue(e.currentBytes)
-    //         setFileName(e.fileName)
-    //     })
-    //     return () => subscription.unsubscribe()
-	// }, [])
+        })
+        return () => {
+            startSubscription.unsubscribe()
+            fileSubscription.unsubscribe()
+        }
+	}, [])
 
     return (
         <div className='copyProgress'>
