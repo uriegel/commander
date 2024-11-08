@@ -6,7 +6,6 @@ import { DialogContext, ResultType } from "web-dialog-react"
 import "functional-extensions"
 import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { ErrorType, Nothing} from "functional-extensions"
-import { progressChangedEvents } from "../requests/events"
 import { WebViewType } from '../webview.ts'
 import { webViewRequest } from "../requests/requests.ts"
 
@@ -24,7 +23,7 @@ const Titlebar = ({ menu, progress, progressFinished, progressRevealed, totalSiz
     
     const dialog = useContext(DialogContext)
 
-    const [move, setMove] = useState(false)
+    const [move, _setMove] = useState(false)
 
     const dialogOpen = useRef(false)
 
@@ -47,11 +46,6 @@ const Titlebar = ({ menu, progress, progressFinished, progressRevealed, totalSiz
 
         start()
     }, [dialog, move, totalSize])
-
-    useEffect(() => {
-        const subscription = progressChangedEvents.subscribe(e => setMove(e.isMove))
-        return () => subscription.unsubscribe()
-	}, [])
 
     useEffect(() => {
         WebView.initializeNoTitlebar()

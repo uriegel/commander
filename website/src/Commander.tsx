@@ -12,7 +12,7 @@ import './themes/adwaita.css'
 import './themes/windows.css'
 import { isWindows } from './globals'
 //import { copyErrorEvents, filesDropEvents, getCredentialsEvents,  progressChangedEvents } from './requests/events'
-import { Progress, showHiddenEvents, showPreviewEvents } from './requests/events'
+import { disposedProgress, finishedProgress, showHiddenEvents, showPreviewEvents, startProgress } from './requests/events'
 import { getCopyController } from './controller/copy/copyController'
 import FileViewer from './components/FileViewer'
 import { SpecialKeys } from 'virtual-table-react'
@@ -23,6 +23,7 @@ import './extensions/extensions'
 import LocationViewer from './components/LocationViewer'
 import TrackViewer from './components/TrackViewer'
 import { WebViewType, WebViewEvents } from './webview.ts'
+import { Subscription } from 'rxjs'
 
 declare const WebView: WebViewType
 declare const webViewEvents: WebViewEvents
@@ -75,7 +76,6 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 	const [progressRevealed, setProgressRevealed] = useState(false)
 	const [progressFinished, setProgressFinished] = useState(false)
 	const [totalMax, setTotalMax] = useState(0)
-	const progressFinisher = useRef(0)
 	const dialog = useContext(DialogContext)
 	
 	webViewEvents.registerShowHidden(setShowHidden)
@@ -231,38 +231,29 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 			await copyItems(true)
 	}, [copyItems, dialog, previewMode])
 
-	const onProgress = useCallback((p: Progress) => {
-		switch (p.kind) {
-			case "start":
-				console.log("start progress", progressFinisher.current)
-				clearTimeout(progressFinisher.current)
-				setProgressRevealed(true)
-				setProgressFinished(false)
-				setTotalMax(p.totalSize)
-				break
-			case "finished":
-				setProgressFinished(true)
-				progressFinisher.current = setTimeout(() => setProgressRevealed(false), 10_000)
-				console.log("finished progress", progressFinisher.current)
-				break
-		}
-	}, [progressFinisher])
-
 	webViewEvents.registerMenuAction(onMenuAction)
-	webViewEvents.registerProgresses(onProgress)
-
-	// useEffect(() => {
-	// 	const subscription = isWindows() ? progressChangedEvents.subscribe(e => {
-	// 		else if (e.isFinished)
-	// 			setProgressFinished(true)
-	// 		else if (e.isDisposed) {
-	// 			setProgress(0)
-	// 			setProgressRevealed(false)
-	// 		}
-	// 		else 
+	
+	useEffect(() => {
+		const startProgressSubscription = isWindows() ? startProgress.subscribe(e => {
+			setProgressRevealed(true)
+			setProgressFinished(false)
+			setTotalMax(e.totalSize)
+		}) : null
+		const finishedProgressSubscription = isWindows() ? finishedProgress.subscribe(() => {
+			setProgressFinished(true)
+		}) : null
+		const disposedProgressSubscription = isWindows() ? disposedProgress.subscribe(() => {
+			setProgressRevealed(false)
+		}) : null
+		return () => {
+			startProgressSubscription?.unsubscribe()
+			finishedProgressSubscription?.unsubscribe()
+			disposedProgressSubscription?.unsubscribe()
+		}
 	// 			setProgress(e.currentBytes/e.totalBytes)
 	// 		setTotalMax(e.totalBytes)
-	// 	}) : null
+    //     const subscription = progressChangedEvents.subscribe(e => setMove(e.isMove))
+	}, [])
 
 	// 	copyErrorSubscription.current?.unsubscribe()
 	// 	copyErrorSubscription.current = copyErrorEvents.subscribe(err => showError(err, setErrorText, "Fehler beim Kopieren: "))

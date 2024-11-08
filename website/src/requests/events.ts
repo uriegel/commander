@@ -2,39 +2,25 @@ import { BehaviorSubject, filter, Subject } from 'rxjs'
 import { FolderViewItem } from '../components/FolderView'
 //import { Version } from './requests'
 //import { ErrorType } from 'functional-extensions'
-import { WebViewType } from '../webview'
+import { WebViewType, WebViewEvents } from '../webview.ts'
+declare const webViewEvents: WebViewEvents
 
 declare const WebView: WebViewType
 
-type ProgressStart = {
-    kind: "start",
-    totalFiles: number
-    totalSize: number
-}
-
-type ProgressFinished = {
-    kind: "finished",
-    finished: true
-}
-
-export type Progress =
-    ProgressStart
-    | ProgressFinished
-
-type CopyProgress = {
-    fileName: string
-    isMove: boolean
-    totalCount: number
-    currentCount: number
-    copyTime: number
-    totalFileBytes: number
-    currentFileBytes: number
-    totalBytes: number
-    currentBytes: number
-    isStarted: boolean
-    isDisposed: boolean
-    isFinished: boolean
-}
+// type CopyProgress = {
+//     fileName: string
+//     isMove: boolean
+//     totalCount: number
+//     currentCount: number
+//     copyTime: number
+//     totalFileBytes: number
+//     currentFileBytes: number
+//     totalBytes: number
+//     currentBytes: number
+//     isStarted: boolean
+//     isDisposed: boolean
+//     isFinished: boolean
+// }
 
 // type FilesDrop = {
 //     id: string
@@ -142,20 +128,20 @@ interface IWindow {
 //     .pipe(filter(n => n.showProgress == true))
 //     .pipe(map(() => true))
 
-export const progressChangedEvents = new BehaviorSubject<CopyProgress>({
-    fileName: "",
-    isMove: false,
-    totalCount: 0,
-    currentCount: 0,
-    copyTime: 0,
-    totalFileBytes: 0,
-    currentFileBytes: 0,
-    totalBytes: 0,
-    currentBytes: 0,
-    isStarted: false,
-    isDisposed: false,
-    isFinished: false
-})
+// export const progressChangedEvents = new BehaviorSubject<CopyProgress>({
+//     fileName: "",
+//     isMove: false,
+//     totalCount: 0,
+//     currentCount: 0,
+//     copyTime: 0,
+//     totalFileBytes: 0,
+//     currentFileBytes: 0,
+//     totalBytes: 0,
+//     currentBytes: 0,
+//     isStarted: false,
+//     isDisposed: false,
+//     isFinished: false
+// })
 
 // export const startUacEvents = () => {
 //     const source = new EventSource("http://localhost:21000/commander/sse")
@@ -166,4 +152,67 @@ export const progressChangedEvents = new BehaviorSubject<CopyProgress>({
 //         .pipe(map(n => n.copyProgress!))
 //         .subscribe(progressChangedEvents)
 // }
+type ProgressStart = {
+    kind: "start",
+    totalFiles: number
+    totalSize: number
+}
+
+type ProgressFinished = {
+    kind: "finished",
+}
+
+type ProgressDisposed = {
+    kind: "disposed",
+}
+
+type ProgressInitialized = {
+    kind: "initialized",
+}
+
+export type Progress =
+    | ProgressStart
+    | ProgressFinished
+    | ProgressDisposed
+    | ProgressInitialized
+
+const progressChangedEvents = new BehaviorSubject<Progress>({kind: "initialized"})
+let progressesDropper = 0
+webViewEvents.registerProgresses((p: Progress) => {
+    switch (p.kind) {
+        case "start":
+            clearTimeout(progressesDropper)
+            break
+        case "finished":
+            progressesDropper = setTimeout(() => progressChangedEvents.next({
+                kind: "disposed"
+            }), 10_000)
+            break
+    }
+    progressChangedEvents.next(p)
+})
+
+export const startProgress = progressChangedEvents
+    .pipe(filter(n => n.kind == "start"))
+export const finishedProgress = progressChangedEvents
+    .pipe(filter(n => n.kind == "finished"))
+export const disposedProgress = progressChangedEvents
+    .pipe(filter(n => n.kind == "disposed"))
+// export const nextFileProgress = progressChangedEvents
+//     .pipe(filter(n => n.kind == "disposed"))
+
+//const onProgress = (p: Progress) => {
+    // switch (p.kind) {
+    //     case "start":
+    //         console.log("start progress", progressFinisher.current)
+    //         clearTimeout(progressFinisher.current)
+    //         setProgressRevealed(true)
+    //         setProgressFinished(false)
+    //         setTotalMax(p.totalSize)
+    //         break
+    //     case "finished":
+    //         setProgressFinished(true)
+    //         break
+    // }
+
 

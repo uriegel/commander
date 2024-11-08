@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react"
-import { progressChangedEvents } from "../../requests/events"
+import { useState } from "react"
 import "./CopyProgress.css"
 
 const secondsToTime = (timeInSecs: number) => {
@@ -10,28 +9,28 @@ const secondsToTime = (timeInSecs: number) => {
 
 const CopyProgress = () => {
 
-    const [totalCount, setTotalCount] = useState(0)
-    const [currentCount, setCurrentCount] = useState(0)
-    const [currentTime, setCurrentTime] = useState(0)
-    const [value, setValue] = useState(0)
-    const [max, setMax] = useState(0)
-    const [totalValue, setTotalValue] = useState(0)
-    const [totalMax, setTotalMax] = useState(0)
-    const [fileName, setFileName] = useState("")
+    const [totalCount, _setTotalCount] = useState(0)
+    const [currentCount, _setCurrentCount] = useState(0)
+    const [currentTime, _setCurrentTime] = useState(0)
+    const [value, _setValue] = useState(0)
+    const [max, _setMax] = useState(0)
+    const [totalValue, _setTotalValue] = useState(0)
+    const [totalMax, _setTotalMax] = useState(0)
+    const [fileName, _setFileName] = useState("")
 
-    useEffect(() => {
-        const subscription = progressChangedEvents.subscribe(e => {
-            setTotalCount(e.totalCount)
-            setCurrentCount(e.currentCount)
-            setCurrentTime(e.copyTime)
-            setMax(e.totalFileBytes)
-            setValue(e.currentFileBytes)
-            setTotalMax(e.totalBytes)
-            setTotalValue(e.currentBytes)
-            setFileName(e.fileName)
-        })
-        return () => subscription.unsubscribe()
-	}, [])
+    // useEffect(() => {
+    //     const subscription = progressChangedEvents.subscribe(e => {
+    //         setTotalCount(e.totalCount)
+    //         setCurrentCount(e.currentCount)
+    //         setCurrentTime(e.copyTime)
+    //         setMax(e.totalFileBytes)
+    //         setValue(e.currentFileBytes)
+    //         setTotalMax(e.totalBytes)
+    //         setTotalValue(e.currentBytes)
+    //         setFileName(e.fileName)
+    //     })
+    //     return () => subscription.unsubscribe()
+	// }, [])
 
     return (
         <div className='copyProgress'>

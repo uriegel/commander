@@ -44,17 +44,21 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     };
     WebView::execute_javascript(&format!("progresses({})", serde_json::to_string(&ps)?)); 
     // TODO1 display values
-    // TODO3 Start when finished but revealed
+
+    let res = copy(&input, items);
+    WebView::execute_javascript(&format!("progresses({})", serde_json::to_string(&ProgressFinished { kind: "finished" })?)); 
+    res
+}
+
+fn copy(input: &CopyItems, items: Vec<(&String, u64)>)->Result<(), RequestError> {
     items.iter().try_fold(ProgressFiles::default(), |curr, (file, file_size)| {
         let progress_files = curr.get_next(file, *file_size);
-        // TODO4 progress_control.send_file(progress_files.file, progress_files.get_current_bytes(), progress_files.index);
+        // TODO2 progress_control.send_file(progress_files.file, progress_files.get_current_bytes(), progress_files.index);
 
         let source_file = PathBuf::from(&input.path).join(&file);
         let target_file = PathBuf::from(&input.target_path).join(&file);
         // TODO remove write protection on target
         let res = copy_item(source_file, target_file, input.move_);
-        // TODO2 set finished, starttimeout, set vanished
-        WebView::execute_javascript(&format!("progresses({})", serde_json::to_string(&ProgressFinished { kind: "finished" })?)); 
         res?;
         Ok::<_, RequestError>(progress_files)
     })?;
@@ -74,7 +78,6 @@ fn copy_item(source_file: PathBuf, target_file: PathBuf, move_: bool)->Result<()
     }    
     Ok(())
 }
-
 
 extern "system" fn progress_callback(
     _total_file_size: i64,
