@@ -1,5 +1,6 @@
-use std::{ffi::c_void, fs::{metadata, Metadata}, os::windows::fs::MetadataExt, path::PathBuf};
+use std::{ffi::c_void, fs::{metadata, Metadata}, os::windows::fs::MetadataExt, path::PathBuf, time::Duration};
 
+use chrono::{DateTime, Local};
 use serde::Serialize;
 use webview_app::webview::WebView;
 use windows::{core::PCWSTR, Win32::Storage::FileSystem::{CopyFileExW, MoveFileWithProgressW, LPPROGRESS_ROUTINE_CALLBACK_REASON, MOVEFILE_COPY_ALLOWED, MOVEFILE_REPLACE_EXISTING}};
@@ -43,15 +44,17 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
         total_size
     };
     WebView::execute_javascript(&format!("progresses({})", serde_json::to_string(&ps)?)); 
-    let res = copy(&input, items);
+    let cpy = Box::into_raw(Box::new(CopyData::new())) as *const c_void;
+    let res = copy(&input, items, cpy);
+    unsafe { let _ = Box::from_raw(cpy as *mut CopyData); }
     WebView::execute_javascript(&format!("progresses({})", serde_json::to_string(&ProgressFinished { kind: "finished" })?)); 
     res
 }
 
-fn copy(input: &CopyItems, items: Vec<(&String, u64)>)->Result<(), RequestError> {
+fn copy(input: &CopyItems, items: Vec<(&String, u64)>, cpy: *const c_void)->Result<(), RequestError> {
     items.iter().try_fold(ProgressFiles::default(), |curr, (file, file_size)| {
         let progress_files = curr.get_next(file, *file_size);
-        // TODO5 combineLatest
+        // TODO6 move flag
         let source_file = PathBuf::from(&input.path).join(&file);
         let target_file = PathBuf::from(&input.target_path).join(&file);
         // TODO remove write protection on target
@@ -62,18 +65,19 @@ fn copy(input: &CopyItems, items: Vec<(&String, u64)>)->Result<(), RequestError>
             current_file: progress_files.index
         };
         WebView::execute_javascript(&format!("progresses({})", serde_json::to_string(&ps)?)); 
-        let res = copy_item(source_file, target_file, input.move_);
+        let res = copy_item(source_file, target_file, input.move_, cpy);
         res?;
         Ok::<_, RequestError>(progress_files)
     })?;
     Ok(())
 }
-
-fn copy_item(source_file: PathBuf, target_file: PathBuf, move_: bool)->Result<(), RequestError> {
+// TODO send timestamps
+fn copy_item(source_file: PathBuf, target_file: PathBuf, move_: bool, cpy: *const c_void)->Result<(), RequestError> {
     if !move_ {
         let source_file = string_to_pcwstr(&source_file.to_string_lossy());
         let target_file = string_to_pcwstr(&target_file.to_string_lossy());
-        unsafe { CopyFileExW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), Some(progress_callback), None, None, 0)?; }
+        unsafe { CopyFileExW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), 
+            Some(progress_callback), Some(cpy), None, 0)?; }
     } else {
         let source_file = string_to_pcwstr(&source_file.to_string_lossy());
         let target_file = string_to_pcwstr(&target_file.to_string_lossy());
@@ -84,21 +88,48 @@ fn copy_item(source_file: PathBuf, target_file: PathBuf, move_: bool)->Result<()
 }
 
 extern "system" fn progress_callback(
-    _total_file_size: i64,
-    _total_bytes_transferred: i64,
+    total_file_size: i64,
+    total_bytes_transferred: i64,
     _stream_size: i64,
     _stream_bytes_transferred: i64,
     _dw_stream_number: u32,
     _dw_callback_reason: LPPROGRESS_ROUTINE_CALLBACK_REASON,
     _h_source_file: windows::Win32::Foundation::HANDLE,
     _h_destination_file: windows::Win32::Foundation::HANDLE,
-    _lp_data: *const c_void,
+    lp_data: *const c_void,
 ) -> u32 {
-    // TODO3 send events after 40ms
-    // TODO4  progress_control.send_file(progress_files.file, progress_files.get_current_bytes(), progress_files.index);
-    println!("Progress callback triggered! {} {}", _total_bytes_transferred, _total_file_size);
+    let copy_data: &mut CopyData = unsafe { &mut *(lp_data as *mut CopyData) };
+    let now = Local::now();
+    if now > copy_data.last_time.unwrap_or_default() + FRAME_DURATION {
+
+        let _ = serde_json::to_string(
+            &ProgressBytes { 
+                kind: "bytes", 
+                current_bytes: total_bytes_transferred,
+                total_bytes: total_file_size
+            }
+        ).inspect(|script| {
+            let _ = WebView::execute_javascript(&format!("progresses({})", script)); 
+        });
+        
+        copy_data.last_time.replace(now);
+    }
     0
 }
+
+struct CopyData {
+    start_time: DateTime<Local>,
+    last_time: Option<DateTime<Local>>
+}
+
+impl CopyData {
+    pub fn new()->Self {
+        Self {
+            start_time: Local::now(),
+            last_time: Some(Local::now())
+        }
+    }
+} 
 
 pub trait StringExt {
     fn clean_path(&self) -> String;
@@ -133,7 +164,16 @@ struct ProgressFile<'a> {
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
+struct ProgressBytes<'a> {
+    kind: &'a str,
+    current_bytes: i64,
+    total_bytes: i64
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 struct ProgressFinished<'a> {
     kind: &'a str,
 }
 
+const FRAME_DURATION: Duration = Duration::from_millis(40);

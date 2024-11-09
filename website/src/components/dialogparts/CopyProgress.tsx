@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import "./CopyProgress.css"
-import { progressFileEvents, progressStartEvents } from "../Titlebar"
+import { progressBytesEvents, progressFileEvents, progressStartEvents } from "../Titlebar"
 
 const secondsToTime = (timeInSecs: number) => {
     const secs = timeInSecs % 60
@@ -10,8 +10,8 @@ const secondsToTime = (timeInSecs: number) => {
 
 const CopyProgress = () => {
     const [currentTime, _setCurrentTime] = useState(0)
-    const [value, _setValue] = useState(0)
-    const [max, _setMax] = useState(0)
+    const [value, setValue] = useState(0)
+    const [max, setMax] = useState(0)
     const [totalCount, setTotalCount] = useState(0)
     const [totalMax, setTotalMax] = useState(0)
     const [fileName, setFileName] = useState("")
@@ -28,9 +28,15 @@ const CopyProgress = () => {
             setCurrentCount(e.currentFile)
             setTotalValue(e.currentBytes)
         })
+        const bytesEvents = progressBytesEvents.subscribe(e => {
+            setMax(e.totalBytes)
+            setValue(e.currentBytes)
+            setTotalValue(e.currentBytes + e.completeCurrentBytes)
+        })
         return () => {
             startEvents.unsubscribe()
             fileEvents.unsubscribe()
+            bytesEvents.unsubscribe()
         }
     }, [])
 

@@ -131,6 +131,14 @@ export type ProgressFile = {
     currentBytes: number
 }
 
+export type ProgressBytes = {
+    kind: "bytes",
+    currentBytes: number
+    totalBytes: number
+    completeCurrentBytes: number
+    completeTotalBytes: number
+}
+
 type ProgressFinished = {
     kind: "finished",
 }
@@ -153,13 +161,25 @@ export type Progress =
     | ProgressFile
     | ProgressFinished
     | ProgressDisposed
+    | ProgressBytes
 
 const progressChangedEvents = new Subject<Progress>()
+let total_current_bytes = 0
+let total_bytes = 0
 let progressesDropper = 0
 webViewEvents.registerProgresses((p: Progress) => {
     switch (p.kind) {
         case "start":
             clearTimeout(progressesDropper)
+            total_current_bytes = 0
+            total_bytes = p.totalSize
+            break
+        case "file":
+            total_current_bytes = p.currentBytes
+            break
+        case "bytes":
+            p.completeCurrentBytes = total_current_bytes
+            p.completeTotalBytes = total_bytes
             break
         case "finished":
             progressesDropper = setTimeout(() => progressChangedEvents.next({
@@ -174,6 +194,8 @@ export const startProgress = progressChangedEvents
     .pipe(filter(n => n.kind == "start"))
 export const fileProgress = progressChangedEvents
     .pipe(filter(n => n.kind == "file"))
+export const byteProgress = progressChangedEvents
+    .pipe(filter(n => n.kind == "bytes"))
 export const finishedProgress = progressChangedEvents
     .pipe(filter(n => n.kind == "finished"))
 export const disposedProgress = progressChangedEvents

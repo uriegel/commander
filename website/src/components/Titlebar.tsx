@@ -8,7 +8,7 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { ErrorType, Nothing} from "functional-extensions"
 import { WebViewType } from '../webview.ts'
 import { webViewRequest } from "../requests/requests.ts"
-import { disposedProgress, fileProgress, finishedProgress, ProgressFile, ProgressStart, startProgress } from "../requests/events.ts"
+import { byteProgress, disposedProgress, fileProgress, finishedProgress, ProgressBytes, ProgressFile, ProgressStart, startProgress } from "../requests/events.ts"
 import { BehaviorSubject } from "rxjs"
 
 declare const WebView: WebViewType
@@ -18,7 +18,8 @@ interface TitlebarProps {
 }
 
 export const progressStartEvents = new BehaviorSubject<ProgressStart>({ kind: "start", totalFiles: 0, totalSize: 0 })
-export const progressFileEvents = new BehaviorSubject<ProgressFile>({kind:"file", currentBytes: 0, currentFile: 0, fileName: ""})
+export const progressFileEvents = new BehaviorSubject<ProgressFile>({ kind: "file", currentBytes: 0, currentFile: 0, fileName: "" })
+export const progressBytesEvents = new BehaviorSubject<ProgressBytes>({kind:"bytes", currentBytes: 0, totalBytes: 0, completeTotalBytes: 0, completeCurrentBytes: 0 })
 
 const Titlebar = ({ menu, }: TitlebarProps) => {
     
@@ -30,12 +31,8 @@ const Titlebar = ({ menu, }: TitlebarProps) => {
 
     const [progressRevealed, setProgressRevealed] = useState(false)
 	const [progressFinished, setProgressFinished] = useState(false)
-    const [currentCount, setCurrentCount] = useState(0)
-    const [totalValue, setTotalValue] = useState(0)
-    const [fileName, setFileName] = useState("")
-    const [totalCount, setTotalCount] = useState(0)
 	const [totalSize, setTotalSize] = useState(0)
-	const [progress] = useState(0)
+    const [progress, setProgress] = useState(0)
 
     const startProgressDialog = useCallback(() => {
         const start = async () => {
@@ -66,17 +63,22 @@ const Titlebar = ({ menu, }: TitlebarProps) => {
             progressStartEvents.next(e)
 			setProgressRevealed(true)
 			setProgressFinished(false)
-            setTotalCount(e.totalFiles)
-			setTotalSize(e.totalSize)
+    		setTotalSize(e.totalSize)
 		})
         const fileSubscription = fileProgress.subscribe(e => {
             progressFileEvents.next(e)
-            //         setCurrentTime(e.copyTime)
             //         setMax(e.totalFileBytes)
             //         setValue(e.currentFileBytes)
             //         setTotalValue(e.currentBytes)
-                })
-                const finishedProgressSubscription = finishedProgress.subscribe(() => {
+        })
+        const bytesSubscription = byteProgress.subscribe(e => {
+            progressBytesEvents.next(e)
+            setProgress((e.currentBytes + e.completeCurrentBytes) / e.completeTotalBytes)
+            //         setMax(e.totalFileBytes)
+            //         setValue(e.currentFileBytes)
+            //         setTotalValue(e.currentBytes)
+        })
+        const finishedProgressSubscription = finishedProgress.subscribe(() => {
 			setProgressFinished(true)
 		})
         const disposedProgressSubscription = disposedProgress.subscribe(() => {
@@ -85,8 +87,9 @@ const Titlebar = ({ menu, }: TitlebarProps) => {
 		return () => {
             startSubscription.unsubscribe()
             fileSubscription.unsubscribe()
-			finishedProgressSubscription?.unsubscribe()
-			disposedProgressSubscription?.unsubscribe()
+            bytesSubscription.unsubscribe()
+			finishedProgressSubscription.unsubscribe()
+			disposedProgressSubscription.unsubscribe()
 		}
 	// 			setProgress(e.currentBytes/e.totalBytes)
 	// 		setTotalMax(e.totalBytes)
