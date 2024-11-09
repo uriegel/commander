@@ -40,6 +40,7 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     let total_files = input.items.len() as u32;
     let ps = ProgressStart {
         kind: "start",
+        is_move: input.move_,
         total_files,
         total_size
     };
@@ -54,7 +55,6 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
 fn copy(input: &CopyItems, items: Vec<(&String, u64)>, cpy: *const c_void)->Result<(), RequestError> {
     items.iter().try_fold(ProgressFiles::default(), |curr, (file, file_size)| {
         let progress_files = curr.get_next(file, *file_size);
-        // TODO6 move flag
         let source_file = PathBuf::from(&input.path).join(&file);
         let target_file = PathBuf::from(&input.target_path).join(&file);
         // TODO remove write protection on target
@@ -81,7 +81,8 @@ fn copy_item(source_file: PathBuf, target_file: PathBuf, move_: bool, cpy: *cons
     } else {
         let source_file = string_to_pcwstr(&source_file.to_string_lossy());
         let target_file = string_to_pcwstr(&target_file.to_string_lossy());
-        unsafe { MoveFileWithProgressW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), None, None, 
+        unsafe { MoveFileWithProgressW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), 
+            Some(progress_callback), Some(cpy), 
             MOVEFILE_COPY_ALLOWED | MOVEFILE_REPLACE_EXISTING)?; }
     }    
     Ok(())
@@ -149,6 +150,7 @@ impl StringExt for String {
 #[serde(rename_all = "camelCase")]
 struct ProgressStart<'a> {
     kind: &'a str,
+    is_move: bool, 
     total_files: u32,
     total_size: u64
 }

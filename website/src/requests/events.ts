@@ -44,7 +44,6 @@ export type DirectoryChangedEvent = {
 // }
 
 // type CommanderEvent = {
-//     copyProgress?: CopyProgress
 //     copyError: ErrorType
 //     serviceItems?: FolderViewItem[]
 //     filesDrop?: FilesDrop
@@ -120,6 +119,7 @@ interface IWindow {
 // }
 export type ProgressStart = {
     kind: "start",
+    isMove: boolean, 
     totalFiles: number
     totalSize: number
 }
@@ -147,15 +147,6 @@ type ProgressDisposed = {
     kind: "disposed",
 }
 
-// type CopyProgress = {
-//
-//     isMove: boolean
-//     copyTime: number
-// currentFileBytes
-//     totalFileBytes: number
-//     : number
-// }
-
 export type Progress =
     | ProgressStart
     | ProgressFile
@@ -164,24 +155,31 @@ export type Progress =
     | ProgressBytes
 
 const progressChangedEvents = new Subject<Progress>()
-let total_current_bytes = 0
-let total_bytes = 0
+let totalCurrentBytes = 0
+let totalBytes = 0
 let progressesDropper = 0
 webViewEvents.registerProgresses((p: Progress) => {
     switch (p.kind) {
         case "start":
             clearTimeout(progressesDropper)
-            total_current_bytes = 0
-            total_bytes = p.totalSize
+            totalCurrentBytes = 0
+            totalBytes = p.totalSize
             break
         case "file":
-            total_current_bytes = p.currentBytes
+            totalCurrentBytes = p.currentBytes
             break
         case "bytes":
-            p.completeCurrentBytes = total_current_bytes
-            p.completeTotalBytes = total_bytes
+            p.completeCurrentBytes = totalCurrentBytes
+            p.completeTotalBytes = totalBytes
             break
         case "finished":
+            progressChangedEvents.next({
+                kind: 'bytes',
+                completeCurrentBytes: totalBytes,
+                completeTotalBytes: totalBytes,
+                currentBytes: totalBytes,
+                totalBytes
+            })
             progressesDropper = setTimeout(() => progressChangedEvents.next({
                 kind: "disposed"
             }), 10_000)

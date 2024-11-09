@@ -17,7 +17,7 @@ interface TitlebarProps {
     menu: JSX.Element
 }
 
-export const progressStartEvents = new BehaviorSubject<ProgressStart>({ kind: "start", totalFiles: 0, totalSize: 0 })
+export const progressStartEvents = new BehaviorSubject<ProgressStart>({ kind: "start", totalFiles: 0, totalSize: 0, isMove: false })
 export const progressFileEvents = new BehaviorSubject<ProgressFile>({ kind: "file", currentBytes: 0, currentFile: 0, fileName: "" })
 export const progressBytesEvents = new BehaviorSubject<ProgressBytes>({kind:"bytes", currentBytes: 0, totalBytes: 0, completeTotalBytes: 0, completeCurrentBytes: 0 })
 
@@ -25,7 +25,7 @@ const Titlebar = ({ menu, }: TitlebarProps) => {
     
     const dialog = useContext(DialogContext)
 
-    const [move, _setMove] = useState(false)
+    const [move, setMove] = useState(false)
 
     const dialogOpen = useRef(false)
 
@@ -62,21 +62,16 @@ const Titlebar = ({ menu, }: TitlebarProps) => {
         const startSubscription = startProgress.subscribe(e => {
             progressStartEvents.next(e)
 			setProgressRevealed(true)
-			setProgressFinished(false)
+            setProgressFinished(false)
+            setMove(e.isMove)
     		setTotalSize(e.totalSize)
 		})
         const fileSubscription = fileProgress.subscribe(e => {
             progressFileEvents.next(e)
-            //         setMax(e.totalFileBytes)
-            //         setValue(e.currentFileBytes)
-            //         setTotalValue(e.currentBytes)
         })
         const bytesSubscription = byteProgress.subscribe(e => {
             progressBytesEvents.next(e)
             setProgress((e.currentBytes + e.completeCurrentBytes) / e.completeTotalBytes)
-            //         setMax(e.totalFileBytes)
-            //         setValue(e.currentFileBytes)
-            //         setTotalValue(e.currentBytes)
         })
         const finishedProgressSubscription = finishedProgress.subscribe(() => {
 			setProgressFinished(true)
@@ -91,16 +86,7 @@ const Titlebar = ({ menu, }: TitlebarProps) => {
 			finishedProgressSubscription.unsubscribe()
 			disposedProgressSubscription.unsubscribe()
 		}
-	// 			setProgress(e.currentBytes/e.totalBytes)
-	// 		setTotalMax(e.totalBytes)
-    //     const subscription = progressChangedEvents.subscribe(e => setMove(e.isMove))
 	}, [])
-
-
-    // useEffect(() => {
-    //     const subscription = showProgressEvents.subscribe(() => startProgressDialog())
-    //     return () => subscription.unsubscribe()
-	// }, [startProgressDialog])
 
     useEffect(() => {
         if (dialogOpen.current)

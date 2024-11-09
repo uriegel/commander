@@ -97,7 +97,6 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
 
 // TODO Progress total size
 // TODO Progress times
-// TODO Progress Windows
 // TODO Error handling
 // TODO lock copy operation (on UI)
 // TODO cancel copy operation
