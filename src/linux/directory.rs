@@ -1,5 +1,6 @@
-use std::{fs::{self, metadata, Metadata}, path::PathBuf, process::Command};
+use std::{fs::{self, metadata, Metadata}, path::PathBuf, process::Command, time::Duration};
 
+use chrono::Local;
 use gtk::gio::{prelude::*, Cancellable, FileCopyFlags};
 use gtk::gio::File;
 
@@ -79,15 +80,26 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
 
         let source_file = PathBuf::from(&input.path).join(&file);
         let target_file = PathBuf::from(&input.target_path).join(&file);
+        let mut last_updated = Some(Local::now() - FRAME_DURATION);
         if !input.move_ {
             File::for_path(source_file).copy(&File::for_path(target_file), FileCopyFlags::OVERWRITE, 
-                None::<&Cancellable>, Some(&mut move |s, t|
-                    progress_control.send_progress(s as u64, t as u64, progress_files.get_current_bytes())
+                None::<&Cancellable>, Some(&mut move |s, t| {
+                    let now = Local::now();
+                    if now > last_updated.unwrap_or_default() + FRAME_DURATION {
+                        last_updated.replace(now);
+                        progress_control.send_progress(s as u64, t as u64, progress_files.get_current_bytes());
+                    }
+                }
             ))?;
         } else {
             File::for_path(source_file).move_(&File::for_path(target_file), FileCopyFlags::OVERWRITE, 
-                None::<&Cancellable>, Some(&mut move |s, t|
-                    progress_control.send_progress(s as u64, t as u64, progress_files.get_current_bytes())
+                None::<&Cancellable>, Some(&mut move |s, t| {
+                    let now = Local::now();
+                    if now > last_updated.unwrap_or_default() + FRAME_DURATION {
+                        last_updated.replace(now);
+                        progress_control.send_progress(s as u64, t as u64, progress_files.get_current_bytes())
+                    }
+                }
             ))?;
         }
         // TODO Dropper for progress, show error
@@ -113,3 +125,4 @@ impl StringExt for String {
     }
 }
 
+const FRAME_DURATION: Duration = Duration::from_millis(40);

@@ -38,13 +38,11 @@ impl ProgressControl {
     }
 }
 
-// TODO debounce 40ms before sending via channel (or via SendJavscript in Windows)
 pub enum Progresses {
     Start(FilesProgressStart),
     Files(FilesProgress),
     File(FileProgress),
 }
-
 
 #[derive(Default)]
 pub struct FilesProgressStart {
