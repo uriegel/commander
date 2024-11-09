@@ -5,7 +5,6 @@ pub struct ProgressFiles<'a> {
     pub file: &'a str,
     current_bytes: u64,
     current_size: u64,
-    // TODO timestamp last conztol updated
 }
 
 impl<'a> ProgressFiles<'a> {
