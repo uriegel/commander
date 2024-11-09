@@ -30,8 +30,14 @@ pub struct ProgressDisplay {
     pub size_label: TemplateChild<Label>,	
 	#[template_child]
     pub title_label: TemplateChild<Label>,	
+	#[template_child]
+    pub duration_label: TemplateChild<Label>,	
+	#[template_child]
+    pub estimated_duration_label: TemplateChild<Label>,	
     #[property(get, set)]
     total_progress: Cell<f64>,	
+    #[property(get, set)]
+    total_bytes: Cell<f64>,	
 	#[property(get, set)]
     current_progress: Cell<f64>,	
 	#[property(get, set)]
@@ -46,6 +52,10 @@ pub struct ProgressDisplay {
     size: Cell<u64>,	
     #[property(get, set)]
     mov: Cell<bool>,	
+    #[property(get, set)]
+    duration: Cell<i32>,	
+    #[property(get, set)]
+    estimated_duration: Cell<i32>,	
 }
 
 #[glib::object_subclass]
@@ -125,6 +135,20 @@ impl ObjectImpl for ProgressDisplay {
             })
            .sync_create()
             .build();
+        self.obj()
+            .bind_property::<Label>("duration", self.duration_label.as_ref(), "label")
+            .transform_to(|_, duration: i32| {
+                Some(seconds_to_time(duration)) 
+            })
+           .sync_create()
+            .build();
+        self.obj()
+            .bind_property::<Label>("estimated_duration", self.estimated_duration_label.as_ref(), "label")
+            .transform_to(|_, duration: i32| {
+                Some(seconds_to_time(duration)) 
+            })
+           .sync_create()
+            .build();
 
         let pd = self.obj().clone();
         self.progress_area.set_draw_func(move|_, c, w, h|{
@@ -160,4 +184,10 @@ struct RGB {
     red: f64,
     green: f64,
     blue: f64
+}
+
+fn seconds_to_time(s: i32)->String {
+    let secs = s % 60;
+    let min = s / 60;
+    format!("{:0>2}:{:0>2}", min, secs)
 }

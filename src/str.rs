@@ -54,6 +54,7 @@ impl SizeExt for usize {
             }
         } 
 
+        // TODO ( ) and  GB, kB, B...
         let str = to_string(*self);
         let pos = str.len() - str.find(',').unwrap_or(str.len());
         if pos > 3 {

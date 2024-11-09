@@ -105,9 +105,8 @@ impl Progresses {
                 display.set_total_progress(total_progress);
                 let progress = file.current.current as f64 / file.current.total as f64;
                 display.set_current_progress(progress);
-
-                // TODO update total duration and guessed duration
-                println!("Sekunden {}", file.current_duration);
+                display.set_duration(file.current_duration);
+                display.set_estimated_duration((file.current_duration as f64 / total_progress) as i32);
             } 
         }
     }
@@ -116,56 +115,3 @@ impl Progresses {
 static mut PROGRESS_SENDER: Option<Arc<Mutex<Sender<Progresses>>>> = None;
 
 const FRAME_DURATION: i64 = 40;
-
-/*
-                // TODO TEST Revealer progress: remaining time
-                // TODO TEST Revealer progress: time
-                std::thread::spawn(|| {
-                    let sender = get_sender().lock().unwrap();
-                    let count = 3;
-                    let size:u64 = 2222;
-                    let frame_duration = Duration::from_millis(40);
-                    let mut now = Local::now();
-                    for i in 0..count {
-                        let file_name = match i {
-                            0 => "Ein erste Datei.png".to_string(),
-                            1 => "Die 2. Datei.jpg".to_string(),
-                            _ => "Die letzte Datei.htm".to_string(),
-                        };
-                        for j in 0..size {
-                            if Local::now() > now + frame_duration {
-                                now = Local::now();
-                                let progress = Progresses { 
-                                    total: Progress { 
-                                        current: j+i*size,
-                                        total: size*count 
-                                    }, 
-                                    current: Progress {
-                                        current: j, 
-                                        total: size
-                                    },
-                                    current_name: file_name.clone(),
-                                    current_count : i as i32,
-                                    total_count: count as i32
-                                };
-                                let _ = sender.send_blocking(progress);
-                            }
-                            thread::sleep(Duration::from_millis(5));
-                        }
-                        let progress = Progresses { 
-                            total: Progress { 
-                                current: size*count,
-                                total: size*count 
-                            }, 
-                            current: Progress {
-                                current: size, 
-                                total: size
-                            },
-                            current_name: "".to_string(),
-                            current_count : (count-1) as i32,
-                            total_count: count as i32
-                        };
-                        let _ = sender.send_blocking(progress);
-                    }
-                });
- */
