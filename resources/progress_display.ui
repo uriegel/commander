@@ -24,9 +24,7 @@
                       <object class="GtkBox">
                         <property name="halign">start</property>
                         <child> 
-                          <object class="GtkLabel">
-                            <property name="label">Fortschritt beim Kopieren</property>
-                          </object>
+                          <object class="GtkLabel" id="title_label"></object>
                         </child>
                         <child> 
                           <object class="GtkLabel" id="size_label">

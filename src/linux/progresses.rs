@@ -14,9 +14,9 @@ pub struct ProgressControl {
 }
 
 impl ProgressControl {
-    pub fn new(total_size: u64, total_files: u32)->Self {
+    pub fn new(total_size: u64, total_files: u32, mov: bool)->Self {
         let sender = get_sender().lock().unwrap();
-        let _ = sender.send_blocking(Progresses::Start(FilesProgressStart {total_files, total_size }));
+        let _ = sender.send_blocking(Progresses::Start(FilesProgressStart {total_files, total_size, mov }));
         Self { total_size }
     }
 
@@ -50,6 +50,7 @@ pub enum Progresses {
 pub struct FilesProgressStart {
     pub total_size: u64,
     pub total_files: u32,
+    pub mov: bool
 }
 
 #[derive(Default)]
@@ -84,6 +85,7 @@ impl Progresses {
                 display.set_total_count(start.total_files as i32);        
                 display.set_size(start.total_size);
                 display.set_total_progress(0.0);
+                display.set_mov(start.mov);
             } 
             Progresses::Files(files) => {
                 display.set_current_count(files.current_files as i32);        

@@ -28,6 +28,8 @@ pub struct ProgressDisplay {
     pub total_count_label: TemplateChild<Label>,	
 	#[template_child]
     pub size_label: TemplateChild<Label>,	
+	#[template_child]
+    pub title_label: TemplateChild<Label>,	
     #[property(get, set)]
     total_progress: Cell<f64>,	
 	#[property(get, set)]
@@ -42,6 +44,8 @@ pub struct ProgressDisplay {
     current_count: Cell<i32>,	
     #[property(get, set)]
     size: Cell<u64>,	
+    #[property(get, set)]
+    mov: Cell<bool>,	
 }
 
 #[glib::object_subclass]
@@ -114,6 +118,13 @@ impl ObjectImpl for ProgressDisplay {
             })
            .sync_create()
             .build();
+        self.obj()
+            .bind_property::<Label>("mov", self.title_label.as_ref(), "label")
+            .transform_to(|_, mov: bool| {
+                Some(if mov { "Fortschritt beim Verschieben" } else { "Fortschritt beim Kopieren" }) 
+            })
+           .sync_create()
+            .build();
 
         let pd = self.obj().clone();
         self.progress_area.set_draw_func(move|_, c, w, h|{
@@ -129,7 +140,7 @@ impl ObjectImpl for ProgressDisplay {
             c.line_to(0.0, 0.0);
             //c.set_source_rgb(0.7, 0.7, 0.7);
             c.set_source_rgb(1.0, 1.0, 1.0);
-            //c.set_source_rgb(0.2, 0.2, 0.2);// TODO dark theme
+            //c.set_source_rgb(0.2, 0.2, 0.2);// TODO dark theme: gsettings get org.gnome.desktop.interface gtk-theme
             let _ = c.fill();
             c.move_to(0.0, 0.0);
             c.arc(0.0, 0.0, (if w < h {w} else {h}) as f64 / 2.0, -PI/2.0, -PI/2.0 + f64::max(progress, 0.01)*PI*2.0);

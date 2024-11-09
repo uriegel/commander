@@ -70,7 +70,8 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     
     let progress_control = ProgressControl::new(
         items.iter().fold(0u64, |curr, (_, i)|i + curr), 
-        input.items.len() as u32);
+        input.items.len() as u32,
+        input.move_);
 
     items.iter().try_fold(ProgressFiles::default(), |curr, (file, file_size)| {
         let progress_files = curr.get_next(file, *file_size);
@@ -95,8 +96,6 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     Ok(())
 }
 
-// TODO Progress move flag
-// TODO Progress total size
 // TODO Progress times
 // TODO Error handling
 // TODO lock copy operation (on UI)
