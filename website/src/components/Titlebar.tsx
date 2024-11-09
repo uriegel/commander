@@ -8,20 +8,14 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { ErrorType, Nothing} from "functional-extensions"
 import { WebViewType } from '../webview.ts'
 import { webViewRequest } from "../requests/requests.ts"
-import { byteProgress, disposedProgress, fileProgress, finishedProgress, ProgressBytes, ProgressFile, ProgressStart, startProgress } from "../requests/events.ts"
-import { BehaviorSubject } from "rxjs"
+import { byteProgress, disposedProgress, fileProgress, finishedProgress, startProgress } from "../requests/events.ts"
+import { progressBytesEvents, progressFileEvents, progressStartEvents } from "../requests/copyprogress.ts"
 
 declare const WebView: WebViewType
 
 interface TitlebarProps {
     menu: JSX.Element
 }
-
-export const progressStartEvents = new BehaviorSubject<ProgressStart>({ kind: "start", totalFiles: 0, totalSize: 0, isMove: false })
-export const progressFileEvents = new BehaviorSubject<ProgressFile>({ kind: "file", currentBytes: 0, currentFile: 0, fileName: "" })
-export const progressBytesEvents = new BehaviorSubject<ProgressBytes>({
-    kind: "bytes", currentBytes: 0, totalBytes: 0, completeTotalBytes: 0, completeCurrentBytes: 0, totalSeconds: 0
-})
 
 const Titlebar = ({ menu, }: TitlebarProps) => {
     

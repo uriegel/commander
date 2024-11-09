@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import "./CopyProgress.css"
-import { progressBytesEvents, progressFileEvents, progressStartEvents } from "../Titlebar"
+import { progressBytesEvents, progressFileEvents, progressStartEvents } from "../../requests/copyprogress"
 
 const secondsToTime = (timeInSecs: number) => {
     const secs = timeInSecs % 60
