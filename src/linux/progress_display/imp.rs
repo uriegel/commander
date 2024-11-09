@@ -6,6 +6,8 @@ use gtk::{glib, CompositeTemplate, DrawingArea, Label, ProgressBar, Revealer};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 
+use crate::str::SizeExt;
+
 #[derive(Default, CompositeTemplate, Properties)]
 #[properties(wrapper_type = super::ProgressDisplay)]
 #[template(resource = "/de/uriegel/commander/progress_display.ui")]
@@ -108,7 +110,7 @@ impl ObjectImpl for ProgressDisplay {
         self.obj()
             .bind_property::<Label>("size", self.size_label.as_ref(), "label")
             .transform_to(|_, count: u64| {
-                Some(format!("({})", count)) // TODO Bytes format
+                Some((count as usize).byte_count_to_string()) 
             })
            .sync_create()
             .build();

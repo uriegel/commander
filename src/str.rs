@@ -27,5 +27,46 @@ impl StrExt for str {
     }
 }
 
+pub trait SizeExt {
+    fn byte_count_to_string(&self) -> String;
+}
+
+impl SizeExt for usize {
+    fn byte_count_to_string(&self) -> String {
+        fn to_string(s: usize)-> String {
+            let gb = (s as f32 / (1024 * 1024 * 1024) as f32).floor();
+            let mb = s % (1024 * 1024 * 1024); 
+            if gb >= 1.0 {
+                return format!("{},{} GB", gb, mb);
+            }
+            let mb2 = (s as f32 / (1024 * 1024) as f32).floor();
+            let kb = s % (1024 * 1024); 
+            if mb2 >= 1.0 {
+                return format!("{},{} MB", mb2, kb);
+            }
+            let kb2 = (s as f32 / 1024 as f32).floor();
+            let b = s % 1024; 
+            if kb2 >= 1.0 {
+                format!("{},{} KB", kb2, b)
+            }
+            else {
+                format!("{} B", b)
+            }
+        } 
+
+        let str = to_string(*self);
+        let pos = str.len() - str.find(',').unwrap_or(str.len());
+        if pos > 3 {
+            str[0..str.len()-pos + 3].to_string()
+        }
+        else {
+            str
+        }
+    }
+}
+
+
+
+
 
 
