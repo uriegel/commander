@@ -95,6 +95,7 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     Ok(())
 }
 
+// TODO Progress move flag
 // TODO Progress total size
 // TODO Progress times
 // TODO Error handling
