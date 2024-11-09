@@ -9,7 +9,7 @@ const secondsToTime = (timeInSecs: number) => {
 }
 
 const CopyProgress = () => {
-    const [currentTime, _setCurrentTime] = useState(0)
+    const [currentTime, setCurrentTime] = useState(0)
     const [value, setValue] = useState(0)
     const [max, setMax] = useState(0)
     const [totalCount, setTotalCount] = useState(0)
@@ -32,6 +32,7 @@ const CopyProgress = () => {
             setMax(e.totalBytes)
             setValue(e.currentBytes)
             setTotalValue(e.currentBytes + e.completeCurrentBytes)
+            setCurrentTime(e.totalSeconds)
         })
         return () => {
             startEvents.unsubscribe()

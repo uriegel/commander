@@ -1,6 +1,7 @@
 #[derive(Default, Clone, Copy)]
 pub struct ProgressFiles<'a> {
     pub index: u32,
+    #[allow(dead_code)]
     pub file: &'a str,
     current_bytes: u64,
     current_size: u64,

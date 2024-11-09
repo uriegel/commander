@@ -161,4 +161,3 @@ fn get_icon_path_of_file(name: &str, path: &str, is_directory: bool)->Option<Str
         None
     }
 }
-

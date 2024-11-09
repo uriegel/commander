@@ -137,10 +137,12 @@ export type ProgressBytes = {
     totalBytes: number
     completeCurrentBytes: number
     completeTotalBytes: number
+    totalSeconds: number
 }
 
 type ProgressFinished = {
     kind: "finished",
+    totalSeconds: number
 }
 
 type ProgressDisposed = {
@@ -177,8 +179,9 @@ webViewEvents.registerProgresses((p: Progress) => {
                 kind: 'bytes',
                 completeCurrentBytes: totalBytes,
                 completeTotalBytes: totalBytes,
-                currentBytes: totalBytes,
-                totalBytes
+                currentBytes: 0,
+                totalBytes,
+                totalSeconds: p.totalSeconds
             })
             progressesDropper = setTimeout(() => progressChangedEvents.next({
                 kind: "disposed"

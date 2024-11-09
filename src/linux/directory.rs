@@ -100,7 +100,8 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
 // TODO Error handling
 // TODO lock copy operation (on UI)
 // TODO cancel copy operation
-// TODO can close: Ok cancel
+// TODO can close: Ok 
+
 
 pub trait StringExt {
     fn clean_path(&self) -> String;

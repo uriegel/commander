@@ -5,6 +5,7 @@ pub mod directory;
 pub mod version;
 mod error;
 mod request_error;
+mod progresses;
 
 pub fn string_to_pcwstr(x: &str) -> Vec<u16> {
     x.encode_utf16().chain(once(0)).collect()

@@ -1,13 +1,12 @@
-use std::{ffi::c_void, fs::{metadata, Metadata}, os::windows::fs::MetadataExt, path::PathBuf, time::Duration};
+use std::{ffi::c_void, fs::{metadata, Metadata}, os::windows::fs::MetadataExt, path::PathBuf};
 
-use chrono::{DateTime, Local};
-use serde::Serialize;
+use chrono::Local;
 use webview_app::webview::WebView;
-use windows::{core::PCWSTR, Win32::Storage::FileSystem::{CopyFileExW, MoveFileWithProgressW, LPPROGRESS_ROUTINE_CALLBACK_REASON, MOVEFILE_COPY_ALLOWED, MOVEFILE_REPLACE_EXISTING}};
+use windows::{core::PCWSTR, Win32::Storage::FileSystem::{CopyFileExW, MoveFileWithProgressW, MOVEFILE_COPY_ALLOWED, MOVEFILE_REPLACE_EXISTING}};
 
 use crate::{directory::{get_extension, CopyItems}, error::Error, progresses::ProgressFiles, request_error::RequestError};
 
-use super::string_to_pcwstr;
+use super::{progresses::{progress_callback, CopyData, ProgressFile, ProgressFinished, ProgressStart}, string_to_pcwstr};
 
 pub fn is_hidden(_: &str, metadata: &Metadata)->bool {
     let attrs = metadata.file_attributes();
@@ -45,10 +44,15 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
         total_size
     };
     WebView::execute_javascript(&format!("progresses({})", serde_json::to_string(&ps)?)); 
-    let cpy = Box::into_raw(Box::new(CopyData::new())) as *const c_void;
+    let copy_data = CopyData::new();
+    let start_time = copy_data.start_time;
+    let cpy = Box::into_raw(Box::new(copy_data)) as *const c_void;
     let res = copy(&input, items, cpy);
     unsafe { let _ = Box::from_raw(cpy as *mut CopyData); }
-    WebView::execute_javascript(&format!("progresses({})", serde_json::to_string(&ProgressFinished { kind: "finished" })?)); 
+    WebView::execute_javascript(&format!("progresses({})", serde_json::to_string(&ProgressFinished { 
+        kind: "finished",
+        total_seconds: (Local::now() - start_time).num_seconds() as i32
+    })?)); 
     res
 }
 
@@ -71,7 +75,7 @@ fn copy(input: &CopyItems, items: Vec<(&String, u64)>, cpy: *const c_void)->Resu
     })?;
     Ok(())
 }
-// TODO send timestamps
+
 fn copy_item(source_file: PathBuf, target_file: PathBuf, move_: bool, cpy: *const c_void)->Result<(), RequestError> {
     if !move_ {
         let source_file = string_to_pcwstr(&source_file.to_string_lossy());
@@ -88,50 +92,6 @@ fn copy_item(source_file: PathBuf, target_file: PathBuf, move_: bool, cpy: *cons
     Ok(())
 }
 
-extern "system" fn progress_callback(
-    total_file_size: i64,
-    total_bytes_transferred: i64,
-    _stream_size: i64,
-    _stream_bytes_transferred: i64,
-    _dw_stream_number: u32,
-    _dw_callback_reason: LPPROGRESS_ROUTINE_CALLBACK_REASON,
-    _h_source_file: windows::Win32::Foundation::HANDLE,
-    _h_destination_file: windows::Win32::Foundation::HANDLE,
-    lp_data: *const c_void,
-) -> u32 {
-    let copy_data: &mut CopyData = unsafe { &mut *(lp_data as *mut CopyData) };
-    let now = Local::now();
-    if now > copy_data.last_time.unwrap_or_default() + FRAME_DURATION {
-
-        let _ = serde_json::to_string(
-            &ProgressBytes { 
-                kind: "bytes", 
-                current_bytes: total_bytes_transferred,
-                total_bytes: total_file_size
-            }
-        ).inspect(|script| {
-            let _ = WebView::execute_javascript(&format!("progresses({})", script)); 
-        });
-        
-        copy_data.last_time.replace(now);
-    }
-    0
-}
-
-struct CopyData {
-    start_time: DateTime<Local>,
-    last_time: Option<DateTime<Local>>
-}
-
-impl CopyData {
-    pub fn new()->Self {
-        Self {
-            start_time: Local::now(),
-            last_time: Some(Local::now())
-        }
-    }
-} 
-
 pub trait StringExt {
     fn clean_path(&self) -> String;
 }
@@ -145,37 +105,3 @@ impl StringExt for String {
         }
     }
 }
-
-#[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
-struct ProgressStart<'a> {
-    kind: &'a str,
-    is_move: bool, 
-    total_files: u32,
-    total_size: u64
-}
-
-#[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
-struct ProgressFile<'a> {
-    kind: &'a str,
-    file_name: &'a str,
-    current_file: u32,
-    current_bytes: u64
-}
-
-#[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
-struct ProgressBytes<'a> {
-    kind: &'a str,
-    current_bytes: i64,
-    total_bytes: i64
-}
-
-#[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
-struct ProgressFinished<'a> {
-    kind: &'a str,
-}
-
-const FRAME_DURATION: Duration = Duration::from_millis(40);
