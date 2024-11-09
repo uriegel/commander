@@ -27,8 +27,6 @@ impl ProgressControl {
             progress: current_size as f64 / self.total_size as f64, 
             current_files: current_count 
         }));
-        // TODO file progress
-        println!("kopiere... {}, {}, {}", file, current_size, current_count);
     }
 
     pub fn send_progress(&self, current: u64, total: u64, total_current: u64) {
