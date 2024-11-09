@@ -12,15 +12,15 @@ pub fn set_progress_sender(snd: Sender<Progresses>) {
 #[derive(Debug, Clone, Copy)]
 pub struct ProgressControl {
     total_size: u64,
-    last_updated: Option<i64>
+    last_updated: Option<i64>,
+    start_time: i64
 }
 
-//Some(Local::now() - FRAME_DURATION);
 impl ProgressControl {
     pub fn new(total_size: u64, total_files: u32, mov: bool)->Self {
         let sender = get_sender().lock().unwrap();
         let _ = sender.send_blocking(Progresses::Start(FilesProgressStart {total_files, total_size, mov }));
-        Self { total_size , last_updated: None }
+        Self { total_size , last_updated: None, start_time: Local::now().timestamp() }
     }
 
     pub fn send_file(&mut self, file: &str, current_size: u64, current_count: u32) {
@@ -40,7 +40,8 @@ impl ProgressControl {
             let sender = get_sender().lock().unwrap();
             let _ = sender.send_blocking(Progresses::File(FileProgress { 
                 current: Progress { current, total }, 
-                total: Progress { current: current + total_current , total: self.total_size } 
+                total: Progress { current: current + total_current , total: self.total_size },
+                current_duration: ((now/1000) - self.start_time) as i32
             }));
         }
     }
@@ -70,6 +71,7 @@ pub struct FilesProgress {
 pub struct FileProgress {
     pub current: Progress,
     pub total: Progress,
+    pub current_duration: i32
 }
 
 #[derive(Default)]
@@ -103,6 +105,9 @@ impl Progresses {
                 display.set_total_progress(total_progress);
                 let progress = file.current.current as f64 / file.current.total as f64;
                 display.set_current_progress(progress);
+
+                // TODO update total duration and guessed duration
+                println!("Sekunden {}", file.current_duration);
             } 
         }
     }
