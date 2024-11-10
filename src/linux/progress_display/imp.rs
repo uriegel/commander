@@ -6,6 +6,7 @@ use gtk::{glib, CompositeTemplate, DrawingArea, Label, ProgressBar, Revealer};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 
+use crate::linux::theme::is_dark_theme;
 use crate::str::SizeExt;
 
 #[derive(Default, CompositeTemplate, Properties)]
@@ -163,8 +164,7 @@ impl ObjectImpl for ProgressDisplay {
             c.arc_negative(0.0, 0.0, (if w < h {w} else {h}) as f64 / 2.0, -PI/2.0, -PI/2.0 + f64::max(progress, 0.01)*PI*2.0);
             c.line_to(0.0, 0.0);
             //c.set_source_rgb(0.7, 0.7, 0.7);
-            c.set_source_rgb(1.0, 1.0, 1.0);
-            //c.set_source_rgb(0.2, 0.2, 0.2);// TODO dark theme: gsettings get org.gnome.desktop.interface gtk-theme
+            if is_dark_theme() { c.set_source_rgb(0.2, 0.2, 0.2); } else { c.set_source_rgb(1.0, 1.0, 1.0); }
             let _ = c.fill();
             c.move_to(0.0, 0.0);
             c.arc(0.0, 0.0, (if w < h {w} else {h}) as f64 / 2.0, -PI/2.0, -PI/2.0 + f64::max(progress, 0.01)*PI*2.0);

@@ -45,6 +45,15 @@ impl ProgressControl {
             }));
         }
     }
+
+    pub fn send_error(&mut self) {
+        let sender = get_sender().lock().unwrap();
+        let _ = sender.send_blocking(Progresses::File(FileProgress { 
+            current: Progress { current: 0, total: 1 }, 
+            total: Progress { current: self.total_size , total: self.total_size },
+            current_duration: 0
+        }));
+    }
 }
 
 pub enum Progresses {

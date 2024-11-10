@@ -79,24 +79,20 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
 
         let source_file = PathBuf::from(&input.path).join(&file);
         let target_file = PathBuf::from(&input.target_path).join(&file);
-        if !input.move_ {
-            File::for_path(source_file).copy(&File::for_path(target_file), FileCopyFlags::OVERWRITE, 
-                None::<&Cancellable>, Some(&mut move |s, t| 
-                    progress_control.send_progress(s as u64, t as u64, progress_files.get_current_bytes())
-            ))?;
-        } else {
-            File::for_path(source_file).move_(&File::for_path(target_file), FileCopyFlags::OVERWRITE, 
-                None::<&Cancellable>, Some(&mut move |s, t| 
-                    progress_control.send_progress(s as u64, t as u64, progress_files.get_current_bytes())
-            ))?;
+    
+        let res = copy_item(input.move_, source_file, target_file, progress_control, progress_files);
+        // TODO Dropper for progress, show error Windows
+        if res.is_err() {
+            progress_control.send_error();
         }
-        // TODO Dropper for progress, show error
+        res?;
         Ok::<_, RequestError>(progress_files)
     })?;
     Ok(())
 }
 
-// TODO Error handling
+// TODO Error handling Linux
+// TODO Error handling Windows
 // TODO lock copy operation (on UI)
 // TODO cancel copy operation
 // TODO can close: Ok 
@@ -104,6 +100,21 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
 
 pub trait StringExt {
     fn clean_path(&self) -> String;
+}
+
+pub fn copy_item(mov: bool, source_file: PathBuf, target_file: PathBuf, mut progress_control: ProgressControl, progress_files: ProgressFiles)->Result<(), RequestError> {
+    if !mov {
+        File::for_path(source_file).copy(&File::for_path(target_file), FileCopyFlags::OVERWRITE, 
+            None::<&Cancellable>, Some(&mut move |s, t| 
+                progress_control.send_progress(s as u64, t as u64, progress_files.get_current_bytes())
+        ))?;
+    } else {
+        File::for_path(source_file).move_(&File::for_path(target_file), FileCopyFlags::OVERWRITE, 
+            None::<&Cancellable>, Some(&mut move |s, t| 
+                progress_control.send_progress(s as u64, t as u64, progress_files.get_current_bytes())
+        ))?;
+    }
+    Ok(())
 }
 
 impl StringExt for String {
