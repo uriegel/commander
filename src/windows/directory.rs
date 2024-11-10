@@ -2,7 +2,9 @@ use std::{ffi::c_void, fs::{metadata, Metadata}, os::windows::fs::MetadataExt, p
 
 use chrono::Local;
 use webview_app::webview::WebView;
-use windows::{core::PCWSTR, Win32::Storage::FileSystem::{CopyFileExW, MoveFileWithProgressW, MOVEFILE_COPY_ALLOWED, MOVEFILE_REPLACE_EXISTING}};
+use windows::{core::PCWSTR, Win32::Storage::FileSystem::{CopyFileExW, MoveFileWithProgressW, 
+    MOVEFILE_COPY_ALLOWED, MOVEFILE_REPLACE_EXISTING, MOVEFILE_WRITE_THROUGH}
+};
 
 use crate::{directory::{get_extension, CopyItems}, error::Error, progresses::ProgressFiles, request_error::RequestError};
 
@@ -61,7 +63,6 @@ fn copy(input: &CopyItems, items: Vec<(&String, u64)>, cpy: *const c_void)->Resu
         let progress_files = curr.get_next(file, *file_size);
         let source_file = PathBuf::from(&input.path).join(&file);
         let target_file = PathBuf::from(&input.target_path).join(&file);
-        // TODO remove write protection on target
         let ps = ProgressFile {
             kind: "file",
             file_name: file,
@@ -80,14 +81,16 @@ fn copy_item(source_file: PathBuf, target_file: PathBuf, move_: bool, cpy: *cons
     if !move_ {
         let source_file = string_to_pcwstr(&source_file.to_string_lossy());
         let target_file = string_to_pcwstr(&target_file.to_string_lossy());
+        // TODO remove write protection on target
         unsafe { CopyFileExW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), 
             Some(progress_callback), Some(cpy), None, 0)?; }
     } else {
+        // TODO remove write protection on target and on source, set write protection on target OR FLAGS
         let source_file = string_to_pcwstr(&source_file.to_string_lossy());
         let target_file = string_to_pcwstr(&target_file.to_string_lossy());
         unsafe { MoveFileWithProgressW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), 
             Some(progress_callback), Some(cpy), 
-            MOVEFILE_COPY_ALLOWED | MOVEFILE_REPLACE_EXISTING)?; }
+            MOVEFILE_COPY_ALLOWED | MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH)?; }
     }    
     Ok(())
 }
