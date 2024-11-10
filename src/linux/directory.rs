@@ -93,7 +93,6 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     Ok(())
 }
 
-// TODO lock copy operation (on UI) Windows
 // TODO cancel copy operation Linux
 // TODO cancel copy operation Windows
 // TODO can close: Ok 

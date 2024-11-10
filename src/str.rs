@@ -1,4 +1,4 @@
-#[allow(dead_code)]
+#![allow(dead_code)]
 
 pub trait StrExt {
     fn ext_is(&self, s: &str) -> bool;

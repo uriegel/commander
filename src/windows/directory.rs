@@ -6,7 +6,7 @@ use windows::{core::PCWSTR, Win32::Storage::FileSystem::{CopyFileExW, MoveFileWi
     MOVEFILE_COPY_ALLOWED, MOVEFILE_REPLACE_EXISTING, MOVEFILE_WRITE_THROUGH}
 };
 
-use crate::{directory::{get_extension, CopyItems}, error::Error, progresses::ProgressFiles, request_error::RequestError};
+use crate::{directory::{get_extension, try_copy_lock, CopyItems}, error::Error, progresses::ProgressFiles, request_error::RequestError};
 
 use super::{progresses::{progress_callback, CopyData, ProgressFile, ProgressFinished, ProgressStart}, string_to_pcwstr};
 
@@ -30,6 +30,9 @@ pub fn get_icon(path: &str)->Result<(String, Vec<u8>), Error> {
 }
 
 pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
+
+    let _binding = try_copy_lock()?;
+
     let items: Vec<(&String, u64)> = input.items.iter().map(|item|
         (item, metadata(PathBuf::from(&input.path).join(&item))
             .ok()
