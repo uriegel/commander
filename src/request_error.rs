@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use std::{any::TypeId, collections::HashMap, string::FromUtf8Error, sync::{MutexGuard, PoisonError}};
+use std::{any::TypeId, collections::HashMap, string::FromUtf8Error, sync::{MutexGuard, PoisonError, TryLockError}};
 
 use quick_xml::DeError;
 use serde::Serialize;
@@ -37,7 +37,7 @@ pub enum ErrorType {
     // Canceled,
     // WrongCredentials,
     NoDiskSpace = 11,
-    // OperationInProgress,
+    OperationInProgress,
     // UacNotStarted = 1099
 }
 
@@ -111,6 +111,13 @@ impl From<trash::Error> for RequestError {
     }
 }
 
+impl From<TryLockError<MutexGuard<'static, bool>>> for RequestError {
+    fn from(_: TryLockError<MutexGuard<'static, bool>>) -> Self {
+        RequestError {
+            status: ErrorType::OperationInProgress
+        }
+    }
+}
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]

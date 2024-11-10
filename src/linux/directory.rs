@@ -3,7 +3,7 @@ use std::{fs::{self, metadata, Metadata}, path::PathBuf, process::Command};
 use gtk::gio::{prelude::*, Cancellable, FileCopyFlags};
 use gtk::gio::File;
 
-use crate::{directory::CopyItems, error::Error, extended_items::{GetExtendedItems, Version}, progresses::ProgressFiles, request_error::RequestError, str::StrExt};
+use crate::{directory::{try_copy_lock, CopyItems}, error::Error, extended_items::{GetExtendedItems, Version}, progresses::ProgressFiles, request_error::RequestError, str::StrExt};
 use crate::directory::get_extension;
 
 use super::{iconresolver::get_geticon_py, progresses::ProgressControl};
@@ -61,6 +61,9 @@ pub fn mount(path: &str)->String {
 }
 
 pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
+
+    let _binding = try_copy_lock()?;
+
     let items: Vec<(&String, u64)> = input.items.iter().map(|item|
         (item, metadata(PathBuf::from(&input.path).join(&item))
             .ok()
@@ -90,8 +93,9 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     Ok(())
 }
 
-// TODO lock copy operation (on UI)
-// TODO cancel copy operation
+// TODO lock copy operation (on UI) Windows
+// TODO cancel copy operation Linux
+// TODO cancel copy operation Windows
 // TODO can close: Ok 
 
 

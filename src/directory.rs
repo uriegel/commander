@@ -1,4 +1,4 @@
-use std::{fs::{canonicalize, create_dir, read_dir, rename, File}, path::PathBuf, time::UNIX_EPOCH};
+use std::{fs::{canonicalize, create_dir, read_dir, rename, File}, path::PathBuf, sync::{Mutex, MutexGuard, TryLockResult}, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -153,6 +153,9 @@ pub fn rename_item(input: RenameItem)->Result<(), RequestError> {
     Ok(())
 }
 
+pub fn try_copy_lock()->TryLockResult<MutexGuard<'static, bool>> {
+    MUTEX.try_lock()
+}
 
 fn get_icon_path_of_file(name: &str, path: &str, is_directory: bool)->Option<String> {
     if !is_directory {
@@ -161,3 +164,5 @@ fn get_icon_path_of_file(name: &str, path: &str, is_directory: bool)->Option<Str
         None
     }
 }
+
+static MUTEX: Mutex<bool> = Mutex::new(false);
