@@ -81,7 +81,6 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
         let target_file = PathBuf::from(&input.target_path).join(&file);
     
         let res = copy_item(input.move_, source_file, target_file, progress_control, progress_files);
-        // TODO Dropper for progress, show error Windows
         if res.is_err() {
             progress_control.send_error();
         }
@@ -91,7 +90,6 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     Ok(())
 }
 
-// TODO Error handling Linux
 // TODO Error handling Windows
 // TODO lock copy operation (on UI)
 // TODO cancel copy operation

@@ -91,12 +91,18 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 				.copy()
 				.match(
 					() => {
-						if (inactivePath == inactive.getPath()) 
+						if (inactivePath == inactive.getPath())
 							inactive.refresh()
 						if (move && activePath == activeFolder?.getPath())
 							getActiveFolder()?.refresh()
 					},
-					e => showError(e, setErrorText))
+					e => {
+						showError(e, setErrorText);
+						if (inactivePath == inactive.getPath())
+							inactive.refresh()
+						if (activePath == activeFolder?.getPath())
+							getActiveFolder()?.refresh()
+					})
 		}
 	}, [dialog])
 
