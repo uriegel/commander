@@ -2,10 +2,11 @@ use std::cell::RefCell;
 use std::time::Duration;
 use std::{cell::Cell, f64::consts::PI};
 use gtk::glib::{clone, spawn_future_local, timeout_future, Properties};
-use gtk::{glib, CompositeTemplate, DrawingArea, Label, ProgressBar, Revealer};
+use gtk::{glib, Button, CompositeTemplate, DrawingArea, Label, ProgressBar, Revealer};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 
+use crate::linux::directory::cancel_copy;
 use crate::linux::theme::is_dark_theme;
 use crate::str::SizeExt;
 
@@ -35,6 +36,8 @@ pub struct ProgressDisplay {
     pub duration_label: TemplateChild<Label>,	
 	#[template_child]
     pub estimated_duration_label: TemplateChild<Label>,	
+	#[template_child]
+    pub cancel_btn: TemplateChild<Button>,	
     #[property(get, set)]
     total_progress: Cell<f64>,	
     #[property(get, set)]
@@ -72,6 +75,15 @@ impl ObjectSubclass for ProgressDisplay {
 	fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
 		obj.init_template();
 	}
+}
+
+#[gtk::template_callbacks]
+impl ProgressDisplay {
+    #[template_callback]
+    pub fn handle_cancel(_: &Button) {
+        // Set the label to "Hello World!" after the button has been clicked on
+        println!("Känzel");
+    }
 }
 
 // Trait shared by all GObjects
@@ -171,6 +183,8 @@ impl ObjectImpl for ProgressDisplay {
             c.set_source_rgb(fill_color.red, fill_color.green, fill_color.blue);
             let _ = c.fill();
         });
+
+        self.cancel_btn.connect_clicked(|_| cancel_copy());
     }	
 }
 

@@ -130,7 +130,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkButton">
+                      <object class="GtkButton" id="cancel_btn">
                         <property name="label">Abbrechen</property>
                       </object>
                     </child>

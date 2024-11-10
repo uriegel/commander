@@ -93,28 +93,39 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     Ok(())
 }
 
-// TODO cancel copy operation Linux
 // TODO cancel copy operation Windows
 // TODO can close: Ok 
-
 
 pub trait StringExt {
     fn clean_path(&self) -> String;
 }
 
 pub fn copy_item(mov: bool, source_file: PathBuf, target_file: PathBuf, mut progress_control: ProgressControl, progress_files: ProgressFiles)->Result<(), RequestError> {
+    reset_copy_cancellable();
     if !mov {
         File::for_path(source_file).copy(&File::for_path(target_file), FileCopyFlags::OVERWRITE, 
-            None::<&Cancellable>, Some(&mut move |s, t| 
+        get_copy_cancellable().as_ref(), Some(&mut move |s, t| 
                 progress_control.send_progress(s as u64, t as u64, progress_files.get_current_bytes())
         ))?;
     } else {
         File::for_path(source_file).move_(&File::for_path(target_file), FileCopyFlags::OVERWRITE, 
-            None::<&Cancellable>, Some(&mut move |s, t| 
+        get_copy_cancellable().as_ref(), Some(&mut move |s, t| 
                 progress_control.send_progress(s as u64, t as u64, progress_files.get_current_bytes())
         ))?;
     }
     Ok(())
+}
+
+pub fn reset_copy_cancellable() {
+    unsafe { COPY_CANCELLABLE.replace(Cancellable::new()) }; 
+}
+
+pub fn get_copy_cancellable()->Option<Cancellable> {
+    unsafe { COPY_CANCELLABLE.clone() }
+}
+
+pub fn cancel_copy() {
+    unsafe { COPY_CANCELLABLE.clone().inspect(|c|c.cancel())};
 }
 
 impl StringExt for String {
@@ -123,3 +134,4 @@ impl StringExt for String {
     }
 }
 
+static mut COPY_CANCELLABLE: Option<Cancellable> = None; 
