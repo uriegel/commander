@@ -87,10 +87,11 @@ fn main() {
     .run();
 }
 
-// TODO Windows: unc-pathes
+// TODO Windows: unc-pathes in funcxtion canonicalize
+// TODO ErrorType::Canceled: Error message
+// TODO Linux ErrorType::Canceled 
 // TODO Copy Step 1: copy items with directories (overwrite yes/no)
-// TODO Copy Step 1: cancel F5 when copying is active
-// TODO Copy Step 1: Cancel copy: error in ProgresstransitResponse
+// TODO can close whem Copy Progress: do not close Commander
 
 // TODO Systemicons 9.11 are broken 
 
