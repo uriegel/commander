@@ -87,24 +87,24 @@ fn main() {
     .run();
 }
 
-// TODO Windows: unc-pathes in function canonicalize
-// TODO Copy Step 1: copy items with directories (overwrite yes/no)
 // TODO can close whem Copy Progress: do not close Commander
 
-// TODO Systemicons 9.11 are broken 
+// TODO connect android
 
 // TODO Apostrohes in path leads to panic in webview (Linux)
 
 // TODO Rename as copy
 // TODO Rename items (extended rename)
 
+// TODO Copy Step2: copy items with directories (overwrite yes/no)
+// TODO Systemicons 9.11 are broken 
+// TODO Windows: unc-pathes in function canonicalize
+
 // TODO delay on loaded?
 // TODO Background color (dark, react not connected)
-
-// TODO connect android
 
 // TODO no // on linux status bar in root   
 
 // TODO suppress developer tools in menus in release version
 
-// TODO Copy Step 3: Check if flatten source targets ad show conflicts
+// TODO Copy Step 3: Check if flatten source targets add show conflicts
