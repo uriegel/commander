@@ -5,6 +5,8 @@ use serde::Serialize;
 use webview_app::webview::WebView;
 use windows::Win32::Storage::FileSystem::LPPROGRESS_ROUTINE_CALLBACK_REASON;
 
+use crate::request_error::RequestError;
+
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ProgressStart<'a> {
@@ -44,6 +46,15 @@ impl CopyData {
     }
 } 
 
+pub fn reset_progress_cancel() {
+    unsafe { PROGRESS_CANCEL = false; }
+}
+
+pub fn cancel_copy()->Result<(), RequestError> {
+    unsafe { PROGRESS_CANCEL = true; }
+    Ok(())
+}
+
 pub extern "system" fn progress_callback(
     total_file_size: i64,
     total_bytes_transferred: i64,
@@ -72,7 +83,7 @@ pub extern "system" fn progress_callback(
         
         copy_data.last_time.replace(now);
     }
-    0
+    unsafe { if PROGRESS_CANCEL { 1 } else { 0 } }
 }
 
 #[derive(Debug, Serialize)]
@@ -84,4 +95,5 @@ struct ProgressBytes<'a> {
     total_seconds: i32
 }
 
+static mut PROGRESS_CANCEL: bool = false;
 const FRAME_DURATION: Duration = Duration::from_millis(40);

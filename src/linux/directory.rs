@@ -93,7 +93,7 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     Ok(())
 }
 
-// TODO cancel copy operation Windows
+// TODO cancel copy operation Windows (test)
 // TODO can close: Ok 
 
 pub trait StringExt {

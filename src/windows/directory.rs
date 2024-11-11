@@ -8,7 +8,7 @@ use windows::{core::PCWSTR, Win32::Storage::FileSystem::{CopyFileExW, MoveFileWi
 
 use crate::{directory::{get_extension, try_copy_lock, CopyItems}, error::Error, progresses::ProgressFiles, request_error::RequestError};
 
-use super::{progresses::{progress_callback, CopyData, ProgressFile, ProgressFinished, ProgressStart}, string_to_pcwstr};
+use super::{progresses::{progress_callback, reset_progress_cancel, CopyData, ProgressFile, ProgressFinished, ProgressStart}, string_to_pcwstr};
 
 pub fn is_hidden(_: &str, metadata: &Metadata)->bool {
     let attrs = metadata.file_attributes();
@@ -32,6 +32,7 @@ pub fn get_icon(path: &str)->Result<(String, Vec<u8>), Error> {
 pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
 
     let _binding = try_copy_lock()?;
+    reset_progress_cancel();
 
     let items: Vec<(&String, u64)> = input.items.iter().map(|item|
         (item, metadata(PathBuf::from(&input.path).join(&item))

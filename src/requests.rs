@@ -2,7 +2,7 @@ use webview_app::request::{get_input, request_blocking, Request};
 
 use crate::{directory::{create_folder, delete_items, get_files, rename_item}, extended_items::{
     cancel_extended_items, get_extended_items
-}, request_error::{from_result, RequestError}, tracks::get_track_info};
+}, request_error::{from_result, RequestError}, tracks::get_track_info, windows::progresses::cancel_copy};
 #[cfg(target_os = "linux")]
 use crate::linux::{root::get_root, directory::copy_items};
 #[cfg(target_os = "windows")]
@@ -20,6 +20,8 @@ pub fn on_request(request: &Request, id: String, cmd: String, json: String)->boo
             "renameitem" => from_result(rename_item(get_input(&json))),
             "gettrackinfo" => from_result(get_track_info(get_input(&json))),
             "copyitems" => from_result(copy_items(get_input(&json))),
+            #[cfg(target_os = "windows")]
+            "cancelCopy" => from_result(cancel_copy()),
             _ => from_result(Ok::<(), RequestError>(()))
         }
     });
