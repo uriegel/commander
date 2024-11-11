@@ -34,7 +34,7 @@ pub enum ErrorType {
     // PathNotFound,
     NotSupported = 7,
     // PathTooLong,
-    Canceled = 9,
+    Cancelled = 9,
     // WrongCredentials,
     NoDiskSpace = 11,
     OperationInProgress,
