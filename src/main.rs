@@ -93,11 +93,27 @@ fn main() {
     .run();
 }
 
+// TODO Rename items (extended rename)
+/*
+ public static AsyncResult<Nothing, RequestError> RenameItems(RenameItemsParam input)
+    {
+        var res = input.Items.Aggregate(Ok<Nothing, RequestError>(nothing), (r, i) => r.SelectMany(_ => PreRenameItem(i)));
+        res = input.Items.Aggregate(res, (r, i) => r.SelectMany(_ => RenameItem(i)));
+        return res.ToAsyncResult();
+
+        Result<Nothing, RequestError> PreRenameItem(RenameItem item)
+            => Move(input.Path.AppendPath(item.Name), input.Path.AppendPath("__RENAMING__" + item.NewName));
+        Result<Nothing, RequestError> RenameItem(RenameItem item)
+            => Move(input.Path.AppendPath("__RENAMING__" + item.NewName), input.Path.AppendPath(item.NewName));
+    }
+ */
+
 // TODO Systemicons 9.11 2nd try
+
 // TODO connect android
 
 // TODO Rename as copy
-// TODO Rename items (extended rename)
+// TODO OnEnter
 
 // TODO Apostrohes in path leads to panic in webview (Linux)
 
