@@ -14,6 +14,7 @@ mod requests_http;
 mod request_error;
 mod tracks;
 mod progresses;
+use directory::try_copy_lock;
 use include_dir::include_dir;
 #[cfg(target_os = "linux")]
 use linux::headerbar::HeaderBar;
@@ -73,6 +74,11 @@ fn on_activate(app: &Application) -> WebView {
     ProgressDisplay::ensure_type();        
     let webview = webview_builder.build();
 
+    webview.can_close(|| {
+        let binding = try_copy_lock();
+        binding.is_ok()
+    });
+
     webview.connect_request(on_request);
     webview
 }
@@ -87,17 +93,15 @@ fn main() {
     .run();
 }
 
-// TODO can close whem Copy Progress: do not close Commander
-
+// TODO Systemicons 9.11 2nd try
 // TODO connect android
-
-// TODO Apostrohes in path leads to panic in webview (Linux)
 
 // TODO Rename as copy
 // TODO Rename items (extended rename)
 
+// TODO Apostrohes in path leads to panic in webview (Linux)
+
 // TODO Copy Step2: copy items with directories (overwrite yes/no)
-// TODO Systemicons 9.11 are broken 
 // TODO Windows: unc-pathes in function canonicalize
 
 // TODO delay on loaded?
