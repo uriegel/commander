@@ -44,10 +44,11 @@ export enum IOError {
     PathNotFound,
     NotSupported,
     PathTooLong,
-    Canceled,
+    Cancelled,
     WrongCredentials,
     NoDiskSpace,
     OperationInProgress,
+    Dropped,
     UacNotStarted = 1099
 }
 

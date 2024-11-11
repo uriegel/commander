@@ -184,7 +184,7 @@ const getExtendedItems = (id: string, path: string, items: FolderViewItem[]): As
 			items: (items as FolderViewItem[]).map(n => n.name),
 			path
 		}) 
-		: AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""}))
+		: AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Dropped, statusText: ""}))
 
 const setExtendedItems = (items: FolderViewItem[], extended: GetExtendedItemsResult, sortColumn: number, sortDescending: boolean): FolderViewItem[] =>
 	sort(items.map((n, i) => !extended.extendedItems[i].exifData && !extended.extendedItems[i].version
@@ -239,7 +239,7 @@ const rename = (path: string, item: FolderViewItem, dialog: DialogHandle) => {
 		defBtnOk: true
 	}, res => res.result == ResultType.Ok && res.input
 		? new Ok(res.input)
-		: new Err({ status: IOError.Canceled, statusText: "" }))
+		: new Err({ status: IOError.Dropped, statusText: "" }))
 		.bindAsync(newName => webViewRequest<Nothing, ErrorType>("renameitem", { path, name: item.name, newName })
 								.map(() => newName))
 }
@@ -262,7 +262,7 @@ const renameAsCopy = (path: string, item: FolderViewItem, dialog: DialogHandle) 
 				defBtnOk: true
 			}, res => res.result == ResultType.Ok
 				? new Ok<string, ErrorType>(res.input ?? "")
-				: new Err<string, ErrorType>({ status: IOError.Canceled, statusText: "" }))
+				: new Err<string, ErrorType>({ status: IOError.Dropped, statusText: "" }))
 			.bindAsync(newName => webViewRequest<Nothing, ErrorType>("renameascopy", {
 				path,
 				name: item.name,
@@ -280,7 +280,7 @@ const createFolder = (path: string, item: FolderViewItem, dialog: DialogHandle) 
 		defBtnOk: true
 	}, res => res.result == ResultType.Ok && res.input
 	? new Ok(res.input)
-	: new Err({ status: IOError.Canceled, statusText: "" }))
+	: new Err({ status: IOError.Dropped, statusText: "" }))
 		.bindAsync(name => webViewRequest<Nothing, ErrorType>("createfolder", { path, name })
 							.map(() => name))
 
@@ -304,7 +304,7 @@ const deleteItems = (path: string, items: FolderViewItem[], dialog: DialogHandle
 			defBtnOk: true
 		}, res => res.result == ResultType.Ok
 		? new Ok(nothing)
-		: new Err({ status: IOError.Canceled, statusText: "" }))
+		: new Err({ status: IOError.Dropped, statusText: "" }))
 			.bindAsync(() => webViewRequest<Nothing, ErrorType>("deleteitems", { path, names: items.map(n => n.name) }))
 }
 

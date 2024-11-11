@@ -61,7 +61,7 @@ const deleteItems = (path: string, items: FolderViewItem[], dialog: DialogHandle
 				defBtnOk: true
 			}, res => res.result == ResultType.Ok
 			? new Ok(nothing)
-			: new Err({ status: IOError.Canceled, statusText: "" }))
+			: new Err({ status: IOError.Dropped, statusText: "" }))
 			.bindAsync(() => webViewRequest<Nothing, ErrorType>("deleteitemsremote", { path, names: items.map(n => n.name) }))
 }
 
@@ -74,7 +74,7 @@ const createFolder = (path: string, item: FolderViewItem, dialog: DialogHandle) 
 		defBtnOk: true
 	}, res => res.result == ResultType.Ok && res.input
 	? new Ok(res.input)
-	: new Err({ status: IOError.Canceled, statusText: "" }))
+	: new Err({ status: IOError.Dropped, statusText: "" }))
 		.bindAsync(name => webViewRequest<Nothing, ErrorType>("createdirectoryremote", { path: path.appendPath(name) })
 							.map(() => name))
 	
@@ -95,7 +95,7 @@ export const getRemoteController = (controller: Controller | null): ControllerRe
 						}),
 				updateItems: () => null,
 				getPath: () => currentPath,
-				getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({ status: IOError.Canceled, statusText: "" })),
+				getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({ status: IOError.Dropped, statusText: "" })),
 				setExtendedItems: items => items,
 				cancelExtendedItems: async () => { },
 				onEnter: ({ path, item }) =>

@@ -76,7 +76,7 @@ const showRemote = (dialog: DialogHandle, item?: FolderViewItem) => {
             localStorage.setItem("remotes", JSON.stringify(items))
             return new Ok<string, ErrorType>(name)
         } else
-            return new Err<string, ErrorType>({ status: IOError.Canceled, statusText: "" })
+            return new Err<string, ErrorType>({ status: IOError.Dropped, statusText: "" })
     })
 }
 
@@ -128,7 +128,7 @@ export const getRemotesController = (controller: Controller | null): ControllerR
         getItems,
         updateItems: ()=>null,
         getPath: () => REMOTES,
-        getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
+        getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Dropped, statusText: ""})),
         setExtendedItems: items => items,
         cancelExtendedItems: async () => { },
         onEnter,

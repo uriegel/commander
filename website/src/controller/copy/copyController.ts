@@ -123,7 +123,7 @@ const getFileSystemCopyController = (move: boolean, dialog: DialogHandle, fromLe
                 defBtnNo: defNo
             }, res => res.result != ResultType.Cancel 
                 ? makeDialogResult(res, fileItems, [], conflictItems)
-                : new Err<string[], ErrorType>({ status: IOError.Canceled, statusText: "" })
+                : new Err<string[], ErrorType>({ status: IOError.Dropped, statusText: "" })
         )
         .bindAsync(copyItems =>
             copyItems.length > 0

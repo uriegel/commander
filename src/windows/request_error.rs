@@ -6,7 +6,7 @@ impl From<windows_result::Error> for RequestError {
             match error.code().0 as u32 {
                 0x80070002 => ErrorType::FileNotFound,
                 0x80070005 => ErrorType::AccessDenied,
-                0x800704D3 => ErrorType::Canceled,
+                0x800704D3 => ErrorType::Cancelled,
                 _ => ErrorType::Unknown                        
             };
         RequestError {

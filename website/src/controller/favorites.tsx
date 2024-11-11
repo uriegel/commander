@@ -84,7 +84,7 @@ export const getFavoritesController = (controller: Controller | null): Controlle
         getItems,
         updateItems: () => null,
         getPath: () => FAVORITES,
-        getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
+        getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Dropped, statusText: ""})),
         setExtendedItems: items => items,
         cancelExtendedItems: async () => { },
         onEnter,

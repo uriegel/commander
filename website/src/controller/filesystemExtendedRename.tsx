@@ -40,7 +40,7 @@ export const createExtendedRenameFileSystemController = (controller: Controller)
                 btnCancel: true
             }, res => res.result == ResultType.Ok
                 ? new Ok(nothing)
-                : new Err({ status: IOError.Canceled, statusText: "" }))
+                : new Err({ status: IOError.Dropped, statusText: "" }))
             .bind(() => rename(enterData)),
     sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => {
         const sorted = controller.sort(items, sortIndex == 0 ? 0 : sortIndex - 1, sortDescending)

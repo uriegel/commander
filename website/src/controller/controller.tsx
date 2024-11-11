@@ -116,10 +116,10 @@ export const createEmptyController = (): Controller => ({
         columns: [],
         renderRow: () => []
     }),
-    getItems: () => AsyncResult.from(new Err<GetItemsResult, ErrorType>({ status: IOError.Canceled, statusText: "" })),
+    getItems: () => AsyncResult.from(new Err<GetItemsResult, ErrorType>({ status: IOError.Dropped, statusText: "" })),
     updateItems: () => null,
     getPath: () => "empty",
-    getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
+    getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Dropped, statusText: ""})),
     setExtendedItems: items => items,
     cancelExtendedItems: async () => { },
     onEnter: () => AsyncResult.from(new Ok<OnEnterResult, ErrorType>({ processed: true })),
@@ -221,7 +221,7 @@ export const showError = (error: ErrorType, setError: (error: string)=>void, pre
             ? "Kein Speicherplatz mehr vorhanden"
             : ioError === IOError.OperationInProgress                                                
             ? "Es ist bereits eine Hintergrundaktion im Gange"
-            : ioError === IOError.Canceled
+            : ioError === IOError.Cancelled
             ? "Die Aktion wurde abgebrochen"
             : "Die Aktion konnte nicht ausgeführt werden"
 
@@ -237,7 +237,7 @@ export const showError = (error: ErrorType, setError: (error: string)=>void, pre
         ? getClientError(error)
         : getServerError(error)
 
-    if (error.status !== IOError.Canceled && error.status !== IOError.UacNotStarted) {
+    if (error.status !== IOError.Dropped && error.status !== IOError.UacNotStarted) {
         setError((prefix ?? "") + text)
     }
 }

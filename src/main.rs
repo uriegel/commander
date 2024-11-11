@@ -87,8 +87,7 @@ fn main() {
     .run();
 }
 
-// TODO ErrorType::Canceled: Error message
-// TODO Windows: unc-pathes in funcxtion canonicalize
+// TODO Windows: unc-pathes in function canonicalize
 // TODO Copy Step 1: copy items with directories (overwrite yes/no)
 // TODO can close whem Copy Progress: do not close Commander
 

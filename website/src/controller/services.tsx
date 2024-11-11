@@ -80,7 +80,7 @@ const createController = (): ControllerResult => ({
         getItems,
         updateItems: ()=>null,
         getPath: () => SERVICES,
-        getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Canceled, statusText: ""})),
+        getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Dropped, statusText: ""})),
         setExtendedItems: items => items,
         cancelExtendedItems: async () => { },
         onEnter: ({ path, item, selectedItems }) => 
