@@ -73,6 +73,20 @@ pub struct CopyItems {
     pub move_: bool
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RenameItemsParam {
+    path: String,
+    items: Vec<RenameItemsItem>
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RenameItemsItem {
+    name: String,
+    new_name: String
+}
+
 pub fn get_files(input: GetFiles)->Result<GetFilesResult, RequestError> {
     let path = canonicalize(&input.path)
         .ok()
@@ -155,6 +169,13 @@ pub fn rename_item(input: RenameItem)->Result<(), RequestError> {
 
 pub fn try_copy_lock()->TryLockResult<MutexGuard<'static, bool>> {
     MUTEX.try_lock()
+}
+
+pub fn rename_items(input: RenameItemsParam)->Result<(), RequestError> {
+    // let path = PathBuf::from(&input.path).join(input.name);
+    // let new_path = PathBuf::from(input.path).join(input.new_name);
+    // rename(path, new_path)?;
+    Ok(())
 }
 
 fn get_icon_path_of_file(name: &str, path: &str, is_directory: bool)->Option<String> {

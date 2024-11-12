@@ -443,7 +443,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({ id, showHidde
 
     const refresh = (forceShowHidden?: boolean, checkPosition?: (checkItem: FolderViewItem) => boolean) => {
         if (path)
-            changePath(id, path, forceShowHidden == undefined ? showHidden : forceShowHidden, undefined, undefined, undefined, checkPosition)
+            changePath(id, path, forceShowHidden !== false && forceShowHidden !== true ? showHidden : forceShowHidden, undefined, undefined, undefined, checkPosition)
     }
 
     const rename = () => 

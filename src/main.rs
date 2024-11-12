@@ -108,8 +108,6 @@ fn main() {
     }
  */
 
-// TODO Systemicons 9.11 2nd try
-
 // TODO connect android
 
 // TODO Rename as copy
