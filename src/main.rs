@@ -15,6 +15,7 @@ mod request_error;
 mod tracks;
 mod progresses;
 mod remote;
+mod webrequest;
 use directory::try_copy_lock;
 use include_dir::include_dir;
 #[cfg(target_os = "linux")]
