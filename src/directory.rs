@@ -172,9 +172,16 @@ pub fn try_copy_lock()->TryLockResult<MutexGuard<'static, bool>> {
 }
 
 pub fn rename_items(input: RenameItemsParam)->Result<(), RequestError> {
-    // let path = PathBuf::from(&input.path).join(input.name);
-    // let new_path = PathBuf::from(input.path).join(input.new_name);
-    // rename(path, new_path)?;
+    for item in &input.items {
+        let path = PathBuf::from(&input.path).join(&item.name);
+        let new_path = PathBuf::from(&input.path).join("__RENAMING__".to_string() + &item.new_name);
+        rename(path, new_path)?;
+    }
+    for item in &input.items {
+        let path = PathBuf::from(&input.path).join("__RENAMING__".to_string() + &item.new_name);        
+        let new_path = PathBuf::from(&input.path).join(&item.new_name);
+        rename(path, new_path)?;
+    }
     Ok(())
 }
 
