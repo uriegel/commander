@@ -49,6 +49,7 @@ export enum IOError {
     NoDiskSpace,
     OperationInProgress,
     Dropped,
+    ConnectionRefused,
     UacNotStarted = 1099
 }
 

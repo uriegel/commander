@@ -223,6 +223,8 @@ export const showError = (error: ErrorType, setError: (error: string)=>void, pre
             ? "Es ist bereits eine Hintergrundaktion im Gange"
             : ioError === IOError.Cancelled
             ? "Die Aktion wurde abgebrochen"
+            : ioError === IOError.ConnectionRefused
+            ? "Verbindungsaufbau wurde abgelehnt"
             : "Die Aktion konnte nicht ausgeführt werden"
 
     const getClientError = (error: ErrorType) => 

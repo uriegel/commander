@@ -38,6 +38,7 @@ pub enum ErrorType {
     // WrongCredentials,
     NoDiskSpace = 11,
     OperationInProgress,
+    ConnectionRefused = 14,
     // UacNotStarted = 1099
 }
 
@@ -58,6 +59,7 @@ impl From<std::io::Error> for RequestError {
             std::io::ErrorKind::NotFound => ErrorType::FileNotFound,
             std::io::ErrorKind::OutOfMemory => ErrorType::NoDiskSpace,
             std::io::ErrorKind::Unsupported => ErrorType::NotSupported,
+            std::io::ErrorKind::ConnectionRefused => ErrorType::ConnectionRefused,
             _ => ErrorType::Unknown
         };
         RequestError {
