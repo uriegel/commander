@@ -1,3 +1,4 @@
+use chrono::DateTime;
 use serde::Deserialize;
 
 use crate::{directory::{DirectoryItem, GetFilesResult}, request_error::RequestError, webrequest::web_get};
@@ -16,7 +17,7 @@ pub struct GetRemoteFilesResult {
     name: String,
     is_directory: bool,
     size: u64,  is_hidden: bool,
-    time: u64
+    time: i64
 }
 
 pub fn get_remote_files(input: GetRemoteFiles) -> Result<GetFilesResult, RequestError> {
@@ -33,7 +34,7 @@ pub fn get_remote_files(input: GetRemoteFiles) -> Result<GetFilesResult, Request
                 is_directory: n.is_directory,
                 is_hidden: n.is_hidden,
                 size: n.size,
-                time: None, // TODO n.time,
+                time: if n.time != 0 { Some(DateTime::from_timestamp_nanos(n.time * 1_000_000)) } else { None },
                 icon_path: if n.is_directory { None} else { Some(n.name) }
             }
         })     
