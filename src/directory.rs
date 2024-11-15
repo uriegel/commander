@@ -47,21 +47,21 @@ pub struct RenameItem {
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DirectoryItem {
-    name: String,
-    size: u64,
-    is_directory: bool,
-    icon_path: Option<String>,
-    is_hidden: bool,
-    time: Option<DateTime<Utc>>
+    pub name: String,
+    pub size: u64,
+    pub is_directory: bool,
+    pub icon_path: Option<String>,
+    pub is_hidden: bool,
+    pub time: Option<DateTime<Utc>>
 }
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GetFilesResult {
-    items: Vec<DirectoryItem>,
-    path: String,
-    dir_count: usize,
-    file_count: usize,
+    pub items: Vec<DirectoryItem>,
+    pub path: String,
+    pub dir_count: usize,
+    pub file_count: usize,
 }
 
 #[derive(Debug, Deserialize)]
