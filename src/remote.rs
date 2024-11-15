@@ -10,7 +10,7 @@ pub struct GetRemoteFiles {
     pub _show_hidden_items: bool,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GetRemoteFilesResult {
 }
@@ -21,11 +21,6 @@ pub fn get_remote_files(input: GetRemoteFiles) -> Result<(), RequestError> {
     let sep = path.find("/").unwrap_or(path.len());
     let (ip, path) = path.split_at(sep);
     let payload = web_get(ip, format!("/getfiles{}", path))?;
-    let res: GetRemoteFilesResult = deser(&payload)?;
+    let test = serde_json::from_slice::<GetRemoteFilesResult>(&payload)?;
     Ok(())
-}
-
-fn deser<'a, T>(buf: &'a Vec<u8>)->Result<T, RequestError> 
-    where T: Deserialize<'a> {
-    Ok(serde_json::from_slice(buf)?)
 }
