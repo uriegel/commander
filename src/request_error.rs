@@ -53,6 +53,7 @@ where T: Serialize + 'static, {
 
 impl From<std::io::Error> for RequestError {
     fn from(error: std::io::Error) -> Self {
+        eprintln!("io.error: {error}");
         let status = match error.kind() {
             std::io::ErrorKind::PermissionDenied => ErrorType::AccessDenied,
             std::io::ErrorKind::AlreadyExists => ErrorType::AlreadyExists,
@@ -70,41 +71,42 @@ impl From<std::io::Error> for RequestError {
 
 impl From<DeError> for RequestError {
     fn from(error: DeError) -> Self {
-        eprintln!("Deserialize error: {}", error.to_string());
+        eprintln!("Deserialize error: {error}");
         RequestError { status: ErrorType::Unknown }
     }
 }
 
 impl From<PoisonError<MutexGuard<'_, HashMap<CancellationKey, std::sync::mpsc::Sender<bool>>>>> for RequestError {
     fn from(error: PoisonError<MutexGuard<'_, HashMap<CancellationKey, std::sync::mpsc::Sender<bool>>>>) -> Self {
-        eprintln!("Error occured while acquiring lock: {}", error);
+        eprintln!("Error occured while acquiring lock: {error}");
         RequestError { status: ErrorType::Unknown }
     }
 }
 
 impl From<serde_json::Error> for RequestError {
     fn from(error: serde_json::Error) -> Self {
-        eprintln!("JSON error occured: {}", error);
+        eprintln!("JSON error occured: {error}");
         RequestError { status: ErrorType::Unknown }
     }
 }
 
 impl From<FromUtf8Error> for RequestError {
     fn from(error: FromUtf8Error) -> Self {
-        eprintln!("Utf8 error occured: {}", error);
+        eprintln!("FromUtf8 error occured: {error}");
         RequestError { status: ErrorType::Unknown }
     }
 }
 
 impl From<Utf8Error> for RequestError {
     fn from(error: Utf8Error) -> Self {
-        eprintln!("Utf8 error occured: {}", error);
+        eprintln!("Utf8 error occured: {error}");
         RequestError { status: ErrorType::Unknown }
     }
 }
 
 impl From<trash::Error> for RequestError {
     fn from(error: trash::Error) -> Self {
+        eprintln!("trash::Error: {error}");
         let status = match &error {
             #[cfg(target_os = "linux")]
             trash::Error::FileSystem { source, .. } if source.kind() == std::io::ErrorKind::PermissionDenied => ErrorType::AccessDenied,
@@ -121,7 +123,8 @@ impl From<trash::Error> for RequestError {
 }
 
 impl From<TryLockError<MutexGuard<'static, bool>>> for RequestError {
-    fn from(_: TryLockError<MutexGuard<'static, bool>>) -> Self {
+    fn from(error: TryLockError<MutexGuard<'static, bool>>) -> Self {
+        eprintln!("TryLockError: {error}");
         RequestError {
             status: ErrorType::OperationInProgress
         }
@@ -129,7 +132,8 @@ impl From<TryLockError<MutexGuard<'static, bool>>> for RequestError {
 }
 
 impl From<ParseIntError> for RequestError {
-    fn from(_: ParseIntError) -> Self {
+    fn from(error: ParseIntError) -> Self {
+        eprintln!("ParseIntError: {error}");
         Self {
             status: ErrorType::Unknown
         }

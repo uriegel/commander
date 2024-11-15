@@ -23,18 +23,16 @@ pub fn web_get(ip: &str, url: String) -> Result<Vec<u8>, RequestError> {
     }
 
     // TODO Read Status Code
-    // TODO read content_length
-    // TODO payload
 
     if headers.len() == 0  { 
         return Err(RequestError { status: crate::request_error::ErrorType::FileNotFound });
     }
 
     let _request_line = &headers[0];
-    if let Some(range_header) = headers.iter().find(|h|h.starts_with("Content-Length: ")) {
-        let len = range_header[16..].parse::<usize>()?; 
+    if let Some(len_header) = headers.iter().find(|h|h.starts_with("Content-Length: ")) {
+        let len = len_header[16..].parse::<usize>()?; 
         let mut buf: Vec<u8> = vec![0; len];
-        buf_reader.read(&mut buf)?;
+        buf_reader.read_exact(&mut buf)?;
         Ok(buf)
     } else {
         return Err(RequestError { status: crate::request_error::ErrorType::FileNotFound })

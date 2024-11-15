@@ -40,8 +40,6 @@ pub fn get_remote_files(input: GetRemoteFiles) -> Result<GetFilesResult, Request
         .filter(|n| input.show_hidden_items || !n.is_hidden)
         .collect();
 
-        // TODO DCIM Camera => error, eprintln in Error mapper
-
     let dir_count = items.iter().filter(|n|n.is_directory).count();
     let file_count = items.iter().filter(|n|!n.is_directory).count();
     Ok(GetFilesResult {
