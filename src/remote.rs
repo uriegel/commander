@@ -13,14 +13,21 @@ pub struct GetRemoteFiles {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GetRemoteFilesResult {
+    name: String,
+    is_directory: bool,
+    size: u64,  is_hidden: bool,
+    time: u64
 }
-
 
 pub fn get_remote_files(input: GetRemoteFiles) -> Result<(), RequestError> {
     let (_, path) = input.path.split_at(7);
     let sep = path.find("/").unwrap_or(path.len());
     let (ip, path) = path.split_at(sep);
     let payload = web_get(ip, format!("/getfiles{}", path))?;
-    let test = serde_json::from_slice::<GetRemoteFilesResult>(&payload)?;
+    let test = serde_json::from_slice::<Vec<GetRemoteFilesResult>>(&payload)?;
+
+
+
+
     Ok(())
 }
