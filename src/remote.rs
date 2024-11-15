@@ -20,7 +20,8 @@ pub fn get_remote_files(input: GetRemoteFiles) -> Result<(), RequestError> {
     let (_, path) = input.path.split_at(7);
     let sep = path.find("/").unwrap_or(path.len());
     let (ip, path) = path.split_at(sep);
-    let affen = web_get(ip, format!("/getfiles{}", path), deser::<GetRemoteFilesResult>)?;
+    let payload = web_get(ip, format!("/getfiles{}", path))?;
+    let res: GetRemoteFilesResult = deser(&payload)?;
     Ok(())
 }
 

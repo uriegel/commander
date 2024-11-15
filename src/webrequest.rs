@@ -3,7 +3,7 @@ use std::{io::{BufRead, BufReader, BufWriter, Read, Write}, net::TcpStream};
 
 use crate::request_error::RequestError;
 
-pub fn web_get<T>(ip: &str, url: String, mapper: fn(&Vec<u8>)->T) -> Result<T, RequestError> {
+pub fn web_get(ip: &str, url: String) -> Result<Vec<u8>, RequestError> {
     let stream = TcpStream::connect(format!("{}:8080", ip))?; 
     let mut buf_writer = BufWriter::new(&stream);
     let mut buf_reader = BufReader::new(&stream);
@@ -35,7 +35,7 @@ pub fn web_get<T>(ip: &str, url: String, mapper: fn(&Vec<u8>)->T) -> Result<T, R
         let len = range_header[16..].parse::<usize>()?; 
         let mut buf: Vec<u8> = vec![0; len];
         buf_reader.read(&mut buf)?;
-        Ok(mapper(&buf))
+        Ok(buf)
     } else {
         return Err(RequestError { status: crate::request_error::ErrorType::FileNotFound })
     }
