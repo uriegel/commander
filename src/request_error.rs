@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use std::{any::TypeId, collections::HashMap, string::FromUtf8Error, sync::{MutexGuard, PoisonError, TryLockError}};
+use std::{any::TypeId, collections::HashMap, num::ParseIntError, str::Utf8Error, string::FromUtf8Error, sync::{MutexGuard, PoisonError, TryLockError}};
 
 use quick_xml::DeError;
 use serde::Serialize;
@@ -96,6 +96,13 @@ impl From<FromUtf8Error> for RequestError {
     }
 }
 
+impl From<Utf8Error> for RequestError {
+    fn from(error: Utf8Error) -> Self {
+        eprintln!("Utf8 error occured: {}", error);
+        RequestError { status: ErrorType::Unknown }
+    }
+}
+
 impl From<trash::Error> for RequestError {
     fn from(error: trash::Error) -> Self {
         let status = match &error {
@@ -117,6 +124,14 @@ impl From<TryLockError<MutexGuard<'static, bool>>> for RequestError {
     fn from(_: TryLockError<MutexGuard<'static, bool>>) -> Self {
         RequestError {
             status: ErrorType::OperationInProgress
+        }
+    }
+}
+
+impl From<ParseIntError> for RequestError {
+    fn from(_: ParseIntError) -> Self {
+        Self {
+            status: ErrorType::Unknown
         }
     }
 }
