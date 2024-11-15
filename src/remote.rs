@@ -6,9 +6,8 @@ use crate::{directory::{DirectoryItem, GetFilesResult}, request_error::RequestEr
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GetRemoteFiles {
-    //pub id: String,
     pub path: String,
-    pub _show_hidden_items: bool,
+    pub show_hidden_items: bool,
 }
 
 #[derive(Debug, Deserialize)]
@@ -38,18 +37,17 @@ pub fn get_remote_files(input: GetRemoteFiles) -> Result<GetFilesResult, Request
                 icon_path: if n.is_directory { None} else { Some(n.name) }
             }
         })     
+        .filter(|n| input.show_hidden_items || !n.is_hidden)
         .collect();
 
-        // TODO is hidden filtering
-        // TODO count files dirs
         // TODO DCIM Camera => error, eprintln in Error mapper
 
-
-
+    let dir_count = items.iter().filter(|n|n.is_directory).count();
+    let file_count = items.iter().filter(|n|!n.is_directory).count();
     Ok(GetFilesResult {
         items,
         path: input.path,
-        dir_count: 0,
-        file_count: 0
+        dir_count,
+        file_count,
     })
 }
