@@ -28,7 +28,7 @@ impl ProgressControl {
         self.last_updated.replace(Local::now().timestamp_millis() - FRAME_DURATION);
         let _ = sender.send_blocking(Progresses::Files(FilesProgress {
             current_name: file.to_string(), 
-            progress: current_size as f64 / self.total_size as f64, 
+            progress: if self.total_size > 0 { current_size as f64 / self.total_size as f64 } else { 0.0 }, 
             current_files: current_count 
         }));
     }
@@ -111,11 +111,11 @@ impl Progresses {
             } 
             Progresses::File(file) => {
                 let total_progress = file.total.current as f64 / file.total.total as f64;
-                display.set_total_progress(total_progress);
+                display.set_total_progress(if total_progress > 0.0 { total_progress } else { 1.0 });
                 let progress = file.current.current as f64 / file.current.total as f64;
                 display.set_current_progress(progress);
                 display.set_duration(file.current_duration);
-                display.set_estimated_duration((file.current_duration as f64 / total_progress) as i32);
+                display.set_estimated_duration( if total_progress > 0.0 { (file.current_duration as f64 / total_progress) as i32 } else { 0 });
             } 
         }
     }

@@ -96,6 +96,8 @@ fn main() {
 }
 
 // TODO copy to/from remote
+// TODO cancel copy Linux
+// TODO if Linux ProgressControl dialog is away, react doesn't get the focus
 
 // TODO Rename as copy
 // TODO OnEnter
