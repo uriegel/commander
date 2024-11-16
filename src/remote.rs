@@ -49,3 +49,9 @@ pub fn get_remote_files(input: GetRemoteFiles) -> Result<GetFilesResult, Request
         file_count,
     })
 }
+
+// TODO: in Android Commander Engine: CopyFileToRemote: copy to remote file "copytoremote", then rename it to the correct filename
+// TODO: Rename File
+// TODO: Rename Directory
+// TODO: Copy Directories from local to remote
+// TODO: in Android Commander Engine: range for remote
