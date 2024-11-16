@@ -95,7 +95,7 @@ fn main() {
     .run();
 }
 
-// TODO connect android
+// TODO copy to/from remote
 
 // TODO Rename as copy
 // TODO OnEnter

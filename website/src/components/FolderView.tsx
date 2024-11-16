@@ -557,7 +557,6 @@ export default FolderView
 
 // TODO when copies from or to remote, send refresh event when finished
 // TODO Collect all errors in list, show ! in StatusBar, When clicked on, a dialog is shown => delete all button
-// TODO Hamburger Menu with Help overview
 
 // TODO Linux Error when closing
 // TODO Linux error handling Copy
