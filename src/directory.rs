@@ -2,6 +2,7 @@ use std::{fs::{canonicalize, create_dir, read_dir, rename, File}, path::PathBuf,
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use serde_repr::Deserialize_repr;
 use urlencoding::decode;
 use trash::delete_all;
 
@@ -64,13 +65,24 @@ pub struct GetFilesResult {
     pub file_count: usize,
 }
 
+#[derive(Debug, Deserialize_repr, PartialEq)]
+#[repr(u32)]
+pub enum JobType {
+    Copy = 0,
+    Move = 1,
+    CopyToRemote = 2,
+    MoveToRemote = 3,
+    CopyFromRemote = 4,
+    MoveFromRemote = 5,
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CopyItems {
     pub path: String,
     pub target_path: String,
     pub items: Vec<String>,
-    pub move_: bool
+    pub job_type: JobType
 }
 
 #[derive(Debug, Deserialize)]

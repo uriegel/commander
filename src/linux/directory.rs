@@ -3,7 +3,7 @@ use std::{fs::{self, metadata, Metadata}, path::PathBuf, process::Command};
 use gtk::gio::{prelude::*, Cancellable, FileCopyFlags};
 use gtk::gio::File;
 
-use crate::{directory::{try_copy_lock, CopyItems}, error::Error, extended_items::{GetExtendedItems, Version}, progresses::ProgressFiles, request_error::RequestError, str::StrExt};
+use crate::{directory::{try_copy_lock, CopyItems, JobType}, error::Error, extended_items::{GetExtendedItems, Version}, progresses::ProgressFiles, request_error::{ErrorType, RequestError}, str::StrExt};
 use crate::directory::get_extension;
 
 use super::{iconresolver::get_geticon_py, progresses::ProgressControl};
@@ -74,16 +74,19 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     let mut progress_control = ProgressControl::new(
         items.iter().fold(0u64, |curr, (_, i)|i + curr), 
         input.items.len() as u32,
-        input.move_);
+        input.job_type == JobType::Move || input.job_type == JobType::MoveFromRemote || input.job_type == JobType::MoveToRemote);
 
     items.iter().try_fold(ProgressFiles::default(), |curr, (file, file_size)| {
         let progress_files = curr.get_next(file, *file_size);
         progress_control.send_file(progress_files.file, progress_files.get_current_bytes(), progress_files.index);
 
-        let source_file = PathBuf::from(&input.path).join(&file);
-        let target_file = PathBuf::from(&input.target_path).join(&file);
-    
-        let res = copy_item(input.move_, source_file, target_file, progress_control, progress_files);
+        let res = match input.job_type {
+            JobType::Copy => copy_item(false, &input, &file, progress_control, progress_files),
+            JobType::Move => copy_item(true, &input, &file, progress_control, progress_files),
+            // TODO
+            JobType::CopyFromRemote => copy_item(false, &input, &file, progress_control, progress_files),
+            _ => return Err(RequestError { status: ErrorType::NotSupported })
+        };
         if res.is_err() {
             progress_control.send_error();
         }
@@ -97,7 +100,9 @@ pub trait StringExt {
     fn clean_path(&self) -> String;
 }
 
-pub fn copy_item(mov: bool, source_file: PathBuf, target_file: PathBuf, mut progress_control: ProgressControl, progress_files: ProgressFiles)->Result<(), RequestError> {
+pub fn copy_item(mov: bool, input: &CopyItems, file: &str, mut progress_control: ProgressControl, progress_files: ProgressFiles)->Result<(), RequestError> {
+    let source_file = PathBuf::from(&input.path).join(file);
+    let target_file = PathBuf::from(&input.target_path).join(file);
     reset_copy_cancellable();
     if !mov {
         File::for_path(source_file).copy(&File::for_path(target_file), FileCopyFlags::OVERWRITE, 
