@@ -555,6 +555,7 @@ let internalDrag = false
 
 export default FolderView
 
+// TODO remote items only for linux
 // TODO when copies from or to remote, send refresh event when finished
 // TODO Collect all errors in list, show ! in StatusBar, When clicked on, a dialog is shown => delete all button
 

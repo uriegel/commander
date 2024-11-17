@@ -3,10 +3,14 @@ use std::{fs::{self, metadata, Metadata}, path::PathBuf, process::Command};
 use gtk::gio::{prelude::*, Cancellable, FileCopyFlags};
 use gtk::gio::File;
 
-use crate::{directory::{try_copy_lock, CopyItems, JobType}, error::Error, extended_items::{GetExtendedItems, Version}, progresses::ProgressFiles, request_error::{ErrorType, RequestError}, str::StrExt};
+use crate::{
+    directory::{try_copy_lock, CopyItems, JobType}, error::Error, extended_items::{
+        GetExtendedItems, Version
+    }, progresses::ProgressFiles, request_error::{ErrorType, RequestError}, 
+    str::StrExt};
 use crate::directory::get_extension;
 
-use super::{iconresolver::get_geticon_py, progresses::ProgressControl};
+use super::{iconresolver::get_geticon_py, progresses::ProgressControl, remote::copy_from_remote};
 
 pub fn is_hidden(name: &str, _: &Metadata)->bool {
     name.as_bytes()[0] == b'.' && name.as_bytes()[1] != b'.'
@@ -83,8 +87,7 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
         let res = match input.job_type {
             JobType::Copy => copy_item(false, &input, &file, progress_control, progress_files),
             JobType::Move => copy_item(true, &input, &file, progress_control, progress_files),
-            // TODO
-            JobType::CopyFromRemote => copy_item(false, &input, &file, progress_control, progress_files),
+            JobType::CopyFromRemote => copy_from_remote(false, &input, &file, progress_control, progress_files),
             _ => return Err(RequestError { status: ErrorType::NotSupported })
         };
         if res.is_err() {

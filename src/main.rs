@@ -14,7 +14,6 @@ mod requests_http;
 mod request_error;
 mod tracks;
 mod progresses;
-mod remote;
 mod webrequest;
 use directory::try_copy_lock;
 use include_dir::include_dir;
