@@ -4,7 +4,7 @@ use chrono::DateTime;
 use serde::Deserialize;
 
 use crate::{directory::{
-    CopyItems, DirectoryItem, GetFilesResult}, linux::directory::reset_copy_cancellable, progresses::ProgressFiles, request_error::RequestError, webrequest::web_get
+    CopyItems, DirectoryItem, GetFilesResult}, progresses::ProgressFiles, request_error::RequestError, webrequest::WebRequest
 };
 
 use super::progresses::ProgressControl;
@@ -27,8 +27,9 @@ pub struct GetRemoteFilesResult {
 
 pub fn get_remote_files(input: GetRemoteFiles) -> Result<GetFilesResult, RequestError> {
     let path_and_ip = get_remote_path(&input.path);
-    let payload = web_get(path_and_ip.ip, format!("/getfiles{}", path_and_ip.path))?;
-    let items = serde_json::from_slice::<Vec<GetRemoteFilesResult>>(&payload)?;
+    let items = 
+        WebRequest::get(path_and_ip.ip, format!("/getfiles{}", path_and_ip.path))
+        ?.to::<Vec<GetRemoteFilesResult>>()?;
     let items: Vec<DirectoryItem> = items
         .into_iter()
         .map(|n|{
@@ -57,7 +58,7 @@ pub fn get_remote_files(input: GetRemoteFiles) -> Result<GetFilesResult, Request
 pub fn copy_from_remote(mov: bool, input: &CopyItems, file: &str, mut progress_control: ProgressControl, progress_files: ProgressFiles)->Result<(), RequestError> {
     let path_and_ip = get_remote_path(&input.path);
     let source_file = PathBuf::from(path_and_ip.path).join(file);
-    let payload = web_get(path_and_ip.ip, format!("/getfiles{}", path_and_ip.path))?;
+   // let payload = web_get(path_and_ip.ip, format!("/getfiles{}", path_and_ip.path))?;
     let target_file = PathBuf::from(&input.target_path).join(file);
     
     let file = File::create(target_file)?;
