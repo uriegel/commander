@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{fs::File, io::BufWriter, path::PathBuf};
 
 use chrono::DateTime;
 use serde::Deserialize;
@@ -57,11 +57,13 @@ pub fn get_remote_files(input: GetRemoteFiles) -> Result<GetFilesResult, Request
 pub fn copy_from_remote(mov: bool, input: &CopyItems, file: &str, mut progress_control: ProgressControl, progress_files: ProgressFiles)->Result<(), RequestError> {
     let path_and_ip = get_remote_path(&input.path);
     let source_file = PathBuf::from(path_and_ip.path).join(file);
+    let payload = web_get(path_and_ip.ip, format!("/getfiles{}", path_and_ip.path))?;
     let target_file = PathBuf::from(&input.target_path).join(file);
     
-    
+    let file = File::create(target_file)?;
+    let file_writer = BufWriter::new(file);
 
-    // TODO create target file
+
     // TODO download file: read content length
     // TODO copy from remote to loacl via bufreader
     // TODO adapt wrapper for bufreader: progress
