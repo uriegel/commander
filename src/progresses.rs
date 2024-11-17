@@ -1,3 +1,5 @@
+use std::io::{BufWriter, Write};
+
 #[derive(Default, Clone, Copy)]
 pub struct ProgressFiles<'a> {
     pub index: u32,
@@ -22,4 +24,32 @@ impl<'a> ProgressFiles<'a> {
     }
 }
 
+pub struct ProgressStream<W> 
+where W: Sized + Write {
+    writer : BufWriter<W>,
+    size: usize,
+    read: usize
+}
+
+impl<W> ProgressStream<W> 
+where W: Sized + Write {
+    pub fn new(writer: BufWriter<W>, size: usize) -> Self 
+    where W: Sized + Write {    
+        Self { writer, read: 0, size }
+    }
+}
+
+impl<W> Write for ProgressStream<W>
+where W: Sized + Write {
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        let read = self.writer.write(buf)?;
+        self.read = self.read + read;
+        println!("copiere: {}", self.read);
+        Ok(read)
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
+        self.writer.flush()
+    }
+}
 

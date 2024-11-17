@@ -18,7 +18,7 @@ impl  WebRequest {
         let payload = format!("GET {url} HTTP/1.1\r\n\r\n");
         buf_writer.write_all(payload.as_bytes())?;
         buf_writer.flush()?;
-    
+   
         loop {
             let mut str = String::new();
             wr.buf_reader.read_line(&mut str)?;
@@ -28,14 +28,15 @@ impl  WebRequest {
             }
             wr.headers.push(str);
         }
-    
         // TODO Read Status Code
+    
     
         if wr.headers.len() == 0  { 
             return Err(RequestError { status: crate::request_error::ErrorType::FileNotFound });
         }
-    
+
         let _request_line = &wr.headers[0];
+
         Ok(wr)
     }
 
@@ -49,6 +50,27 @@ impl  WebRequest {
             Ok(res)
         } else {
             return Err(RequestError { status: crate::request_error::ErrorType::FileNotFound })
+        }
+    }
+
+    pub fn download<W>(&mut self, writer: &mut W) -> Result<(), RequestError>
+    where W: ?Sized + Write {
+        if let Some(len_header) = self.headers.iter().find(|h|h.starts_with("Content-Length: ")) {
+            let mut len = len_header[16..].parse::<usize>()?; 
+            let mut buf = vec![0; usize::min(8192, len)];
+            loop {
+                let buf_slice = &mut buf[..usize::min(8192, len)];
+                let read = self.buf_reader.read(buf_slice)?;
+                len = len - read;
+                let buf_slice = &mut buf[..read];
+                writer.write(buf_slice)?;
+                if len <= 0 {
+                    break
+                }
+            }
+            Ok(())
+        } else {
+            Err(RequestError { status: crate::request_error::ErrorType::FileNotFound })
         }
     }
 
