@@ -81,8 +81,15 @@ pub enum JobType {
 pub struct CopyItems {
     pub path: String,
     pub target_path: String,
-    pub items: Vec<String>,
+    pub items: Vec<CopyItem>,
     pub job_type: JobType
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CopyItem {
+    pub name: String,
+    pub size: u64
 }
 
 #[derive(Debug, Deserialize)]

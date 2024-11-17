@@ -4,7 +4,7 @@ use gtk::gio::{prelude::*, Cancellable, FileCopyFlags};
 use gtk::gio::File;
 
 use crate::{
-    directory::{try_copy_lock, CopyItems, JobType}, error::Error, extended_items::{
+    directory::{try_copy_lock, CopyItem, CopyItems, JobType}, error::Error, extended_items::{
         GetExtendedItems, Version
     }, progresses::ProgressFiles, request_error::{ErrorType, RequestError}, 
     str::StrExt};
@@ -68,8 +68,8 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
 
     let _binding = try_copy_lock()?;
 
-    let items: Vec<(&String, u64)> = input.items.iter().map(|item|
-        (item, metadata(PathBuf::from(&input.path).join(&item))
+    let items: Vec<(&CopyItem, u64)> = input.items.iter().map(|item|
+        (item, metadata(PathBuf::from(&input.path).join(&item.name))
             .ok()
             .map(|m| m.len()) // TODO from remote metadata is not local
             .unwrap_or_default()))
@@ -81,13 +81,13 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
         input.job_type == JobType::Move || input.job_type == JobType::MoveFromRemote || input.job_type == JobType::MoveToRemote);
 
     items.iter().try_fold(ProgressFiles::default(), |curr, (file, file_size)| {
-        let progress_files = curr.get_next(file, *file_size);
+        let progress_files = curr.get_next(&file.name, *file_size);
         progress_control.send_file(progress_files.file, progress_files.get_current_bytes(), progress_files.index);
 
         let res = match input.job_type {
-            JobType::Copy => copy_item(false, &input, &file, progress_control, progress_files),
-            JobType::Move => copy_item(true, &input, &file, progress_control, progress_files),
-            JobType::CopyFromRemote => copy_from_remote(false, &input, &file, progress_control, progress_files),
+            JobType::Copy => copy_item(false, &input, &file.name, progress_control, progress_files),
+            JobType::Move => copy_item(true, &input, &file.name, progress_control, progress_files),
+            JobType::CopyFromRemote => copy_from_remote(false, &input, &file.name, progress_control, progress_files),
             _ => return Err(RequestError { status: ErrorType::NotSupported })
         };
         if res.is_err() {
