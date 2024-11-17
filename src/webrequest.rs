@@ -6,11 +6,11 @@ use serde::de::DeserializeOwned;
 use crate::request_error::RequestError;
 
 pub struct WebRequest {
-    pub headers: Vec<String>,
-    pub buf_reader: BufReader<TcpStream>
+    headers: Vec<String>,
+    buf_reader: BufReader<TcpStream>
 }
 
-impl  WebRequest {
+impl WebRequest {
     pub fn get(ip: &str, url: String) -> Result<WebRequest, RequestError> {
         let stream = TcpStream::connect(format!("{}:8080", ip))?; 
         let mut buf_writer = BufWriter::new(&stream);
@@ -42,8 +42,7 @@ impl  WebRequest {
 
     pub fn to<T>(&mut self) -> Result<T, RequestError> 
     where T: DeserializeOwned {
-        if let Some(len_header) = self.headers.iter().find(|h|h.starts_with("Content-Length: ")) {
-            let len = len_header[16..].parse::<usize>()?; 
+        if let Some(len) = self.get_header(CONTENT_LENGTH).map(|l|l.parse::<usize>().unwrap_or(0)) {
             let mut buf: Vec<u8> = vec![0; len];
             self.buf_reader.read_exact(&mut buf)?;
             let res = serde_json::from_slice::<T>(&buf)?;
@@ -53,18 +52,18 @@ impl  WebRequest {
         }
     }
 
-    pub fn get_content_len(&self)-> Option<usize> {
-        if let Some(len_header) = self.headers.iter().find(|h|h.starts_with("Content-Length: ")) {
-            Some(len_header[16..].parse::<usize>().unwrap_or(0))
-        } else {
-            None
-        }
+    pub fn get_header<'a>(&'a self, header: &str)-> Option<&'a str> {
+        self
+            .headers
+            .iter()
+            .find(|h|h.starts_with(header))
+            .map(|v| &v[header.len()+2..] )
+
     }
 
     pub fn download<W>(&mut self, writer: &mut W) -> Result<(), RequestError>
     where W: ?Sized + Write {
-        if let Some(len_header) = self.headers.iter().find(|h|h.starts_with("Content-Length: ")) {
-            let mut len = len_header[16..].parse::<usize>()?; 
+        if let Some(mut len) = self.get_header(CONTENT_LENGTH).map(|l|l.parse::<usize>().unwrap_or(0)) {
             let mut buf = vec![0; usize::min(8192, len)];
             loop {
                 let buf_slice = &mut buf[..usize::min(8192, len)];
@@ -91,3 +90,4 @@ impl  WebRequest {
 
 }
 
+pub static CONTENT_LENGTH: &str = "Content-Length";

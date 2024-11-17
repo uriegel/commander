@@ -4,7 +4,7 @@ use chrono::DateTime;
 use serde::Deserialize;
 
 use crate::{directory::{
-    CopyItems, DirectoryItem, GetFilesResult}, progresses::{ProgressFiles, ProgressStream}, request_error::RequestError, webrequest::WebRequest
+    CopyItems, DirectoryItem, GetFilesResult}, progresses::{ProgressFiles, ProgressStream}, request_error::RequestError, webrequest::{WebRequest, CONTENT_LENGTH}
 };
 
 use super::{directory::reset_copy_cancellable, progresses::ProgressControl};
@@ -62,7 +62,9 @@ pub fn copy_from_remote(_mov: bool, input: &CopyItems, file: &str, mut progress_
     let file = File::create(target_file)?;
     reset_copy_cancellable();
     let mut web_request = WebRequest::get(path_and_ip.ip, format!("/downloadfile{}", source_file.to_string_lossy()))?;
-    let len = web_request.get_content_len().unwrap_or(0);
+    let len = web_request.get_header(CONTENT_LENGTH).map(|l|l.parse::<usize>()).unwrap_or(Ok(0))?;
+    let date = web_request.get_header("x-file-date");
+    println!("X file date: {:?}", date);
     let mut progress_stream = ProgressStream::new(BufWriter::new(file), len, move |p, t|
         progress_control.send_progress(p as u64, t as u64, progress_files.get_current_bytes()));
     web_request.download(&mut progress_stream)?;
@@ -83,7 +85,6 @@ fn get_remote_path<'a>(path: &'a str)-> PathAndIp<'a> {
     let (ip, path) = path.split_at(sep);
     PathAndIp { ip, path }
 }
-
 
 // TODO: in Android Commander Engine: CopyFileToRemote: copy to remote file "copytoremote", then rename it to the correct filename
 // TODO: Rename File
