@@ -71,8 +71,8 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     let items: Vec<(&CopyItem, u64)> = input.items.iter().map(|item|
         (item, metadata(PathBuf::from(&input.path).join(&item.name))
             .ok()
-            .map(|m| m.len()) // TODO from remote metadata is not local
-            .unwrap_or_default()))
+            .map(|m| m.len()) 
+            .unwrap_or(item.size)))
             .collect();
     
     let mut progress_control = ProgressControl::new(
