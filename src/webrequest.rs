@@ -53,6 +53,14 @@ impl  WebRequest {
         }
     }
 
+    pub fn get_content_len(&self)-> Option<usize> {
+        if let Some(len_header) = self.headers.iter().find(|h|h.starts_with("Content-Length: ")) {
+            Some(len_header[16..].parse::<usize>().unwrap_or(0))
+        } else {
+            None
+        }
+    }
+
     pub fn download<W>(&mut self, writer: &mut W) -> Result<(), RequestError>
     where W: ?Sized + Write {
         if let Some(len_header) = self.headers.iter().find(|h|h.starts_with("Content-Length: ")) {

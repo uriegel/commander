@@ -60,14 +60,13 @@ pub fn copy_from_remote(_mov: bool, input: &CopyItems, file: &str, mut progress_
     let source_file = PathBuf::from(&path_and_ip.path).join(file);
     let target_file = PathBuf::from(&input.target_path).join(file);
     let file = File::create(target_file)?;
-    let mut progress_stream = ProgressStream::new(BufWriter::new(file));
-    
     reset_copy_cancellable();
-    WebRequest::get(path_and_ip.ip, format!("/downloadfile{}", source_file.to_string_lossy()))
-        // TODO get Length and set legnth 
-        ?.download(&mut progress_stream)?;
+    let mut web_request = WebRequest::get(path_and_ip.ip, format!("/downloadfile{}", source_file.to_string_lossy()))?;
+    let len = web_request.get_content_len().unwrap_or(0);
+    let mut progress_stream = ProgressStream::new(BufWriter::new(file), len, move |p, t|
+        progress_control.send_progress(p as u64, t as u64, progress_files.get_current_bytes()));
+    web_request.download(&mut progress_stream)?;
 
-    // TODO adapt wrapper for bufreader: progress
     // TODO copy file attributes from remote
     // TODO , use this??? or another cancel mechanism
     Ok(())

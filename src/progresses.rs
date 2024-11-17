@@ -24,27 +24,28 @@ impl<'a> ProgressFiles<'a> {
     }
 }
 
-pub struct ProgressStream<W> 
+pub struct ProgressStream<'a, W> 
 where W: Sized + Write {
     writer : BufWriter<W>,
     size: usize,
-    read: usize
+    read: usize,
+    on_progress: Box<dyn FnMut(usize, usize) + 'a>
 }
 
-impl<W> ProgressStream<W> 
+impl<'a, W> ProgressStream<'a, W> 
 where W: Sized + Write {
-    pub fn new(writer: BufWriter<W>, size: usize) -> Self 
+    pub fn new(writer: BufWriter<W>, size: usize, on_progress: impl FnMut(usize, usize) + 'a) -> Self 
     where W: Sized + Write {    
-        Self { writer, read: 0, size }
+        Self { writer, read: 0, size, on_progress: Box::new(on_progress) }
     }
 }
 
-impl<W> Write for ProgressStream<W>
+impl<'a, W> Write for ProgressStream<'a, W>
 where W: Sized + Write {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
         let read = self.writer.write(buf)?;
         self.read = self.read + read;
-        println!("copiere: {}", self.read);
+        (self.on_progress)(self.read, self.size);
         Ok(read)
     }
 

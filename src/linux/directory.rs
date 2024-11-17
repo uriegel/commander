@@ -71,7 +71,7 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     let items: Vec<(&String, u64)> = input.items.iter().map(|item|
         (item, metadata(PathBuf::from(&input.path).join(&item))
             .ok()
-            .map(|m| m.len())
+            .map(|m| m.len()) // TODO from remote metadata is not local
             .unwrap_or_default()))
             .collect();
     
