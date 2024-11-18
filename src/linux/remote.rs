@@ -1,4 +1,4 @@
-use std::{fs::File, io::BufWriter, path::PathBuf};
+use std::{fs::File, io::{BufWriter, Write}, path::PathBuf, time::SystemTime};
 
 use chrono::DateTime;
 use serde::Deserialize;
@@ -63,13 +63,18 @@ pub fn copy_from_remote(_mov: bool, input: &CopyItems, file: &str, mut progress_
     reset_copy_cancellable();
     let mut web_request = WebRequest::get(path_and_ip.ip, format!("/downloadfile{}", source_file.to_string_lossy()))?;
     let len = web_request.get_header(CONTENT_LENGTH).map(|l|l.parse::<usize>()).unwrap_or(Ok(0))?;
-    let date = web_request.get_header("x-file-date");
-    println!("X file date: {:?}", date);
-    let mut progress_stream = ProgressStream::new(BufWriter::new(file), len, move |p, t|
+        
+    let mut progress_stream = ProgressStream::new(BufWriter::new(&file), len, move |p, t|
         progress_control.send_progress(p as u64, t as u64, progress_files.get_current_bytes()));
     web_request.download(&mut progress_stream)?;
+    progress_stream.flush()?;
+    web_request
+    .get_header("x-file-date")
+    .and_then(|x|x.parse::<i64>().ok())
+    .and_then(|x|DateTime::from_timestamp_millis(x)) 
+    .map(|dt|SystemTime::from(dt))
+    .inspect(|st|{ let _ = file.set_modified(*st); });
 
-    // TODO copy file attributes from remote
     // TODO , use this??? or another cancel mechanism
     Ok(())
 }
