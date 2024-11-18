@@ -89,6 +89,7 @@ pub struct CopyItems {
 #[serde(rename_all = "camelCase")]
 pub struct CopyItem {
     pub name: String,
+    #[allow(dead_code)]
     pub size: u64
 }
 

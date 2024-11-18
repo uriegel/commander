@@ -6,7 +6,7 @@ use windows::{core::PCWSTR, Win32::Storage::FileSystem::{CopyFileExW, MoveFileWi
     MOVEFILE_COPY_ALLOWED, MOVEFILE_REPLACE_EXISTING, MOVEFILE_WRITE_THROUGH}
 };
 
-use crate::{directory::{get_extension, try_copy_lock, CopyItems}, error::Error, progresses::ProgressFiles, request_error::RequestError};
+use crate::{directory::{get_extension, try_copy_lock, CopyItems, JobType}, error::Error, progresses::ProgressFiles, request_error::RequestError};
 
 use super::{progresses::{progress_callback, reset_progress_cancel, CopyData, ProgressFile, ProgressFinished, ProgressStart}, string_to_pcwstr};
 
@@ -35,7 +35,7 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     reset_progress_cancel();
 
     let items: Vec<(&String, u64)> = input.items.iter().map(|item|
-        (item, metadata(PathBuf::from(&input.path).join(&item))
+        (&item.name, metadata(PathBuf::from(&input.path).join(&item.name))
             .ok()
             .map(|m| m.len())
             .unwrap_or_default()))
@@ -45,7 +45,7 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     let total_files = input.items.len() as u32;
     let ps = ProgressStart {
         kind: "start",
-        is_move: input.move_,
+        is_move: input.job_type == JobType::Move || input.job_type == JobType::MoveFromRemote || input.job_type == JobType::MoveToRemote,
         total_files,
         total_size
     };
@@ -74,7 +74,7 @@ fn copy(input: &CopyItems, items: Vec<(&String, u64)>, cpy: *const c_void)->Resu
             current_file: progress_files.index
         };
         WebView::execute_javascript(&format!("progresses({})", serde_json::to_string(&ps)?)); 
-        let res = copy_item(source_file, target_file, input.move_, cpy);
+        let res = copy_item(source_file, target_file, input.job_type == JobType::Move, cpy);
         res?;
         Ok::<_, RequestError>(progress_files)
     })?;
