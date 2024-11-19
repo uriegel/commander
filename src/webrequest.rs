@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use core::str;
 use std::{io::{BufRead, BufReader, BufWriter, Read, Write}, net::TcpStream};
 
