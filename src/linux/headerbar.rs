@@ -89,7 +89,7 @@ impl HeaderBar {
                 webview.grab_focus();
             }))
             .build();
-        app.set_accels_for_action("app.togglePreviewMode", &["<Ctrl>F3"]);
+        app.set_accels_for_action("app.togglePreviewMode", &["<Shift>F3"]);
         app.add_action_entries([action_toggle_preview]);
 
         let action_rename = ActionEntry::builder("rename")
@@ -107,7 +107,7 @@ impl HeaderBar {
                 webview.grab_focus();
             }))
             .build();
-        app.set_accels_for_action("app.extendedrename", &["<Ctrl>F2"]);
+        app.set_accels_for_action("app.extendedrename", &["<Shift>F2"]);
         app.add_action_entries([action_extended_rename]);
 
         let action_rename_as_copy = ActionEntry::builder("renameascopy")
@@ -116,7 +116,7 @@ impl HeaderBar {
                 webview.grab_focus();
             }))
             .build();
-        app.set_accels_for_action("app.renameascopy", &["<Shift>F2"]);
+        app.set_accels_for_action("app.renameascopy", &["<Super>F2"]);
         app.add_action_entries([action_rename_as_copy]);
 
         let action_copy = ActionEntry::builder("copy")

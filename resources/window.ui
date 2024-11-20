@@ -53,6 +53,10 @@
             <attribute name="label">Kopie _anlegen</attribute>
             <attribute name="action">app.renameascopy</attribute>
           </item>
+          <item>
+            <attribute name="label">_Erweitertes Umbenennen</attribute>
+            <attribute name="action">app.extendedrename</attribute>
+          </item>
         </section>
         <section>
           <item>
