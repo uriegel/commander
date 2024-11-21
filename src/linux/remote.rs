@@ -4,7 +4,7 @@ use chrono::DateTime;
 use serde::Deserialize;
 
 use crate::{directory::{
-    CopyItems, DirectoryItem, GetFilesResult}, progresses::{ProgressFiles, ProgressStream}, request_error::RequestError, webrequest::{WebRequest, CONTENT_LENGTH}
+    CopyItems, DirectoryItem, GetFilesResult}, progresses::ProgressStream, request_error::RequestError, webrequest::{WebRequest, CONTENT_LENGTH}
 };
 
 use super::directory::reset_copy_cancellable;
