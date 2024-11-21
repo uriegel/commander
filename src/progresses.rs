@@ -4,7 +4,7 @@ use std::{cell::RefCell, io::{BufWriter, Write}};
 use chrono::Local;
 
 #[cfg(target_os = "linux")]
-use crate::linux::progresses::{start_progress, file_progress};
+use crate::linux::progresses::{start_progress, file_progress, end_progress};
 
 pub struct TotalProgress {
     total_size: u64, 
@@ -82,7 +82,7 @@ impl<'a> CurrentProgress<'a> {
 
 impl Drop for TotalProgress {
     fn drop(&mut self) {
-        // Send finish
+        end_progress();
     }
 }
 

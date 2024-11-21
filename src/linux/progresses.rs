@@ -23,6 +23,11 @@ pub fn file_progress(current_name: String, progress: f64, current_files: u32) {
     }));
 }
 
+pub fn end_progress() {
+    let sender = get_sender().lock().unwrap();
+    let _ = sender.send_blocking(Progresses::End);
+}
+
 #[derive(Debug, Clone, Copy)]
 pub struct ProgressControl {
     total_size: u64,
@@ -60,6 +65,11 @@ impl ProgressControl {
         //}
     }
 
+    pub fn send_finish(&mut self) {
+        let sender = get_sender().lock().unwrap();
+        let _ = sender.send_blocking(Progresses::End);
+    }
+
     pub fn send_error(&mut self) {
         let sender = get_sender().lock().unwrap();
         let _ = sender.send_blocking(Progresses::File(FileProgress { 
@@ -74,6 +84,7 @@ pub enum Progresses {
     Start(FilesProgressStart),
     Files(FilesProgress),
     File(FileProgress),
+    End
 }
 
 #[derive(Default)]
@@ -135,7 +146,8 @@ impl Progresses {
                 display.set_current_progress(progress);
                 display.set_duration(file.current_duration);
                 display.set_estimated_duration( if total_progress > 0.0 { (file.current_duration as f64 / total_progress) as i32 } else { 0 });
-            } 
+            }
+            Progresses::End => display.set_total_progress(1.0)
         }
     }
 }
