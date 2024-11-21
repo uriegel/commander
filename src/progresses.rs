@@ -4,7 +4,7 @@ use std::{cell::RefCell, io::{BufWriter, Write}};
 use chrono::Local;
 
 #[cfg(target_os = "linux")]
-use crate::linux::progresses::{start_progress, file_progress, end_progress};
+use crate::linux::progresses::{start_progress, file_progress, end_progress, bytes_progress};
 
 pub struct TotalProgress {
     total_size: u64, 
@@ -73,9 +73,9 @@ impl<'a> CurrentProgress<'a> {
 
     pub fn send_bytes(&self, size: u64) {
         let now = Local::now().timestamp_millis();
-        if now > self.total.last_updated.borrow().clone() + FRAME_DURATION {
+        if size == self.size || now > self.total.last_updated.borrow().clone() + FRAME_DURATION {
             self.total.reset_updated(now);
-            println!("Kopiere: {}", size);
+            bytes_progress(size, self.size, self.total.current_size.borrow().clone() + size, self.total.total_size);
         }
     }
 }

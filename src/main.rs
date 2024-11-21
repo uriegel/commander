@@ -97,6 +97,7 @@ fn main() {
 // TODO copy to/from remote
 // TODO cancel copy Linux
 // TODO if Linux ProgressControl dialog is away, react doesn't get the focus
+// TODO Linux ProgressControl Byte scale
 
 // TODO copy for windows and linux with rust
 // TODO Linux Progress, Windows Progress progress control for both
