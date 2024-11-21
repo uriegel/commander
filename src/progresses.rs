@@ -55,3 +55,28 @@ where W: Sized + Write {
     }
 }
 
+// TODO struct for total settings
+// TODO struct for current settings
+
+/*
+Linux:
+1. Start; total size, total count, move
+   saved: timestamp
+2. FilesProgress: name, progress (current/total), current count
+3. FileProgress: current (current, total), total (current, total), current duration
+4. Error: current (0, 1), total (total, total), current duration: 0
+
+Lacking: Finished
+
+Windows:
+1. Start: total size, total count, move, Kind
+2. ProgressFile: name, progress (current), current count
+3. ProgressBytes: current_bytes, total_bytes, total_seconds
+4. ProgressFinished: total seconds
+
+Differences: total seconds (Windows) current seconds (Linux)
++ Linux: total seconds
++ Windows: current seconds
++ both: send progresses as rationals
+
+*/
