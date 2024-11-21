@@ -6,11 +6,11 @@ use gtk::gio::File;
 use crate::{
     directory::{try_copy_lock, CopyItem, CopyItems, JobType}, error::Error, extended_items::{
         GetExtendedItems, Version
-    }, progresses::ProgressFiles, request_error::{ErrorType, RequestError}, 
+    }, progresses::{CurrentProgress, TotalProgress}, request_error::{ErrorType, RequestError}, 
     str::StrExt};
 use crate::directory::get_extension;
 
-use super::{iconresolver::get_geticon_py, progresses::ProgressControl, remote::copy_from_remote};
+use super::{iconresolver::get_geticon_py, remote::copy_from_remote};
 
 pub fn is_hidden(name: &str, _: &Metadata)->bool {
     name.as_bytes()[0] == b'.' && name.as_bytes()[1] != b'.'
@@ -75,27 +75,21 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
             .unwrap_or(item.size)))
             .collect();
     
-    let mut progress_control = ProgressControl::new(
+    let total_progress = TotalProgress::new(
         items.iter().fold(0u64, |curr, (_, i)|i + curr), 
-        input.items.len() as u32,
-        input.job_type == JobType::Move || input.job_type == JobType::MoveFromRemote || input.job_type == JobType::MoveToRemote);
+        input.items.len() as u32, 
+        input.job_type == JobType::Move || input.job_type == JobType::MoveFromRemote || input.job_type == JobType::MoveToRemote
+    );
 
-    items.iter().try_fold(ProgressFiles::default(), |curr, (file, file_size)| {
-        let progress_files = curr.get_next(&file.name, *file_size);
-        progress_control.send_file(progress_files.file, progress_files.get_current_bytes(), progress_files.index);
-
-        let res = match input.job_type {
-            JobType::Copy => copy_item(false, &input, &file.name, progress_control, progress_files),
-            JobType::Move => copy_item(true, &input, &file.name, progress_control, progress_files),
-            JobType::CopyFromRemote => copy_from_remote(false, &input, &file.name, progress_control, progress_files),
+    for (file, file_size) in items {
+        let current_progress = CurrentProgress::new(&total_progress, &file.name, file_size);
+        match input.job_type {
+            JobType::Copy => copy_item(false, &input, &file.name, &current_progress),
+            JobType::Move => copy_item(true, &input, &file.name, &current_progress),
+            // JobType::CopyFromRemote => copy_from_remote(false, &input, &file.name, current_progress),
             _ => return Err(RequestError { status: ErrorType::NotSupported })
-        };
-        if res.is_err() {
-            progress_control.send_error();
-        }
-        res?;
-        Ok::<_, RequestError>(progress_files)
-    })?;
+        }?;
+    }
     Ok(())
 }
 
@@ -103,19 +97,17 @@ pub trait StringExt {
     fn clean_path(&self) -> String;
 }
 
-pub fn copy_item(mov: bool, input: &CopyItems, file: &str, mut progress_control: ProgressControl, progress_files: ProgressFiles)->Result<(), RequestError> {
+pub fn copy_item(mov: bool, input: &CopyItems, file: &str, progress: &CurrentProgress)->Result<(), RequestError> {
     let source_file = PathBuf::from(&input.path).join(file);
     let target_file = PathBuf::from(&input.target_path).join(file);
     reset_copy_cancellable();
     if !mov {
         File::for_path(source_file).copy(&File::for_path(target_file), FileCopyFlags::OVERWRITE, 
-        get_copy_cancellable().as_ref(), Some(&mut move |s, t| 
-                progress_control.send_progress(s as u64, t as u64, progress_files.get_current_bytes())
+        get_copy_cancellable().as_ref(), Some(&mut move |s, _| progress.send_bytes(s as u64)
         ))?;
     } else {
         File::for_path(source_file).move_(&File::for_path(target_file), FileCopyFlags::OVERWRITE, 
-        get_copy_cancellable().as_ref(), Some(&mut move |s, t| 
-                progress_control.send_progress(s as u64, t as u64, progress_files.get_current_bytes())
+        get_copy_cancellable().as_ref(), Some(&mut move |s, _|progress.send_bytes(s as u64)
         ))?;
     }
     Ok(())
