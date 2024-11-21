@@ -94,13 +94,14 @@ fn main() {
     .run();
 }
 
+// TODO copy remote
+// TODO Windows Progress progress control for both
 // TODO copy to/from remote
 // TODO cancel copy Linux
 // TODO if Linux ProgressControl dialog is away, react doesn't get the focus
 // TODO Linux ProgressControl Byte scale
 
 // TODO copy for windows and linux with rust
-// TODO Linux Progress, Windows Progress progress control for both
 // TODO copy for windows and linux with rust and perhaps native methods without progress
 // TODO before copy: ctrl r on both sides without extended, don't compare exif date!!!
 

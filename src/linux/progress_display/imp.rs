@@ -81,7 +81,7 @@ impl ObjectSubclass for ProgressDisplay {
 impl ProgressDisplay {
     #[template_callback]
     pub fn handle_cancel(_: &Button) {
-        // TODO Set the label to "Hello World!" after the button has been clicked on
+        // TODO Cancel copy
         println!("Känzel");
     }
 }

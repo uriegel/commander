@@ -22,15 +22,16 @@ pub fn file_progress(current_name: String, progress: f64, current_files: u32) {
     }));
 }
 
-pub fn bytes_progress(current_current: u64, current_total: u64, total_current: u64, total_total: u64) {
+pub fn bytes_progress(current_current: u64, current_total: u64, total_current: u64, total_total: u64, current_duration: i32, estimated_duration: i32) {
     let sender = get_sender().lock().unwrap();
     let current = current_current as f64 / current_total as f64;
     let total = total_current as f64 / total_total as f64;
     let total = if total > 0.0 { total } else { 1.0 };
     let _ = sender.send_blocking(Progresses::File(FileProgress {
-        current_duration: 0,
+        current_duration,
         current,
-        total
+        total,
+        estimated_duration
     }));
 }
 
@@ -38,35 +39,6 @@ pub fn end_progress() {
     let sender = get_sender().lock().unwrap();
     let _ = sender.send_blocking(Progresses::End);
 }
-
-
-//     pub fn send_progress(&mut self, _current: u64, _total: u64, _total_current: u64) {
-//         let _now = Local::now().timestamp_millis();
-//         // if current == total || now > self.last_updated.unwrap_or_default() + FRAME_DURATION {
-//         //     self.last_updated.replace(now);
-//         //     let sender = get_sender().lock().unwrap();
-//         //     let _ = sender.send_blocking(Progresses::File(FileProgress { 
-//         //         current: Progress { current, total }, 
-//         //         total: Progress { current: current + total_current , total: self.total_size },
-//         //         current_duration: ((now/1000) - self.start_time) as i32
-//         //     }));
-//         //}
-//     }
-
-//     pub fn send_finish(&mut self) {
-//         let sender = get_sender().lock().unwrap();
-//         let _ = sender.send_blocking(Progresses::End);
-//     }
-
-//     pub fn send_error(&mut self) {
-//         let sender = get_sender().lock().unwrap();
-//         let _ = sender.send_blocking(Progresses::File(FileProgress { 
-//             current: Progress { current: 0, total: 1 }, 
-//             total: Progress { current: self.total_size , total: self.total_size },
-//             current_duration: 0
-//         }));
-//     }
-// }
 
 pub enum Progresses {
     Start(FilesProgressStart),
@@ -93,7 +65,8 @@ pub struct FilesProgress {
 pub struct FileProgress {
     pub current: f64,
     pub total: f64,
-    pub current_duration: i32
+    pub current_duration: i32,
+    pub estimated_duration: i32
 }
 
 fn get_sender()->&'static Arc<Mutex<Sender<Progresses>>> {
@@ -122,11 +95,10 @@ impl Progresses {
                 display.set_total_progress(files.progress);
             } 
             Progresses::File(file) => {
-                let total_progress = file.total;
                 display.set_total_progress(file.total);
                 display.set_current_progress(file.current);
                 display.set_duration(file.current_duration);
-                //display.set_estimated_duration( if total_progress > 0.0 { (file.current_duration as f64 / total_progress) as i32 } else { 0 });
+                display.set_estimated_duration(file.estimated_duration);
             }
             Progresses::End => display.set_total_progress(1.0)
         }

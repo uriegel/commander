@@ -12,7 +12,8 @@ pub struct TotalProgress {
     mov: bool,
     current_size: RefCell<u64>,
     current_files: RefCell<u32>,
-    last_updated: RefCell<i64>
+    last_updated: RefCell<i64>,
+    start_time: i64
 }
 
 impl TotalProgress {
@@ -24,7 +25,8 @@ impl TotalProgress {
             mov, 
             current_size: RefCell::new(0), 
             last_updated: RefCell::new(0), 
-            current_files: RefCell::new(1)
+            current_files: RefCell::new(1),
+            start_time: Local::now().timestamp()
         }
     }
 
@@ -74,8 +76,13 @@ impl<'a> CurrentProgress<'a> {
     pub fn send_bytes(&self, size: u64) {
         let now = Local::now().timestamp_millis();
         if size == self.size || now > self.total.last_updated.borrow().clone() + FRAME_DURATION {
+            let current_duration = ((now/1000) - self.total.start_time) as i32;
+            let total = (self.total.current_size.borrow().clone() + size) as f64 / self.total.total_size as f64;
+            let total = if total > 0.0 { total } else { 1.0 };
+            let estimated_duration = if total > 0.0 { (current_duration as f64 / total) as i32 } else { 0 };
             self.total.reset_updated(now);
-            bytes_progress(size, self.size, self.total.current_size.borrow().clone() + size, self.total.total_size);
+            bytes_progress(size, self.size, self.total.current_size.borrow().clone() + size, 
+                self.total.total_size, current_duration, estimated_duration);
         }
     }
 }
@@ -149,22 +156,3 @@ where W: Sized + Write {
 
 const FRAME_DURATION: i64 = 40;
 
-/*
-Linux:
-2. FilesProgress: name, progress (current/total), current count
-3. FileProgress: current (current, total), total (current, total), current duration
-4. Error: current (0, 1), total (total, total), current duration: 0
-
-Lacking: Finished
-
-Windows:
-2. ProgressFile: name, progress (current), current count
-3. ProgressBytes: current_bytes, total_bytes, total_seconds
-4. ProgressFinished: total seconds
-
-Differences: total seconds (Windows) current seconds (Linux)
-+ Linux: total seconds
-+ Windows: current seconds
-+ both: send progresses as rationals
-
-*/
