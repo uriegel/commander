@@ -15,6 +15,11 @@ mod request_error;
 mod tracks;
 mod progresses;
 mod webrequest;
+#[cfg(target_os = "linux")]
+mod linux;
+#[cfg(target_os = "windows")]
+mod windows;
+
 use directory::try_copy_lock;
 use include_dir::include_dir;
 #[cfg(target_os = "linux")]
@@ -23,14 +28,8 @@ use linux::headerbar::HeaderBar;
 use gtk::prelude::StaticTypeExt;
 #[cfg(target_os = "linux")]
 use linux::progress_display::ProgressDisplay;
-
 #[cfg(target_os = "windows")]
 use std::sync::{Arc, Mutex};
-
-#[cfg(target_os = "linux")]
-mod linux;
-#[cfg(target_os = "windows")]
-mod windows;
 
 use requests::on_request;
 
