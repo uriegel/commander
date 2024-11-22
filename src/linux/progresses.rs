@@ -25,6 +25,7 @@ pub fn file_progress(current_name: String, progress: f64, current_files: u32) {
 pub fn bytes_progress(current_current: u64, current_total: u64, total_current: u64, total_total: u64, current_duration: i32, estimated_duration: i32) {
     let sender = get_sender().lock().unwrap();
     let current = current_current as f64 / current_total as f64;
+    let current = if current < 0.0 || current > 1.0 || current_total == 0 { 0.0 } else { current };
     let total = total_current as f64 / total_total as f64;
     let total = if total > 0.0 { total } else { 1.0 };
     let _ = sender.send_blocking(Progresses::File(FileProgress {
