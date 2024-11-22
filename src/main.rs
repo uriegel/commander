@@ -94,7 +94,6 @@ fn main() {
     .run();
 }
 
-// TODO copy remote
 // TODO copy for windows and linux with rust
 // TODO move for windows and linux with rust and native methods without progress
 // TODO Windows Progress progress control for both

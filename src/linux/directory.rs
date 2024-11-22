@@ -10,7 +10,7 @@ use crate::{
     str::StrExt};
 use crate::directory::get_extension;
 
-use super::iconresolver::get_geticon_py;
+use super::{iconresolver::get_geticon_py, remote::copy_from_remote};
 
 pub fn is_hidden(name: &str, _: &Metadata)->bool {
     name.as_bytes()[0] == b'.' && name.as_bytes()[1] != b'.'
@@ -86,7 +86,7 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
         match input.job_type {
             JobType::Copy => copy_item(false, &input, &file.name, &current_progress),
             JobType::Move => copy_item(true, &input, &file.name, &current_progress),
-            // JobType::CopyFromRemote => copy_from_remote(false, &input, &file.name, current_progress),
+            JobType::CopyFromRemote => copy_from_remote(false, &input, &file.name, &current_progress),
             _ => return Err(RequestError { status: ErrorType::NotSupported })
         }?;
     }

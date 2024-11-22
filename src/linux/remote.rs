@@ -4,7 +4,7 @@ use chrono::DateTime;
 use serde::Deserialize;
 
 use crate::{directory::{
-    CopyItems, DirectoryItem, GetFilesResult}, progresses::ProgressStream, request_error::RequestError, webrequest::{WebRequest, CONTENT_LENGTH}
+    CopyItems, DirectoryItem, GetFilesResult}, progresses::{CurrentProgress, ProgressStream}, request_error::RequestError, webrequest::WebRequest
 };
 
 use super::directory::reset_copy_cancellable;
@@ -55,29 +55,27 @@ pub fn get_remote_files(input: GetRemoteFiles) -> Result<GetFilesResult, Request
     })
 }
 
-// pub fn copy_from_remote(_mov: bool, input: &CopyItems, file: &str, progress_files: ProgressFiles)->Result<(), RequestError> {
-//     let path_and_ip = get_remote_path(&input.path);
-//     let source_file = PathBuf::from(&path_and_ip.path).join(file);
-//     let target_file = PathBuf::from(&input.target_path).join(file);
-//     let file = File::create(target_file)?;
-//     reset_copy_cancellable();
-//     let mut web_request = WebRequest::get(path_and_ip.ip, format!("/downloadfile{}", source_file.to_string_lossy()))?;
-//     let len = web_request.get_header(CONTENT_LENGTH).map(|l|l.parse::<usize>()).unwrap_or(Ok(0))?;
-        
-//     let mut progress_stream = ProgressStream::new(BufWriter::new(&file), len, move |p, t|
-//         progress_control.send_progress(p as u64, t as u64, progress_files.get_current_bytes()));
-//     web_request.download(&mut progress_stream)?;
-//     progress_stream.flush()?;
-//     web_request
-//     .get_header("x-file-date")
-//     .and_then(|x|x.parse::<i64>().ok())
-//     .and_then(|x|DateTime::from_timestamp_millis(x)) 
-//     .map(|dt|SystemTime::from(dt))
-//     .inspect(|st|{ let _ = file.set_modified(*st); });
+pub fn copy_from_remote(_mov: bool, input: &CopyItems, file: &str, progress: &CurrentProgress)->Result<(), RequestError> {
+    let path_and_ip = get_remote_path(&input.path);
+    let source_file = PathBuf::from(&path_and_ip.path).join(file);
+    let target_file = PathBuf::from(&input.target_path).join(file);
+    let file = File::create(target_file)?;
+    reset_copy_cancellable();
+    let mut web_request = WebRequest::get(path_and_ip.ip, format!("/downloadfile{}", source_file.to_string_lossy()))?;
+    let mut progress_stream = ProgressStream::new(BufWriter::new(&file), 
+        |p| progress.send_bytes(p as u64));
+    web_request.download(&mut progress_stream)?;
+    progress_stream.flush()?;
+    web_request
+        .get_header("x-file-date")
+        .and_then(|x|x.parse::<i64>().ok())
+        .and_then(|x|DateTime::from_timestamp_millis(x)) 
+        .map(|dt|SystemTime::from(dt))
+        .inspect(|st|{ let _ = file.set_modified(*st); });
 
-//     // TODO , use this??? or another cancel mechanism
-//     Ok(())
-// }
+    // TODO , use this??? or another cancel mechanism
+    Ok(())
+}
 
 struct PathAndIp<'a> {
     ip: &'a str,

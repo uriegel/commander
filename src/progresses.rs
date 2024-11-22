@@ -61,16 +61,16 @@ impl<'a> CurrentProgress<'a> {
     }
 
     pub fn send_file(&self) {
-        let now = Local::now().timestamp_millis();
-        if now > self.total.last_updated.borrow().clone() + FRAME_DURATION {
+//        let now = Local::now().timestamp_millis();
+//        if now > self.total.last_updated.borrow().clone() + FRAME_DURATION {
             let progress = if self.total.total_size > 0 { 
                 self.total.current_size.borrow().clone() as f64 / self.total.total_size as f64 
             } else { 
                 0.0 
             }; 
             file_progress(self.name.to_string(), progress, self.total.current_files.borrow().clone());
-            self.total.reset_updated(now);
-        }
+//            self.total.reset_updated(now);
+        //}
     }
 
     pub fn send_bytes(&self, size: u64) {
@@ -103,16 +103,15 @@ impl<'a> Drop for CurrentProgress<'a> {
 pub struct ProgressStream<'a, W> 
 where W: Sized + Write {
     writer : BufWriter<W>,
-    size: usize,
     read: usize,
-    on_progress: Box<dyn FnMut(usize, usize) + 'a>
+    on_progress: Box<dyn FnMut(usize) + 'a>
 }
 
 impl<'a, W> ProgressStream<'a, W> 
 where W: Sized + Write {
-    pub fn new(writer: BufWriter<W>, size: usize, on_progress: impl FnMut(usize, usize) + 'a) -> Self 
+    pub fn new(writer: BufWriter<W>, on_progress: impl FnMut(usize) + 'a) -> Self 
     where W: Sized + Write {    
-        Self { writer, read: 0, size, on_progress: Box::new(on_progress) }
+        Self { writer, read: 0, on_progress: Box::new(on_progress) }
     }
 }
 
@@ -121,7 +120,7 @@ where W: Sized + Write {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
         let read = self.writer.write(buf)?;
         self.read = self.read + read;
-        (self.on_progress)(self.read, self.size);
+        (self.on_progress)(self.read);
         Ok(read)
     }
 
