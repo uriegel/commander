@@ -80,30 +80,28 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 	// const getCredentialsSubscription = useRef<Subscription | null>(null)
 	// const copyErrorSubscription = useRef<Subscription | null>(null)
 		
-	const copyItemsToInactive = useCallback((inactive: FolderViewHandle | null, move: boolean, activeController: Controller,
+	const copyItemsToInactive = useCallback(async (inactive: FolderViewHandle | null, move: boolean, activeController: Controller,
 			activePath: string, itemsToCopy: FolderViewItem[], id?: string) => {
-		const controller = inactive && getCopyController(move, dialog, id == ID_LEFT, activeController, inactive.getController(),
-			activePath, inactive.getPath(), itemsToCopy, inactive.getItems())
-		if (controller) {
-			const inactivePath = inactive.getPath()
-			const activeFolder = getActiveFolder()
-			controller
-				.copy()
-				.match(
-					() => {
-						if (inactivePath == inactive.getPath())
-							inactive.refresh()
-						if (move && activePath == activeFolder?.getPath())
-							getActiveFolder()?.refresh()
-					},
-					e => {
-						showError(e, setErrorText);
-						if (inactivePath == inactive.getPath())
-							inactive.refresh()
-						if (activePath == activeFolder?.getPath())
-							getActiveFolder()?.refresh()
-					})
-		}
+
+		if (!inactive)
+			return
+
+		getCopyController(activeController, inactive.getController())
+			?.copy(move, dialog, id == ID_LEFT, activePath, inactive.getPath(), itemsToCopy, inactive.getItems())
+			?.match(
+				() => {
+					if (inactive.getPath() == inactive.getPath())
+						inactive.refresh()
+					if (move && activePath == getActiveFolder()?.getPath())
+						getActiveFolder()?.refresh()
+				},
+				e => {
+					showError(e, setErrorText);
+					if (inactive.getPath() == inactive.getPath())
+						inactive.refresh()
+					if (activePath == getActiveFolder()?.getPath())
+						getActiveFolder()?.refresh()
+				})
 	}, [dialog])
 
 	useEffect(() => {

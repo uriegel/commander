@@ -93,15 +93,16 @@ fn main() {
     .run();
 }
 
+// TODO panics with current_progress!!!
+// TODO before copy: update sizes and datetime from files, check both sides, create conflicts
 // TODO copy for windows and linux with rust
+// TODO copy attributes and executable
 // TODO move for windows and linux with rust and native methods without progress
 // TODO Windows Progress progress control for both
 // TODO cancel copy Linux
 // TODO if Linux ProgressControl dialog is away, react doesn't get the focus
 // TODO Linux ProgressControl Byte scale
 // TODO copy to/from remote
-
-// TODO before copy: ctrl r on both sides without extended, don't compare exif date!!!
 
 // TODO Rename as copy
 // TODO OnEnter
