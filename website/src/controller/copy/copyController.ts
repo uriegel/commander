@@ -4,46 +4,90 @@ import { FolderViewItem } from "../../components/FolderView"
 import { Controller, ControllerType, ItemsType, getItemsType } from "../controller"
 import { compareVersion } from "../filesystem"
 import { IOError } from "../../requests/requests"
-import { copy, CopyItem } from "./fileSystem"
-import { AsyncResult, Err, ErrorType, Nothing, Ok, mergeToDictionary, nothing } from "functional-extensions"
+import { copy, CopyItem, FileSystemCopyController } from "./fileSystem"
+import { AsyncResult, Err, ErrorType, Nothing, Ok, Result, mergeToDictionary, nothing } from "functional-extensions"
 //import { copyInfoFromRemote } from "./fromRemoteCopy"
 //import { copyInfoToRemote } from "./toRemoteCopy"
 
 
 export const getCopyController = (fromController: Controller, toController: Controller): CopyController|null =>
     fromController.type == ControllerType.FileSystem && toController.type == ControllerType.FileSystem
-    ? new CopyController(fromController, toController)
+    ? new FileSystemCopyController(fromController, toController)
     : fromController.type == ControllerType.Remote && toController.type == ControllerType.FileSystem
     ? new CopyController(fromController, toController)
     : fromController.type == ControllerType.FileSystem && toController.type == ControllerType.Remote
     ? new CopyController(fromController, toController)
     : null
 
-class CopyController {
+export class CopyController {
 
     constructor(
         private fromController: Controller,
         private toController: Controller) { }
     
-    copy(move: boolean, dialog: DialogHandle, fromLeft: boolean, sourcePath: string, targetPath: string,
-        items: FolderViewItem[], targetItems: FolderViewItem[]): AsyncResult<Nothing, ErrorType> {
+    async copy(move: boolean, dialog: DialogHandle, fromLeft: boolean, sourcePath: string, targetPath: string,
+        items: FolderViewItem[], targetFolderItems: FolderViewItem[]): Promise<Result<Nothing, ErrorType>> {
         
-        const fileItems = items
-            .filter(n => !n.isDirectory)
-        const totalSize = fileItems
+        const copyItems = await this.checkCopyItems(items, targetFolderItems, sourcePath, targetPath)
+        const totalSize = copyItems.items
             .map(n => n.size || 0)
             .reduce((a, c) => a + c, 0)
-                    
         
-        // TODO GetConflictItems: when path does start with "remote", get items from rust
-        // Get sizes from all sources
-        // get sizes form targets if available
-        // get exif from sources and targets if available (Windows)
-        const targetItemsMap = mergeToDictionary(
-            targetItems
-                .filter(n => !n.isDirectory)
-                .map(ti => ({ key: ti.name, value: ti })))
-        const conflictFileItems = fileItems.map(n => {
+        const copyText = copyItems.conflicts.length > 0
+            ? move ? "Verschieben" : "Kopieren"
+            : move ? "verschieben" : "kopieren"
+        const type = getItemsType(items)
+        const text = copyItems.conflicts.length > 0
+            ? `Einträge überschreiben beim ${copyText}?`
+            : type == ItemsType.Directory
+            ? `Möchtest Du das Verzeichnis ${copyText}?`
+            : type == ItemsType.Directories
+            ? `Möchtest Du die Verzeichnisse ${copyText}?`
+            : type == ItemsType.File
+            ? `Möchtest Du die Datei ${copyText}?`
+            : type == ItemsType.Files
+            ? `Möchtest Du die Dateien ${copyText}?`
+            : `Möchtest Du die Verzeichnisse und Dateien ${copyText}?`
+        const filterNoOverwrite = (item: ConflictItem) => (item.time ?? "") < (item.targetTime ?? "")
+            && compareVersion(item.version, item.targetVersion) < 0
+    
+        const defNo = copyItems.conflicts.length > 0 && copyItems.conflicts.filter(filterNoOverwrite).length > 0
+        
+        return dialog.showDialog({
+                text: `${text} (${totalSize?.byteCountToString()})`,   
+                slide: fromLeft ? Slide.Left : Slide.Right,
+                extension: copyItems.conflicts.length ? CopyConflicts : undefined,
+                extensionProps: copyItems.conflicts, 
+                fullscreen: copyItems.conflicts.length > 0,
+                btnYes: copyItems.conflicts.length > 0,
+                btnNo: copyItems.conflicts.length > 0,
+                btnOk: copyItems.conflicts.length == 0,
+                btnCancel: true,
+                defBtnYes: !defNo && copyItems.conflicts.length > 0,
+                defBtnNo: defNo
+            }, res => res.result != ResultType.Cancel 
+                ? makeDialogResult(res, copyItems.items, copyItems.conflicts)
+                : new Err<CopyItem[], ErrorType>({ status: IOError.Cancelled, statusText: "" }))
+            .bindAsync(copyItems =>
+                copyItems.length > 0
+                ? copy(sourcePath, targetPath, copyItems, getJobType(this.fromController.type, this.toController.type, move))
+                : AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)))
+            .toResult()
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async checkCopyItems(items: FolderViewItem[], targetItems: FolderViewItem[], _sourcePath: string, _targetPath: string) {
+        const resItems = items.filter(n => !n.isDirectory)
+        const resTargetItems = targetItems.filter(n => !n.isDirectory)
+        return {
+            items: resItems,
+            conflicts: this.makeConflictItems(resItems, resTargetItems)
+        }
+    }
+
+    makeConflictItems(items: FolderViewItem[], targetItems: FolderViewItem[]) {
+        const targetItemsMap = mergeToDictionary(targetItems.map(ti => ({ key: ti.name, value: ti })))
+        const conflictFileItems = items.map(n => {
             const check = targetItemsMap[n.name]
             return check
                 ? {
@@ -60,56 +104,7 @@ class CopyController {
                 } as ConflictItem
                 : undefined
         }).filter(n => n != undefined) as ConflictItem[]
-        const conflictItems = conflictFileItems //dirInfos ? conflictFileItems.concat(dirInfos) : conflictFileItems
-     
-        
-
-
-        const copyText = conflictItems.length > 0
-            ? move ? "Verschieben" : "Kopieren"
-            : move ? "verschieben" : "kopieren"
-        const type = getItemsType(items)
-        const text = conflictItems.length > 0
-            ? `Einträge überschreiben beim ${copyText}?`
-            : type == ItemsType.Directory
-            ? `Möchtest Du das Verzeichnis ${copyText}?`
-            : type == ItemsType.Directories
-            ? `Möchtest Du die Verzeichnisse ${copyText}?`
-            : type == ItemsType.File
-            ? `Möchtest Du die Datei ${copyText}?`
-            : type == ItemsType.Files
-            ? `Möchtest Du die Dateien ${copyText}?`
-            : `Möchtest Du die Verzeichnisse und Dateien ${copyText}?`
-        const filterNoOverwrite = (item: ConflictItem) =>
-            (item.exifDate && item.targetExifDate
-                ? item.exifDate < item.targetExifDate
-                : (item.time ?? "") < (item.targetTime ?? ""))
-            && compareVersion(item.version, item.targetVersion) < 0
-    
-        const defNo = conflictItems.length > 0
-            && conflictItems
-                .filter(filterNoOverwrite)
-            .length > 0
-        
-        return dialog.showDialog({
-                text: `${text} (${totalSize?.byteCountToString()})`,   
-                slide: fromLeft ? Slide.Left : Slide.Right,
-                extension: conflictItems.length ? CopyConflicts : undefined,
-                extensionProps: conflictItems, 
-                fullscreen: conflictItems.length > 0,
-                btnYes: conflictItems.length > 0,
-                btnNo: conflictItems.length > 0,
-                btnOk: conflictItems.length == 0,
-                btnCancel: true,
-                defBtnYes: !defNo && conflictItems.length > 0,
-                defBtnNo: defNo
-            }, res => res.result != ResultType.Cancel 
-                ? makeDialogResult(res, fileItems, conflictItems)
-                : new Err<CopyItem[], ErrorType>({ status: IOError.Cancelled, statusText: "" }))
-            .bindAsync(copyItems =>
-                copyItems.length > 0
-                ? copy(sourcePath, targetPath, copyItems, getJobType(this.fromController.type, this.toController.type, move))
-                : AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)))        
+        return conflictFileItems //dirInfos ? conflictFileItems.concat(dirInfos) : conflictFileItems
     }
 }
 
@@ -118,9 +113,7 @@ export enum JobType
     Copy,
     Move,
     CopyToRemote,
-    MoveToRemote, //?
     CopyFromRemote,
-    MoveFromRemote //?
 }
 
 export interface CopyController1 {

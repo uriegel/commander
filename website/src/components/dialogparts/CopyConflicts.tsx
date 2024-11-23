@@ -11,15 +11,12 @@ import { IconNameType } from '../../enums'
 
 export interface ConflictItem {
 	name: string
-	subPath: string
 	iconPath?: string
     size?: number
     time?: string
-    exifDate?: string
     version?: Version
     targetSize?: number
     targetTime?: string
-    targetExifDate?: string
     targetVersion?: Version
 }
 
@@ -42,21 +39,20 @@ const CopyConflicts = ({ props }: ExtensionProps) => {
 		{ name: "Größe", isRightAligned: true }
 	]
 
-	const renderRowBase = ({ name, subPath, iconPath, time, exifDate, targetExifDate, targetTime, size, targetSize }: ConflictItem) => [
+	const renderRowBase = ({ name, iconPath, time, targetTime, size, targetSize }: ConflictItem) => [
 		(<div>
 			<IconName namePart={name} type={IconNameType.File} iconPath={iconPath} />
-			<div className={subPath ? 'subPath' : 'subPath empty'}>{subPath ?? "___"}</div>
 		</div>),
 		(<div className=
 			{
-				(exifDate ?? time ?? "") > (targetExifDate ?? targetTime ?? "")
+				(time ?? "") > (targetTime ?? "")
 				? "overwrite"
-				: (exifDate ?? time ?? "") < (targetExifDate ?? targetTime ?? "")
+				: (time ?? "") < (targetTime ?? "")
 				? "notOverwrite"
 				: "equal"
 			}>
-			<div>{formatDateTime(exifDate ?? time)}</div>
-			<div>{formatDateTime(targetExifDate ?? targetTime)}</div>
+			<div>{formatDateTime(time)}</div>
+			<div>{formatDateTime(targetTime)}</div>
 		</div>),
 		(<div className={targetSize == size ? "equal" : ""}>
 			<div>{formatSize(size)}</div>

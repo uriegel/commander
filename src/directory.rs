@@ -71,9 +71,7 @@ pub enum JobType {
     Copy = 0,
     Move = 1,
     CopyToRemote = 2,
-    MoveToRemote = 3,
-    CopyFromRemote = 4,
-    MoveFromRemote = 5,
+    CopyFromRemote = 3,
 }
 
 #[derive(Debug, Deserialize)]

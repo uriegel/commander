@@ -78,7 +78,7 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     let total_progress = TotalProgress::new(
         items.iter().fold(0u64, |curr, (_, i)|i + curr), 
         input.items.len() as u32, 
-        input.job_type == JobType::Move || input.job_type == JobType::MoveFromRemote || input.job_type == JobType::MoveToRemote
+        input.job_type == JobType::Move
     );
 
     for (file, file_size) in items {

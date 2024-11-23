@@ -86,22 +86,22 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 		if (!inactive)
 			return
 
-		getCopyController(activeController, inactive.getController())
-			?.copy(move, dialog, id == ID_LEFT, activePath, inactive.getPath(), itemsToCopy, inactive.getItems())
-			?.match(
-				() => {
-					if (inactive.getPath() == inactive.getPath())
-						inactive.refresh()
-					if (move && activePath == getActiveFolder()?.getPath())
-						getActiveFolder()?.refresh()
-				},
-				e => {
-					showError(e, setErrorText);
-					if (inactive.getPath() == inactive.getPath())
-						inactive.refresh()
-					if (activePath == getActiveFolder()?.getPath())
-						getActiveFolder()?.refresh()
-				})
+	const res = await getCopyController(activeController, inactive.getController())
+				?.copy(move, dialog, id == ID_LEFT, activePath, inactive.getPath(), itemsToCopy, inactive.getItems())
+	res?.match(
+		() => {
+			if (inactive.getPath() == inactive.getPath())
+				inactive.refresh()
+			if (move && activePath == getActiveFolder()?.getPath())
+				getActiveFolder()?.refresh()
+		},
+		e => {
+			showError(e, setErrorText);
+			if (inactive.getPath() == inactive.getPath())
+				inactive.refresh()
+			if (activePath == getActiveFolder()?.getPath())
+				getActiveFolder()?.refresh()
+		})
 	}, [dialog])
 
 	useEffect(() => {
