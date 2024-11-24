@@ -23,6 +23,7 @@ import LocationViewer from './components/LocationViewer'
 import TrackViewer from './components/TrackViewer'
 import { WebViewType, WebViewEvents } from './webview.ts'
 import { getCopyController } from './controller/copy/createCopyController.ts'
+import { RequestError } from './requests/requests.ts'
 
 declare const WebView: WebViewType
 declare const webViewEvents: WebViewEvents
@@ -86,22 +87,23 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 		if (!inactive)
 			return
 
-	const res = await getCopyController(activeController, inactive.getController())
+		try {
+			await getCopyController(activeController, inactive.getController())
 				?.copy(move, dialog, id == ID_LEFT, activePath, inactive.getPath(), itemsToCopy, inactive.getItems())
-	res?.match(
-		() => {
 			if (inactive.getPath() == inactive.getPath())
 				inactive.refresh()
 			if (move && activePath == getActiveFolder()?.getPath())
 				getActiveFolder()?.refresh()
-		},
-		e => {
-			showError(e, setErrorText);
-			if (inactive.getPath() == inactive.getPath())
-				inactive.refresh()
-			if (activePath == getActiveFolder()?.getPath())
-				getActiveFolder()?.refresh()
-		})
+		} catch (err) {
+			if (err instanceof RequestError) {
+				showError(err, setErrorText);
+				if (inactive.getPath() == inactive.getPath())
+					inactive.refresh()
+				if (activePath == getActiveFolder()?.getPath())
+					getActiveFolder()?.refresh()
+            } else 
+				console.error(err)
+	}
 	}, [dialog])
 
 	useEffect(() => {

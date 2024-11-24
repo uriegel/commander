@@ -3,8 +3,8 @@ import CopyConflicts, { ConflictItem } from "../../components/dialogparts/CopyCo
 import { FolderViewItem } from "../../components/FolderView"
 import { Controller, ControllerType, ItemsType, getItemsType } from "../controller"
 import { compareVersion } from "../filesystem"
-import { IOError, webViewRequest1 } from "../../requests/requests"
-import { AsyncResult, Err, ErrorType, Nothing, Ok, Result, mergeToDictionary, nothing } from "functional-extensions"
+import { IOError, RequestError, webViewRequest } from "../../requests/requests"
+import { mergeToDictionary } from "functional-extensions"
 //import { copyInfoFromRemote } from "./fromRemoteCopy"
 //import { copyInfoToRemote } from "./toRemoteCopy"
 
@@ -19,31 +19,19 @@ export type CopyItemResult = {
 }
 
 export const copyInfo = (sourcePath: string, targetPath: string, items: string[]) =>
-    webViewRequest1<string[], ErrorType>("copyitemsinfo", {
+    webViewRequest("copyitemsinfo", {
             path: sourcePath,
             targetPath: targetPath,
             items
     })
 
 export const copy = (sourcePath: string, targetPath: string, items: CopyItem[], jobType: JobType) => 
-    webViewRequest1<Nothing, ErrorType>("copyitems", {
-            path: sourcePath,
-            targetPath: targetPath,
-            items,
-            jobType
+    webViewRequest("copyitems", {
+        path: sourcePath,
+        targetPath: targetPath,
+        items,
+        jobType
     })
-
-
-
-    
-
-
-
-
-
-
-
-
 
 export class CopyController {
 
@@ -52,7 +40,7 @@ export class CopyController {
         private toController: Controller) { }
     
     async copy(move: boolean, dialog: DialogHandle, fromLeft: boolean, sourcePath: string, targetPath: string,
-        items: FolderViewItem[], targetFolderItems: FolderViewItem[]): Promise<Result<Nothing, ErrorType>> {
+        items: FolderViewItem[], targetFolderItems: FolderViewItem[]): Promise<void> {
         
         const copyItems = await this.checkCopyItems(items, targetFolderItems, sourcePath, targetPath)
         const totalSize = copyItems.items
@@ -66,39 +54,39 @@ export class CopyController {
         const text = copyItems.conflicts.length > 0
             ? `Einträge überschreiben beim ${copyText}?`
             : type == ItemsType.Directory
-            ? `Möchtest Du das Verzeichnis ${copyText}?`
-            : type == ItemsType.Directories
-            ? `Möchtest Du die Verzeichnisse ${copyText}?`
-            : type == ItemsType.File
-            ? `Möchtest Du die Datei ${copyText}?`
-            : type == ItemsType.Files
-            ? `Möchtest Du die Dateien ${copyText}?`
-            : `Möchtest Du die Verzeichnisse und Dateien ${copyText}?`
+                ? `Möchtest Du das Verzeichnis ${copyText}?`
+                : type == ItemsType.Directories
+                    ? `Möchtest Du die Verzeichnisse ${copyText}?`
+                    : type == ItemsType.File
+                        ? `Möchtest Du die Datei ${copyText}?`
+                        : type == ItemsType.Files
+                            ? `Möchtest Du die Dateien ${copyText}?`
+                            : `Möchtest Du die Verzeichnisse und Dateien ${copyText}?`
         const filterNoOverwrite = (item: ConflictItem) => (item.time ?? "") < (item.targetTime ?? "")
             && compareVersion(item.version, item.targetVersion) < 0
     
         const defNo = copyItems.conflicts.length > 0 && copyItems.conflicts.filter(filterNoOverwrite).length > 0
         
-        return dialog.showDialog({
-                text: `${text} (${totalSize?.byteCountToString()})`,   
-                slide: fromLeft ? Slide.Left : Slide.Right,
-                extension: copyItems.conflicts.length ? CopyConflicts : undefined,
-                extensionProps: copyItems.conflicts, 
-                fullscreen: copyItems.conflicts.length > 0,
-                btnYes: copyItems.conflicts.length > 0,
-                btnNo: copyItems.conflicts.length > 0,
-                btnOk: copyItems.conflicts.length == 0,
-                btnCancel: true,
-                defBtnYes: !defNo && copyItems.conflicts.length > 0,
-                defBtnNo: defNo
-            }, res => res.result != ResultType.Cancel 
-                ? makeDialogResult(res, copyItems.items, copyItems.conflicts)
-                : new Err<CopyItem[], ErrorType>({ status: IOError.Cancelled, statusText: "" }))
-            .bindAsync(copyItems =>
-                copyItems.length > 0
-                ? copy(sourcePath, targetPath, copyItems, getJobType(this.fromController.type, this.toController.type, move))
-                : AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)))
-            .toResult()
+        const res = await dialog.show({
+            text: `${text} (${totalSize?.byteCountToString()})`,
+            slide: fromLeft ? Slide.Left : Slide.Right,
+            extension: copyItems.conflicts.length ? CopyConflicts : undefined,
+            extensionProps: copyItems.conflicts,
+            fullscreen: copyItems.conflicts.length > 0,
+            btnYes: copyItems.conflicts.length > 0,
+            btnNo: copyItems.conflicts.length > 0,
+            btnOk: copyItems.conflicts.length == 0,
+            btnCancel: true,
+            defBtnYes: !defNo && copyItems.conflicts.length > 0,
+            defBtnNo: defNo
+        })
+        if (res.result == ResultType.Cancel)
+            throw new RequestError(IOError.Cancelled, "")
+        const itemsToCopy = makeDialogResult(res, copyItems.items, copyItems.conflicts)
+
+        if (itemsToCopy.length > 0)
+            // TODO await copy!!!!
+            copy(sourcePath, targetPath, itemsToCopy, getJobType(this.fromController.type, this.toController.type, move))
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -155,8 +143,7 @@ const makeDialogResult = (res: DialogResult, fileItems: FolderViewItem[], confli
             name: n.name,
             size: n.size || 0
         }))
-    return new Ok<CopyItem[], ErrorType>(
-        res.result == ResultType.Yes
+    return res.result == ResultType.Yes
         ? itemsToCopy
         : itemsToCopy.diff(
             conflictItems.map(n => ({
@@ -164,5 +151,4 @@ const makeDialogResult = (res: DialogResult, fileItems: FolderViewItem[], confli
                 size: n.size || 0
             }))
         )
-    )
 }            

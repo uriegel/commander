@@ -1,11 +1,10 @@
-import { Controller, ControllerType, EnterData, OnEnterResult, showError } from "./controller"
+import { Controller, ControllerType, EnterData, showError } from "./controller"
 import 'functional-extensions'
 import { FolderViewItem } from "../components/FolderView"
 import { DialogHandle, ResultType } from "web-dialog-react"
 import ExtendedRename from "../components/dialogparts/ExtendedRename"
 import { createFileSystemController } from "./filesystem"
-import { Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
-import { IOError, webViewRequest1 } from "../requests/requests"
+import { IOError, RequestError, webViewRequest } from "../requests/requests"
 
 export interface ExtendedRenameProps {
     prefix: string
@@ -31,17 +30,24 @@ export const createExtendedRenameFileSystemController = (controller: Controller)
     getItems: controller.getItems,
     updateItems: controller.updateItems,
     getPath: controller.getPath,
-    onEnter: (enterData: EnterData) => 
-        enterData.items.find(n => n.newName) == undefined
-        ? controller.onEnter(enterData)
-        : enterData.dialog.showDialog<Nothing, ErrorType>({
-                text: "Umbenennungen starten?",
-                btnOk: true,
-                btnCancel: true
-            }, res => res.result == ResultType.Ok
-                ? new Ok(nothing)
-                : new Err({ status: IOError.Dropped, statusText: "" }))
-            .bind(() => rename(enterData)),
+    onEnter: async (enterData: EnterData) => {
+        if (enterData.items.find(n => n.newName) == undefined)
+            return await controller.onEnter(enterData)
+        else {
+            try {
+                const res = await enterData.dialog.show({
+                    text: "Umbenennungen starten?",
+                    btnOk: true,
+                    btnCancel: true
+                })
+                if (res.result != ResultType.Ok)
+                    throw new RequestError(IOError.Dropped, "")
+                return await rename(enterData)
+            } catch {
+                throw new RequestError(IOError.Dropped, "")
+            }
+        }
+    },
     sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => {
         const sorted = controller.sort(items, sortIndex == 0 ? 0 : sortIndex - 1, sortDescending)
         onSelectionChanged(sorted)
@@ -58,31 +64,33 @@ export const createExtendedRenameFileSystemController = (controller: Controller)
     cleanUp: () => { }
 })
 
-export const extendedRename = (controller: Controller, dialog: DialogHandle, isExtended: boolean) => 
-	dialog.showDialog({
-		text: "Erweitertes Umbenennen",
-		extension: ExtendedRename,
-		extensionProps: {
-			prefix: localStorage.getItem("extendedRenamePrefix") ?? "Bild",
-			digits: localStorage.getItem("extendedRenameDigits")?.parseInt() ?? 3,
-			startNumber: localStorage.getItem("extendedRenameStartNumber")?.parseInt() ?? 1
-		} as ExtendedRenameProps,
-		btnOk: true,
-		btnCancel: true,
-		defBtnOk: true
-    }, res => {
-        if (res.result == ResultType.Ok) {
-            localStorage.setItem("extendedRenamePrefix", res.props.prefix)
-            localStorage.setItem("extendedRenameDigits", res.props.digits.toString())
-            localStorage.setItem("extendedRenameStartNumber", res.props.startNumber.toString())
-            return !isExtended
-                ? new Ok<Controller, Nothing>(createExtendedRenameFileSystemController(controller)) 
-                : new Err<Controller, Nothing>(nothing)
-        } else
-            return isExtended
-                ? new Ok<Controller, Nothing>(createFileSystemController())
-                : new Err<Controller, Nothing>(nothing)    
+export const extendedRename = async (controller: Controller, dialog: DialogHandle, isExtended: boolean) => {
+    const res = await dialog.show({
+        text: "Erweitertes Umbenennen",
+        extension: ExtendedRename,
+        extensionProps: {
+            prefix: localStorage.getItem("extendedRenamePrefix") ?? "Bild",
+            digits: localStorage.getItem("extendedRenameDigits")?.parseInt() ?? 3,
+            startNumber: localStorage.getItem("extendedRenameStartNumber")?.parseInt() ?? 1
+        } as ExtendedRenameProps,
+        btnOk: true,
+        btnCancel: true,
+        defBtnOk: true
     })
+    if (res.result == ResultType.Ok) {
+        localStorage.setItem("extendedRenamePrefix", res.props.prefix)
+        localStorage.setItem("extendedRenameDigits", res.props.digits.toString())
+        localStorage.setItem("extendedRenameStartNumber", res.props.startNumber.toString())
+        if (!isExtended)
+            return createExtendedRenameFileSystemController(controller)
+        else 
+            throw new RequestError(IOError.NotSupported, "")
+    } else
+        if (isExtended)
+            return createFileSystemController()
+        else
+            throw new RequestError(IOError.NotSupported, "")
+}
 
 const onSelectionChanged = (items: FolderViewItem[]) => {
     const prefix = localStorage.getItem("extendedRenamePrefix") ?? "Bild"
@@ -96,24 +104,30 @@ const onSelectionChanged = (items: FolderViewItem[]) => {
     }, startNumber)
 } 
 
-const rename = (enterData: EnterData) => {
+const rename = async (enterData: EnterData) => {
     if (enterData.selectedItems.length > 0) {
         const testItems = enterData.items
             ?.filter(n => !n.isDirectory)
             .map(n => n.isSelected ? n.newName?.toLowerCase() ?? "" : n.name.toLowerCase())
             ?? []
         if (new Set(testItems).size == testItems.length) {
-            webViewRequest1<Nothing, ErrorType>("renameitems", {
+            try {
+                await webViewRequest("renameitems", {
                     path: enterData.path,
                     items: enterData.selectedItems.map(n => ({
                         name: n.name,
                         newName: n.newName!
                     }))
-            }).match(
-                enterData.refresh,
-                e => showError(e, enterData.setError))
+                })
+                enterData.refresh()
+            } catch (err) {
+                if (err instanceof RequestError) 
+                    showError(err, enterData.setError)
+                else 
+                    console.error(err)
+            }
         } else
             enterData.setError("Dateinamen nicht eindeutig")
     }
-    return new Ok<OnEnterResult, ErrorType>({ processed: true })
+    return { processed: true }
 }

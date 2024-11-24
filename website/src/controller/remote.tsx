@@ -1,12 +1,11 @@
 import { TableColumns } from "virtual-table-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
-import { Controller, ControllerResult, ControllerType, ItemsType, OnEnterResult, addParent, formatDateTime, formatSize, getItemsType, sortItems } from "./controller"
+import { Controller, ControllerResult, ControllerType, ItemsType, addParent, formatDateTime, formatSize, getItemsType, sortItems } from "./controller"
 import { getSortFunction } from "./filesystem"
 import { REMOTES } from "./remotes"
 import { IconNameType } from "../enums"
-import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
-import { GetItemsResult, IOError, RequestError, webViewRequest, webViewRequest1 } from "../requests/requests"
+import { GetItemsResult, IOError, RequestError, webViewRequest } from "../requests/requests"
 import { DialogHandle, ResultType } from "web-dialog-react"
 
 export const REMOTE = "remote"
@@ -41,7 +40,7 @@ const getColumns = () => ({
 const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
 	sortItems(items, getSortFunction(sortIndex, sortDescending), true) 
 
-const deleteItems = (path: string, items: FolderViewItem[], dialog: DialogHandle) => {
+const deleteItems = async (path: string, items: FolderViewItem[], dialog: DialogHandle) => {
 
 	const type = getItemsType(items)
 	const text = type == ItemsType.Directory
@@ -54,30 +53,35 @@ const deleteItems = (path: string, items: FolderViewItem[], dialog: DialogHandle
 		? "Möchtest Du die Dateien löschen?"		
 		: "Möchtest Du die Verzeichnisse und Dateien löschen?"	
 
-	return dialog.showDialog<Nothing, ErrorType>({
-				text,
-				btnOk: true,
-				btnCancel: true,
-				defBtnOk: true
-			}, res => res.result == ResultType.Ok
-			? new Ok(nothing)
-			: new Err({ status: IOError.Dropped, statusText: "" }))
-			.bindAsync(() => webViewRequest1<Nothing, ErrorType>("deleteitemsremote", { path, names: items.map(n => n.name) }))
+	const res = await dialog.show({
+		text,
+		btnOk: true,
+		btnCancel: true,
+		defBtnOk: true
+	})
+		
+	if (res.result != ResultType.Ok)
+		throw new RequestError(IOError.Dropped, "")
+
+	await webViewRequest("deleteitemsremote", { path, names: items.map(n => n.name) })
 }
 
-const createFolder = (path: string, item: FolderViewItem, dialog: DialogHandle) => 
-	dialog.showDialog<string, ErrorType>({
+const createFolder = async (path: string, item: FolderViewItem, dialog: DialogHandle) => {
+	const res = await dialog.show({
 		text: "Neuen Ordner anlegen",
 		inputText: !item.isParent ? item.name : "",
 		btnOk: true,
 		btnCancel: true,
 		defBtnOk: true
-	}, res => res.result == ResultType.Ok && res.input
-	? new Ok(res.input)
-	: new Err({ status: IOError.Dropped, statusText: "" }))
-		.bindAsync(name => webViewRequest1<Nothing, ErrorType>("createdirectoryremote", { path: path.appendPath(name) })
-							.map(() => name))
-	
+	})
+	if (res.result != ResultType.Ok || !res.input)
+		throw new RequestError(IOError.Dropped, "")
+			
+	const name = res.input
+	await webViewRequest("createdirectoryremote", { path: path.appendPath(name) })
+	return name
+}
+
 export const getRemoteController = (controller: Controller | null): ControllerResult => {
 	let currentPath = ""
 	return controller?.type == ControllerType.Remote
@@ -98,32 +102,31 @@ export const getRemoteController = (controller: Controller | null): ControllerRe
 				getExtendedItems: () => { throw new RequestError(IOError.Dropped, "") },
 				setExtendedItems: items => items,
 				cancelExtendedItems: async () => { },
-				onEnter: ({ path, item }) =>
-					AsyncResult.from(new Ok<OnEnterResult, ErrorType>(
-						item.isParent && path.split("/").filter(n => n.length > 0).length - 1 == 1
-							? ({
-								processed: false,
-								pathToSet: REMOTES,
-								latestPath: path
-							})
-							: item.isParent
-								? ({
-									processed: false,
-									pathToSet: path.getParentPath(),
-									latestPath: path.extractSubPath()
-								})
-								: item.isDirectory
-									? ({
-										processed: false,
-										pathToSet: path.appendPath(item.name)
-									})
-									: { processed: true })),
+				onEnter: async ({ path, item }) =>
+					item.isParent && path.split("/").filter(n => n.length > 0).length - 1 == 1
+						? ({
+							processed: false,
+							pathToSet: REMOTES,
+							latestPath: path
+						})
+						: item.isParent
+						? ({
+							processed: false,
+							pathToSet: path.getParentPath(),
+							latestPath: path.extractSubPath()
+						})
+						: item.isDirectory
+						? ({
+							processed: false,
+							pathToSet: path.appendPath(item.name)
+						})
+						: { processed: true },
 				sort,
 				itemsSelectable: true,
 				appendPath: (path: string, subPath: string) => path.appendPath(subPath),
-				rename: () => AsyncResult.from(new Ok<string, ErrorType>("")),
-				extendedRename: () => AsyncResult.from(new Err<Controller, Nothing>(nothing)),
-				renameAsCopy: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
+				rename: async () => "",
+				extendedRename: async () => { throw new RequestError(IOError.NotSupported, "") }, 
+				renameAsCopy: async () => {},
 				createFolder,
 				deleteItems,
 				onSelectionChanged: () => { },

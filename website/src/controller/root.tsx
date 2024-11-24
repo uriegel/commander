@@ -1,14 +1,13 @@
 import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
-import { Controller, ControllerResult, ControllerType, EnterData, formatSize, OnEnterResult} from "./controller"
+import { Controller, ControllerResult, ControllerType, EnterData, formatSize} from "./controller"
 import { REMOTES } from "./remotes"
-import { webViewRequest, IOError, webViewRequest1, RequestError } from "../requests/requests"
+import { webViewRequest, IOError, RequestError } from "../requests/requests"
 import "functional-extensions"
 import { SERVICES } from "./services"
 import { FAVORITES } from "./favorites"
 import { IconNameType } from "../enums"
-import { AsyncResult, Err, ErrorType, nothing, Nothing, Ok } from "functional-extensions"
 
 export const ROOT = "root"
 const platform = getPlatform()
@@ -73,21 +72,22 @@ const getLinuxColumns = () => ({
 	renderRow: renderLinuxRow
 })
 
-const onWindowsEnter = (enterData: EnterData) => 
-    enterData.keys.alt
-    ? webViewRequest1<OnEnterResult, ErrorType>("onenter", { path: enterData.item.name, keys: enterData.keys } )
-        .map(() => ({ processed: true }))
-    : AsyncResult.from(new Ok<OnEnterResult, ErrorType>({
-        processed: false, 
-        pathToSet: enterData.item.name
-    }))
+const onWindowsEnter = async (enterData: EnterData) => {
+    if (enterData.keys.alt) {
+        await webViewRequest("onenter", { path: enterData.item.name, keys: enterData.keys })
+        return { processed: true }
+    } else
+        return {
+            processed: false,
+            pathToSet: enterData.item.name
+        }
+}
 
-const onLinuxEnter = (enterData: EnterData) => 
-    AsyncResult.from(new Ok<OnEnterResult, ErrorType>({
+const onLinuxEnter = async (enterData: EnterData) => ({
         processed: false, 
         pathToSet: enterData.item.mountPoint || enterData.item.mountPoint!.length > 0 ? enterData.item.mountPoint : enterData.item.name,
         mount: !enterData.item.mountPoint
-    }))
+    })
 
 export const getRootController = (controller: Controller | null): ControllerResult => 
     controller?.type == ControllerType.Root
@@ -106,11 +106,11 @@ export const getRootController = (controller: Controller | null): ControllerResu
         sort: (items: FolderViewItem[]) => items,
         itemsSelectable: false,
         appendPath: (_: string, subPath: string) => subPath,
-        rename: () => AsyncResult.from(new Ok<string, ErrorType>("")),
-        extendedRename: () => AsyncResult.from(new Err<Controller, Nothing>(nothing)),
-        renameAsCopy: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
-        createFolder: () => AsyncResult.from(new Ok<string, ErrorType>("")),
-        deleteItems: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
+        rename: async () => "",
+        extendedRename: async () => { throw new RequestError(IOError.NotSupported, "") }, 
+        renameAsCopy: async () => {},
+        createFolder: async () => "",
+        deleteItems: async () => {},
         onSelectionChanged: () => { },
         cleanUp: () => { }
     }})

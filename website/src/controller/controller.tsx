@@ -9,7 +9,7 @@ import { getRemoteController } from "./remote"
 import { FAVORITES, getFavoritesController } from "./favorites"
 import { SERVICES, getServicesController } from "./services"
 import { Platform, getPlatform, getPort } from "../globals"
-import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
+import { ErrorType } from "functional-extensions"
 import { DirectoryChangedEvent } from "../requests/events"
 
 const dateFormat = Intl.DateTimeFormat("de-DE", {
@@ -72,15 +72,15 @@ export interface Controller {
     getExtendedItems: (id: string, path: string, items: FolderViewItem[]) => Promise<GetExtendedItemsResult>
     setExtendedItems: (items: FolderViewItem[], extended: GetExtendedItemsResult, sortIndex: number, sortDescending: boolean) => FolderViewItem[]
     cancelExtendedItems: (id: string)=>Promise<void>,
-    onEnter: (data: EnterData) => AsyncResult<OnEnterResult, ErrorType> 
+    onEnter: (data: EnterData) => Promise<OnEnterResult> 
     sort: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => FolderViewItem[]
     itemsSelectable: boolean
     appendPath: (path: string, subPath: string) => string,
-    rename: (path: string, item: FolderViewItem, dialog: DialogHandle) => AsyncResult<string, ErrorType>
-    extendedRename: (controller: Controller, dialog: DialogHandle) => AsyncResult<Controller, Nothing>
-    renameAsCopy: (path: string, item: FolderViewItem, dialog: DialogHandle) => AsyncResult<Nothing, ErrorType>
-    createFolder: (path: string, item: FolderViewItem, dialog: DialogHandle) => AsyncResult<string, ErrorType>
-    deleteItems: (path: string, items: FolderViewItem[], dialog: DialogHandle) => AsyncResult<Nothing, ErrorType>
+    rename: (path: string, item: FolderViewItem, dialog: DialogHandle) => Promise<string>
+    extendedRename: (controller: Controller, dialog: DialogHandle) => Promise<Controller>
+    renameAsCopy: (path: string, item: FolderViewItem, dialog: DialogHandle) => Promise<void>
+    createFolder: (path: string, item: FolderViewItem, dialog: DialogHandle) => Promise<string>
+    deleteItems: (path: string, items: FolderViewItem[], dialog: DialogHandle) => Promise<void>
     onSelectionChanged: (items: FolderViewItem[]) => void 
     cleanUp: () => void
 }
@@ -122,15 +122,15 @@ export const createEmptyController = (): Controller => ({
     getExtendedItems: () => { throw new RequestError(IOError.Dropped, "") },
     setExtendedItems: items => items,
     cancelExtendedItems: async () => { },
-    onEnter: () => AsyncResult.from(new Ok<OnEnterResult, ErrorType>({ processed: true })),
+    onEnter: async () => ({ processed: true }),
     sort: (items: FolderViewItem[]) => items,
     itemsSelectable: false,
     appendPath: () => "",
-    rename: () => AsyncResult.from(new Ok<string, ErrorType>("")),
-    extendedRename: () => AsyncResult.from(new Err<Controller, Nothing>(nothing)),
-    renameAsCopy: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
-    createFolder: () => AsyncResult.from(new Ok<string, ErrorType>("")),
-    deleteItems: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
+    rename: async () => "",
+    extendedRename: async () => { throw new RequestError(IOError.NotSupported, "") }, 
+    renameAsCopy: async () => {},
+    createFolder: async () => "",
+    deleteItems: async () => {},
     onSelectionChanged: () => { },
     cleanUp: () => { }
 })

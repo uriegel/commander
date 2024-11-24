@@ -4,11 +4,10 @@ import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, ItemsType, OnEnterResult, addParent, formatDateTime, formatSize, formatVersion, getItemsType, sortItems } from "./controller"
-import { GetExtendedItemsResult, GetItemsResult, IOError, RequestError, Version, webViewRequest, webViewRequest1 } from "../requests/requests"
+import { GetExtendedItemsResult, GetItemsResult, IOError, RequestError, Version, webViewRequest } from "../requests/requests"
 import { ROOT } from "./root"
 import { extendedRename } from "./filesystemExtendedRename"
 import { IconNameType } from "../enums"
-import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
 import { DirectoryChangedEvent, DirectoryChangedType } from "../requests/events"
 
 const platform = getPlatform()
@@ -64,11 +63,11 @@ export const getFileSystemController = (controller: Controller|null): Controller
 })
 
 const onFileEnter = (path: string, keys?: SpecialKeys) => 
-	webViewRequest1<Nothing, ErrorType>("onenter", { path, keys })
+	webViewRequest("onenter", { path, keys })
 		.map(() => ({ processed: true }) as OnEnterResult)
 	
 const onShowDirectory = (path: string) => 
-	webViewRequest1<Nothing, ErrorType>("onshowdir", { path })
+	webViewRequest("onshowdir", { path })
 		.map(() => ({ processed: true }) as OnEnterResult)		
 		
 export const createFileSystemController = (): Controller => {
@@ -88,27 +87,27 @@ export const createFileSystemController = (): Controller => {
 				}),
 		updateItems,
 		getPath: () => currentPath,
-		onEnter: ({ path, item, keys }) =>
+		onEnter: async ({ path, item, keys }) =>
 			item.isParent && path.length > driveLength
-			? AsyncResult.from(new Ok<OnEnterResult, ErrorType>({
+			? ({
 				processed: false,
 				pathToSet: path + '/' + item.name,
 				latestPath: path.extractSubPath()
-			}))
+			})
 			: item.isParent && path.length == driveLength
-			? AsyncResult.from(new Ok<OnEnterResult, ErrorType>({
+			? ({
 				processed: false,
 				pathToSet: ROOT,
 				latestPath: path
-			}))
+			})
 			: item.isDirectory && keys.ctrl
-			? onShowDirectory(path.appendPath(item.name))
+			? await onShowDirectory(path.appendPath(item.name))
 			: item.isDirectory && !keys.alt
-			? AsyncResult.from(new Ok<OnEnterResult, ErrorType>({
+			? ({
 				processed: false,
 				pathToSet: path + '/' + item.name
-			}))
-			: onFileEnter(path.appendPath(item.name), keys),
+			})
+			: await onFileEnter(path.appendPath(item.name), keys),
 		sort,
 		itemsSelectable: true,
 		appendPath: platform == Platform.Windows ? appendWindowsPath : appendLinuxPath,
@@ -198,7 +197,7 @@ const setExtendedItems = (items: FolderViewItem[], extended: GetExtendedItemsRes
 		: { ...n, version: extended.extendedItems[i].version || undefined, exifData: extended.extendedItems[i].exifData || undefined }), sortColumn, sortDescending)
 
 const cancelExtendedItems = async (id: string) => {
-	await webViewRequest1<Nothing, ErrorType>("cancelextendeditems", { id })
+	await webViewRequest("cancelextendeditems", { id })
 }
 		
 export const getSortFunction = (index: number, descending: boolean) => {
@@ -224,7 +223,7 @@ export const getSortFunction = (index: number, descending: boolean) => {
 		: undefined
 }
 
-const rename = (path: string, item: FolderViewItem, dialog: DialogHandle) => {
+const rename = async (path: string, item: FolderViewItem, dialog: DialogHandle) => {
 	const getInputRange = () => {
 		const pos = item.name.lastIndexOf(".")
 		return (pos == -1)
@@ -232,21 +231,22 @@ const rename = (path: string, item: FolderViewItem, dialog: DialogHandle) => {
 			: [0, pos]
 	}
 
-	return dialog.showDialog<string, ErrorType>({
+	const res = await dialog.show({
 		text: item.isDirectory ? "Möchtest Du das Verzeichnis umbenennen?" : "Möchtest Du die Datei umbenennen?",
 		inputText: item.name,
 		inputSelectRange: getInputRange(),
 		btnOk: true,
 		btnCancel: true,
 		defBtnOk: true
-	}, res => res.result == ResultType.Ok && res.input
-		? new Ok(res.input)
-		: new Err({ status: IOError.Dropped, statusText: "" }))
-		.bindAsync(newName => webViewRequest1<Nothing, ErrorType>("renameitem", { path, name: item.name, newName })
-								.map(() => newName))
+	})
+	if (res.result != ResultType.Ok || !res.input)
+		throw new RequestError(IOError.Dropped, "")
+	const newName = res.input
+	await webViewRequest("renameitem", { path, name: item.name, newName })
+	return newName
 }
 
-const renameAsCopy = (path: string, item: FolderViewItem, dialog: DialogHandle) => {
+const renameAsCopy = async (path: string, item: FolderViewItem, dialog: DialogHandle) => {
 	const getInputRange = () => {
 		const pos = item.name.lastIndexOf(".")
 		return (pos == -1)
@@ -254,39 +254,42 @@ const renameAsCopy = (path: string, item: FolderViewItem, dialog: DialogHandle) 
 			: [0, pos]
 	}
 
-	return item.isDirectory == false
-		? dialog.showDialog({
-				text: "Möchtest Du eine Kopie der Datei erstellen?",
-				inputText: item.name,
-				inputSelectRange: getInputRange(),
-				btnOk: true,
-				btnCancel: true,
-				defBtnOk: true
-			}, res => res.result == ResultType.Ok
-				? new Ok<string, ErrorType>(res.input ?? "")
-				: new Err<string, ErrorType>({ status: IOError.Dropped, statusText: "" }))
-			.bindAsync(newName => webViewRequest1<Nothing, ErrorType>("renameascopy", {
-				path,
-				name: item.name,
-				newName
-			}))
-		: AsyncResult.from(new Ok<Nothing, ErrorType>(nothing))
+	if (item.isDirectory == false) {
+		const res = await dialog.show({
+			text: "Möchtest Du eine Kopie der Datei erstellen?",
+			inputText: item.name,
+			inputSelectRange: getInputRange(),
+			btnOk: true,
+			btnCancel: true,
+			defBtnOk: true
+		})
+		if (res.result != ResultType.Ok)
+			throw new RequestError(IOError.Dropped, "")
+		const newName = res.input
+		await webViewRequest("renameascopy", {
+			path,
+			name: item.name,
+			newName
+		})
+	}
 }
 
-const createFolder = (path: string, item: FolderViewItem, dialog: DialogHandle) => 
-	dialog.showDialog<string, ErrorType>({
+const createFolder = async (path: string, item: FolderViewItem, dialog: DialogHandle) => {
+	const res = await dialog.show({
 		text: "Neuen Ordner anlegen",
 		inputText: !item.isParent ? item.name : "",
 		btnOk: true,
 		btnCancel: true,
 		defBtnOk: true
-	}, res => res.result == ResultType.Ok && res.input
-	? new Ok(res.input)
-	: new Err({ status: IOError.Dropped, statusText: "" }))
-		.bindAsync(name => webViewRequest1<Nothing, ErrorType>("createfolder", { path, name })
-							.map(() => name))
+	})
+	if (res.result != ResultType.Ok || !res.input)
+		throw new RequestError(IOError.Dropped, "")
+	const name = res.input
+	await webViewRequest("createfolder", { path, name })
+	return name
+}
 
-const deleteItems = (path: string, items: FolderViewItem[], dialog: DialogHandle) => {
+const deleteItems = async (path: string, items: FolderViewItem[], dialog: DialogHandle) => {
 
 	const type = getItemsType(items)
 	const text = type == ItemsType.Directory
@@ -299,15 +302,15 @@ const deleteItems = (path: string, items: FolderViewItem[], dialog: DialogHandle
 		? "Möchtest Du die Dateien löschen?"		
 		: "Möchtest Du die Verzeichnisse und Dateien löschen?"	
 	
-	return dialog.showDialog<Nothing, ErrorType>({
-			text,
-			btnOk: true,
-			btnCancel: true,
-			defBtnOk: true
-		}, res => res.result == ResultType.Ok
-		? new Ok(nothing)
-		: new Err({ status: IOError.Dropped, statusText: "" }))
-			.bindAsync(() => webViewRequest1<Nothing, ErrorType>("deleteitems", { path, names: items.map(n => n.name) }))
+	const res = await dialog.show({
+		text,
+		btnOk: true,
+		btnCancel: true,
+		defBtnOk: true
+	})
+	if (res.result != ResultType.Ok)
+		throw new RequestError(IOError.Dropped, "")
+	await webViewRequest("deleteitems", { path, names: items.map(n => n.name) })
 }
 
 export const compareVersion = (versionLeft?: Version, versionRight?: Version) =>

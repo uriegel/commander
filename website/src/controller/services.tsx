@@ -3,9 +3,8 @@ import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
 import { Controller, ControllerResult, ControllerType, OnEnterResult, addParent, sortItems } from "./controller"
 import { ROOT } from "./root"
-import { GetItemsResult, IOError, RequestError, webViewRequest, webViewRequest1 } from "../requests/requests"
+import { GetItemsResult, IOError, RequestError, webViewRequest } from "../requests/requests"
 import { IconNameType, ServiceStartMode, ServiceStatus } from "../enums"
-import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
 
 export const SERVICES = "services"
 
@@ -83,28 +82,28 @@ const createController = (): ControllerResult => ({
         getExtendedItems: () => { throw new RequestError(IOError.Dropped, "") },
         setExtendedItems: items => items,
         cancelExtendedItems: async () => { },
-        onEnter: ({ path, item, selectedItems }) => 
+        onEnter: async({ path, item, selectedItems }) => 
             item.isParent
-                ? AsyncResult.from(new Ok<OnEnterResult, ErrorType>({
+                ? ({
                     processed: false,
                     pathToSet: ROOT,
                     latestPath: path
-                }))
+                })
                 : start(selectedItems || [item ])
                     .map(() =>({ processed: true } as OnEnterResult)),
         sort,
         itemsSelectable: true,
         appendPath: (path: string, subPath: string) => path.appendPath(subPath),
-        rename: () => AsyncResult.from(new Ok<string, ErrorType>("")),
-        extendedRename: () => AsyncResult.from(new Err<Controller, Nothing>(nothing)),
-        renameAsCopy: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
-        createFolder: () => AsyncResult.from(new Ok<string, ErrorType>("")),
-        deleteItems: (_: string, selectedItems: FolderViewItem[]) => 
-            selectedItems[0].isParent
-                ? AsyncResult.from(new Ok<Nothing, ErrorType>(nothing))
-                : stop(selectedItems),
+        rename: async () => "",
+        extendedRename: async () => { throw new RequestError(IOError.NotSupported, "") }, 
+        renameAsCopy: async () => {},
+        createFolder: async () => "",
+        deleteItems: async (_: string, selectedItems: FolderViewItem[]) => {
+            if (!selectedItems[0].isParent)
+                await stop(selectedItems)
+        },
         onSelectionChanged: () => { },
-        cleanUp: () => webViewRequest1<Nothing, ErrorType>("cleanupservices")
+        cleanUp: () => webViewRequest("cleanupservices")
     }
 })
 
@@ -134,15 +133,15 @@ const getRowClasses = (item: FolderViewItem) =>
     : []
 
 const start = (selectedItems: FolderViewItem[]) => 
-    webViewRequest1<Nothing, ErrorType>("startservices", {
-            items: selectedItems
-                .filter(n => n.status == ServiceStatus.Stopped)
-                .map(n => n.name)
-        })
+    webViewRequest("startservices", {
+        items: selectedItems
+            .filter(n => n.status == ServiceStatus.Stopped)
+            .map(n => n.name)
+    })
       
 const stop = (selectedItems: FolderViewItem[]) => 
-    webViewRequest1<Nothing, ErrorType>("stopservices", {
-            items: selectedItems
-                .filter(n => n.status == ServiceStatus.Running)
-                .map(n => n.name)
-        })
+    webViewRequest("stopservices", {
+        items: selectedItems
+            .filter(n => n.status == ServiceStatus.Running)
+            .map(n => n.name)
+    })

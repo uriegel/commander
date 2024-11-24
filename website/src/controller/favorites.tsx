@@ -1,10 +1,9 @@
 import { DialogHandle, ResultType } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
-import { Controller, ControllerResult, ControllerType, EnterData, OnEnterResult, addParent } from "./controller"
+import { Controller, ControllerResult, ControllerType, EnterData, addParent } from "./controller"
 import { ROOT } from "./root"
 import { IconNameType } from "../enums"
-import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
 import { IOError, RequestError } from "../requests/requests"
 
 export const FAVORITES = "fav"
@@ -65,14 +64,13 @@ const onNew = (dialog: DialogHandle, refresh?: ()=>void, otherPath?: string) => 
     } 
 }
 
-const onEnter = (enterData: EnterData) =>
-    AsyncResult.from(new Ok<OnEnterResult, ErrorType>(
-        enterData.item.isNew
-        ? onNew(enterData.dialog, enterData.refresh, enterData.otherPath)
-        : {
-            processed: false,
-            pathToSet: enterData.item.isParent ? ROOT : enterData.item.name
-        })) 
+const onEnter = async (enterData: EnterData) => 
+    enterData.item.isNew
+    ?  onNew(enterData.dialog, enterData.refresh, enterData.otherPath)
+    : ({
+        processed: false,
+        pathToSet: enterData.item.isParent ? ROOT : enterData.item.name
+    })
 
 export const getFavoritesController = (controller: Controller | null): ControllerResult => 
     controller?.type == ControllerType.Favorites
@@ -91,10 +89,10 @@ export const getFavoritesController = (controller: Controller | null): Controlle
         sort: (items: FolderViewItem[]) => items,
         itemsSelectable: false,
         appendPath: (_: string, subPath: string) => subPath,
-        rename: () => AsyncResult.from(new Ok<string, ErrorType>("")),
-        extendedRename: () => AsyncResult.from(new Err<Controller, Nothing>(nothing)),
-        renameAsCopy: () => AsyncResult.from(new Ok<Nothing, ErrorType>(nothing)),
-        createFolder: () => AsyncResult.from(new Ok<string, ErrorType>("")),
+        rename: async () => "",
+        extendedRename: async () => { throw new RequestError(IOError.NotSupported, "") }, 
+        renameAsCopy: async () => {},
+        createFolder: async () => "",
         deleteItems,
         onSelectionChanged: () => { },
         cleanUp: () => { }
@@ -114,18 +112,16 @@ const getItems = async () => {
     }
 }
 
-const deleteItems = (_: string, items: FolderViewItem[], dialog: DialogHandle) => 
-    dialog.showDialog<Nothing, ErrorType>({
-		text: `Möchtest Du ${items.length > 1 ? "die Favoriten" : "den Favoriten"} löschen?`,
-		btnOk: true,
-		btnCancel: true,
-		defBtnOk: true
-    }, res => {
-        if (res.result == ResultType.Ok) {
-            const favs = getFavoriteItems().filter(x => !items.find(n => n.name == x.name))
-            localStorage.setItem("fav", JSON.stringify(favs))
-        }
-        return new Ok<Nothing, ErrorType>(nothing)
+const deleteItems = async (_: string, items: FolderViewItem[], dialog: DialogHandle) => {
+    const res = await dialog.show({
+        text: `Möchtest Du ${items.length > 1 ? "die Favoriten" : "den Favoriten"} löschen?`,
+        btnOk: true,
+        btnCancel: true,
+        defBtnOk: true
     })
-
+    if (res.result == ResultType.Ok) {
+        const favs = getFavoriteItems().filter(x => !items.find(n => n.name == x.name))
+        localStorage.setItem("fav", JSON.stringify(favs))
+    }
+}
 

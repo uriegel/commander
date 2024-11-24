@@ -4,9 +4,8 @@ import useResizeObserver from '@react-hook/resize-observer'
 import { Map as LMap } from "leaflet"
 import { MapContainer, Marker, Polyline, TileLayer } from 'react-leaflet'
 import { useEffect, useRef, useState } from 'react'
-import { ErrorType } from 'functional-extensions'
 import { LatLngExpression } from 'leaflet'
-import { webViewRequest1 } from '../requests/requests'
+import { webViewRequest } from '../requests/requests'
 
 type TrackInfo = {
     name?: string
@@ -50,28 +49,32 @@ const TrackViewer = ({ path }: TrackViewerProps) => {
 
     
     useEffect(() => {
-        webViewRequest1<TrackInfo, ErrorType>("gettrackinfo", { path })
-            .match(n => {
+        (async () => {
+            try {
+                const info = await webViewRequest<TrackInfo>("gettrackinfo", { path })
                 setPosition(0)
-                setPointCount(n.trackPoints?.length ?? 0)
-                if (n.trackPoints)
-                    setTrackPoints(n.trackPoints)
-                setAverageVelocity(n.averageSpeed)
-                setAverageHeartRate(n.averageHeartRate)
-                setDistance(n.distance)
-                setDuration(n.duration)
-                const trk = n.trackPoints?.map(n => [n.latitude!, n.longitude!])
+                setPointCount(info.trackPoints?.length ?? 0)
+                if (info.trackPoints)
+                    setTrackPoints(info.trackPoints)
+                setAverageVelocity(info.averageSpeed)
+                setAverageHeartRate(info.averageHeartRate)
+                setDistance(info.distance)
+                setDuration(info.duration)
+                const trk = info.trackPoints?.map(n => [n.latitude!, n.longitude!])
                 if (trk) {
                     setTrack(trk)
                     const maxLat = trk.reduce((prev, curr) => Math.max(prev, curr[0]), trk[0][0])
                     const minLat = trk.reduce((prev, curr) => Math.min(prev, curr[0]), trk[0][0])
                     const maxLng = trk.reduce((prev, curr) => Math.max(prev, curr[1]), trk[0][1])
                     const minLng = trk.reduce((prev, curr) => Math.min(prev, curr[1]), trk[0][1])
-                    setMaxVelocity(n.trackPoints?.max(t => t.velocity ?? 0) ?? 0)
-                    setMaxHeartRate(n.trackPoints?.max(t => t.heartrate ?? 0)?? 0)
+                    setMaxVelocity(info.trackPoints?.max(t => t.velocity ?? 0) ?? 0)
+                    setMaxHeartRate(info.trackPoints?.max(t => t.heartrate ?? 0) ?? 0)
                     myMap.current?.fitBounds([[maxLat, maxLng], [minLat, minLng]])
                 }
-            }, e => console.error(e))
+            } catch (err) {
+                console.error(err)
+            }
+        })()
     }, [path])
 
     useResizeObserver(root.current, () => {

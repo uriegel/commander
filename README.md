@@ -42,7 +42,7 @@ Gtk4 Inspector
 
 Then open it
 
-```org/gtk/settings/debug/enavle-inspector-keybinding```
+```org/gtk/settings/debug/enable-inspector-keybinding```
 
 Then in Commander:
 

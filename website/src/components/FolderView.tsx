@@ -10,7 +10,6 @@ import { isWindows } from '../globals'
 import { Subscription } from 'rxjs'
 import { ServiceStartMode, ServiceStatus } from '../enums'
 import { DialogContext, DialogHandle } from 'web-dialog-react'
-import { nothing } from 'functional-extensions'
 import { getDirectoryChangedEvents, DirectoryChangedType } from '../requests/events'
 
 declare const webViewDropFiles: (id: string, move: boolean, paths: FileList)=>void
@@ -103,17 +102,22 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({ id, showHidde
         },
         getPath() { return path },
         rename,
-        extendedRename(dialog: DialogHandle) {
-            controller.current.extendedRename(controller.current, dialog)
-                .match(c => {
-                    restrictionView.current?.reset()
-                    controller.current = c
-                    virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
+        async extendedRename(dialog: DialogHandle) {
+            try {
+                const newController = await controller.current.extendedRename(controller.current, dialog)
+                restrictionView.current?.reset()
+                controller.current = newController
+                virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
+                controller.current.onSelectionChanged(items)
+            } catch (err) {
+                if (err instanceof RequestError) 
                     controller.current.onSelectionChanged(items)
-                },
-                () => controller.current.onSelectionChanged(items))
-            controller.current.onSelectionChanged(items)
-            setItems(items.map(n => n))
+                else 
+				    console.error(err)
+            }
+            // TODO
+            // controller.current.onSelectionChanged(items)
+            // setItems(items.map(n => n))
         },
         renameAsCopy,
         createFolder,
@@ -319,19 +323,23 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({ id, showHidde
                 console.log("err", err, controller.current.getPath())
                 setPath(controller.current.getPath())
                 showError(err, setError)
-            }
+            } else 
+                console.error(err)
         }
     }
 
-    const processEnter = (item: FolderViewItem, keys: SpecialKeys, otherPath?: string) => 
-        controller.current.onEnter({ path, item, keys, dialog, setError, refresh, selectedItems: getSelectedItems(), items, otherPath })
-        .map(res => {
-            if (!res.processed && res.pathToSet) 
+    const processEnter = async (item: FolderViewItem, keys: SpecialKeys, otherPath?: string) => {
+        try {
+            const res = await controller.current.onEnter({ path, item, keys, dialog, setError, refresh, selectedItems: getSelectedItems(), items, otherPath })
+            if (!res.processed && res.pathToSet)
                 changePath(id, res.pathToSet, showHidden, res.latestPath, res.mount)
-            return nothing;
-        })
-        .match(() => {},
-            e => showError(e, setError))
+        } catch (err) {
+            if (err instanceof RequestError)
+                showError(err, setError)
+            else 
+                console.error(err)
+        }
+    }
 
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setPath(e.target.value)
 
@@ -449,44 +457,66 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({ id, showHidde
     }
 
     const rename = () => 
-        withSelectedItem(item => {
+        withSelectedItem(async item => {
             virtualTable.current?.setFocus()
-            controller.current.rename(path, item, dialog)
-                .match(
-                    newName => refresh(false, n => n.name == newName),
-                    err => showError(err, setError))
+            try {
+                const newName = await controller.current.rename(path, item, dialog)
+                refresh(false, n => n.name == newName)
+            } catch (err) {
+                if (err instanceof RequestError) 
+                    showError(err, setError);
+                else 
+                    console.error(err)
+            }
         })
     
-    const renameAsCopy = () => {
+    const renameAsCopy = async () => {
         virtualTable.current?.setFocus()
         const items = getSelectedItems()
         if (items?.length == 1) {
-            controller.current.renameAsCopy(path, items[0], dialog)
-                .match(
-                    () => refresh(),
-                    e => showError(e, setError)
-                )
+            try {
+                await controller.current.renameAsCopy(path, items[0], dialog)
+                refresh()
+            } catch (err) {
+                if (err instanceof RequestError) 
+                    showError(err, setError);
+                else 
+                    console.error(err)
+            }
         }
     }
 
-    const createFolder = () => {
+    const createFolder = async () => {
         virtualTable.current?.setFocus()
-        if (dialog)
-            controller.current
-                .createFolder(path, items[virtualTable.current?.getPosition() ?? 0], dialog)
-                .match(
-                    newName => refresh(false, n => n.name == newName),
-                    err => showError(err, setError))
+        if (dialog) {
+            try {
+                const newName = await controller.current
+                    .createFolder(path, items[virtualTable.current?.getPosition() ?? 0], dialog)
+                refresh(false, n => n.name == newName)
+            } catch (err) {
+                if (err instanceof RequestError)
+                    showError(err, setError);
+                else
+                    console.error(err)
+            }
+        }
     }
 
-    const deleteItems = () => {
+    const deleteItems = async () => {
         virtualTable.current?.setFocus()
         const items = getSelectedItems()
-        if (items.length > 0 && dialog)
-            controller.current.deleteItems(path, items, dialog)
-                .match(
-                    () => refresh(),
-                    err => showError(err, setError))
+        try {
+            if (items.length > 0 && dialog) {
+                await controller.current.deleteItems(path, items, dialog)
+                refresh()
+            }
+        } catch (err) {
+            if (err instanceof RequestError) {
+                console.log("err", err, controller.current.getPath())
+                showError(err, setError)
+            } else 
+                console.error(err)
+        }
     }
 
 	const onItemClick = (item: FolderViewItem, _: number, ctrlKey: boolean) => {
