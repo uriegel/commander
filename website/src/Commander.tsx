@@ -23,7 +23,7 @@ import LocationViewer from './components/LocationViewer'
 import TrackViewer from './components/TrackViewer'
 import { WebViewType, WebViewEvents } from './webview.ts'
 import { getCopyController } from './controller/copy/createCopyController.ts'
-import { RequestError } from './requests/requests.ts'
+import { IOError, RequestError } from './requests/requests.ts'
 
 declare const WebView: WebViewType
 declare const webViewEvents: WebViewEvents
@@ -99,7 +99,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 				showError(err, setErrorText);
 				if (inactive.getPath() == inactive.getPath())
 					inactive.refresh()
-				if (activePath == getActiveFolder()?.getPath())
+				if (err.status != IOError.Cancelled && activePath == getActiveFolder()?.getPath())
 					getActiveFolder()?.refresh()
             } else 
 				console.error(err)

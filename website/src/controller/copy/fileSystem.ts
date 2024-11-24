@@ -1,18 +1,23 @@
-import { CopyController } from "./copyController"
+import { FolderViewItem } from "../../components/FolderView"
+import { webViewRequest } from "../../requests/requests"
+import { CopyController, CopyItemResult } from "./copyController"
 
 export class FileSystemCopyController extends CopyController {
     // Get sizes from all sources
     // get sizes form targets if available
     // get exif from sources and targets if available (Windows)
 
-    // async checkCopyItems(items: FolderViewItem[], _targetItems: FolderViewItem[], sourcePath: string, targetPath: string) {
+    async checkCopyItems(items: FolderViewItem[], _targetItems: FolderViewItem[], sourcePath: string, targetPath: string) {
         
-    //     return await webViewRequest1<CopyItemResult, ErrorType>("checkcopyitems", {
-    //         items: items.filter(n => !n.isDirectory),
-    //         path: sourcePath,
-    //         targetPath
-    //     }).toResult()
-    // }
+        const af =  await webViewRequest<CopyItemResult>("checkcopyitems", {
+            items: items.filter(n => !n.isDirectory),
+            path: sourcePath,
+            targetPath
+        })
+
+        console.log("Af", af)
+        return af
+    }
 }
    
 

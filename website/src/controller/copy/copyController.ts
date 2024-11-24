@@ -54,14 +54,14 @@ export class CopyController {
         const text = copyItems.conflicts.length > 0
             ? `Einträge überschreiben beim ${copyText}?`
             : type == ItemsType.Directory
-                ? `Möchtest Du das Verzeichnis ${copyText}?`
-                : type == ItemsType.Directories
-                    ? `Möchtest Du die Verzeichnisse ${copyText}?`
-                    : type == ItemsType.File
-                        ? `Möchtest Du die Datei ${copyText}?`
-                        : type == ItemsType.Files
-                            ? `Möchtest Du die Dateien ${copyText}?`
-                            : `Möchtest Du die Verzeichnisse und Dateien ${copyText}?`
+            ? `Möchtest Du das Verzeichnis ${copyText}?`
+            : type == ItemsType.Directories
+            ? `Möchtest Du die Verzeichnisse ${copyText}?`
+            : type == ItemsType.File
+            ? `Möchtest Du die Datei ${copyText}?`
+            : type == ItemsType.Files
+            ? `Möchtest Du die Dateien ${copyText}?`
+            : `Möchtest Du die Verzeichnisse und Dateien ${copyText}?`
         const filterNoOverwrite = (item: ConflictItem) => (item.time ?? "") < (item.targetTime ?? "")
             && compareVersion(item.version, item.targetVersion) < 0
     
@@ -85,8 +85,7 @@ export class CopyController {
         const itemsToCopy = makeDialogResult(res, copyItems.items, copyItems.conflicts)
 
         if (itemsToCopy.length > 0)
-            // TODO await copy!!!!
-            copy(sourcePath, targetPath, itemsToCopy, getJobType(this.fromController.type, this.toController.type, move))
+            await copy(sourcePath, targetPath, itemsToCopy, getJobType(this.fromController.type, this.toController.type, move))
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
