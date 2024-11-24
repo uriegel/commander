@@ -4,7 +4,7 @@ import VirtualTable, { OnSort, SelectableItem, SpecialKeys, TableColumns, Virtua
 import { checkController, Controller, createEmptyController, showError } from '../controller/controller'
 import { ROOT } from '../controller/root'
 import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
-import { ExifData, Version } from '../requests/requests'
+import { ExifData, RequestError, Version } from '../requests/requests'
 import { initializeHistory } from '../history'
 import { isWindows } from '../globals'
 import { Subscription } from 'rxjs'
@@ -272,53 +272,55 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({ id, showHidde
             : columns
     }
 
-    const changePath = (id: string, path: string, showHidden: boolean, latestPath?: string, mount?: boolean, fromBacklog?: boolean, checkPosition?: (checkItem: FolderViewItem)=>boolean) => {
+    const changePath = async (id: string, path: string, showHidden: boolean, latestPath?: string, mount?: boolean, fromBacklog?: boolean, checkPosition?: (checkItem: FolderViewItem) => boolean) => {
+        
         controller.current.cancelExtendedItems(id)
         restrictionView.current?.reset()
         const controllerChanged = checkController(path, controller.current)
-        controllerChanged.controller
-            .getItems(id, path, showHidden, sortIndex.current, sortDescending.current, mount || false, dialog)
-            .match(
-                res => {
-                    if (controllerChanged.changed) {
-                        controller.current = controllerChanged.controller
-                        virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
-                    }
-                    setPath(res.path)
-                    setItems(res.items, res.dirCount, res.fileCount)
-                    const pos =
-                        latestPath
-                            ? res.items.findIndex(n => n.name == latestPath)
-                            : checkPosition
-                                ? res.items.findIndex(n => checkPosition(n))
-                                : 0
-                    virtualTable.current?.setInitialPosition(pos, res.items.length)
-                    refPath.current = res.path
-                    localStorage.setItem(`${id}-lastPath`, res.path)
-                    if (!fromBacklog)
-                        history.current?.set(res.path)
-                    
-                    setStatusText("Erweiterte Infos werden abgerufen...")
-                    extendedItemsPendingRefCount.current++
-                    controller.current
-                        .getExtendedItems(id, res.path, res.items)
-                        .match(
-                            ok => {
-                                if (--extendedItemsPendingRefCount.current == 0)
-                                    setStatusText(null)
-                                if (ok.path == refPath.current)
-                                    setItems(controller.current.setExtendedItems(res.items, ok, sortIndex.current, sortDescending.current))
-                            }, () => {
-                                if (--extendedItemsPendingRefCount.current == 0)
-                                    setStatusText(null)
-                            })
-                },
-                err => {
-                    console.log("err", err, controller.current.getPath())
-                    setPath(controller.current.getPath())
-                    showError(err, setError)
+        try {
+            const res = await controllerChanged.controller.getItems(id, path, showHidden, sortIndex.current, sortDescending.current, mount || false, dialog)
+            if (controllerChanged.changed) {
+                controller.current = controllerChanged.controller
+                virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
+            }
+            setPath(res.path)
+            setItems(res.items, res.dirCount, res.fileCount)
+            const pos =
+                latestPath
+                    ? res.items.findIndex(n => n.name == latestPath)
+                    : checkPosition
+                        ? res.items.findIndex(n => checkPosition(n))
+                        : 0
+            virtualTable.current?.setInitialPosition(pos, res.items.length)
+            refPath.current = res.path
+            localStorage.setItem(`${id}-lastPath`, res.path)
+            if (!fromBacklog)
+                history.current?.set(res.path)
+                 
+            setStatusText("Erweiterte Infos werden abgerufen...")
+            extendedItemsPendingRefCount.current++
+
+            try {
+                const extended = await controller.current.getExtendedItems(id, res.path, res.items)
+                if (--extendedItemsPendingRefCount.current <= 0) {
+                    extendedItemsPendingRefCount.current = 0
+                    setStatusText(null)
                 }
-            )
+                if (extended.path == refPath.current)
+                    setItems(controller.current.setExtendedItems(res.items, extended, sortIndex.current, sortDescending.current))
+            } catch {
+                if (--extendedItemsPendingRefCount.current <= 0) {
+                    extendedItemsPendingRefCount.current = 0
+                    setStatusText(null)
+                }
+            }
+        } catch (err) {
+            if (err instanceof RequestError) {
+                console.log("err", err, controller.current.getPath())
+                setPath(controller.current.getPath())
+                showError(err, setError)
+            }
+        }
     }
 
     const processEnter = (item: FolderViewItem, keys: SpecialKeys, otherPath?: string) => 

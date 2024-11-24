@@ -1,16 +1,49 @@
-use std::{fs::{self, metadata, Metadata}, path::PathBuf, process::Command};
+use std::{fs::{self, metadata, Metadata}, path::PathBuf, process::Command, time::UNIX_EPOCH};
 
+use chrono::{DateTime, Utc};
 use gtk::gio::{prelude::*, Cancellable, FileCopyFlags};
 use gtk::gio::File;
+use serde::Serialize;
 
 use crate::{
-    directory::{try_copy_lock, CopyItem, CopyItems, JobType}, error::Error, extended_items::{
+    directory::{try_copy_lock, CopyItem, CopyItems, DirectoryItem, JobType}, error::Error, extended_items::{
         GetExtendedItems, Version
     }, progresses::{CurrentProgress, TotalProgress}, request_error::{ErrorType, RequestError}, 
     str::StrExt};
 use crate::directory::get_extension;
 
 use super::{iconresolver::get_geticon_py, remote::copy_from_remote};
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ConflictItem {
+	name: String,
+	icon_path: Option<String>,
+    size: u64,
+    time: Option<DateTime<Utc>>,
+    //version?: Version
+    target_size: u64,
+    target_time: Option<DateTime<Utc>>
+    //targetVersion?: Version
+}
+
+impl ConflictItem {
+    pub fn from(item: &DirectoryItem, metadata: &Metadata)->Self {
+        let target_size = metadata.len();
+        let target_time =  metadata.modified()
+                    .ok()
+                    .and_then(|t|t.duration_since(UNIX_EPOCH).ok())
+                    .map(|d|DateTime::from_timestamp_nanos(d.as_nanos() as i64)); 
+        Self {
+            name: item.name.clone(),
+            icon_path: item.icon_path.clone(),
+            size: item.size,
+            time: item.time,
+            target_size,
+            target_time
+        }
+    }
+}
 
 pub fn is_hidden(name: &str, _: &Metadata)->bool {
     name.as_bytes()[0] == b'.' && name.as_bytes()[1] != b'.'
@@ -62,6 +95,15 @@ pub fn mount(path: &str)->String {
         .map(|s|s.trim())
         .unwrap_or(path)
         .to_string()
+}
+
+pub fn update_directory_item(item: DirectoryItem, metadata: &Metadata)->DirectoryItem {
+    let size = metadata.len();
+    let time =  metadata.modified()
+                .ok()
+                .and_then(|t|t.duration_since(UNIX_EPOCH).ok())
+                .map(|d|DateTime::from_timestamp_nanos(d.as_nanos() as i64)); 
+    DirectoryItem { size, time, ..item }
 }
 
 pub fn copy_items(input: CopyItems)->Result<(), RequestError> {

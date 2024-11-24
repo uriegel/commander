@@ -4,7 +4,7 @@ import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, ItemsType, OnEnterResult, addParent, formatDateTime, formatSize, formatVersion, getItemsType, sortItems } from "./controller"
-import { GetExtendedItemsResult, GetItemsResult, IOError, Version, webViewRequest } from "../requests/requests"
+import { GetExtendedItemsResult, GetItemsResult, IOError, RequestError, Version, webViewRequest, webViewRequest1 } from "../requests/requests"
 import { ROOT } from "./root"
 import { extendedRename } from "./filesystemExtendedRename"
 import { IconNameType } from "../enums"
@@ -64,11 +64,11 @@ export const getFileSystemController = (controller: Controller|null): Controller
 })
 
 const onFileEnter = (path: string, keys?: SpecialKeys) => 
-	webViewRequest<Nothing, ErrorType>("onenter", { path, keys })
+	webViewRequest1<Nothing, ErrorType>("onenter", { path, keys })
 		.map(() => ({ processed: true }) as OnEnterResult)
 	
 const onShowDirectory = (path: string) => 
-	webViewRequest<Nothing, ErrorType>("onshowdir", { path })
+	webViewRequest1<Nothing, ErrorType>("onshowdir", { path })
 		.map(() => ({ processed: true }) as OnEnterResult)		
 		
 export const createFileSystemController = (): Controller => {
@@ -81,7 +81,7 @@ export const createFileSystemController = (): Controller => {
 		setExtendedItems,
 		cancelExtendedItems,
 		getItems: (id, path, showHiddenItems, sortIndex, sortDescending, mount) => 
-			webViewRequest<GetItemsResult, ErrorType>("getfiles", { id, path, showHiddenItems, mount })
+			webViewRequest<GetItemsResult>("getfiles", { id, path, showHiddenItems, mount })
 				.map(ok => {
 					currentPath = ok.path
 					return { ...ok, items: addParent(sortItems(ok.items, getSortFunction(sortIndex, sortDescending), true)) }
@@ -177,14 +177,16 @@ const checkExtendedItems =
 		? checkExtendedItemsWindows
 		: checkExtendedItemsLinux	
 
-const getExtendedItems = (id: string, path: string, items: FolderViewItem[]): AsyncResult<GetExtendedItemsResult, ErrorType> => 
-	checkExtendedItems(items)
-		? webViewRequest<GetExtendedItemsResult, ErrorType>("getextendeditems", {
-			id,
-			items: (items as FolderViewItem[]).map(n => n.name),
-			path
-		}) 
-		: AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Dropped, statusText: ""}))
+const getExtendedItems = async (id: string, path: string, items: FolderViewItem[]) => {
+	if (!checkExtendedItems(items))
+		throw new RequestError(IOError.Dropped, "")
+		
+	return await webViewRequest<GetExtendedItemsResult>("getextendeditems", {
+		id,
+		items: (items as FolderViewItem[]).map(n => n.name),
+		path
+	})
+}		
 
 const setExtendedItems = (items: FolderViewItem[], extended: GetExtendedItemsResult, sortColumn: number, sortDescending: boolean): FolderViewItem[] =>
 	sort(items.map((n, i) => !extended.extendedItems[i].exifData && !extended.extendedItems[i].version
@@ -196,7 +198,7 @@ const setExtendedItems = (items: FolderViewItem[], extended: GetExtendedItemsRes
 		: { ...n, version: extended.extendedItems[i].version || undefined, exifData: extended.extendedItems[i].exifData || undefined }), sortColumn, sortDescending)
 
 const cancelExtendedItems = async (id: string) => {
-	await webViewRequest<Nothing, ErrorType>("cancelextendeditems", { id })
+	await webViewRequest1<Nothing, ErrorType>("cancelextendeditems", { id })
 }
 		
 export const getSortFunction = (index: number, descending: boolean) => {
@@ -240,7 +242,7 @@ const rename = (path: string, item: FolderViewItem, dialog: DialogHandle) => {
 	}, res => res.result == ResultType.Ok && res.input
 		? new Ok(res.input)
 		: new Err({ status: IOError.Dropped, statusText: "" }))
-		.bindAsync(newName => webViewRequest<Nothing, ErrorType>("renameitem", { path, name: item.name, newName })
+		.bindAsync(newName => webViewRequest1<Nothing, ErrorType>("renameitem", { path, name: item.name, newName })
 								.map(() => newName))
 }
 
@@ -263,7 +265,7 @@ const renameAsCopy = (path: string, item: FolderViewItem, dialog: DialogHandle) 
 			}, res => res.result == ResultType.Ok
 				? new Ok<string, ErrorType>(res.input ?? "")
 				: new Err<string, ErrorType>({ status: IOError.Dropped, statusText: "" }))
-			.bindAsync(newName => webViewRequest<Nothing, ErrorType>("renameascopy", {
+			.bindAsync(newName => webViewRequest1<Nothing, ErrorType>("renameascopy", {
 				path,
 				name: item.name,
 				newName
@@ -281,7 +283,7 @@ const createFolder = (path: string, item: FolderViewItem, dialog: DialogHandle) 
 	}, res => res.result == ResultType.Ok && res.input
 	? new Ok(res.input)
 	: new Err({ status: IOError.Dropped, statusText: "" }))
-		.bindAsync(name => webViewRequest<Nothing, ErrorType>("createfolder", { path, name })
+		.bindAsync(name => webViewRequest1<Nothing, ErrorType>("createfolder", { path, name })
 							.map(() => name))
 
 const deleteItems = (path: string, items: FolderViewItem[], dialog: DialogHandle) => {
@@ -305,7 +307,7 @@ const deleteItems = (path: string, items: FolderViewItem[], dialog: DialogHandle
 		}, res => res.result == ResultType.Ok
 		? new Ok(nothing)
 		: new Err({ status: IOError.Dropped, statusText: "" }))
-			.bindAsync(() => webViewRequest<Nothing, ErrorType>("deleteitems", { path, names: items.map(n => n.name) }))
+			.bindAsync(() => webViewRequest1<Nothing, ErrorType>("deleteitems", { path, names: items.map(n => n.name) }))
 }
 
 export const compareVersion = (versionLeft?: Version, versionRight?: Version) =>

@@ -6,7 +6,7 @@ import { MapContainer, Marker, Polyline, TileLayer } from 'react-leaflet'
 import { useEffect, useRef, useState } from 'react'
 import { ErrorType } from 'functional-extensions'
 import { LatLngExpression } from 'leaflet'
-import { webViewRequest } from '../requests/requests'
+import { webViewRequest1 } from '../requests/requests'
 
 type TrackInfo = {
     name?: string
@@ -50,7 +50,7 @@ const TrackViewer = ({ path }: TrackViewerProps) => {
 
     
     useEffect(() => {
-        webViewRequest<TrackInfo, ErrorType>("gettrackinfo", { path })
+        webViewRequest1<TrackInfo, ErrorType>("gettrackinfo", { path })
             .match(n => {
                 setPosition(0)
                 setPointCount(n.trackPoints?.length ?? 0)

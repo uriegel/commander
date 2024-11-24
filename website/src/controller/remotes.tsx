@@ -6,7 +6,7 @@ import { Controller, ControllerResult, ControllerType, EnterData, OnEnterResult,
 import { ROOT } from "./root"
 import { IconNameType } from "../enums"
 import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
-import { GetExtendedItemsResult, GetItemsResult, IOError } from "../requests/requests"
+import { IOError, RequestError } from "../requests/requests"
 
 export const REMOTES = "remotes"
 
@@ -36,20 +36,18 @@ const getColumns = () => ({
 	renderRow
 })
 
-const getItems = () => {
+const getItems = async () => {
     const items = getRemoteItems()
-    return AsyncResult
-        .from(new Ok<GetItemsResult, ErrorType>({
-            path: REMOTES,
-            dirCount: items.length,
-            fileCount: 0,
-            items: addParent(items)
-                .concat({
-                    name: "Entferntes Gerät hinzufügen...",
-                    isNew: true
-                })
-        }
-        ))
+    return {
+        path: REMOTES,
+        dirCount: items.length,
+        fileCount: 0,
+        items: addParent(items)
+            .concat({
+                name: "Entferntes Gerät hinzufügen...",
+                isNew: true
+            })
+    }
 }
 
 const showRemote = (dialog: DialogHandle, item?: FolderViewItem) => {
@@ -128,7 +126,7 @@ export const getRemotesController = (controller: Controller | null): ControllerR
         getItems,
         updateItems: ()=>null,
         getPath: () => REMOTES,
-        getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Dropped, statusText: ""})),
+        getExtendedItems: () => { throw new RequestError(IOError.Dropped, "") },
         setExtendedItems: items => items,
         cancelExtendedItems: async () => { },
         onEnter,

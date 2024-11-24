@@ -5,7 +5,7 @@ import { DialogHandle, ResultType } from "web-dialog-react"
 import ExtendedRename from "../components/dialogparts/ExtendedRename"
 import { createFileSystemController } from "./filesystem"
 import { Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
-import { IOError, webViewRequest } from "../requests/requests"
+import { IOError, webViewRequest1 } from "../requests/requests"
 
 export interface ExtendedRenameProps {
     prefix: string
@@ -103,7 +103,7 @@ const rename = (enterData: EnterData) => {
             .map(n => n.isSelected ? n.newName?.toLowerCase() ?? "" : n.name.toLowerCase())
             ?? []
         if (new Set(testItems).size == testItems.length) {
-            webViewRequest<Nothing, ErrorType>("renameitems", {
+            webViewRequest1<Nothing, ErrorType>("renameitems", {
                     path: enterData.path,
                     items: enterData.selectedItems.map(n => ({
                         name: n.name,

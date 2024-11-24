@@ -3,7 +3,7 @@ import { FolderViewItem } from "../components/FolderView"
 import IconName from "../components/IconName"
 import { Controller, ControllerResult, ControllerType, OnEnterResult, addParent, sortItems } from "./controller"
 import { ROOT } from "./root"
-import { GetExtendedItemsResult, GetItemsResult, IOError, webViewRequest } from "../requests/requests"
+import { GetItemsResult, IOError, RequestError, webViewRequest, webViewRequest1 } from "../requests/requests"
 import { IconNameType, ServiceStartMode, ServiceStatus } from "../enums"
 import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
 
@@ -55,7 +55,7 @@ const getColumns = () => ({
 } as TableColumns<FolderViewItem>)
 
 const getItems = (_: string, __: string, ___: boolean, sortIndex: number, sortDescending: boolean) => 
-    webViewRequest<ServiceItem[], ErrorType>("getservices")
+    webViewRequest<ServiceItem[]>("getservices")
         .map(items => ({
             path: SERVICES,
             dirCount: items.length,
@@ -80,7 +80,7 @@ const createController = (): ControllerResult => ({
         getItems,
         updateItems: ()=>null,
         getPath: () => SERVICES,
-        getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Dropped, statusText: ""})),
+        getExtendedItems: () => { throw new RequestError(IOError.Dropped, "") },
         setExtendedItems: items => items,
         cancelExtendedItems: async () => { },
         onEnter: ({ path, item, selectedItems }) => 
@@ -104,7 +104,7 @@ const createController = (): ControllerResult => ({
                 ? AsyncResult.from(new Ok<Nothing, ErrorType>(nothing))
                 : stop(selectedItems),
         onSelectionChanged: () => { },
-        cleanUp: () => webViewRequest<Nothing, ErrorType>("cleanupservices")
+        cleanUp: () => webViewRequest1<Nothing, ErrorType>("cleanupservices")
     }
 })
 
@@ -134,14 +134,14 @@ const getRowClasses = (item: FolderViewItem) =>
     : []
 
 const start = (selectedItems: FolderViewItem[]) => 
-    webViewRequest<Nothing, ErrorType>("startservices", {
+    webViewRequest1<Nothing, ErrorType>("startservices", {
             items: selectedItems
                 .filter(n => n.status == ServiceStatus.Stopped)
                 .map(n => n.name)
         })
       
 const stop = (selectedItems: FolderViewItem[]) => 
-    webViewRequest<Nothing, ErrorType>("stopservices", {
+    webViewRequest1<Nothing, ErrorType>("stopservices", {
             items: selectedItems
                 .filter(n => n.status == ServiceStatus.Running)
                 .map(n => n.name)

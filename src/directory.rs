@@ -1,4 +1,4 @@
-use std::{fs::{canonicalize, create_dir, read_dir, rename, File}, path::PathBuf, sync::{Mutex, MutexGuard, TryLockResult}, time::UNIX_EPOCH};
+use std::{fs::{self, canonicalize, create_dir, read_dir, rename, File}, io::ErrorKind, path::PathBuf, sync::{Mutex, MutexGuard, TryLockResult}, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -11,12 +11,11 @@ use crate::{error::Error, request_error::RequestError};
 #[cfg(target_os = "windows")]
 use crate::windows::directory::{is_hidden, StringExt, get_icon_path};
 #[cfg(target_os = "linux")]
-use crate::linux::directory::{is_hidden, StringExt, get_icon_path, mount};
+use crate::linux::directory::{is_hidden, StringExt, get_icon_path, mount, update_directory_item, ConflictItem};
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GetFiles {
-    //pub id: String,
     pub path: String,
     pub show_hidden_items: bool,
     #[cfg(target_os = "linux")]
@@ -45,7 +44,7 @@ pub struct RenameItem {
     pub new_name: String,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DirectoryItem {
     pub name: String,
@@ -54,6 +53,16 @@ pub struct DirectoryItem {
     pub icon_path: Option<String>,
     pub is_hidden: bool,
     pub time: Option<DateTime<Utc>>
+}
+
+impl DirectoryItem {
+    pub fn copy(&self)->Self {
+        Self {
+            name: self.name.clone(),
+            icon_path: self.icon_path.clone(),
+            ..*self
+        }
+    }
 }
 
 #[derive(Debug, Serialize)]
@@ -103,6 +112,15 @@ pub struct RenameItemsParam {
 pub struct RenameItemsItem {
     name: String,
     new_name: String
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CheckCoypItems {
+    path: String,
+    target_path: String,
+    items: Vec<DirectoryItem>
+
 }
 
 pub fn get_files(input: GetFiles)->Result<GetFilesResult, RequestError> {
@@ -201,6 +219,43 @@ pub fn rename_items(input: RenameItemsParam)->Result<(), RequestError> {
         rename(path, new_path)?;
     }
     Ok(())
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CopyItemResult {
+    items: Vec<DirectoryItem>,
+    conflicts: Vec<ConflictItem>
+}
+
+pub fn check_copy_items(input: CheckCoypItems)->Result<CopyItemResult, RequestError> {
+    let conflict_items = 
+        input.items
+            .into_iter()
+            .map(|di|create_copy_item(di, &input.path, &input.target_path))
+            .collect::<Result<Vec<_>, RequestError>>()?;
+    let (items, conflicts): (Vec<Option<DirectoryItem>>, Vec<Option<ConflictItem>>) = conflict_items.into_iter().unzip();
+    let items: Vec<DirectoryItem> = items.into_iter().filter_map(|f|f).collect();
+    let conflicts: Vec<ConflictItem> = conflicts.into_iter().filter_map(|f|f).collect();
+    Ok(CopyItemResult { items, conflicts })
+}
+
+fn create_copy_item(item: DirectoryItem, path: &str, target_path: &str)->Result<(Option<DirectoryItem>, Option<ConflictItem>), RequestError> { 
+
+    let updated_item = match fs::metadata(PathBuf::from(path).join(&item.name)) {
+        Ok (meta) => Ok(Some(update_directory_item(item.copy(), &meta))),
+        Err (err) if err.kind() == ErrorKind::NotFound => Ok(None),
+        Err (err) => Err(err)
+    }?;
+
+    let conflict = updated_item.as_ref().and_then(|n| {
+        match fs::metadata(PathBuf::from(target_path).join(&n.name)) {
+            Ok (meta) => Some(ConflictItem::from(&item, &meta)),
+            _ => None,
+        }
+    });
+
+    Ok((updated_item, conflict))
 }
 
 fn get_icon_path_of_file(name: &str, path: &str, is_directory: bool)->Option<String> {

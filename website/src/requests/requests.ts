@@ -68,7 +68,20 @@ type ResultType<T, E extends ErrorType> = {
     err: E
 }
 
-export const webViewRequest = <T, E extends ErrorType>(method: string, payload?: object) => {
+export class RequestError extends Error {
+    constructor(public status: IOError, public statusText: string) {
+        super(statusText)
+    }
+}
+
+export const webViewRequest = async <T>(method: string, payload?: object) => {
+    const ret = await WebView.request(method, payload || {}) as ResultType<T, RequestError>
+    if (ret.err)
+        throw new RequestError(ret.err.status, ret.err.statusText)
+    return ret.ok 
+}
+
+export const webViewRequest1 = <T, E extends ErrorType>(method: string, payload?: object) => {
     const request = async (): Promise<Result<T, E>> => {
         const ret = await WebView.request(method, payload || {}) as ResultType<T, E>
         return ret.ok

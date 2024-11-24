@@ -7,7 +7,7 @@ import "functional-extensions"
 import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { ErrorType, Nothing} from "functional-extensions"
 import { WebViewType } from '../webview.ts'
-import { webViewRequest } from "../requests/requests.ts"
+import { webViewRequest1 } from "../requests/requests.ts"
 import { byteProgress, disposedProgress, fileProgress, finishedProgress, startProgress } from "../requests/events.ts"
 import { progressBytesEvents, progressFileEvents, progressStartEvents } from "../requests/copyprogress.ts"
 
@@ -44,7 +44,7 @@ const Titlebar = ({ menu, }: TitlebarProps) => {
             })
             dialogOpen.current = false
             if (res?.result == ResultType.Ok)
-                webViewRequest<Nothing, ErrorType>("cancelCopy")
+                webViewRequest1<Nothing, ErrorType>("cancelCopy")
         }
 
         start()

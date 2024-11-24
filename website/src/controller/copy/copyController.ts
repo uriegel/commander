@@ -3,21 +3,47 @@ import CopyConflicts, { ConflictItem } from "../../components/dialogparts/CopyCo
 import { FolderViewItem } from "../../components/FolderView"
 import { Controller, ControllerType, ItemsType, getItemsType } from "../controller"
 import { compareVersion } from "../filesystem"
-import { IOError } from "../../requests/requests"
-import { copy, CopyItem, FileSystemCopyController } from "./fileSystem"
+import { IOError, webViewRequest1 } from "../../requests/requests"
 import { AsyncResult, Err, ErrorType, Nothing, Ok, Result, mergeToDictionary, nothing } from "functional-extensions"
 //import { copyInfoFromRemote } from "./fromRemoteCopy"
 //import { copyInfoToRemote } from "./toRemoteCopy"
 
+export type CopyItem = {
+    name: string,
+    size: number
+}
 
-export const getCopyController = (fromController: Controller, toController: Controller): CopyController|null =>
-    fromController.type == ControllerType.FileSystem && toController.type == ControllerType.FileSystem
-    ? new FileSystemCopyController(fromController, toController)
-    : fromController.type == ControllerType.Remote && toController.type == ControllerType.FileSystem
-    ? new CopyController(fromController, toController)
-    : fromController.type == ControllerType.FileSystem && toController.type == ControllerType.Remote
-    ? new CopyController(fromController, toController)
-    : null
+export type CopyItemResult = {
+    items: FolderViewItem[],
+    conflicts: ConflictItem[]
+}
+
+export const copyInfo = (sourcePath: string, targetPath: string, items: string[]) =>
+    webViewRequest1<string[], ErrorType>("copyitemsinfo", {
+            path: sourcePath,
+            targetPath: targetPath,
+            items
+    })
+
+export const copy = (sourcePath: string, targetPath: string, items: CopyItem[], jobType: JobType) => 
+    webViewRequest1<Nothing, ErrorType>("copyitems", {
+            path: sourcePath,
+            targetPath: targetPath,
+            items,
+            jobType
+    })
+
+
+
+    
+
+
+
+
+
+
+
+
 
 export class CopyController {
 
@@ -114,10 +140,6 @@ export enum JobType
     Move,
     CopyToRemote,
     CopyFromRemote,
-}
-
-export interface CopyController1 {
-    copy: () => AsyncResult<Nothing, ErrorType>
 }
 
 const getJobType = (from: ControllerType, to: ControllerType, move: boolean) =>

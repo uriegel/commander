@@ -13,7 +13,6 @@ import './themes/windows.css'
 import { isWindows } from './globals'
 //import { copyErrorEvents, filesDropEvents, getCredentialsEvents,  progressChangedEvents } from './requests/events'
 import { showHiddenEvents, showPreviewEvents } from './requests/events'
-import { getCopyController } from './controller/copy/copyController'
 import FileViewer from './components/FileViewer'
 import { SpecialKeys } from 'virtual-table-react'
 import Titlebar from './components/Titlebar'
@@ -23,6 +22,7 @@ import './extensions/extensions'
 import LocationViewer from './components/LocationViewer'
 import TrackViewer from './components/TrackViewer'
 import { WebViewType, WebViewEvents } from './webview.ts'
+import { getCopyController } from './controller/copy/createCopyController.ts'
 
 declare const WebView: WebViewType
 declare const webViewEvents: WebViewEvents

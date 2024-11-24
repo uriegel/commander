@@ -3,7 +3,7 @@ import IconName from "../components/IconName"
 import { getPlatform, Platform } from "../globals"
 import { Controller, ControllerResult, ControllerType, EnterData, formatSize, OnEnterResult} from "./controller"
 import { REMOTES } from "./remotes"
-import { webViewRequest, GetExtendedItemsResult, IOError } from "../requests/requests"
+import { webViewRequest, IOError, webViewRequest1, RequestError } from "../requests/requests"
 import "functional-extensions"
 import { SERVICES } from "./services"
 import { FAVORITES } from "./favorites"
@@ -75,7 +75,7 @@ const getLinuxColumns = () => ({
 
 const onWindowsEnter = (enterData: EnterData) => 
     enterData.keys.alt
-    ? webViewRequest<OnEnterResult, ErrorType>("onenter", { path: enterData.item.name, keys: enterData.keys } )
+    ? webViewRequest1<OnEnterResult, ErrorType>("onenter", { path: enterData.item.name, keys: enterData.keys } )
         .map(() => ({ processed: true }))
     : AsyncResult.from(new Ok<OnEnterResult, ErrorType>({
         processed: false, 
@@ -99,7 +99,7 @@ export const getRootController = (controller: Controller | null): ControllerResu
         getColumns: platform == Platform.Windows ? getWindowsColumns : getLinuxColumns,
         getItems,
         updateItems: ()=>null,
-        getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Dropped, statusText: ""})),
+        getExtendedItems: () => { throw new RequestError(IOError.Dropped, "") },
         setExtendedItems: items => items,
         cancelExtendedItems: async () => { },
         onEnter: platform == Platform.Windows ? onWindowsEnter : onLinuxEnter,
@@ -116,7 +116,7 @@ export const getRootController = (controller: Controller | null): ControllerResu
     }})
 
 const getItems = () => 
-    webViewRequest<GetRootResult, ErrorType>("getroot")
+    webViewRequest<GetRootResult>("getroot")
         .map(items => {
             const pos = items.findIndex(n => !n.isMounted)
             const extendedItems = items

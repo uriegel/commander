@@ -5,7 +5,7 @@ import { Controller, ControllerResult, ControllerType, EnterData, OnEnterResult,
 import { ROOT } from "./root"
 import { IconNameType } from "../enums"
 import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
-import { GetExtendedItemsResult, GetItemsResult, IOError } from "../requests/requests"
+import { IOError, RequestError } from "../requests/requests"
 
 export const FAVORITES = "fav"
 
@@ -84,7 +84,7 @@ export const getFavoritesController = (controller: Controller | null): Controlle
         getItems,
         updateItems: () => null,
         getPath: () => FAVORITES,
-        getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Dropped, statusText: ""})),
+        getExtendedItems: () => { throw new RequestError(IOError.Dropped, "") },
         setExtendedItems: items => items,
         cancelExtendedItems: async () => { },
         onEnter,
@@ -100,20 +100,18 @@ export const getFavoritesController = (controller: Controller | null): Controlle
         cleanUp: () => { }
     }})
 
-const getItems = () => {
+const getItems = async () => {
     const items = getFavoriteItems()
-    return AsyncResult
-        .from(new Ok<GetItemsResult, ErrorType>({
-            path: FAVORITES,
-            dirCount: items.length,
-            fileCount: 0,
-            items: addParent(items)
-                .concat({
-                    name: "Favoriten hinzufügen...",
-                    isNew: true
-                })
-        }
-        ))
+    return {
+        path: FAVORITES,
+        dirCount: items.length,
+        fileCount: 0,
+        items: addParent(items)
+            .concat({
+                name: "Favoriten hinzufügen...",
+                isNew: true
+            })
+    }
 }
 
 const deleteItems = (_: string, items: FolderViewItem[], dialog: DialogHandle) => 

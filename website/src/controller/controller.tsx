@@ -3,7 +3,7 @@ import { DialogHandle } from "web-dialog-react"
 import { FolderViewItem } from "../components/FolderView"
 import { getFileSystemController } from "./filesystem"
 import { getRemotesController, REMOTES } from "./remotes"
-import { GetExtendedItemsResult, GetItemsResult, IOError, Version } from "../requests/requests"
+import { GetExtendedItemsResult, GetItemsResult, IOError, RequestError, Version } from "../requests/requests"
 import { getRootController, ROOT } from "./root"
 import { getRemoteController } from "./remote"
 import { FAVORITES, getFavoritesController } from "./favorites"
@@ -66,10 +66,10 @@ export interface Controller {
     type: ControllerType
     id: string
     getColumns: ()=>TableColumns<FolderViewItem>
-    getItems: (id: string, path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean, mount: boolean, dialog: DialogHandle) => AsyncResult<GetItemsResult, ErrorType>
+    getItems: (id: string, path: string, showHidden: boolean, sortIndex: number, sortDescending: boolean, mount: boolean, dialog: DialogHandle) => Promise<GetItemsResult>
     updateItems: (items: FolderViewItem[], sortIndex: number, sortDescending: boolean, evt: DirectoryChangedEvent)=>FolderViewItem[]|null
     getPath(): string
-    getExtendedItems: (id: string, path: string, items: FolderViewItem[]) => AsyncResult<GetExtendedItemsResult, ErrorType>
+    getExtendedItems: (id: string, path: string, items: FolderViewItem[]) => Promise<GetExtendedItemsResult>
     setExtendedItems: (items: FolderViewItem[], extended: GetExtendedItemsResult, sortIndex: number, sortDescending: boolean) => FolderViewItem[]
     cancelExtendedItems: (id: string)=>Promise<void>,
     onEnter: (data: EnterData) => AsyncResult<OnEnterResult, ErrorType> 
@@ -116,10 +116,10 @@ export const createEmptyController = (): Controller => ({
         columns: [],
         renderRow: () => []
     }),
-    getItems: () => AsyncResult.from(new Err<GetItemsResult, ErrorType>({ status: IOError.Dropped, statusText: "" })),
+    getItems: () => { throw new RequestError(IOError.Dropped, "") },
     updateItems: () => null,
     getPath: () => "empty",
-    getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({status: IOError.Dropped, statusText: ""})),
+    getExtendedItems: () => { throw new RequestError(IOError.Dropped, "") },
     setExtendedItems: items => items,
     cancelExtendedItems: async () => { },
     onEnter: () => AsyncResult.from(new Ok<OnEnterResult, ErrorType>({ processed: true })),

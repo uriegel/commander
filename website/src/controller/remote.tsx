@@ -6,7 +6,7 @@ import { getSortFunction } from "./filesystem"
 import { REMOTES } from "./remotes"
 import { IconNameType } from "../enums"
 import { AsyncResult, Err, ErrorType, Nothing, Ok, nothing } from "functional-extensions"
-import { GetExtendedItemsResult, GetItemsResult, IOError, webViewRequest } from "../requests/requests"
+import { GetItemsResult, IOError, RequestError, webViewRequest, webViewRequest1 } from "../requests/requests"
 import { DialogHandle, ResultType } from "web-dialog-react"
 
 export const REMOTE = "remote"
@@ -62,7 +62,7 @@ const deleteItems = (path: string, items: FolderViewItem[], dialog: DialogHandle
 			}, res => res.result == ResultType.Ok
 			? new Ok(nothing)
 			: new Err({ status: IOError.Dropped, statusText: "" }))
-			.bindAsync(() => webViewRequest<Nothing, ErrorType>("deleteitemsremote", { path, names: items.map(n => n.name) }))
+			.bindAsync(() => webViewRequest1<Nothing, ErrorType>("deleteitemsremote", { path, names: items.map(n => n.name) }))
 }
 
 const createFolder = (path: string, item: FolderViewItem, dialog: DialogHandle) => 
@@ -75,7 +75,7 @@ const createFolder = (path: string, item: FolderViewItem, dialog: DialogHandle) 
 	}, res => res.result == ResultType.Ok && res.input
 	? new Ok(res.input)
 	: new Err({ status: IOError.Dropped, statusText: "" }))
-		.bindAsync(name => webViewRequest<Nothing, ErrorType>("createdirectoryremote", { path: path.appendPath(name) })
+		.bindAsync(name => webViewRequest1<Nothing, ErrorType>("createdirectoryremote", { path: path.appendPath(name) })
 							.map(() => name))
 	
 export const getRemoteController = (controller: Controller | null): ControllerResult => {
@@ -88,19 +88,19 @@ export const getRemoteController = (controller: Controller | null): ControllerRe
 				id: REMOTE,
 				getColumns,
 				getItems: (id, path, showHiddenItems, sortIndex, sortDescending) =>
-					webViewRequest<GetItemsResult, ErrorType>("getremotefiles", { id, path, showHiddenItems })
+					webViewRequest<GetItemsResult>("getremotefiles", { id, path, showHiddenItems })
 						.map(ok => {
 							currentPath = ok.path
 							return { ...ok, items: addParent(sortItems(ok.items, getSortFunction(sortIndex, sortDescending))) }
 						}),
 				updateItems: () => null,
 				getPath: () => currentPath,
-				getExtendedItems: () => AsyncResult.from(new Err<GetExtendedItemsResult, ErrorType>({ status: IOError.Dropped, statusText: "" })),
+				getExtendedItems: () => { throw new RequestError(IOError.Dropped, "") },
 				setExtendedItems: items => items,
 				cancelExtendedItems: async () => { },
 				onEnter: ({ path, item }) =>
 					AsyncResult.from(new Ok<OnEnterResult, ErrorType>(
-						item.isParent && path.split("/").filter(n => n.length > 0).sideEffectForEach(n => console.log("Eintrag", n)).length - 1 == 1
+						item.isParent && path.split("/").filter(n => n.length > 0).length - 1 == 1
 							? ({
 								processed: false,
 								pathToSet: REMOTES,
