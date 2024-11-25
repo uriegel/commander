@@ -7,8 +7,6 @@ use crate::{directory::{
     CopyItems, DirectoryItem, GetFilesResult}, progresses::{CurrentProgress, ProgressStream}, request_error::RequestError, webrequest::WebRequest
 };
 
-use super::directory::reset_copy_cancellable;
-
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GetRemoteFiles {
@@ -60,7 +58,7 @@ pub fn _copy_from_remote(_mov: bool, input: &CopyItems, file: &str, progress: &C
     let source_file = PathBuf::from(&path_and_ip.path).join(file);
     let target_file = PathBuf::from(&input.target_path).join(file);
     let file = File::create(target_file)?;
-    reset_copy_cancellable();
+    //reset_copy_cancellable();
     let mut web_request = WebRequest::get(path_and_ip.ip, format!("/downloadfile{}", source_file.to_string_lossy()))?;
     let mut progress_stream = ProgressStream::new(BufWriter::new(&file), 
         |p| progress.send_bytes(p as u64));

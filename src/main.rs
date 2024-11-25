@@ -93,7 +93,6 @@ fn main() {
     .run();
 }
 
-// TODO before copy: update sizes and datetime from files, check both sides, create conflicts
 // TODO copy for windows and linux with rust
 // TODO copy attributes and executable
 // TODO move for windows and linux with rust and native methods without progress

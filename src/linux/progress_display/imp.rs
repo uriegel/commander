@@ -6,7 +6,6 @@ use gtk::{glib, Button, CompositeTemplate, DrawingArea, Label, ProgressBar, Reve
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 
-use crate::linux::directory::cancel_copy;
 use crate::linux::theme::is_dark_theme;
 use crate::str::SizeExt;
 
@@ -184,7 +183,7 @@ impl ObjectImpl for ProgressDisplay {
             let _ = c.fill();
         });
 
-        self.cancel_btn.connect_clicked(|_| cancel_copy());
+        // TODO self.cancel_btn.connect_clicked(|_| cancel_copy());
     }	
 }
 

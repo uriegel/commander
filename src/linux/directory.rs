@@ -1,15 +1,10 @@
-use std::{fs::{self, Metadata}, path::PathBuf, process::Command, time::UNIX_EPOCH};
+use std::{fs::{self, Metadata}, process::Command, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
-use gtk::gio::{prelude::*, Cancellable, FileCopyFlags};
-use gtk::gio::File;
 use serde::Serialize;
 
 use crate::{
-    directory::{CopyItems, DirectoryItem}, error::Error, extended_items::{
-        GetExtendedItems, Version
-    }, progresses::CurrentProgress, request_error::RequestError, 
-    str::StrExt};
+    directory::DirectoryItem, error::Error, extended_items::{GetExtendedItems, Version}, str::StrExt};
 use crate::directory::get_extension;
 
 use super::iconresolver::get_geticon_py;
@@ -110,33 +105,17 @@ pub trait StringExt {
     fn clean_path(&self) -> String;
 }
 
-pub fn copy_item(mov: bool, input: &CopyItems, file: &str, progress: &CurrentProgress)->Result<(), RequestError> {
-    let source_file = PathBuf::from(&input.path).join(file);
-    let target_file = PathBuf::from(&input.target_path).join(file);
-    reset_copy_cancellable();
-    if !mov {
-        File::for_path(source_file).copy(&File::for_path(target_file), FileCopyFlags::OVERWRITE, 
-        get_copy_cancellable().as_ref(), Some(&mut move |s, _| progress.send_bytes(s as u64)
-        ))?;
-    } else {
-        File::for_path(source_file).move_(&File::for_path(target_file), FileCopyFlags::OVERWRITE, 
-        get_copy_cancellable().as_ref(), Some(&mut move |s, _|progress.send_bytes(s as u64)
-        ))?;
-    }
-    Ok(())
-}
+// pub fn reset_copy_cancellable() {
+//     unsafe { COPY_CANCELLABLE.replace(Cancellable::new()) }; 
+// }
 
-pub fn reset_copy_cancellable() {
-    unsafe { COPY_CANCELLABLE.replace(Cancellable::new()) }; 
-}
+// pub fn get_copy_cancellable()->Option<Cancellable> {
+//     unsafe { COPY_CANCELLABLE.clone() }
+// }
 
-pub fn get_copy_cancellable()->Option<Cancellable> {
-    unsafe { COPY_CANCELLABLE.clone() }
-}
-
-pub fn cancel_copy() {
-    unsafe { COPY_CANCELLABLE.clone().inspect(|c|c.cancel())};
-}
+// pub fn cancel_copy() {
+//     unsafe { COPY_CANCELLABLE.clone().inspect(|c|c.cancel())};
+// }
 
 impl StringExt for String {
     fn clean_path(&self) -> String {
@@ -144,4 +123,4 @@ impl StringExt for String {
     }
 }
 
-static mut COPY_CANCELLABLE: Option<Cancellable> = None; 
+//static mut COPY_CANCELLABLE: Option<Cancellable> = None; 

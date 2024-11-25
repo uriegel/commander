@@ -1,4 +1,4 @@
-use std::{fs::{self, canonicalize, create_dir, read_dir, rename, File}, io::ErrorKind, path::PathBuf, sync::{Mutex, MutexGuard, TryLockResult}, time::UNIX_EPOCH};
+use std::{fs::{self, canonicalize, create_dir, read_dir, rename, File}, io::{BufReader, BufWriter, ErrorKind, Read, Write}, path::PathBuf, sync::{Mutex, MutexGuard, TryLockResult}, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -6,12 +6,12 @@ use serde_repr::Deserialize_repr;
 use urlencoding::decode;
 use trash::delete_all;
 
-use crate::{error::Error, progresses::{CurrentProgress, TotalProgress}, request_error::{ErrorType, RequestError}};
+use crate::{error::Error, progresses::{CurrentProgress, ProgressStream, TotalProgress}, request_error::{ErrorType, RequestError}};
 
 #[cfg(target_os = "windows")]
 use crate::windows::directory::{is_hidden, StringExt, get_icon_path};
 #[cfg(target_os = "linux")]
-use crate::linux::directory::{is_hidden, StringExt, get_icon_path, mount, update_directory_item, ConflictItem, copy_item};
+use crate::linux::directory::{is_hidden, StringExt, get_icon_path, mount, update_directory_item, ConflictItem};
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -252,8 +252,8 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     for file in &input.items {
         let current_progress = CurrentProgress::new(&total_progress, &file.name, file.size);
         match input.job_type {
-            JobType::Copy => copy_item(false, &input, &file.name, &current_progress),
-            JobType::Move => copy_item(true, &input, &file.name, &current_progress),
+            JobType::Copy => copy_item(false, &input, &file.name, file.size, &current_progress),
+            JobType::Move => copy_item(true, &input, &file.name, file.size, &current_progress),
             //JobType::CopyFromRemote => copy_from_remote(false, &input, &file.name, &current_progress),
             _ => return Err(RequestError { status: ErrorType::NotSupported })
         }?;
@@ -278,6 +278,29 @@ fn create_copy_item(item: DirectoryItem, path: &str, target_path: &str)->Result<
 
     Ok((updated_item, conflict))
 }
+
+fn copy_item(mov: bool, input: &CopyItems, file: &str, size: u64, progress: &CurrentProgress)->Result<(), RequestError> {
+    let source_path = PathBuf::from(&input.path).join(file);
+    let target_path = PathBuf::from(&input.target_path).join(file);
+    //reset_copy_cancellable();
+
+    let source_file = File::open(source_path)?;
+    let target_file = File::create(target_path)?;
+    let mut source_stream = BufReader::new(&source_file);
+    let mut target_stream = ProgressStream::new(BufWriter::new(&target_file), |p| progress.send_bytes(p as u64));
+    let mut buf = vec![0; usize::min(8192, size as usize)];
+    loop {
+        let read = source_stream.read(&mut buf)?;
+        if read == 0 {
+            break;
+        }
+        let buf_slice = &mut buf[..read];
+        target_stream.write(buf_slice)?;
+    }
+    if mov {} // TODO move
+    Ok(())
+}
+
 
 fn get_icon_path_of_file(name: &str, path: &str, is_directory: bool)->Option<String> {
     if !is_directory {
