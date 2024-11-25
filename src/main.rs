@@ -15,6 +15,7 @@ mod request_error;
 mod tracks;
 mod progresses;
 mod webrequest;
+mod remote;
 #[cfg(target_os = "linux")]
 mod linux;
 #[cfg(target_os = "windows")]
@@ -93,7 +94,6 @@ fn main() {
     .run();
 }
 
-// TODO copy to remote
 // TODO move for windows and linux with rust and native methods without progress
 // TODO cancel copy 
 // TODO if Linux ProgressControl dialog is away, react doesn't get the focus

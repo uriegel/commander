@@ -53,7 +53,7 @@ pub fn get_remote_files(input: GetRemoteFiles) -> Result<GetFilesResult, Request
     })
 }
 
-pub fn _copy_from_remote(_mov: bool, input: &CopyItems, file: &str, progress: &CurrentProgress)->Result<(), RequestError> {
+pub fn copy_from_remote(_mov: bool, input: &CopyItems, file: &str, progress: &CurrentProgress)->Result<(), RequestError> {
     let path_and_ip = get_remote_path(&input.path);
     let source_file = PathBuf::from(&path_and_ip.path).join(file);
     let target_file = PathBuf::from(&input.target_path).join(file);

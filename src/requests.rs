@@ -2,10 +2,9 @@ use webview_app::request::{get_input, request_blocking, Request};
 
 use crate::{directory::{check_copy_items, copy_items, create_folder, delete_items, get_files, rename_item, rename_items}, extended_items::{
     cancel_extended_items, get_extended_items
-}, request_error::{from_result, RequestError}, tracks::get_track_info};
+}, remote::get_remote_files, request_error::{from_result, RequestError}, tracks::get_track_info};
 #[cfg(target_os = "linux")]
-use crate::linux::{
-    root::get_root, remote::get_remote_files };
+use crate::linux::root::get_root;
 #[cfg(target_os = "windows")]
 use crate::windows::{root::get_root, progresses::cancel_copy};
 

@@ -11,7 +11,7 @@ use serde_repr::Deserialize_repr;
 use urlencoding::decode;
 use trash::delete_all;
 
-use crate::{error::Error, progresses::{CurrentProgress, ProgressStream, TotalProgress}, request_error::{ErrorType, RequestError}};
+use crate::{error::Error, progresses::{CurrentProgress, ProgressStream, TotalProgress}, remote::copy_from_remote, request_error::{ErrorType, RequestError}};
 
 #[cfg(target_os = "windows")]
 use crate::windows::directory::{is_hidden, StringExt, get_icon_path, ConflictItem, update_directory_item, copy_attributes};
@@ -259,7 +259,7 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
         match input.job_type {
             JobType::Copy => copy_item(false, &input, &file.name, file.size, &current_progress),
             JobType::Move => copy_item(true, &input, &file.name, file.size, &current_progress),
-            //JobType::CopyFromRemote => copy_from_remote(false, &input, &file.name, &current_progress),
+            JobType::CopyFromRemote => copy_from_remote(false, &input, &file.name, &current_progress),
             _ => return Err(RequestError { status: ErrorType::NotSupported })
         }?;
     }
