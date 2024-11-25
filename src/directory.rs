@@ -11,10 +11,10 @@ use serde_repr::Deserialize_repr;
 use urlencoding::decode;
 use trash::delete_all;
 
-use crate::{error::Error, progresses::{CurrentProgress, ProgressStream, TotalProgress}, request_error::{ErrorType, RequestError}, windows::directory::copy_attributes};
+use crate::{error::Error, progresses::{CurrentProgress, ProgressStream, TotalProgress}, request_error::{ErrorType, RequestError}};
 
 #[cfg(target_os = "windows")]
-use crate::windows::directory::{is_hidden, StringExt, get_icon_path, ConflictItem, update_directory_item};
+use crate::windows::directory::{is_hidden, StringExt, get_icon_path, ConflictItem, update_directory_item, copy_attributes};
 #[cfg(target_os = "linux")]
 use crate::linux::directory::{is_hidden, StringExt, get_icon_path, mount, update_directory_item, ConflictItem, copy_attributes};
 
