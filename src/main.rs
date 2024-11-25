@@ -93,14 +93,13 @@ fn main() {
     .run();
 }
 
-// TODO copy for windows and linux with rust
-// TODO copy attributes and executable
+// TODO copy attributes (readonly!) and executable
+// TODO copy to/from remote
 // TODO move for windows and linux with rust and native methods without progress
-// TODO Windows Progress progress control for both
-// TODO cancel copy Linux
+// TODO cancel copy 
 // TODO if Linux ProgressControl dialog is away, react doesn't get the focus
 // TODO Linux ProgressControl Byte scale
-// TODO copy to/from remote
+// TODO copy from remote
 
 // TODO Rename as copy
 // TODO OnEnter
