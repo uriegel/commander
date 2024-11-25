@@ -1,4 +1,4 @@
-use std::{fs::{self, canonicalize, create_dir, metadata, read_dir, rename, File}, io::ErrorKind, path::PathBuf, sync::{Mutex, MutexGuard, TryLockResult}, time::UNIX_EPOCH};
+use std::{fs::{self, canonicalize, create_dir, read_dir, rename, File}, io::ErrorKind, path::PathBuf, sync::{Mutex, MutexGuard, TryLockResult}, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -96,7 +96,6 @@ pub struct CopyItems {
 #[serde(rename_all = "camelCase")]
 pub struct CopyItem {
     pub name: String,
-    #[allow(dead_code)]
     pub size: u64
 }
 
@@ -244,21 +243,14 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
 
     let _binding = try_copy_lock()?;
 
-    let items: Vec<(&CopyItem, u64)> = input.items.iter().map(|item|
-        (item, metadata(PathBuf::from(&input.path).join(&item.name))
-            .ok()
-            .map(|m| m.len()) 
-            .unwrap_or(item.size)))
-            .collect();
-    
     let total_progress = TotalProgress::new(
-        items.iter().fold(0u64, |curr, (_, i)|i + curr), 
+        input.items.iter().fold(0u64, |curr, i|i.size + curr), 
         input.items.len() as u32, 
         input.job_type == JobType::Move
     );
 
-    for (file, file_size) in items {
-        let current_progress = CurrentProgress::new(&total_progress, &file.name, file_size);
+    for file in &input.items {
+        let current_progress = CurrentProgress::new(&total_progress, &file.name, file.size);
         match input.job_type {
             JobType::Copy => copy_item(false, &input, &file.name, &current_progress),
             JobType::Move => copy_item(true, &input, &file.name, &current_progress),
