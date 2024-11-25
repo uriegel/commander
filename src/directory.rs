@@ -1,4 +1,4 @@
-use std::{fs::{self, canonicalize, create_dir, read_dir, rename, File}, io::ErrorKind, path::PathBuf, sync::{Mutex, MutexGuard, TryLockResult}, time::UNIX_EPOCH};
+use std::{fs::{self, canonicalize, create_dir, metadata, read_dir, rename, File}, io::ErrorKind, path::PathBuf, sync::{Mutex, MutexGuard, TryLockResult}, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -6,12 +6,12 @@ use serde_repr::Deserialize_repr;
 use urlencoding::decode;
 use trash::delete_all;
 
-use crate::{error::Error, request_error::RequestError};
+use crate::{error::Error, progresses::{CurrentProgress, TotalProgress}, request_error::{ErrorType, RequestError}};
 
 #[cfg(target_os = "windows")]
 use crate::windows::directory::{is_hidden, StringExt, get_icon_path};
 #[cfg(target_os = "linux")]
-use crate::linux::directory::{is_hidden, StringExt, get_icon_path, mount, update_directory_item, ConflictItem};
+use crate::linux::directory::{is_hidden, StringExt, get_icon_path, mount, update_directory_item, ConflictItem, copy_item};
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -238,6 +238,35 @@ pub fn check_copy_items(input: CheckCoypItems)->Result<CopyItemResult, RequestEr
     let items: Vec<DirectoryItem> = items.into_iter().filter_map(|f|f).collect();
     let conflicts: Vec<ConflictItem> = conflicts.into_iter().filter_map(|f|f).collect();
     Ok(CopyItemResult { items, conflicts })
+}
+
+pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
+
+    let _binding = try_copy_lock()?;
+
+    let items: Vec<(&CopyItem, u64)> = input.items.iter().map(|item|
+        (item, metadata(PathBuf::from(&input.path).join(&item.name))
+            .ok()
+            .map(|m| m.len()) 
+            .unwrap_or(item.size)))
+            .collect();
+    
+    let total_progress = TotalProgress::new(
+        items.iter().fold(0u64, |curr, (_, i)|i + curr), 
+        input.items.len() as u32, 
+        input.job_type == JobType::Move
+    );
+
+    for (file, file_size) in items {
+        let current_progress = CurrentProgress::new(&total_progress, &file.name, file_size);
+        match input.job_type {
+            JobType::Copy => copy_item(false, &input, &file.name, &current_progress),
+            JobType::Move => copy_item(true, &input, &file.name, &current_progress),
+            //JobType::CopyFromRemote => copy_from_remote(false, &input, &file.name, &current_progress),
+            _ => return Err(RequestError { status: ErrorType::NotSupported })
+        }?;
+    }
+    Ok(())
 }
 
 fn create_copy_item(item: DirectoryItem, path: &str, target_path: &str)->Result<(Option<DirectoryItem>, Option<ConflictItem>), RequestError> { 

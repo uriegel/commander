@@ -1,4 +1,4 @@
-use std::{fs::{self, metadata, Metadata}, path::PathBuf, process::Command, time::UNIX_EPOCH};
+use std::{fs::{self, Metadata}, path::PathBuf, process::Command, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
 use gtk::gio::{prelude::*, Cancellable, FileCopyFlags};
@@ -6,13 +6,13 @@ use gtk::gio::File;
 use serde::Serialize;
 
 use crate::{
-    directory::{try_copy_lock, CopyItem, CopyItems, DirectoryItem, JobType}, error::Error, extended_items::{
+    directory::{CopyItems, DirectoryItem}, error::Error, extended_items::{
         GetExtendedItems, Version
-    }, progresses::{CurrentProgress, TotalProgress}, request_error::{ErrorType, RequestError}, 
+    }, progresses::CurrentProgress, request_error::RequestError, 
     str::StrExt};
 use crate::directory::get_extension;
 
-use super::{iconresolver::get_geticon_py, remote::copy_from_remote};
+use super::iconresolver::get_geticon_py;
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -104,35 +104,6 @@ pub fn update_directory_item(item: DirectoryItem, metadata: &Metadata)->Director
                 .and_then(|t|t.duration_since(UNIX_EPOCH).ok())
                 .map(|d|DateTime::from_timestamp_nanos(d.as_nanos() as i64)); 
     DirectoryItem { size, time, ..item }
-}
-
-pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
-
-    let _binding = try_copy_lock()?;
-
-    let items: Vec<(&CopyItem, u64)> = input.items.iter().map(|item|
-        (item, metadata(PathBuf::from(&input.path).join(&item.name))
-            .ok()
-            .map(|m| m.len()) 
-            .unwrap_or(item.size)))
-            .collect();
-    
-    let total_progress = TotalProgress::new(
-        items.iter().fold(0u64, |curr, (_, i)|i + curr), 
-        input.items.len() as u32, 
-        input.job_type == JobType::Move
-    );
-
-    for (file, file_size) in items {
-        let current_progress = CurrentProgress::new(&total_progress, &file.name, file_size);
-        match input.job_type {
-            JobType::Copy => copy_item(false, &input, &file.name, &current_progress),
-            JobType::Move => copy_item(true, &input, &file.name, &current_progress),
-            JobType::CopyFromRemote => copy_from_remote(false, &input, &file.name, &current_progress),
-            _ => return Err(RequestError { status: ErrorType::NotSupported })
-        }?;
-    }
-    Ok(())
 }
 
 pub trait StringExt {
