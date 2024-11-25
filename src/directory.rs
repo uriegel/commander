@@ -1,4 +1,9 @@
-use std::{fs::{self, canonicalize, create_dir, read_dir, rename, File}, io::{BufReader, BufWriter, ErrorKind, Read, Write}, path::PathBuf, sync::{Mutex, MutexGuard, TryLockResult}, time::UNIX_EPOCH};
+use std::{
+    fs::{
+        self, canonicalize, create_dir, read_dir, rename, File
+    }, io::{
+        BufReader, BufWriter, ErrorKind, Read, Write
+    }, path::PathBuf, sync::{Mutex, MutexGuard, TryLockResult}, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -6,7 +11,7 @@ use serde_repr::Deserialize_repr;
 use urlencoding::decode;
 use trash::delete_all;
 
-use crate::{error::Error, progresses::{CurrentProgress, ProgressStream, TotalProgress}, request_error::{ErrorType, RequestError}};
+use crate::{error::Error, linux::directory::copy_attributes, progresses::{CurrentProgress, ProgressStream, TotalProgress}, request_error::{ErrorType, RequestError}};
 
 #[cfg(target_os = "windows")]
 use crate::windows::directory::{is_hidden, StringExt, get_icon_path, ConflictItem, update_directory_item};
@@ -297,10 +302,11 @@ fn copy_item(mov: bool, input: &CopyItems, file: &str, size: u64, progress: &Cur
         let buf_slice = &mut buf[..read];
         target_stream.write(buf_slice)?;
     }
+    target_stream.flush()?;
+    copy_attributes(&source_file, &target_file)?;
     if mov {} // TODO move
     Ok(())
 }
-
 
 fn get_icon_path_of_file(name: &str, path: &str, is_directory: bool)->Option<String> {
     if !is_directory {

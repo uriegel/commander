@@ -115,6 +115,10 @@ where W: Sized + Write {
     where W: Sized + Write {    
         Self { writer, read: 0, on_progress: Box::new(on_progress) }
     }
+
+    pub fn flush(&mut self)->std::io::Result<()> {
+        self.writer.flush()
+    }
 }
 
 impl<'a, W> Write for ProgressStream<'a, W>

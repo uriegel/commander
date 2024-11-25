@@ -1,4 +1,4 @@
-use std::{fs::File, io::{BufWriter, Write}, path::PathBuf, time::SystemTime};
+use std::{fs::File, io::BufWriter, path::PathBuf, time::SystemTime};
 
 use chrono::DateTime;
 use serde::Deserialize;

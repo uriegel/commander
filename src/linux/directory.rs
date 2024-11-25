@@ -1,10 +1,10 @@
-use std::{fs::{self, Metadata}, process::Command, time::UNIX_EPOCH};
+use std::{fs::{self, File, Metadata}, process::Command, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
 use serde::Serialize;
 
 use crate::{
-    directory::DirectoryItem, error::Error, extended_items::{GetExtendedItems, Version}, str::StrExt};
+    directory::DirectoryItem, error::Error, extended_items::{GetExtendedItems, Version}, request_error::RequestError, str::StrExt};
 use crate::directory::get_extension;
 
 use super::iconresolver::get_geticon_py;
@@ -101,6 +101,14 @@ pub fn update_directory_item(item: DirectoryItem, metadata: &Metadata)->Director
 
 pub trait StringExt {
     fn clean_path(&self) -> String;
+}
+
+pub fn copy_attributes(source_file: &File, target_file: &File)->Result<(), RequestError> {
+    let meta = source_file.metadata()?;
+    let modified = meta.modified()?;
+    target_file.set_modified(modified)?;
+    target_file.set_permissions(meta.permissions())?;
+    Ok(())
 }
 
 // pub fn reset_copy_cancellable() {
