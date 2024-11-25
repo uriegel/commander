@@ -9,7 +9,7 @@ use trash::delete_all;
 use crate::{error::Error, progresses::{CurrentProgress, ProgressStream, TotalProgress}, request_error::{ErrorType, RequestError}};
 
 #[cfg(target_os = "windows")]
-use crate::windows::directory::{is_hidden, StringExt, get_icon_path};
+use crate::windows::directory::{is_hidden, StringExt, get_icon_path, ConflictItem, update_directory_item};
 #[cfg(target_os = "linux")]
 use crate::linux::directory::{is_hidden, StringExt, get_icon_path, mount, update_directory_item, ConflictItem};
 

@@ -11,8 +11,6 @@ fn main() {
 
 #[cfg(target_os = "windows")]    
 fn main() {
-    copy_marker_pngs();
-
     static_vcruntime::metabuild();
     let mut res = winresource::WindowsResource::new();
     res.set_icon("resources/kirk.ico")

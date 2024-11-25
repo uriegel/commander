@@ -25,7 +25,7 @@ const CopyProgress = () => {
         })
         const fileEvents = progressFileEvents.subscribe(e => {
             setFileName(e.fileName)
-            setCurrentCount(e.currentFile)
+            setCurrentCount(e.currentFiles)
             setTotalValue(e.currentBytes)
         })
         const bytesEvents = progressBytesEvents.subscribe(e => {

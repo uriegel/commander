@@ -7,7 +7,7 @@ use crate::{directory::{check_copy_items, copy_items, create_folder, delete_item
 use crate::linux::{
     root::get_root, remote::get_remote_files };
 #[cfg(target_os = "windows")]
-use crate::windows::{root::get_root, directory::copy_items, progresses::cancel_copy};
+use crate::windows::{root::get_root, progresses::cancel_copy};
 
 pub fn on_request(request: &Request, id: String, cmd: String, json: String)->bool {
     request_blocking(request, id, move || {

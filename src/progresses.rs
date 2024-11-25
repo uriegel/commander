@@ -5,6 +5,8 @@ use chrono::Local;
 
 #[cfg(target_os = "linux")]
 use crate::linux::progresses::{start_progress, file_progress, end_progress, bytes_progress};
+#[cfg(target_os = "windows")]
+use crate::windows::progresses::{start_progress, file_progress, end_progress, bytes_progress};
 
 pub struct TotalProgress {
     total_size: u64, 
