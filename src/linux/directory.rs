@@ -16,10 +16,8 @@ pub struct ConflictItem {
 	icon_path: Option<String>,
     size: u64,
     time: Option<DateTime<Utc>>,
-    //version?: Version
     target_size: u64,
     target_time: Option<DateTime<Utc>>
-    //targetVersion?: Version
 }
 
 impl ConflictItem {

@@ -70,7 +70,7 @@ impl<'a> CurrentProgress<'a> {
             } else { 
                 0.0 
             }; 
-            file_progress(self.name.to_string(), progress, self.total.current_files.borrow().clone());
+            file_progress(self.name.to_string(), progress, *self.total.current_size.borrow(), self.total.current_files.borrow().clone());
 //            self.total.reset_updated(now);
         //}
     }

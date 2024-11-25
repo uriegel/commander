@@ -13,7 +13,7 @@ pub fn start_progress(total_files: u32, total_size: u64, mov: bool) {
     let _ = sender.send_blocking(Progresses::Start(FilesProgressStart {total_files, total_size, mov }));
 }
 
-pub fn file_progress(current_name: String, progress: f64, current_files: u32) {
+pub fn file_progress(current_name: String, progress: f64, _total_bytes: u64, current_files: u32) {
     let sender = get_sender().lock().unwrap();
     let _ = sender.send_blocking(Progresses::Files(FilesProgress {
         current_name, 
