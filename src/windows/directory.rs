@@ -1,9 +1,9 @@
-use std::{fs::Metadata, os::windows::fs::MetadataExt, path::PathBuf, time::UNIX_EPOCH};
+use std::{fs::{File, Metadata}, os::windows::fs::MetadataExt, path::PathBuf, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
 use serde::Serialize;
 
-use crate::{directory::{get_extension, DirectoryItem}, error::Error};
+use crate::{directory::{get_extension, DirectoryItem}, error::Error, request_error::RequestError};
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -65,6 +65,14 @@ pub fn update_directory_item(item: DirectoryItem, metadata: &Metadata)->Director
     DirectoryItem { size, time, ..item }
 }
 
+pub fn copy_attributes(source_file: &File, target_file: &File)->Result<(), RequestError> {
+    let meta = source_file.metadata()?;
+    let modified = meta.modified()?;
+    target_file.set_modified(modified)?;
+    target_file.set_permissions(meta.permissions())?;
+    Ok(())
+}
+
 // fn copy(input: &CopyItems, items: Vec<(&String, u64)>, cpy: *const c_void)->Result<(), RequestError> {
 //     items.iter().try_fold(ProgressFiles::default(), |curr, (file, file_size)| {
 //         let progress_files = curr.get_next(file, *file_size);
@@ -88,11 +96,9 @@ pub fn update_directory_item(item: DirectoryItem, metadata: &Metadata)->Director
 //     if !move_ {
 //         let source_file = string_to_pcwstr(&source_file.to_string_lossy());
 //         let target_file = string_to_pcwstr(&target_file.to_string_lossy());
-//         // TODO remove write protection on target
 //         unsafe { CopyFileExW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), 
 //             Some(progress_callback), Some(cpy), None, 0)?; }
 //     } else {
-//         // TODO remove write protection on target and on source, set write protection on target OR FLAGS
 //         let source_file = string_to_pcwstr(&source_file.to_string_lossy());
 //         let target_file = string_to_pcwstr(&target_file.to_string_lossy());
 //         unsafe { MoveFileWithProgressW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), 

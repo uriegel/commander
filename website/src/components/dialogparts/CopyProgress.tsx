@@ -29,10 +29,13 @@ const CopyProgress = () => {
             setTotalValue(e.currentBytes)
         })
         const bytesEvents = progressBytesEvents.subscribe(e => {
-            setMax(e.totalBytes)
-            setValue(e.currentBytes)
-            setTotalValue(e.currentBytes + e.completeCurrentBytes)
-            setCurrentTime(e.totalSeconds)
+            if (e.currentBytes != 0) {
+                console.log(e.totalBytes, e.currentBytes, e.completeCurrentBytes)
+                setMax(e.totalBytes)
+                setValue(e.currentBytes)
+                setTotalValue(e.currentBytes + e.completeCurrentBytes)
+                setCurrentTime(e.totalSeconds)
+            }
         })
         return () => {
             startEvents.unsubscribe()

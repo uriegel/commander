@@ -93,7 +93,6 @@ fn main() {
     .run();
 }
 
-// TODO copy attributes (readonly!) (Windows)
 // TODO copy to/from remote
 // TODO move for windows and linux with rust and native methods without progress
 // TODO cancel copy 

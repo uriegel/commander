@@ -11,12 +11,12 @@ use serde_repr::Deserialize_repr;
 use urlencoding::decode;
 use trash::delete_all;
 
-use crate::{error::Error, linux::directory::copy_attributes, progresses::{CurrentProgress, ProgressStream, TotalProgress}, request_error::{ErrorType, RequestError}};
+use crate::{error::Error, progresses::{CurrentProgress, ProgressStream, TotalProgress}, request_error::{ErrorType, RequestError}, windows::directory::copy_attributes};
 
 #[cfg(target_os = "windows")]
 use crate::windows::directory::{is_hidden, StringExt, get_icon_path, ConflictItem, update_directory_item};
 #[cfg(target_os = "linux")]
-use crate::linux::directory::{is_hidden, StringExt, get_icon_path, mount, update_directory_item, ConflictItem};
+use crate::linux::directory::{is_hidden, StringExt, get_icon_path, mount, update_directory_item, ConflictItem, copy_attributes};
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -290,7 +290,9 @@ fn copy_item(mov: bool, input: &CopyItems, file: &str, size: u64, progress: &Cur
     //reset_copy_cancellable();
 
     let source_file = File::open(source_path)?;
+    let _ = rm_rf::remove(&target_path);
     let target_file = File::create(target_path)?;
+
     let mut source_stream = BufReader::new(&source_file);
     let mut target_stream = ProgressStream::new(BufWriter::new(&target_file), |p| progress.send_bytes(p as u64));
     let mut buf = vec![0; usize::min(8192, size as usize)];
