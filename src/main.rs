@@ -93,7 +93,7 @@ fn main() {
     .run();
 }
 
-// TODO copy to/from remote
+// TODO copy to remote
 // TODO move for windows and linux with rust and native methods without progress
 // TODO cancel copy 
 // TODO if Linux ProgressControl dialog is away, react doesn't get the focus
