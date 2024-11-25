@@ -127,8 +127,9 @@ export type ProgressStart = {
 export type ProgressFile = {
     kind: "file",
     fileName: string
-    progress: number
+    currentBytes: number
     currentFiles: number
+
 }
 
 export type ProgressBytes = {

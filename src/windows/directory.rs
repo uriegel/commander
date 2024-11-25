@@ -57,6 +57,7 @@ pub fn get_icon(path: &str)->Result<(String, Vec<u8>), Error> {
 
 pub fn update_directory_item(item: DirectoryItem, metadata: &Metadata)->DirectoryItem {
     let size = metadata.len();
+    // TODO update versions!!
     let time =  metadata.modified()
                 .ok()
                 .and_then(|t|t.duration_since(UNIX_EPOCH).ok())

@@ -16,12 +16,12 @@ pub fn start_progress(total_files: u32, total_size: u64, mov: bool) {
     });
 }
 
-pub fn file_progress(current_name: String, progress: f64, current_files: u32) {
+pub fn file_progress(current_name: String, _progress: f64, current_bytes: u64, current_files: u32) {
     let _ = serde_json::to_string(
         &ProgressFile { 
             kind: "file",
             file_name: &current_name,
-            progress,
+            current_bytes,
             current_files
         }
     ).inspect(|script| {
@@ -72,8 +72,8 @@ pub struct ProgressFinished<'a> {
 pub struct ProgressFile<'a> {
     pub kind: &'a str,
     pub file_name: &'a str,
-    pub progress: f64,
-    pub current_files: u32
+    pub current_files: u32,
+    pub current_bytes: u64
 }
 
 // pub fn reset_progress_cancel() {
