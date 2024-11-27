@@ -24,27 +24,18 @@
         --mbr-menubar-selected-background-color: var(--vtr-selected-background-color);
 
         --wdr-main-background-color: #f6f5f4;
-        --wdr-buttons-gap: 0px;
-        --wdr-buttons-float: none;
-        --wdr-button-background-color: #f6f5f4;
+        --wdr-button-background-color: #ebebeb;
         --wdr-button-color: black;
-        --wdr-button-hover-background-color: white;
-        --wdr-button-active-background-color: #d6d1cd;   
-        --wdr-button-margin: 20px 0px 0px 0px;
-        --wdr-button-flexgrow: 1;
-        --wdr-button-marginleft: 0px;
+        --wdr-button-padding: 5px 25px;
+        --wdr-button-hover-background-color: #dcdcdc;
+        --wdr-button-active-background-color: #bebebe;   
         --wdr-button-focus-color: blue;    
-        --wdr-button-cornerradius: 0px;
-        --wdr-button-left-cornerradius: var(--wdr-button-buttomradius);
-        --wdr-button-right-cornerradius: var(--wdr-button-buttomradius);
         --wdr-button-bordercolor: lightgray;
         --wdr-button-borderstyle: solid;
-        --wdr-button-borderwidth: 1px 0px 1px 1px;
-        --wdr-button-first-borderwidth: 0px;
-        --wdr-button-buttomradius: 5px;
-        --wdr-button-padding: 10px 50px;
-        --wdr-button-outlinestyle: dotted;
-        --wdr-button-outlineoffset: -2px;
+        --wdr-button-cornerradius: 5px;
+        --wdr-button-outlinestyle: solid;
+        --wdr-button-outlineoffset: 0px;
+        --wdr-input-selection-color: #3584e4;
         --wdr-input-selection-color: var(--vtr-selected-background-color);
     }
 }
@@ -88,27 +79,23 @@
     
         --wdr-main-color: white;
         --wdr-main-background-color: #353535;
-        --wdr-buttons-gap: 0px;
-        --wdr-buttons-float: none;
-        --wdr-button-background-color: #353535;
+        --wdr-button-background-color: #454545;
         --wdr-button-color: white;
-        --wdr-button-hover-background-color: #4b4b4b;
-        --wdr-button-active-background-color: #242424;   
-        --wdr-button-margin: 20px 0px 0px 0px;
-        --wdr-button-flexgrow: 1;
-        --wdr-button-marginleft: 0px;
+        --wdr-button-padding: 5px 25px;
+        --wdr-button-hover-background-color: #4f4f4f;
+        --wdr-button-active-background-color: #6e6e6e;   
         --wdr-button-focus-color: rgb(126, 126, 126);    
-        --wdr-button-cornerradius: 0px;
-        --wdr-button-left-cornerradius: var(--wdr-button-buttomradius);
-        --wdr-button-right-cornerradius: var(--wdr-button-buttomradius);
         --wdr-button-bordercolor: black;
         --wdr-button-borderstyle: solid;
-        --wdr-button-borderwidth: 1px 0px 1px 1px;
-        --wdr-button-first-borderwidth: 0px;
-        --wdr-button-buttomradius: 5px;
-        --wdr-button-padding: 10px 50px;
-        --wdr-button-outlinestyle: dotted;
-        --wdr-button-outlineoffset: -2px;
+        --wdr-button-cornerradius: 5px;
+        --wdr-button-outlinestyle: solid;
+        --wdr-button-outlineoffset: 0px;
+        --wdr-cancel-hover-color: white;
+        --wdr-cancel-active-color: white;
+        --wdr-cancel-color: white;
+        --wdr-cancel-background-color: #353535;
+        --wdr-cancel-background-hover-color: #4b4b4b;
+        --wdr-cancel-background-active-color: #242424;
         --wdr-input-selection-color: var(--vtr-selected-background-color);
     }   
 }

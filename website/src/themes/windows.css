@@ -14,6 +14,26 @@
         --mbr-menubar-background-color: var(--scaffolding-background-color);
         --mbr-menubar-submenu-background-color: white;
         --mbr-menubar-selected-background-color: var(--vtr-selected-background-color);
+
+        --wdr-cancel-border-radius: 0px 10px 0px 0px;
+        --wdr-cancel-margin-right: 0px;
+        --wdr-cancel-margin-top: 0px;
+        --wdr-cancel-padding: 6px 10px;
+        --wdr-cancel-hover-color: white;
+        --wdr-cancel-active-color: white;
+        --wdr-cancel-background-color: white;
+        --wdr-cancel-background-hover-color: red;
+        --wdr-cancel-background-active-color: rgb(255, 89, 89);
+        --wdr-button-default-background-color: blue;
+        --wdr-button-default-color: white;
+        --wdr-button-default-background-hover-color: #7979ff;
+        --wdr-button-default-background-active-color: #01018e;
+    
+        --wdr-button-font-weight: normal;
+        --wdr-button-background-color: #ebebeb;
+        --wdr-button-color: black;
+        --wdr-button-hover-background-color: #dcdcdc;
+        --wdr-button-active-background-color: #bebebe;   
     }
 }
 
@@ -55,12 +75,28 @@
     
         --wdr-main-color: white;
         --wdr-main-background-color: #353535;
-        --wdr-button-background-color: #505050;
+        --wdr-cancel-border-radius: 0px 10px 0px 0px;
+        --wdr-cancel-margin-right: 0px;
+        --wdr-cancel-margin-top: 0px;
+        --wdr-cancel-padding: 6px 10px;
+        --wdr-cancel-hover-color: white;
+        --wdr-cancel-active-color: white;
+        --wdr-cancel-color: white;
+        --wdr-cancel-background-color: #353535;
+        --wdr-cancel-background-hover-color: red;
+        --wdr-cancel-background-active-color: rgb(255, 89, 89);
+    
+        --wdr-button-default-background-color: blue;
+        --wdr-button-default-color: white;
+        --wdr-button-default-background-hover-color: #7979ff;
+        --wdr-button-default-background-active-color: #01018e;
+        --wdr-button-focus-color: rgb(126, 126, 126);    
+    
+        --wdr-button-font-weight: normal;
+        --wdr-button-background-color: #454545;
         --wdr-button-color: white;
-        --wdr-button-hover-background-color: #4b4b4b;
-        --wdr-button-active-background-color: #242424;
-        --wdr-button-focus-color: blue;
-        --wdr-button-bordercolor: black;
+        --wdr-button-hover-background-color: #4f4f4f;
+        --wdr-button-active-background-color: #6e6e6e;   
         --wdr-input-selection-color: #3584e4;
     }    
 }
