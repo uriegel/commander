@@ -100,6 +100,9 @@ fn main() {
 // TODO Linux ProgressControl Byte scale
 // TODO copy from remote
 
+// TODO copy from remote (Windows) copies only 515 bytes!
+// TODO MKV (ali) not playing
+
 // TODO Rename as copy
 // TODO OnEnter
 
