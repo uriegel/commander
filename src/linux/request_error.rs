@@ -15,6 +15,7 @@ impl From<gtk::glib::Error> for RequestError {
                     IOErrorEnum::NotFound => ErrorType::FileNotFound,
                     IOErrorEnum::PermissionDenied => ErrorType::AccessDenied,
                     IOErrorEnum::Cancelled => ErrorType::Cancelled,
+                    IOErrorEnum::NotSupported => ErrorType::NotSupported,
                     _ => ErrorType::Unknown
                 }
             } else {

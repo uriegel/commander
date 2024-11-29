@@ -1,6 +1,7 @@
-use std::{fs::{self, File, Metadata}, process::Command, time::UNIX_EPOCH};
+use std::{fs::{self, File, Metadata}, path::PathBuf, process::Command, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
+use gtk::{gio::{Cancellable, FileCopyFlags}, prelude::FileExt};
 use serde::Serialize;
 
 use crate::{
@@ -101,6 +102,12 @@ pub fn update_directory_item(item: DirectoryItem, metadata: &Metadata)->Director
 
 pub trait StringExt {
     fn clean_path(&self) -> String;
+}
+
+pub fn move_item(source_file: &PathBuf, target_file: &PathBuf)->Result<(), RequestError> {
+    gtk::gio::File::for_path(source_file).move_(&gtk::gio::File::for_path(target_file), 
+    FileCopyFlags::OVERWRITE | FileCopyFlags::NO_FALLBACK_FOR_MOVE, None::<&Cancellable>, None)?;
+    Ok(())
 }
 
 pub fn copy_attributes(source_file: &File, target_file: &File)->Result<(), RequestError> {
