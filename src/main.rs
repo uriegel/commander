@@ -94,11 +94,13 @@ fn main() {
     .run();
 }
 
-// TODO move for windows and linux with rust and native methods without progress
 // TODO cancel copy 
 // TODO if Linux ProgressControl dialog is away, react doesn't get the focus
 // TODO Linux ProgressControl Byte scale
 // TODO copy from remote
+
+// TODO copy from remote (Windows) copies only 515 bytes!
+// TODO MKV (ali) not playing
 
 // TODO Rename as copy
 // TODO OnEnter

@@ -78,7 +78,7 @@ const TrackViewer = ({ path }: TrackViewerProps) => {
     }, [path])
 
     useResizeObserver(root.current, () => {
-        myMap.current?.invalidateSize({ debounceMoveend: true, animate: true })    
+        setTimeout(() => myMap.current?.invalidateSize({ debounceMoveend: true, animate: true }), 100)    
     })
 
     const onPosition = (pos: number) => {
@@ -102,7 +102,8 @@ const TrackViewer = ({ path }: TrackViewerProps) => {
     return (
         <div className="trackView" ref={root}>
             <MapContainer className='track' ref={myMap} center={[0, 0]} zoom={13} scrollWheelZoom={true} >
-                <TileLayer attribution='' url="https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png" />
+                {/* <TileLayer attribution='' url="https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png" /> */}
+                <TileLayer attribution='' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <Marker position={track[position] as LatLngExpression}></Marker> 
                 <Polyline pathOptions={{ fillColor: 'red', color: 'blue' }}
                     positions={track as LatLngExpression[]}/>

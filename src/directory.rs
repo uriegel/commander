@@ -16,7 +16,7 @@ use crate::{error::Error, progresses::{CurrentProgress, ProgressStream, TotalPro
 #[cfg(target_os = "windows")]
 use crate::windows::directory::{is_hidden, StringExt, get_icon_path, ConflictItem, update_directory_item, copy_attributes};
 #[cfg(target_os = "linux")]
-use crate::linux::directory::{is_hidden, StringExt, get_icon_path, mount, update_directory_item, ConflictItem, copy_attributes};
+use crate::linux::directory::{is_hidden, StringExt, get_icon_path, mount, update_directory_item, ConflictItem, copy_attributes, move_item};
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -289,6 +289,22 @@ fn copy_item(mov: bool, input: &CopyItems, file: &str, size: u64, progress: &Cur
     let target_path = PathBuf::from(&input.target_path).join(file);
     //reset_copy_cancellable();
 
+    if !mov {
+        copy(&source_path, &target_path, size, progress)?;  
+    } else {
+        match move_item(&source_path, &target_path) {
+            Err(err) if err.status == ErrorType::NotSupported => {
+                copy(&source_path, &target_path, size, progress)?;
+                fs::remove_file(&source_path)?;
+            },
+            Err(err) => return Err(err),
+            _ => {}
+        }
+    }
+    Ok(())
+}
+
+fn copy(source_path: &PathBuf, target_path: &PathBuf, size: u64, progress: &CurrentProgress)->Result<(), RequestError> {
     let source_file = File::open(source_path)?;
     let _ = rm_rf::remove(&target_path);
     let target_file = File::create(target_path)?;
@@ -306,7 +322,6 @@ fn copy_item(mov: bool, input: &CopyItems, file: &str, size: u64, progress: &Cur
     }
     target_stream.flush()?;
     copy_attributes(&source_file, &target_file)?;
-    if mov {} // TODO move
     Ok(())
 }
 

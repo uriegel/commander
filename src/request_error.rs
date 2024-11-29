@@ -22,7 +22,7 @@ impl RequestError {
     }
 }
 
-#[derive(Debug, Serialize_repr)]
+#[derive(Debug, PartialEq, Serialize_repr)]
 #[repr(u32)]
 pub enum ErrorType {
     Unknown = 0,

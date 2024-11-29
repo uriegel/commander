@@ -20,13 +20,14 @@ const LocationViewer = ({ latitude, longitude }: LocationViewerProps) => {
     }, [latitude, longitude])
 
     useResizeObserver(root.current, () => {
-        myMap.current?.invalidateSize({ debounceMoveend: true, animate: true })    
+        setTimeout(() => myMap.current?.invalidateSize({ debounceMoveend: true, animate: true }), 100)    
     })
 
     return (
         <div className="locationView" ref={root}>
             <MapContainer className='location' ref={myMap} center={[latitude, longitude]} zoom={13} scrollWheelZoom={true} >
-                <TileLayer attribution='' url="https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png" />
+                {/* <TileLayer attribution='' url="https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png" /> */}
+                <TileLayer attribution='' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <Marker position={[latitude, longitude]}>
                     <Popup>Der Aufnahmestandort.</Popup>
                 </Marker>
