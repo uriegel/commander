@@ -14,7 +14,7 @@ use trash::delete_all;
 use crate::{error::Error, progresses::{CurrentProgress, ProgressStream, TotalProgress}, remote::copy_from_remote, request_error::{ErrorType, RequestError}};
 
 #[cfg(target_os = "windows")]
-use crate::windows::directory::{is_hidden, StringExt, get_icon_path, ConflictItem, update_directory_item, copy_attributes};
+use crate::windows::directory::{is_hidden, StringExt, get_icon_path, ConflictItem, update_directory_item, copy_attributes, move_item};
 #[cfg(target_os = "linux")]
 use crate::linux::directory::{is_hidden, StringExt, get_icon_path, mount, update_directory_item, ConflictItem, copy_attributes, move_item};
 
@@ -295,7 +295,7 @@ fn copy_item(mov: bool, input: &CopyItems, file: &str, size: u64, progress: &Cur
         match move_item(&source_path, &target_path) {
             Err(err) if err.status == ErrorType::NotSupported => {
                 copy(&source_path, &target_path, size, progress)?;
-                fs::remove_file(&source_path)?;
+                let _ = rm_rf::remove(&source_path);
             },
             Err(err) => return Err(err),
             _ => {}

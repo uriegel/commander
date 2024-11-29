@@ -7,6 +7,7 @@ impl From<windows_result::Error> for RequestError {
                 0x80070002 => ErrorType::FileNotFound,
                 0x80070005 => ErrorType::AccessDenied,
                 0x800704D3 => ErrorType::Cancelled,
+                0x80070011 => ErrorType::NotSupported,
                 _ => ErrorType::Unknown                        
             };
         RequestError {

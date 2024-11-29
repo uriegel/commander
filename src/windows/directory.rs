@@ -2,8 +2,11 @@ use std::{fs::{File, Metadata}, os::windows::fs::MetadataExt, path::PathBuf, tim
 
 use chrono::{DateTime, Utc};
 use serde::Serialize;
+use windows::{core::PCWSTR, Win32::Storage::FileSystem::{MoveFileWithProgressW, MOVEFILE_REPLACE_EXISTING, MOVEFILE_WRITE_THROUGH}};
 
 use crate::{directory::{get_extension, DirectoryItem}, error::Error, request_error::RequestError};
+
+use super::string_to_pcwstr;
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -65,6 +68,15 @@ pub fn update_directory_item(item: DirectoryItem, metadata: &Metadata)->Director
     DirectoryItem { size, time, ..item }
 }
 
+pub fn move_item(source_file: &PathBuf, target_file: &PathBuf)->Result<(), RequestError> {
+    let source_file = string_to_pcwstr(&source_file.to_string_lossy());
+    let target_file = string_to_pcwstr(&target_file.to_string_lossy());
+    unsafe { MoveFileWithProgressW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), 
+        None, None, MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH)?; 
+    }
+    Ok(())
+}
+
 pub fn copy_attributes(source_file: &File, target_file: &File)->Result<(), RequestError> {
     let meta = source_file.metadata()?;
     let modified = meta.modified()?;
@@ -72,41 +84,6 @@ pub fn copy_attributes(source_file: &File, target_file: &File)->Result<(), Reque
     target_file.set_permissions(meta.permissions())?;
     Ok(())
 }
-
-// fn copy(input: &CopyItems, items: Vec<(&String, u64)>, cpy: *const c_void)->Result<(), RequestError> {
-//     items.iter().try_fold(ProgressFiles::default(), |curr, (file, file_size)| {
-//         let progress_files = curr.get_next(file, *file_size);
-//         let source_file = PathBuf::from(&input.path).join(&file);
-//         let target_file = PathBuf::from(&input.target_path).join(&file);
-//         let ps = ProgressFile {
-//             kind: "file",
-//             file_name: file,
-//             current_bytes: progress_files.get_current_bytes(),
-//             current_file: progress_files.index
-//         };
-//         WebView::execute_javascript(&format!("progresses({})", serde_json::to_string(&ps)?)); 
-//         let res = copy_item(source_file, target_file, input.job_type == JobType::Move, cpy);
-//         res?;
-//         Ok::<_, RequestError>(progress_files)
-//     })?;
-//     Ok(())
-// }
-
-// fn copy_item(source_file: PathBuf, target_file: PathBuf, move_: bool, cpy: *const c_void)->Result<(), RequestError> {
-//     if !move_ {
-//         let source_file = string_to_pcwstr(&source_file.to_string_lossy());
-//         let target_file = string_to_pcwstr(&target_file.to_string_lossy());
-//         unsafe { CopyFileExW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), 
-//             Some(progress_callback), Some(cpy), None, 0)?; }
-//     } else {
-//         let source_file = string_to_pcwstr(&source_file.to_string_lossy());
-//         let target_file = string_to_pcwstr(&target_file.to_string_lossy());
-//         unsafe { MoveFileWithProgressW(PCWSTR(source_file.as_ptr()), PCWSTR(target_file.as_ptr()), 
-//             Some(progress_callback), Some(cpy), 
-//             MOVEFILE_COPY_ALLOWED | MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH)?; }
-//     }    
-//     Ok(())
-// }
 
 pub trait StringExt {
     fn clean_path(&self) -> String;
