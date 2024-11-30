@@ -14,8 +14,6 @@ export class FileSystemCopyController extends CopyController {
             path: sourcePath,
             targetPath
         })
-
-        console.log("Af", af)
         return af
     }
 }

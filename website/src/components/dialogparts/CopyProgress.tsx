@@ -30,7 +30,6 @@ const CopyProgress = () => {
         })
         const bytesEvents = progressBytesEvents.subscribe(e => {
             if (e.currentBytes != 0) {
-                console.log(e.totalBytes, e.currentBytes, e.completeCurrentBytes)
                 setMax(e.totalBytes)
                 setValue(e.currentBytes)
                 setTotalValue(e.currentBytes + e.completeCurrentBytes)

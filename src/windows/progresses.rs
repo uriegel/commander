@@ -1,7 +1,7 @@
 use serde::Serialize;
 use webview_app::webview::WebView;
 
-use crate::request_error::RequestError;
+use crate::{cancellations::{self, CancellationType}, request_error::RequestError};
 
 pub fn start_progress(total_files: u32, total_size: u64, mov: bool) {
     let _ = serde_json::to_string(
@@ -76,12 +76,8 @@ pub struct ProgressFile<'a> {
     pub current_bytes: u64
 }
 
-// pub fn reset_progress_cancel() {
-//     unsafe { PROGRESS_CANCEL = false; }
-// }
-
 pub fn cancel_copy()->Result<(), RequestError> {
-//     unsafe { PROGRESS_CANCEL = true; }
+    let _ = cancellations::cancel(None, CancellationType::Copy);
     Ok(())
 }
 
@@ -94,4 +90,3 @@ struct ProgressBytes<'a> {
     total_seconds: i32
 }
 
-//static mut PROGRESS_CANCEL: bool = false;

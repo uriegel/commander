@@ -118,22 +118,8 @@ pub fn copy_attributes(source_file: &File, target_file: &File)->Result<(), Reque
     Ok(())
 }
 
-// pub fn reset_copy_cancellable() {
-//     unsafe { COPY_CANCELLABLE.replace(Cancellable::new()) }; 
-// }
-
-// pub fn get_copy_cancellable()->Option<Cancellable> {
-//     unsafe { COPY_CANCELLABLE.clone() }
-// }
-
-// pub fn cancel_copy() {
-//     unsafe { COPY_CANCELLABLE.clone().inspect(|c|c.cancel())};
-// }
-
 impl StringExt for String {
     fn clean_path(&self) -> String {
         self.clone()
     }
 }
-
-//static mut COPY_CANCELLABLE: Option<Cancellable> = None; 

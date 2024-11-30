@@ -19,12 +19,12 @@ pub fn on_request(request: &Request, id: String, cmd: String, json: String)->boo
             "deleteitems" => from_result(delete_items(get_input(&json))),
             "renameitem" => from_result(rename_item(get_input(&json))),
             "gettrackinfo" => from_result(get_track_info(get_input(&json))),
+            "checkcopyitems" => from_result(check_copy_items(get_input(&json))),
             "copyitems" => from_result(copy_items(get_input(&json))),
             "renameitems" => from_result(rename_items(get_input(&json))),
-            "checkcopyitems" => from_result(check_copy_items(get_input(&json))),
             "getremotefiles" => from_result(get_remote_files(get_input(&json))),
             #[cfg(target_os = "windows")]
-            "cancelCopy" => from_result(cancel_copy()),
+            "cancelcopy" => from_result(cancel_copy()),
             _ => from_result(Ok::<(), RequestError>(()))
         }
     });

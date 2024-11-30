@@ -41,7 +41,7 @@ const Titlebar = ({ menu, }: TitlebarProps) => {
             })
             dialogOpen.current = false
             if (res?.result == ResultType.Ok)
-                await webViewRequest("cancelCopy")
+                await webViewRequest("cancelcopy")
         }
 
         start()
