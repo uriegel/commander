@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 use core::str;
-use std::{io::{BufRead, BufReader, BufWriter, Read, Write}, net::TcpStream};
+use std::{io::{BufRead, BufReader, BufWriter, Read, Write}, net::TcpStream, sync::mpsc::Receiver};
 
 use serde::de::DeserializeOwned;
 
@@ -62,11 +62,11 @@ impl WebRequest {
 
     }
 
-    pub fn download<W>(&mut self, writer: &mut W) -> Result<(), RequestError>
+    pub fn download<W>(&mut self, writer: &mut W, rcv: &Receiver<bool>) -> Result<(), RequestError>
     where W: ?Sized + Write {
         if let Some(mut len) = self.get_header(CONTENT_LENGTH).map(|l|l.parse::<usize>().unwrap_or(0)) {
             let mut buf = vec![0; usize::min(8192, len)];
-            loop {
+            while let Err(std::sync::mpsc::TryRecvError::Empty) = rcv.try_recv() {
                 let buf_slice = &mut buf[..usize::min(8192, len)];
                 let read = self.buf_reader.read(buf_slice)?;
                 len = len - read;

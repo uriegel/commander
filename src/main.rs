@@ -94,12 +94,12 @@ fn main() {
     .run();
 }
 
-// TODO cancel copy 
 // TODO if Linux ProgressControl dialog is away, react doesn't get the focus
 // TODO Linux ProgressControl Byte scale
 // TODO copy from remote
 
 // TODO copy from remote (Windows) copies only 515 bytes!
+// TODO Windows update versions!!
 
 // TODO Rename as copy
 // TODO OnEnter

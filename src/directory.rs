@@ -296,18 +296,12 @@ fn create_copy_item(item: DirectoryItem, path: &str, target_path: &str)->Result<
 fn copy_item(mov: bool, input: &CopyItems, file: &str, size: u64, progress: &CurrentProgress, rcv: &Receiver<bool>)->Result<(), RequestError> {
     let source_path = PathBuf::from(&input.path).join(file);
     let target_path = PathBuf::from(&input.target_path).join(file);
-    //reset_copy_cancellable();
-
-    // TODO cancel copy per buffer copy
-    let affe = rcv.try_recv();
-
-
     if !mov {
-        copy(&source_path, &target_path, size, progress)?;  
+        copy(&source_path, &target_path, size, progress, rcv)?;  
     } else {
         match move_item(&source_path, &target_path) {
             Err(err) if err.status == ErrorType::NotSupported => {
-                copy(&source_path, &target_path, size, progress)?;
+                copy(&source_path, &target_path, size, progress, rcv)?;
                 let _ = rm_rf::remove(&source_path);
             },
             Err(err) => return Err(err),
@@ -317,7 +311,7 @@ fn copy_item(mov: bool, input: &CopyItems, file: &str, size: u64, progress: &Cur
     Ok(())
 }
 
-fn copy(source_path: &PathBuf, target_path: &PathBuf, size: u64, progress: &CurrentProgress)->Result<(), RequestError> {
+fn copy(source_path: &PathBuf, target_path: &PathBuf, size: u64, progress: &CurrentProgress, rcv: &Receiver<bool>)->Result<(), RequestError> {
     let source_file = File::open(source_path)?;
     let _ = rm_rf::remove(&target_path);
     let target_file = File::create(target_path)?;
@@ -325,7 +319,8 @@ fn copy(source_path: &PathBuf, target_path: &PathBuf, size: u64, progress: &Curr
     let mut source_stream = BufReader::new(&source_file);
     let mut target_stream = ProgressStream::new(BufWriter::new(&target_file), |p| progress.send_bytes(p as u64));
     let mut buf = vec![0; usize::min(8192, size as usize)];
-    loop {
+
+    while let Err(std::sync::mpsc::TryRecvError::Empty) = rcv.try_recv() {
         let read = source_stream.read(&mut buf)?;
         if read == 0 {
             break;
