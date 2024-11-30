@@ -70,8 +70,6 @@ pub fn copy_from_remote(_mov: bool, input: &CopyItems, file: &str, progress: &Cu
         .and_then(|x|DateTime::from_timestamp_millis(x)) 
         .map(|dt|SystemTime::from(dt))
         .inspect(|st|{ let _ = file.set_modified(*st); });
-
-    // TODO , use this??? or another cancel mechanism
     Ok(())
 }
 

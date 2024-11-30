@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::time::Duration;
 use std::{cell::Cell, f64::consts::PI};
 use gtk::glib::{clone, spawn_future_local, timeout_future, Properties};
-use gtk::{glib, Button, CompositeTemplate, DrawingArea, Label, ProgressBar, Revealer};
+use gtk::{glib, template_callbacks, Button, CompositeTemplate, DrawingArea, Label, ProgressBar, Revealer};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 
@@ -71,6 +71,7 @@ impl ObjectSubclass for ProgressDisplay {
 
 	fn class_init(klass: &mut Self::Class) {
 		klass.bind_template();
+        klass.bind_template_callbacks();
 	}
 
 	fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
@@ -175,9 +176,6 @@ impl ObjectImpl for ProgressDisplay {
             c.set_source_rgb(fill_color.red, fill_color.green, fill_color.blue);
             let _ = c.fill();
         });
-
-        // TODO close Progress immediately
-        self.cancel_btn.connect_clicked(|_| { let _ = cancellations::cancel(None, CancellationType::Copy); });
     }	
 }
 
@@ -186,6 +184,15 @@ impl WidgetImpl for ProgressDisplay {}
 
 // Trait shared by all boxes
 impl BoxImpl for ProgressDisplay {}
+
+#[template_callbacks]
+impl ProgressDisplay {
+    #[template_callback]
+    fn handle_cancel(&self, _: &Button) {
+        let _ = cancellations::cancel(None, CancellationType::Copy);
+        self.revealer.set_reveal_child(false);
+    }
+}
 
 struct RGB {
     red: f64,

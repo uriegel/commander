@@ -132,6 +132,7 @@
                     <child>
                       <object class="GtkButton" id="cancel_btn">
                         <property name="label">Abbrechen</property>
+                        <signal name="clicked" handler="handle_cancel" swapped="true"/>
                       </object>
                     </child>
                   </object>
