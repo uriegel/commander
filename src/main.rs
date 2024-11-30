@@ -94,6 +94,8 @@ fn main() {
     .run();
 }
 
+// TODO Cancel Copy Windows
+
 // TODO if Linux ProgressControl dialog is away, react doesn't get the focus
 // TODO Linux ProgressControl Byte scale
 // TODO copy from remote
