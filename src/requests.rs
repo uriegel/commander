@@ -4,7 +4,7 @@ use crate::{directory::{check_copy_items, copy_items, create_folder, delete_item
     cancel_extended_items, get_extended_items
 }, remote::get_remote_files, request_error::{from_result, RequestError}, tracks::get_track_info};
 #[cfg(target_os = "linux")]
-use crate::linux::root::get_root;
+use crate::linux:: {root::get_root, directory::on_enter};
 #[cfg(target_os = "windows")]
 use crate::windows::{root::get_root, progresses::cancel_copy};
 
@@ -23,6 +23,7 @@ pub fn on_request(request: &Request, id: String, cmd: String, json: String)->boo
             "copyitems" => from_result(copy_items(get_input(&json))),
             "renameitems" => from_result(rename_items(get_input(&json))),
             "getremotefiles" => from_result(get_remote_files(get_input(&json))),
+            "onenter" => from_result(on_enter(get_input(&json))),
             #[cfg(target_os = "windows")]
             "cancelcopy" => from_result(cancel_copy()),
             _ => from_result(Ok::<(), RequestError>(()))

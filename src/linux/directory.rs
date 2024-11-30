@@ -2,7 +2,7 @@ use std::{fs::{self, File, Metadata}, path::PathBuf, process::Command, time::UNI
 
 use chrono::{DateTime, Utc};
 use gtk::{gio::{Cancellable, FileCopyFlags}, prelude::FileExt};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::{
     directory::DirectoryItem, error::Error, extended_items::{GetExtendedItems, Version}, request_error::RequestError, str::StrExt};
@@ -19,6 +19,12 @@ pub struct ConflictItem {
     time: Option<DateTime<Utc>>,
     target_size: u64,
     target_time: Option<DateTime<Utc>>
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OnEnter {
+    path: String
 }
 
 impl ConflictItem {
@@ -115,6 +121,13 @@ pub fn copy_attributes(source_file: &File, target_file: &File)->Result<(), Reque
     let modified = meta.modified()?;
     target_file.set_modified(modified)?;
     target_file.set_permissions(meta.permissions())?;
+    Ok(())
+}
+
+pub fn on_enter(input: OnEnter)->Result<(), RequestError> {
+    Command::new("xdg-open")
+        .arg(format!("{}", input.path))
+        .spawn()?;
     Ok(())
 }
 
