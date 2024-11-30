@@ -82,7 +82,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 	// const copyErrorSubscription = useRef<Subscription | null>(null)
 		
 	const copyItemsToInactive = useCallback(async (inactive: FolderViewHandle | null, move: boolean, activeController: Controller,
-			activePath: string, itemsToCopy: FolderViewItem[], id?: string) => {
+			activePath: string, itemsToCopy: FolderViewItem[], id: string) => {
 
 		if (!inactive)
 			return

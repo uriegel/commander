@@ -6,6 +6,7 @@ use gtk::{glib, Button, CompositeTemplate, DrawingArea, Label, ProgressBar, Reve
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 
+use crate::cancellations::{self, CancellationType};
 use crate::linux::theme::is_dark_theme;
 use crate::str::SizeExt;
 
@@ -13,6 +14,7 @@ use crate::str::SizeExt;
 #[properties(wrapper_type = super::ProgressDisplay)]
 #[template(resource = "/de/uriegel/commander/progress_display.ui")]
 pub struct ProgressDisplay {
+    pub id: String,
 	#[template_child]
     pub revealer: TemplateChild<Revealer>,	
 	#[template_child]
@@ -74,15 +76,6 @@ impl ObjectSubclass for ProgressDisplay {
 	fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
 		obj.init_template();
 	}
-}
-
-#[gtk::template_callbacks]
-impl ProgressDisplay {
-    #[template_callback]
-    pub fn handle_cancel(_: &Button) {
-        // TODO Cancel copy
-        println!("Känzel");
-    }
 }
 
 // Trait shared by all GObjects
@@ -183,7 +176,8 @@ impl ObjectImpl for ProgressDisplay {
             let _ = c.fill();
         });
 
-        // TODO self.cancel_btn.connect_clicked(|_| cancel_copy());
+        // TODO close Progress immediately
+        self.cancel_btn.connect_clicked(|_| { let _ = cancellations::cancel(None, CancellationType::Copy); });
     }	
 }
 

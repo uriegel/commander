@@ -1,10 +1,10 @@
-use std::{fs::File, io::BufReader, path::PathBuf, sync::mpsc::{channel, Sender, TryRecvError}};
+use std::{fs::File, io::BufReader, path::PathBuf, sync::mpsc::{channel, TryRecvError}};
 
 use chrono::{DateTime, Local, TimeZone};
 use exif::{Field, In, Tag, Value};
 use serde::{Deserialize, Serialize};
 
-use crate::{cancellations::{get_cancellation, CancellationKey}, request_error::RequestError };
+use crate::{cancellations::{self, CancellationType}, request_error::RequestError};
 
 #[cfg(target_os = "windows")]
 use crate::windows::version::get_version;
@@ -13,7 +13,7 @@ use crate::linux::directory::get_version;
 
 pub fn get_extended_items(input: GetExtendedItems)->Result<GetExtendedItemsResult, RequestError> {
     let (snd, rcv) = channel::<bool>();
-    change_cancellation(input.id.clone(), snd);
+    cancellations::reset(Some(input.id.clone()), CancellationType::ExtendedItem, snd);
     let path = input.path.clone(); 
     Ok(GetExtendedItemsResult {
         path,
@@ -33,16 +33,8 @@ pub fn get_extended_items(input: GetExtendedItems)->Result<GetExtendedItemsResul
 }
 
 pub fn cancel_extended_items(input: CancelExtendedItems)->Result<(), RequestError> {
-    let cancellation = get_cancellation().lock()?;
-    let cancel = cancellation.get(&CancellationKey::extended_item(input.id));
-    cancel.inspect(|snd|{let _ = snd.send(true);});
+    cancellations::cancel(Some(&input.id), CancellationType::ExtendedItem)?;
     Ok(())
-}
-
-fn change_cancellation(id: String, sender: Sender<bool>) {
-    let mut cancellation = get_cancellation().lock().unwrap();
-    let cancel = cancellation.insert(CancellationKey::extended_item(id), sender);
-    cancel.inspect(|snd|{let _ = snd.send(true);});
 }
 
 fn get_exif_data(input: &GetExtendedItems, item: &String) -> Option<ExifData> {

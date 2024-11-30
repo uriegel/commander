@@ -35,10 +35,8 @@ const Titlebar = ({ menu, }: TitlebarProps) => {
             const res = await dialog.show({
                 text: `Fortschritt beim ${move ? "Verschieben" : "Kopieren"} (${totalSize?.byteCountToString()})`,
                 btnCancel: true,
-                btnCancelText: "Abbrechen",
                 btnOk: true,
                 btnOkText: "Stoppen",
-                defBtnCancel: true,
                 extension: CopyProgress
             })
             dialogOpen.current = false

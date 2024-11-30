@@ -1,31 +1,40 @@
 use std::{collections::HashMap, sync::{mpsc::Sender, Arc, Mutex, Once}};
 
-pub fn get_cancellation()->&'static Arc<Mutex<HashMap<CancellationKey, Sender<bool>>>> {
+use crate::request_error::RequestError;
+
+#[derive(Hash, Eq, PartialEq, Debug)]
+pub enum CancellationType {
+    ExtendedItem,
+    Copy
+}
+
+#[derive(Hash, Eq, PartialEq, Debug)]
+pub struct CancellationKey {
+    id: Option<String>,
+    cancellation_type: CancellationType
+}
+
+pub fn reset(id: Option<String>, cancellation_type: CancellationType, sender: Sender<bool>) {
+    let mut cancellation = get().lock().unwrap();
+    let _ = cancellation.insert(CancellationKey { id, cancellation_type }, sender);
+}
+
+pub fn cancel(id: Option<&str>, cancellation_type: CancellationType)->Result<(), RequestError> {
+    let cancellation = get().lock()?;
+    let cancel = cancellation.get(&CancellationKey {
+        id: id.map(|s|s.to_string()), cancellation_type
+    });
+    cancel.inspect(|snd|{let _ = snd.send(true);});
+    Ok(())
+}
+
+fn get()->&'static Arc<Mutex<HashMap<CancellationKey, Sender<bool>>>> {
     unsafe {
         INIT.call_once(|| {
             CANCELLATION = Some(Arc::new(Mutex::new(HashMap::new())));
         });
         CANCELLATION.as_ref().unwrap()        
     }
-}
-
-#[derive(Hash, Eq, PartialEq, Debug)]
-pub struct CancellationKey {
-    id: String,
-    cancellation_type: CancellationType
-}
-
-impl CancellationKey {
-    pub fn extended_item(id: String)->Self {
-        CancellationKey {
-            id, cancellation_type: CancellationType::ExtendedItem
-        }
-    } 
-}
-
-#[derive(Hash, Eq, PartialEq, Debug)]
-enum CancellationType {
-    ExtendedItem
 }
 
 static INIT: Once = Once::new();

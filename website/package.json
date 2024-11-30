@@ -34,9 +34,9 @@
   },
   "scripts": {
     "dev": "vite",
-    "lint": "tsc && eslint .",
+    "lint": "tsc  -b && eslint .",
     "preview": "vite preview",
-    "build": "tsc && vite build"
+    "build": "tsc -b && vite build"
   },
   "eslintConfig": {
     "extends": "react-app"

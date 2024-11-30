@@ -3,7 +3,7 @@ use std::{
         self, canonicalize, create_dir, read_dir, rename, File
     }, io::{
         BufReader, BufWriter, ErrorKind, Read, Write
-    }, path::PathBuf, sync::{Mutex, MutexGuard, TryLockResult}, time::UNIX_EPOCH};
+    }, path::PathBuf, sync::{mpsc::{channel, Receiver}, Mutex, MutexGuard, TryLockResult}, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -11,7 +11,8 @@ use serde_repr::Deserialize_repr;
 use urlencoding::decode;
 use trash::delete_all;
 
-use crate::{error::Error, progresses::{CurrentProgress, ProgressStream, TotalProgress}, remote::copy_from_remote, request_error::{ErrorType, RequestError}};
+use crate::{cancellations::{self, CancellationType}, error::Error, progresses::{CurrentProgress, ProgressStream, TotalProgress}, 
+    remote::copy_from_remote, request_error::{ErrorType, RequestError}};
 
 #[cfg(target_os = "windows")]
 use crate::windows::directory::{is_hidden, StringExt, get_icon_path, ConflictItem, update_directory_item, copy_attributes, move_item};
@@ -248,26 +249,34 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
 
     let _binding = try_copy_lock()?;
 
+    let (snd, rcv) = channel::<bool>();
+    cancellations::reset(None, CancellationType::Copy, snd);
+
     let total_progress = TotalProgress::new(
         input.items.iter().fold(0u64, |curr, i|i.size + curr), 
         input.items.len() as u32, 
         input.job_type == JobType::Move
     );
 
-    for file in &input.items {
-        let current_progress = CurrentProgress::new(&total_progress, &file.name, file.size);
-        match input.job_type {
-            JobType::Copy => copy_item(false, &input, &file.name, file.size, &current_progress),
-            JobType::Move => copy_item(true, &input, &file.name, file.size, &current_progress),
-            JobType::CopyFromRemote => copy_from_remote(false, &input, &file.name, &current_progress),
-            _ => return Err(RequestError { status: ErrorType::NotSupported })
-        }?;
-    }
+    for file in input
+        .items
+        .iter()
+        .take_while(|_| match rcv.try_recv() {
+            Err(std::sync::mpsc::TryRecvError::Empty) => true,
+            _ => false
+        }) {
+            let current_progress = CurrentProgress::new(&total_progress, &file.name, file.size);
+            match input.job_type {
+                JobType::Copy => copy_item(false, &input, &file.name, file.size, &current_progress, &rcv),
+                JobType::Move => copy_item(true, &input, &file.name, file.size, &current_progress, &rcv),
+                JobType::CopyFromRemote => copy_from_remote(false, &input, &file.name, &current_progress, &rcv),
+                _ => return Err(RequestError { status: ErrorType::NotSupported })
+            }?;
+        };
     Ok(())
 }
 
 fn create_copy_item(item: DirectoryItem, path: &str, target_path: &str)->Result<(Option<DirectoryItem>, Option<ConflictItem>), RequestError> { 
-
     let updated_item = match fs::metadata(PathBuf::from(path).join(&item.name)) {
         Ok (meta) => Ok(Some(update_directory_item(item.copy(), &meta))),
         Err (err) if err.kind() == ErrorKind::NotFound => Ok(None),
@@ -284,10 +293,14 @@ fn create_copy_item(item: DirectoryItem, path: &str, target_path: &str)->Result<
     Ok((updated_item, conflict))
 }
 
-fn copy_item(mov: bool, input: &CopyItems, file: &str, size: u64, progress: &CurrentProgress)->Result<(), RequestError> {
+fn copy_item(mov: bool, input: &CopyItems, file: &str, size: u64, progress: &CurrentProgress, rcv: &Receiver<bool>)->Result<(), RequestError> {
     let source_path = PathBuf::from(&input.path).join(file);
     let target_path = PathBuf::from(&input.target_path).join(file);
     //reset_copy_cancellable();
+
+    // TODO cancel copy per buffer copy
+    let affe = rcv.try_recv();
+
 
     if !mov {
         copy(&source_path, &target_path, size, progress)?;  
