@@ -1,14 +1,9 @@
-use std::{fs, path::Path, sync::Once};
+use std::{fs, path::Path, sync::OnceLock};
 
 use crate::APP_ID;
 
 pub fn get_geticon_py()->&'static str {
-    unsafe {
-        INIT.call_once(|| {
-            GETICON_PY = Some(get_path());
-        });
-        GETICON_PY.as_ref().unwrap()        
-    }
+    GETICON_PY.get_or_init(|| get_path())
 }
 
 fn get_path()->String {
@@ -22,5 +17,4 @@ fn get_path()->String {
     path_app.to_string_lossy().to_string()
 }
 
-static INIT: Once = Once::new();
-static mut GETICON_PY: Option<String> = None;
+static GETICON_PY: OnceLock<String> = OnceLock::new();

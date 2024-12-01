@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::{mpsc::Sender, Arc, Mutex, Once}};
+use std::{collections::HashMap, sync::{mpsc::Sender, Arc, Mutex, OnceLock}};
 
 use crate::request_error::RequestError;
 
@@ -29,13 +29,7 @@ pub fn cancel(id: Option<&str>, cancellation_type: CancellationType)->Result<(),
 }
 
 fn get()->&'static Arc<Mutex<HashMap<CancellationKey, Sender<bool>>>> {
-    unsafe {
-        INIT.call_once(|| {
-            CANCELLATION = Some(Arc::new(Mutex::new(HashMap::new())));
-        });
-        CANCELLATION.as_ref().unwrap()        
-    }
+    CANCELLATION.get_or_init(||Arc::new(Mutex::new(HashMap::new())))
 }
 
-static INIT: Once = Once::new();
-static mut CANCELLATION: Option<Arc<Mutex<HashMap<CancellationKey, Sender<bool>>>>> = None;
+static CANCELLATION: OnceLock<Arc<Mutex<HashMap<CancellationKey, Sender<bool>>>>> = OnceLock::new();

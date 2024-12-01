@@ -1,11 +1,11 @@
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, OnceLock};
 
 use async_channel::Sender;
 
 use super::progress_display::ProgressDisplay;
 
 pub fn set_progress_sender(snd: Sender<Progresses>) {
-    unsafe { PROGRESS_SENDER = Some(Arc::new(Mutex::new(snd))) };
+    PROGRESS_SENDER.set(Arc::new(Mutex::new(snd))).unwrap()
 }
 
 pub fn start_progress(total_files: u32, total_size: u64, mov: bool) {
@@ -71,9 +71,7 @@ pub struct FileProgress {
 }
 
 fn get_sender()->&'static Arc<Mutex<Sender<Progresses>>> {
-    unsafe {
-        PROGRESS_SENDER.as_ref().unwrap()        
-    }
+    PROGRESS_SENDER.get().unwrap()        
 }
 
 impl Progresses {
@@ -106,5 +104,5 @@ impl Progresses {
     }
 }
 
-static mut PROGRESS_SENDER: Option<Arc<Mutex<Sender<Progresses>>>> = None;
+static PROGRESS_SENDER: OnceLock<Arc<Mutex<Sender<Progresses>>>> = OnceLock::new();
 
