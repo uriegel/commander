@@ -1,3 +1,5 @@
+use std::sync::{Mutex, OnceLock};
+
 use gtk::prelude::*;
 use gtk::Settings;
 
@@ -7,17 +9,23 @@ pub fn is_dark_theme() -> bool {
         settings.property::<bool>("gtk-application-prefer-dark-theme")
     }
 
-    unsafe {
-        if DARK_THEME.is_none() {
-            DARK_THEME.replace(retrieve_dark_theme());
+    // Initialize DARK_THEME if it hasn't been already
+    let dark_theme = DARK_THEME.get_or_init(|| Mutex::new(None));
 
-            let settings = Settings::default().expect("Failed to get default GtkSettings");
-            settings.connect_notify(Some("gtk-application-prefer-dark-theme"), |_settings, _| {
-                DARK_THEME.replace(retrieve_dark_theme());
-            });            
-        }
-        DARK_THEME.unwrap_or_default()
+    let mut dark_theme_lock = dark_theme.lock().unwrap();
+    if dark_theme_lock.is_none() {
+        *dark_theme_lock = Some(retrieve_dark_theme());
+
+        let settings = Settings::default().expect("Failed to get default GtkSettings");
+        let dark_theme_clone = DARK_THEME.get().unwrap();
+        settings.connect_notify(Some("gtk-application-prefer-dark-theme"), move |_settings, _| {
+            let new_value = retrieve_dark_theme();
+            let mut dark_theme_lock = dark_theme_clone.lock().unwrap();
+            *dark_theme_lock = Some(new_value);
+        });
     }
+
+    dark_theme_lock.unwrap_or_default()
 }
 
-static mut DARK_THEME: Option<bool> = None;
+static DARK_THEME: OnceLock<Mutex<Option<bool>>> = OnceLock::new();
