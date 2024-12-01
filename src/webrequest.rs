@@ -4,7 +4,7 @@ use std::{io::{BufRead, BufReader, BufWriter, Read, Write}, net::TcpStream, sync
 
 use serde::de::DeserializeOwned;
 
-use crate::request_error::RequestError;
+use crate::{directory::copy_not_cancelled, request_error::RequestError};
 
 pub struct WebRequest {
     headers: Vec<String>,
@@ -66,7 +66,7 @@ impl WebRequest {
     where W: ?Sized + Write {
         if let Some(mut len) = self.get_header(CONTENT_LENGTH).map(|l|l.parse::<usize>().unwrap_or(0)) {
             let mut buf = vec![0; usize::min(8192, len)];
-            while let Err(std::sync::mpsc::TryRecvError::Empty) = rcv.try_recv() {
+            while copy_not_cancelled(rcv) {
                 let buf_slice = &mut buf[..usize::min(8192, len)];
                 let read = self.buf_reader.read(buf_slice)?;
                 len = len - read;

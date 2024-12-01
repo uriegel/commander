@@ -11,7 +11,7 @@ use serde_repr::Deserialize_repr;
 use urlencoding::decode;
 use trash::delete_all;
 
-use crate::{cancellations::{self, CancellationType}, error::Error, progresses::{CurrentProgress, ProgressStream, TotalProgress}, 
+use crate::{cancellations::{self, cancel, CancellationType}, error::Error, progresses::{CurrentProgress, ProgressStream, TotalProgress}, 
     remote::copy_from_remote, request_error::{ErrorType, RequestError}};
 
 #[cfg(target_os = "windows")]
@@ -276,6 +276,15 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
     Ok(())
 }
 
+pub fn copy_not_cancelled(rcv: &Receiver<bool>)->bool {
+    if let Err(std::sync::mpsc::TryRecvError::Empty) = rcv.try_recv() {
+        true
+    } else {
+        let _ = cancel(None, CancellationType::Copy);
+        false
+    }
+}
+
 fn create_copy_item(item: DirectoryItem, path: &str, target_path: &str)->Result<(Option<DirectoryItem>, Option<ConflictItem>), RequestError> { 
     let updated_item = match fs::metadata(PathBuf::from(path).join(&item.name)) {
         Ok (meta) => Ok(Some(update_directory_item(item.copy(), &meta))),
@@ -320,7 +329,7 @@ fn copy(source_path: &PathBuf, target_path: &PathBuf, size: u64, progress: &Curr
     let mut target_stream = ProgressStream::new(BufWriter::new(&target_file), |p| progress.send_bytes(p as u64));
     let mut buf = vec![0; usize::min(8192, size as usize)];
 
-    while let Err(std::sync::mpsc::TryRecvError::Empty) = rcv.try_recv() {
+    while copy_not_cancelled(rcv) {
         let read = source_stream.read(&mut buf)?;
         if read == 0 {
             break;
