@@ -11,6 +11,7 @@
           <object class="GtkMenuButton">
             <property name="popover">
               <object class="GtkPopover">
+                <signal name="closed" handler="handle_closed" swapped="true"/>
                 <child>
                   <object class="GtkBox">
                     <property name="margin-bottom">20</property>

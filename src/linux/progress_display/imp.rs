@@ -2,11 +2,12 @@ use std::cell::RefCell;
 use std::time::Duration;
 use std::{cell::Cell, f64::consts::PI};
 use gtk::glib::{clone, spawn_future_local, timeout_future, Properties};
-use gtk::{glib, template_callbacks, Button, CompositeTemplate, DrawingArea, Label, ProgressBar, Revealer};
+use gtk::{glib, template_callbacks, Button, CompositeTemplate, DrawingArea, Label, Popover, ProgressBar, Revealer};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 
 use crate::cancellations::{self, CancellationType};
+use crate::linux::focus;
 use crate::linux::theme::is_dark_theme;
 use crate::str::SizeExt;
 
@@ -187,6 +188,12 @@ impl BoxImpl for ProgressDisplay {}
 
 #[template_callbacks]
 impl ProgressDisplay {
+    #[template_callback]
+    fn handle_closed(&self, _: &Popover) {
+        let focus = focus::get_sender().lock().unwrap();
+        let _ = focus.send_blocking(true);
+    }
+
     #[template_callback]
     fn handle_cancel(&self, _: &Button) {
         let _ = cancellations::cancel(None, CancellationType::Copy);

@@ -58,7 +58,10 @@ fn on_activate(app: &Application) -> WebView {
     #[cfg(target_os = "linux")]
     let webview_builder = webview_builder.with_builder(
         "/de/uriegel/commander/window.ui",
-        move |builder| HeaderBar::new(builder),
+        move |builder| {
+            linux::focus::initialize(builder);
+            HeaderBar::new(builder)
+        },
     );
 
     #[cfg(target_os = "windows")]
@@ -94,7 +97,6 @@ fn main() {
     .run();
 }
 
-// TODO if Linux ProgressControl dialog is away, react doesn't get the focus
 // TODO Linux ProgressControl Byte scale
 // TODO copy from remote
 
