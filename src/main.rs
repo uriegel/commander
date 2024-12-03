@@ -97,24 +97,21 @@ fn main() {
     .run();
 }
 
-// TODO copy from remote
+// TODO Apostrohes in path leads to panic in webview (Linux)
+// TODO no // on linux status bar in root   
+// TODO suppress developer tools in menus in release version
+
+// TODO Rename as copy
 
 // TODO copy from remote (Windows) copies only 515 bytes!
 // TODO Windows update versions!!
-
-// TODO Rename as copy
 // TODO OnEnter (Windows)
-
-// TODO Apostrohes in path leads to panic in webview (Linux)
 
 // TODO Copy Step2: copy items with directories (overwrite yes/no)
 // TODO Windows: unc-pathes in function canonicalize
+// TODO Copy to remote
 
 // TODO delay on loaded?
 // TODO Background color (dark, react not connected)
-
-// TODO no // on linux status bar in root   
-
-// TODO suppress developer tools in menus in release version
 
 // TODO Copy Step 3: Check if flatten source targets add show conflicts
