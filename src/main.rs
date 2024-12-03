@@ -97,14 +97,13 @@ fn main() {
     .run();
 }
 
-// TODO Linux ProgressControl Byte scale
 // TODO copy from remote
 
 // TODO copy from remote (Windows) copies only 515 bytes!
 // TODO Windows update versions!!
 
 // TODO Rename as copy
-// TODO OnEnter
+// TODO OnEnter (Windows)
 
 // TODO Apostrohes in path leads to panic in webview (Linux)
 

@@ -33,35 +33,34 @@ pub trait SizeExt {
 
 impl SizeExt for usize {
     fn byte_count_to_string(&self) -> String {
-        fn to_string(s: usize)-> String {
+        fn to_string(s: usize)-> (String, String) {
             let gb = (s as f32 / (1024 * 1024 * 1024) as f32).floor();
             let mb = s % (1024 * 1024 * 1024); 
             if gb >= 1.0 {
-                return format!("{},{} GB", gb, mb);
+                return (format!("{},{}", gb, mb), "GB".to_string());
             }
             let mb2 = (s as f32 / (1024 * 1024) as f32).floor();
             let kb = s % (1024 * 1024); 
             if mb2 >= 1.0 {
-                return format!("{},{} MB", mb2, kb);
+                return (format!("{},{}", mb2, kb), "MB".to_string());
             }
             let kb2 = (s as f32 / 1024 as f32).floor();
             let b = s % 1024; 
             if kb2 >= 1.0 {
-                format!("{},{} KB", kb2, b)
+                (format!("{},{}", kb2, b), "KB".to_string())
             }
             else {
-                format!("{} B", b)
+                (format!("{}", b),"B".to_string())
             }
         } 
 
-        // TODO ( ) and  GB, kB, B...
-        let str = to_string(*self);
+        let (str, unit) = to_string(*self);
         let pos = str.len() - str.find(',').unwrap_or(str.len());
         if pos > 3 {
-            str[0..str.len()-pos + 3].to_string()
+            format!("({} {})", &str[0..str.len()-pos + 3], unit)
         }
         else {
-            str
+            format!("({} {})", str, unit)
         }
     }
 }
