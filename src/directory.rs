@@ -208,6 +208,28 @@ pub fn rename_item(input: RenameItem)->Result<(), RequestError> {
     Ok(())
 }
 
+pub fn rename_as_copy(input: RenameItem)->Result<(), RequestError> {
+    let path = PathBuf::from(&input.path);
+    let source_file = File::open(path.join(input.name))?;
+    let target_file = File::create(path.join(input.new_name))?;
+
+    let mut source_stream = BufReader::new(&source_file);
+    let mut target_stream = BufWriter::new(&target_file);
+    let mut buf = vec![0; 8192];
+
+    loop {
+        let read = source_stream.read(&mut buf)?;
+        if read == 0 {
+            break;
+        }
+        let buf_slice = &mut buf[..read];
+        target_stream.write(buf_slice)?;
+    }
+    target_stream.flush()?;
+    copy_attributes(&source_file, &target_file)?;
+    Ok(())
+}
+
 pub fn try_copy_lock()->TryLockResult<MutexGuard<'static, bool>> {
     MUTEX.try_lock()
 }

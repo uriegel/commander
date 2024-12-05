@@ -1,8 +1,9 @@
 use webview_app::request::{get_input, request_blocking, Request};
 
-use crate::{directory::{check_copy_items, copy_items, create_folder, delete_items, get_files, rename_item, rename_items}, extended_items::{
-    cancel_extended_items, get_extended_items
-}, remote::get_remote_files, request_error::{from_result, RequestError}, tracks::get_track_info};
+use crate::{directory::{check_copy_items, copy_items, create_folder, delete_items, get_files, rename_item, rename_items, rename_as_copy}, 
+    extended_items::{
+        cancel_extended_items, get_extended_items
+    }, remote::get_remote_files, request_error::{from_result, RequestError}, tracks::get_track_info};
 #[cfg(target_os = "linux")]
 use crate::linux:: {root::get_root, directory::on_enter};
 #[cfg(target_os = "windows")]
@@ -18,6 +19,7 @@ pub fn on_request(request: &Request, id: String, cmd: String, json: String)->boo
             "createfolder" => from_result(create_folder(get_input(&json))),
             "deleteitems" => from_result(delete_items(get_input(&json))),
             "renameitem" => from_result(rename_item(get_input(&json))),
+            "renameascopy" => from_result(rename_as_copy(get_input(&json))),
             "gettrackinfo" => from_result(get_track_info(get_input(&json))),
             "checkcopyitems" => from_result(check_copy_items(get_input(&json))),
             "copyitems" => from_result(copy_items(get_input(&json))),

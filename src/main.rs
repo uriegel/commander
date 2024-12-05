@@ -97,8 +97,6 @@ fn main() {
     .run();
 }
 
-// TODO Rename as copy
-
 // TODO suppress developer tools in menus in release version (Windows)
 // TODO copy from remote (Windows) copies only 515 bytes!
 // TODO Windows update versions!!
