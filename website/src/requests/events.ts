@@ -2,10 +2,8 @@ import { filter, Subject } from 'rxjs'
 import { FolderViewItem } from '../components/FolderView'
 //import { Version } from './requests'
 //import { ErrorType } from 'functional-extensions'
-import { WebViewType, WebViewEvents } from '../webview.ts'
+import { WebViewEvents } from '../webview.ts'
 declare const webViewEvents: WebViewEvents
-
-declare const WebView: WebViewType
 
 // type FilesDrop = {
 //     id: string
@@ -62,27 +60,6 @@ export const getDirectoryChangedEvents = (folderId: string) =>
     directoryChangedEvents
         .pipe(filter(n => n.folderId == folderId))
 
-const initialize = () => {
-    WebView.registerEvents<string>("MenuAction", cmd => menuActionEvents.next(cmd))
-    WebView.registerEvents<boolean>("ShowHidden", hidden => showHiddenEvents.next(hidden))
-    WebView.registerEvents<boolean>("Preview", preview => showPreviewEvents.next(preview))
-    WebView.registerEvents<DirectoryChangedEvent>("DirectoryChanged", e => directoryChangedEvents.next(e))
-}
-try {
-    if (WebView)
-        initialize()
-} catch { console.log("Initializing web view after loading") }
-
-function onWebViewLoaded() {
-    initialize()
-}
-
-interface IWindow {
-    onWebViewLoaded: (cb: () => void)=>void
-}
-
-(window as unknown as IWindow).onWebViewLoaded = onWebViewLoaded
-        
 // export const folderViewItemsChangedEvents = commanderEvents
 //     .pipe(filter(n => n.serviceItems != undefined))
 //     .pipe(map(n => n.serviceItems!))

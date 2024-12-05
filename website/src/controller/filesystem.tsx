@@ -52,7 +52,7 @@ const getLinuxColumns = () => ({
 	renderRow,
 } as TableColumns<FolderViewItem>)
 
-const appendLinuxPath = (path: string, subPath: string) => `${path}/${subPath}`
+const appendLinuxPath = (path: string, subPath: string) => path != "/" ? `${path}/${subPath}` : `/${subPath}`
 
 const appendWindowsPath = (path: string, subPath: string) => path.length == 3 ? `${path}${subPath}` : `${path}\\${subPath}`
 

@@ -97,7 +97,6 @@ fn main() {
     .run();
 }
 
-// TODO no // on linux status bar in root   
 // TODO suppress developer tools in menus in release version
 
 // TODO Rename as copy
