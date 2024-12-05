@@ -63,7 +63,7 @@
             <attribute name="label">_Kopieren</attribute>
             <attribute name="action">app.copy</attribute>
           </item>
-          <item>
+          <item> 
             <attribute name="label">_Verschieben</attribute>
             <attribute name="action">app.move</attribute>
           </item>
@@ -105,7 +105,7 @@
           </item>
         </section>
       </submenu>
-      <submenu>
+      <submenu id="sub-menu-view">
         <attribute name="label">_Ansicht</attribute>
         <section>
           <item>

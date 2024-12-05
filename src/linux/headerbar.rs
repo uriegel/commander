@@ -1,12 +1,13 @@
 use std::time::Duration;
 
-use gtk::glib::{self, spawn_future_local, timeout_future};
-use gtk::glib::clone;
+use gtk::glib::{self, spawn_future_local, timeout_future, clone};
 use webkit6::prelude::*;
 use webkit6::{
     gtk::{ApplicationWindow, gio::ActionEntry, Builder},
     gio::Cancellable
 };
+#[cfg(not(debug_assertions))]
+use gtk::gio;
 
 use super::progress_display::ProgressDisplay;
 use super::progresses::set_progress_sender;
@@ -18,7 +19,7 @@ impl HeaderBar {
         let window: ApplicationWindow = builder.object("window").unwrap();
         let app = window.application().unwrap();
         let webview: webkit6::WebView = builder.object("webview").unwrap();
-
+        adapt_menu(builder);
         let action_devtools = ActionEntry::builder("devtools")
             .activate(clone!(#[weak]webview, move |_, _, _|{
                 let inspector = webview.inspector().unwrap();
@@ -196,3 +197,13 @@ impl HeaderBar {
     }
 }
 
+#[cfg(not(debug_assertions))]
+fn adapt_menu(builder: &Builder) {
+    builder
+    .object::<gio::Menu>("sub-menu-view")
+    .expect("Failed to get 'sub-menu-view'")
+    .remove(2);
+}
+
+#[cfg(debug_assertions)]
+fn adapt_menu(_: &Builder) {}
