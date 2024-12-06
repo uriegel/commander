@@ -28,7 +28,7 @@
         --wdr-button-default-color: white;
         --wdr-button-default-background-hover-color: #7979ff;
         --wdr-button-default-background-active-color: #01018e;
-    
+        --wdr-button-padding: 5px 25px;
         --wdr-button-font-weight: normal;
         --wdr-button-background-color: #ebebeb;
         --wdr-button-color: black;
@@ -91,7 +91,7 @@
         --wdr-button-default-background-hover-color: #7979ff;
         --wdr-button-default-background-active-color: #01018e;
         --wdr-button-focus-color: rgb(126, 126, 126);    
-    
+        --wdr-button-padding: 5px 25px;
         --wdr-button-font-weight: normal;
         --wdr-button-background-color: #454545;
         --wdr-button-color: white;
