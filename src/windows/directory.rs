@@ -1,7 +1,7 @@
 use std::{fs::{File, Metadata}, os::windows::fs::MetadataExt, path::PathBuf, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use windows::{core::PCWSTR, Win32::Storage::FileSystem::{MoveFileWithProgressW, MOVEFILE_REPLACE_EXISTING, MOVEFILE_WRITE_THROUGH}};
 
 use crate::{directory::{get_extension, DirectoryItem}, error::Error, request_error::RequestError};
@@ -82,6 +82,19 @@ pub fn copy_attributes(source_file: &File, target_file: &File)->Result<(), Reque
     let modified = meta.modified()?;
     target_file.set_modified(modified)?;
     target_file.set_permissions(meta.permissions())?;
+    Ok(())
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OnEnter {
+    path: String
+}
+
+pub fn on_enter(input: OnEnter)->Result<(), RequestError> {
+    // Command::new("xdg-open")
+    //     .arg(format!("{}", input.path))
+    //     .spawn()?;
     Ok(())
 }
 

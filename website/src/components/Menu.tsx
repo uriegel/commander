@@ -131,14 +131,16 @@ const Menu = ({ autoMode, showHidden, toggleShowHidden, showViewer, toggleShowVi
             key: "SHOW_FULLSCREEN",
             shortcut: "F11"
         }, {
-            type: MenuItemType.Separator
+            type: MenuItemType.Separator,
+            invisible: true,
         }, {
             name: "_Entwicklerwerkzeuge",
             type: MenuItemType.MenuItem,
             key: "SHOW_DEV_TOOLS",
+            invisible: true,
             shortcut: "Strg+Shift+I"
         }]
-        }]} onAction={onMenuAction} />
+    }]} onAction={onMenuAction} />
 )
 
 export default Menu
