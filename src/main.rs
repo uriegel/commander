@@ -97,8 +97,7 @@ fn main() {
     .run();
 }
 
-// TODO suppress developer tools in menus in release version (Windows)
-// TODO copy from remote (Windows) copies only 515 bytes!
+// TODO Update react in table_view and commander
 // TODO Windows update versions!!
 // TODO OnEnter (Windows)
 
@@ -106,7 +105,6 @@ fn main() {
 // TODO Windows: unc-pathes in function canonicalize
 // TODO Copy to remote
 
-// TODO delay on loaded?
 // TODO Background color (dark, react not connected)
 
 // TODO Copy Step 3: Check if flatten source targets add show conflicts
