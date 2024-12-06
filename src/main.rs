@@ -97,7 +97,6 @@ fn main() {
     .run();
 }
 
-// TODO CopyConflict no: overwritten!
 // TODO OnEnter (Windows)
 
 // TODO Copy Step2: copy items with directories (overwrite yes/no)

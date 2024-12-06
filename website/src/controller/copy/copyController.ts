@@ -142,12 +142,10 @@ const makeDialogResult = (res: DialogResult, fileItems: FolderViewItem[], confli
             name: n.name,
             size: n.size || 0
         }))
+    
+    const hashmap = new Map(conflictItems.map(n => [n.name, n.name]))
+    
     return res.result == ResultType.Yes
         ? itemsToCopy
-        : itemsToCopy.diff(
-            conflictItems.map(n => ({
-                name: n.name,
-                size: n.size || 0
-            }))
-        )
+        : itemsToCopy.filter(n => hashmap.has(n.name) == false)
 }            
