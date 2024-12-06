@@ -97,7 +97,6 @@ fn main() {
     .run();
 }
 
-// TODO Update react in table_view and commander
 // TODO Windows update versions!!
 // TODO OnEnter (Windows)
 

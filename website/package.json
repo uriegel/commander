@@ -24,10 +24,10 @@
     "eslint-plugin-react-refresh": "^0.4.16",
     "functional-extensions": "^1.9.17",
     "menubar-react": "^2.2.0",
-    "react-progress-control": "^1.0.0",
+    "react-progress-control": "^1.1.0",
     "rxjs": "^7.8.0",
     "typescript": "^5.7.2",
-    "view-split-react": "^1.1.0",
+    "view-split-react": "^1.2.0",
     "virtual-table-react": "^10.10.0",
     "vite": "^6.0.3",
     "web-dialog-react": "^5.1.0"
