@@ -5,7 +5,7 @@ use gtk::{gio::{Cancellable, FileCopyFlags}, prelude::FileExt};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    directory::DirectoryItem, error::Error, extended_items::{GetExtendedItems, Version}, request_error::RequestError, str::StrExt};
+    directory::DirectoryItem, error::Error, extended_items::Version, request_error::RequestError, str::StrExt};
 use crate::directory::get_extension;
 
 use super::iconresolver::get_geticon_py;
@@ -28,7 +28,7 @@ pub struct OnEnter {
 }
 
 impl ConflictItem {
-    pub fn from(item: &DirectoryItem, metadata: &Metadata)->Self {
+    pub fn from(_: &str, _: &str, item: &DirectoryItem, metadata: &Metadata)->Self {
         let target_size = metadata.len();
         let target_time =  metadata.modified()
                     .ok()
@@ -77,7 +77,7 @@ pub fn get_icon(path: &str)->Result<(String, Vec<u8>), Error> {
     Ok((icon_path.clone(), icon))
 }
 
-pub fn get_version(_: &GetExtendedItems, _: &String) -> Option<Version> {
+pub fn get_version(_: &str, _: &str) -> Option<Version> {
     None
 }
 
