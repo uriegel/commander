@@ -95,3 +95,7 @@ Icon=/usr/share/applications/commander.png
 StartupWMClass=de.uriegel.commander
 ```
 
+## History
+
+03.02.2022 rust neon with promises
+

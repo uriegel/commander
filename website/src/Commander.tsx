@@ -292,7 +292,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 	return (
 		<>
 			{ isWindows() && (<Titlebar menu={(
-				<Menu autoMode={false} onMenuAction={onMenuAction} 
+				<Menu autoMode={false} onMenuAction={onMenuAction} releaseMode={location.port != "5173"}
 				showHidden={showHidden} toggleShowHidden={toggleShowHiddenAndRefresh}
 				showViewer={showViewer} toggleShowViewer={toggleShowViewer} />
 			)} />) }

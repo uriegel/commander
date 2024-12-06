@@ -29,14 +29,20 @@ impl WebRequest {
             }
             wr.headers.push(str);
         }
-        // TODO Read Status Code
-    
-    
+
         if wr.headers.len() == 0  { 
             return Err(RequestError { status: crate::request_error::ErrorType::FileNotFound });
         }
-
-        let _request_line = &wr.headers[0];
+        let request_line = &mut wr.headers[0];
+        let status = match request_line.find(" ") {
+            Some(pos) => request_line.split_off(pos),
+            _ => return Err(RequestError { status: crate::request_error::ErrorType::FileNotFound })
+        };
+        match status.trim() {
+            s if s.starts_with("200") => {}
+            s if s.starts_with("404") => return Err(RequestError { status: crate::request_error::ErrorType::FileNotFound }),
+            _ => return Err(RequestError { status: crate::request_error::ErrorType::Unknown }),
+        };
 
         Ok(wr)
     }
@@ -59,7 +65,6 @@ impl WebRequest {
             .iter()
             .find(|h|h.starts_with(header))
             .map(|v| &v[header.len()+2..] )
-
     }
 
     pub fn download<W>(&mut self, writer: &mut W, rcv: &Receiver<bool>) -> Result<(), RequestError>

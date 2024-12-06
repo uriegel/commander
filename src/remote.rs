@@ -58,7 +58,10 @@ pub fn copy_from_remote(_mov: bool, input: &CopyItems, file: &str, progress: &Cu
     let source_file = PathBuf::from(&path_and_ip.path).join(file);
     let target_file = PathBuf::from(&input.target_path).join(file);
     let file = File::create(target_file)?;
-    let mut web_request = WebRequest::get(path_and_ip.ip, format!("/downloadfile{}", source_file.to_string_lossy()))?;
+    let source_path = source_file.to_string_lossy();
+    #[cfg(target_os = "windows")]
+    let source_path = source_path.replace("\\", "/");
+    let mut web_request = WebRequest::get(path_and_ip.ip, format!("/downloadfile{}", source_path))?;
     let mut progress_stream = ProgressStream::new(BufWriter::new(&file), 
         |p| progress.send_bytes(p as u64));
     web_request.download(&mut progress_stream, rcv)?;

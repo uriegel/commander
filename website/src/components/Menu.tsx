@@ -2,6 +2,7 @@ import Menubar, { MenuItemType } from 'menubar-react'
 
 export interface MenuProps {
     autoMode: boolean
+    releaseMode: boolean
     showHidden: boolean,
     toggleShowHidden: ()=>void,
     showViewer: boolean,
@@ -9,7 +10,7 @@ export interface MenuProps {
     onMenuAction: (key: string)=>void
 }
 
-const Menu = ({ autoMode, showHidden, toggleShowHidden, showViewer, toggleShowViewer,
+const Menu = ({ autoMode, releaseMode, showHidden, toggleShowHidden, showViewer, toggleShowViewer,
         onMenuAction }: MenuProps) => (
     <Menubar autoMode={autoMode} items={[{
         name: "_Datei",
@@ -132,12 +133,12 @@ const Menu = ({ autoMode, showHidden, toggleShowHidden, showViewer, toggleShowVi
             shortcut: "F11"
         }, {
             type: MenuItemType.Separator,
-            invisible: true,
+            invisible: releaseMode,
         }, {
             name: "_Entwicklerwerkzeuge",
             type: MenuItemType.MenuItem,
             key: "SHOW_DEV_TOOLS",
-            invisible: true,
+            invisible: releaseMode,
             shortcut: "Strg+Shift+I"
         }]
     }]} onAction={onMenuAction} />
