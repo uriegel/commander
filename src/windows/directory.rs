@@ -4,9 +4,9 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use windows::{core::PCWSTR, Win32::Storage::FileSystem::{MoveFileWithProgressW, MOVEFILE_REPLACE_EXISTING, MOVEFILE_WRITE_THROUGH}};
 
-use crate::{directory::{get_extension, DirectoryItem}, error::Error, request_error::RequestError};
+use crate::{directory::{get_extension, DirectoryItem}, error::Error, extended_items::Version, request_error::RequestError};
 
-use super::string_to_pcwstr;
+use super::{string_to_pcwstr, version::get_version};
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -15,14 +15,14 @@ pub struct ConflictItem {
 	icon_path: Option<String>,
     size: u64,
     time: Option<DateTime<Utc>>,
-    //version?: Version
+    version: Option<Version>,
     target_size: u64,
-    target_time: Option<DateTime<Utc>>
-    //targetVersion?: Version
+    target_time: Option<DateTime<Utc>>,
+    target_version: Option<Version>
 }
 
 impl ConflictItem {
-    pub fn from(item: &DirectoryItem, metadata: &Metadata)->Self {
+    pub fn from(path: &str, target_path: &str, item: &DirectoryItem, metadata: &Metadata)->Self {
         let target_size = metadata.len();
         let target_time =  metadata.modified()
                     .ok()
@@ -34,7 +34,9 @@ impl ConflictItem {
             size: item.size,
             time: item.time,
             target_size,
-            target_time
+            target_time,
+            version: get_version(path, &item.name),
+            target_version: get_version(target_path, &item.name),
         }
     }
 }
@@ -60,7 +62,6 @@ pub fn get_icon(path: &str)->Result<(String, Vec<u8>), Error> {
 
 pub fn update_directory_item(item: DirectoryItem, metadata: &Metadata)->DirectoryItem {
     let size = metadata.len();
-    // TODO update versions!!
     let time =  metadata.modified()
                 .ok()
                 .and_then(|t|t.duration_since(UNIX_EPOCH).ok())

@@ -26,7 +26,7 @@ pub fn get_extended_items(input: GetExtendedItems)->Result<GetExtendedItemsResul
                                 })
                         .map(|n| ExtendedItem { 
                                             exif_data: get_exif_data(&input, n),
-                                            version: get_version(&input, n),
+                                            version: get_version(&input.path, n),
                                         })
                         .collect()
     })

@@ -4,14 +4,14 @@ use windows::{core::{w, PCWSTR}, Win32::{
     Foundation::TRUE, Storage::FileSystem::{GetFileVersionInfoSizeW, GetFileVersionInfoW, VerQueryValueW, VS_FIXEDFILEINFO}}
 };
 
-use crate::extended_items::{GetExtendedItems, Version};
+use crate::extended_items::Version;
 
 use super::string_to_pcwstr;
 
-pub fn get_version(input: &GetExtendedItems, item: &String) -> Option<Version> {
+pub fn get_version(path: &str, item: &str) -> Option<Version> {
     let lower_item = item.to_lowercase();
-    if lower_item.ends_with(".exe") {
-        version(&PathBuf::from(&input.path).join(item))
+    if lower_item.ends_with(".exe") || lower_item.ends_with(".dll") {
+        version(&PathBuf::from(path).join(item))
     } else {
         None            
     }

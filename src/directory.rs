@@ -316,7 +316,7 @@ fn create_copy_item(item: DirectoryItem, path: &str, target_path: &str)->Result<
 
     let conflict = updated_item.as_ref().and_then(|n| {
         match fs::metadata(PathBuf::from(target_path).join(&n.name)) {
-            Ok (meta) => Some(ConflictItem::from(&n, &meta)),
+            Ok (meta) => Some(ConflictItem::from(path, target_path, &n, &meta)),
             _ => None,
         }
     });
