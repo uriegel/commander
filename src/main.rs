@@ -99,10 +99,9 @@ fn main() {
 
 // TODO OnEnter (Windows)
 
-// TODO Copy Step2: copy items with directories (overwrite yes/no)
+// TODO Copy Step2: Check if flatten source targets add show conflicts
 // TODO Windows: unc-pathes in function canonicalize
 // TODO Copy to remote
 
 // TODO Background color (dark, react not connected)
 
-// TODO Copy Step 3: Check if flatten source targets add show conflicts
