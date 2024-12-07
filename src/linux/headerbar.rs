@@ -9,6 +9,9 @@ use webkit6::{
 #[cfg(not(debug_assertions))]
 use gtk::gio;
 
+use crate::request_error::RequestError;
+use crate::requests::ShowDialog;
+
 use super::progress_display::ProgressDisplay;
 use super::progresses::set_progress_sender;
 
@@ -203,6 +206,11 @@ fn adapt_menu(builder: &Builder) {
     .object::<gio::Menu>("sub-menu-view")
     .expect("Failed to get 'sub-menu-view'")
     .remove(2);
+}
+
+pub fn show_dialog(input: ShowDialog)->Result<(), RequestError> {
+    println!("Dialog {}", input.show);
+    Ok(())
 }
 
 #[cfg(debug_assertions)]

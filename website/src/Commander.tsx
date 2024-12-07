@@ -73,6 +73,8 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 	const [statusText, setStatusText] = useState<string | null>(null)
 	const [itemCount, setItemCount] = useState({dirCount: 0, fileCount: 0 })
 	const dialog = useContext(DialogContext)
+	if (dialog)
+		dialog.setCallback(show => WebView.request("showdialog", { show }))
 	
 	webViewEvents.registerShowHidden(setShowHidden)
 	webViewEvents.registerShowPreview(setShowViewer)

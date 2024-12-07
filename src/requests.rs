@@ -1,3 +1,4 @@
+use serde::Deserialize;
 use webview_app::request::{get_input, request_blocking, Request};
 
 use crate::{directory::{check_copy_items, copy_items, create_folder, delete_items, get_files, rename_as_copy, rename_item, rename_items}, 
@@ -5,9 +6,16 @@ use crate::{directory::{check_copy_items, copy_items, create_folder, delete_item
         cancel_extended_items, get_extended_items
     }, remote::get_remote_files, request_error::{from_result, RequestError}, tracks::get_track_info};
 #[cfg(target_os = "linux")]
-use crate::linux:: {root::get_root, directory::on_enter};
+use crate::linux:: {root::get_root, directory::on_enter, headerbar::show_dialog};
 #[cfg(target_os = "windows")]
 use crate::windows::{root::get_root, progresses::cancel_copy, directory::on_enter};
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ShowDialog {
+    pub show: bool
+}
+
 
 pub fn on_request(request: &Request, id: String, cmd: String, json: String)->bool {
     request_blocking(request, id, move || {
@@ -26,6 +34,7 @@ pub fn on_request(request: &Request, id: String, cmd: String, json: String)->boo
             "renameitems" => from_result(rename_items(get_input(&json))),
             "getremotefiles" => from_result(get_remote_files(get_input(&json))),
             "onenter" => from_result(on_enter(get_input(&json))),
+            "showdialog" => from_result(show_dialog(get_input(&json))),
             #[cfg(target_os = "windows")]
             "cancelcopy" => from_result(cancel_copy()),
             _ => from_result(Ok::<(), RequestError>(()))
