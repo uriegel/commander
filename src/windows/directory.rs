@@ -1,11 +1,18 @@
-use std::{fs::{File, Metadata}, os::windows::fs::MetadataExt, path::PathBuf, time::UNIX_EPOCH};
+use std::{fs::{File, Metadata}, mem, os::windows::fs::MetadataExt, path::PathBuf, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use windows::{core::PCWSTR, Win32::Storage::FileSystem::{MoveFileWithProgressW, MOVEFILE_REPLACE_EXISTING, MOVEFILE_WRITE_THROUGH}};
+use windows::{
+    core::PCWSTR, Win32::{
+        Storage::FileSystem::{
+            MoveFileWithProgressW, MOVEFILE_REPLACE_EXISTING, MOVEFILE_WRITE_THROUGH
+        }, UI::Shell::{
+            ShellExecuteExW, SEE_MASK_INVOKEIDLIST, SHELLEXECUTEINFOW
+        }
+    }
+};
 
 use crate::{directory::{get_extension, DirectoryItem}, error::Error, extended_items::Version, request_error::RequestError};
-
 use super::{string_to_pcwstr, version::get_version};
 
 #[derive(Debug, Serialize)]
@@ -86,16 +93,41 @@ pub fn copy_attributes(source_file: &File, target_file: &File)->Result<(), Reque
     Ok(())
 }
 
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SpecialKeys {
+    alt: bool,
+    ctrl: bool,
+    shift: bool,
+}
+
+
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct OnEnter {
-    path: String
+    path: String,
+    keys: Option<SpecialKeys>
 }
 
 pub fn on_enter(input: OnEnter)->Result<(), RequestError> {
-    // Command::new("xdg-open")
-    //     .arg(format!("{}", input.path))
-    //     .spawn()?;
+    let file = string_to_pcwstr(&input.path);
+
+    let verb = string_to_pcwstr(match input.keys {
+        Some(SpecialKeys { alt: true, .. }) => "properties",
+        Some(SpecialKeys  { ctrl: true, .. }) => "openas",
+        _ => "open"
+    });
+
+    let mut info = SHELLEXECUTEINFOW {
+        cbSize: mem::size_of::<SHELLEXECUTEINFOW>() as u32,
+        fMask: SEE_MASK_INVOKEIDLIST,
+        lpFile: PCWSTR(file.as_ptr()),
+        lpVerb: PCWSTR(verb.as_ptr()),
+        ..Default::default()
+    };
+
+    unsafe { ShellExecuteExW(&mut info) }?;
     Ok(())
 }
 

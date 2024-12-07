@@ -23,7 +23,7 @@ webkit6 = "0.4.0"
 async-channel = "2.3.1"
 
 [target.'cfg(target_os="windows")'.dependencies]
-windows = { version = "0.58", features = [ "Win32_Storage_FileSystem"]}
+windows = { version = "0.58", features = [ "Win32_Storage_FileSystem", "Win32_System_Registry"]}
 systemicons = "0.9.13"
 windows-result = "0.2.0"
 
