@@ -97,7 +97,6 @@ fn main() {
     .run();
 }
 
-// TODO Copy: Flatten sub directories in source and targets, get conflicts
 // TODO Copy: copy items in sub directories
 
 // TODO Windows: unc-pathes in function canonicalize
