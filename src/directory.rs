@@ -257,7 +257,7 @@ pub struct CopyItemResult {
 
 pub fn check_copy_items(input: CheckCoypItems)->Result<CopyItemResult, RequestError> {
     let conflict_items = 
-        input.items
+        flatten_directories(&input.path, input.items)?
             .into_iter()
             .map(|di|create_copy_item(di, &input.path, &input.target_path))
             .collect::<Result<Vec<_>, RequestError>>()?;
@@ -305,6 +305,49 @@ pub fn copy_not_cancelled(rcv: &Receiver<bool>)->bool {
         let _ = cancel(None, CancellationType::Copy);
         false
     }
+}
+
+fn flatten_directories(path: &str, items: Vec<DirectoryItem>)->Result<Vec<DirectoryItem>, RequestError> {
+    items
+        .into_iter()
+        .map(|n| match n.is_directory {
+            false => Ok(Vec::from([n])),
+            true => unpack_directory(path, &n.name),
+        })
+        .collect::<Result<Vec<Vec<DirectoryItem>>, RequestError>>()
+        .map(|n|
+                n.into_iter()
+                .flatten()
+                .collect())
+}
+
+fn unpack_directory(path: &str, sub_path: &str)->Result<Vec<DirectoryItem>, RequestError> {
+    let items: Vec<DirectoryItem> = read_dir(PathBuf::from(path).join(sub_path))
+        ?.filter_map(|file|file.ok())
+        .filter_map(|file| {
+            if let Ok(metadata) = file.metadata() {
+                Some((file, metadata))
+            } else {
+                None
+            }
+        })
+        .map(|(entry, meta)| {
+            let name = PathBuf::from(sub_path).join(entry.file_name().to_str().unwrap_or_default()).to_string_lossy().to_string();
+            let is_directory = meta.is_dir();
+            DirectoryItem {
+                is_hidden: false,
+                is_directory,
+                size: meta.len(),
+                time: meta.modified()
+                            .ok()
+                            .and_then(|t|t.duration_since(UNIX_EPOCH).ok())
+                            .map(|d|DateTime::from_timestamp_nanos(d.as_nanos() as i64)), 
+                icon_path: get_icon_path_of_file(&name, &path, is_directory).map(|s|s.to_string()),
+                name
+            }
+        })
+        .collect();
+    return flatten_directories(path, items)
 }
 
 fn create_copy_item(item: DirectoryItem, path: &str, target_path: &str)->Result<(Option<DirectoryItem>, Option<ConflictItem>), RequestError> { 
