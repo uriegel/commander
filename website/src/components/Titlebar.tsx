@@ -91,7 +91,7 @@ const Titlebar = ({ menu, }: TitlebarProps) => {
         ? (<div className="titlebar">
             <img alt="" src="/webroot/images/kirk.png"/>
             {menu}
-            <div className="titlebarGrip">
+            <div className="titlebarGrip" id="$DRAG_REGION$">
                 <span id="$TITLE$"></span>
             </div>
             <div className={`pieContainer${progressRevealed ? " revealed" : ""}${progressFinished ? " finished" : ""}`} onClick={startProgressDialog}>

@@ -97,7 +97,7 @@ fn main() {
     .run();
 }
 
-// TODO OnFocus (Windows) => WebView
+// TODO Linux: Del is shortcut for delete, even when dialog is open
 
 // TODO Copy Step2: Check if flatten source targets add show conflicts
 // TODO Windows: unc-pathes in function canonicalize
