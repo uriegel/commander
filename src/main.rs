@@ -97,9 +97,12 @@ fn main() {
     .run();
 }
 
-// TODO Copy Step2: Check if flatten source targets add show conflicts
+// TODO Copy: Flatten sub directories in source and targets, get conflicts
+// TODO Copy: copy items in sub directories
+
 // TODO Windows: unc-pathes in function canonicalize
 // TODO Copy to remote
 
 // TODO Background color (dark, react not connected)
-
+// TODO UAC
+// TODO Drag 'n Drop
