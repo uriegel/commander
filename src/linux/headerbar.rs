@@ -1,5 +1,7 @@
+use std::sync::{Arc, Mutex, OnceLock};
 use std::time::Duration;
 
+use async_channel::Sender;
 use gtk::glib::{self, spawn_future_local, timeout_future, clone};
 use webkit6::prelude::*;
 use webkit6::{
@@ -186,17 +188,26 @@ impl HeaderBar {
         app.set_accels_for_action("app.selectnone", &["KP_Subtract"]);
         app.add_action_entries([action_select_none]);
 
-        let (sender, receiver) = async_channel::unbounded();
-        set_progress_sender(sender);
+        let (progress_sender, progress_receiver) = async_channel::unbounded();
+        set_progress_sender(progress_sender);
         let progress_display: ProgressDisplay = builder.object("progressdisplay").unwrap();
-
         glib::spawn_future_local(clone!(
             #[weak] progress_display, 
             async move {
-                while let Ok(progress) = receiver.recv().await {
+                while let Ok(progress) = progress_receiver.recv().await {
                     progress.display_progress(&progress_display);
                 }
-            }));        
+            }));   
+
+        let (dialog_open_sender, dialog_open_receiver) = async_channel::unbounded();
+        set_dialog_open_sender(dialog_open_sender);
+        glib::spawn_future_local(clone!(
+            #[weak] app, 
+            async move {
+                while let Ok(show) = dialog_open_receiver.recv().await {
+                    app.set_accels_for_action("app.delete", if show { &[] } else { &["Delete"] });
+                }
+            }));   
     }
 }
 
@@ -209,9 +220,20 @@ fn adapt_menu(builder: &Builder) {
 }
 
 pub fn show_dialog(input: ShowDialog)->Result<(), RequestError> {
-    println!("Dialog {}", input.show);
+    let snd = get_dialog_open_sender().lock().unwrap(); 
+    snd.send_blocking(input.show).unwrap();
     Ok(())
 }
 
 #[cfg(debug_assertions)]
 fn adapt_menu(_: &Builder) {}
+
+fn get_dialog_open_sender()->&'static Arc<Mutex<Sender<bool>>> {
+    DIALOG_OPEN_SENDER.get().unwrap()        
+}
+
+fn set_dialog_open_sender(snd: Sender<bool>) {
+    DIALOG_OPEN_SENDER.set(Arc::new(Mutex::new(snd))).unwrap()
+}
+
+static DIALOG_OPEN_SENDER: OnceLock<Arc<Mutex<Sender<bool>>>> = OnceLock::new();

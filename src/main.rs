@@ -97,10 +97,6 @@ fn main() {
     .run();
 }
 
-// TODO Linux: Del is shortcut for delete, even when dialog is open:
-// TODO Dialogbar: send event when dialog opens and closes
-// TODO channel in headerbar which can set or remove the set_accel_for_action when dialog is open or closed
-
 // TODO Copy Step2: Check if flatten source targets add show conflicts
 // TODO Windows: unc-pathes in function canonicalize
 // TODO Copy to remote
