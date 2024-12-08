@@ -97,7 +97,7 @@ fn main() {
     .run();
 }
 
-// TODO Copy: copy items in sub directories
+// TODO Move: move items in sub directories, create_dir_all for Windows and Linux
 
 // TODO Windows: unc-pathes in function canonicalize
 // TODO Copy to remote

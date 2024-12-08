@@ -1,6 +1,6 @@
 use std::{
     fs::{
-        self, canonicalize, create_dir, read_dir, rename, File
+        self, canonicalize, create_dir, create_dir_all, read_dir, rename, File
     }, io::{
         BufReader, BufWriter, ErrorKind, Read, Write
     }, path::PathBuf, sync::{mpsc::{channel, Receiver}, Mutex, MutexGuard, TryLockResult}, time::UNIX_EPOCH};
@@ -388,8 +388,20 @@ fn copy_item(mov: bool, input: &CopyItems, file: &str, size: u64, progress: &Cur
 fn copy(source_path: &PathBuf, target_path: &PathBuf, size: u64, progress: &CurrentProgress, rcv: &Receiver<bool>)->Result<(), RequestError> {
     let source_file = File::open(source_path)?;
     let _ = rm_rf::remove(&target_path);
-    let target_file = File::create(target_path)?;
-
+    let target_file = match File::create(target_path) {
+        Err(e) if e.kind() == ErrorKind::NotFound => {
+            println!("Error {:?}", e);
+            match target_path.parent() {
+                Some(p) => {
+                    create_dir_all(p)?;
+                    File::create(target_path)?
+                }
+                None => Err(e)?
+            }
+        },
+        Err(e) => Err(e)?,
+        Ok(tf) => tf,
+    };
     let mut source_stream = BufReader::new(&source_file);
     let mut target_stream = ProgressStream::new(BufWriter::new(&target_file), |p| progress.send_bytes(p as u64));
     let mut buf = vec![0; usize::min(8192, size as usize)];
