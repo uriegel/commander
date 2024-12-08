@@ -1,4 +1,4 @@
-use std::{fs::{self, create_dir_all, File, Metadata}, path::PathBuf, process::Command, time::UNIX_EPOCH};
+use std::{fs::{self, File, Metadata}, path::PathBuf, process::Command, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
 use gtk::{gio::{Cancellable, FileCopyFlags}, prelude::FileExt};

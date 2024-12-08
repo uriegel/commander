@@ -97,8 +97,7 @@ fn main() {
     .run();
 }
 
-// TODO Move: Delete empty su directories
-
+// TODO Move: Delete empty sub directories  (check Windows)
 // TODO Windows: unc-pathes in function canonicalize
 
 // TODO Copy to remote

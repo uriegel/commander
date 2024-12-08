@@ -6,6 +6,7 @@ use std::{
     }, path::PathBuf, sync::{mpsc::{channel, Receiver}, Mutex, MutexGuard, TryLockResult}, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
+use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use serde_repr::Deserialize_repr;
 use urlencoding::decode;
@@ -295,6 +296,9 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
                 _ => return Err(RequestError { status: ErrorType::NotSupported })
             }?;
         };
+    if input.job_type == JobType::Move {
+        delete_empty_directories(input);
+    }
     Ok(())
 }
 
@@ -422,6 +426,23 @@ fn copy(source_path: &PathBuf, target_path: &PathBuf, size: u64, progress: &Curr
     target_stream.flush()?;
     copy_attributes(&source_file, &target_file)?;
     Ok(())
+}
+
+fn delete_empty_directories(input: CopyItems) {
+    let dirs = input
+        .items
+        .iter()
+        .filter(|n| n.name.contains("/"))
+        .filter_map(|n|PathBuf::from(&input.path).join(&n.name).parent().map(|p|PathBuf::from(p))) 
+        .unique()
+        .sorted_by(|a, b|Ord::cmp(&b.components().collect::<Vec<_>>().len(), &a.components().collect::<Vec<_>>().len()))
+        .collect::<Vec<_>>();
+
+    println!("Dirs {:?}", dirs);
+
+    for path in dirs {
+        let _ = fs::remove_dir(path);
+    }
 }
 
 fn get_icon_path_of_file(name: &str, path: &str, is_directory: bool)->Option<String> {
