@@ -440,9 +440,16 @@ fn delete_empty_directories(input: CopyItems) {
 
     println!("Dirs {:?}", dirs);
 
-    for path in dirs {
+    for path in &dirs {
         let _ = fs::remove_dir(path);
     }
+    dirs.last().inspect(|p| {
+        println!("Das letzte {:?} - {:?}", p, input.path);
+        // TODO "/home/uwe/test/uuu/neuuuu/test"
+        // TODO take parent and remove it as long path is > source_path (/home/uwe/test)
+        // TODO delete /uuu/neuuuu
+        // TODO delete /uuu
+    });
 }
 
 fn get_icon_path_of_file(name: &str, path: &str, is_directory: bool)->Option<String> {
