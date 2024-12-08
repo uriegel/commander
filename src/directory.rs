@@ -135,9 +135,12 @@ pub fn get_files(input: GetFiles)->Result<GetFilesResult, RequestError> {
         .map(|p|p.to_string_lossy().to_string().clean_path())
         .unwrap_or_else(||input.path.clone());
 
+    #[cfg(target_os = "windows")]
+    let path = if path.starts_with("UNC") { format!("\\{}", &path[3..]) } else { path };
+
     #[cfg(target_os = "linux")]
     let path = if input.mount { mount(&path) } else { path };
-    
+
     let items: Vec<DirectoryItem> = read_dir(&path)
         ?.filter_map(|file|file.ok())
         .filter_map(|file| {
