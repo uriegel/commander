@@ -443,13 +443,23 @@ fn delete_empty_directories(input: CopyItems) {
     for path in &dirs {
         let _ = fs::remove_dir(path);
     }
-    dirs.last().inspect(|p| {
-        println!("Das letzte {:?} - {:?}", p, input.path);
-        // TODO "/home/uwe/test/uuu/neuuuu/test"
-        // TODO take parent and remove it as long path is > source_path (/home/uwe/test)
-        // TODO delete /uuu/neuuuu
-        // TODO delete /uuu
-    });
+    dirs.last().inspect(|p| 
+        if let Some(sub_path) = p.strip_prefix(&input.path).ok() {
+            let mut path = sub_path;
+            loop {
+                match path.parent() {
+                    Some(sub_path) => {
+                        if sub_path.to_str().unwrap_or("").len() == 0 {
+                            break;
+                        }
+                        println!("Sub path: {:?}", sub_path);
+                        let _ = fs::remove_dir( PathBuf::from(&input.path).join(sub_path));
+                        path = sub_path;
+                    }
+                    None => break
+                }
+            }
+        });
 }
 
 fn get_icon_path_of_file(name: &str, path: &str, is_directory: bool)->Option<String> {
