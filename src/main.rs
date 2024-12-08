@@ -100,7 +100,9 @@ fn main() {
 // TODO Move: move items in sub directories, create_dir_all for Windows
 
 // TODO Windows: unc-pathes in function canonicalize
+
 // TODO Copy to remote
+// TODO Copy directories and sub directories to remote
 
 // TODO Background color (dark, react not connected)
 // TODO UAC
