@@ -111,14 +111,6 @@ pub trait StringExt {
 }
 
 pub fn move_item(source_file: &PathBuf, target_file: &PathBuf)->Result<(), RequestError> {
-
-    if let Some(p) = target_file.parent() {
-        if let Ok(true) = fs::exists(p) {}
-        else {
-            create_dir_all(p)?
-        }
-    }
-    
     gtk::gio::File::for_path(source_file).move_(&gtk::gio::File::for_path(target_file), 
         FileCopyFlags::OVERWRITE | FileCopyFlags::NO_FALLBACK_FOR_MOVE, None::<&Cancellable>, None)?;
     Ok(())

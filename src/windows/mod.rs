@@ -1,11 +1,17 @@
 use std::iter::once;
 
+use crate::{request_error::RequestError, requests::ShowDialog};
+
 pub mod root;
 pub mod directory;
 pub mod version;
 pub mod progresses;
 mod error;
 mod request_error;
+
+pub fn show_dialog(_: ShowDialog)->Result<(), RequestError> {
+    Ok(())
+}
 
 pub fn string_to_pcwstr(x: &str) -> Vec<u16> {
     x.encode_utf16().chain(once(0)).collect()

@@ -8,11 +8,12 @@ use crate::{directory::{check_copy_items, copy_items, create_folder, delete_item
 #[cfg(target_os = "linux")]
 use crate::linux:: {root::get_root, directory::on_enter, headerbar::show_dialog};
 #[cfg(target_os = "windows")]
-use crate::windows::{root::get_root, progresses::cancel_copy, directory::on_enter};
+use crate::windows::{root::get_root, progresses::cancel_copy, directory::on_enter, show_dialog};
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ShowDialog {
+    #[allow(dead_code)]
     pub show: bool
 }
 

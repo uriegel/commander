@@ -373,6 +373,12 @@ fn copy_item(mov: bool, input: &CopyItems, file: &str, size: u64, progress: &Cur
     if !mov {
         copy(&source_path, &target_path, size, progress, rcv)?;  
     } else {
+        if let Some(p) = target_path.parent() {
+            if let Ok(true) = fs::exists(p) {}
+            else {
+                create_dir_all(p)?
+            }
+        }
         match move_item(&source_path, &target_path) {
             Err(err) if err.status == ErrorType::NotSupported => {
                 copy(&source_path, &target_path, size, progress, rcv)?;
