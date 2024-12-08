@@ -390,7 +390,6 @@ fn copy(source_path: &PathBuf, target_path: &PathBuf, size: u64, progress: &Curr
     let _ = rm_rf::remove(&target_path);
     let target_file = match File::create(target_path) {
         Err(e) if e.kind() == ErrorKind::NotFound => {
-            println!("Error {:?}", e);
             match target_path.parent() {
                 Some(p) => {
                     create_dir_all(p)?;
