@@ -452,7 +452,6 @@ fn delete_empty_directories(input: CopyItems) {
                         if sub_path.to_str().unwrap_or("").len() == 0 {
                             break;
                         }
-                        println!("Sub path: {:?}", sub_path);
                         let _ = fs::remove_dir( PathBuf::from(&input.path).join(sub_path));
                         path = sub_path;
                     }
