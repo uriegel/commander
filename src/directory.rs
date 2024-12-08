@@ -3,7 +3,7 @@ use std::{
         self, canonicalize, create_dir, create_dir_all, read_dir, rename, File
     }, io::{
         BufReader, BufWriter, ErrorKind, Read, Write
-    }, path::PathBuf, sync::{mpsc::{channel, Receiver}, Mutex, MutexGuard, TryLockResult}, time::UNIX_EPOCH};
+    }, path::{PathBuf, MAIN_SEPARATOR}, sync::{mpsc::{channel, Receiver}, Mutex, MutexGuard, TryLockResult}, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
 use itertools::Itertools;
@@ -432,7 +432,7 @@ fn delete_empty_directories(input: CopyItems) {
     let dirs = input
         .items
         .iter()
-        .filter(|n| n.name.contains("/"))
+        .filter(|n| n.name.contains(MAIN_SEPARATOR))
         .filter_map(|n|PathBuf::from(&input.path).join(&n.name).parent().map(|p|PathBuf::from(p))) 
         .unique()
         .sorted_by(|a, b|Ord::cmp(&b.components().collect::<Vec<_>>().len(), &a.components().collect::<Vec<_>>().len()))
