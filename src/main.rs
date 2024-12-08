@@ -97,8 +97,6 @@ fn main() {
     .run();
 }
 
-// TODO Windows: unc-pathes in function canonicalize
-
 // TODO Copy to remote
 
 // TODO Copy directories and sub directories to remote
