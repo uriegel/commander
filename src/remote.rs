@@ -1,4 +1,4 @@
-use std::{fs::File, io::BufWriter, path::PathBuf, sync::mpsc::Receiver, time::SystemTime};
+use std::{fs::File, io::BufWriter, path::PathBuf, sync::mpsc::Receiver, time::{SystemTime, UNIX_EPOCH}};
 
 use chrono::DateTime;
 use serde::Deserialize;
@@ -53,7 +53,7 @@ pub fn get_remote_files(input: GetRemoteFiles) -> Result<GetFilesResult, Request
     })
 }
 
-pub fn copy_from_remote(_mov: bool, input: &CopyItems, file: &str, progress: &CurrentProgress, rcv: &Receiver<bool>)->Result<(), RequestError> {
+pub fn copy_from_remote(input: &CopyItems, file: &str, progress: &CurrentProgress, rcv: &Receiver<bool>)->Result<(), RequestError> {
     let path_and_ip = get_remote_path(&input.path);
     let source_file = PathBuf::from(&path_and_ip.path).join(file);
     let target_file = PathBuf::from(&input.target_path).join(file);
@@ -75,6 +75,24 @@ pub fn copy_from_remote(_mov: bool, input: &CopyItems, file: &str, progress: &Cu
     Ok(())
 }
 
+pub fn copy_to_remote(input: &CopyItems, file: &str, progress: &CurrentProgress, rcv: &Receiver<bool>)->Result<(), RequestError> {
+    let path_and_ip = get_remote_path(&input.target_path);
+    let target_file = PathBuf::from(&path_and_ip.path).join(file);
+    let source_file = PathBuf::from(&input.path).join(file);
+    let mut file = File::open(source_file)?;
+    let target_path = target_file.to_string_lossy();
+    #[cfg(target_os = "windows")]
+    let target_path = target_path.replace("\\", "/");
+    let meta = file.metadata()?;
+    let datetime = 
+        meta
+            .modified()
+            .ok()
+            .and_then(|t|t.duration_since(UNIX_EPOCH).ok())
+            .map(|d|d.as_millis() as i64); 
+    WebRequest::put(path_and_ip.ip, format!("/putfile{target_path}"), &mut file, meta.len() as usize, datetime, rcv)?;
+    Ok(())
+}
 struct PathAndIp<'a> {
     ip: &'a str,
     path: &'a str,

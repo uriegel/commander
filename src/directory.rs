@@ -13,7 +13,7 @@ use urlencoding::decode;
 use trash::delete_all;
 
 use crate::{cancellations::{self, cancel, CancellationType}, error::Error, progresses::{CurrentProgress, ProgressStream, TotalProgress}, 
-    remote::copy_from_remote, request_error::{ErrorType, RequestError}};
+    remote::{copy_from_remote, copy_to_remote}, request_error::{ErrorType, RequestError}};
 
 #[cfg(target_os = "windows")]
 use crate::windows::directory::{is_hidden, StringExt, get_icon_path, ConflictItem, update_directory_item, copy_attributes, move_item};
@@ -295,8 +295,8 @@ pub fn copy_items(input: CopyItems)->Result<(), RequestError> {
             match input.job_type {
                 JobType::Copy => copy_item(false, &input, &file.name, file.size, &current_progress, &rcv),
                 JobType::Move => copy_item(true, &input, &file.name, file.size, &current_progress, &rcv),
-                JobType::CopyFromRemote => copy_from_remote(false, &input, &file.name, &current_progress, &rcv),
-                _ => return Err(RequestError { status: ErrorType::NotSupported })
+                JobType::CopyFromRemote => copy_from_remote(&input, &file.name, &current_progress, &rcv),
+                JobType::CopyToRemote => copy_to_remote(&input, &file.name, &current_progress, &rcv)
             }?;
         };
     if input.job_type == JobType::Move {

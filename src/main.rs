@@ -97,8 +97,7 @@ fn main() {
     .run();
 }
 
-// TODO Copy to remote
-
+// TODO Copy to remote with progress: Trait ProgressStream and two imp: ProgressReasStream or ProgressWriteStream
 // TODO Copy directories and sub directories to remote
 
 // TODO Background color (dark, react not connected)
