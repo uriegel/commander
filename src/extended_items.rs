@@ -52,7 +52,7 @@ fn exif_data(file: &PathBuf)->Option<ExifData> {
     let exif_reader = exif::Reader::new();
     let exif = exif_reader.read_from_container(
         &mut bufreader)
-            .inspect_err(|e|println!("Error reading exif info: {}", e))
+            //.inspect_err(|e|println!("Error reading exif info: {}", e))
             .ok()?;
     let dt = exif.get_field(
         Tag::DateTimeOriginal, In::PRIMARY)

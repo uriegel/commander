@@ -12,8 +12,12 @@ use serde_repr::Deserialize_repr;
 use urlencoding::decode;
 use trash::delete_all;
 
-use crate::{cancellations::{self, cancel, CancellationType}, error::Error, progresses::{CurrentProgress, ProgressStream, TotalProgress}, 
-    remote::{copy_from_remote, copy_to_remote}, request_error::{ErrorType, RequestError}};
+use crate::{cancellations::{
+    self, cancel, CancellationType}, error::Error, progresses::{
+        CurrentProgress, TotalProgress
+    }, progressstream::ProgressWriteStream, remote::{
+        copy_from_remote, copy_to_remote
+    }, request_error::{ErrorType, RequestError}};
 
 #[cfg(target_os = "windows")]
 use crate::windows::directory::{is_hidden, StringExt, get_icon_path, ConflictItem, update_directory_item, copy_attributes, move_item};
@@ -415,7 +419,7 @@ fn copy(source_path: &PathBuf, target_path: &PathBuf, size: u64, progress: &Curr
         Ok(tf) => tf,
     };
     let mut source_stream = BufReader::new(&source_file);
-    let mut target_stream = ProgressStream::new(BufWriter::new(&target_file), |p| progress.send_bytes(p as u64));
+    let mut target_stream = ProgressWriteStream::new(BufWriter::new(&target_file), |p| progress.send_bytes(p as u64));
     let mut buf = vec![0; usize::min(8192, size as usize)];
 
     while copy_not_cancelled(rcv) {
@@ -440,8 +444,6 @@ fn delete_empty_directories(input: CopyItems) {
         .unique()
         .sorted_by(|a, b|Ord::cmp(&b.components().collect::<Vec<_>>().len(), &a.components().collect::<Vec<_>>().len()))
         .collect::<Vec<_>>();
-
-    println!("Dirs {:?}", dirs);
 
     for path in &dirs {
         let _ = fs::remove_dir(path);

@@ -1,10 +1,10 @@
-use std::{fs::File, io::BufWriter, path::PathBuf, sync::mpsc::Receiver, time::{SystemTime, UNIX_EPOCH}};
+use std::{fs::File, io::{BufReader, BufWriter}, path::PathBuf, sync::mpsc::Receiver, time::{SystemTime, UNIX_EPOCH}};
 
 use chrono::DateTime;
 use serde::Deserialize;
 
 use crate::{directory::{
-    CopyItems, DirectoryItem, GetFilesResult}, progresses::{CurrentProgress, ProgressStream}, request_error::RequestError, webrequest::WebRequest
+    CopyItems, DirectoryItem, GetFilesResult}, progresses::CurrentProgress, progressstream::{ProgressReadStream, ProgressWriteStream}, request_error::RequestError, webrequest::WebRequest
 };
 
 #[derive(Debug, Deserialize)]
@@ -62,7 +62,7 @@ pub fn copy_from_remote(input: &CopyItems, file: &str, progress: &CurrentProgres
     #[cfg(target_os = "windows")]
     let source_path = source_path.replace("\\", "/");
     let mut web_request = WebRequest::get(path_and_ip.ip, format!("/downloadfile{}", source_path))?;
-    let mut progress_stream = ProgressStream::new(BufWriter::new(&file), 
+    let mut progress_stream = ProgressWriteStream::new(BufWriter::new(&file), 
         |p| progress.send_bytes(p as u64));
     web_request.download(&mut progress_stream, rcv)?;
     progress_stream.flush()?;
@@ -79,7 +79,7 @@ pub fn copy_to_remote(input: &CopyItems, file: &str, progress: &CurrentProgress,
     let path_and_ip = get_remote_path(&input.target_path);
     let target_file = PathBuf::from(&path_and_ip.path).join(file);
     let source_file = PathBuf::from(&input.path).join(file);
-    let mut file = File::open(source_file)?;
+    let file = File::open(source_file)?;
     let target_path = target_file.to_string_lossy();
     #[cfg(target_os = "windows")]
     let target_path = target_path.replace("\\", "/");
@@ -90,7 +90,9 @@ pub fn copy_to_remote(input: &CopyItems, file: &str, progress: &CurrentProgress,
             .ok()
             .and_then(|t|t.duration_since(UNIX_EPOCH).ok())
             .map(|d|d.as_millis() as i64); 
-    WebRequest::put(path_and_ip.ip, format!("/putfile{target_path}"), &mut file, meta.len() as usize, datetime, rcv)?;
+    let mut progress_stream = ProgressReadStream::new(BufReader::new(&file),         
+        |p| progress.send_bytes(p as u64));
+    WebRequest::put(path_and_ip.ip, format!("/putfile{target_path}"), &mut progress_stream, meta.len() as usize, datetime, rcv)?;
     Ok(())
 }
 struct PathAndIp<'a> {

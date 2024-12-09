@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use std::{cell::RefCell, io::{BufWriter, Write}};
+use std::cell::RefCell;
 
 use chrono::Local;
 
@@ -99,39 +99,6 @@ impl<'a> Drop for CurrentProgress<'a> {
     fn drop(&mut self) {
         self.total.add_size(self.size);
         self.total.add_file();
-    }
-}
-
-pub struct ProgressStream<'a, W> 
-where W: Sized + Write {
-    writer : BufWriter<W>,
-    read: usize,
-    on_progress: Box<dyn FnMut(usize) + 'a>
-}
-
-impl<'a, W> ProgressStream<'a, W> 
-where W: Sized + Write {
-    pub fn new(writer: BufWriter<W>, on_progress: impl FnMut(usize) + 'a) -> Self 
-    where W: Sized + Write {    
-        Self { writer, read: 0, on_progress: Box::new(on_progress) }
-    }
-
-    pub fn flush(&mut self)->std::io::Result<()> {
-        self.writer.flush()
-    }
-}
-
-impl<'a, W> Write for ProgressStream<'a, W>
-where W: Sized + Write {
-    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
-        let read = self.writer.write(buf)?;
-        self.read = self.read + read;
-        (self.on_progress)(self.read);
-        Ok(read)
-    }
-
-    fn flush(&mut self) -> std::io::Result<()> {
-        self.writer.flush()
     }
 }
 

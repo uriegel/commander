@@ -4,7 +4,7 @@ use std::{io::{BufRead, BufReader, BufWriter, Read, Write}, net::TcpStream, sync
 
 use serde::de::DeserializeOwned;
 
-use crate::{directory::copy_not_cancelled, request_error::RequestError};
+use crate::{directory::copy_not_cancelled, request_error::{ErrorType, RequestError}};
 
 pub struct WebRequest {
     headers: Vec<String>,
@@ -118,7 +118,7 @@ impl WebRequest {
             _ => return Err(RequestError { status: crate::request_error::ErrorType::FileNotFound })
         };
         match status.trim() {
-            s if s.starts_with("200") => {}
+            s if s.starts_with("200") || s.starts_with("204") => {}
             s if s.starts_with("404") => return Err(RequestError { status: crate::request_error::ErrorType::FileNotFound }),
             _ => return Err(RequestError { status: crate::request_error::ErrorType::Unknown }),
         };
@@ -129,15 +129,13 @@ impl WebRequest {
     fn upload<R>(&mut self, reader: &mut R, mut len: usize, rcv: &Receiver<bool>) -> Result<(), RequestError>
     where R: ?Sized + Read {
         let mut buf = vec![0; usize::min(8192, len)];
-        while copy_not_cancelled(rcv) {
+        loop {
+            if !copy_not_cancelled(rcv) {
+                return Err(RequestError { status: ErrorType::Cancelled })
+            }
+
             let buf_slice = &mut buf[..usize::min(8192, len)];
             let read = reader.read(buf_slice)?;
-            
-            
-            //let read = self.buf_reader.read(buf_slice)?;
-            
-            
-            
             len = len - read;
             let buf_slice = &mut buf[..read];
             self.buf_writer.write(buf_slice)?;

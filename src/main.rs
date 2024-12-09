@@ -14,6 +14,7 @@ mod requests_http;
 mod request_error;
 mod tracks;
 mod progresses;
+mod progressstream;
 mod webrequest;
 mod remote;
 #[cfg(target_os = "linux")]
@@ -97,7 +98,7 @@ fn main() {
     .run();
 }
 
-// TODO Copy to remote with progress: Trait ProgressStream and two imp: ProgressReasStream or ProgressWriteStream
+// TODO Geschätzte Restzeit instead of Dauer
 // TODO Copy directories and sub directories to remote
 
 // TODO Background color (dark, react not connected)
