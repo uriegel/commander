@@ -84,7 +84,7 @@ impl<'a> CurrentProgress<'a> {
             let estimated_duration = if total > 0.0 { (current_duration as f64 / total) as i32 } else { 0 };
             self.total.reset_updated(now);
             bytes_progress(size, self.size, self.total.current_size.borrow().clone() + size, 
-                self.total.total_size, current_duration, estimated_duration);
+                self.total.total_size, current_duration, estimated_duration - current_duration);
         }
     }
 }
