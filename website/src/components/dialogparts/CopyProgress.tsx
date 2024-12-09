@@ -57,8 +57,8 @@ const CopyProgress = () => {
                             <td className="rightAligned">{secondsToTime(currentTime)}</td>
                         </tr>
                         <tr>
-                            <td>Geschätzte Dauer:</td>
-                            <td className="rightAligned">{secondsToTime(Math.floor(currentTime * totalMax / totalValue))}</td>
+                            <td>Geschätzte Restzeit:</td>
+                            <td className="rightAligned">{secondsToTime(Math.floor(currentTime * totalMax / totalValue) - currentTime)}</td>
                         </tr>
                     </tbody>
                 </table>

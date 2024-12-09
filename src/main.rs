@@ -98,7 +98,6 @@ fn main() {
     .run();
 }
 
-// TODO Geschätzte Restzeit instead of Dauer (Windows)
 // TODO Copy directories and sub directories to remote
 
 // TODO Background color (dark, react not connected)
