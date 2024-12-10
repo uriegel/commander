@@ -45,9 +45,9 @@ const CopyConflicts = ({ props }: ExtensionProps) => {
 		</div>),
 		(<div className=
 			{
-				(time ?? "") > (targetTime ?? "")
+				(time?.substring(0, 23) ?? "") > (targetTime?.substring(0, 23) ?? "")
 				? "overwrite"
-				: (time ?? "") < (targetTime ?? "")
+				: (time?.substring(0, 23) ?? "") < (targetTime?.substring(0, 23) ?? "")
 				? "notOverwrite"
 				: "equal"
 			}>
@@ -67,7 +67,7 @@ const CopyConflicts = ({ props }: ExtensionProps) => {
 			: v < 0 
 			? "notOverwrite"
 			: "equal"
-}
+	}
 
 	const renderRow = useCallback((item: ConflictItem) => 
 		getPlatform() == Platform.Windows 
