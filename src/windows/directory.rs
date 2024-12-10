@@ -46,6 +46,22 @@ impl ConflictItem {
             target_version: get_version(target_path, &item.name),
         }
     }
+
+    pub fn from_values(item: &DirectoryItem, size: u64, time: i64)->Self {
+        let target_size = size;
+        let target_time = Some(DateTime::from_timestamp_nanos(time * 1_000_000)); 
+        Self {
+            name: item.name.clone(),
+            icon_path: item.icon_path.clone(),
+            size: item.size,
+            time: item.time,
+            version: None,
+            target_version: None, 
+            target_size,
+            target_time
+        }
+    }
+
 }
 
 pub fn is_hidden(_: &str, metadata: &Metadata)->bool {

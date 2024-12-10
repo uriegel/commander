@@ -126,9 +126,9 @@ fn create_copy_item(item: DirectoryItem, path: &str, target_path: &str)->Result<
     }?;
 
     let target_file = PathBuf::from(target_path).join(&item.name);
+    let target_file = target_file.to_string_lossy();
     #[cfg(target_os = "windows")]
     let target_file = target_file.replace("\\", "/");
-    let target_file = target_file.to_string_lossy();
 
     let path_and_ip = get_remote_path(&target_file);
     let RemoteMetaData { size, time} = 
