@@ -4,8 +4,12 @@ use chrono::DateTime;
 use serde::Deserialize;
 use urlencoding::encode;
 
-use crate::{directory::{
-    flatten_directories, CheckCoypItems, CopyItemResult, CopyItems, DirectoryItem, GetFilesResult}, progresses::CurrentProgress, progressstream::{ProgressReadStream, ProgressWriteStream}, request_error::RequestError, webrequest::WebRequest
+use crate::{
+    directory::{
+        flatten_directories, CheckCoypItems, CopyItemResult, CopyItems, DirectoryItem, GetFilesResult
+    }, progresses::CurrentProgress, progressstream::{
+        ProgressReadStream, ProgressWriteStream
+    }, request_error::RequestError, webrequest::WebRequest
 };
 
 #[cfg(target_os = "windows")]
@@ -121,15 +125,31 @@ fn create_copy_item(item: DirectoryItem, path: &str, target_path: &str)->Result<
         Err (err) => Err(err)
     }?;
 
-    // TODO get it from remote: get_metadata (len, modified)
+    let target_file = PathBuf::from(target_path).join(&item.name);
+    #[cfg(target_os = "windows")]
+    let target_file = target_file.replace("\\", "/");
+    let target_file = target_file.to_string_lossy();
+
+    let path_and_ip = get_remote_path(&target_file);
+    let RemoteMetaData { size, time} = 
+        WebRequest::get(path_and_ip.ip, format!("/metadata{}", encode(&path_and_ip.path)))
+            ?.to::<RemoteMetaData>()?;
+
     let conflict = updated_item.as_ref().and_then(|n| {
-        match fs::metadata(PathBuf::from(target_path).join(&n.name)) {
-            Ok (meta) => Some(ConflictItem::from(path, target_path, &n, &meta)),
-            _ => None,
+        match size {
+            -1 => None,
+            _ => Some(ConflictItem::from_values(&n, size as u64, time)),
         }
     });
 
     Ok((updated_item, conflict))
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct RemoteMetaData {
+    size: i64, 
+    time: i64 
 }
 
 struct PathAndIp<'a> {

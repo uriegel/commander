@@ -98,7 +98,8 @@ fn main() {
     .run();
 }
 
-// TODO Copy directories and sub directories to remote
+// TODO Copy directories and sub directories to remote: create sub directories if necessary
+// TODO Compare timestamps from local and remote: cut milliseconds
 
 // TODO Background color (dark, react not connected)
 // TODO UAC
