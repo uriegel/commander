@@ -127,9 +127,9 @@ pub struct RenameItemsItem {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CheckCoypItems {
-    path: String,
-    target_path: String,
-    items: Vec<DirectoryItem>
+    pub path: String,
+    pub target_path: String,
+    pub items: Vec<DirectoryItem>
 
 }
 
@@ -259,8 +259,8 @@ pub fn rename_items(input: RenameItemsParam)->Result<(), RequestError> {
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CopyItemResult {
-    items: Vec<DirectoryItem>,
-    conflicts: Vec<ConflictItem>
+    pub items: Vec<DirectoryItem>,
+    pub conflicts: Vec<ConflictItem>
 }
 
 pub fn check_copy_items(input: CheckCoypItems)->Result<CopyItemResult, RequestError> {
@@ -318,7 +318,7 @@ pub fn copy_not_cancelled(rcv: &Receiver<bool>)->bool {
     }
 }
 
-fn flatten_directories(path: &str, items: Vec<DirectoryItem>)->Result<Vec<DirectoryItem>, RequestError> {
+pub fn flatten_directories(path: &str, items: Vec<DirectoryItem>)->Result<Vec<DirectoryItem>, RequestError> {
     items
         .into_iter()
         .map(|n| match n.is_directory {

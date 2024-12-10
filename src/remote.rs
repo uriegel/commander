@@ -1,11 +1,17 @@
-use std::{fs::File, io::{BufReader, BufWriter}, path::PathBuf, sync::mpsc::Receiver, time::{SystemTime, UNIX_EPOCH}};
+use std::{fs::{self, File}, io::{BufReader, BufWriter, ErrorKind}, path::PathBuf, sync::mpsc::Receiver, time::{SystemTime, UNIX_EPOCH}};
 
 use chrono::DateTime;
 use serde::Deserialize;
+use urlencoding::encode;
 
 use crate::{directory::{
-    CopyItems, DirectoryItem, GetFilesResult}, progresses::CurrentProgress, progressstream::{ProgressReadStream, ProgressWriteStream}, request_error::RequestError, webrequest::WebRequest
+    flatten_directories, CheckCoypItems, CopyItemResult, CopyItems, DirectoryItem, GetFilesResult}, progresses::CurrentProgress, progressstream::{ProgressReadStream, ProgressWriteStream}, request_error::RequestError, webrequest::WebRequest
 };
+
+#[cfg(target_os = "windows")]
+use crate::windows::directory::{ConflictItem, update_directory_item};
+#[cfg(target_os = "linux")]
+use crate::linux::directory::{update_directory_item, ConflictItem};
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -53,6 +59,18 @@ pub fn get_remote_files(input: GetRemoteFiles) -> Result<GetFilesResult, Request
     })
 }
 
+pub fn check_copy_items_to_remote(input: CheckCoypItems)->Result<CopyItemResult, RequestError> {
+    let conflict_items = 
+        flatten_directories(&input.path, input.items)?
+            .into_iter()
+            .map(|di|create_copy_item(di, &input.path, &input.target_path))
+            .collect::<Result<Vec<_>, RequestError>>()?;
+    let (items, conflicts): (Vec<Option<DirectoryItem>>, Vec<Option<ConflictItem>>) = conflict_items.into_iter().unzip();
+    let items: Vec<DirectoryItem> = items.into_iter().filter_map(|f|f).collect();
+    let conflicts: Vec<ConflictItem> = conflicts.into_iter().filter_map(|f|f).collect();
+    Ok(CopyItemResult { items, conflicts })
+}
+
 pub fn copy_from_remote(input: &CopyItems, file: &str, progress: &CurrentProgress, rcv: &Receiver<bool>)->Result<(), RequestError> {
     let path_and_ip = get_remote_path(&input.path);
     let source_file = PathBuf::from(&path_and_ip.path).join(file);
@@ -92,9 +110,28 @@ pub fn copy_to_remote(input: &CopyItems, file: &str, progress: &CurrentProgress,
             .map(|d|d.as_millis() as i64); 
     let mut progress_stream = ProgressReadStream::new(BufReader::new(&file),         
         |p| progress.send_bytes(p as u64));
-    WebRequest::put(path_and_ip.ip, format!("/putfile{target_path}"), &mut progress_stream, meta.len() as usize, datetime, rcv)?;
+    WebRequest::put(path_and_ip.ip, format!("/putfile{}", encode(&target_path)), &mut progress_stream, meta.len() as usize, datetime, rcv)?;
     Ok(())
 }
+
+fn create_copy_item(item: DirectoryItem, path: &str, target_path: &str)->Result<(Option<DirectoryItem>, Option<ConflictItem>), RequestError> { 
+    let updated_item = match fs::metadata(PathBuf::from(path).join(&item.name)) {
+        Ok (meta) => Ok(Some(update_directory_item(item.copy(), &meta))),
+        Err (err) if err.kind() == ErrorKind::NotFound => Ok(None),
+        Err (err) => Err(err)
+    }?;
+
+    // TODO get it from remote: get_metadata (len, modified)
+    let conflict = updated_item.as_ref().and_then(|n| {
+        match fs::metadata(PathBuf::from(target_path).join(&n.name)) {
+            Ok (meta) => Some(ConflictItem::from(path, target_path, &n, &meta)),
+            _ => None,
+        }
+    });
+
+    Ok((updated_item, conflict))
+}
+
 struct PathAndIp<'a> {
     ip: &'a str,
     path: &'a str,

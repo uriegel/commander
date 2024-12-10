@@ -4,7 +4,7 @@ use webview_app::request::{get_input, request_blocking, Request};
 use crate::{directory::{check_copy_items, copy_items, create_folder, delete_items, get_files, rename_as_copy, rename_item, rename_items}, 
     extended_items::{
         cancel_extended_items, get_extended_items
-    }, remote::get_remote_files, request_error::{from_result, RequestError}, tracks::get_track_info};
+    }, remote::{check_copy_items_to_remote, get_remote_files}, request_error::{from_result, RequestError}, tracks::get_track_info};
 #[cfg(target_os = "linux")]
 use crate::linux:: {root::get_root, directory::on_enter, headerbar::show_dialog};
 #[cfg(target_os = "windows")]
@@ -31,6 +31,7 @@ pub fn on_request(request: &Request, id: String, cmd: String, json: String)->boo
             "renameascopy" => from_result(rename_as_copy(get_input(&json))),
             "gettrackinfo" => from_result(get_track_info(get_input(&json))),
             "checkcopyitems" => from_result(check_copy_items(get_input(&json))),
+            "checkcopyitemstoremote" => from_result(check_copy_items_to_remote(get_input(&json))),
             "copyitems" => from_result(copy_items(get_input(&json))),
             "renameitems" => from_result(rename_items(get_input(&json))),
             "getremotefiles" => from_result(get_remote_files(get_input(&json))),

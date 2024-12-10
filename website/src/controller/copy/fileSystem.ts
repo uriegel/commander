@@ -8,7 +8,7 @@ export class FileSystemCopyController extends CopyController {
     // get exif from sources and targets if available (Windows)
 
     async checkCopyItems(items: FolderViewItem[], _targetItems: FolderViewItem[], sourcePath: string, targetPath: string) {
-        return await webViewRequest<CopyItemResult>("checkcopyitems", {
+        return await webViewRequest<CopyItemResult>("checkcopytoremoteitems", {
             items,
             path: sourcePath,
             targetPath
