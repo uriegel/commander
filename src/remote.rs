@@ -36,7 +36,7 @@ pub struct GetRemoteFilesResult {
 pub fn get_remote_files(input: GetRemoteFiles) -> Result<GetFilesResult, RequestError> {
     let path_and_ip = get_remote_path(&input.path);
     let items = 
-        WebRequest::get(path_and_ip.ip, format!("/getfiles{}", path_and_ip.path))
+        WebRequest::get(path_and_ip.ip, format!("/getfiles{}", encode(&path_and_ip.path)))
         ?.to::<Vec<GetRemoteFilesResult>>()?;
     let items: Vec<DirectoryItem> = items
         .into_iter()
@@ -83,7 +83,7 @@ pub fn copy_from_remote(input: &CopyItems, file: &str, progress: &CurrentProgres
     let source_path = source_file.to_string_lossy();
     #[cfg(target_os = "windows")]
     let source_path = source_path.replace("\\", "/");
-    let mut web_request = WebRequest::get(path_and_ip.ip, format!("/downloadfile{}", source_path))?;
+    let mut web_request = WebRequest::get(path_and_ip.ip, format!("/downloadfile{}", encode(&source_path)))?;
     let mut progress_stream = ProgressWriteStream::new(BufWriter::new(&file), 
         |p| progress.send_bytes(p as u64));
     web_request.download(&mut progress_stream, rcv)?;

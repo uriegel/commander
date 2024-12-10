@@ -42,6 +42,9 @@ export class CopyController {
     async copy(move: boolean, dialog: DialogHandle, fromLeft: boolean, sourcePath: string, targetPath: string,
         items: FolderViewItem[], targetFolderItems: FolderViewItem[]): Promise<void> {
         
+        if (sourcePath == targetPath)
+            throw new RequestError(IOError.AlreadyExists, "")
+        
         const copyItems = await this.checkCopyItems(items, targetFolderItems, sourcePath, targetPath)
         const totalSize = copyItems.items
             .map(n => n.size || 0)

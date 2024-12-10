@@ -98,8 +98,6 @@ fn main() {
     .run();
 }
 
-// TODO Copy directories and sub directories to remote: create sub directories if necessary
-
 // TODO Background color (dark, react not connected)
 // TODO UAC
 // TODO Drag 'n Drop
