@@ -109,7 +109,6 @@ pub fn copy_attributes(source_file: &File, target_file: &File)->Result<(), Reque
     Ok(())
 }
 
-
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SpecialKeys {
@@ -144,6 +143,20 @@ pub fn on_enter(input: OnEnter)->Result<(), RequestError> {
     };
 
     unsafe { ShellExecuteExW(&mut info) }?;
+    Ok(())
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct NativeCopy {
+    files: Vec<String>, 
+    id: String,
+    #[serde(rename = "move")]
+    mov: bool
+}
+
+pub fn native_copy(input: NativeCopy) -> Result<(), RequestError> {
+    println!("{:?}", input);
     Ok(())
 }
 

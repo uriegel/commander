@@ -4,7 +4,7 @@ import VirtualTable, { OnSort, SelectableItem, SpecialKeys, TableColumns, Virtua
 import { checkController, Controller, createEmptyController, showError } from '../controller/controller'
 import { ROOT } from '../controller/root'
 import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
-import { ExifData, RequestError, Version } from '../requests/requests'
+import { ExifData, RequestError, Version, webViewRequest } from '../requests/requests'
 import { initializeHistory } from '../history'
 import { isWindows } from '../globals'
 import { Subscription } from 'rxjs'
@@ -552,8 +552,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({ id, showHidde
     const onDragOver = (evt: React.DragEvent) => {
         evt.preventDefault()
         evt.stopPropagation()
-        if (internalDrag) 
-            evt.dataTransfer.dropEffect = evt.shiftKey ? "move" : "copy"
+        evt.dataTransfer.dropEffect = evt.shiftKey ? "move" : "copy"
     }
 
     const onDrop = async (evt: React.DragEvent) => {
@@ -568,9 +567,11 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({ id, showHidde
                 onCopy(evt.shiftKey)
         }
         else {
-            //webViewDropFiles(id, evt.shiftKey, evt.dataTransfer.files)
             const files = await WebView.filesDropped(evt.dataTransfer)
             console.log("copy", files)
+            webViewRequest("nativecopy", {
+                files, id, move: evt.shiftKey
+            })
         }
     }
 
