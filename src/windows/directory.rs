@@ -11,6 +11,7 @@ use windows::{
         }
     }
 };
+use windows_result::HRESULT;
 
 use crate::{directory::{get_extension, DirectoryItem}, error::Error, extended_items::Version, request_error::RequestError};
 use super::{string_to_pcwstr, version::get_version};
@@ -174,13 +175,11 @@ pub fn native_copy(input: NativeCopy) -> Result<(), RequestError> {
         pTo: PCWSTR(target_buffer.as_mut_ptr()),
         ..Default::default()
     };
-    let res = unsafe { SHFileOperationW(&mut sh_file_op) };
-    // TODO After copy_native refresh view
-    // TODO Window Handle
-    // TODO resssss to RequestError
-
-    println!("Ressss {res}");
-    Ok(()) 
+    match unsafe { SHFileOperationW(&mut sh_file_op) } {
+        0 => Ok(()), 
+        e => Err(windows_result::Error::new(HRESULT::from_win32(e as u32), "").into())
+    }
+   
 }
 
 pub trait StringExt {

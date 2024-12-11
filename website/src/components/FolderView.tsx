@@ -568,10 +568,15 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({ id, showHidde
         }
         else {
             const files = await WebView.filesDropped(evt.dataTransfer)
-            console.log("copy", files)
-            webViewRequest("nativecopy", {
-                files, id, move: evt.shiftKey, target: path
-            })
+            try {
+                await webViewRequest("nativecopy", {
+                    files, id, move: evt.shiftKey, target: path
+                })
+                refresh()
+            } catch (err) {
+                if (err instanceof RequestError) 
+                    showError(err, setError)
+            }
         }
     }
 
