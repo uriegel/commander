@@ -7,7 +7,7 @@ use windows::{
         Storage::FileSystem::{
             MoveFileWithProgressW, MOVEFILE_REPLACE_EXISTING, MOVEFILE_WRITE_THROUGH
         }, UI::Shell::{
-            ShellExecuteExW, SEE_MASK_INVOKEIDLIST, SHELLEXECUTEINFOW
+            SHFileOperationW, ShellExecuteExW, FO_COPY, FO_MOVE, SEE_MASK_INVOKEIDLIST, SHELLEXECUTEINFOW, SHFILEOPSTRUCTW
         }
     }
 };
@@ -157,8 +157,28 @@ pub struct NativeCopy {
 }
 
 pub fn native_copy(input: NativeCopy) -> Result<(), RequestError> {
-    println!("{:?}", input);
-    Ok(())
+    let mut input_buffer = 
+        input
+            .files
+            .iter()
+            .map(|f|string_to_pcwstr(f))
+            .collect::<Vec<_>>()
+            .concat();
+    input_buffer.push(0);
+    let mut target_buffer = string_to_pcwstr(&input.target);
+    target_buffer.push(0);
+     
+    let mut sh_file_op = SHFILEOPSTRUCTW {
+        wFunc: if input.mov { FO_MOVE } else { FO_COPY },
+        pFrom: PCWSTR(input_buffer.as_mut_ptr()),
+        pTo: PCWSTR(target_buffer.as_mut_ptr()),
+        ..Default::default()
+    };
+    let res = unsafe { SHFileOperationW(&mut sh_file_op) };
+    // TODO resssss to RequestError
+    // TODO After copy_native refresh view
+    println!("Ressss {res}");
+    Ok(()) 
 }
 
 pub trait StringExt {
