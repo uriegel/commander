@@ -175,8 +175,10 @@ pub fn native_copy(input: NativeCopy) -> Result<(), RequestError> {
         ..Default::default()
     };
     let res = unsafe { SHFileOperationW(&mut sh_file_op) };
-    // TODO resssss to RequestError
     // TODO After copy_native refresh view
+    // TODO Window Handle
+    // TODO resssss to RequestError
+
     println!("Ressss {res}");
     Ok(()) 
 }
