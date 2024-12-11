@@ -149,8 +149,9 @@ pub fn on_enter(input: OnEnter)->Result<(), RequestError> {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NativeCopy {
-    files: Vec<String>, 
     id: String,
+    files: Vec<String>, 
+    target: String,
     #[serde(rename = "move")]
     mov: bool
 }
