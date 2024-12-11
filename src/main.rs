@@ -98,6 +98,11 @@ fn main() {
     .run();
 }
 
+
+// TODO Drag 'n Drop (Windows)
+// TODO use Shell with native copy dialog if external
+// TODO use copyProcessor if internal
+
 // TODO Background color (dark, react not connected)
 // TODO UAC
-// TODO Drag 'n Drop
+

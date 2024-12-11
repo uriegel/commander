@@ -11,8 +11,9 @@ import { Subscription } from 'rxjs'
 import { ServiceStartMode, ServiceStatus } from '../enums'
 import { DialogContext, DialogHandle } from 'web-dialog-react'
 import { getDirectoryChangedEvents, DirectoryChangedType } from '../requests/events'
+import { WebViewType } from '../webview'
 
-declare const webViewDropFiles: (id: string, move: boolean, paths: FileList)=>void
+declare const WebView: WebViewType
 declare const webViewDragStart: (path: string, fileList: string[]) => void
 
 export interface FolderViewItem extends SelectableItem {
@@ -557,12 +558,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({ id, showHidde
 
     const onDrop = async (evt: React.DragEvent) => {
 
-        console.log("Droppp", evt.dataTransfer.files)
-        evt.preventDefault()
-        for (const item of evt.dataTransfer.files) {
-            const entry = item.getAsEntry();
-            console.log("entry", entry)
-        }
         setDragging(false)
         const internal = internalDrag
         internalDrag = false
@@ -572,14 +567,17 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({ id, showHidde
             if (!dragStarted)
                 onCopy(evt.shiftKey)
         }
-        else
-            webViewDropFiles(id, evt.shiftKey, evt.dataTransfer.files)
+        else {
+            //webViewDropFiles(id, evt.shiftKey, evt.dataTransfer.files)
+            const files = await WebView.filesDropped(evt.dataTransfer)
+            console.log("copy", files)
+        }
     }
 
     return (
         <div className={`folder${dragging ? " dragging" : ""}`} onFocus={onFocusChanged}
-            onDragEnter={isWindows() ? onDragEnter : undefined} onDragOver={!isWindows() ? onDragOver : undefined}
-            onDragLeave={isWindows() ? onDragLeave : undefined} onDrop={!isWindows() ? onDrop : undefined}>
+            onDragEnter={isWindows() ? onDragEnter : undefined} onDragOver={isWindows() ? onDragOver : undefined}
+            onDragLeave={isWindows() ? onDragLeave : undefined} onDrop={isWindows() ? onDrop : undefined}>
             <input ref={input} className="pathInput" spellCheck={false} value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
             <div className={`tableContainer${dragStarted ? " dragStarted" : ""}`} onKeyDown={onKeyDown} >
                 <VirtualTable ref={virtualTable} items={items} onSort={onSort} onColumnWidths={onColumnWidths} onItemClick={onItemClick}

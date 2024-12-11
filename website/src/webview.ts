@@ -8,6 +8,7 @@ export declare type WebViewType = {
     dropFiles: (id: string, move: boolean, droppedFiles: string[]) => void,
     setDroppedFilesEventHandler: (success: boolean) => void
     closeWindow(): () => void
+    filesDropped: (dataTransfer: DataTransfer) => Promise<string[]>
 }
 
 export declare type WebViewEvents = {
