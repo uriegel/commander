@@ -4,11 +4,11 @@ use webview_app::request::{get_input, request_blocking, Request};
 use crate::{directory::{check_copy_items, copy_items, create_folder, delete_items, get_files, rename_as_copy, rename_item, rename_items}, 
     extended_items::{
         cancel_extended_items, get_extended_items
-    }, remote::{check_copy_items_to_remote, get_remote_files}, request_error::{from_result, RequestError}, tracks::get_track_info, windows::directory::native_copy};
+    }, remote::{check_copy_items_to_remote, get_remote_files}, request_error::{from_result, RequestError}, tracks::get_track_info};
 #[cfg(target_os = "linux")]
 use crate::linux:: {root::get_root, directory::on_enter, headerbar::show_dialog};
 #[cfg(target_os = "windows")]
-use crate::windows::{root::get_root, progresses::cancel_copy, directory::on_enter, show_dialog};
+use crate::windows::{root::get_root, progresses::cancel_copy, directory::{on_enter, directory::native_copy}, show_dialog};
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
