@@ -6,6 +6,7 @@ pub mod root;
 pub mod directory;
 pub mod version;
 pub mod progresses;
+pub mod hwnd;
 mod error;
 mod request_error;
 

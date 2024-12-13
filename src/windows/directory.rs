@@ -1,10 +1,10 @@
-use std::{fs::{File, Metadata}, mem, os::windows::fs::MetadataExt, path::PathBuf, time::UNIX_EPOCH};
+use std::{ffi::c_void, fs::{File, Metadata}, mem, os::windows::fs::MetadataExt, path::PathBuf, time::UNIX_EPOCH};
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use windows::{
     core::PCWSTR, Win32::{
-        Storage::FileSystem::{
+        Foundation::HWND, Storage::FileSystem::{
             MoveFileWithProgressW, MOVEFILE_REPLACE_EXISTING, MOVEFILE_WRITE_THROUGH
         }, UI::Shell::{
             SHFileOperationW, ShellExecuteExW, FO_COPY, FO_MOVE, SEE_MASK_INVOKEIDLIST, SHELLEXECUTEINFOW, SHFILEOPSTRUCTW
@@ -14,7 +14,7 @@ use windows::{
 use windows_result::HRESULT;
 
 use crate::{directory::{get_extension, DirectoryItem}, error::Error, extended_items::Version, request_error::RequestError};
-use super::{string_to_pcwstr, version::get_version};
+use super::{hwnd::get_hwnd, string_to_pcwstr, version::get_version};
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -173,6 +173,7 @@ pub fn native_copy(input: NativeCopy) -> Result<(), RequestError> {
         wFunc: if input.mov { FO_MOVE } else { FO_COPY },
         pFrom: PCWSTR(input_buffer.as_mut_ptr()),
         pTo: PCWSTR(target_buffer.as_mut_ptr()),
+        hwnd: HWND(get_hwnd() as *mut c_void),
         ..Default::default()
     };
     match unsafe { SHFileOperationW(&mut sh_file_op) } {

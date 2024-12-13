@@ -31,6 +31,8 @@ use gtk::prelude::StaticTypeExt;
 #[cfg(target_os = "linux")]
 use linux::progress_display::ProgressDisplay;
 #[cfg(target_os = "windows")]
+use windows::hwnd::set_hwnd;
+#[cfg(target_os = "windows")]
 use std::sync::{Arc, Mutex};
 
 use requests::on_request;
@@ -78,6 +80,9 @@ fn on_activate(app: &Application) -> WebView {
     #[cfg(target_os = "linux")]
     ProgressDisplay::ensure_type();        
     let webview = webview_builder.build();
+
+    #[cfg(target_os = "windows")]
+    set_hwnd(webview.get_handle().handle.hwnd);
 
     webview.can_close(|| {
         let binding = try_copy_lock();

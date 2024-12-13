@@ -17,7 +17,6 @@ pub struct ShowDialog {
     pub show: bool
 }
 
-
 pub fn on_request(request: &Request, id: String, cmd: String, json: String)->bool {
     request_blocking(request, id, move || {
         match cmd.as_str() {
