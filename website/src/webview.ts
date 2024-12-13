@@ -3,7 +3,7 @@ import { Progress } from "./requests/events"
 export declare type WebViewType = {
     initializeNoTitlebar: () => void,
     showDevTools: () => void,
-    startDragFiles: (files: string[]) => void,
+    startDragFiles: (files: string[]) => Promise<void>,
     request: <T, TR>(method: string, data: T) => Promise<TR>
     dropFiles: (id: string, move: boolean, droppedFiles: string[]) => void,
     setDroppedFilesEventHandler: (success: boolean) => void

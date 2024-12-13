@@ -531,7 +531,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({ id, showHidde
             setDragStarted(true)
             internalDrag = true
             evt.preventDefault()
-            await webViewDragStart(path, items)
+            await WebView.startDragFiles(items.map(i => `${path}\\${i}`))
             setDragStarted(false)
             internalDrag = false
         } 
@@ -556,7 +556,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({ id, showHidde
     }
 
     const onDrop = async (evt: React.DragEvent) => {
-
         setDragging(false)
         const internal = internalDrag
         internalDrag = false

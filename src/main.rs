@@ -98,9 +98,6 @@ fn main() {
     .run();
 }
 
-// TODO Drag files (Windows)
-// TODO use copyProcessor if internal
-
 // TODO Background color (dark, react not connected)
 // TODO UAC
 
