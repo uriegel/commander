@@ -103,6 +103,8 @@ fn main() {
     .run();
 }
 
-// TODO Background color (dark, react not connected)
+// TODO Connect remote pathes
+// TODO Reconnect remote pathes 
+// TODO Reconnect not mounted drives
 // TODO UAC
 
