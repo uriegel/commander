@@ -103,8 +103,9 @@ fn main() {
     .run();
 }
 
-// TODO Connect remote pathes
-// TODO Reconnect remote pathes 
-// TODO Reconnect not mounted drives
+// TODO Connect remote unc pathes
+// TODO Reconnect remote unc pathes 
+// TODO Reconnect not mounted drives: /run/media/uwe/898989/ take str before 5th / and try to mount if started with /run
+// TODO If not reconnect goto root
 // TODO UAC
 
