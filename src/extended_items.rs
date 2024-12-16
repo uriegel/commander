@@ -39,7 +39,7 @@ pub fn cancel_extended_items(input: CancelExtendedItems)->Result<(), RequestErro
 
 fn get_exif_data(input: &GetExtendedItems, item: &String) -> Option<ExifData> {
     let lower_item = item.to_lowercase();
-    if lower_item.ends_with(".jpg") || lower_item.ends_with(".png") {
+    if lower_item.ends_with(".jpg") || lower_item.ends_with(".png")|| lower_item.ends_with(".heic") {
         exif_data(&PathBuf::from(&input.path).join(item))
     } else {
         None            

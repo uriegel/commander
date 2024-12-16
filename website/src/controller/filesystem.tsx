@@ -169,7 +169,7 @@ const checkExtendedItemsWindows = (items: FolderViewItem[]) =>
 const checkExtendedItemsLinux = (items: FolderViewItem[]) => 
 	items.find(n => {
 		const check = n.name.toLowerCase()
-		return check.endsWith(".jpg") || check.endsWith(".png")
+		return check.endsWith(".jpg") || check.endsWith(".png")|| check.endsWith(".heic")
 	})
 const checkExtendedItems = 
 	platform == Platform.Windows

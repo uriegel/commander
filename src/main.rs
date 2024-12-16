@@ -108,4 +108,5 @@ fn main() {
 // TODO Reconnect not mounted drives: /run/media/uwe/898989/ take str before 5th / and try to mount if started with /run
 // TODO If not reconnect goto root
 // TODO UAC
+// TODO Windows: change path to windows\system32, then immediatley restrict to 'z': when version are available, restriction is broken
 

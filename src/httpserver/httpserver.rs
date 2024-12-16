@@ -1,9 +1,10 @@
 use core::str;
-use std::{io::{BufRead, BufReader, BufWriter, Read, Seek, Write}, net::{TcpListener, TcpStream}, sync::{Arc, Mutex}, thread};
+use std::{fs::{self, File}, io::{BufRead, BufReader, BufWriter, Read, Seek, Write}, net::{TcpListener, TcpStream}, path::PathBuf, process::Command, sync::{Arc, Mutex}, thread};
 
 use include_dir::Dir;
+use urlencoding::decode;
 
-use crate::{error::Error, httpserver::range::send_range, requests_http::route_get, str::StrExt};
+use crate::{directory::get_file, error::Error, httpserver::range::send_range, requests_http::route_get, str::StrExt};
 use super::{html, request::Request, threadpool::ThreadPool};
 
 #[derive(Clone)]
@@ -33,6 +34,27 @@ pub fn send_stream(request: &mut Request, path: &str, stream: impl Read+Seek, le
     let content_type = get_content_type(path);
     if content_type.starts_with("audio") || content_type.starts_with("video") {
         send_range(request, stream, len, status_line, content_type)?;
+    } else if content_type == "image/heic" {
+        let pos_end = path.find('?');
+        let path = if let Some(pos_end) = pos_end { &path[..pos_end] } else { path };
+        let path = decode(path)?.to_string();
+
+        // TODO Windows
+        let output_path = PathBuf::from("/tmp/output.jpg");
+        //let resa = fs::copy(path, output_path);
+        //  println!("resa {:?}", resa);
+
+        Command::new("ffmpeg")
+            .arg("-i")
+            .arg(path)
+            .arg(output_path.to_string_lossy().to_string())
+            .arg("-y")
+            .output()?;
+        let stream = File::open(&output_path)?;
+        let len = stream.metadata()?.len();
+        send_complete_stream(request, stream, len, status_line, content_type)?;
+        
+
     } else {
         send_complete_stream(request, stream, len, status_line, content_type)?;
     }
@@ -135,6 +157,7 @@ fn get_content_type(path: &str)->&str {
         path if path.ext_is(".css") => "text/css",
         path if path.ext_is(".js") => "text/javascript",
         path if path.ext_is(".jpg") => "image/jpg",
+        path if path.ext_is(".heic") => "image/heic",
         path if path.ext_is(".png") => "image/png",
         path if path.ext_is(".pdf") => "application/pdf",
         path if path.ext_is(".mp4") => "video/mp4",
