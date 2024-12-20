@@ -1,10 +1,10 @@
 use core::str;
-use std::{fs::{self, File}, io::{BufRead, BufReader, BufWriter, Read, Seek, Write}, net::{TcpListener, TcpStream}, path::PathBuf, process::Command, sync::{Arc, Mutex}, thread};
+use std::{fs::File, io::{BufRead, BufReader, BufWriter, Read, Seek, Write}, net::{TcpListener, TcpStream}, path::PathBuf, process::Command, sync::{Arc, Mutex}, thread};
 
 use include_dir::Dir;
 use urlencoding::decode;
 
-use crate::{directory::get_file, error::Error, httpserver::range::send_range, requests_http::route_get, str::StrExt};
+use crate::{error::Error, httpserver::range::send_range, requests_http::route_get, str::StrExt};
 use super::{html, request::Request, threadpool::ThreadPool};
 
 #[derive(Clone)]
@@ -163,6 +163,8 @@ fn get_content_type(path: &str)->&str {
         path if path.ext_is(".mp4") => "video/mp4",
         path if path.ext_is(".mkv") => "video/mkv",
         path if path.ext_is(".mp3") => "audio/mp3",
+        path if path.ext_is(".ogg") => "audio/ogg",
+        path if path.ext_is(".aac") => "audio/aac",
         _ => "text/plain"
     }
 }

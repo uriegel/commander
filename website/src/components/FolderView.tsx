@@ -14,6 +14,7 @@ import { getDirectoryChangedEvents, DirectoryChangedType } from '../requests/eve
 import { WebViewType } from '../webview'
 
 declare const WebView: WebViewType
+// eslint-disable-next-line 
 declare const webViewDragStart: (path: string, fileList: string[]) => void
 
 export interface FolderViewItem extends SelectableItem {
