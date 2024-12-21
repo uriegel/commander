@@ -35,14 +35,14 @@ pub fn get_root()->Result<Vec<RootItem>, RequestError> {
             get_part(first_line, "MOUNT"),
             get_part(first_line, "FSTYPE")
         ];
-    
+   
         let root_items = lines
             .iter()
             .skip(1)
             .map(|n| {
                 let name = get_string(column_positions, n, 1, Some(2));
                 match name.bytes().next() {
-                    Some(b) if b > 127 => {
+                    Some(b) => {
                         let description = get_string(column_positions, n, 2, Some(3));
                         let mount_point = get_string(column_positions, n, 3, Some(4));
                         let size = match str::parse::<usize>(&get_string(column_positions, n, 0, Some(1))) {
@@ -51,7 +51,11 @@ pub fn get_root()->Result<Vec<RootItem>, RequestError> {
                         };
                         let drive_type = get_string(column_positions, n, 4, None);
                         let is_mounted = mount_point.len() > 0;
-                        Some(RootItem { name: name[6..].to_string(), description, mount_point, size, drive_type, is_mounted })
+                        if !mount_point.starts_with("[") {
+                            Some(RootItem { name: if b > 127 { name[6..].to_string() } else { name.to_string() }, description, mount_point, size, drive_type, is_mounted })
+                        } else {
+                            None
+                        }
                     },
                     _ => None
                 }
