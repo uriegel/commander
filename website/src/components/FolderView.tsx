@@ -312,8 +312,11 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({ id, showHidde
                     extendedItemsPendingRefCount.current = 0
                     setStatusText(null)
                 }
-                if (extended.path == refPath.current)
-                    setItems(controller.current.setExtendedItems(res.items, extended, sortIndex.current, sortDescending.current))
+                if (extended.path == refPath.current) {
+                    const items = controller.current.setExtendedItems(res.items, extended, sortIndex.current, sortDescending.current)
+                    const ri = restrictionView.current?.setExtendedItems(items)
+                    setItems(ri || items)
+                }
             } catch {
                 if (--extendedItemsPendingRefCount.current <= 0) {
                     extendedItemsPendingRefCount.current = 0

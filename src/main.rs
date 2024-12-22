@@ -102,10 +102,6 @@ fn main() {
     .on_activate(on_activate)
     .run();
 }
-
-// TODO Change path to img, then immediately  restrict to i
-// TODO change path to windows\system32, then immediatley restrict to 'z': when version are available, restriction is broken
-
 // TODO Fullscreen gtk_window_fullscreen 
 // TODO Connect remote unc pathes
 // TODO Reconnect remote unc pathes 

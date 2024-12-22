@@ -4,7 +4,8 @@ import './RestrictionView.css'
 
 export type RestrictionViewHandle = {
     checkKey: (code: string) => FolderViewItem[] | null
-    reset: ()=>void
+    reset: () => void
+    setExtendedItems: (items: FolderViewItem[])=>FolderViewItem[]
 }
 
 interface RestrictionViewProps {
@@ -47,6 +48,12 @@ const RestrictionView = forwardRef<RestrictionViewHandle, RestrictionViewProps>(
         reset() {
             setRestriction("")
             refItems.current = null
+        },
+        setExtendedItems(items: FolderViewItem[]) {
+            if (refItems.current != null)
+                refItems.current = items
+            const itemsToCheck = refItems.current ?? items            
+            return itemsToCheck.filter(n => n.name.toLocaleLowerCase().startsWith(restriction))
         }
     }))
 
