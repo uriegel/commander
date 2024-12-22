@@ -598,12 +598,7 @@ let internalDrag = false
 
 export default FolderView
 
-// TODO remote items only for linux
-// TODO when copies from or to remote, send refresh event when finished
 // TODO Collect all errors in list, show ! in StatusBar, When clicked on, a dialog is shown => delete all button
-
-// TODO Linux Error when closing
-// TODO Linux error handling Copy
 
 // TODO Drag n drop from outside copy hidden file
 
@@ -611,8 +606,6 @@ export default FolderView
 // TODO Windows append home drive to root
 
 // TODO Viewer .. => Directory Info
-
-// TODO Dev tools not in Release mode
 
 // using System.IO;
 
@@ -629,19 +622,9 @@ export default FolderView
 // }
 
 // TODO .. => Btn safe reject sudo eject sde1
-// TODO Arrow left and right in web-dialog button bar
 // TODO Viewer text in textedit with save option
-// TODO Take RenderRow in column
-// TODO remote copy dirs
-// TODO remote createFolder
-// TODO remote delete files
-// TODO remote rename file
-// TODO remote move
 // TODO Statusbar nowrap text-overflow ellipses
-// TODO Viewer: directory info
-// TODO Check gtk webview: drop file/files/folder/folders sudo apt install libwebkit2gtk-4.0-dev
 // TODO https://stackoverflow.com/questions/71581401/drag-a-file-from-my-gtk-app-to-another-app-not-the-other-way-around
-// TODO Drag n drop to outside (Linux) with Gtk feature (startDrag when leaving the app)
 
 // WindowsIdentity.RunImpersonated(userHandle, () =>
 // {

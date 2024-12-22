@@ -164,8 +164,8 @@ fn get_remote_path<'a>(path: &'a str)-> PathAndIp<'a> {
     PathAndIp { ip, path }
 }
 
-// TODO: in Android Commander Engine: CopyFileToRemote: copy to remote file "copytoremote", then rename it to the correct filename
 // TODO: Rename File
 // TODO: Rename Directory
+// TODO: in Android Commander Engine: CopyFileToRemote: copy to remote file "copytoremote", then rename it to the correct filename
 // TODO: Copy Directories from local to remote
 // TODO: in Android Commander Engine: range for remote
