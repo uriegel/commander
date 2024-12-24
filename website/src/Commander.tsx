@@ -284,11 +284,9 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 				:(<PictureViewer path={path.path} latitude={path.latitude} longitude={path.longitude} />)
 			: ext == ".mp3" || ext == ".mp4" || ext == ".mkv" || ext == ".wav"|| ext == ".ogg" || ext == ".aac"
 			? (<MediaPlayer path={path.path} />)
-			: ext == ".pdf"
-			? (<FileViewer path={path.path} />)
 			: ext == ".gpx"
 			? (<TrackViewer path={path.path} />)
-			: (<div></div>)
+			: (<FileViewer path={path.path} />)
 	}
 
 	return (

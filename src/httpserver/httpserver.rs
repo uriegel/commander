@@ -165,7 +165,8 @@ fn get_content_type(path: &str)->&str {
         path if path.ext_is(".mp3") => "audio/mp3",
         path if path.ext_is(".ogg") => "audio/ogg",
         path if path.ext_is(".aac") => "audio/aac",
-        _ => "text/plain"
+        path if path.ext_is(".html") => "text/html; charset=utf-8",
+        _ => "text/plain; charset=utf-8"
     }
 }
 
