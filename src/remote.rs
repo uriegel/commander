@@ -33,6 +33,13 @@ pub struct GetRemoteFilesResult {
     time: i64
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DeleteItems {
+    pub path: String,
+    pub names: Vec<String>
+}
+
 pub fn get_remote_files(input: GetRemoteFiles) -> Result<GetFilesResult, RequestError> {
     let path_and_ip = get_remote_path(&input.path);
     let items = 
@@ -116,6 +123,16 @@ pub fn copy_to_remote(input: &CopyItems, file: &str, progress: &CurrentProgress,
         |p| progress.send_bytes(p as u64));
     WebRequest::put(path_and_ip.ip, format!("/putfile{}", encode(&target_path)), &mut progress_stream, meta.len() as usize, datetime, rcv)?;
     Ok(())
+}
+
+pub fn delete_remote_files(input: DeleteItems)->Result<(), RequestError> {
+    input.names.iter().try_for_each(|i|{
+        let target_file = PathBuf::from(&input.path).join(i);
+        let target_file = target_file.to_string_lossy();
+        let path_and_ip = get_remote_path(&target_file);    
+        WebRequest::delete(path_and_ip.ip, format!("/deletefile{}", encode(&path_and_ip.path)))?;
+        Ok(())
+    })
 }
 
 fn create_copy_item(item: DirectoryItem, path: &str, target_path: &str)->Result<(Option<DirectoryItem>, Option<ConflictItem>), RequestError> { 

@@ -4,7 +4,7 @@ use webview_app::request::{get_input, request_blocking, Request};
 use crate::{directory::{check_copy_items, copy_items, create_folder, delete_items, get_files, rename_as_copy, rename_item, rename_items}, 
     extended_items::{
         cancel_extended_items, get_extended_items
-    }, remote::{check_copy_items_to_remote, get_remote_files}, request_error::{from_result, RequestError}, tracks::get_track_info};
+    }, remote::{check_copy_items_to_remote, delete_remote_files, get_remote_files}, request_error::{from_result, RequestError}, tracks::get_track_info};
 #[cfg(target_os = "linux")]
 use crate::linux:: {root::get_root, directory::on_enter, headerbar::show_dialog};
 #[cfg(target_os = "windows")]
@@ -34,6 +34,7 @@ pub fn on_request(request: &Request, id: String, cmd: String, json: String)->boo
             "copyitems" => from_result(copy_items(get_input(&json))),
             "renameitems" => from_result(rename_items(get_input(&json))),
             "getremotefiles" => from_result(get_remote_files(get_input(&json))),
+            "deleteitemsremote" => from_result(delete_remote_files(get_input(&json))),
             "onenter" => from_result(on_enter(get_input(&json))),
             "showdialog" => from_result(show_dialog(get_input(&json))),
             #[cfg(target_os = "windows")]

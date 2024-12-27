@@ -156,6 +156,39 @@ impl WebRequest {
         })
     }
 
+    pub fn delete(ip: &str, url: String) -> Result<WebRequest, RequestError> {
+        let stream = TcpStream::connect(format!("{}:8080", ip))?; 
+        let mut wr = WebRequest::new(stream)?;
+        let payload = format!("DELETE {url} HTTP/1.1\r\n\r\n");
+        wr.buf_writer.write_all(payload.as_bytes())?;
+        wr.buf_writer.flush()?;
+   
+        loop {
+            let mut str = String::new();
+            wr.buf_reader.read_line(&mut str)?;
+            str = str.trim().to_string();
+            if str.len() == 0 {
+                break;
+            }
+            wr.headers.push(str);
+        }
+
+        if wr.headers.len() == 0  { 
+            return Err(RequestError { status: crate::request_error::ErrorType::FileNotFound });
+        }
+        let request_line = &mut wr.headers[0];
+        let status = match request_line.find(" ") {
+            Some(pos) => request_line.split_off(pos),
+            _ => return Err(RequestError { status: crate::request_error::ErrorType::FileNotFound })
+        };
+        match status.trim() {
+            s if s.starts_with("204") => {}
+            s if s.starts_with("404") => return Err(RequestError { status: crate::request_error::ErrorType::FileNotFound }),
+            _ => return Err(RequestError { status: crate::request_error::ErrorType::Unknown }),
+        };
+
+        Ok(wr)
+    }
 }
 
 pub static CONTENT_LENGTH: &str = "Content-Length";
