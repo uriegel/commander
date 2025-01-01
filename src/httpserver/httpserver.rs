@@ -162,6 +162,7 @@ fn get_content_type(path: &str)->&str {
         path if path.ext_is(".pdf") => "application/pdf",
         path if path.ext_is(".mp4") => "video/mp4",
         path if path.ext_is(".mkv") => "video/mkv",
+        path if path.ext_is(".mov") => "video/mov",
         path if path.ext_is(".mp3") => "audio/mp3",
         path if path.ext_is(".ogg") => "audio/ogg",
         path if path.ext_is(".aac") => "audio/aac",
