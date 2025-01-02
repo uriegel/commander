@@ -91,7 +91,7 @@ const onEnter = async (enterData: EnterData) =>
         ? await startShowRemote(enterData.dialog, enterData.refresh)
         : {
             processed: false, 
-            pathToSet: enterData.item.isParent ? ROOT : `remote/${enterData.item.ipAddress}`
+            pathToSet: enterData.item.isParent ? ROOT : `remote/${enterData.item.ipAddress}${enterData.item.isAndroid ? ":8080" : ""}`
         } 
 
 const deleteItems = async (_: string, items: FolderViewItem[], dialog: DialogHandle) => {

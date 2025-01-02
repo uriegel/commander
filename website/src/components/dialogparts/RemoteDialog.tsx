@@ -30,7 +30,7 @@ const RemoteDialog = ({onChange, props }: ExtensionProps) => {
     return (
         <div className='dialog' >
             <input type="text" className='wdr-focusable' placeholder="Anzeigenamen festlegen" value={name} onChange={onNameChange} />
-            <input type="text" className='wdr-focusable' placeholder="IP-Adresse des externen Gerätes" value={ipAddress} onChange={onIpChange}/>
+            <input type="text" className='wdr-focusable' placeholder="Hostname oder IP-Adresse" value={ipAddress} onChange={onIpChange}/>
             <div>
                 <input id="adderType" type="checkbox" className='wdr-focusable' checked={isAndroid} onChange={onIsAndroid} />
                 <label htmlFor="adderType">Android</label>

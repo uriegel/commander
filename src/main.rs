@@ -103,6 +103,7 @@ fn main() {
     .run();
 }
 // TODO Fullscreen gtk_window_fullscreen 
+// TODO remote change_path, no connection then change_apth again -> 1st get_path returns, not cancelled
 // TODO Connect remote unc pathes
 // TODO Reconnect remote unc pathes 
 // TODO Reconnect not mounted drives: /run/media/uwe/898989/ take str before 5th / and try to mount if started with /run

@@ -41,9 +41,9 @@ pub struct DeleteItems {
 }
 
 pub fn get_remote_files(input: GetRemoteFiles) -> Result<GetFilesResult, RequestError> {
-    let path_and_ip = get_remote_path(&input.path);
+    let path_and_host = get_remote_path(&input.path);
     let items = 
-        WebRequest::get(path_and_ip.ip, format!("/getfiles{}", encode(&path_and_ip.path)))
+        WebRequest::get(path_and_host.host, format!("/getfiles{}", encode(&path_and_host.path)))
         ?.to::<Vec<GetRemoteFilesResult>>()?;
     let items: Vec<DirectoryItem> = items
         .into_iter()
@@ -90,7 +90,7 @@ pub fn copy_from_remote(input: &CopyItems, file: &str, progress: &CurrentProgres
     let source_path = source_file.to_string_lossy();
     #[cfg(target_os = "windows")]
     let source_path = source_path.replace("\\", "/");
-    let mut web_request = WebRequest::get(path_and_ip.ip, format!("/downloadfile{}", encode(&source_path)))?;
+    let mut web_request = WebRequest::get(path_and_ip.host, format!("/downloadfile{}", encode(&source_path)))?;
     let mut progress_stream = ProgressWriteStream::new(BufWriter::new(&file), 
         |p| progress.send_bytes(p as u64));
     web_request.download(&mut progress_stream, rcv)?;
@@ -121,7 +121,7 @@ pub fn copy_to_remote(input: &CopyItems, file: &str, progress: &CurrentProgress,
             .map(|d|d.as_millis() as i64); 
     let mut progress_stream = ProgressReadStream::new(BufReader::new(&file),         
         |p| progress.send_bytes(p as u64));
-    WebRequest::put(path_and_ip.ip, format!("/putfile{}", encode(&target_path)), &mut progress_stream, meta.len() as usize, datetime, rcv)?;
+    WebRequest::put(path_and_ip.host, format!("/putfile{}", encode(&target_path)), &mut progress_stream, meta.len() as usize, datetime, rcv)?;
     Ok(())
 }
 
@@ -130,7 +130,7 @@ pub fn delete_remote_files(input: DeleteItems)->Result<(), RequestError> {
         let target_file = PathBuf::from(&input.path).join(i);
         let target_file = target_file.to_string_lossy();
         let path_and_ip = get_remote_path(&target_file);    
-        WebRequest::delete(path_and_ip.ip, format!("/deletefile{}", encode(&path_and_ip.path)))?;
+        WebRequest::delete(path_and_ip.host, format!("/deletefile{}", encode(&path_and_ip.path)))?;
         Ok(())
     })
 }
@@ -149,7 +149,7 @@ fn create_copy_item(item: DirectoryItem, path: &str, target_path: &str)->Result<
 
     let path_and_ip = get_remote_path(&target_file);
     let RemoteMetaData { size, time} = 
-        WebRequest::get(path_and_ip.ip, format!("/metadata{}", encode(&path_and_ip.path)))
+        WebRequest::get(path_and_ip.host, format!("/metadata{}", encode(&path_and_ip.path)))
             ?.to::<RemoteMetaData>()?;
 
     let conflict = updated_item.as_ref().and_then(|n| {
@@ -169,16 +169,16 @@ struct RemoteMetaData {
     time: i64 
 }
 
-struct PathAndIp<'a> {
-    ip: &'a str,
+struct PathAndHost<'a> {
+    host: &'a str,
     path: &'a str,
 }
 
-fn get_remote_path<'a>(path: &'a str)-> PathAndIp<'a> {
+fn get_remote_path<'a>(path: &'a str)-> PathAndHost<'a> {
     let (_, path) = path.split_at(7);
     let sep = path.find("/").unwrap_or(path.len());
-    let (ip, path) = path.split_at(sep);
-    PathAndIp { ip, path }
+    let (host, path) = path.split_at(sep);
+    PathAndHost { host, path }
 }
 
 // TODO: Rename File

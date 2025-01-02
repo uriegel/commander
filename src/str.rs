@@ -4,6 +4,7 @@ pub trait StrExt {
     fn ext_is(&self, s: &str) -> bool;
     fn split_at_str<'a >(&'a self, pat: &'a str) -> Option<(&'a str, &'a str)>;
     fn substr_after<'a >(&'a self, pat: &'a str) -> Option<&'a str>;
+    fn starts_with_ignore_case<'a >(&'a self, pat: &'a str) -> bool; 
 }
 
 impl StrExt for str {
@@ -24,6 +25,10 @@ impl StrExt for str {
 
     fn substr_after<'a >(&'a self, pat: &'a str) -> Option<&'a str> {
         self.find(pat).map(|idx| &self[idx + pat.len()..])
+    }
+
+    fn starts_with_ignore_case<'a >(&'a self, pat: &'a str) -> bool {
+        self.to_lowercase().starts_with(&pat.to_lowercase())
     }
 }
 

@@ -4,7 +4,7 @@ use std::{io::{BufRead, BufReader, BufWriter, Read, Write}, net::TcpStream, sync
 
 use serde::de::DeserializeOwned;
 
-use crate::{directory::copy_not_cancelled, request_error::{ErrorType, RequestError}};
+use crate::{directory::copy_not_cancelled, request_error::{ErrorType, RequestError}, str::StrExt};
 
 pub struct WebRequest {
     headers: Vec<String>,
@@ -13,10 +13,10 @@ pub struct WebRequest {
 }
 
 impl WebRequest {
-    pub fn get(ip: &str, url: String) -> Result<WebRequest, RequestError> {
-        let stream = TcpStream::connect(format!("{}:8080", ip))?; 
+    pub fn get(host: &str, url: String) -> Result<WebRequest, RequestError> {
+        let stream = TcpStream::connect(host)?; 
         let mut wr = WebRequest::new(stream)?;
-        let payload = format!("GET {url} HTTP/1.1\r\n\r\n");
+        let payload = format!("GET {url} HTTP/1.1\r\nHost: {host}\r\n\r\n");
         wr.buf_writer.write_all(payload.as_bytes())?;
         wr.buf_writer.flush()?;
    
@@ -63,7 +63,7 @@ impl WebRequest {
         self
             .headers
             .iter()
-            .find(|h|h.starts_with(header))
+            .find(|h|h.starts_with_ignore_case(header))
             .map(|v| &v[header.len()+2..] )
     }
 
