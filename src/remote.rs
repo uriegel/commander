@@ -43,7 +43,7 @@ pub struct DeleteItems {
 pub fn get_remote_files(input: GetRemoteFiles) -> Result<GetFilesResult, RequestError> {
     let path_and_host = get_remote_path(&input.path);
     let items = 
-        WebRequest::get(path_and_host.host, format!("/getfiles{}", encode(&path_and_host.path)))
+        WebRequest::get(path_and_host.host, format!("/getfiles{}", encode(&path_and_host.path).replace("%2F", "/")))
         ?.to::<Vec<GetRemoteFilesResult>>()?;
     let items: Vec<DirectoryItem> = items
         .into_iter()

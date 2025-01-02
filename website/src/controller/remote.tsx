@@ -38,7 +38,7 @@ const getColumns = () => ({
 } as TableColumns<FolderViewItem>)
 
 const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
-	sortItems(items, getSortFunction(sortIndex, sortDescending), true) 
+	sortItems(items, getSortFunction(sortIndex, sortDescending)) 
 
 const deleteItems = async (path: string, items: FolderViewItem[], dialog: DialogHandle) => {
 

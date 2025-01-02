@@ -64,7 +64,7 @@ const getItems = (_: string, __: string, ___: boolean, sortIndex: number, sortDe
         } as GetItemsResult))
 
 const sort = (items: FolderViewItem[], sortIndex: number, sortDescending: boolean) => 
-	sortItems(items, getSortFunction(sortIndex, sortDescending), true) 
+	sortItems(items, getSortFunction(sortIndex, sortDescending)) 
 
 export const getServicesController = (controller: Controller | null): ControllerResult => 
     controller?.type == ControllerType.Services
