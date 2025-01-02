@@ -87,11 +87,11 @@ impl WebRequest {
         }
     }
 
-    pub fn put<R>(ip: &str, url: String, reader: &mut R, len: usize, modified: Option<i64>, rcv: &Receiver<bool>) -> Result<WebRequest, RequestError> 
+    pub fn put<R>(host: &str, url: String, reader: &mut R, len: usize, modified: Option<i64>, rcv: &Receiver<bool>) -> Result<WebRequest, RequestError> 
     where R: ?Sized + Read {
-        let stream = TcpStream::connect(format!("{}:8080", ip))?; 
+        let stream = TcpStream::connect(host)?; 
         let mut wr = WebRequest::new(stream)?;
-        let payload = format!("PUT {url} HTTP/1.1\r\nContent-Length: {len}{}\r\n\r\n", match modified {
+        let payload = format!("PUT {url} HTTP/1.1\r\nContent-Length: {len}{}\r\nHost: {host}\r\n\r\n", match modified {
             Some(m) => format!("\r\nx-file-date: {m}"),
             None => "".to_string()
         });

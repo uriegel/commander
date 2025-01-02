@@ -90,7 +90,7 @@ pub fn copy_from_remote(input: &CopyItems, file: &str, progress: &CurrentProgres
     let source_path = source_file.to_string_lossy();
     #[cfg(target_os = "windows")]
     let source_path = source_path.replace("\\", "/");
-    let mut web_request = WebRequest::get(path_and_ip.host, format!("/downloadfile{}", encode(&source_path)))?;
+    let mut web_request = WebRequest::get(path_and_ip.host, format!("/downloadfile{}", encode(&source_path).replace("%2F", "/")))?;
     let mut progress_stream = ProgressWriteStream::new(BufWriter::new(&file), 
         |p| progress.send_bytes(p as u64));
     web_request.download(&mut progress_stream, rcv)?;
@@ -121,7 +121,7 @@ pub fn copy_to_remote(input: &CopyItems, file: &str, progress: &CurrentProgress,
             .map(|d|d.as_millis() as i64); 
     let mut progress_stream = ProgressReadStream::new(BufReader::new(&file),         
         |p| progress.send_bytes(p as u64));
-    WebRequest::put(path_and_ip.host, format!("/putfile{}", encode(&target_path)), &mut progress_stream, meta.len() as usize, datetime, rcv)?;
+    WebRequest::put(path_and_ip.host, format!("/putfile{}", encode(&target_path).replace("%2F", "/")), &mut progress_stream, meta.len() as usize, datetime, rcv)?;
     Ok(())
 }
 
@@ -149,7 +149,7 @@ fn create_copy_item(item: DirectoryItem, path: &str, target_path: &str)->Result<
 
     let path_and_ip = get_remote_path(&target_file);
     let RemoteMetaData { size, time} = 
-        WebRequest::get(path_and_ip.host, format!("/metadata{}", encode(&path_and_ip.path)))
+        WebRequest::get(path_and_ip.host, format!("/metadata{}", encode(&path_and_ip.path).replace("%2F", "/")))
             ?.to::<RemoteMetaData>()?;
 
     let conflict = updated_item.as_ref().and_then(|n| {
