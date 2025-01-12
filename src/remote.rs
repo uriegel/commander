@@ -130,7 +130,7 @@ pub fn delete_remote_files(input: DeleteItems)->Result<(), RequestError> {
         let target_file = PathBuf::from(&input.path).join(i);
         let target_file = target_file.to_string_lossy();
         let path_and_ip = get_remote_path(&target_file);    
-        WebRequest::delete(path_and_ip.host, format!("/deletefile{}", encode(&path_and_ip.path)))?;
+        WebRequest::delete(path_and_ip.host, format!("/deletefile{}", encode(&path_and_ip.path).replace("%2F", "/")))?;
         Ok(())
     })
 }

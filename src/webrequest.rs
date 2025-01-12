@@ -156,10 +156,10 @@ impl WebRequest {
         })
     }
 
-    pub fn delete(ip: &str, url: String) -> Result<WebRequest, RequestError> {
-        let stream = TcpStream::connect(format!("{}:8080", ip))?; 
+    pub fn delete(host: &str, url: String) -> Result<WebRequest, RequestError> {
+        let stream = TcpStream::connect(host)?; 
         let mut wr = WebRequest::new(stream)?;
-        let payload = format!("DELETE {url} HTTP/1.1\r\n\r\n");
+        let payload = format!("DELETE {url} HTTP/1.1\r\nHost: {host}\r\n\r\n");
         wr.buf_writer.write_all(payload.as_bytes())?;
         wr.buf_writer.flush()?;
    
