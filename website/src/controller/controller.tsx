@@ -186,10 +186,11 @@ export const formatVersion = (version?: Version) =>
     version ? `${version.major}.${version.minor}.${version.build}.${version.patch}` : ""
 
 export const sortItems = (folderItemArray: FolderViewItem[], sortFunction?: SortFunction) => {
-    const dirs = folderItemArray.filter(n => n.isDirectory || n.isParent).sort((a, b) => a.name.localeCompare(b.name))
+    const parent = folderItemArray.find(n => n.isParent)
+    const dirs = folderItemArray.filter(n => n.isDirectory && !n.isParent).sort((a, b) => a.name.localeCompare(b.name))
     let files = folderItemArray.filter(n => !n.isDirectory) 
     files = sortFunction ? files.sort(sortFunction) : files
-    return dirs.concat(files)
+    return parent ? [parent].concat(dirs.concat(files)) : dirs.concat(files)
 }
 
 export const excludeParent = (items: FolderViewItem[]) => 
