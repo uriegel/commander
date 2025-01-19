@@ -1,6 +1,7 @@
 #![allow(deprecated)]
 use std::fs;
 use std::path::Path;
+use std::process::Command;
 use std::sync::{Arc, Mutex, OnceLock};
 use async_channel::Sender;
 
@@ -26,7 +27,14 @@ pub fn init_open_with(parent_window: Window) {
             dialog.connect_response(move|dialog, response| {
                 if response == gtk::ResponseType::Ok {
                     if let Some(app_info) = dialog.app_info() {
-                        let _ = app_info.launch_uris(&[&file], None::<&gio::AppLaunchContext>);
+                        if app_info.executable().ends_with("code") {
+                            let _ = Command::new(app_info.executable())
+                                .arg(&file)
+                                .status();
+
+                        } else {
+                            let _ = app_info.launch_uris(&[&file], None::<&gio::AppLaunchContext>);
+                        }
                     }
                 }
                 dialog.close();
