@@ -1,13 +1,12 @@
 #![allow(deprecated)]
 use std::fs;
 use std::path::Path;
-use std::process::Command;
 use std::sync::{Arc, Mutex, OnceLock};
 use async_channel::Sender;
 
-use gtk::gio::content_type_guess;
+use gtk::gio::{self, content_type_guess};
 use gtk::{prelude::*, AppChooserWidget};
-use gtk::{glib::self, AppChooserDialog, Window};
+use gtk::{glib, AppChooserDialog, Window};
 
 pub fn init_open_with(parent_window: Window) {
     let (sender, receiver) = async_channel::unbounded();
@@ -27,10 +26,7 @@ pub fn init_open_with(parent_window: Window) {
             dialog.connect_response(move|dialog, response| {
                 if response == gtk::ResponseType::Ok {
                     if let Some(app_info) = dialog.app_info() {
-                        println!("Starte {:?} {file}", app_info.executable());
-                        let _ = Command::new(app_info.executable())
-                            .arg(&file)
-                            .status();
+                        let _ = app_info.launch_uris(&[&file], None::<&gio::AppLaunchContext>);
                     }
                 }
                 dialog.close();
