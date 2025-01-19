@@ -29,7 +29,7 @@ use linux::headerbar::HeaderBar;
 #[cfg(target_os = "linux")]
 use gtk::prelude::StaticTypeExt;
 #[cfg(target_os = "linux")]
-use linux::progress_display::ProgressDisplay;
+use linux::{progress_display::ProgressDisplay, openwith::init_open_with};
 #[cfg(target_os = "windows")]
 use windows::hwnd::set_hwnd;
 #[cfg(target_os = "windows")]
@@ -63,6 +63,7 @@ fn on_activate(app: &Application) -> WebView {
         "/de/uriegel/commander/window.ui",
         move |builder| {
             linux::focus::initialize(builder);
+            init_open_with(builder.object("window").unwrap());
             HeaderBar::new(builder)
         },
     );

@@ -8,7 +8,7 @@ use crate::{
     directory::DirectoryItem, error::Error, extended_items::Version, request_error::RequestError, str::StrExt};
 use crate::directory::get_extension;
 
-use super::iconresolver::get_geticon_py;
+use super::{iconresolver::get_geticon_py, openwith::open_with};
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -23,8 +23,18 @@ pub struct ConflictItem {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct SpecialKeys {
+    alt: bool,
+    ctrl: bool,
+    shift: bool,
+}
+
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct OnEnter {
-    path: String
+    path: String,
+    keys: Option<SpecialKeys>
 }
 
 impl ConflictItem {
@@ -138,9 +148,13 @@ pub fn copy_attributes(source_file: &File, target_file: &File)->Result<(), Reque
 }
 
 pub fn on_enter(input: OnEnter)->Result<(), RequestError> {
-    Command::new("xdg-open")
+    if input.keys.map(|k|k.alt).unwrap_or(false) == false {
+        Command::new("xdg-open")
         .arg(format!("{}", input.path))
         .spawn()?;
+    } else {
+        open_with(input.path);
+    }
     Ok(())
 }
 

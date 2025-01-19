@@ -4,6 +4,7 @@ pub mod directory;
 pub mod progress_display;
 pub mod progresses;
 pub mod focus;
+pub mod openwith;
 mod iconresolver;
 mod request_error;
 mod theme;
