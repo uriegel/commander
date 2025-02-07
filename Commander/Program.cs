@@ -25,6 +25,4 @@ WebView
     .CanClose(() => true)
     .Run();
 
-// TODO Linux Builder WithBuilder app
 // TODO Windows: Titlebar
-// TODO Linux: Titlebar

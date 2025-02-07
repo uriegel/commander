@@ -7,12 +7,12 @@ namespace Linux;
 
 public static class HeaderBar
 {
-    public static BuilderHandle WithBuilder()
-    {
-        return Builder
-                .FromDotNetResource("ui");
-                // .SideEffect(b => b.GetObject<ButtonHandle>("devtools", b => b
-                //     .OnClicked(() => WebWindowNetCore.WebView.RunJavascript("WebView.showDevTools()"))));
-    }
+    public static BuilderHandle WithBuilder(ApplicationHandle app)
+        => Builder
+                .FromDotNetResource("ui")
+                .SideEffect(b => 
+                    app.AddActions([
+                        new("devtools", () => WebWindowNetCore.WebView.RunJavascript("WebView.showDevTools()"), "<Ctrl><Shift>I"),                                                
+                    ]));
 }
 #endif
