@@ -1,7 +1,5 @@
 ﻿using System.Drawing;
-using System.IO;
 using System.Reflection;
-using System.Threading.Tasks;
 using CsTools.Extensions;
 using WebWindowNetCore;
 
@@ -17,7 +15,8 @@ WebView
     .DefaultContextMenuDisabled()
     .BackgroundColor(Color.Transparent)
 #if Windows    
-    .ResourceIcon("icon")
+    .WithoutNativeTitlebar()
+    //.ResourceIcon("icon")
 #endif    
     .DebugUrl("http://localhost:5173")
     .Url("res://react.test/index.html")
