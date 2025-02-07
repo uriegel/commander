@@ -46,4 +46,10 @@
     <PackageReference Include="WebWindowNetCore" Version="11.0.2-beta-2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="./Resources/window.ui">
+      <LogicalName>ui</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using System.Reflection;
-using CsTools.Extensions;
 using WebWindowNetCore;
 
 var names = Assembly.GetEntryAssembly()?.GetManifestResourceNames();
@@ -14,15 +13,18 @@ WebView
     .DevTools()
     .DefaultContextMenuDisabled()
     .BackgroundColor(Color.Transparent)
-#if Windows    
+#if Linux    
+    .WithBuilder(Linux.HeaderBar.WithBuilder)
+#elif Windows
     .WithoutNativeTitlebar()
     //.ResourceIcon("icon")
-#endif    
+#endif
     .DebugUrl("http://localhost:5173")
     .Url("res://react.test/index.html")
     .QueryString("?param1=123&param2=456")
     .CanClose(() => true)
     .Run();
 
+// TODO Linux Builder WithBuilder app
 // TODO Windows: Titlebar
 // TODO Linux: Titlebar
