@@ -21,27 +21,8 @@ WebView
     .DebugUrl("http://localhost:5173")
     .Url("res://react.test/index.html")
     .QueryString("?param1=123&param2=456")
-    .OnRequest(OnRequest)
-    .OnResourceRequest(OnResource)
     .CanClose(() => true)
     .Run();
 
-void OnRequest(Request request)
-{
-    switch (request.Cmd)
-    {
-        case "cmd1":
-            {
-                var data = request.Deserialize<Input>();
-                request.Response(new Contact("Uwe Riegel", 9865));
-            }
-            break;
-    }
-}
-
-Task<Stream?> OnResource(string uri)
-    => Resources.Get(uri[7..]).ToAsync();
-
-record Input(string Text, int Id);
-record Contact(string Name, int Id);
-
+// TODO Windows: Titlebar
+// TODO Linux: Titlebar
