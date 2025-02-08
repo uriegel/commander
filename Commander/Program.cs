@@ -20,12 +20,15 @@ WebView
 #endif
     .DebugUrl("http://localhost:5173")
     .Url("res://react.test/index.html")
-    .QueryString("?param1=123&param2=456")
     .CanClose(() => true)
     .OnRequest(Requests.Process)
     .Run();
 
+// TODO initial Focus Linux
+// TODO initial Focus Windows
 // TODO getfiles
+// TODO test Linux 10 000 files
+// TODO test Windows 10 000 files
 // TODO icons Linux
 // TODO icons Windows
 // TODO viewer images
