@@ -12,7 +12,6 @@ WebView
     .SaveBounds()
     .DevTools()
     .DefaultContextMenuDisabled()
-    .BackgroundColor(Color.Transparent)
 #if Linux    
     .WithBuilder(Linux.HeaderBar.WithBuilder)
 #elif Windows
@@ -23,9 +22,9 @@ WebView
     .Url("res://react.test/index.html")
     .QueryString("?param1=123&param2=456")
     .CanClose(() => true)
+    .OnRequest(Requests.Process)
     .Run();
 
-// TODO Linux: getroot
 // TODO Windows: getroot
 // TODO getfiles
 
