@@ -33,14 +33,13 @@ static class Root
                 titles.IndexOf("FSTYPE")
             }
             select Ok<RootItem[], RequestError>(
-                (from n in driveLines
+                [.. from n in driveLines
                         .Skip(1)
                         .Append("home")
                     where n.FilterDrives(columnPositions)
                     let item = CreateRootItem(n, columnPositions)
                     orderby item.IsMounted descending, item.Name
-                    select item)
-                .ToArray()))
+                    select item]))
                 .ToAsyncResult();
 
         RootItem CreateRootItem(string driveString, int[] columnPositions)

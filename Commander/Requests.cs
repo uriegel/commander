@@ -7,9 +7,7 @@ static class Requests
     {
         try
         {
-            var affen = Root.Get();
-            var affe = await affen.ToResult();
-            request.Response(affe);
+            request.Response(await Root.Get().ToResult());
         }
         catch (Exception e)
         {
