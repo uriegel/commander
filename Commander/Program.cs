@@ -13,7 +13,7 @@ WebView
     .DevTools()
     .DefaultContextMenuDisabled()
 #if Linux    
-    .WithBuilder(Linux.HeaderBar.WithBuilder)
+    .WithHeaderbar(Linux.HeaderBar.Get)
 #elif Windows
     .WithoutNativeTitlebar()
     .ResourceIcon("icon")
@@ -24,8 +24,6 @@ WebView
     .OnRequest(Requests.Process)
     .Run();
 
-// TODO initial Focus Linux
-// TODO initial Focus Windows
 // TODO getfiles
 // TODO test Linux 10 000 files
 // TODO test Windows 10 000 files
