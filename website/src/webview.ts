@@ -1,7 +1,7 @@
 import { Progress } from "./requests/events"
 
 export declare type WebViewType = {
-    initializeNoTitlebar: () => void,
+    initializeCustomTitlebar: () => void,
     showDevTools: () => void,
     startDragFiles: (files: string[]) => Promise<void>,
     request: <T, TR>(method: string, data: T) => Promise<TR>

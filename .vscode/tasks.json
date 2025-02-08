@@ -28,6 +28,7 @@
             },
             "group": {
               "kind": "build",
+			  "order": 1,
               "isDefault": true
             }
         }, {
@@ -55,13 +56,14 @@
             },
             "group": {
               "kind": "build",
-              "isDefault": true
+			  "order": 3,
+              "isDefault": false
             }
         }, {
           "label": "build",
           "command": "dotnet",
           "type": "shell",
-          "dependsOn": "npm dev",
+        //   "dependsOn": "npm dev",
           "args": [
               "build",
               // Ask dotnet build to generate full paths for file names.
@@ -70,6 +72,7 @@
               "/consoleloggerparameters:NoSummary"
           ],
           "group": {
+			"order": 2,
             "kind": "build",
             "isDefault": true
           },
@@ -78,6 +81,7 @@
             "label": "build release",
             "command": "dotnet",
             "type": "shell",
+			"dependsOn": "build react",
             "args": [
                 "publish",
                 "-c",
@@ -89,6 +93,7 @@
             ],
             "group": {
               "kind": "build",
+			  "order": 4,
               "isDefault": true
             },
             "problemMatcher": "$msCompile"

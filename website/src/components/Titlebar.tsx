@@ -48,7 +48,7 @@ const Titlebar = ({ menu, }: TitlebarProps) => {
     }, [dialog, move, totalSize])
 
     useEffect(() => {
-        WebView.initializeNoTitlebar()
+        WebView.initializeCustomTitlebar()
     }, [])
     
 	useEffect(() => {
@@ -89,7 +89,7 @@ const Titlebar = ({ menu, }: TitlebarProps) => {
 
     return  isWindows()        
         ? (<div className="titlebar">
-            <img alt="" src="/webroot/images/kirk.png"/>
+            <img alt="" src="res://react.test/windowicon"/>
             {menu}
             <div className="titlebarGrip" id="$DRAG_REGION$">
                 <span id="$TITLE$"></span>

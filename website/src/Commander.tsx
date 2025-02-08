@@ -293,7 +293,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 		<>
 			{ isWindows() && (<Titlebar menu={(
 				<Menu autoMode={false} onMenuAction={onMenuAction} releaseMode={location.port != "5173"}
-				showHidden={showHidden} toggleShowHidden={toggleShowHiddenAndRefresh}
+				showHidden={ showHidden} toggleShowHidden={toggleShowHiddenAndRefresh}
 				showViewer={showViewer} toggleShowViewer={toggleShowViewer} />
 			)} />) }
 			<ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
