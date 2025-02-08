@@ -17,7 +17,7 @@ WebView
     .WithBuilder(Linux.HeaderBar.WithBuilder)
 #elif Windows
     .WithoutNativeTitlebar()
-    //.ResourceIcon("icon")
+    .ResourceIcon("icon")
 #endif
     .DebugUrl("http://localhost:5173")
     .Url("res://react.test/index.html")

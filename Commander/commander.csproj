@@ -15,6 +15,7 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>false</SelfContained>
+    <ApplicationIcon>./Resources/Kirk.ico</ApplicationIcon>
   </PropertyGroup> 
 
   <PropertyGroup Condition="'$(IsLinux)'=='true'">
@@ -43,12 +44,15 @@
     <DefineConstants>Linux</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="WebWindowNetCore" Version="11.0.3-beta-3" />
+    <PackageReference Include="WebWindowNetCore" Version="11.0.4-beta-4" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="./Resources/window.ui">
       <LogicalName>ui</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/Kirk.ico">
+      <LogicalName>icon</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
 
