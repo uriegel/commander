@@ -7,7 +7,16 @@ static class Requests
     {
         try
         {
-            request.Response(await Root.Get().ToResult());
+            switch (request.Cmd)
+            {
+                case "getroot":
+                    request.Response(await Root.Get().ToResult());
+                    break;
+                case "getfiles":
+                    request.Response(await Directory.GetFiles(request.Deserialize<GetFiles>()!).ToResult());
+                    break;
+            }
+
         }
         catch (Exception e)
         {
@@ -15,3 +24,4 @@ static class Requests
         }
     }
 }
+
