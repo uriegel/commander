@@ -14,7 +14,10 @@ static partial class Directory
     public static AsyncResult<DirectoryInfo, RequestError> Validate(this DirectoryInfo info)
         => Ok<DirectoryInfo, RequestError>(info).ToAsyncResult();
 
-    static string Mount(string path) 
+    public static AsyncResult<GetExtendedItemsResult, RequestError> GetExtendedItems(GetExtendedItems param)
+        => GetExtendedItems(param.Id, param.Path, param.Items);
+
+    static string Mount(string path)
     {
         var output = "";
         using var proc = new Process()
@@ -43,5 +46,7 @@ static partial class Directory
         return output.SubstringAfter(" at ");
     }
 }
+
+record GetExtendedItemsResult(ExifData?[] ExifDatas, string Path);
 
 #endif
