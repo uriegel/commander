@@ -1,4 +1,6 @@
+using System.Collections.Immutable;
 using System.Data;
+using CsTools.Extensions;
 using CsTools.Functional;
 using CsTools.HttpRequest;
 
@@ -44,7 +46,32 @@ static partial class Directory
             => showHiddenItems || !item.IsHidden;
     }
 
+    static AsyncResult<GetExtendedItemsResult, RequestError> GetExtendedItems(string id, string path, string[] items)
+    {
+        extendedInfosCancellations = extendedInfosCancellations.Remove(id);
+        extendedInfosCancellations = extendedInfosCancellations.Add(id, new());
+        ExifData? GetExifDate(string file)
+        {
+            if (extendedInfosCancellations
+                    .GetValue(id)
+                    ?.IsCancellationRequested == true)
+                return null;
+            return null;  // TODO ExifReader.GetExifData(path.AppendPath(file));
+        }
+
+        ExifData? CheckGetExifDate(string item)
+            => item.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase) || item.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase)
+                ? GetExifDate(item)
+                : null;
+
+        return Ok<GetExtendedItemsResult, RequestError>(new(items.Select(CheckGetExifDate).ToArray(), path))
+                    .ToAsyncResult();
+    }
+
     static DirectoryInfo CreateDirectoryInfo(this string path) => new(path);
+
+    static ImmutableDictionary<string, CancellationTokenSource> extendedInfosCancellations
+        = ImmutableDictionary<string, CancellationTokenSource>.Empty;
 }
 
 enum IOErrorType
@@ -131,3 +158,9 @@ record DirectoryItem(
             (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden,
             info.LastWriteTime);
 };
+
+record GetExtendedItems(
+    string Id,
+    string[] Items,
+    string Path
+);

@@ -24,13 +24,13 @@ WebView
     .OnRequest(Requests.Process)
     .Run();
 
-// TODO test GetFiles Windows 10 000 files
 // TODO icons Linux
 // TODO icons Windows
 // TODO viewer images
 // TODO viewer images with location, use shortcut crtl+F3, release version
 // TODO viewer pdf
 // TODO viewer Test mp4 without http server
+// TODO Events class for sending events to react
 // TODO root Linux: sdd when there is no sdd1
 // TODO extended infos
 // TODO Windows: version infos

@@ -15,6 +15,9 @@ static class Requests
                 case "getfiles":
                     request.Response(await Directory.GetFiles(request.Deserialize<GetFiles>()!).ToResult());
                     break;
+                case "getextendeditems":
+                    request.Response(await Directory.GetExtendedItems(request.Deserialize<GetExtendedItems>()!).ToResult());
+                    break;
             }
 
         }
