@@ -9,7 +9,6 @@ import New from '../svg/New'
 import Service from '../svg/Service'
 import Favorite from '../svg/Favorite'
 import { IconNameType } from '../enums'
-import { getPort } from '../globals'
 
 interface IconNameProps {
     namePart: string
@@ -21,7 +20,7 @@ const IconName = ({ namePart, type, iconPath }: IconNameProps) =>
     (<span> { type == IconNameType.Folder
         ? (<Folder />)
         : type == IconNameType.File
-        ? (<img className="iconImage" src={`http://localhost:${getPort()}/geticon?path=${iconPath}`} alt="" />) 
+        ? (<img className="iconImage" src={`res://commander.react/geticon/${iconPath}`} alt="" />) 
         : type == IconNameType.Root
         ? (<Drive />)
         : type == IconNameType.Home

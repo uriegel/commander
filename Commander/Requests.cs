@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using CsTools.Extensions;
 using WebWindowNetCore;
 
 static class Requests
@@ -26,5 +27,12 @@ static class Requests
             Console.WriteLine($"Error occured in Requests.Process: {e}");
         }
     }
+
+    public static Task<Stream?> OnResource(string url) =>
+        url switch
+        {
+            var iconurl when iconurl.StartsWith("geticon") => Directory.ProcessIcon(iconurl[8..]),
+            _ => ((Stream?)null).ToAsync()
+        };
 }
 

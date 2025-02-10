@@ -43,21 +43,22 @@
     <DefineConstants>Linux</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="WebWindowNetCore" Version="11.0.7-beta-7" />
+    <PackageReference Include="WebWindowNetCore" Version="11.0.8-beta-8" />
+    <PackageReference Include="WebServerLight" Version="0.0.2-beta-2" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="../website/dist/index.html">
-      <LogicalName>index.html</LogicalName>
+      <LogicalName>/index.html</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="../website/dist/scripts/index.js">
-      <LogicalName>$([System.String]::new('%(RelativeDir)').SubString(16).Replace('\','/'))%(FileName)%(Extension)</LogicalName>
+      <LogicalName>/$([System.String]::new('%(RelativeDir)').SubString(16).Replace('\','/'))%(FileName)%(Extension)</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="../website/dist/assets/*.js">
-      <LogicalName>$([System.String]::new('%(RelativeDir)').SubString(16).Replace('\','/'))%(FileName)%(Extension)</LogicalName>
+      <LogicalName>/$([System.String]::new('%(RelativeDir)').SubString(16).Replace('\','/'))%(FileName)%(Extension)</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="../website/dist/assets/*.css">
-      <LogicalName>$([System.String]::new('%(RelativeDir)').SubString(16).Replace('\','/'))%(FileName)%(Extension)</LogicalName>
+      <LogicalName>/$([System.String]::new('%(RelativeDir)').SubString(16).Replace('\','/'))%(FileName)%(Extension)</LogicalName>
     </EmbeddedResource>
 
     <EmbeddedResource Include="./Resources/headerbar.ui">

@@ -1,8 +1,18 @@
-﻿using System.Drawing;
-using System.Reflection;
+﻿using System.Reflection;
+using WebServerLight;
 using WebWindowNetCore;
 
 var names = Assembly.GetEntryAssembly()?.GetManifestResourceNames();
+
+var server =
+    ServerBuilder
+        .New()
+        .Http(8080)
+        .WebsiteFromResource("")
+        .Build();
+    
+server.Start();
+
 
 WebView
     .Create()
@@ -18,14 +28,19 @@ WebView
     .WithoutNativeTitlebar()
     .ResourceIcon("icon")
 #endif
-    .DebugUrl("http://localhost:5173")
-    .Url("res://react.test/index.html")
+    //.DebugUrl("http://localhost:5173")
+    //.Url("res://commander.react")
+    .Url("http://localhost:8080")
     .CanClose(() => true)
     .OnRequest(Requests.Process)
+    .OnResourceRequest(Requests.OnResource)
     .Run();
+
 
 // TODO icons Linux
 // TODO icons Windows
+// TODO Custom requests instead of alert Linux
+// TODO Custom requests instead of Messages Windows
 // TODO viewer images
 // TODO viewer images with location, use shortcut crtl+F3, release version
 // TODO viewer pdf
