@@ -75,11 +75,27 @@ export class RequestError extends Error {
 }
 
 export const webViewRequest = async <T>(method: string, payload?: object) => {
-    const ret = await WebView.request(method, payload || {}) as ResultType<T, RequestError>
-    if (ret.err)
-        throw new RequestError(ret.err.status, ret.err.statusText)
-    return ret.ok 
+
+    const msg = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload || {})
+    }
+
+    const response = await fetch(`/json/${method}`, msg) 
+    const res = await response.json() as ResultType<T, RequestError>
+    if (res.err)
+        throw new RequestError(res.err.status, res.err.statusText)
+    return res.ok 
 }
+
+
+// export const webViewRequest = async <T>(method: string, payload?: object) => {
+//     const ret = await WebView.request(method, payload || {}) as ResultType<T, RequestError>
+//     if (ret.err)
+//         throw new RequestError(ret.err.status, ret.err.statusText)
+//     return ret.ok 
+// }
 
 
 

@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
-    <!-- <TargetFrameworks>net8.0</TargetFrameworks> -->
+    <!-- <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks> -->
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows>
     <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
@@ -44,7 +44,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="WebWindowNetCore" Version="11.0.8-beta-8" />
-    <PackageReference Include="WebServerLight" Version="0.0.2-beta-2" />
+    <PackageReference Include="WebServerLight" Version="0.0.5-beta-5" />
   </ItemGroup>
 
   <ItemGroup>

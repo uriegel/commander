@@ -9,9 +9,22 @@ var server =
         .New()
         .Http(8080)
         .WebsiteFromResource("")
+        .JsonPost(Requests.JsonPost)
         .Build();
     
 server.Start();
+
+// async Task<bool> JsonPost(JsonRequest request)
+// {
+//     var data = await request.DeserializeAsync<Data>();
+//     var response = new Response([
+//         new Contact("Uwe Riegel", 34),
+//         new Contact("Miles Davis", 90),
+//         new Contact("John Coltrane", 99)], 123, "Response");
+
+//     await request.SendAsync(response);
+//     return true;
+// } 
 
 
 WebView
@@ -29,13 +42,12 @@ WebView
     .ResourceIcon("icon")
 #endif
     //.DebugUrl("http://localhost:5173")
-    //.Url("res://commander.react")
     .Url("http://localhost:8080")
     .CanClose(() => true)
-    .OnRequest(Requests.Process)
+    //.OnRequest(Requests.Process)
     .OnResourceRequest(Requests.OnResource)
     .Run();
-
+server.Stop();
 
 // TODO icons Linux
 // TODO icons Windows
