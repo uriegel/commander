@@ -15,9 +15,9 @@ static class Requests
                 case "/json/getfiles":
                     await request.SendAsync(await Directory.GetFiles((await request.DeserializeAsync<GetFiles>())!).ToResult());
                     break;
-                // case "getextendeditems":
-                //     request.Response(await Directory.GetExtendedItems(request.Deserialize<GetExtendedItems>()!).ToResult());
-                //     break;
+                case "/json/getextendeditems":
+                    await request.SendAsync(await Directory.GetExtendedItems((await request.DeserializeAsync<GetExtendedItems>())!).ToResult());
+                    break;
                 default:
                     return false;
             }

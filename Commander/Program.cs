@@ -8,24 +8,13 @@ var server =
     ServerBuilder
         .New()
         .Http(8080)
-        .WebsiteFromResource("")
+        .WebsiteFromResource()
         .JsonPost(Requests.JsonPost)
+        .AddAllowedOrigin("http://localhost:5173")
+        .AccessControlMaxAge(TimeSpan.FromHours(1))
         .Build();
-    
+
 server.Start();
-
-// async Task<bool> JsonPost(JsonRequest request)
-// {
-//     var data = await request.DeserializeAsync<Data>();
-//     var response = new Response([
-//         new Contact("Uwe Riegel", 34),
-//         new Contact("Miles Davis", 90),
-//         new Contact("John Coltrane", 99)], 123, "Response");
-
-//     await request.SendAsync(response);
-//     return true;
-// } 
-
 
 WebView
     .Create()
@@ -34,25 +23,34 @@ WebView
     .InitialBounds(600, 800)
     .SaveBounds()
     .DevTools()
-    .DefaultContextMenuDisabled()
-#if Linux    
-    .WithHeaderbar(Linux.HeaderBar.Get)
+
+
+
+
+
+    //.DefaultContextMenuDisabled()
+    
+
+
+
+
+#if Linux
+    .WithHeaderbar(Linux.HeaderBar.Build)
 #elif Windows
     .WithoutNativeTitlebar()
     .ResourceIcon("icon")
 #endif
-    //.DebugUrl("http://localhost:5173")
+    .DebugUrl("http://localhost:5173")
     .Url("http://localhost:8080")
     .CanClose(() => true)
-    //.OnRequest(Requests.Process)
-    .OnResourceRequest(Requests.OnResource)
     .Run();
 server.Stop();
 
-// TODO icons Linux
+
+// TODO react 5173 Linux: request not returning in WebKit
+// TODO icons Linux python
+// TODO Devtools
 // TODO icons Windows
-// TODO Custom requests instead of alert Linux
-// TODO Custom requests instead of Messages Windows
 // TODO viewer images
 // TODO viewer images with location, use shortcut crtl+F3, release version
 // TODO viewer pdf
