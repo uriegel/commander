@@ -1,20 +1,19 @@
 #if Linux
-using System.Runtime.InteropServices;
-using CsTools.Extensions;
 using GtkDotNet;
 using GtkDotNet.SafeHandles;
+using WebWindowNetCore;
 
 namespace Linux;
 
 public static class HeaderBar
 {
-    public static void Build(ApplicationHandle app, WindowHandle win)
+    public static void Build(WebView webView, ApplicationHandle app, WindowHandle win)
     {
         using var builder = Builder.FromDotNetResource("headerbar");
         win.Titlebar(builder.GetWidget("headerbar"));
 
         app.AddActions([
-                new("devtools", () => WebWindowNetCore.WebView.RunJavascript("WebView.showDevTools()"), "<Ctrl><Shift>I"),
+                new("devtools", webView.ShowDevTools, "<Ctrl><Shift>I"),
         ]);
     }
 }

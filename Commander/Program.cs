@@ -11,8 +11,7 @@ var server =
         .WebsiteFromResource()
         .JsonPost(Requests.JsonPost)
         .AddAllowedOrigin("http://localhost:5173")
-        // TODO
-        //.AccessControlMaxAge(TimeSpan.FromHours(1))
+        .AccessControlMaxAge(TimeSpan.FromHours(1))
         .Build();
 
 server.Start();
@@ -24,17 +23,7 @@ WebView
     .InitialBounds(600, 800)
     .SaveBounds()
     .DevTools()
-
-
-
-
-    // TODO
-    //.DefaultContextMenuDisabled()
-    
-
-
-
-
+    .DefaultContextMenuDisabled()
 #if Linux
     .WithHeaderbar(Linux.HeaderBar.Build)
 #elif Windows
@@ -47,7 +36,6 @@ WebView
     .Run();
 server.Stop();
 
-// TODO Devtools
 // TODO root: no payload
 // TODO Windows Headerbar
 // TODO icons Linux python
