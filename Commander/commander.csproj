@@ -44,7 +44,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="WebWindowNetCore" Version="11.0.10-beta-10" />
-    <PackageReference Include="WebServerLight" Version="0.0.7-beta-7" />
+    <PackageReference Include="WebServerLight" Version="0.0.8-beta-8" />
   </ItemGroup>
 
   <ItemGroup>

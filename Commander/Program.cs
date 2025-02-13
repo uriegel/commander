@@ -11,7 +11,8 @@ var server =
         .WebsiteFromResource()
         .JsonPost(Requests.JsonPost)
         .AddAllowedOrigin("http://localhost:5173")
-        .AccessControlMaxAge(TimeSpan.FromHours(1))
+        // TODO
+        //.AccessControlMaxAge(TimeSpan.FromHours(1))
         .Build();
 
 server.Start();
@@ -27,7 +28,7 @@ WebView
 
 
 
-
+    // TODO
     //.DefaultContextMenuDisabled()
     
 
@@ -46,10 +47,10 @@ WebView
     .Run();
 server.Stop();
 
-
-// TODO react 5173 Linux: request not returning in WebKit
-// TODO icons Linux python
 // TODO Devtools
+// TODO root: no payload
+// TODO Windows Headerbar
+// TODO icons Linux python
 // TODO icons Windows
 // TODO viewer images
 // TODO viewer images with location, use shortcut crtl+F3, release version
