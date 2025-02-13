@@ -89,7 +89,7 @@ const Titlebar = ({ menu, }: TitlebarProps) => {
 
     return  isWindows()        
         ? (<div className="titlebar">
-            <img alt="" src="res://react.test/windowicon"/>
+            <img alt="" src="/windowicon"/>
             {menu}
             <div className="titlebarGrip" id="$DRAG_REGION$">
                 <span id="$TITLE$"></span>

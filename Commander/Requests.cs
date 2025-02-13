@@ -57,7 +57,7 @@ static class Requests
     public static Task<Stream?> OnResource(string url) =>
         url switch
         {
-            var iconurl when iconurl.StartsWith("geticon") => Directory.ProcessIcon(iconurl[8..]),
+            //var iconurl when iconurl.StartsWith("geticon") => Directory.ProcessIcon(iconurl[8..]),
             _ => ((Stream?)null).ToAsync()
         };
 }
