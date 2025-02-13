@@ -10,6 +10,7 @@ var server =
         .Http(8080)
         .WebsiteFromResource()
         .JsonPost(Requests.JsonPost)
+        .Get(Requests.OnGet)
         .AddAllowedOrigin("http://localhost:5173")
         .AccessControlMaxAge(TimeSpan.FromHours(1))
         .Build();
@@ -30,16 +31,15 @@ WebView
     .WithoutNativeTitlebar()
     .ResourceIcon("icon")
 #endif
-    .DebugUrl("http://localhost:5173")
+    //.DebugUrl("http://localhost:5173")
     .Url("http://localhost:8080")
     .CanClose(() => true)
     .Run();
 server.Stop();
 
-// TODO root: no payload
-// TODO Windows Headerbar
-// TODO icons Linux python
+// TODO Linux memoize copy python script
 // TODO icons Windows
+// TODO extended items
 // TODO viewer images
 // TODO viewer images with location, use shortcut crtl+F3, release version
 // TODO viewer pdf

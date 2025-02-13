@@ -20,7 +20,7 @@ const IconName = ({ namePart, type, iconPath }: IconNameProps) =>
     (<span> { type == IconNameType.Folder
         ? (<Folder />)
         : type == IconNameType.File
-        ? (<img className="iconImage" src={`res://commander.react/geticon/${iconPath}`} alt="" />) 
+        ? (<img className="iconImage" src={`http://localhost:8080/geticon/${iconPath}`} alt="" />) 
         : type == IconNameType.Root
         ? (<Drive />)
         : type == IconNameType.Home

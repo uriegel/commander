@@ -79,7 +79,7 @@ export const webViewRequest = async <T>(method: string, payload?: object) => {
     const msg = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload || {})
+        body: JSON.stringify(payload)
     }
 
     const response = await fetch(`http://localhost:8080/json/${method}`, msg) 
@@ -90,12 +90,6 @@ export const webViewRequest = async <T>(method: string, payload?: object) => {
 }
 
 
-// export const webViewRequest = async <T>(method: string, payload?: object) => {
-//     const ret = await WebView.request(method, payload || {}) as ResultType<T, RequestError>
-//     if (ret.err)
-//         throw new RequestError(ret.err.status, ret.err.statusText)
-//     return ret.ok 
-// }
 
 
 

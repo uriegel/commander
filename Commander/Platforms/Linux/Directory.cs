@@ -3,8 +3,12 @@ using System.Diagnostics;
 using CsTools.Extensions;
 using CsTools.Functional;
 using CsTools.HttpRequest;
-using GtkDotNet;
+using WebServerLight;
+
+using static CsTools.ProcessCmd;
 using static CsTools.Core;
+using static CsTools.Functional.Memoization;
+using CsTools;
 
 static partial class Directory
 {
@@ -17,10 +21,10 @@ static partial class Directory
     public static AsyncResult<GetExtendedItemsResult, RequestError> GetExtendedItems(GetExtendedItems param)
         => GetExtendedItems(param.Id, param.Path, param.Items);
 
-    public static Task<Stream?> ProcessIcon(string iconHint) =>
+    public static Task<bool> ProcessIcon(string iconHint, GetRequest request) =>
         Platform.Value == PlatformType.Gnome
-            ? ProcessGtkIcon(iconHint)
-            : ProcessKdeIcon(iconHint);
+            ? ProcessGtkIcon(iconHint, request)
+            : ProcessKdeIcon(iconHint, request);
 
     static string Mount(string path)
     {
@@ -51,41 +55,18 @@ static partial class Directory
         return output.SubstringAfter(" at ");
     }
 
-    static Task<Stream?> ProcessGtkIcon(string iconHint)
+    static Task<bool> ProcessGtkIcon(string iconHint, GetRequest request)
         => Task.Run(() =>
-                RepeatOnException(() =>
+                RepeatOnException(async () =>
                 {
-                    var directory = $"/usr/share/icons/{Theme.BaseTheme}/16x16/mimetypes";
-                    var iconFile = (Gtk.GuessContentType(iconHint)?.Replace('/', '-') ?? "") + ".png";
 
-                    Console.WriteLine($"Eikon: {iconFile}");
-
-                    var path = directory.AppendPath(iconFile);
-                    if (File.Exists(path))
-                        return path.OpenFile();
-                    else if (iconFile == "image-jpeg.png" || iconFile == "image-png.png")
-                    {
-                        iconFile = "image-x-generic.png";
-                        path = directory.AppendPath(iconFile);
-                        return File.Exists(path) ? path.OpenFile() : DefaultIcon(directory);
-                    }
-                    else if (iconFile == "video-mp4.png" || iconFile == "video-x-matroska.png")
-                    {
-                        iconFile = "video-x-generic.png";
-                        path = directory.AppendPath(iconFile);
-                        return File.Exists(path) ? path.OpenFile() : DefaultIcon(directory);
-                    }
-                    else
-                        return DefaultIcon(directory);
+                    var iconFile = await GetGtkIcon(iconHint);
+                    using var icon = File.OpenRead(iconFile ?? "");
+                    await request.SendAsync(icon, (int)icon.Length, MimeType.Get(iconFile?.GetFileExtension()) ?? MimeTypes.ImageJpeg);
+                    return true;
                 }, 3));
 
-    static Stream? DefaultIcon(string directory)
-    {
-        var path = directory.AppendPath("application-x-generic.png");
-        return File.Exists(path) ? path.OpenFile() : null;
-    }
-    
-    static async Task<Stream?> ProcessKdeIcon(string iconHint)
+    static async Task<bool> ProcessKdeIcon(string iconHint, GetRequest request)
     {
         var output = "";
         using var proc = new Process()
@@ -122,8 +103,16 @@ static partial class Directory
         var iconpath = $"/usr/share/icons/breeze/mimetypes/16/{mime}.svg";
         if (!File.Exists(iconpath))
             iconpath = $"/usr/share/icons/breeze/mimetypes/16/application-x-zerosize.svg";
-        return iconpath.OpenFile();
+        var file = iconpath.OpenFile();
+        await request.SendAsync(file, (int)file.Length, "image.svg");
+        return true;
     }
+    static Func<string> GetGtkIconScript { get; } = Memoize(() => "Commander/Resources/geticon.py");
+    static Func<string, Task<string?>> GetGtkIcon { get; } = MemoizeAsync<string>(InitGtkIcon, true);
+
+    static Task<string?> InitGtkIcon(string iconHint, string? oldValue)
+        => RepeatOnException(async ()
+            => (await RunAsync("python3", $"\"{GetGtkIconScript()}\" {iconHint}")).TrimEnd(), 3) as Task<string?>;
 }
 
 record GetExtendedItemsResult(ExifData?[] ExifDatas, string Path);
