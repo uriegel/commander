@@ -17,7 +17,8 @@ var server =
 
 server.Start();
 
-WebView
+Globals.WebView =
+    WebView
     .Create()
     .AppId(Globals.AppId)
     .Title("Commander")
@@ -33,11 +34,13 @@ WebView
 #endif
     .DebugUrl("http://localhost:5173")
     .Url("http://localhost:8080")
-    .CanClose(() => true)
-    .Run();
+    .CanClose(() => true);
+
+Globals.WebView.Run();
+
 server.Stop();
 
-// TODO icons Windows
+// TODO WebView functions with Invoke (Windows and Linux)
 // TODO extended items
 // TODO viewer images
 // TODO viewer images with location, use shortcut crtl+F3, release version

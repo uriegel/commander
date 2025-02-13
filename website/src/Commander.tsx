@@ -23,7 +23,7 @@ import LocationViewer from './components/LocationViewer'
 import TrackViewer from './components/TrackViewer'
 import { WebViewType, WebViewEvents } from './webview.ts'
 import { getCopyController } from './controller/copy/createCopyController.ts'
-import { IOError, RequestError } from './requests/requests.ts'
+import { IOError, RequestError, webViewRequest } from './requests/requests.ts'
 
 declare const WebView: WebViewType
 declare const webViewEvents: WebViewEvents
@@ -201,7 +201,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 		else if (key == "SEL_NONE")
 			getActiveFolder()?.selectNone()
 		else if (key == "SHOW_DEV_TOOLS")
-			WebView.showDevTools()
+			webViewRequest("showdevtools")
 		// TODO
 		// else if (key == "SHOW_FULLSCREEN")
 		// 	await request("showfullscreen")

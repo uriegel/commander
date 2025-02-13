@@ -60,7 +60,8 @@
     <EmbeddedResource Include="../website/dist/assets/*.css">
       <LogicalName>/$([System.String]::new('%(RelativeDir)').SubString(16).Replace('\','/'))%(FileName)%(Extension)</LogicalName>
     </EmbeddedResource>
-
+  </ItemGroup>
+  <ItemGroup Condition="'$(IsWindows)'=='true'">
     <EmbeddedResource Include="./Resources/headerbar.ui">
       <LogicalName>headerbar</LogicalName>
     </EmbeddedResource>
@@ -68,8 +69,10 @@
       <LogicalName>icon</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="./Resources/kirk.png">
-      <LogicalName>windowicon</LogicalName>
+      <LogicalName>/windowicon</LogicalName>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup Condition="'$(IsLinux)'=='true'">
     <EmbeddedResource Include="./Resources/geticon.py">
       <LogicalName>geticon</LogicalName>
     </EmbeddedResource>

@@ -18,6 +18,9 @@ static class Requests
                 case "/json/getextendeditems":
                     await request.SendAsync(await Directory.GetExtendedItems((await request.DeserializeAsync<GetExtendedItems>())!).ToResult());
                     break;
+                case "/json/showdevtools":
+                    Globals.WebView?.ShowDevTools();
+                    break;
                 default:
                     return false;
             }
