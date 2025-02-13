@@ -107,7 +107,13 @@ static partial class Directory
         await request.SendAsync(file, (int)file.Length, "image.svg");
         return true;
     }
-    static Func<string> GetGtkIconScript { get; } = Memoize(() => "Commander/Resources/geticon.py");
+    static Func<string> GetGtkIconScript { get; } = Memoize(() =>
+        Environment
+            .GetFolderPath(Environment.SpecialFolder.ApplicationData)
+            .AppendPath(Globals.AppId)
+            .SideEffect(d => d.EnsureDirectoryExists())
+            .AppendPath("geticon.py")
+            .SideEffect(p => p.WriteAllTextToFilePath(new StreamReader(Resources.Get("geticon")!).ReadToEnd())));
     static Func<string, Task<string?>> GetGtkIcon { get; } = MemoizeAsync<string>(InitGtkIcon, true);
 
     static Task<string?> InitGtkIcon(string iconHint, string? oldValue)
@@ -118,3 +124,4 @@ static partial class Directory
 record GetExtendedItemsResult(ExifData?[] ExifDatas, string Path);
 
 #endif
+

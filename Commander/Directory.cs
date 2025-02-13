@@ -64,8 +64,8 @@ static partial class Directory
                 ? GetExifDate(item)
                 : null;
 
-        return Ok<GetExtendedItemsResult, RequestError>(new(items.Select(CheckGetExifDate).ToArray(), path))
-                    .ToAsyncResult();
+        return Ok<GetExtendedItemsResult, RequestError>(new([.. items.Select(CheckGetExifDate)], path))
+            .ToAsyncResult();
     }
 
     static DirectoryInfo CreateDirectoryInfo(this string path) => new(path);

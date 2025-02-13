@@ -19,7 +19,7 @@ server.Start();
 
 WebView
     .Create()
-    .AppId("de.uriegel.commander")
+    .AppId(Globals.AppId)
     .Title("Commander")
     .InitialBounds(600, 800)
     .SaveBounds()
@@ -31,13 +31,12 @@ WebView
     .WithoutNativeTitlebar()
     .ResourceIcon("icon")
 #endif
-    //.DebugUrl("http://localhost:5173")
+    .DebugUrl("http://localhost:5173")
     .Url("http://localhost:8080")
     .CanClose(() => true)
     .Run();
 server.Stop();
 
-// TODO Linux memoize copy python script
 // TODO icons Windows
 // TODO extended items
 // TODO viewer images
