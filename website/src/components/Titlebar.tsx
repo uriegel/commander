@@ -9,18 +9,11 @@ import { byteProgress, disposedProgress, fileProgress, finishedProgress, startPr
 import { progressBytesEvents, progressFileEvents, progressStartEvents } from "../requests/copyprogress.ts"
 import { webViewRequest } from "../requests/requests.ts"
 
-// TODO
-// declare type WebViewType = {
-//     initializeCustomTitlebar: () => void,
-//     showDevTools: () => void,
-//     startDragFiles: (files: string[]) => Promise<void>,
-//     request: <T, TR>(method: string, data: T) => Promise<TR>
-//     dropFiles: (id: string, move: boolean, droppedFiles: string[]) => void,
-//     setDroppedFilesEventHandler: (success: boolean) => void
-//     closeWindow(): () => void
-//     filesDropped: (dataTransfer: DataTransfer) => Promise<string[]>
-// }
-
+declare type WebViewType = {
+    initializeCustomTitlebar: () => void,
+    closeWindow(): () => void
+}
+declare const WebView: WebViewType
 
 interface TitlebarProps {
     menu: JSX.Element
@@ -58,7 +51,7 @@ const Titlebar = ({ menu, }: TitlebarProps) => {
     }, [dialog, move, totalSize])
 
     useEffect(() => {
-        // TODO WebView.initializeCustomTitlebar()
+        WebView.initializeCustomTitlebar()
     }, [])
     
 	useEffect(() => {

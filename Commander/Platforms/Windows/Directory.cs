@@ -1,5 +1,6 @@
 #if Windows
 
+using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using ClrWinApi;
@@ -43,22 +44,6 @@ static partial class Directory
             return false;
     }
 
-    public static AsyncResult<GetExtendedItemsResult, RequestError> GetExtendedItems(GetExtendedItems param)
-        => GetExtendedItems(param.Id, param.Path, param.Items)
-            .Select(items => items with
-            {
-                Versions = [.. param
-                            .Items
-                            .Select(n => CheckGetVersion(param.Path, n))]
-            });
-
-    public static Version? CheckGetVersion(string path, string item)
-        => item.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase) || item.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase)
-            ? null // TODO FileVersionInfo
-                   //     .GetVersionInfo(path.AppendPath(item))
-                   //     .MapVersion()
-            : null;
-
     static string Mount(string path) => "";
 
     static AsyncResult<Nothing, RequestError> GetCredentials(string path)
@@ -94,6 +79,13 @@ static partial class Directory
                 })
             ?? (new MemoryStream() as Stream).ToAsync();
 
+    static Version? GetVersion(string file)
+        => file.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase) || file.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase)
+            ? FileVersionInfo
+                    .GetVersionInfo(file)
+                    .MapVersion()
+            : null;
+
     static TaskCompletionSource<Result<Nothing, RequestError>>? credentialsTaskSource;
 }
 
@@ -103,16 +95,5 @@ record Version(
     int Patch,
     int Build
 );
-
-record GetExtendedItemsResult(
-    ExifData?[] ExifDatas,
-    Version?[]? Versions,
-    string Path
-)
-{
-    public GetExtendedItemsResult(ExifData?[] exifTimes, string path)
-        : this(exifTimes, null, path) { }
-};
-
 
 #endif

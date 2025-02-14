@@ -54,27 +54,25 @@ static partial class Directory
         return new();
     }
 
-    static Task<Result<GetExtendedItemsResult, RequestError>> GetExtendedItems(string id, string path, string[] items)
+    public static Task<Result<GetExtendedItemsResult, RequestError>> GetExtendedItems(GetExtendedItems param)
     {
-        var cancellation = extendedInfosCancellations.AddOrUpdate(id, new CancellationTokenSource(), (id, cts) =>
+        var cancellation = extendedInfosCancellations.AddOrUpdate(param.Id, new CancellationTokenSource(), (id, cts) =>
             {
                 cts.Cancel();
                 return new CancellationTokenSource();
             });
 
-        return Task.Run(() => Ok<GetExtendedItemsResult, RequestError>(new(items.Select(CheckGetExifDate), path)));
+        return Task.Run(() => Ok<GetExtendedItemsResult, RequestError>(new(param.Items.Select(CheckGetExifDate), param.Path)));
         
-        ExifData? GetExifDate(string file)
-        {
-            if (cancellation.IsCancellationRequested)
-                return null;
-            return ExifReader.GetExifData(path.AppendPath(file));
-        }
-
         ExtendedItem CheckGetExifDate(string item)
-            => item.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase) || item.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase)
-                ? new(GetExifDate(item), null)
-                : new(null, null);  
+            => cancellation.IsCancellationRequested == false
+                ? new(GetExifDate(item), GetVersion(param.Path.AppendPath(item)))
+                : new(null, null);
+
+        ExifData? GetExifDate(string file)
+            => file.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase) || file.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase)
+                ? ExifReader.GetExifData(param.Path.AppendPath(file))
+                : null;
     }
 
     static DirectoryInfo CreateDirectoryInfo(this string path) => new(path);

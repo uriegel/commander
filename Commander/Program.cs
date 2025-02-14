@@ -40,8 +40,6 @@ Globals.WebView.Run();
 
 server.Stop();
 
-// TODO Windows close
-// TODO Windows Version
 // TODO viewer images
 // TODO viewer images with location, use shortcut crtl+F3, release version
 // TODO viewer pdf
