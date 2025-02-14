@@ -1,3 +1,4 @@
+#if Windows
 using System.Diagnostics;
 
 static class Extensions
@@ -7,3 +8,5 @@ static class Extensions
             ? new(info.FileMajorPart, info.FileMinorPart, info.FilePrivatePart, info.FileBuildPart)
             : null;
 }    
+
+#endif
