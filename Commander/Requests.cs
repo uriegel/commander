@@ -20,6 +20,7 @@ static class Requests
                     break;
                 case "/json/showdevtools":
                     Globals.WebView?.ShowDevTools();
+                    await request.SendAsync("{}");
                     break;
                 default:
                     return false;
