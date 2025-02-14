@@ -40,7 +40,6 @@ Globals.WebView.Run();
 
 server.Stop();
 
-// TODO WebView functions with Invoke (Windows and Linux)
 // TODO extended items
 // TODO viewer images
 // TODO viewer images with location, use shortcut crtl+F3, release version
