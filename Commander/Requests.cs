@@ -16,7 +16,10 @@ static class Requests
                     await request.SendAsync(await Directory.GetFiles((await request.DeserializeAsync<GetFiles>())!).ToResult());
                     break;
                 case "/json/getextendeditems":
-                    await request.SendAsync(await Directory.GetExtendedItems((await request.DeserializeAsync<GetExtendedItems>())!).ToResult());
+                    await request.SendAsync(await Directory.GetExtendedItems((await request.DeserializeAsync<GetExtendedItems>())!));
+                    break;
+                case "/json/cancelextendeditems":
+                    await request.SendAsync(Directory.CancelExtendedItems((await request.DeserializeAsync<CancelExtendedItems>())!));
                     break;
                 case "/json/showdevtools":
                     Globals.WebView?.ShowDevTools();
@@ -42,3 +45,4 @@ static class Requests
         };
 }
 
+record Empty();

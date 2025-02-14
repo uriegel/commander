@@ -5,12 +5,22 @@ import CopyProgress from "./dialogparts/CopyProgress"
 import { DialogContext, ResultType } from "web-dialog-react"
 import "functional-extensions"
 import { useCallback, useContext, useEffect, useRef, useState } from "react"
-import { WebViewType } from '../webview.ts'
 import { byteProgress, disposedProgress, fileProgress, finishedProgress, startProgress } from "../requests/events.ts"
 import { progressBytesEvents, progressFileEvents, progressStartEvents } from "../requests/copyprogress.ts"
 import { webViewRequest } from "../requests/requests.ts"
 
-declare const WebView: WebViewType
+// TODO
+// declare type WebViewType = {
+//     initializeCustomTitlebar: () => void,
+//     showDevTools: () => void,
+//     startDragFiles: (files: string[]) => Promise<void>,
+//     request: <T, TR>(method: string, data: T) => Promise<TR>
+//     dropFiles: (id: string, move: boolean, droppedFiles: string[]) => void,
+//     setDroppedFilesEventHandler: (success: boolean) => void
+//     closeWindow(): () => void
+//     filesDropped: (dataTransfer: DataTransfer) => Promise<string[]>
+// }
+
 
 interface TitlebarProps {
     menu: JSX.Element
@@ -48,7 +58,7 @@ const Titlebar = ({ menu, }: TitlebarProps) => {
     }, [dialog, move, totalSize])
 
     useEffect(() => {
-        WebView.initializeCustomTitlebar()
+        // TODO WebView.initializeCustomTitlebar()
     }, [])
     
 	useEffect(() => {

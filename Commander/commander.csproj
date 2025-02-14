@@ -1,14 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
-    <!-- <TargetFrameworks>net8.0</TargetFrameworks> -->
-    <Nullable>enable</Nullable>
     <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows>
     <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
-    <PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
+
   <PropertyGroup Condition="'$(IsWindows)'=='true'">
+  <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
     <OutputType>WinExe</OutputType>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <TargetFramework>net8.0-windows</TargetFramework>
@@ -18,6 +16,7 @@
   </PropertyGroup> 
 
   <PropertyGroup Condition="'$(IsLinux)'=='true'">
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <SelfContained>false</SelfContained>
     <TargetFramework>net8.0</TargetFramework>
@@ -27,6 +26,7 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PublishSingleFile>true</PublishSingleFile>
     <Version>0.0.1</Version>
     <Authors>Uwe Riegel</Authors>
     <Company>Uwe Riegel</Company>
@@ -62,9 +62,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup Condition="'$(IsWindows)'=='true'">
-    <EmbeddedResource Include="./Resources/headerbar.ui">
-      <LogicalName>headerbar</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="./Resources/Kirk.ico">
       <LogicalName>icon</LogicalName>
     </EmbeddedResource>
@@ -75,6 +72,9 @@
   <ItemGroup Condition="'$(IsLinux)'=='true'">
     <EmbeddedResource Include="./Resources/geticon.py">
       <LogicalName>geticon</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/headerbar.ui">
+      <LogicalName>headerbar</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
 

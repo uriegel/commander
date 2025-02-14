@@ -1,8 +1,5 @@
 import { FolderViewItem } from "../components/FolderView"
 import { ErrorType } from "functional-extensions"
-import { WebViewType } from "../webview"
-
-declare const WebView: WebViewType
 
 export type GetItemsResult = {
     items: FolderViewItem[]

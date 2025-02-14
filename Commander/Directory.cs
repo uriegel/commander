@@ -1,9 +1,10 @@
+using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Data;
 using CsTools.Extensions;
 using CsTools.Functional;
 using CsTools.HttpRequest;
-
+using Microsoft.VisualBasic;
 using static CsTools.Core;
 
 static partial class Directory
@@ -46,32 +47,39 @@ static partial class Directory
             => showHiddenItems || !item.IsHidden;
     }
 
-    static AsyncResult<GetExtendedItemsResult, RequestError> GetExtendedItems(string id, string path, string[] items)
+    public static Result<Empty, RequestError> CancelExtendedItems(CancelExtendedItems param)
     {
-        extendedInfosCancellations = extendedInfosCancellations.Remove(id);
-        extendedInfosCancellations = extendedInfosCancellations.Add(id, new());
+        extendedInfosCancellations.TryRemove(param.Id, out var cts);
+        cts?.Cancel();
+        return new();
+    }
+
+    static Task<Result<GetExtendedItemsResult, RequestError>> GetExtendedItems(string id, string path, string[] items)
+    {
+        var cancellation = extendedInfosCancellations.AddOrUpdate(id, new CancellationTokenSource(), (id, cts) =>
+            {
+                cts.Cancel();
+                return new CancellationTokenSource();
+            });
+
+        return Task.Run(() => Ok<GetExtendedItemsResult, RequestError>(new(items.Select(CheckGetExifDate), path)));
+        
         ExifData? GetExifDate(string file)
         {
-            if (extendedInfosCancellations
-                    .GetValue(id)
-                    ?.IsCancellationRequested == true)
+            if (cancellation.IsCancellationRequested)
                 return null;
-            return null;  // TODO ExifReader.GetExifData(path.AppendPath(file));
+            return ExifReader.GetExifData(path.AppendPath(file));
         }
 
-        ExifData? CheckGetExifDate(string item)
+        ExtendedItem CheckGetExifDate(string item)
             => item.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase) || item.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase)
-                ? GetExifDate(item)
-                : null;
-
-        return Ok<GetExtendedItemsResult, RequestError>(new([.. items.Select(CheckGetExifDate)], path))
-            .ToAsyncResult();
+                ? new(GetExifDate(item), null)
+                : new(null, null);  
     }
 
     static DirectoryInfo CreateDirectoryInfo(this string path) => new(path);
 
-    static ImmutableDictionary<string, CancellationTokenSource> extendedInfosCancellations
-        = ImmutableDictionary<string, CancellationTokenSource>.Empty;
+    static readonly ConcurrentDictionary<string, CancellationTokenSource> extendedInfosCancellations = [];
 }
 
 enum IOErrorType
@@ -164,3 +172,7 @@ record GetExtendedItems(
     string[] Items,
     string Path
 );
+record CancelExtendedItems(string Id);
+
+record ExtendedItem(ExifData? ExifData, Version? Version);
+record GetExtendedItemsResult(IEnumerable<ExtendedItem> ExtendedItems, string Path);

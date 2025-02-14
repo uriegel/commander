@@ -18,7 +18,7 @@ static partial class Directory
     public static AsyncResult<DirectoryInfo, RequestError> Validate(this DirectoryInfo info)
         => Ok<DirectoryInfo, RequestError>(info).ToAsyncResult();
 
-    public static AsyncResult<GetExtendedItemsResult, RequestError> GetExtendedItems(GetExtendedItems param)
+    public static Task<Result<GetExtendedItemsResult, RequestError>> GetExtendedItems(GetExtendedItems param)
         => GetExtendedItems(param.Id, param.Path, param.Items);
 
     public static Task<bool> ProcessIcon(string iconHint, GetRequest request) =>
@@ -121,7 +121,7 @@ static partial class Directory
             => (await RunAsync("python3", $"\"{GetGtkIconScript()}\" {iconHint}")).TrimEnd(), 3) as Task<string?>;
 }
 
-record GetExtendedItemsResult(ExifData?[] ExifDatas, string Path);
+record Version();
 
 #endif
 

@@ -21,11 +21,10 @@ import './extensions/extensions'
 //import Credentials, { CredentialsProps } from './components/dialogparts/Credentials'
 import LocationViewer from './components/LocationViewer'
 import TrackViewer from './components/TrackViewer'
-import { WebViewType, WebViewEvents } from './webview.ts'
+import { WebViewEvents } from './webview.ts'
 import { getCopyController } from './controller/copy/createCopyController.ts'
 import { IOError, RequestError, webViewRequest } from './requests/requests.ts'
 
-declare const WebView: WebViewType
 declare const webViewEvents: WebViewEvents
 
 enum PreviewMode {
@@ -73,8 +72,8 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 	const [statusText, setStatusText] = useState<string | null>(null)
 	const [itemCount, setItemCount] = useState({dirCount: 0, fileCount: 0 })
 	const dialog = useContext(DialogContext)
-	if (dialog)
-		dialog.setCallback(show => WebView.request("showdialog", { show }))
+	// if (dialog)
+	// 	dialog.setCallback(show => WebView.request("showdialog", { show }))
 	
 	webViewEvents.registerShowHidden(setShowHidden)
 	webViewEvents.registerShowPreview(setShowViewer)
@@ -194,8 +193,8 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 	const onMenuAction = useCallback(async (key: string) => {
 		if (key == "REFRESH") 
 			getActiveFolder()?.refresh()
-		else if (key == "END") 
-			WebView.closeWindow()
+		// else if (key == "END") 
+		// 	WebView.closeWindow()
 		else if (key == "SEL_ALL")
 			getActiveFolder()?.selectAll()
 		else if (key == "SEL_NONE")

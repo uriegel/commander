@@ -13,7 +13,7 @@ public static class HeaderBar
         win.Titlebar(builder.GetWidget("headerbar"));
 
         app.AddActions([
-                new("devtools", webView.ShowDevTools, "<Ctrl><Shift>I"),
+            new("devtools", webView.ShowDevTools, "<Ctrl><Shift>I"),
         ]);
     }
 }

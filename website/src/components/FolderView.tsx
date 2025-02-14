@@ -4,18 +4,16 @@ import VirtualTable, { OnSort, SelectableItem, SpecialKeys, TableColumns, Virtua
 import { checkController, Controller, createEmptyController, showError } from '../controller/controller'
 import { ROOT } from '../controller/root'
 import RestrictionView, { RestrictionViewHandle } from './RestrictionView'
-import { ExifData, RequestError, Version, webViewRequest } from '../requests/requests'
+import { ExifData, RequestError, Version } from '../requests/requests'
 import { initializeHistory } from '../history'
 import { isWindows } from '../globals'
 import { Subscription } from 'rxjs'
 import { ServiceStartMode, ServiceStatus } from '../enums'
 import { DialogContext, DialogHandle } from 'web-dialog-react'
 import { getDirectoryChangedEvents, DirectoryChangedType } from '../requests/events'
-import { WebViewType } from '../webview'
 
-declare const WebView: WebViewType
 // eslint-disable-next-line 
-declare const webViewDragStart: (path: string, fileList: string[]) => void
+//declare const webViewDragStart: (path: string, fileList: string[]) => void
 
 export interface FolderViewItem extends SelectableItem {
     name:         string
@@ -535,7 +533,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({ id, showHidde
             setDragStarted(true)
             internalDrag = true
             evt.preventDefault()
-            await WebView.startDragFiles(items.map(i => `${path}\\${i}`))
+            //await WebView.startDragFiles(items.map(i => `${path}\\${i}`))
             setDragStarted(false)
             internalDrag = false
         } 
@@ -570,16 +568,16 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>(({ id, showHidde
                 onCopy(evt.shiftKey)
         }
         else {
-            const files = await WebView.filesDropped(evt.dataTransfer)
-            try {
-                await webViewRequest("nativecopy", {
-                    files, id, move: evt.shiftKey, target: path
-                })
-                refresh()
-            } catch (err) {
-                if (err instanceof RequestError) 
-                    showError(err, setError)
-            }
+            // const files = await WebView.filesDropped(evt.dataTransfer)
+            // try {
+            //     await webViewRequest("nativecopy", {
+            //         files, id, move: evt.shiftKey, target: path
+            //     })
+            //     refresh()
+            // } catch (err) {
+            //     if (err instanceof RequestError) 
+            //         showError(err, setError)
+            // }
         }
     }
 
