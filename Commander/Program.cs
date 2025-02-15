@@ -41,8 +41,11 @@ Globals.WebView =
 Globals.WebView.Run();
 server.Stop();
 
-// TODO IFrame without black css frame
-// TODO IFrame only for known types: detect text, pdf
+// TODO IFrame only for known types: 
+// TODO Content-Type only Content-type: text/plain; charset=utf-8 
+// TODO or pdf
+// TODO up to a certain file length!
+
 // TODO Track viewer
 // TODO viewer mp4 with Ranges
 // TODO root Linux: sdd when there is no sdd1
