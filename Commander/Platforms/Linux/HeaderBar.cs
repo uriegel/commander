@@ -1,4 +1,5 @@
 #if Linux
+using CsTools.Applicative;
 using GtkDotNet;
 using GtkDotNet.SafeHandles;
 using WebWindowNetCore;
@@ -13,6 +14,8 @@ public static class HeaderBar
         win.Titlebar(builder.GetWidget("headerbar"));
 
         app.AddActions([
+            new("showpreview", false, Events.PreviewAction, "F3"),            
+            new("togglePreviewMode", Events.MenuAction.Apply("TOGGLE_PREVIEW"), "<Ctrl>F3"),
             new("devtools", webView.ShowDevTools, "<Ctrl><Shift>I"),
         ]);
     }

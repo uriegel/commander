@@ -44,8 +44,20 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="WebWindowNetCore" Version="11.0.12-beta-12" />
-    <PackageReference Include="WebServerLight" Version="0.0.8-beta-8" />
+    <PackageReference Include="WebServerLight" Version="0.0.9-beta-9" />
   </ItemGroup>
+
+
+
+
+
+
+
+  <ItemGroup Condition="'$(IsLinux)'=='true'">
+    <PackageReference Include="Gtk4DotNet" Version="6.8.0" />
+  </ItemGroup>
+
+
 
   <ItemGroup>
     <EmbeddedResource Include="../website/dist/index.html">

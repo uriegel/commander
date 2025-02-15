@@ -1,5 +1,6 @@
 import { FolderViewItem } from "../components/FolderView"
 import { ErrorType } from "functional-extensions"
+import { getPort } from "../globals"
 
 export type GetItemsResult = {
     items: FolderViewItem[]
@@ -79,7 +80,7 @@ export const webViewRequest = async <T>(method: string, payload?: object) => {
         body: JSON.stringify(payload)
     }
 
-    const response = await fetch(`http://localhost:8080/json/${method}`, msg) 
+    const response = await fetch(`http://localhost:${getPort()}/json/${method}`, msg) 
     const res = await response.json() as ResultType<T, RequestError>
     if (res.err)
         throw new RequestError(res.err.status, res.err.statusText)

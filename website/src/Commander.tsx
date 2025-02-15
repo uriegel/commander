@@ -12,7 +12,7 @@ import './themes/adwaita.css'
 import './themes/windows.css'
 import { isWindows } from './globals'
 //import { copyErrorEvents, filesDropEvents, getCredentialsEvents,  progressChangedEvents } from './requests/events'
-import { showHiddenEvents, showPreviewEvents } from './requests/events'
+import { menuActionEvents, showHiddenEvents, showPreviewEvents } from './requests/events'
 import FileViewer from './components/FileViewer'
 import { SpecialKeys } from 'virtual-table-react'
 import Titlebar from './components/Titlebar'
@@ -233,15 +233,15 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 			await copyItems(true)
 	}, [copyItems, dialog, previewMode])
 
-	webViewEvents.registerMenuAction(onMenuAction)
-	
-	// 	copyErrorSubscription.current?.unsubscribe()
-	// 	copyErrorSubscription.current = copyErrorEvents.subscribe(err => showError(err, setErrorText, "Fehler beim Kopieren: "))
-
+	menuActionEvents.subscribe(onMenuAction)
+		
 	showPreviewEvents.subscribe(set => {
 		setShowViewer(set)
 		showViewerRef.current = set
 	})
+
+	// 	copyErrorSubscription.current?.unsubscribe()
+	// 	copyErrorSubscription.current = copyErrorEvents.subscribe(err => showError(err, setErrorText, "Fehler beim Kopieren: "))
 
 	showHiddenEvents.subscribe(set => {
 		setShowHidden(set)

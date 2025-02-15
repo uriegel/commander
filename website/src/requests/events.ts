@@ -3,6 +3,40 @@ import { FolderViewItem } from '../components/FolderView'
 //import { Version } from './requests'
 //import { ErrorType } from 'functional-extensions'
 import { WebViewEvents } from '../webview.ts'
+import { getPort } from '../globals.ts'
+
+export const menuActionEvents = new Subject<string>()
+export const showPreviewEvents = new Subject<boolean>()
+
+enum EventType {
+    MenuAction,
+    PreviewAction
+}
+
+type Event = {
+    eventType: EventType,
+    menuAction?: string
+    previewOn?: boolean
+}
+
+const ws = new WebSocket(`ws://localhost:${getPort()}/eventsink`)
+ws.onopen = () => console.log("global event sink opened")
+ws.onclose = () => console.log("global event sink closed")
+ws.onmessage = e => {
+    const evt = JSON.parse(e.data) as Event
+    switch (evt.eventType) {
+        case EventType.MenuAction:
+            if (evt.menuAction)
+                menuActionEvents.next(evt.menuAction)
+            break
+        case EventType.PreviewAction:
+            showPreviewEvents.next(evt.previewOn == true)
+            break
+    }
+}
+    
+
+///
 declare const webViewEvents: WebViewEvents
 
 // type FilesDrop = {
@@ -51,9 +85,8 @@ export type DirectoryChangedEvent = {
 //     showProgress?: boolean
 // }
 
-export const menuActionEvents = new Subject<string>()
+
 export const showHiddenEvents = new Subject<boolean>()
-export const showPreviewEvents = new Subject<boolean>()
 export const directoryChangedEvents = new Subject<DirectoryChangedEvent>()
 
 export const getDirectoryChangedEvents = (folderId: string) =>
@@ -179,5 +212,4 @@ export const finishedProgress = progressChangedEvents
     .pipe(filter(n => n.kind == "finished"))
 export const disposedProgress = progressChangedEvents
     .pipe(filter(n => n.kind == "disposed"))
-
 

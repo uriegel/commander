@@ -7,10 +7,11 @@ var names = Assembly.GetEntryAssembly()?.GetManifestResourceNames();
 var server =
     ServerBuilder
         .New()
-        .Http(8080)
+        .Http(Globals.Port)
         .WebsiteFromResource()
         .JsonPost(Requests.JsonPost)
         .Get(Requests.OnGet)
+        .WebSocket(Events.Create)
         .AddAllowedOrigin("http://localhost:5173")
         .AccessControlMaxAge(TimeSpan.FromHours(1))
         .Build();
@@ -33,7 +34,8 @@ Globals.WebView =
     .ResourceIcon("icon")
 #endif
     .DebugUrl("http://localhost:5173")
-    .Url("http://localhost:8080")
+    .Url($"http://localhost:{Globals.Port}")
+    .QueryString($"?port={Globals.Port}")
     .CanClose(() => true);
 
 Globals.WebView.Run();

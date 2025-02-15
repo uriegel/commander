@@ -1,4 +1,4 @@
-import { isWindows } from "../globals"
+import { getPort, isWindows } from "../globals"
 import './Titlebar.css'
 import Pie from 'react-progress-control'
 import CopyProgress from "./dialogparts/CopyProgress"
@@ -92,7 +92,7 @@ const Titlebar = ({ menu, }: TitlebarProps) => {
 
     return  isWindows()        
         ? (<div className="titlebar">
-            <img alt="" src="http://localhost:8080/windowicon"/>
+            <img alt="" src={`http://localhost:${getPort()}/windowicon`} />
             {menu}
             <div className="titlebarGrip" id="$DRAG_REGION$">
                 <span id="$TITLE$"></span>
