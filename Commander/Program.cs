@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using CsTools.Extensions;
 using WebServerLight;
 using WebWindowNetCore;
 
@@ -36,7 +37,7 @@ Globals.WebView =
     .DebugUrl("http://localhost:5173")
     .Url($"http://localhost:{Globals.Port}")
     .QueryString($"?port={Globals.Port}")
-    .CanClose(() => true);
+    .CanClose(() => true.SideEffect(_ => server.Stop()));
 
 Globals.WebView.Run();
 
