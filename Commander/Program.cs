@@ -44,6 +44,7 @@ Globals.WebView =
 
 Globals.WebView.Run();
 
+// TODO remove all GTK  event handlers: GtkActions, Window OnClose, ResScheme-Handler, OnLoad... globally in Gtk4DotNet
 // TODO IFrame without black css frame
 // TODO IFrame only for known types: detect text, pdf
 // TODO Track viewer
