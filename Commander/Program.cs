@@ -44,8 +44,6 @@ Globals.WebView =
 
 Globals.WebView.Run();
 
-server.Stop();
-
 // TODO IFrame without black css frame
 // TODO IFrame only for known types: detect text, pdf
 // TODO Track viewer
