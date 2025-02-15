@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using CsTools.Extensions;
 using WebServerLight;
 using WebWindowNetCore;
 
@@ -37,14 +36,11 @@ Globals.WebView =
     .DebugUrl("http://localhost:5173")
     .Url($"http://localhost:{Globals.Port}")
     .QueryString($"?port={Globals.Port}")
-    .CanClose(() => true
-                        .SideEffect(_ => server.Stop())
-                        .SideEffect(_ => GC.Collect())
-                        .SideEffect(_ => GC.Collect()));
+    .CanClose(() => true);
 
 Globals.WebView.Run();
+server.Stop();
 
-// TODO remove all GTK  event handlers: GtkActions, Window OnClose, ResScheme-Handler, OnLoad... globally in Gtk4DotNet
 // TODO IFrame without black css frame
 // TODO IFrame only for known types: detect text, pdf
 // TODO Track viewer

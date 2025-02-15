@@ -43,22 +43,9 @@
     <DefineConstants>Linux</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="WebWindowNetCore" Version="11.0.12-beta-12" />
+    <PackageReference Include="WebWindowNetCore" Version="11.0.13-beta-13" />
     <PackageReference Include="WebServerLight" Version="0.0.11-beta-11" />
   </ItemGroup>
-
-
-
-
-
-
-
-  <ItemGroup Condition="'$(IsLinux)'=='true'">
-    <PackageReference Include="Gtk4DotNet" Version="6.8.0" />
-  </ItemGroup>
-
-
-
   <ItemGroup>
     <EmbeddedResource Include="../website/dist/index.html">
       <LogicalName>/index.html</LogicalName>
