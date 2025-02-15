@@ -37,7 +37,10 @@ Globals.WebView =
     .DebugUrl("http://localhost:5173")
     .Url($"http://localhost:{Globals.Port}")
     .QueryString($"?port={Globals.Port}")
-    .CanClose(() => true.SideEffect(_ => server.Stop()));
+    .CanClose(() => true
+                        .SideEffect(_ => server.Stop())
+                        .SideEffect(_ => GC.Collect())
+                        .SideEffect(_ => GC.Collect()));
 
 Globals.WebView.Run();
 
