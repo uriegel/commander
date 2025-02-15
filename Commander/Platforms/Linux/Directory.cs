@@ -18,7 +18,7 @@ static partial class Directory
     public static AsyncResult<DirectoryInfo, RequestError> Validate(this DirectoryInfo info)
         => Ok<DirectoryInfo, RequestError>(info).ToAsyncResult();
 
-    public static Task<bool> ProcessIcon(string iconHint, GetRequest request) =>
+    public static Task<bool> ProcessIcon(string iconHint, IRequest request) =>
         Platform.Value == PlatformType.Gnome
             ? ProcessGtkIcon(iconHint, request)
             : ProcessKdeIcon(iconHint, request);
@@ -52,7 +52,7 @@ static partial class Directory
         return output.SubstringAfter(" at ");
     }
 
-    static Task<bool> ProcessGtkIcon(string iconHint, GetRequest request)
+    static Task<bool> ProcessGtkIcon(string iconHint, IRequest request)
         => Task.Run(() =>
                 RepeatOnException(async () =>
                 {
@@ -62,7 +62,7 @@ static partial class Directory
                     return true;
                 }, 3));
 
-    static async Task<bool> ProcessKdeIcon(string iconHint, GetRequest request)
+    static async Task<bool> ProcessKdeIcon(string iconHint, IRequest request)
     {
         var output = "";
         using var proc = new Process()

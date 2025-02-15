@@ -75,13 +75,21 @@ static partial class Directory
                 : null;
     }
 
-    public static async Task<bool> ProcessFile(GetRequest request)
+    public static async Task<bool> ProcessFile(IRequest request)
     {
         var filepath = request.QueryParts.GetValue("path")?.ReplacePathSeparatorForPlatform();
-        if (filepath != null)
+        if (filepath != null)   
         {
             using var file = File.OpenRead(filepath);
-            await request.SendAsync(file, (int)file.Length, MimeType.Get(filepath?.GetFileExtension()) ?? MimeTypes.ImageJpeg);
+            var ext = filepath?.GetFileExtension()?.ToLowerInvariant() ?? ".txt";
+            var mime = ext == ".png" || ext == ".jpg" || ext == ".pdf"
+                 ? MimeType.Get(ext)!
+                 : MimeTypes.TextPlain + "; charset=utf-8";
+            if (mime != MimeTypes.TextPlain || file.Length < 100_000)
+                await request.SendAsync(file, (int)file.Length, mime == MimeTypes.TextPlain ? MimeTypes.TextPlain + "; charset=utf-8" : mime);
+            else
+                await request.Send404();
+            
             return true;
         }
         else

@@ -3,27 +3,27 @@ using WebServerLight;
 
 static class Requests
 {
-    public static async Task<bool> JsonPost(JsonRequest request)
+    public static async Task<bool> JsonPost(IRequest request)
     {
         try
         {
             switch (request.Url)
             {
                 case "/json/getroot":
-                    await request.SendAsync(await Root.Get().ToResult());
+                    await request.SendJsonAsync(await Root.Get().ToResult());
                     break;
                 case "/json/getfiles":
-                    await request.SendAsync(await Directory.GetFiles((await request.DeserializeAsync<GetFiles>())!).ToResult());
+                    await request.SendJsonAsync(await Directory.GetFiles((await request.DeserializeAsync<GetFiles>())!).ToResult());
                     break;
                 case "/json/getextendeditems":
-                    await request.SendAsync(await Directory.GetExtendedItems((await request.DeserializeAsync<GetExtendedItems>())!));
+                    await request.SendJsonAsync(await Directory.GetExtendedItems((await request.DeserializeAsync<GetExtendedItems>())!));
                     break;
                 case "/json/cancelextendeditems":
-                    await request.SendAsync(Directory.CancelExtendedItems((await request.DeserializeAsync<CancelExtendedItems>())!));
+                    await request.SendJsonAsync(Directory.CancelExtendedItems((await request.DeserializeAsync<CancelExtendedItems>())!));
                     break;
                 case "/json/showdevtools":
                     Globals.WebView?.ShowDevTools();
-                    await request.SendAsync("{}");
+                    await request.SendJsonAsync("{}");
                     break;
                 default:
                     return false;
@@ -37,7 +37,7 @@ static class Requests
         }
     }
 
-    public static Task<bool> OnGet(GetRequest request) =>
+    public static Task<bool> OnGet(IRequest request) =>
         request.Url switch
         {
             var url when url.StartsWith("/geticon") => Directory.ProcessIcon(url[9..], request),
