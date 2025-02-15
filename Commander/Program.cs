@@ -42,10 +42,10 @@ Globals.WebView.Run();
 
 server.Stop();
 
-// TODO Ctrl+F3 in Release Linux: send from webView
-// TODO viewer pdf
+// TODO IFrame without black css frame
+// TODO IFrame only for known types: detect text, pdf
 // TODO Track viewer
-// TODO viewer mp4
+// TODO viewer mp4 with Ranges
 // TODO root Linux: sdd when there is no sdd1
 // TODO Kurzschlüsse in react-menubar
 
