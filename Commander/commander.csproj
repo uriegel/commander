@@ -72,6 +72,15 @@
     <EmbeddedResource Include="../website/dist/assets/*.css">
       <LogicalName>/$([System.String]::new('%(RelativeDir)').SubString(16).Replace('\','/'))%(FileName)%(Extension)</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="../website/dist/marker-icon-2x.png">
+      <LogicalName>/$([System.String]::new('%(RelativeDir)').SubString(16).Replace('\','/'))%(FileName)%(Extension)</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../website/dist/marker-icon.png">
+      <LogicalName>/$([System.String]::new('%(RelativeDir)').SubString(16).Replace('\','/'))%(FileName)%(Extension)</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../website/dist/marker-shadow.png">
+      <LogicalName>/$([System.String]::new('%(RelativeDir)').SubString(16).Replace('\','/'))%(FileName)%(Extension)</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup Condition="'$(IsWindows)'=='true'">
     <EmbeddedResource Include="./Resources/Kirk.ico">
