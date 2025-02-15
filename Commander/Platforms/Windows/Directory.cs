@@ -32,7 +32,7 @@ static partial class Directory
         : info.Extension?.Length > 0 ? info.Extension
         : ".noextension";
 
-    public async static Task<bool> ProcessIcon(string iconHint, GetRequest request)
+    public async static Task<bool> ProcessIcon(string iconHint, IRequest request)
     {
         var stream = await GetIconStream(iconHint);
         if (stream != null)

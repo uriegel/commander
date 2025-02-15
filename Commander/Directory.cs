@@ -77,23 +77,30 @@ static partial class Directory
 
     public static async Task<bool> ProcessFile(IRequest request)
     {
-        var filepath = request.QueryParts.GetValue("path")?.ReplacePathSeparatorForPlatform();
-        if (filepath != null)   
+        try
         {
-            using var file = File.OpenRead(filepath);
-            var ext = filepath?.GetFileExtension()?.ToLowerInvariant() ?? ".txt";
-            var mime = ext == ".png" || ext == ".jpg" || ext == ".pdf"
-                 ? MimeType.Get(ext)!
-                 : MimeTypes.TextPlain + "; charset=utf-8";
-            if (mime != MimeTypes.TextPlain || file.Length < 100_000)
-                await request.SendAsync(file, (int)file.Length, mime == MimeTypes.TextPlain ? MimeTypes.TextPlain + "; charset=utf-8" : mime);
+            var filepath = request.QueryParts.GetValue("path")?.ReplacePathSeparatorForPlatform();
+            if (filepath != null)
+            {
+                using var file = File.OpenRead(filepath);
+                var ext = filepath?.GetFileExtension()?.ToLowerInvariant() ?? ".txt";
+                var mime = ext == ".png" || ext == ".jpg" || ext == ".pdf"
+                    ? MimeType.Get(ext)!
+                    : MimeTypes.TextPlain;
+                if (mime != MimeTypes.TextPlain || !file.IsBinary())
+                    await request.SendAsync(file, (int)file.Length, mime == MimeTypes.TextPlain ? MimeTypes.TextPlain + "; charset=utf-8" : mime);
+                else
+                    await request.Send404();
+
+                return true;
+            }
             else
-                await request.Send404();
-            
-            return true;
+                return false;
         }
-        else
+        catch
+        {
             return false;
+        }
     }
 
     static DirectoryInfo CreateDirectoryInfo(this string path) => new(path);
@@ -197,7 +204,7 @@ record ExtendedItem(ExifData? ExifData, Version? Version);
 record GetExtendedItemsResult(IEnumerable<ExtendedItem> ExtendedItems, string Path);
 
 // TODO 
-static class Extensions
+static class Extensions2
 {
     public static string ReplacePathSeparatorForPlatform(this string path)
 #if Windows
@@ -205,4 +212,39 @@ static class Extensions
 #else
         => path;
 #endif
+
+    public static bool IsBinary(this Stream file)
+    {
+        file.Position = 0;
+        try
+        {
+            const int charsToCheck = 8000;
+            const char nulChar = '\0';
+            var requiredConsecutiveNull = 1;
+
+            int nulCount = 0;
+
+            using var streamReader = new StreamReader(file, leaveOpen: true);
+            for (var i = 0; i < charsToCheck; i++)
+            {
+                if (streamReader.EndOfStream)
+                    return false;
+
+                if ((char)streamReader.Read() == nulChar)
+                {
+                    nulCount++;
+
+                    if (nulCount >= requiredConsecutiveNull)
+                        return true;
+                }
+                else
+                    nulCount = 0;
+            }
+            return false;
+        }
+        finally
+        {
+            file.Position = 0;
+        }
+    }
 }
