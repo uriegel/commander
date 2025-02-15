@@ -40,7 +40,8 @@ static class Requests
     public static Task<bool> OnGet(GetRequest request) =>
         request.Url switch
         {
-            var iconurl when iconurl.StartsWith("/geticon") => Directory.ProcessIcon(iconurl[9..], request),
+            var url when url.StartsWith("/geticon") => Directory.ProcessIcon(url[9..], request),
+            var url when url.StartsWith("/getfile") => Directory.ProcessFile(request),
             _ => false.ToAsync()
         };
 }

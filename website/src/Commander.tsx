@@ -67,7 +67,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 	const [showViewer, setShowViewer] = useState(false)
 	const showHiddenRef = useRef(false)
 	const showViewerRef = useRef(false)
-	const [path, setPath] = useState<PathProp>({ path: "", latitude: undefined, longitude: undefined, isDirectory: false })
+	const [path, setPath] = useDebouncedState<PathProp>({ path: "", latitude: undefined, longitude: undefined, isDirectory: false }, 200)
 	const [errorText, setErrorText] = useState<string | null>(null)
 	const [statusText, setStatusText] = useState<string | null>(null)
 	const [itemCount, setItemCount] = useState({dirCount: 0, fileCount: 0 })
@@ -157,8 +157,9 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 	}, [])
 
 	const onPathChanged = useCallback(
-		(path: string, isDirectory: boolean, latitude?: number, longitude?: number) => setPath({ path, isDirectory, latitude, longitude }
-	), [])
+		(path: string, isDirectory: boolean, latitude?: number, longitude?: number) =>
+			setPath({ path, isDirectory, latitude, longitude })
+		, [])
 
 	const onEnter = (item: FolderViewItem, keys: SpecialKeys) => {
 		getActiveFolder()?.processEnter(item, keys, getInactiveFolder()?.getPath())
@@ -304,4 +305,34 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 
 export default Commander
 
-
+// TODO rework
+export function useDebouncedState<T>(initial: T, timeInMs: number = 300) {
+	const [value, setValue] = useState(initial)
+	const timeoutRef = useRef<number | null>(null)
+	const lastValue = useRef<T>(initial)
+  
+	const setDebouncedValue = (newValue: T) => {
+	  	if (lastValue.current === newValue) {
+			return	  	}
+  
+		if (timeoutRef.current) {
+			clearTimeout(timeoutRef.current);
+	  	}
+  
+	  	timeoutRef.current = setTimeout(() => {
+			if (lastValue.current !== newValue) {
+		  		setValue(newValue);
+			}
+			lastValue.current = newValue
+	  	}, timeInMs)
+	}
+  
+	useEffect(() => {
+	  	return () => {
+			if (timeoutRef.current) 
+				clearTimeout(timeoutRef.current)
+	  	}
+	}, [])
+  
+	return [value, setDebouncedValue] as const
+  }

@@ -1,10 +1,10 @@
 using System.Collections.Concurrent;
-using System.Collections.Immutable;
 using System.Data;
+using CsTools;
 using CsTools.Extensions;
 using CsTools.Functional;
 using CsTools.HttpRequest;
-using Microsoft.VisualBasic;
+using WebServerLight;
 using static CsTools.Core;
 
 static partial class Directory
@@ -73,6 +73,19 @@ static partial class Directory
             => file.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase) || file.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase)
                 ? ExifReader.GetExifData(param.Path.AppendPath(file))
                 : null;
+    }
+
+    public static async Task<bool> ProcessFile(GetRequest request)
+    {
+        var filepath = request.QueryParts.GetValue("path")?.ReplacePathSeparatorForPlatform();
+        if (filepath != null)
+        {
+            using var file = File.OpenRead(filepath);
+            await request.SendAsync(file, (int)file.Length, MimeType.Get(filepath?.GetFileExtension()) ?? MimeTypes.ImageJpeg);
+            return true;
+        }
+        else
+            return false;
     }
 
     static DirectoryInfo CreateDirectoryInfo(this string path) => new(path);
@@ -174,3 +187,14 @@ record CancelExtendedItems(string Id);
 
 record ExtendedItem(ExifData? ExifData, Version? Version);
 record GetExtendedItemsResult(IEnumerable<ExtendedItem> ExtendedItems, string Path);
+
+// TODO 
+static class Extensions
+{
+    public static string ReplacePathSeparatorForPlatform(this string path)
+#if Windows
+        => path.Replace('/', '\\');
+#else
+        => path;
+#endif
+}

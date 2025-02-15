@@ -42,7 +42,6 @@ Globals.WebView.Run();
 
 server.Stop();
 
-// TODO viewer images
 // TODO viewer images with location, use shortcut crtl+F3, release version
 // TODO viewer pdf
 // TODO viewer Test mp4 without http server
