@@ -11,9 +11,10 @@ static class Events
         Console.WriteLine($"Event source created: {socket.Url}");
     }
 
-    public static Action<string> MenuAction { get; } = menuAction => Send(new(EventType.MenuAction, menuAction, null));
-    public static Action<bool> PreviewAction { get; } = preview => Send(new(EventType.PreviewAction, null, preview));
-
+    public static Action<string> MenuAction { get; } = menuAction => Send(new(EventType.MenuAction, menuAction, null, null));
+    public static Action<bool> PreviewAction { get; } = preview => Send(new(EventType.PreviewAction, null, preview, null));
+    public static Action<bool> ShowHiddenAction { get; } = showHidden => Send(new(EventType.ShowHiddenAction, null, null, showHidden));
+    
     static async void Send(Event evt)
     {
         try
@@ -29,8 +30,9 @@ static class Events
 enum EventType
 {
     MenuAction,
-    PreviewAction
+    PreviewAction,
+    ShowHiddenAction
 }
 
-record Event(EventType EventType, string? MenuAction, bool? PreviewOn);
+record Event(EventType EventType, string? MenuAction,bool? PreviewOn, bool? ShowHidden);
 

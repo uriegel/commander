@@ -7,16 +7,19 @@ import { getPort } from '../globals.ts'
 
 export const menuActionEvents = new Subject<string>()
 export const showPreviewEvents = new Subject<boolean>()
+export const showHiddenEvents = new Subject<boolean>()
 
 enum EventType {
     MenuAction,
-    PreviewAction
+    PreviewAction,
+    ShowHiddenAction
 }
 
 type Event = {
-    eventType: EventType,
+    eventType: EventType
     menuAction?: string
     previewOn?: boolean
+    showHidden?: boolean
 }
 
 const ws = new WebSocket(`ws://localhost:${getPort()}/eventsink`)
@@ -32,7 +35,10 @@ ws.onmessage = e => {
         case EventType.PreviewAction:
             showPreviewEvents.next(evt.previewOn == true)
             break
-    }
+        case EventType.ShowHiddenAction:
+            showHiddenEvents.next(evt.showHidden == true)
+            break
+        }
 }
     
 
@@ -86,7 +92,6 @@ export type DirectoryChangedEvent = {
 // }
 
 
-export const showHiddenEvents = new Subject<boolean>()
 export const directoryChangedEvents = new Subject<DirectoryChangedEvent>()
 
 export const getDirectoryChangedEvents = (folderId: string) =>
