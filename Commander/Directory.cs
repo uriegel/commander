@@ -84,11 +84,11 @@ static partial class Directory
             {
                 using var file = File.OpenRead(filepath);
                 var ext = filepath?.GetFileExtension()?.ToLowerInvariant() ?? ".txt";
-                var mime = ext == ".png" || ext == ".jpg" || ext == ".pdf"
+                var mime = ext == ".png" || ext == ".jpg" || ext == ".pdf" || ext == ".mp4" || ext == ".mkv" || ext == ".mp3"
                     ? MimeType.Get(ext)!
                     : MimeTypes.TextPlain;
                 if (mime != MimeTypes.TextPlain || !file.IsBinary())
-                    await request.SendAsync(file, (int)file.Length, mime == MimeTypes.TextPlain ? MimeTypes.TextPlain + "; charset=utf-8" : mime);
+                    await request.SendAsync(file, file.Length, mime == MimeTypes.TextPlain ? MimeTypes.TextPlain + "; charset=utf-8" : mime);
                 else
                     await request.Send404();
 

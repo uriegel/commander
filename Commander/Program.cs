@@ -14,6 +14,7 @@ var server =
         .WebSocket(Events.Create)
         .AddAllowedOrigin("http://localhost:5173")
         .AccessControlMaxAge(TimeSpan.FromHours(1))
+        .UseRange()
         .Build();
 
 server.Start();
@@ -41,7 +42,6 @@ Globals.WebView =
 Globals.WebView.Run();
 server.Stop();
 
-// TODO viewer mp4 with Ranges
 // TODO root Linux: sdd when there is no sdd1
 // TODO Kurzschlüsse in react-menubar
 
