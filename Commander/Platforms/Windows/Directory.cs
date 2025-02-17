@@ -44,6 +44,26 @@ static partial class Directory
             return false;
     }
 
+    public static Task<Result<Nothing, RequestError>> DeleteItems(DeleteItemsParam input)
+        => (SHFileOperation(new ShFileOPStruct
+        {
+            Func = FileFuncFlags.DELETE,
+            From = string.Join("\U00000000", input.Names.Select(input.Path.AppendPath))
+                            + "\U00000000\U00000000",
+            Flags = FileOpFlags.NOCONFIRMATION
+                    | FileOpFlags.NOERRORUI
+                    | FileOpFlags.NOCONFIRMMKDIR
+                    | FileOpFlags.SILENT
+                    | FileOpFlags.ALLOWUNDO
+        }) switch
+        {
+            0 => Ok<Nothing, RequestError>(nothing),
+            2 => Error<Nothing, RequestError>(IOErrorType.FileNotFound.ToError()),
+            0x78 => Error<Nothing, RequestError>(IOErrorType.AccessDenied.ToError()),
+            _ => Error<Nothing, RequestError>(IOErrorType.Exn.ToError())
+        })
+            .ToAsync();                        
+
     static string Mount(string path) => "";
 
     static AsyncResult<Nothing, RequestError> GetCredentials(string path)
