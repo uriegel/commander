@@ -12,7 +12,7 @@ import { ServiceStartMode, ServiceStatus } from '../enums'
 import { DialogContext, DialogHandle } from 'web-dialog-react'
 import { getDirectoryChangedEvents, DirectoryChangedType } from '../requests/events'
 
-// eslint-disable-next-line 
+//// eslint-disable-next-line 
 //declare const webViewDragStart: (path: string, fileList: string[]) => void
 
 export interface FolderViewItem extends SelectableItem {

@@ -21,11 +21,8 @@ import './extensions/extensions'
 //import Credentials, { CredentialsProps } from './components/dialogparts/Credentials'
 import LocationViewer from './components/LocationViewer'
 import TrackViewer from './components/TrackViewer'
-import { WebViewEvents } from './webview.ts'
 import { getCopyController } from './controller/copy/createCopyController.ts'
 import { IOError, RequestError, webViewRequest } from './requests/requests.ts'
-
-declare const webViewEvents: WebViewEvents
 
 enum PreviewMode {
 	Default,
@@ -75,10 +72,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 	// if (dialog)
 	// 	dialog.setCallback(show => WebView.request("showdialog", { show }))
 	
-	webViewEvents.registerShowHidden(setShowHidden)
-	webViewEvents.registerShowPreview(setShowViewer)
-	
-	// const filesDropSubscription = useRef<Subscription | null>(null)
+	//  const filesDropSubscription = useRef<Subscription | null>(null)
 	// const getCredentialsSubscription = useRef<Subscription | null>(null)
 	// const copyErrorSubscription = useRef<Subscription | null>(null)
 		
@@ -159,7 +153,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 	const onPathChanged = useCallback(
 		(path: string, isDirectory: boolean, latitude?: number, longitude?: number) =>
 			setPath({ path, isDirectory, latitude, longitude })
-		, [])
+		, [setPath])
 
 	const onEnter = (item: FolderViewItem, keys: SpecialKeys) => {
 		getActiveFolder()?.processEnter(item, keys, getInactiveFolder()?.getPath())

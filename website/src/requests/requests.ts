@@ -63,7 +63,7 @@ export enum IOError {
 
 type ResultType<T, E extends ErrorType> = {
     ok: T
-    err: E
+    error: E
 }
 
 export class RequestError extends Error {
@@ -82,8 +82,8 @@ export const webViewRequest = async <T>(method: string, payload?: object) => {
 
     const response = await fetch(`http://localhost:${getPort()}/json/${method}`, msg) 
     const res = await response.json() as ResultType<T, RequestError>
-    if (res.err)
-        throw new RequestError(res.err.status, res.err.statusText)
+    if (res.error)
+        throw new RequestError(res.error.status, res.error.statusText)
     return res.ok 
 }
 

@@ -2,7 +2,6 @@ import { filter, Subject } from 'rxjs'
 import { FolderViewItem } from '../components/FolderView'
 //import { Version } from './requests'
 //import { ErrorType } from 'functional-extensions'
-import { WebViewEvents } from '../webview.ts'
 import { getPort } from '../globals.ts'
 
 export const menuActionEvents = new Subject<string>()
@@ -43,8 +42,6 @@ ws.onmessage = e => {
     
 
 ///
-declare const webViewEvents: WebViewEvents
-
 // type FilesDrop = {
 //     id: string
 //     path: string
@@ -173,39 +170,39 @@ export type Progress =
     | ProgressBytes
 
 const progressChangedEvents = new Subject<Progress>()
-let totalCurrentBytes = 0
-let totalBytes = 0
-let progressesDropper = 0
-webViewEvents.registerProgresses((p: Progress) => {
-    switch (p.kind) {
-        case "start":
-            clearTimeout(progressesDropper)
-            totalCurrentBytes = 0
-            totalBytes = p.totalSize
-            break
-        case "file":
-            totalCurrentBytes = p.currentBytes
-            break
-        case "bytes":
-            p.completeCurrentBytes = totalCurrentBytes
-            p.completeTotalBytes = totalBytes
-            break
-        case "finished":
-            progressChangedEvents.next({
-                kind: 'bytes',
-                completeCurrentBytes: totalBytes,
-                completeTotalBytes: totalBytes,
-                currentBytes: 0,
-                totalBytes,
-                totalSeconds: p.totalSeconds
-            })
-            progressesDropper = setTimeout(() => progressChangedEvents.next({
-                kind: "disposed"
-            }), 10_000)
-            break
-    }
-    progressChangedEvents.next(p)
-})
+// let totalCurrentBytes = 0
+// let totalBytes = 0
+// let progressesDropper = 0
+// webViewEvents.registerProgresses((p: Progress) => {
+//     switch (p.kind) {
+//         case "start":
+//             clearTimeout(progressesDropper)
+//             totalCurrentBytes = 0
+//             totalBytes = p.totalSize
+//             break
+//         case "file":
+//             totalCurrentBytes = p.currentBytes
+//             break
+//         case "bytes":
+//             p.completeCurrentBytes = totalCurrentBytes
+//             p.completeTotalBytes = totalBytes
+//             break
+//         case "finished":
+//             progressChangedEvents.next({
+//                 kind: 'bytes',
+//                 completeCurrentBytes: totalBytes,
+//                 completeTotalBytes: totalBytes,
+//                 currentBytes: 0,
+//                 totalBytes,
+//                 totalSeconds: p.totalSeconds
+//             })
+//             progressesDropper = setTimeout(() => progressChangedEvents.next({
+//                 kind: "disposed"
+//             }), 10_000)
+//             break
+//     }
+//     progressChangedEvents.next(p)
+// })
 
 export const startProgress = progressChangedEvents
     .pipe(filter(n => n.kind == "start"))
