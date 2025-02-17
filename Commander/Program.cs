@@ -42,6 +42,7 @@ Globals.WebView =
 Globals.WebView.Run();
 server.Stop();
 
+// TODO CreateFolder: access denied not shown
 // TODO root Linux: sdd when there is no sdd1
 // TODO Kurzschlüsse in react-menubar
 

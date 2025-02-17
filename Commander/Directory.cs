@@ -103,6 +103,11 @@ static partial class Directory
         }
     }
 
+    public static Result<Nothing, RequestError> CreateFolder(CreateFolderInput input)
+        => Try(
+            () => nothing.SideEffect(_ => System.IO.Directory.CreateDirectory(input.Path.AppendPath(input.Name))),
+            Error.MapException);
+
     static DirectoryInfo CreateDirectoryInfo(this string path) => new(path);
 
     static readonly ConcurrentDictionary<string, CancellationTokenSource> extendedInfosCancellations = [];
@@ -199,9 +204,10 @@ record GetExtendedItems(
     string Path
 );
 record CancelExtendedItems(string Id);
-
 record ExtendedItem(ExifData? ExifData, Version? Version);
 record GetExtendedItemsResult(IEnumerable<ExtendedItem> ExtendedItems, string Path);
+
+record CreateFolderInput(string Path, string Name);
 
 // TODO 
 static class Extensions2
