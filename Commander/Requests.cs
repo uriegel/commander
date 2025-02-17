@@ -27,6 +27,9 @@ static class Requests
                 case "/json/deleteitems":
                     await request.SendJsonAsync(Directory.DeleteItems((await request.DeserializeAsync<DeleteItemsParam>())!));
                     break;
+                case "/json/checkcopyitems":
+                    await request.SendJsonAsync(Directory.CheckCopyItems((await request.DeserializeAsync<CheckCopyItems>())!));
+                    break;
                 case "/json/gettrackinfo":
                     await request.SendJsonAsync(await TrackInfo.Get((await request.DeserializeAsync<GetTrackInfo>())!.Path));
                     break;

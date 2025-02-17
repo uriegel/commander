@@ -5,6 +5,7 @@ using CsTools.Extensions;
 using CsTools.Functional;
 using CsTools.HttpRequest;
 using WebServerLight;
+
 using static CsTools.Core;
 
 static partial class Directory
@@ -20,10 +21,13 @@ static partial class Directory
             .SelectError(e => new RequestError(e.Status, e.StatusText));
 
     public static Result<GetFilesResult, RequestError> GetFiles(DirectoryInfo dirInfo, bool showHiddenItems)
+        =>Try(
+            () => GetFilesResult(dirInfo, showHiddenItems),
+            e => IOErrorType.PathNotFound.ToError());
+
+    public static GetFilesResult GetFilesResult(DirectoryInfo dirInfo, bool showHiddenItems)
     {
-        return
-             Try(
-                () => new DirFileInfo(
+        return MakeFilesResult(new DirFileInfo(
                     [.. dirInfo
                         .GetDirectories()
                         .Select(DirectoryItem.CreateDirItem)
@@ -33,9 +37,7 @@ static partial class Directory
                         .GetFiles()
                         .Select(DirectoryItem.CreateFileItem)
                         .Where(FilterHidden)
-                        .ToArray()),
-                e => IOErrorType.PathNotFound.ToError())
-            .Select(MakeFilesResult);
+                        .ToArray()));
 
         GetFilesResult MakeFilesResult(DirFileInfo dirFileInfo)
             => new([.. dirFileInfo.Directories, .. dirFileInfo.Files],
@@ -102,6 +104,53 @@ static partial class Directory
             return false;
         }
     }
+
+    public static Result<CopyItemResult, RequestError> CheckCopyItems(CheckCopyItems input)
+    {
+
+
+        // 4 Items to copy. 2 deleted
+        // copyItems
+        // Object
+
+        // conflicts: Array (2)
+        // 0
+        // {name: "Bildschirmfoto vom 2024-12-16 13-34-52.png", iconPath: ".png", size: 75576, time: "2024-12-16T12:34:52.997Z", targetSize: 75576, …}
+        // 1
+        // {name: "Bildschirmfoto vom 2024-12-19 11-39-51.png", iconPath: ".png", size: 24048, time: "2024-12-19T10:39:51.231845639Z", targetSize: 24048, …}
+
+        // Array Prototype
+
+        // items: Array (2)
+        // 0
+        // {name: "Bildschirmfoto vom 2024-12-16 13-34-52.png", size: 75576, isDirectory: false, iconPath: ".png", isHidden: false, …}
+        // 1
+        // {name: "Bildschirmfoto vom 2024-12-19 11-39-51.png", size: 24048, isDirectory: false, iconPath: ".png", isHidden: false, …}
+
+
+
+
+        var conflict_items = 
+            FlattenDirectories(input.Path, input.Items)
+//             .into_iter()
+//             .map(|di|create_copy_item(di, &input.path, &input.target_path))
+//             .collect::<Result<Vec<_>, RequestError>>()?;
+//     let (items, conflicts): (Vec<Option<DirectoryItem>>, Vec<Option<ConflictItem>>) = conflict_items.into_iter().unzip();
+//     let items: Vec<DirectoryItem> = items.into_iter().filter_map(|f|f).collect();
+//     let conflicts: Vec<ConflictItem> = conflicts.into_iter().filter_map(|f|f).collect();
+//     Ok(CopyItemResult { items, conflicts })        
+        return nothing;
+    }
+
+    public static IEnumerable<DirectoryItem> FlattenDirectories(string path, DirectoryItem[] items)
+        => items.SelectMany(n => n.IsDirectory ? UnpackDirectory(path, n.Name) : [n]);
+
+    static DirectoryItem[] UnpackDirectory(string path, string subPath)
+            => path
+                .AppendPath(subPath)
+                .CreateDirectoryInfo()
+                .Pipe(n => GetFilesResult(n, false))
+                .Items;
 
     public static Result<Nothing, RequestError> CreateFolder(CreateFolderInput input)
         => Try(
@@ -208,6 +257,9 @@ record ExtendedItem(ExifData? ExifData, Version? Version);
 record GetExtendedItemsResult(IEnumerable<ExtendedItem> ExtendedItems, string Path);
 record CreateFolderInput(string Path, string Name);
 record DeleteItemsParam(string Path, string[] Names);
+record CheckCopyItems(string Path, string TargetPath, DirectoryItem[] Items);
+record ConflictItem(string Name, string? IconPath, long Size, DateTime? Time, long TargetSize, DateTime? TaretTime);
+record CopyItemResult(DirectoryItem[] Items, ConflictItem[] Conflicts);
 
 
 // TODO 
