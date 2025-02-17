@@ -24,6 +24,9 @@ static class Requests
                 case "/json/createfolder":
                     await request.SendJsonAsync(Directory.CreateFolder((await request.DeserializeAsync<CreateFolderInput>())!));
                     break;
+                case "/json/deleteitems":
+                    await request.SendJsonAsync(Directory.DeleteItems((await request.DeserializeAsync<DeleteItemsParam>())!));
+                    break;
                 case "/json/gettrackinfo":
                     await request.SendJsonAsync(await TrackInfo.Get((await request.DeserializeAsync<GetTrackInfo>())!.Path));
                     break;

@@ -206,8 +206,9 @@ record GetExtendedItems(
 record CancelExtendedItems(string Id);
 record ExtendedItem(ExifData? ExifData, Version? Version);
 record GetExtendedItemsResult(IEnumerable<ExtendedItem> ExtendedItems, string Path);
-
 record CreateFolderInput(string Path, string Name);
+record DeleteItemsParam(string Path, string[] Names);
+
 
 // TODO 
 static class Extensions2

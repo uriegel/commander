@@ -9,6 +9,7 @@ using static CsTools.ProcessCmd;
 using static CsTools.Core;
 using static CsTools.Functional.Memoization;
 using CsTools;
+using GtkDotNet;
 
 static partial class Directory
 {
@@ -22,6 +23,16 @@ static partial class Directory
         Platform.Value == PlatformType.Gnome
             ? ProcessGtkIcon(iconHint, request)
             : ProcessKdeIcon(iconHint, request);
+
+    public static Task<Result<Nothing, RequestError>> DeleteItems(DeleteItemsParam input)
+        => Gtk.Dispatch(() =>
+                    input.Names
+                        .Select(n =>
+                            GFile
+                            .New(input.Path.AppendPath(n))
+                            .Use(f => f.Trash()))
+                        .FirstOrDefault(n => n.IsError)
+                        .SelectError(GErrorToRequestError));
 
     static string Mount(string path)
     {
@@ -117,6 +128,18 @@ static partial class Directory
             => (await RunAsync("python3", $"\"{GetGtkIconScript()}\" {iconHint}")).TrimEnd(), 3) as Task<string?>;
 
     static Version? GetVersion(string _) => null;
+
+    static RequestError GErrorToRequestError(GError ge)
+        => ge switch
+        {
+            FileError fe when fe.Error == FileError.ErrorType.AccessDenied => IOErrorType.AccessDenied.ToError(),
+            FileError fe when fe.Error == FileError.ErrorType.SourceNotFound => IOErrorType.FileNotFound.ToError(),
+            FileError fe when fe.Error == FileError.ErrorType.TargetNotFound => IOErrorType.PathNotFound.ToError(),
+            FileError fe when fe.Error == FileError.ErrorType.TargetExisting => IOErrorType.AlreadyExists.ToError(),
+            FileError fe when fe.Error == FileError.ErrorType.NoDiskSpace => IOErrorType.NoDiskSpace.ToError(),
+            FileError fe when fe.Error == FileError.ErrorType.Canceled => IOErrorType.Canceled.ToError(),
+            _ => IOErrorType.Exn.ToError()
+        };
 }
 
 record Version();

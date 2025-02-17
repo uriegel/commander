@@ -19,6 +19,7 @@ public static class HeaderBar
             new("togglePreviewMode", Events.MenuAction.Apply("TOGGLE_PREVIEW"), "<Ctrl>F3"),
             new("showpreview", false, Events.PreviewAction, "F3"),
             new("adaptpath", Events.MenuAction.Apply("ADAPT_PATH"), "F9"),
+            new("delete", Events.MenuAction.Apply("DELETE")),
             new("createfolder", Events.MenuAction.Apply("CREATE_FOLDER"), "F7"),
             new("refresh", Events.MenuAction.Apply("REFRESH"), "<Ctrl>R"),
             new("showhidden", false, Events.ShowHiddenAction, "<Ctrl>H"),            
