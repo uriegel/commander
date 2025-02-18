@@ -130,8 +130,8 @@ static partial class Directory
 
 
 
-        var conflict_items = 
-            FlattenDirectories(input.Path, input.Items)
+        var conflict_items =
+            FlattenDirectories(input.Path, input.Items);
 //             .into_iter()
 //             .map(|di|create_copy_item(di, &input.path, &input.target_path))
 //             .collect::<Result<Vec<_>, RequestError>>()?;
@@ -139,8 +139,25 @@ static partial class Directory
 //     let items: Vec<DirectoryItem> = items.into_iter().filter_map(|f|f).collect();
 //     let conflicts: Vec<ConflictItem> = conflicts.into_iter().filter_map(|f|f).collect();
 //     Ok(CopyItemResult { items, conflicts })        
-        return nothing;
+        return Error<CopyItemResult, RequestError>(new RequestError(245, "Nein"));
     }
+
+//     fn create_copy_item(item: DirectoryItem, path: &str, target_path: &str)->Result<(Option<DirectoryItem>, Option<ConflictItem>), RequestError> { 
+//     let updated_item = match fs::metadata(PathBuf::from(path).join(&item.name)) {
+//         Ok (meta) => Ok(Some(update_directory_item(item.copy(), &meta))),
+//         Err (err) if err.kind() == ErrorKind::NotFound => Ok(None),
+//         Err (err) => Err(err)
+//     }?;
+
+//     let conflict = updated_item.as_ref().and_then(|n| {
+//         match fs::metadata(PathBuf::from(target_path).join(&n.name)) {
+//             Ok (meta) => Some(ConflictItem::from(path, target_path, &n, &meta)),
+//             _ => None,
+//         }
+//     });
+
+//     Ok((updated_item, conflict))
+// }
 
     public static IEnumerable<DirectoryItem> FlattenDirectories(string path, DirectoryItem[] items)
         => items.SelectMany(n => n.IsDirectory ? UnpackDirectory(path, n.Name) : [n]);
