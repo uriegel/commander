@@ -108,35 +108,15 @@ static partial class Directory
 
     public static Result<CopyItemResult, RequestError> CheckCopyItems(CheckCopyItems input)
     {
-
-
-        // 4 Items to copy. 2 deleted
-        // copyItems
-        // Object
-
-        // conflicts: Array (2)
-        // 0
-        // {name: "Bildschirmfoto vom 2024-12-16 13-34-52.png", iconPath: ".png", size: 75576, time: "2024-12-16T12:34:52.997Z", targetSize: 75576, …}
-        // 1
-        // {name: "Bildschirmfoto vom 2024-12-19 11-39-51.png", iconPath: ".png", size: 24048, time: "2024-12-19T10:39:51.231845639Z", targetSize: 24048, …}
-
-        // Array Prototype
-
-        // items: Array (2)
-        // 0
-        // {name: "Bildschirmfoto vom 2024-12-16 13-34-52.png", size: 75576, isDirectory: false, iconPath: ".png", isHidden: false, …}
-        // 1
-        // {name: "Bildschirmfoto vom 2024-12-19 11-39-51.png", size: 24048, isDirectory: false, iconPath: ".png", isHidden: false, …}
-
-
-
-
         var conflictItems =
             FlattenDirectories(input.Items)
             .Select(n => CreateCopyItem(n, input.Path, input.TargetPath))
-            .SelectFilterNull(n => n.Item1 != null ? n : null)
             .ToArray();
 
+        var updatedItems = conflictItems.SelectFilterNull(n => n.Item1).ToArray();
+        var conflicts = conflictItems.SelectFilterNull(n => n.Item2).ToArray();
+
+        return Ok<CopyItemResult, RequestError>(new(updatedItems, conflicts));
 
         (DirectoryItem?, ConflictItem?) CreateCopyItem(DirectoryItem item, string path, string targetPath)
         {
@@ -152,11 +132,9 @@ static partial class Directory
         }
 
 
-        return Error<CopyItemResult, RequestError>(new RequestError(245, "Nein"));
-
         IEnumerable<DirectoryItem> FlattenDirectories(IEnumerable<DirectoryItem> items)
         {
-            var files = items.Where(n => !n.IsDirectory);
+            var files = items.Where(n => !n.IsDirectory).OrderBy(n => n.Name);
             var subFiles = items.Where(n => n.IsDirectory).SelectMany(n => UnpackDirectory(input.Path, n.Name));
             return files.Concat(subFiles);
         }
@@ -165,14 +143,7 @@ static partial class Directory
             => path
                 .AppendPath(subPath)
                 .CreateDirectoryInfo()
-                .Pipe(n => FlattenDirectories(GetFilesResult(n, true).Items.Select(n =>
-
-{
-    var affe = n with { Name = subPath.AppendPath(n.Name) };
-    Console.WriteLine($"Affe: {affe}");
-    return affe;
-}
-                )));
+                .Pipe(n => FlattenDirectories(GetFilesResult(n, true).Items.Select(n => n with { Name = subPath.AppendPath(n.Name) })));
     }
 
     public static Result<Nothing, RequestError> CreateFolder(CreateFolderInput input)
