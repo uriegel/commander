@@ -4,6 +4,7 @@ using CsTools;
 using CsTools.Extensions;
 using CsTools.Functional;
 using CsTools.HttpRequest;
+using GtkDotNet;
 using WebServerLight;
 
 using static CsTools.Core;
@@ -131,7 +132,9 @@ static partial class Directory
 
 
         var conflict_items =
-            FlattenDirectories(input.Path, input.Items);
+            FlattenDirectories(input.Items)
+            .Select(n => CreateCopyItem(n, input.Path, input.TargetPath))
+            .ToArray();
 
         (DirectoryItem?, ConflictItem?) CreateCopyItem(DirectoryItem item, string path, string targetPath)
         {
@@ -146,24 +149,6 @@ static partial class Directory
             return (updatedItem, updatedItem != null && conflict != null ? ConflictItem.Create(updatedItem, conflict) : null);
         }
 
-        //     fn create_copy_item(item: DirectoryItem, path: &str, target_path: &str)->Result<(Option<DirectoryItem>, Option<ConflictItem>), RequestError> { 
-        //      let updated_item = match fs::metadata(PathBuf::from(path).join(&item.name)) {
-        //             Ok (meta) => Ok(Some(update_directory_item(item.copy(), &meta))),
-        //         Err (err) if err.kind() == ErrorKind::NotFound => Ok(None),
-        //         Err (err) => Err(err)
-        //       }?;
-
-        //     let conflict = updated_item.as_ref().and_then(|n| {
-        //         match fs::metadata(PathBuf::from(target_path).join(&n.name)) {
-        //             Ok (meta) => Some(ConflictItem::from(path, target_path, &n, &meta)),
-        //             _ => None,
-        //         }
-        //     });
-
-        //     Ok((updated_item, conflict))
-        // }
-
-
 
         //             .map(|di|create_copy_item(di, &input.path, &input.target_path))
         //             .collect::<Result<Vec<_>, RequestError>>()?;
@@ -172,17 +157,16 @@ static partial class Directory
         //     let conflicts: Vec<ConflictItem> = conflicts.into_iter().filter_map(|f|f).collect();
         //     Ok(CopyItemResult { items, conflicts })        
         return Error<CopyItemResult, RequestError>(new RequestError(245, "Nein"));
-    }
 
-    public static IEnumerable<DirectoryItem> FlattenDirectories(string path, DirectoryItem[] items)
-        => items.SelectMany(n => n.IsDirectory ? UnpackDirectory(path, n.Name) : [n]);
+        IEnumerable<DirectoryItem> FlattenDirectories(IEnumerable<DirectoryItem> items)
+            => items.SelectMany(n => n.IsDirectory ? UnpackDirectory(input.Path, n.Name) : [n]);
 
-    static DirectoryItem[] UnpackDirectory(string path, string subPath)
+        IEnumerable<DirectoryItem> UnpackDirectory(string path, string subPath)
             => path
                 .AppendPath(subPath)
                 .CreateDirectoryInfo()
-                .Pipe(n => GetFilesResult(n, false))
-                .Items;
+                .Pipe(n => FlattenDirectories(GetFilesResult(n, true).Items.Select(n => n with { Name = subPath.AppendPath(n.Name)})));
+    }
 
     public static Result<Nothing, RequestError> CreateFolder(CreateFolderInput input)
         => Try(
