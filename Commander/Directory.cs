@@ -132,32 +132,47 @@ static partial class Directory
 
         var conflict_items =
             FlattenDirectories(input.Path, input.Items);
-//             .into_iter()
-//             .map(|di|create_copy_item(di, &input.path, &input.target_path))
-//             .collect::<Result<Vec<_>, RequestError>>()?;
-//     let (items, conflicts): (Vec<Option<DirectoryItem>>, Vec<Option<ConflictItem>>) = conflict_items.into_iter().unzip();
-//     let items: Vec<DirectoryItem> = items.into_iter().filter_map(|f|f).collect();
-//     let conflicts: Vec<ConflictItem> = conflicts.into_iter().filter_map(|f|f).collect();
-//     Ok(CopyItemResult { items, conflicts })        
+
+        (DirectoryItem?, ConflictItem?) CreateCopyItem(DirectoryItem item, string path, string targetPath)
+        {
+            var updatedItem = Try(
+                () => DirectoryItem.CreateFileItem(new FileInfo(path.AppendPath(item.Name))),
+                e => IOErrorType.PathNotFound.ToError())
+                    .ToNullable();
+            var conflict = Try(
+                () => DirectoryItem.CreateFileItem(new FileInfo(targetPath.AppendPath(item.Name))),
+                e => IOErrorType.PathNotFound.ToError())
+                    .ToNullable();
+            return (updatedItem, updatedItem != null && conflict != null ? ConflictItem.Create(updatedItem, conflict) : null);
+        }
+
+        //     fn create_copy_item(item: DirectoryItem, path: &str, target_path: &str)->Result<(Option<DirectoryItem>, Option<ConflictItem>), RequestError> { 
+        //      let updated_item = match fs::metadata(PathBuf::from(path).join(&item.name)) {
+        //             Ok (meta) => Ok(Some(update_directory_item(item.copy(), &meta))),
+        //         Err (err) if err.kind() == ErrorKind::NotFound => Ok(None),
+        //         Err (err) => Err(err)
+        //       }?;
+
+        //     let conflict = updated_item.as_ref().and_then(|n| {
+        //         match fs::metadata(PathBuf::from(target_path).join(&n.name)) {
+        //             Ok (meta) => Some(ConflictItem::from(path, target_path, &n, &meta)),
+        //             _ => None,
+        //         }
+        //     });
+
+        //     Ok((updated_item, conflict))
+        // }
+
+
+
+        //             .map(|di|create_copy_item(di, &input.path, &input.target_path))
+        //             .collect::<Result<Vec<_>, RequestError>>()?;
+        //     let (items, conflicts): (Vec<Option<DirectoryItem>>, Vec<Option<ConflictItem>>) = conflict_items.into_iter().unzip();
+        //     let items: Vec<DirectoryItem> = items.into_iter().filter_map(|f|f).collect();
+        //     let conflicts: Vec<ConflictItem> = conflicts.into_iter().filter_map(|f|f).collect();
+        //     Ok(CopyItemResult { items, conflicts })        
         return Error<CopyItemResult, RequestError>(new RequestError(245, "Nein"));
     }
-
-//     fn create_copy_item(item: DirectoryItem, path: &str, target_path: &str)->Result<(Option<DirectoryItem>, Option<ConflictItem>), RequestError> { 
-//     let updated_item = match fs::metadata(PathBuf::from(path).join(&item.name)) {
-//         Ok (meta) => Ok(Some(update_directory_item(item.copy(), &meta))),
-//         Err (err) if err.kind() == ErrorKind::NotFound => Ok(None),
-//         Err (err) => Err(err)
-//     }?;
-
-//     let conflict = updated_item.as_ref().and_then(|n| {
-//         match fs::metadata(PathBuf::from(target_path).join(&n.name)) {
-//             Ok (meta) => Some(ConflictItem::from(path, target_path, &n, &meta)),
-//             _ => None,
-//         }
-//     });
-
-//     Ok((updated_item, conflict))
-// }
 
     public static IEnumerable<DirectoryItem> FlattenDirectories(string path, DirectoryItem[] items)
         => items.SelectMany(n => n.IsDirectory ? UnpackDirectory(path, n.Name) : [n]);
@@ -275,7 +290,11 @@ record GetExtendedItemsResult(IEnumerable<ExtendedItem> ExtendedItems, string Pa
 record CreateFolderInput(string Path, string Name);
 record DeleteItemsParam(string Path, string[] Names);
 record CheckCopyItems(string Path, string TargetPath, DirectoryItem[] Items);
-record ConflictItem(string Name, string? IconPath, long Size, DateTime? Time, long TargetSize, DateTime? TaretTime);
+record ConflictItem(string Name, string? IconPath, long Size, DateTime? Time, long TargetSize, DateTime? TargetTime)
+{
+    public static ConflictItem Create(DirectoryItem item, DirectoryItem source)
+        => new(item.Name, item.IconPath, source.Size, source.Time, item.Size, item.Time);
+};
 record CopyItemResult(DirectoryItem[] Items, ConflictItem[] Conflicts);
 
 
@@ -323,4 +342,13 @@ static class Extensions2
             file.Position = 0;
         }
     }
+
+    public static T? ToNullable<T, TE>(this Result<T, TE> result)
+        where T : notnull
+        where TE : notnull
+    {
+#nullable disable
+        return result.Match(n => n, e => default);
+#nullable enable
+    }         
 }
