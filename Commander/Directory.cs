@@ -131,41 +131,48 @@ static partial class Directory
 
 
 
-        var conflict_items =
+        var conflictItems =
             FlattenDirectories(input.Items)
             .Select(n => CreateCopyItem(n, input.Path, input.TargetPath))
+            .SelectFilterNull(n => n.Item1 != null ? n : null)
             .ToArray();
+
 
         (DirectoryItem?, ConflictItem?) CreateCopyItem(DirectoryItem item, string path, string targetPath)
         {
             var updatedItem = Try(
-                () => DirectoryItem.CreateFileItem(new FileInfo(path.AppendPath(item.Name))),
+                () => DirectoryItem.CreateFileItem(new FileInfo(path.AppendPath(item.Name))) with { Name = item.Name },
                 e => IOErrorType.PathNotFound.ToError())
                     .ToNullable();
             var conflict = Try(
-                () => DirectoryItem.CreateFileItem(new FileInfo(targetPath.AppendPath(item.Name))),
+                () => DirectoryItem.CreateFileItem(new FileInfo(targetPath.AppendPath(item.Name))) with { Name = item.Name },
                 e => IOErrorType.PathNotFound.ToError())
                     .ToNullable();
             return (updatedItem, updatedItem != null && conflict != null ? ConflictItem.Create(updatedItem, conflict) : null);
         }
 
 
-        //             .map(|di|create_copy_item(di, &input.path, &input.target_path))
-        //             .collect::<Result<Vec<_>, RequestError>>()?;
-        //     let (items, conflicts): (Vec<Option<DirectoryItem>>, Vec<Option<ConflictItem>>) = conflict_items.into_iter().unzip();
-        //     let items: Vec<DirectoryItem> = items.into_iter().filter_map(|f|f).collect();
-        //     let conflicts: Vec<ConflictItem> = conflicts.into_iter().filter_map(|f|f).collect();
-        //     Ok(CopyItemResult { items, conflicts })        
         return Error<CopyItemResult, RequestError>(new RequestError(245, "Nein"));
 
         IEnumerable<DirectoryItem> FlattenDirectories(IEnumerable<DirectoryItem> items)
-            => items.SelectMany(n => n.IsDirectory ? UnpackDirectory(input.Path, n.Name) : [n]);
-
+        {
+            var files = items.Where(n => !n.IsDirectory);
+            var subFiles = items.Where(n => n.IsDirectory).SelectMany(n => UnpackDirectory(input.Path, n.Name));
+            return files.Concat(subFiles);
+        }
+            
         IEnumerable<DirectoryItem> UnpackDirectory(string path, string subPath)
             => path
                 .AppendPath(subPath)
                 .CreateDirectoryInfo()
-                .Pipe(n => FlattenDirectories(GetFilesResult(n, true).Items.Select(n => n with { Name = subPath.AppendPath(n.Name)})));
+                .Pipe(n => FlattenDirectories(GetFilesResult(n, true).Items.Select(n =>
+
+{
+    var affe = n with { Name = subPath.AppendPath(n.Name) };
+    Console.WriteLine($"Affe: {affe}");
+    return affe;
+}
+                )));
     }
 
     public static Result<Nothing, RequestError> CreateFolder(CreateFolderInput input)
