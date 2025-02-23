@@ -120,14 +120,12 @@ static partial class Directory
 
         (DirectoryItem?, ConflictItem?) CreateCopyItem(DirectoryItem item, string path, string targetPath)
         {
-            var updatedItem = Try(
-                () => DirectoryItem.CreateFileItem(new FileInfo(path.AppendPath(item.Name))) with { Name = item.Name },
-                e => IOErrorType.PathNotFound.ToError())
-                    .ToNullable();
-            var conflict = Try(
-                () => DirectoryItem.CreateFileItem(new FileInfo(targetPath.AppendPath(item.Name))) with { Name = item.Name },
-                e => IOErrorType.PathNotFound.ToError())
-                    .ToNullable();
+            var updatedItem = DirectoryItem
+                                .CreateMaybeFileItem(new FileInfo(path.AppendPath(item.Name)))
+                                .Pipe(n => n != null ? n with { Name = item.Name } : null);
+            var conflict = DirectoryItem
+                                .CreateMaybeFileItem(new FileInfo(targetPath.AppendPath(item.Name)))
+                                .Pipe(n => n != null ? n with { Name = item.Name } : null);
             return (updatedItem, updatedItem != null && conflict != null ? ConflictItem.Create(updatedItem, conflict) : null);
         }
 
@@ -145,6 +143,9 @@ static partial class Directory
                 .CreateDirectoryInfo()
                 .Pipe(n => FlattenDirectories(GetFilesResult(n, true).Items.Select(n => n with { Name = subPath.AppendPath(n.Name) })));
     }
+
+    public static Result<Empty, RequestError> CopyItems(CopyItems input)
+        => new();
 
     public static Result<Nothing, RequestError> CreateFolder(CreateFolderInput input)
         => Try(
@@ -239,6 +240,16 @@ record DirectoryItem(
             Directory.GetIconPath(info),
             (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden,
             info.LastWriteTime);
+    public static DirectoryItem? CreateMaybeFileItem(FileInfo info)
+        => info.Exists
+            ? new(
+                info.Name,
+                info.Length,
+                false,
+                Directory.GetIconPath(info),
+                (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden,
+                info.LastWriteTime)
+            : null;
 };
 
 record GetExtendedItems(
@@ -252,6 +263,8 @@ record GetExtendedItemsResult(IEnumerable<ExtendedItem> ExtendedItems, string Pa
 record CreateFolderInput(string Path, string Name);
 record DeleteItemsParam(string Path, string[] Names);
 record CheckCopyItems(string Path, string TargetPath, DirectoryItem[] Items);
+record CopyItems(string Path, string TargetPath, CopyItem[] Items, JobType Type);
+record CopyItem(string Name, long Size);
 record ConflictItem(string Name, string? IconPath, long Size, DateTime? Time, long TargetSize, DateTime? TargetTime)
 {
     public static ConflictItem Create(DirectoryItem item, DirectoryItem source)
@@ -259,6 +272,12 @@ record ConflictItem(string Name, string? IconPath, long Size, DateTime? Time, lo
 };
 record CopyItemResult(DirectoryItem[] Items, ConflictItem[] Conflicts);
 
+enum JobType {
+    Copy,
+    Move,
+    CopyToRemote,
+    CopyFromRemote,
+}
 
 // TODO 
 static class Extensions2
@@ -312,5 +331,5 @@ static class Extensions2
 #nullable disable
         return result.Match(n => n, e => default);
 #nullable enable
-    }         
+    }
 }

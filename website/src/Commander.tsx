@@ -67,7 +67,7 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 	const [path, setPath] = useDebouncedState<PathProp>({ path: "", latitude: undefined, longitude: undefined, isDirectory: false }, 200)
 	const [errorText, setErrorText] = useState<string | null>(null)
 	const [statusText, setStatusText] = useState<string | null>(null)
-	const [itemCount, setItemCount] = useState({dirCount: 0, fileCount: 0 })
+	const [itemCount, setItemCount] = useState({ dirCount: 0, fileCount: 0 })
 	const dialog = useContext(DialogContext)
 	// if (dialog)
 	// 	dialog.setCallback(show => WebView.request("showdialog", { show }))
@@ -81,7 +81,6 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 
 		if (!inactive)
 			return
-
 		try {
 			await getCopyController(activeController, inactive.getController())
 				?.copy(move, dialog, id == ID_LEFT, activePath, inactive.getPath(), itemsToCopy, inactive.getItems())
@@ -178,12 +177,12 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 	const onFocusRight = () => activeFolderId.current = ID_RIGHT
 	const [previewMode, setPreviewMode] = useState(PreviewMode.Default)
 
-	const copyItems = useCallback(async (move: boolean) => {
+	const copyItems = async (move: boolean) => {
 		const active = getActiveFolder()
 		const inactive = getInactiveFolder()
 		if (active && inactive)
 			copyItemsToInactive(inactive, move, active.getController(), active.getPath(), active.getSelectedItems(), active.id)
-	}, [copyItemsToInactive])
+	}
 
 	const onMenuAction = useCallback(async (key: string) => {
 		if (key == "REFRESH") 
@@ -226,21 +225,28 @@ const Commander = forwardRef<CommanderHandle, CommanderProps>((_, ref) => {
 			await copyItems(false)
 		else if (key == "MOVE")			
 			await copyItems(true)
-	}, [copyItems, dialog, previewMode])
+	}, [dialog, previewMode])
 
-	menuActionEvents.subscribe(onMenuAction)
-		
-	showPreviewEvents.subscribe(set => {
-		setShowViewer(set)
-		showViewerRef.current = set
-	})
+	useEffect(() => {
+		const subscription = menuActionEvents.subscribe(onMenuAction)
+		return () => subscription.unsubscribe() 
+	}, [onMenuAction])
+			
+	useEffect(() => {
+		const subscription = showPreviewEvents.subscribe(set => {
+			setShowViewer(set)
+			showViewerRef.current = set
+		})
+		return () => subscription.unsubscribe() 
+	}, [onMenuAction])
 
 	// 	copyErrorSubscription.current?.unsubscribe()
 	// 	copyErrorSubscription.current = copyErrorEvents.subscribe(err => showError(err, setErrorText, "Fehler beim Kopieren: "))
 
-	showHiddenEvents.subscribe(set => {
-		setShowHidden(set)
-	})
+	useEffect(() => {
+		const subscription = showHiddenEvents.subscribe(set => setShowHidden(set))
+		return () => subscription.unsubscribe() 
+	}, [onMenuAction])
 
 	useEffect(() => {
 		folderLeft.current?.refresh(showHidden)

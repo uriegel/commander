@@ -26,6 +26,7 @@ ws.onopen = () => console.log("global event sink opened")
 ws.onclose = () => console.log("global event sink closed")
 ws.onmessage = e => {
     const evt = JSON.parse(e.data) as Event
+    console.log("Event gekommen:", evt)
     switch (evt.eventType) {
         case EventType.MenuAction:
             if (evt.menuAction)

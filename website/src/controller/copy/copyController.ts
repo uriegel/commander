@@ -41,7 +41,7 @@ export class CopyController {
     
     async copy(move: boolean, dialog: DialogHandle, fromLeft: boolean, sourcePath: string, targetPath: string,
         items: FolderViewItem[], targetFolderItems: FolderViewItem[]): Promise<void> {
-        
+        console.log("Will kopieren")
         if (sourcePath == targetPath)
             throw new RequestError(IOError.AlreadyExists, "")
         
@@ -70,6 +70,9 @@ export class CopyController {
     
         const defNo = copyItems.conflicts.length > 0 && copyItems.conflicts.filter(filterNoOverwrite).length > 0
         
+        if (!dialog)
+            console.log("Kann nich")
+
         const res = await dialog.show({
             text: `${text} (${totalSize?.byteCountToString()})`,
             slide: fromLeft ? Slide.Left : Slide.Right,
