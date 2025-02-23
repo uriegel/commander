@@ -11,7 +11,7 @@ public static class HeaderBar
     public static void Build(WebView webView, ApplicationHandle app, WindowHandle win)
     {
         using var builder = Builder.FromDotNetResource("headerbar");
-        win.Titlebar(builder.GetWidget("headerbar"));
+        win.Titlebar(builder.GetWidget<HeaderBarHandle>("headerbar"));
 
         // TODO Add to descriptions in Gtk4DotNet:
         // TODO <Ctrl>F3  b e f o r e  <F3> !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
