@@ -31,6 +31,8 @@ static class Requests
                     await request.SendJsonAsync(Directory.CheckCopyItems((await request.DeserializeAsync<CheckCopyItems>())!));
                     break;
                 case "/json/copyitems":
+                    // TODO copy, when copy again: es ist bereits eine Hintergrundaktion im Gange
+                    // TODO prevent closing when copying
                     await request.SendJsonAsync(Directory.CopyItems((await request.DeserializeAsync<CopyItems>())!));
                     break;
                 case "/json/gettrackinfo":
