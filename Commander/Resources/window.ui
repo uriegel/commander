@@ -61,7 +61,7 @@
             <attribute name="action">win.move</attribute>
           </item>
           <item>
-            <attribute name="label">_Lschen</attribute>
+            <attribute name="label">_Löschen</attribute>
             <attribute name="action">win.delete</attribute>
           </item>
         </section>
@@ -80,7 +80,7 @@
             <attribute name="action">win.favorites</attribute>
           </item>
           <item>
-            <attribute name="label">_Gleichen Ordner ffnen</attribute>
+            <attribute name="label">_Gleichen Ordner öffnen</attribute>
             <attribute name="action">win.adaptpath</attribute>
           </item>
         </section>
