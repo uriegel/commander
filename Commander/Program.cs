@@ -29,7 +29,7 @@ Globals.WebView =
     .DevTools()
     .DefaultContextMenuDisabled()
 #if Linux
-    .WithHeaderbar(Linux.HeaderBar.Build)
+    .FromResourceTemplate("template", Linux.CustomWindow.Register)
 #elif Windows
     .WithoutNativeTitlebar()
     .ResourceIcon("icon")

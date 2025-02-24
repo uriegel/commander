@@ -43,7 +43,7 @@
     <DefineConstants>Linux</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="WebWindowNetCore" Version="11.0.15-beta-15" />
+    <PackageReference Include="WebWindowNetCore" Version="11.0.16-beta-16" />
     <PackageReference Include="WebServerLight" Version="0.0.15-beta-15" />
   </ItemGroup>
   <ItemGroup>
@@ -81,8 +81,8 @@
     <EmbeddedResource Include="./Resources/geticon.py">
       <LogicalName>geticon</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="./Resources/headerbar.ui">
-      <LogicalName>headerbar</LogicalName>
+    <EmbeddedResource Include="./Resources/window.ui">
+      <LogicalName>template</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
 
