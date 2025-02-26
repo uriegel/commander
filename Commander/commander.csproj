@@ -43,7 +43,7 @@
     <DefineConstants>Linux</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="WebWindowNetCore" Version="11.0.18-beta-18" />
+    <PackageReference Include="WebWindowNetCore" Version="11.0.19-beta-19" />
     <PackageReference Include="WebServerLight" Version="0.0.15-beta-15" />
   </ItemGroup>
   <ItemGroup>
