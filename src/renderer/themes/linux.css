@@ -52,7 +52,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-    :root .adwaitaTheme {
+    :root .linuxTheme {
         --color: lightgray;
         background-color: #2f2f2f; 
         --drag-highlight: darkgreen;
