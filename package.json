@@ -34,7 +34,7 @@
       "icon": "icons",
       "desktop": {
         "entry": {
-          "StartupWMClass": "Commander"
+          "StartupWMClass": "commander"
         }
       }
     }
