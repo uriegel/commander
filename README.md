@@ -2,7 +2,7 @@
 A Norton Commander clone based on Electron and React with Typescript
 
 TODO
-* web menu
+* show dev tools
 * panes
 * show preview 
 * CommanderView

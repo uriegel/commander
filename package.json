@@ -4,7 +4,6 @@
   "description": "A Norton Commander clone based on Electron and React with Typescript",
   "main": "dist/main/index.js",
   "type": "module",
-
   "author": {
     "name": "Uwe Riegel",
     "email": "uriegel@hotmail.de"
@@ -13,8 +12,8 @@
     "appId": "de.uriegel.commander",
     "productName": "Commander",
     "removePackageScripts": true,
-    "asar": true,            
-    "asarUnpack": [],    
+    "asar": true,
+    "asarUnpack": [],
     "files": [
       "dist/main/**/*",
       "dist/renderer/**/*",
@@ -24,12 +23,15 @@
       "buildResources": "resources"
     },
     "win": {
-      "target": "nsis"      
+      "target": "nsis"
     },
     "linux": {
-      "target": ["AppImage", "deb"]
+      "target": [
+        "AppImage",
+        "deb"
+      ]
     }
-  },  
+  },
   "scripts": {
     "dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && cross-env VITE_DEV_SERVER_URL=http://localhost:5173 electron .\"",
     "build": "vite build && tsc -p tsconfig.json",
@@ -57,6 +59,7 @@
     "cross-env": "^10.1.0",
     "electron": "^38.2.0",
     "electron-builder": "^26.0.20",
+    "menubar-react": "^2.2.0",
     "typescript": "^5.9.3",
     "vite": "^7.1.7",
     "wait-on": "^9.0.1"
