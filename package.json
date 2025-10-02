@@ -1,0 +1,64 @@
+{
+  "name": "commander",
+  "version": "1.0.0",
+  "description": "A Norton Commander clone based on Electron and React with Typescript",
+  "main": "dist/main/index.js",
+  "type": "module",
+
+  "author": {
+    "name": "Uwe Riegel",
+    "email": "uriegel@hotmail.de"
+  },
+  "build": {
+    "appId": "de.uriegel.commander",
+    "productName": "Commander",
+    "removePackageScripts": true,
+    "asar": true,            
+    "asarUnpack": [],    
+    "files": [
+      "dist/main/**/*",
+      "dist/renderer/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "buildResources": "resources"
+    },
+    "win": {
+      "target": "nsis"      
+    },
+    "linux": {
+      "target": ["AppImage", "deb"]
+    }
+  },  
+  "scripts": {
+    "dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && cross-env VITE_DEV_SERVER_URL=http://localhost:5173 electron .\"",
+    "build": "vite build && tsc -p tsconfig.json",
+    "dist": "npm run build && electron-builder",
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uriegel/commander.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/uriegel/commander/issues"
+  },
+  "homepage": "https://github.com/uriegel/commander#readme",
+  "dependencies": {
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.16",
+    "@types/react-dom": "^19.1.11",
+    "@vitejs/plugin-react": "^5.0.4",
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
+    "electron": "^38.2.0",
+    "electron-builder": "^26.0.20",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.7",
+    "wait-on": "^9.0.1"
+  }
+}
