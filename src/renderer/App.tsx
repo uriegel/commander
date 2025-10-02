@@ -1,5 +1,20 @@
-import React from "react"
+import React, { useRef } from "react"
+import Commander, { CommanderHandle } from "./components/Commander"
+import './themes/linux.css'
+import './App.css'
 
-export default function App() {
-	return <h1>Hello from React + TypeScript + Electron!</h1>
+const App = () => {
+
+	const commander = useRef(null as CommanderHandle | null)
+	
+	const onKeyDown = (evt: React.KeyboardEvent) =>
+		commander.current?.onKeyDown(evt)
+
+	return (
+		<div className="App linuxTheme" onKeyDown={onKeyDown}>
+			<Commander ref={commander} ></Commander>
+		</div>
+	)
 }
+
+export default App

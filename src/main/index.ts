@@ -13,10 +13,11 @@ const createWindow = () => {
 	mainWindow = new BrowserWindow({
 		width: 800,
 		height: 600,
-		webPreferences: {
-			preload: path.join(__dirname, "preload.js"),
-		},
+		// webPreferences: {
+		// 	preload: path.join(__dirname, "preload.js"),
+		// },
 	})
+	mainWindow.removeMenu()
 
   	if (process.env.VITE_DEV_SERVER_URL) {
     	mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL)
