@@ -47,7 +47,7 @@ const createWindow = () => {
 		width: 800,
 		height: 600,
 		//icon: path.join(__dirname, '../renderer/kirk.png')
-		//icon: "/home/uwe/Projekte/WindowsCommander/Commander/Resources/kirk.png"
+		icon: path.join(__dirname, "../../icons/64x64.png")
 		// webPreferences: {
 		// 	preload: path.join(__dirname, "preload.js"),
 		// },
