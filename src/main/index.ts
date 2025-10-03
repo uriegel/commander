@@ -15,22 +15,15 @@ protocol.registerSchemesAsPrivileged([
 		privileges: {
 			standard: true, secure: true, supportFetchAPI: true	
 		}
+	}, 	{
+		scheme: 'json',
+		privileges: {
+			standard: true, secure: true, supportFetchAPI: true	
+		}
 	}
 ])
 
 const createWindow = () => {
-
-	(async () => {
-		console.log("Test")
-		var drives = await getDrives()
-		console.log("Test", drives)
-
-		var buffer = await getIcon(".wav")
-		
-		console.log("Buffer", buffer.length)
-	})()
-
-
 
 	protocol.handle("cmd", async req => {
 		if (req.method == 'POST') {
@@ -38,6 +31,8 @@ const createWindow = () => {
 				case "cmd://show_dev_tools/":
 			    	mainWindow?.webContents.openDevTools()
 					return new Response()
+				
+				
 				default:
 					const text = await req.text()
 					console.log("POST", text)
@@ -48,13 +43,37 @@ const createWindow = () => {
 						})
 			}
 		} else
-			return new Response('<h1>Hello from GET</h1>', {
-				headers: {
-					'Content-Type': 'text/html' 
-					
-				}
-  		});
+			throw "only POST!"
 	})
+	protocol.handle("json", async req => {
+		if (req.method == 'POST') {
+			switch (req.url) {
+				case "json://getdrives/":
+					const text = await req.text()
+					
+					// TODO to requsts.ts
+		console.log("Test")
+		var drives = await getDrives()
+		console.log("Test", drives)
+
+		var buffer = await getIcon(".wav")
+		
+		console.log("Buffer", buffer.length)
+
+
+					return writeJson({ ok: true, received: text })
+				default:
+					return writeJson({ ok: false })
+			}
+		} else
+			throw "only POST!"
+	})
+
+	function writeJson(msg: any) {
+		return new Response(JSON.stringify(msg), {
+			headers: { 'Content-Type': 'application/json' }
+		})
+	}
 
 	mainWindow = new BrowserWindow({
 		width: 800,

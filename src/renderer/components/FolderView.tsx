@@ -1,6 +1,7 @@
-import { forwardRef, useCallback, useRef, useState } from "react"
+import { forwardRef, useCallback, useEffect, useRef, useState } from "react"
 import VirtualTable, { type OnSort, type SelectableItem, type TableColumns, type VirtualTableHandle } from "virtual-table-react"
 import './FolderView.css'
+import { getItemsProvider } from "../items-provider/provider"
 
 // TODO discriminated union, share with main process, SelectableItem is empty there
 // inherit from FolderViewItemBase
@@ -39,6 +40,42 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const [items, setStateItems] = useState([] as FolderViewItem[])
     const [path, setPath] = useState("")
+
+    useEffect(() => {
+        changePath(localStorage.getItem(`${id}-lastPath`) ?? "root", false, false)
+        // eslint-disable-next-line react-hooks/exhaustive-deps        
+    }, []) 
+
+    const changePath = useCallback(async (path?: string, forceShowHidden?: boolean, mount?: boolean, latestPath?: string, fromBacklog?: boolean, checkPosition?: (checkItem: FolderViewItem) => boolean) => {
+        const itemsProvider = getItemsProvider(path)
+        const result = itemsProvider.getItems(id, path, forceShowHidden === undefined ? showHidden : forceShowHidden, mount)
+        // if (result.cancelled)
+        //     return
+        // restrictionView.current?.reset()
+        // if (result.controller) {
+        //     controller.current = getController(result.controller)
+        //     virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
+        // }
+        // if (result.path)
+        //     setPath(result.path)
+        // const items = result.items && result.items?.length > 0 ? result.items : controller.current.getItems()
+        // const newItems = controller.current.sort(items, sortIndex.current, sortDescending.current)
+        // setItems(newItems, result.dirCount, result.fileCount)
+        // getExtended({ id: result.id, folderId: id })
+        // const pos = latestPath
+        //             ? newItems.findIndex(n => n.name == latestPath)
+        //             : checkPosition
+        //             ? newItems.findIndex(n => checkPosition(n))
+        //             : 0
+        // virtualTable.current?.setInitialPosition(pos, newItems.length)
+        // if (result.path) {
+        //     localStorage.setItem(`${id}-lastPath`, result.path)
+        //     if (!fromBacklog)
+        //         history.current.set(result.path)
+        // }
+        //    }, [id, setItems, setWidths, showHidden])
+    }, [id, showHidden])
+
     
     // const onSort = async (sort: OnSort) => {
     //     sortIndex.current = sort.isSubColumn ? 10 : sort.column

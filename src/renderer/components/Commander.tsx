@@ -7,6 +7,7 @@ import MediaPlayer from "./viewers/MediaPlayer"
 import FileViewer from "./viewers/FileViewer"
 import TrackViewer from "./viewers/TrackViewer"
 import FolderView, { FolderViewHandle, FolderViewItem } from "./FolderView"
+import { cmdRequest } from "../requests/requests"
 
 const ID_LEFT = "left"
 const ID_RIGHT = "right"
@@ -63,17 +64,8 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
             case "REFRESH":
                 // TODO getActiveFolder()?.refresh()
                 break
-            case "SHOW_DEV_TOOLS":
-                // const msg = {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({
-                //         test: "Ein Test",
-                //         id: 67
-                //     })
-                // }
-                //const response = await fetch(`cmd://${key}`, msg)
-                await fetch(`cmd://${key}`, { method: 'POST' })
+			case "SHOW_DEV_TOOLS":
+				await cmdRequest(key)
                 break
         }
         // TODO }, [getActiveFolder, getInactiveFolder, previewMode, showViewer])
