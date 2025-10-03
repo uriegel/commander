@@ -2,12 +2,8 @@ import { forwardRef, useCallback, useEffect, useRef, useState } from "react"
 import VirtualTable, { type OnSort, type SelectableItem, type TableColumns, type VirtualTableHandle } from "virtual-table-react"
 import './FolderView.css'
 import { getItemsProvider } from "../items-provider/provider"
+import { Item } from "../../items"
 
-// TODO discriminated union, share with main process, SelectableItem is empty there
-// inherit from FolderViewItemBase
-export interface FolderViewItem extends SelectableItem {
-}
-    
 export type FolderViewHandle = {
     id: string
     setFocus: ()=>void
@@ -25,7 +21,7 @@ interface FolderViewProp {
     onFocus: () => void
     onItemChanged: (path: string, isDir: boolean, latitude?: number, longitude?: number) => void
     // onItemsChanged: (count: ItemCount)=>void
-    onEnter: (item: FolderViewItem)=>void
+    onEnter: (item: Item)=>void
     setStatusText: (text?: string) => void
     //dialog: DialogHandle
 }
@@ -36,9 +32,9 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     
     const input = useRef<HTMLInputElement | null>(null)
 
-    const virtualTable = useRef<VirtualTableHandle<FolderViewItem>>(null)
+    const virtualTable = useRef<VirtualTableHandle<Item>>(null)
 
-    const [items, setStateItems] = useState([] as FolderViewItem[])
+    const [items, setStateItems] = useState([] as Item[])
     const [path, setPath] = useState("")
 
     useEffect(() => {
@@ -46,7 +42,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         // eslint-disable-next-line react-hooks/exhaustive-deps        
     }, []) 
 
-    const changePath = useCallback(async (path?: string, forceShowHidden?: boolean, mount?: boolean, latestPath?: string, fromBacklog?: boolean, checkPosition?: (checkItem: FolderViewItem) => boolean) => {
+    const changePath = useCallback(async (path?: string, forceShowHidden?: boolean, mount?: boolean, latestPath?: string, fromBacklog?: boolean, checkPosition?: (checkItem: Item) => boolean) => {
         const itemsProvider = getItemsProvider(path)
         const result = itemsProvider.getItems(id, path, forceShowHidden === undefined ? showHidden : forceShowHidden, mount)
         // if (result.cancelled)
@@ -92,7 +88,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     //     onItemChanged(controller.current.appendPath(path, item.name),
     //         item.isDirectory == true, item.exifData?.latitude, item.exifData?.longitude),
     // [path, onItemChanged])         
-    const onPositionChanged = useCallback((item: FolderViewItem) => {},
+    const onPositionChanged = useCallback((item: Item) => {},
     [path])         
 
     // TODO controller id

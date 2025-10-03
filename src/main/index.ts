@@ -2,7 +2,7 @@ import { app, BrowserWindow, protocol } from "electron"
 import * as path from "path"
 import { fileURLToPath } from "url"
 import { dirname } from "path"
-import { getDrives, getIcon } from 'filesystem-utilities'
+import { getDrives, getIcon, getFiles } from 'filesystem-utilities'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -31,8 +31,6 @@ const createWindow = () => {
 				case "cmd://show_dev_tools/":
 			    	mainWindow?.webContents.openDevTools()
 					return new Response()
-				
-				
 				default:
 					const text = await req.text()
 					console.log("POST", text)
@@ -55,6 +53,9 @@ const createWindow = () => {
 		console.log("Test")
 		var drives = await getDrives()
 		console.log("Test", drives)
+					
+		const files = await getFiles("/home/uwe")
+		console.log("files", files)
 
 		var buffer = await getIcon(".wav")
 		

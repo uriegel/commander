@@ -6,8 +6,9 @@ import LocationViewer from "./viewers/LocationViewer"
 import MediaPlayer from "./viewers/MediaPlayer"
 import FileViewer from "./viewers/FileViewer"
 import TrackViewer from "./viewers/TrackViewer"
-import FolderView, { FolderViewHandle, FolderViewItem } from "./FolderView"
+import FolderView, { FolderViewHandle } from "./FolderView"
 import { cmdRequest } from "../requests/requests"
+import { Item } from "../../items"
 
 const ID_LEFT = "left"
 const ID_RIGHT = "right"
@@ -88,7 +89,7 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 			setItemProperty({ path, isDirectory, latitude, longitude })
 	, [])
 	
-	const onEnter = (item: FolderViewItem) => {
+	const onEnter = (item: Item) => {
 		// getActiveFolder()?.processEnter(item, getInactiveFolder()?.getPath())
 	}
 	
