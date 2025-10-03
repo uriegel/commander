@@ -30,12 +30,10 @@ interface RemotesItem extends Item {
 }
 
 interface ExtendedRenameItem extends Item {
-    kind:       3
     newName?:   string 
 }
 
 interface FavoritesItem extends Item {
-    kind:   4
     path?:  string
 }
 
