@@ -1,5 +1,25 @@
 import { forwardRef, useCallback, useImperativeHandle, useState } from "react"
 import Menu from "./Menu"
+import ViewSplit from "view-split-react"
+import PictureViewer from "./viewers/PictureViewer"
+import LocationViewer from "./viewers/LocationViewer"
+import MediaPlayer from "./viewers/MediaPlayer"
+import FileViewer from "./viewers/FileViewer"
+import TrackViewer from "./viewers/TrackViewer"
+
+const PreviewMode = {
+    Default: 'Default',
+    Location: 'Location',
+    Both: 'Both'
+}
+type PreviewMode = (typeof PreviewMode)[keyof typeof PreviewMode]
+
+interface ItemProperty {
+	path: string
+	latitude?: number 
+	longitude?: number
+	isDirectory: boolean
+}
 
 export type CommanderHandle = {
     onKeyDown: (evt: React.KeyboardEvent)=>void
@@ -12,6 +32,9 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 
     const [showViewer, setShowViewer] = useState(false)    
     const [showHidden, setShowHidden] = useState(false)
+    const [itemProperty, setItemProperty] = useState<ItemProperty>({ path: "", latitude: undefined, longitude: undefined, isDirectory: false })
+
+    const [previewMode, setPreviewMode] = useState(PreviewMode.Default)
 
     const onKeyDown = (evt: React.KeyboardEvent) => {
         if (evt.code == "Tab" && !evt.shiftKey) {
@@ -52,6 +75,51 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 	const toggleShowViewer = () => {
 		// showViewerRef.current = !showViewerRef.current
 		// setShowViewer(showViewerRef.current)
+    }
+
+	// const FolderLeft = () => (
+	// 	<FolderView ref={folderLeft} id={ID_LEFT} onFocus={onFocusLeft} onItemChanged={onItemChanged} onItemsChanged={setItemCount}
+	// 		onEnter={onEnter} showHidden={showHidden} setStatusText={setStatusTextLeft} dialog={dialog} />
+	// )
+	// const FolderRight = () => (
+	// 	<FolderView ref={folderRight} id={ID_RIGHT} onFocus={onFocusRight} onItemChanged={onItemChanged} onItemsChanged={setItemCount}
+	// 		onEnter={onEnter} showHidden={showHidden} setStatusText={setStatusTextRight} dialog={dialog} />
+	// )
+	const FolderLeft = () => (
+		<div />
+	)
+	const FolderRight = () => (
+		<div />
+	)
+
+	const VerticalSplitView = () => (
+        <ViewSplit firstView={FolderLeft} secondView={FolderRight}></ViewSplit>
+    )
+
+    const ViewerView = () => {
+		const ext = itemProperty
+					.path
+					.getExtension()
+					.toLocaleLowerCase()
+		
+		return ext == ".jpg" || ext == ".png" || ext == ".jpeg"
+		 	? previewMode == PreviewMode.Default
+			? (<PictureViewer path={itemProperty.path} latitude={itemProperty.latitude} longitude={itemProperty.longitude} />)
+			: previewMode == PreviewMode.Location && itemProperty.latitude && itemProperty.longitude
+			? (<LocationViewer latitude={itemProperty.latitude} longitude={itemProperty.longitude} />)
+			: itemProperty.latitude && itemProperty.longitude
+			? <div className='bothViewer'>
+					<PictureViewer path={itemProperty.path} latitude={itemProperty.latitude} longitude={itemProperty.longitude} />
+					<LocationViewer latitude={itemProperty.latitude} longitude={itemProperty.longitude} />
+				</div>
+			:(<PictureViewer path={itemProperty.path} latitude={itemProperty.latitude} longitude={itemProperty.longitude} />)
+		 	: ext == ".mp3" || ext == ".mp4" || ext == ".mkv" || ext == ".wav"
+		 	? (<MediaPlayer path={itemProperty.path} />)
+		 	: ext == ".pdf"
+		 	? (<FileViewer path={itemProperty.path} />)
+		 	: ext == ".gpx"
+		 	? (<TrackViewer path={itemProperty.path} />)
+         	: (<div></div>)
 	}
     
     return (
@@ -60,7 +128,7 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 				showHidden={showHidden} toggleShowHidden={toggleShowHiddenAndRefresh}
                 showViewer={showViewer} toggleShowViewer={toggleShowViewer}
             />            
-            <div>Kommandant</div>
+            <ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
         </>
     )
 })
