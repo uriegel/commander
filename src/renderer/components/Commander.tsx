@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useImperativeHandle, useState } from "react"
+import { forwardRef, useCallback, useImperativeHandle, useRef, useState } from "react"
 import Menu from "./Menu"
 import ViewSplit from "view-split-react"
 import PictureViewer from "./viewers/PictureViewer"
@@ -34,7 +34,9 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
     const [showHidden, setShowHidden] = useState(false)
     const [itemProperty, setItemProperty] = useState<ItemProperty>({ path: "", latitude: undefined, longitude: undefined, isDirectory: false })
 
-    const [previewMode, setPreviewMode] = useState(PreviewMode.Default)
+	const [previewMode, setPreviewMode] = useState(PreviewMode.Default)
+	
+	const showViewerRef = useRef(false)
 
     const onKeyDown = (evt: React.KeyboardEvent) => {
         if (evt.code == "Tab" && !evt.shiftKey) {
@@ -73,8 +75,8 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 	}
 	
 	const toggleShowViewer = () => {
-		// showViewerRef.current = !showViewerRef.current
-		// setShowViewer(showViewerRef.current)
+		showViewerRef.current = !showViewerRef.current
+		setShowViewer(showViewerRef.current)
     }
 
 	// const FolderLeft = () => (
