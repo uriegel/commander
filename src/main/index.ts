@@ -50,19 +50,17 @@ const createWindow = () => {
 					const text = await req.text()
 					
 					// TODO to requsts.ts
-		console.log("Test")
-		var drives = await getDrives()
-		console.log("Test", drives)
+					var drives = await getDrives()
 					
-		const files = await getFiles("/home/uwe")
-		console.log("files", files)
+		// const files = await getFiles("/home/uwe")
+		// console.log("files", files)
 
-		var buffer = await getIcon(".wav")
+		// var buffer = await getIcon(".wav")
 		
-		console.log("Buffer", buffer.length)
+		// console.log("Buffer", buffer.length)
 
 
-					return writeJson({ ok: true, received: text })
+					return writeJson({ drives })
 				default:
 					return writeJson({ ok: false })
 			}

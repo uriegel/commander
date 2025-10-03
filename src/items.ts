@@ -9,7 +9,7 @@ export interface Item extends SelectableItem {
     isDirectory?: boolean    
 }
 
-interface RootItem extends Item {
+export interface RootItem extends Item {
     description?:  string
     mountPoint?:   string
     isMounted?:    boolean
@@ -17,23 +17,23 @@ interface RootItem extends Item {
     //    driveKind?:    DriveKind    
 }
 
-interface FileItem extends Item {
+export interface FileItem extends Item {
     time?:      string
 //    exifData?: ExifData
     isHidden?:  boolean
 }
 
-interface RemotesItem extends Item {
+export interface RemotesItem extends Item {
     ipAddress?: string
     isAndroid?: boolean
     isNew?:     boolean
 }
 
-interface ExtendedRenameItem extends Item {
+export interface ExtendedRenameItem extends Item {
     newName?:   string 
 }
 
-interface FavoritesItem extends Item {
+export interface FavoritesItem extends Item {
     path?:  string
 }
 

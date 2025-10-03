@@ -44,7 +44,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const changePath = useCallback(async (path?: string, forceShowHidden?: boolean, mount?: boolean, latestPath?: string, fromBacklog?: boolean, checkPosition?: (checkItem: Item) => boolean) => {
         const itemsProvider = getItemsProvider(path)
-        const result = itemsProvider.getItems(id, path, forceShowHidden === undefined ? showHidden : forceShowHidden, mount)
+        const result = await itemsProvider.getItems(id, path, forceShowHidden === undefined ? showHidden : forceShowHidden, mount)
+        console.log("items", result)
         // if (result.cancelled)
         //     return
         // restrictionView.current?.reset()
