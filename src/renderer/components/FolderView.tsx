@@ -2,7 +2,8 @@ import { forwardRef, useCallback, useRef, useState } from "react"
 import VirtualTable, { type OnSort, type SelectableItem, type TableColumns, type VirtualTableHandle } from "virtual-table-react"
 import './FolderView.css'
 
-// TODO discriminated union, share with main process
+// TODO discriminated union, share with main process, SelectableItem is empty there
+// inherit from FolderViewItemBase
 export interface FolderViewItem extends SelectableItem {
 }
     

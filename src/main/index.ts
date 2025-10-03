@@ -2,6 +2,7 @@ import { app, BrowserWindow, protocol } from "electron"
 import * as path from "path"
 import { fileURLToPath } from "url"
 import { dirname } from "path"
+import { getDrives, getIcon } from 'filesystem-utilities'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -18,6 +19,18 @@ protocol.registerSchemesAsPrivileged([
 ])
 
 const createWindow = () => {
+
+	(async () => {
+		console.log("Test")
+		var drives = await getDrives()
+		console.log("Test", drives)
+
+		var buffer = await getIcon(".wav")
+		
+		console.log("Buffer", buffer.length)
+	})()
+
+
 
 	protocol.handle("cmd", async req => {
 		if (req.method == 'POST') {

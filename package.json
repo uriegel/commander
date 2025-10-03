@@ -54,6 +54,7 @@
   },
   "homepage": "https://github.com/uriegel/commander#readme",
   "dependencies": {
+    "filesystem-utilities": "^6.0.3",
     "functional-extensions": "^1.9.17",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
