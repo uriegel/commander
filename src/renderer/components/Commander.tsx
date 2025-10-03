@@ -6,6 +6,10 @@ import LocationViewer from "./viewers/LocationViewer"
 import MediaPlayer from "./viewers/MediaPlayer"
 import FileViewer from "./viewers/FileViewer"
 import TrackViewer from "./viewers/TrackViewer"
+import FolderView, { FolderViewHandle, FolderViewItem } from "./FolderView"
+
+const ID_LEFT = "left"
+const ID_RIGHT = "right"
 
 const PreviewMode = {
     Default: 'Default',
@@ -30,12 +34,20 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
         onKeyDown
     }))
 
-    const [showViewer, setShowViewer] = useState(false)    
+	const folderLeft = useRef<FolderViewHandle>(null)
+	const folderRight = useRef<FolderViewHandle>(null)
+
+	const [showViewer, setShowViewer] = useState(false)    
     const [showHidden, setShowHidden] = useState(false)
     const [itemProperty, setItemProperty] = useState<ItemProperty>({ path: "", latitude: undefined, longitude: undefined, isDirectory: false })
-
+	const [statusTextLeft, setStatusTextLeft] = useState<string | undefined>(undefined)
+	const [statusTextRight, setStatusTextRight] = useState<string | undefined>(undefined)
 	const [previewMode, setPreviewMode] = useState(PreviewMode.Default)
 	
+	const [activeFolderId, setActiveFolderId] = useState(ID_LEFT)
+	const onFocusLeft = () => setActiveFolderId(ID_LEFT)
+	const onFocusRight = () => setActiveFolderId(ID_RIGHT)
+
 	const showViewerRef = useRef(false)
 
     const onKeyDown = (evt: React.KeyboardEvent) => {
@@ -77,21 +89,25 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 	const toggleShowViewer = () => {
 		showViewerRef.current = !showViewerRef.current
 		setShowViewer(showViewerRef.current)
-    }
+	}
+	
+	const onItemChanged = useCallback(
+		(path: string, isDirectory: boolean, latitude?: number, longitude?: number) => 
+			setItemProperty({ path, isDirectory, latitude, longitude })
+	, [])
+	
+	const onEnter = (item: FolderViewItem) => {
+		// getActiveFolder()?.processEnter(item, getInactiveFolder()?.getPath())
+	}
+	
 
-	// const FolderLeft = () => (
-	// 	<FolderView ref={folderLeft} id={ID_LEFT} onFocus={onFocusLeft} onItemChanged={onItemChanged} onItemsChanged={setItemCount}
-	// 		onEnter={onEnter} showHidden={showHidden} setStatusText={setStatusTextLeft} dialog={dialog} />
-	// )
-	// const FolderRight = () => (
-	// 	<FolderView ref={folderRight} id={ID_RIGHT} onFocus={onFocusRight} onItemChanged={onItemChanged} onItemsChanged={setItemCount}
-	// 		onEnter={onEnter} showHidden={showHidden} setStatusText={setStatusTextRight} dialog={dialog} />
-	// )
 	const FolderLeft = () => (
-		<div />
+		<FolderView ref={folderLeft} id={ID_LEFT} onFocus={onFocusLeft} onItemChanged={onItemChanged} onEnter= {onEnter}
+			showHidden={showHidden} setStatusText={setStatusTextLeft} />
 	)
 	const FolderRight = () => (
-		<div />
+		<FolderView ref={folderRight} id={ID_RIGHT} onFocus={onFocusRight} onItemChanged={onItemChanged} onEnter= {onEnter}
+			showHidden={showHidden} setStatusText={setStatusTextRight} />
 	)
 
 	const VerticalSplitView = () => (
