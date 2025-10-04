@@ -2,8 +2,6 @@
 A Norton Commander clone based on Electron and React with Typescript
 
 TODO
-* get drives: filesystem-utilities: ~ count 0, remove
-* get drives: filesystem-utilities: sde
 * get files
 * status bar
 * lint check

@@ -53,5 +53,5 @@ const renderRow = (item: RootItem) => [
     } />),
     item.description ?? "",
     item.mountPoint ?? "",
-    formatSize(item.size)
+    formatSize(item.size || -1)
 ]
