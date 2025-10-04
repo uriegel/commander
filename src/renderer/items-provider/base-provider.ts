@@ -1,5 +1,5 @@
 import { TableColumns } from "virtual-table-react";
-import { Item } from "../../items";
+import { Item } from "../items-provider/items"
 
 export abstract class IItemsProvider {
     abstract readonly id: string

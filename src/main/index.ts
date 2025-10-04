@@ -2,8 +2,9 @@ import { app, BrowserWindow, protocol } from "electron"
 import * as path from "path"
 import { fileURLToPath } from "url"
 import { dirname } from "path"
-import { getDrives, getIcon, getFiles } from 'filesystem-utilities'
 import * as settings from 'electron-settings'
+import { onCmd } from "./cmds.js"
+import { onRequest } from "./requests.js"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -27,53 +28,13 @@ protocol.registerSchemesAsPrivileged([
 const createWindow = () => {
 
 	protocol.handle("cmd", async req => {
-		if (req.method == 'POST') {
-			switch (req.url) {
-				case "cmd://show_dev_tools/":
-			    	mainWindow?.webContents.openDevTools()
-					return new Response()
-				default:
-					const text = await req.text()
-					console.log("POST", text)
-
-					return new Response(JSON.stringify({ ok: true, received: text }),
-						{
-							headers: { 'Content-Type': 'application/json' }
-						})
-			}
-		} else
-			throw "only POST!"
+		if (req.method == 'POST') 
+			onCmd(req, mainWindow)
+		else 
+            console.error(`Cmd only with HTTP method POST allowed`)
+		return new Response()
 	})
-	protocol.handle("json", async req => {
-		if (req.method == 'POST') {
-			switch (req.url) {
-				case "json://getdrives/":
-					const text = await req.text()
-					
-					// TODO to requsts.ts
-					var drives = await getDrives()
-					
-		// const files = await getFiles("/home/uwe")
-		// console.log("files", files)
-
-		// var buffer = await getIcon(".wav")
-		
-		// console.log("Buffer", buffer.length)
-
-
-					return writeJson({ drives })
-				default:
-					return writeJson({ ok: false })
-			}
-		} else
-			throw "only POST!"
-	})
-
-	function writeJson(msg: any) {
-		return new Response(JSON.stringify(msg), {
-			headers: { 'Content-Type': 'application/json' }
-		})
-	}
+	protocol.handle("json", async req => await onRequest(req))
 
 	const bounds = {
 		x: settings.getSync("x") as number,

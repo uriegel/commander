@@ -1,7 +1,7 @@
 import { TableColumns } from "virtual-table-react"
 import { getDrives } from "../requests/requests"
 import { IItemsProvider } from "./base-provider"
-import { Item, RootItem } from "../../items"
+import { Item, RootItem } from "../items-provider/items"
 import IconName, { IconNameType } from "../components/IconName"
 import { formatSize } from "./provider"
 

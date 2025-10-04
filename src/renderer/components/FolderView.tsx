@@ -2,7 +2,7 @@ import { forwardRef, useCallback, useEffect, useRef, useState } from "react"
 import VirtualTable, { type OnSort, type SelectableItem, type TableColumns, type VirtualTableHandle } from "virtual-table-react"
 import './FolderView.css'
 import { getItemsProvider } from "../items-provider/provider"
-import { Item } from "../../items"
+import { Item } from "../items-provider/items"
 import { IItemsProvider } from "../items-provider/base-provider"
 
 export type FolderViewHandle = {

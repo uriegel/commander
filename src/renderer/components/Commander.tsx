@@ -8,7 +8,7 @@ import FileViewer from "./viewers/FileViewer"
 import TrackViewer from "./viewers/TrackViewer"
 import FolderView, { FolderViewHandle } from "./FolderView"
 import { cmdRequest } from "../requests/requests"
-import { Item } from "../../items"
+import { Item } from "../items-provider/items"
 
 const ID_LEFT = "left"
 const ID_RIGHT = "right"

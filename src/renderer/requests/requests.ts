@@ -1,4 +1,4 @@
-import { RootItem } from "../../items"
+import { RootItem } from "../items-provider/items"
 
 export const cmdRequest = async (cmd: string) => await fetch(`cmd://${cmd}`, { method: 'POST' })
 

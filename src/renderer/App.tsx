@@ -2,7 +2,7 @@ import React, { useRef } from "react"
 import Commander, { CommanderHandle } from "./components/Commander"
 import './themes/linux.css'
 import './App.css'
-import "../extensions"
+import "./extensions/extensions"
 
 const App = () => {
 
