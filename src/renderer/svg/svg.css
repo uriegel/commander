@@ -1,0 +1,14 @@
+.image {
+    width: 16px;
+    height: 16px;
+    vertical-align: bottom;
+    margin-right: 3px;
+    margin-left: 1px;
+}
+
+.svgImagePath {
+    fill: var(--svg-image-path-color);
+}
+.isSelected .svgImagePath {
+    fill: var(--vtr-selected-color);
+}

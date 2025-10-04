@@ -3,6 +3,7 @@ import * as path from "path"
 import { fileURLToPath } from "url"
 import { dirname } from "path"
 import { getDrives, getIcon, getFiles } from 'filesystem-utilities'
+import * as settings from 'electron-settings'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -74,15 +75,44 @@ const createWindow = () => {
 		})
 	}
 
-	mainWindow = new BrowserWindow({
-		width: 800,
-		height: 600,
+	const bounds = {
+		x: settings.getSync("x") as number,
+		y: settings.getSync("y") as number,
+		width: settings.getSync("width") as number || 600,
+		height: settings.getSync("height") as number || 800,
 		//icon: path.join(__dirname, '../renderer/kirk.png')
 		icon: path.join(__dirname, "../../icons/64x64.png")
 		// webPreferences: {
 		// 	preload: path.join(__dirname, "preload.js"),
 		// },
-	})
+	}
+
+	mainWindow = new BrowserWindow(bounds)
+    if (settings.getSync("isMaximized"))
+		mainWindow.maximize()
+	
+	mainWindow.on('maximize', () => {
+		const bounds = mainWindow?.getBounds()
+		if (bounds) {
+			settings.set("width", bounds.width)
+			settings.set("height", bounds.height)
+			settings.set("isMaximized", true)
+		}
+    })
+
+    mainWindow.on('unmaximize', () => settings.set("isMaximized", false))    
+ 	mainWindow.on("close", () => {
+        if (!mainWindow?.isMaximized()) {
+			const bounds = mainWindow?.getBounds()
+			if (bounds) {
+				settings.setSync("x", bounds.x)
+				settings.setSync("y", bounds.y)
+				settings.setSync("width", bounds.width)
+				settings.setSync("height", bounds.height)
+			}
+        }
+    })   
+
 	mainWindow.removeMenu()
 
 	if (process.env.VITE_DEV_SERVER_URL) {

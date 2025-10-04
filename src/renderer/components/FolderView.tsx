@@ -3,6 +3,7 @@ import VirtualTable, { type OnSort, type SelectableItem, type TableColumns, type
 import './FolderView.css'
 import { getItemsProvider } from "../items-provider/provider"
 import { Item } from "../../items"
+import { IItemsProvider } from "../items-provider/base-provider"
 
 export type FolderViewHandle = {
     id: string
@@ -37,22 +38,24 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const [items, setStateItems] = useState([] as Item[])
     const [path, setPath] = useState("")
 
+    const itemsProvider = useRef<IItemsProvider>(undefined)
+
     useEffect(() => {
         changePath(localStorage.getItem(`${id}-lastPath`) ?? "root", false, false)
         // eslint-disable-next-line react-hooks/exhaustive-deps        
     }, []) 
 
     const changePath = useCallback(async (path?: string, forceShowHidden?: boolean, mount?: boolean, latestPath?: string, fromBacklog?: boolean, checkPosition?: (checkItem: Item) => boolean) => {
-        const itemsProvider = getItemsProvider(path)
-        const result = await itemsProvider.getItems(id, path, forceShowHidden === undefined ? showHidden : forceShowHidden, mount)
+        const newItemsProvider = getItemsProvider(path, itemsProvider.current)
+        const result = await newItemsProvider.getItems(id, path, forceShowHidden === undefined ? showHidden : forceShowHidden, mount)
         console.log("items", result)
         // if (result.cancelled)
         //     return
         // restrictionView.current?.reset()
-        // if (result.controller) {
-        //     controller.current = getController(result.controller)
-        //     virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
-        // }
+        if (itemsProvider.current != newItemsProvider) {
+            itemsProvider.current = newItemsProvider
+            virtualTable.current?.setColumns(setWidths(itemsProvider.current.getColumns()))
+        }
         // if (result.path)
         //     setPath(result.path)
         // const items = result.items && result.items?.length > 0 ? result.items : controller.current.getItems()
@@ -92,8 +95,17 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const onPositionChanged = useCallback((item: Item) => {},
     [path])         
 
-    // TODO controller id
-    const getWidthsId = useCallback(() => `${id}-{controller.current.id}-widths`, [id])
+    const getWidthsId = useCallback(() => `${id}-${itemsProvider.current?.id}-widths`, [id])
+
+    const setWidths = useCallback((columns: TableColumns<Item>) => {
+        const widthstr = localStorage.getItem(getWidthsId())
+        const widths = widthstr ? JSON.parse(widthstr) as number[] : null
+        return widths
+            ? {
+                ...columns, columns: columns.columns.map((n, i) => ({...n, width: widths![i]}))
+            }
+            : columns
+    }, [getWidthsId])
 
     const onFocusChanged = useCallback(() => {
         onFocus()

@@ -3,10 +3,9 @@ A Norton Commander clone based on Electron and React with Typescript
 
 TODO
 * get drives
-* save bounds
-* Commander icon
-* get files
 * get icons with protocol.http and if-modified-since
+* check Windows
+* get files
 * check Windows
 * status bar
 * lint check
