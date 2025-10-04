@@ -1,8 +1,8 @@
 import { app, protocol } from "electron"
 import { exec } from 'child_process'
-import { getIcon } from "filesystem-utilities"
 import path from "path"
 import { rootDir } from "./index.js"
+import { readFile } from "fs/promises"
 
 export function registerGetIconProtocol() {
     const isDev = !app.isPackaged
@@ -13,10 +13,7 @@ export function registerGetIconProtocol() {
     protocol.handle('icon', async (request) => {
         const url = new URL(request.url)
         const iconName = url.pathname.slice(1) // e.g. icon://folder.png → 'folder.png'
-
-        const icon1 = (await runCmd(`python3 ${iconFromNameScript} ${iconName}`)).trimEnd()
-        console.log("icon", icon1)
-
+        const icon = (await runCmd(`python3 ${iconFromNameScript} ${iconName}`)).trimEnd()
 
         // Optional: you can store last-modified info in memory or on disk
         // const lastModified = getLastModifiedTimeForIcon(iconName)
@@ -26,12 +23,11 @@ export function registerGetIconProtocol() {
         // if (ifModifiedSince && new Date(ifModifiedSince) >= new Date(lastModified)) {
         //     return new Response(null, { status: 304 }) 
         // }
-
         try {
-            const icon = await getIcon(iconName) 
-            return new Response(icon as any, {
+            const data = await readFile(icon) 
+            return new Response(data as any, {
                 headers: {
-                    'Content-Type': 'image/svg+xml',
+                    'Content-Type': icon.toLowerCase().endsWith('svg') ? 'image/svg+xml' : 'image/png'
 //                    'Last-Modified': lastModified,
                     //'Cache-Control': 'public, max-age=3600'
                 }
