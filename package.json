@@ -17,8 +17,16 @@
     "files": [
       "dist/main/**/*",
       "dist/renderer/**/*",
+      "python/**/*",
       "package.json"
     ],
+    "extraResources": [
+      {
+        "from": "python/",
+        "to": "python/",
+        "filter": ["**/*"]
+      }
+    ],    
     "directories": {
       "buildResources": "resources"
     },

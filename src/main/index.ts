@@ -7,8 +7,7 @@ import { onCmd } from "./cmds.js"
 import { onRequest } from "./requests.js"
 import { registerGetIconProtocol } from "./icons.js"
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+export const rootDir = dirname(fileURLToPath(import.meta.url))
 
 let mainWindow: BrowserWindow | null = null
 
@@ -48,11 +47,7 @@ const createWindow = () => {
 		y: settings.getSync("y") as number,
 		width: settings.getSync("width") as number || 600,
 		height: settings.getSync("height") as number || 800,
-		//icon: path.join(__dirname, '../renderer/kirk.png')
-		icon: path.join(__dirname, "../../icons/64x64.png")
-		// webPreferences: {
-		// 	preload: path.join(__dirname, "preload.js"),
-		// },
+		icon: path.join(rootDir, "../../icons/64x64.png")
 	}
 
 	mainWindow = new BrowserWindow(bounds)
@@ -86,7 +81,7 @@ const createWindow = () => {
 	if (process.env.VITE_DEV_SERVER_URL) 
 		mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL)
 	else 
-		mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"))
+		mainWindow.loadFile(path.join(rootDir, "../renderer/index.html"))
 	// TODO initial dev tools
 	//mainWindow.webContents.openDevTools()
 }
@@ -128,7 +123,7 @@ const { pathToFileURL } = require('url');
 app.whenReady().then(() => {
 protocol.handle('myapp', (request) => {
 const filePath = request.url.slice('myapp://'.length);
-return net.fetch(pathToFileURL(path.join(__dirname, filePath)).toString());
+return net.fetch(pathToFileURL(path.join(rootDir, filePath)).toString());
 });
 });
 Kopieren

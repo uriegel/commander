@@ -2,6 +2,7 @@
 A Norton Commander clone based on Electron and React with Typescript
 
 TODO
+* get drives: deploy py scripts, memoize getIcon calls
 * get drives: get icon with protocol.http and if-modified-since
 * get drives: filesystem-utilities: ~ count 0, remove
 * get drives: filesystem-utilities: sde

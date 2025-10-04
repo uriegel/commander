@@ -1,10 +1,22 @@
-import { protocol } from "electron"
+import { app, protocol } from "electron"
+import { exec } from 'child_process'
 import { getIcon } from "filesystem-utilities"
+import path from "path"
+import { rootDir } from "./index.js"
 
 export function registerGetIconProtocol() {
+    const isDev = !app.isPackaged
+    const iconFromNameScript = isDev  
+        ? path.join(rootDir, '..', '..', 'python', 'iconFromName.py')
+        : path.join(process.resourcesPath, 'python', 'iconFromName.py');
+
     protocol.handle('icon', async (request) => {
         const url = new URL(request.url)
         const iconName = url.pathname.slice(1) // e.g. icon://folder.png → 'folder.png'
+
+        const icon1 = (await runCmd(`python3 ${iconFromNameScript} ${iconName}`)).trimEnd()
+        console.log("icon", icon1)
+
 
         // Optional: you can store last-modified info in memory or on disk
         // const lastModified = getLastModifiedTimeForIcon(iconName)
@@ -30,3 +42,5 @@ export function registerGetIconProtocol() {
         }
     })
 }
+
+const runCmd = (cmd: string):Promise<string> => new Promise(res => exec(cmd, (_, stdout) => res(stdout)))
