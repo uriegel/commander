@@ -25,24 +25,24 @@ interface IconNameProps {
 
 const IconName = ({ namePart, type, iconPath }: IconNameProps) => 
     (<span> { type == IconNameType.Folder
-        ? (<img className="image" src={`http://localhost:20000/iconfromname/folder-open`} alt="" />)
+        ? (<img className="image" src={`icon://local/folder-open`} alt="" />)
         : type == IconNameType.File
-        ? (<img className="iconImage" src={`http://localhost:20000/iconfromextension/${iconPath}`} alt="" />)
+        ? (<img className="iconImage" src={`icon://local/${iconPath}`} alt="" />)
         : type == IconNameType.Root
-        ? (<img className="image" src={`http://localhost:20000/iconfromname/drive-removable-media`} alt="" />)
+        ? (<img className="image" src={`icon://local/drive-removable-media`} alt="" />)
         : type == IconNameType.RootEjectable
-        ? (<img className="image" src={`http://localhost:20000/iconfromname/media-removable`} alt="" />)
+        ? (<img className="image" src={`icon://local/media-removable`} alt="" />)
         : type == IconNameType.Home
-        ? (<img className="image" src={`http://localhost:20000/iconfromname/user-home`} alt="" />)
+        ? (<img className="image" src={`icon://local/user-home`} alt="" />)
         : type == IconNameType.Android
         ? (<Android />)
         : type == IconNameType.Remote
-        ? (<img className="image" src={`http://localhost:20000/iconfromname/network-server`} alt="" />)
+        ? (<img className="image" src={`icon://local/network-server`} alt="" />)
         : type == IconNameType.New
         ? (<New />)
         : type == IconNameType.Favorite
-        ? (<img className="image" src={`http://localhost:20000/iconfromname/starred`} alt="" />)
-        : (<img className="image" src={`http://localhost:20000/iconfromname/go-up`} alt="" />)
+        ? (<img className="image" src={`icon://local/starred`} alt="" />)
+        : (<img className="image" src={`icon://local/go-up`} alt="" />)
         }
         <span>{namePart}</span>
     </span>)

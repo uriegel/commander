@@ -5,6 +5,7 @@ import { dirname } from "path"
 import * as settings from 'electron-settings'
 import { onCmd } from "./cmds.js"
 import { onRequest } from "./requests.js"
+import { registerGetIconProtocol } from "./icons.js"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -22,6 +23,11 @@ protocol.registerSchemesAsPrivileged([
 		privileges: {
 			standard: true, secure: true, supportFetchAPI: true	
 		}
+	}, 	{
+		scheme: 'icon',
+		privileges: {
+			standard: true, secure: true, supportFetchAPI: true
+		}
 	}
 ])
 
@@ -35,6 +41,7 @@ const createWindow = () => {
 		return new Response()
 	})
 	protocol.handle("json", async req => await onRequest(req))
+	registerGetIconProtocol()
 
 	const bounds = {
 		x: settings.getSync("x") as number,
