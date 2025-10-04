@@ -18,7 +18,7 @@ export const onRequest = async (request: Request) => {
             // console.log("Buffer", buffer.length)
 
 
-            return writeJson({ drives })
+            return writeJson(drives)
         default:
             return writeJson({ ok: false })
     }

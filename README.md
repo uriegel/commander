@@ -2,8 +2,9 @@
 A Norton Commander clone based on Electron and React with Typescript
 
 TODO
-* get drives
-* get icons with protocol.http and if-modified-since
+* get drives: get icon with protocol.http and if-modified-since
+* get drives: filesystem-utilities: ~ count 0, remove
+* get drives: filesystem-utilities: sde
 * check Windows
 * get files
 * check Windows

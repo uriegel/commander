@@ -49,8 +49,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         const newItemsProvider = getItemsProvider(path, itemsProvider.current)
         const result = await newItemsProvider.getItems(id, path, forceShowHidden === undefined ? showHidden : forceShowHidden, mount)
         console.log("items", result)
-        // if (result.cancelled)
-        //     return
+        if (result.cancelled)
+            return
         // restrictionView.current?.reset()
         if (itemsProvider.current != newItemsProvider) {
             itemsProvider.current = newItemsProvider
@@ -58,9 +58,9 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         }
         // if (result.path)
         //     setPath(result.path)
-        // const items = result.items && result.items?.length > 0 ? result.items : controller.current.getItems()
+        //const items = result.items && result.items?.length > 0 ? result.items : itemsProvider.current.getItems()
         // const newItems = controller.current.sort(items, sortIndex.current, sortDescending.current)
-        // setItems(newItems, result.dirCount, result.fileCount)
+        setItems(result.items!, result.dirCount, result.fileCount)
         // getExtended({ id: result.id, folderId: id })
         // const pos = latestPath
         //             ? newItems.findIndex(n => n.name == latestPath)
@@ -92,8 +92,21 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     //     onItemChanged(controller.current.appendPath(path, item.name),
     //         item.isDirectory == true, item.exifData?.latitude, item.exifData?.longitude),
     // [path, onItemChanged])         
-    const onPositionChanged = useCallback((item: Item) => {},
-    [path])         
+    const onPositionChanged = useCallback((item: Item) => {}, [path])         
+    
+    // const setItems = useCallback((items: Item[], dirCount?: number, fileCount?: number) => {
+    //     setStateItems(items)
+    //     refItems.current = items
+    //     if (dirCount != undefined || fileCount != undefined) {
+    //         itemCount.current = { dirCount: dirCount || 0, fileCount: fileCount || 0 }
+    //         onItemsChanged(itemCount.current)
+    //     }
+    // }, [onItemsChanged])
+    const setItems = useCallback((items: Item[], dirCount?: number, fileCount?: number) => {
+        setStateItems(items)
+        //refItems.current = items
+    }, [])
+    
 
     const getWidthsId = useCallback(() => `${id}-${itemsProvider.current?.id}-widths`, [id])
 

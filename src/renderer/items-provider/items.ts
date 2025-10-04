@@ -37,6 +37,15 @@ export interface FavoritesItem extends Item {
     path?:  string
 }
 
+export interface ItemsResult {
+    items?: Item[]
+    dirCount: number,
+    fileCount: number,
+    path?: string,
+    cancelled?: boolean
+}
+
+// TODO
 const affe = (item: Item) => {
     const test = item.name
     const root = (item as RootItem).mountPoint

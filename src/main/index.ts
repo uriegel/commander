@@ -76,14 +76,12 @@ const createWindow = () => {
 
 	mainWindow.removeMenu()
 
-	if (process.env.VITE_DEV_SERVER_URL) {
+	if (process.env.VITE_DEV_SERVER_URL) 
 		mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL)
-		mainWindow.webContents.openDevTools()
-	}
-	else {
+	else 
 		mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"))
-		mainWindow.webContents.openDevTools()
-	}
+	// TODO initial dev tools
+	//mainWindow.webContents.openDevTools()
 }
 
 app.setName("commander")
