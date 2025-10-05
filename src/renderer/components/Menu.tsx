@@ -90,6 +90,13 @@ const Menu = ({ autoMode, releaseMode, showHidden, toggleShowHidden, showViewer,
     }, {
         name: "_Selektion",
         items: [{
+            name: "Selection _wechseln",
+            type: MenuItemType.MenuItem,
+            shortcut: "Insert",
+            key: "TOGGLE_SEL"
+        }, {
+            type: MenuItemType.Separator
+        },{
             name: "_Alles",
             type: MenuItemType.MenuItem,
             shortcut: "Num+",

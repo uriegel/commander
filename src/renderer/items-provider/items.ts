@@ -45,8 +45,3 @@ export interface ItemsResult {
     cancelled?: boolean
 }
 
-// TODO
-const affe = (item: Item) => {
-    const test = item.name
-    const root = (item as RootItem).mountPoint
-}

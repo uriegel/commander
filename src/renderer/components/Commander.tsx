@@ -52,6 +52,9 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 
 	const showViewerRef = useRef(false)
 
+	const getActiveFolder = useCallback(() => activeFolderId == ID_LEFT ? folderLeft.current : folderRight.current, [activeFolderId])
+	const getInactiveFolder = useCallback(() => activeFolderId == ID_LEFT ? folderRight.current : folderLeft.current, [activeFolderId])
+
     const onKeyDown = (evt: React.KeyboardEvent) => {
         if (evt.code == "Tab" && !evt.shiftKey) {
             // TODO		getInactiveFolder()?.setFocus()
@@ -63,8 +66,17 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
     const onMenuAction = useCallback(async (key: string) => {
         switch (key) {
             case "REFRESH":
-                // TODO getActiveFolder()?.refresh()
-                break
+                getActiveFolder()?.refresh()
+				break
+			case "TOGGLE_SEL":
+				getActiveFolder()?.insertSelection()
+				break
+			case "SEL_ALL":
+				getActiveFolder()?.selectAll()
+				break
+			case "SEL_NONE":
+				getActiveFolder()?.selectNone()
+				break
 			case "SHOW_DEV_TOOLS":
 				await cmdRequest(key)
                 break
@@ -93,7 +105,6 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 		// getActiveFolder()?.processEnter(item, getInactiveFolder()?.getPath())
 	}
 	
-
 	const FolderLeft = () => (
 		<FolderView ref={folderLeft} id={ID_LEFT} onFocus={onFocusLeft} onItemChanged={onItemChanged} onEnter= {onEnter}
 			showHidden={showHidden} setStatusText={setStatusTextLeft} />

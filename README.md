@@ -12,3 +12,5 @@ TODO
 * copy: then compare
 * copy: then copy
 * copy: get exifs for copied items
+
+* menubar-react: Kurzschlüsse in console, Insert shortcut Ins and Einfg

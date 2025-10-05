@@ -13,11 +13,6 @@ export const onRequest = async (request: Request) => {
             // const files = await getFiles("/home/uwe")
             // console.log("files", files)
 
-            // var buffer = await getIcon(".wav")
-		
-            // console.log("Buffer", buffer.length)
-
-
             return writeJson(drives)
         default:
             return writeJson({ ok: false })

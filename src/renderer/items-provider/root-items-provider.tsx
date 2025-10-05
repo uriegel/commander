@@ -7,6 +7,8 @@ import { formatSize } from "./provider"
 
 export class RootItemProvider extends IItemsProvider {
     readonly id = "Root"
+    // TODO only for testing
+    readonly itemsSelectable = true
 
     getColumns(): TableColumns<Item> {
         return {

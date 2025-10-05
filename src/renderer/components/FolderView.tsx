@@ -1,8 +1,8 @@
-import { forwardRef, useCallback, useEffect, useRef, useState } from "react"
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react"
 import VirtualTable, { type OnSort, type SelectableItem, type TableColumns, type VirtualTableHandle } from "virtual-table-react"
 import './FolderView.css'
 import { getItemsProvider } from "../items-provider/provider"
-import { Item } from "../items-provider/items"
+import { Item, RemotesItem } from "../items-provider/items"
 import { IItemsProvider } from "../items-provider/base-provider"
 
 export type FolderViewHandle = {
@@ -40,6 +40,25 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const itemsProvider = useRef<IItemsProvider>(undefined)
 
+    useImperativeHandle(ref, () => ({
+        id,
+        setFocus() { virtualTable.current?.setFocus() },
+      //  processEnter,
+        refresh,
+        getPath() { return path },
+        changePath,
+        insertSelection,
+        selectAll,
+        selectNone,
+        // copyItems,
+        // deleteItems,
+        // createFolder,
+        // rename,
+        // openFolder,
+        // extendedRename,
+        // showFavorites
+    }))
+
     useEffect(() => {
         changePath(localStorage.getItem(`${id}-lastPath`) ?? "root", false, false)
         // eslint-disable-next-line react-hooks/exhaustive-deps        
@@ -48,7 +67,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const changePath = useCallback(async (path?: string, forceShowHidden?: boolean, mount?: boolean, latestPath?: string, fromBacklog?: boolean, checkPosition?: (checkItem: Item) => boolean) => {
         const newItemsProvider = getItemsProvider(path, itemsProvider.current)
         const result = await newItemsProvider.getItems(id, path, forceShowHidden === undefined ? showHidden : forceShowHidden, mount)
-        console.log("items", result)
         if (result.cancelled)
             return
         // restrictionView.current?.reset()
@@ -120,6 +138,18 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             : columns
     }, [getWidthsId])
 
+    const toggleSelection = (item: Item) => {
+        if (!item.isParent && !(item as RemotesItem)?.isNew)
+            item.isSelected = !item.isSelected
+        return item
+    }
+
+    const setSelection = (item: Item, set: boolean) => {
+        if (!item.isParent && !(item as RemotesItem)?.isNew)
+            item.isSelected = set
+        return item
+    }
+
     const onFocusChanged = useCallback(() => {
         onFocus()
         // const pos = virtualTable.current?.getPosition() ?? 0
@@ -146,12 +176,37 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         }
     }
 
+    const refresh = (forceShowHidden?: boolean, checkPosition?: (checkItem: Item) => boolean) =>
+        changePath(path, forceShowHidden || (forceShowHidden === false ? false : showHidden), undefined, undefined, undefined, checkPosition)
+
     const onInputFocus = (e: React.FocusEvent<HTMLInputElement>) => 
         setTimeout(() => e.target.select())
 
     const onColumnWidths = (widths: number[]) => {
         if (widths.length)
             localStorage.setItem(getWidthsId(), JSON.stringify(widths))
+    }
+
+    const insertSelection = () => {
+        if (itemsProvider.current?.itemsSelectable) {
+            setItems(items.map((n, i) => i != virtualTable.current?.getPosition() ? n : toggleSelection(n)))
+            virtualTable.current?.setPosition(virtualTable.current.getPosition() + 1)
+            itemsProvider.current.onSelectionChanged(items)
+        }
+    }
+
+    const selectAll = () => {
+        if (itemsProvider.current?.itemsSelectable) {
+            setItems(items.map((n) => setSelection(n, true)))
+            itemsProvider.current.onSelectionChanged(items)
+        }
+    }
+
+    const selectNone = () => {
+        if (itemsProvider.current?.itemsSelectable) {
+            setItems(items.map((n) => setSelection(n, false)))
+            itemsProvider.current.onSelectionChanged(items)
+        }
     }
 
     return (

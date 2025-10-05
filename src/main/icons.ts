@@ -29,7 +29,7 @@ export function registerGetIconProtocol() {
                 headers: {
                     'Content-Type': icon.toLowerCase().endsWith('svg') ? 'image/svg+xml' : 'image/png',
 //                    'Last-Modified': lastModified,
-                    'Cache-Control': 'public, max-age=3600'
+//                    'Cache-Control': 'public, max-age=3600'
                 }
             })
         } catch (err) {
