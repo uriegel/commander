@@ -9,11 +9,14 @@ export function registerGetIconProtocol() {
     const iconFromNameScript = isDev  
         ? path.join(rootDir, '..', '..', 'python', 'iconFromName.py')
         : path.join(process.resourcesPath, 'python', 'iconFromName.py');
+    const iconFromExtensionScript = isDev  
+        ? path.join(rootDir, '..', '..', 'python', 'iconFromExtension.py')
+        : path.join(process.resourcesPath, 'python', 'iconFromExtension.py');
 
     protocol.handle('icon', async (request) => {
         const url = new URL(request.url)
-        const iconName = url.pathname.slice(1) // e.g. icon://folder.png → 'folder.png'
-        const icon = (await runCmd(`python3 ${iconFromNameScript} ${iconName}`)).trimEnd()
+        const iconName = url.pathname.slice(1) || "ddd"// e.g. icon://folder.png → 'folder.png'
+        const icon = (await runCmd(`python3 ${url.hostname == "name" ? iconFromNameScript : iconFromExtensionScript} ${iconName}`)).trimEnd()
 
         // Optional: you can store last-modified info in memory or on disk
         // const lastModified = getLastModifiedTimeForIcon(iconName)
