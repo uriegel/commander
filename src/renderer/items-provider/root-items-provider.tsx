@@ -1,12 +1,14 @@
 import { TableColumns } from "virtual-table-react"
 import { getDrives } from "../requests/requests"
-import { IItemsProvider } from "./base-provider"
+import { EnterData, IItemsProvider, OnEnterResult } from "./base-provider"
 import { Item, RootItem } from "../items-provider/items"
 import IconName, { IconNameType } from "../components/IconName"
 import { formatSize } from "./provider"
 
+export const ROOT = "Root"
+
 export class RootItemProvider extends IItemsProvider {
-    readonly id = "Root"
+    readonly id = ROOT
     // TODO only for testing
     readonly itemsSelectable = true
 
@@ -32,6 +34,15 @@ export class RootItemProvider extends IItemsProvider {
             items,
             dirCount: items.length,
             fileCount: 0
+        }
+    }
+
+    async onEnter(enterData: EnterData): Promise<OnEnterResult> {
+        const rootEnter = enterData.item as RootItem
+        return {
+            processed: false,
+            pathToSet: rootEnter.mountPoint || rootEnter.mountPoint?.length || 0 > 0 ? rootEnter.mountPoint : enterData.item.name,
+            mount: !rootEnter?.mountPoint            
         }
     }
 

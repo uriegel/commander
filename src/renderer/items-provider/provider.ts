@@ -1,8 +1,12 @@
 import { IItemsProvider } from "./base-provider"
-import { RootItemProvider } from "./root-items-provider"
+import { FILE, FileItemProvider } from "./file-item-provider"
+import { ROOT, RootItemProvider } from "./root-items-provider"
 
-export const getItemsProvider = (path?: string, recentProvider?: IItemsProvider) : IItemsProvider => {
-    return recentProvider || new RootItemProvider()
+export const getItemsProvider = (path?: string, recentProvider?: IItemsProvider): IItemsProvider => {
+    if (path == "root" || !path)
+        return recentProvider?.id == ROOT ? recentProvider : new RootItemProvider()
+    else
+        return recentProvider?.id == FILE ? recentProvider : new FileItemProvider()
 }
 
 export const formatSize = (num?: number) => {
@@ -23,4 +27,28 @@ export const formatSize = (num?: number) => {
         sizeStr = strfirst + sizeStr
     }
     return sizeStr    
+}
+
+const dateFormat = Intl.DateTimeFormat("de-DE", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+})
+
+const timeFormat = Intl.DateTimeFormat("de-DE", {
+    hour: "2-digit",
+    minute: "2-digit"
+})
+
+export function formatDateTime(dateStr?: string) {
+    if (!dateStr || (dateStr as string).startsWith && dateStr.startsWith("0001"))
+        return ''
+    const date = Date.parse(dateStr)
+    return dateFormat.format(date) + " " + timeFormat.format(date)  
+}
+
+export function formatDate(date?: Date) {
+    return date
+        ? dateFormat.format(date) + " " + timeFormat.format(date)  
+        : ""
 }

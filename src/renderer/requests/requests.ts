@@ -3,6 +3,7 @@ import { RootItem } from "../items-provider/items"
 export const cmdRequest = async (cmd: string) => await fetch(`cmd://${cmd}`, { method: 'POST' })
 
 export const getDrives = () => jsonRequest<RootItem[]>("getdrives", {})
+export const getFiles = () => jsonRequest<FileItem[]>("getfiles", {})
 
 const jsonRequest =  async <T>(cmd: string, msg: any) => {
     const payload = {

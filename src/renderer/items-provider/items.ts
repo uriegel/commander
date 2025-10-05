@@ -17,9 +17,13 @@ export interface RootItem extends Item {
     //    driveKind?:    DriveKind    
 }
 
+export interface ExifData {
+    dateTime: Date
+}
+
 export interface FileItem extends Item {
-    time?:      string
-//    exifData?: ExifData
+    time?:      Date
+    exifData?:  ExifData
     isHidden?:  boolean
 }
 

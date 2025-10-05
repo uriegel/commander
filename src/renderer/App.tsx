@@ -1,5 +1,6 @@
 import React, { useRef } from "react"
 import Commander, { CommanderHandle } from "./components/Commander"
+import WithDialog from 'web-dialog-react'
 import './themes/linux.css'
 import './App.css'
 import "./extensions/extensions"
@@ -13,7 +14,9 @@ const App = () => {
 
 	return (
 		<div className="App linuxTheme" onKeyDown={onKeyDown}>
-			<Commander ref={commander} ></Commander>
+			<WithDialog>
+				<Commander ref={commander} ></Commander>
+			</WithDialog>
 		</div>
 	)
 }

@@ -4,11 +4,13 @@ import './FolderView.css'
 import { getItemsProvider } from "../items-provider/provider"
 import { Item, RemotesItem } from "../items-provider/items"
 import { IItemsProvider } from "../items-provider/base-provider"
+import { DialogHandle } from "web-dialog-react"
 
 export type FolderViewHandle = {
     id: string
     setFocus: ()=>void
     refresh: (forceShowHidden?: boolean) => void
+    processEnter: (item: Item, otherPath?: string)=>Promise<void>
     getPath: () => string
     changePath: (path: string) => void
     insertSelection: () => void
@@ -24,11 +26,11 @@ interface FolderViewProp {
     // onItemsChanged: (count: ItemCount)=>void
     onEnter: (item: Item)=>void
     setStatusText: (text?: string) => void
-    //dialog: DialogHandle
+    dialog: DialogHandle
 }
 
 const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
-    { id, showHidden, onFocus, onEnter, onItemChanged, setStatusText },
+    { id, showHidden, onFocus, onEnter, onItemChanged, setStatusText, dialog },
     ref) => {
     
     const input = useRef<HTMLInputElement | null>(null)
@@ -43,7 +45,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     useImperativeHandle(ref, () => ({
         id,
         setFocus() { virtualTable.current?.setFocus() },
-      //  processEnter,
+        processEnter,
         refresh,
         getPath() { return path },
         changePath,
@@ -125,7 +127,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         //refItems.current = items
     }, [])
     
-
     const getWidthsId = useCallback(() => `${id}-${itemsProvider.current?.id}-widths`, [id])
 
     const setWidths = useCallback((columns: TableColumns<Item>) => {
@@ -152,19 +153,19 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const onFocusChanged = useCallback(() => {
         onFocus()
-        // const pos = virtualTable.current?.getPosition() ?? 0
-        // const item = pos < items.length ? items[pos] : null
-        // if (item)
-        //     onPositionChanged(item)
-        // onItemsChanged(itemCount.current)
-        //    }, [items, onFocus, onPositionChanged, onItemsChanged]) 
+        const pos = virtualTable.current?.getPosition() ?? 0
+        const item = pos < items.length ? items[pos] : null
+        if (item)
+            onPositionChanged(item)
+        // TODO onItemsChanged(itemCount.current)
+        //   }, [items, onFocus, onPositionChanged, onItemsChanged]) 
     }, [])
 
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setPath(e.target.value)
 
     const onInputKeyDown = (e: React.KeyboardEvent) => {
         if (e.code == "Enter") {
-//            changePath(path, showHidden)
+            changePath(path, showHidden)
             virtualTable.current?.setFocus()
             e.stopPropagation()
             e.preventDefault()
@@ -176,8 +177,26 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         }
     }
 
+    const processEnter = async (item: Item, otherPath?: string) => {
+        const res = await itemsProvider.current?.onEnter({ id, path, item, selectedItems: getSelectedItems(), dialog, otherPath })
+        if (res && !res.processed)
+            changePath(res.pathToSet, showHidden, res.mount, res.latestPath)
+        if (res?.refresh)
+            refresh()
+    }
+
     const refresh = (forceShowHidden?: boolean, checkPosition?: (checkItem: Item) => boolean) =>
         changePath(path, forceShowHidden || (forceShowHidden === false ? false : showHidden), undefined, undefined, undefined, checkPosition)
+
+    const getSelectedItems = () => {
+
+        const checkParent = (item: Item) => !item.isParent ? item : null
+
+        const selected = items.filter(n => n.isSelected)
+        return selected.length > 0
+            ? selected
+            : [checkParent(items[virtualTable.current?.getPosition() ?? 0])].filter(n => n != null) as Item[]
+    }
 
     const onInputFocus = (e: React.FocusEvent<HTMLInputElement>) => 
         setTimeout(() => e.target.select())
