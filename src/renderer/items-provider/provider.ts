@@ -47,8 +47,3 @@ export function formatDateTime(dateStr?: string) {
     return dateFormat.format(date) + " " + timeFormat.format(date)  
 }
 
-export function formatDate(date?: Date) {
-    return date
-        ? dateFormat.format(date) + " " + timeFormat.format(date)  
-        : ""
-}

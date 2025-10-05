@@ -2,14 +2,13 @@ import { TableColumns } from "virtual-table-react"
 import { EnterData, IItemsProvider, OnEnterResult } from "./base-provider"
 import { Item, FileItem } from "./items"
 import IconName, { IconNameType } from "../components/IconName"
-import { formatDate, formatDateTime, formatSize } from "./provider"
+import { formatDateTime, formatSize } from "./provider"
 import { getFiles } from "../requests/requests"
 
 export const FILE = "File"
 
 export class FileItemProvider extends IItemsProvider {
     readonly id = FILE
-    // TODO only for testing
     readonly itemsSelectable = true
 
     getColumns(): TableColumns<Item> {
@@ -24,11 +23,12 @@ export class FileItemProvider extends IItemsProvider {
         }
     }
     
-    async getItems(id: string) {
+    async getItems(id: string, path: string) {
 
         // TODO compare reqId with reqId from the BaseProvider, if smaller cancel. Do this also after result
 
-        const items = await getFiles()
+        const items = await getFiles(path)
+        console.log(items, items)
         return {
             items,
             dirCount: items.length,
@@ -70,7 +70,7 @@ const renderRow = (item: FileItem) => [
 			? IconNameType.Folder
 			: IconNameType.File}
 		iconPath={item.name.getExtension()} />),
-	(<span className={item.exifData?.dateTime ? "exif" : "" } >{formatDate(item?.exifData?.dateTime ?? item?.time)}</span>),
+	(<span className={item.exifData?.dateTime ? "exif" : "" } >{formatDateTime(item?.exifData?.dateTime ?? item?.time)}</span>),
 	formatSize(item.size)
 ]
 

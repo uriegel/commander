@@ -9,8 +9,7 @@ export const ROOT = "Root"
 
 export class RootItemProvider extends IItemsProvider {
     readonly id = ROOT
-    // TODO only for testing
-    readonly itemsSelectable = true
+    readonly itemsSelectable = false
 
     getColumns(): TableColumns<Item> {
         return {

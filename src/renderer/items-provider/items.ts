@@ -18,11 +18,11 @@ export interface RootItem extends Item {
 }
 
 export interface ExifData {
-    dateTime: Date
+    dateTime: string
 }
 
 export interface FileItem extends Item {
-    time?:      Date
+    time?:      string
     exifData?:  ExifData
     isHidden?:  boolean
 }
