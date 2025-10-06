@@ -83,7 +83,7 @@ const createWindow = () => {
 	else 
 		mainWindow.loadFile(path.join(rootDir, "../renderer/index.html"))
 	// TODO initial dev tools
-	//mainWindow.webContents.openDevTools()
+	// mainWindow.webContents.openDevTools()
 }
 
 app.setName("commander")

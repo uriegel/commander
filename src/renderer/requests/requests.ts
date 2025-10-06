@@ -1,9 +1,12 @@
-import { RootItem } from "../items-provider/items"
+type RequestItem = {
+    items: FileItem[],
+    path: string
+}
 
 export const cmdRequest = async (cmd: string) => await fetch(`cmd://${cmd}`, { method: 'POST' })
 
-export const getDrives = () => jsonRequest<RootItem[]>("getdrives", {})
-export const getFiles = (path: string) => jsonRequest<FileItem[]>("getfiles", { path })
+export const getDrives = () => jsonRequest<RequestItem>("getdrives", {})
+export const getFiles = (path: string) => jsonRequest<RequestItem>("getfiles", { path })
 
 const jsonRequest =  async <T>(cmd: string, msg: any) => {
     const payload = {

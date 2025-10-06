@@ -28,10 +28,11 @@ export class RootItemProvider extends IItemsProvider {
 
         // TODO compare reqId with reqId from the BaseProvider, if smaller cancel. Do this also after result
 
-        const items = await getDrives()
+        const result = await getDrives()
         return {
-            items,
-            dirCount: items.length,
+            items: result.items,
+            path: result.path,
+            dirCount: result.items.length,
             fileCount: 0
         }
     }

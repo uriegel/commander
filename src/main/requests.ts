@@ -10,11 +10,11 @@ export const onRequest = async (request: Request) => {
     switch (request.url) {
         case "json://getdrives/":
             const drives = await getDrives()
-            return writeJson(drives)
+            return writeJson({ items: drives, path: "root" })
         case "json://getfiles/":
             const getfiles = await request.json() as GetFiles
-            const files = await getFiles(getfiles.path)
-            return writeJson(files)
+            const items = await getFiles(getfiles.path)
+            return writeJson({ items, path: getfiles.path })
         default:
             return writeJson({ ok: false })
     }

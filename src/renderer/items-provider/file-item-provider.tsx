@@ -27,10 +27,11 @@ export class FileItemProvider extends IItemsProvider {
 
         // TODO compare reqId with reqId from the BaseProvider, if smaller cancel. Do this also after result
 
-        const items = await getFiles(path)
+        const result = await getFiles(path)
         return {
-            items,
-            dirCount: items.length,
+            items: result.items,
+            path: result.path,
+            dirCount: result.items.length,
             fileCount: 0
         }
     }
