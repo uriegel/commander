@@ -45,6 +45,10 @@ export class RootItemProvider extends IItemsProvider {
         }
     }
 
+    appendPath(_: string, subPath: string) {
+        return subPath
+    } 
+
     constructor() { super() }
 }
 

@@ -26,6 +26,7 @@ export abstract class IItemsProvider {
     abstract getColumns(): TableColumns<Item>
     abstract getItems(id: string, path?: string, showHidden?: boolean, mount?: boolean): Promise<ItemsResult>
     abstract onEnter(data: EnterData): Promise<OnEnterResult> 
+    abstract appendPath(path: string, subPath: string): string
     onSelectionChanged(items: Item[]) {}
 }
 

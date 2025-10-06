@@ -28,13 +28,16 @@ export class FileItemProvider extends IItemsProvider {
         // TODO compare reqId with reqId from the BaseProvider, if smaller cancel. Do this also after result
 
         const items = await getFiles(path)
-        console.log(items, items)
         return {
             items,
             dirCount: items.length,
             fileCount: 0
         }
     }
+
+    appendPath(path: string, subPath: string) {
+        return path.appendPath(subPath)
+    } 
 
     async onEnter(enterData: EnterData): Promise<OnEnterResult> {
         const fileEnter = enterData.item as FileItem

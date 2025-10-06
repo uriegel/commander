@@ -19,6 +19,8 @@ export interface RootItem extends Item {
 
 export interface ExifData {
     dateTime: string
+    latitude?: number
+    longitude: number
 }
 
 export interface FileItem extends Item {

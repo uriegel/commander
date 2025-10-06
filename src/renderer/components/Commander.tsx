@@ -10,6 +10,7 @@ import FolderView, { FolderViewHandle } from "./FolderView"
 import { cmdRequest } from "../requests/requests"
 import { Item } from "../items-provider/items"
 import { DialogContext } from "web-dialog-react"
+import Statusbar from "./StatusBar"
 
 const ID_LEFT = "left"
 const ID_RIGHT = "right"
@@ -42,9 +43,11 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 
 	const [showViewer, setShowViewer] = useState(false)    
     const [showHidden, setShowHidden] = useState(false)
-    const [itemProperty, setItemProperty] = useState<ItemProperty>({ path: "", latitude: undefined, longitude: undefined, isDirectory: false })
+	const [itemProperty, setItemProperty] = useState<ItemProperty>({ path: "", latitude: undefined, longitude: undefined, isDirectory: false })
+	const [itemCount, setItemCount] = useState({ dirCount: 0, fileCount: 0 })
 	const [statusTextLeft, setStatusTextLeft] = useState<string | undefined>(undefined)
 	const [statusTextRight, setStatusTextRight] = useState<string | undefined>(undefined)
+	const [errorText, setErrorText] = useState<string | null>(null)
 	const [previewMode, setPreviewMode] = useState(PreviewMode.Default)
 	
 	const [activeFolderId, setActiveFolderId] = useState(ID_LEFT)
@@ -116,6 +119,10 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 			showHidden={showHidden} setStatusText={setStatusTextRight} dialog={dialog}/>
 	)
 
+	const getStatusText = useCallback(() => 
+		activeFolderId == ID_LEFT ? statusTextLeft : statusTextRight
+	, [activeFolderId, statusTextLeft, statusTextRight])
+
 	const VerticalSplitView = () => (
         <ViewSplit firstView={FolderLeft} secondView={FolderRight}></ViewSplit>
     )
@@ -153,6 +160,8 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
                 showViewer={showViewer} toggleShowViewer={toggleShowViewer}
             />            
             <ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
+			<Statusbar path={itemProperty.path} dirCount={itemCount.dirCount} fileCount={itemCount.fileCount}
+					errorText={errorText} setErrorText={setErrorText} statusText={getStatusText()} />		
         </>
     )
 })

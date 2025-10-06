@@ -2,8 +2,20 @@
 A Norton Commander clone based on Electron and React with Typescript
 
 TODO
-* get files
-* status bar
+* path input: show path
+* get files: subpath
+* get files: parent
+* path input: getItems
+* get files: hidden control
+* get files: sorting
+* get files: restricting
+* get files: cancelling
+* get files: not found
+* get files: access denied
+* status bar: file count dir count
+* status bar: error text
+* get exif data
+* get drives: mount
 * lint check
 * CSP in index.html
 

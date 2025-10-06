@@ -2,7 +2,7 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useSta
 import VirtualTable, { type OnSort, type SelectableItem, type TableColumns, type VirtualTableHandle } from "virtual-table-react"
 import './FolderView.css'
 import { getItemsProvider } from "../items-provider/provider"
-import { Item, RemotesItem } from "../items-provider/items"
+import { Item, FileItem, RemotesItem } from "../items-provider/items"
 import { IItemsProvider } from "../items-provider/base-provider"
 import { DialogHandle } from "web-dialog-react"
 
@@ -76,8 +76,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             itemsProvider.current = newItemsProvider
             virtualTable.current?.setColumns(setWidths(itemsProvider.current.getColumns()))
         }
-        // if (result.path)
-        //     setPath(result.path)
+        if (result.path)
+            setPath(result.path)
         //const items = result.items && result.items?.length > 0 ? result.items : itemsProvider.current.getItems()
         // const newItems = controller.current.sort(items, sortIndex.current, sortDescending.current)
         setItems(result.items!, result.dirCount, result.fileCount)
@@ -108,11 +108,10 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const onSort = (sort: OnSort) => {
     }
 
-    // const onPositionChanged = useCallback((item: FolderViewItem) =>
-    //     onItemChanged(controller.current.appendPath(path, item.name),
-    //         item.isDirectory == true, item.exifData?.latitude, item.exifData?.longitude),
-    // [path, onItemChanged])         
-    const onPositionChanged = useCallback((item: Item) => {}, [path])         
+    const onPositionChanged = useCallback((item: Item) =>
+        onItemChanged(itemsProvider.current?.appendPath(path, item.name) || "",
+            item.isDirectory == true, (item as FileItem)?.exifData?.latitude, (item as FileItem)?.exifData?.longitude),
+    [path, onItemChanged])         
     
     // const setItems = useCallback((items: Item[], dirCount?: number, fileCount?: number) => {
     //     setStateItems(items)
