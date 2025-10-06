@@ -5,7 +5,6 @@ TODO
 * path input: show path
 * get files: subpath
 * get files: parent
-* path input: getItems
 * get files: hidden control
 * get files: sorting
 * get files: restricting
