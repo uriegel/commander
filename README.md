@@ -2,7 +2,6 @@
 A Norton Commander clone based on Electron and React with Typescript
 
 TODO
-* Electron menu, bridge to renderer
 * getItems: normalize path 
 * getItems: parent when / => to root
 * getItems: parent: check last folder
