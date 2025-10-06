@@ -29,7 +29,12 @@ export class FileItemProvider extends IItemsProvider {
 
         const result = await getFiles(path)
         return {
-            items: result.items,
+            items: [{
+                name: '..',
+                isParent: true,
+                isDirectory: true,
+                size: -1
+            }, ...result.items as FileItem[]],
             path: result.path,
             dirCount: result.items.length,
             fileCount: 0

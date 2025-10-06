@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useContext, useImperativeHandle, useRef, useState } from "react"
+import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useRef, useState } from "react"
 import Menu from "./Menu"
 import ViewSplit from "view-split-react"
 import PictureViewer from "./viewers/PictureViewer"
@@ -61,7 +61,11 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 	const getActiveFolder = useCallback(() => activeFolderId == ID_LEFT ? folderLeft.current : folderRight.current, [activeFolderId])
 	const getInactiveFolder = useCallback(() => activeFolderId == ID_LEFT ? folderRight.current : folderLeft.current, [activeFolderId])
 
-    const onKeyDown = (evt: React.KeyboardEvent) => {
+	useEffect(() => {
+		folderLeft.current?.setFocus()
+	}, [])
+
+	const onKeyDown = (evt: React.KeyboardEvent) => {
         if (evt.code == "Tab" && !evt.shiftKey) {
             getInactiveFolder()?.setFocus()
             evt.preventDefault()

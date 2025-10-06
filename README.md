@@ -3,9 +3,8 @@ A Norton Commander clone based on Electron and React with Typescript
 
 TODO
 * getItems: normalize path 
-* Initial focus to left folder
-* PathInput: after enter focus folder
-* get files: parent
+* getItems: parent: check last folder
+* getItems: parent when / => to root
 * status bar: file count dir count
 * get files: hidden control
 * get files: sorting
@@ -16,8 +15,8 @@ TODO
 * status bar: error text
 * get exif data
 * get drives: mount
+* history control
 * lint check
-* CSP in index.html
 
 * copy: refresh left 
 * copy: refresh right 
@@ -26,3 +25,5 @@ TODO
 * copy: get exifs for copied items
 
 * menubar-react: Kurzschlüsse in console, Insert shortcut Ins and Einfg
+
+* CSP in index.html
