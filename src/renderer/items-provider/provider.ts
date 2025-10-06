@@ -3,7 +3,7 @@ import { FILE, FileItemProvider } from "./file-item-provider"
 import { ROOT, RootItemProvider } from "./root-items-provider"
 
 export const getItemsProvider = (path?: string, recentProvider?: IItemsProvider): IItemsProvider => {
-    if (path == "root" || !path)
+    if (path == "root" || !path || path == "/..")
         return recentProvider?.id == ROOT ? recentProvider : new RootItemProvider()
     else
         return recentProvider?.id == FILE ? recentProvider : new FileItemProvider()

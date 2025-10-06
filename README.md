@@ -2,9 +2,6 @@
 A Norton Commander clone based on Electron and React with Typescript
 
 TODO
-* getItems: normalize path 
-* getItems: parent when / => to root
-* getItems: parent: check last folder
 * status bar: file count dir count
 * get files: hidden control
 * get files: sorting

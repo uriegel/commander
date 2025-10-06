@@ -1,4 +1,5 @@
 import { getDrives, getFiles } from "filesystem-utilities"
+import path from 'path'
 
 type GetFiles = {
     path: string
@@ -13,8 +14,9 @@ export const onRequest = async (request: Request) => {
             return writeJson({ items: drives, path: "root" })
         case "json://getfiles/":
             const getfiles = await request.json() as GetFiles
-            const items = await getFiles(getfiles.path)
-            return writeJson({ items, path: getfiles.path })
+            const normalizedPath =  path.normalize(getfiles.path)
+            const items = await getFiles(normalizedPath)
+            return writeJson({ items, path: normalizedPath })
         default:
             return writeJson({ ok: false })
     }

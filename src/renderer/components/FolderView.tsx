@@ -66,37 +66,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         // eslint-disable-next-line react-hooks/exhaustive-deps        
     }, []) 
 
-    const changePath = useCallback(async (path?: string, forceShowHidden?: boolean, mount?: boolean, latestPath?: string, fromBacklog?: boolean, checkPosition?: (checkItem: Item) => boolean) => {
-        const newItemsProvider = getItemsProvider(path, itemsProvider.current)
-        const result = await newItemsProvider.getItems(id, path, forceShowHidden === undefined ? showHidden : forceShowHidden, mount)
-        if (result.cancelled)
-            return
-        // restrictionView.current?.reset()
-        if (itemsProvider.current != newItemsProvider) {
-            itemsProvider.current = newItemsProvider
-            virtualTable.current?.setColumns(setWidths(itemsProvider.current.getColumns()))
-        }
-        if (result.path)
-            setPath(result.path)
-        //const items = result.items && result.items?.length > 0 ? result.items : itemsProvider.current.getItems()
-        // const newItems = controller.current.sort(items, sortIndex.current, sortDescending.current)
-        setItems(result.items!, result.dirCount, result.fileCount)
-        // getExtended({ id: result.id, folderId: id })
-        // const pos = latestPath
-        //             ? newItems.findIndex(n => n.name == latestPath)
-        //             : checkPosition
-        //             ? newItems.findIndex(n => checkPosition(n))
-        //             : 0
-        // virtualTable.current?.setInitialPosition(pos, newItems.length)
-        // if (result.path) {
-        //     localStorage.setItem(`${id}-lastPath`, result.path)
-        //     if (!fromBacklog)
-        //         history.current.set(result.path)
-        // }
-        //    }, [id, setItems, setWidths, showHidden])
-    }, [id, showHidden])
-
-    
     // const onSort = async (sort: OnSort) => {
     //     sortIndex.current = sort.isSubColumn ? 10 : sort.column
     //     sortDescending.current = sort.isDescending
@@ -137,6 +106,37 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             }
             : columns
     }, [getWidthsId])
+
+    const changePath = useCallback(async (path?: string, forceShowHidden?: boolean, mount?: boolean, latestPath?: string, fromBacklog?: boolean, checkPosition?: (checkItem: Item) => boolean) => {
+        const newItemsProvider = getItemsProvider(path, itemsProvider.current)
+        const result = await newItemsProvider.getItems(id, path, forceShowHidden === undefined ? showHidden : forceShowHidden, mount)
+        if (result.cancelled)
+            return
+        // restrictionView.current?.reset()
+        if (itemsProvider.current != newItemsProvider) {
+            itemsProvider.current = newItemsProvider
+            virtualTable.current?.setColumns(setWidths(itemsProvider.current.getColumns()))
+        }
+        if (result.path)
+            setPath(result.path)
+        //const items = result.items && result.items?.length > 0 ? result.items : itemsProvider.current.getItems()
+        // const newItems = controller.current.sort(items, sortIndex.current, sortDescending.current)
+        const newItems = result.items!
+        setItems(newItems, result.dirCount, result.fileCount)
+        // getExtended({ id: result.id, folderId: id })
+        const pos = latestPath
+                    ? newItems.findIndex(n => n.name == latestPath)
+                    : checkPosition
+                    ? newItems.findIndex(n => checkPosition(n))
+                    : 0
+        virtualTable.current?.setInitialPosition(pos, newItems.length)
+        // if (result.path) {
+        //     localStorage.setItem(`${id}-lastPath`, result.path)
+        //     if (!fromBacklog)
+        //         history.current.set(result.path)
+        // }
+        //    }, [id, setItems, setWidths, showHidden])
+    }, [id, setWidths, showHidden])
 
     const toggleSelection = (item: Item) => {
         if (!item.isParent && !(item as RemotesItem)?.isNew)
