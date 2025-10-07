@@ -1,0 +1,19 @@
+{
+  "name": "testrs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./source/index.js",
+  "scripts": {
+    "debug": "node ./source/index.js",
+    "build-rust": "napi build --release",
+    "build-rust-debug": "napi build"  
+  },  
+ "dependencies": {
+    "rust-addon": "file:local-modules/rust-addon"
+  },  
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@napi-rs/cli": "^3.3.0"
+  }
+}

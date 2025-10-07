@@ -1,5 +1,6 @@
-import { getDrives, getFiles } from "filesystem-utilities"
+import { getFiles } from "filesystem-utilities"
 import path from 'path'
+import { getDrives } from "./drives.js"
 
 type GetFiles = {
     path: string
