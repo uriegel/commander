@@ -6,20 +6,10 @@ import * as settings from 'electron-settings'
 import { onCmd } from "./cmds.js"
 import { onRequest } from "./requests.js"
 import { registerGetIconProtocol } from "./icons.js"
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-import type * as Addon from 'rust-addon';
-
-const addon = require('rust-addon') as typeof Addon;
 
 export const rootDir = dirname(fileURLToPath(import.meta.url))
 
 let mainWindow: BrowserWindow | null = null
-
-
-
-console.log("Von Rust berechnet",  addon.plus100(99))
-
 
 protocol.registerSchemesAsPrivileged([
 	{
