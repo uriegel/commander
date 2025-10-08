@@ -19,6 +19,14 @@
             },
             "args" : ["."],            
             "outputCapture": "std"
-        }        
+        }, {
+            "name": "Launch Rust (Linux)",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/node_modules/electron/dist/electron",
+            "args": [ "" ],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "build",
+        }
     ]
 }
