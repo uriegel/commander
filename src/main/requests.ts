@@ -1,6 +1,9 @@
-import { getFiles } from "filesystem-utilities"
 import path from 'path'
 import { getDrives } from "./drives.js"
+import type * as RustAddonType from 'rust'
+import { createRequire } from 'module'
+const require = createRequire(import.meta.url)
+const addon = require('rust') as typeof RustAddonType
 
 type GetFiles = {
     path: string
@@ -16,8 +19,8 @@ export const onRequest = async (request: Request) => {
         case "json://getfiles/":
             const getfiles = await request.json() as GetFiles
             const normalizedPath =  path.normalize(getfiles.path)
-            const items = await getFiles(normalizedPath)
-            return writeJson({ items, path: normalizedPath })
+            const items = await addon.getFilesAsync(normalizedPath)
+            return writeJson(items)
         default:
             return writeJson({ ok: false })
     }

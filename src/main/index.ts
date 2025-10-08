@@ -6,18 +6,6 @@ import * as settings from 'electron-settings'
 import { onCmd } from "./cmds.js"
 import { onRequest } from "./requests.js"
 import { registerGetIconProtocol } from "./icons.js"
-import type * as RustAddonType from 'rust'
-import { createRequire } from 'module'
-const require = createRequire(import.meta.url)
-const addon = require('rust') as typeof RustAddonType
-
-console.log("Das ist eine Ausgabe")
-
-;(async () => {
-	console.log("Das asünkrone GetFiles", await addon.getFilesAsync("/home/uwe"))	
-})()
-
-
 
 export const rootDir = dirname(fileURLToPath(import.meta.url))
 

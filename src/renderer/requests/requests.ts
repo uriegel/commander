@@ -1,3 +1,5 @@
+import { FileItem } from "../items-provider/items"
+
 type RequestItem = {
     items: FileItem[],
     path: string

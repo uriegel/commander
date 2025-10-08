@@ -5,7 +5,7 @@
   "main": "./index.node",
   "scripts": {
     "build-rust": "napi build --release && npm run copy",
-    "copy": "cp index.node ../local_modules/rust && cp index.d.ts ../local_modules/rust cp package.json ../local_modules/rust"
+    "copy": "cp index.node ../local_modules/rust && cp index.d.ts ../local_modules/rust && cp package.json ../local_modules/rust"
   },  
   "author": "",
   "license": "MIT",

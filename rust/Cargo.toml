@@ -11,6 +11,9 @@ crate-type = ["cdylib"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+chrono = "0.4.42"
+itertools = "0.14.0"
+lexicmp = "0.2.0"
 napi = "3.0.0"
 napi-derive = "3.0.0"
 
