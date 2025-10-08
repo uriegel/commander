@@ -18,24 +18,30 @@ export type FolderViewHandle = {
     selectNone: () => void
 }
 
+interface ItemCount {
+    fileCount: number
+    dirCount: number
+}
+
 interface FolderViewProp {
     id: string,
     showHidden: boolean
     onFocus: () => void
     onItemChanged: (path: string, isDir: boolean, latitude?: number, longitude?: number) => void
-    // onItemsChanged: (count: ItemCount)=>void
+    onItemsChanged: (count: ItemCount)=>void
     onEnter: (item: Item)=>void
     setStatusText: (text?: string) => void
     dialog: DialogHandle
 }
 
 const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
-    { id, showHidden, onFocus, onEnter, onItemChanged, setStatusText, dialog },
+    { id, showHidden, onFocus, onEnter, onItemChanged, onItemsChanged, setStatusText, dialog },
     ref) => {
     
     const input = useRef<HTMLInputElement | null>(null)
 
     const virtualTable = useRef<VirtualTableHandle<Item>>(null)
+    const itemCount = useRef({ fileCount: 0, dirCount: 0 })
 
     const [items, setStateItems] = useState([] as Item[])
     const [path, setPath] = useState("")
@@ -82,18 +88,14 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             item.isDirectory == true, (item as FileItem)?.exifData?.latitude, (item as FileItem)?.exifData?.longitude),
     [path, onItemChanged])         
     
-    // const setItems = useCallback((items: Item[], dirCount?: number, fileCount?: number) => {
-    //     setStateItems(items)
-    //     refItems.current = items
-    //     if (dirCount != undefined || fileCount != undefined) {
-    //         itemCount.current = { dirCount: dirCount || 0, fileCount: fileCount || 0 }
-    //         onItemsChanged(itemCount.current)
-    //     }
-    // }, [onItemsChanged])
     const setItems = useCallback((items: Item[], dirCount?: number, fileCount?: number) => {
         setStateItems(items)
         //refItems.current = items
-    }, [])
+        if (dirCount != undefined || fileCount != undefined) {
+            itemCount.current = { dirCount: dirCount || 0, fileCount: fileCount || 0 }
+            onItemsChanged(itemCount.current)
+        }
+    }, [onItemsChanged])
     
     const getWidthsId = useCallback(() => `${id}-${itemsProvider.current?.id}-widths`, [id])
 
@@ -156,9 +158,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         const item = pos < items.length ? items[pos] : null
         if (item)
             onPositionChanged(item)
-        // TODO onItemsChanged(itemCount.current)
-        //   }, [items, onFocus, onPositionChanged, onItemsChanged]) 
-    }, [])
+        onItemsChanged(itemCount.current)
+    }, [items, onFocus, onPositionChanged, onItemsChanged]) 
 
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setPath(e.target.value)
 

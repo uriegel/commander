@@ -2,7 +2,9 @@ import { FileItem } from "../items-provider/items"
 
 type RequestItem = {
     items: FileItem[],
-    path: string
+    path: string,
+    dirCount: number,
+    fileCount: number
 }
 
 export const cmdRequest = async (cmd: string) => await fetch(`cmd://${cmd}`, { method: 'POST' })

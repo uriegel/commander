@@ -36,8 +36,8 @@ export class FileItemProvider extends IItemsProvider {
                 size: -1
             }, ...result.items as FileItem[]],
             path: result.path,
-            dirCount: result.items.length,
-            fileCount: 0
+            dirCount: result.dirCount,
+            fileCount: result.fileCount
         }
     }
 

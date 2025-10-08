@@ -21,8 +21,8 @@ pub struct FileItem {
 #[napi(object)]
 pub struct FileItemsResult {
 	pub items: Vec<FileItem>,
-	pub dirs: i32,
-	pub files: i32,
+	pub dir_count: i32,
+	pub file_count: i32,
 	pub path: String
 }
 
@@ -113,14 +113,14 @@ fn get_internal_files(path: String) -> std::result::Result<FileItemsResult, MyEr
 
 	dirs.sort_by(|a, b| natural_lexical_cmp(&a.name, &b.name));	
 	files.sort_by(|a, b| natural_lexical_cmp(&a.name, &b.name));	
-	let files_count = files.len();
-	let dirs_count = dirs.len();
+	let file_count = files.len() as i32;
+	let dir_count = dirs.len() as i32;
 	dirs.append(&mut files);
 
     Ok(FileItemsResult {
 		items: dirs,
-		dirs: dirs_count as i32,
-		files: files_count as i32,
+		dir_count,
+		file_count,
 		path
 	})
 

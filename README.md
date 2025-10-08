@@ -2,7 +2,6 @@
 A Norton Commander clone based on Electron and React with Typescript
 
 TODO
-* status bar: file count dir count
 * get files: hidden control
 * get files: sorting
 * get files: restricting
