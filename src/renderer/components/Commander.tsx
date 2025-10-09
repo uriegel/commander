@@ -6,7 +6,7 @@ import LocationViewer from "./viewers/LocationViewer"
 import MediaPlayer from "./viewers/MediaPlayer"
 import FileViewer from "./viewers/FileViewer"
 import TrackViewer from "./viewers/TrackViewer"
-import FolderView, { FolderViewHandle } from "./FolderView"
+import FolderView, { FolderViewHandle, ItemCount } from "./FolderView"
 import { cmdRequest } from "../requests/requests"
 import { Item } from "../items-provider/items"
 import { DialogContext } from "web-dialog-react"
@@ -40,7 +40,9 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 
 	const folderLeft = useRef<FolderViewHandle>(null)
 	const folderRight = useRef<FolderViewHandle>(null)
-
+	const showHiddenRef = useRef(false)
+	const activeFolderIdRef = useRef(ID_LEFT)
+	
 	const [showViewer, setShowViewer] = useState(false)    
     const [showHidden, setShowHidden] = useState(false)
 	const [itemProperty, setItemProperty] = useState<ItemProperty>({ path: "", latitude: undefined, longitude: undefined, isDirectory: false })
@@ -49,17 +51,23 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 	const [statusTextRight, setStatusTextRight] = useState<string | undefined>(undefined)
 	const [errorText, setErrorText] = useState<string | null>(null)
 	const [previewMode, setPreviewMode] = useState(PreviewMode.Default)
-	
-	const [activeFolderId, setActiveFolderId] = useState(ID_LEFT)
-	const onFocusLeft = () => setActiveFolderId(ID_LEFT)
-	const onFocusRight = () => setActiveFolderId(ID_RIGHT)
+	const [activeFolderId, setActiveFolderId] = useState(activeFolderIdRef.current)
+		
+	const onFocusLeft = () => {
+		activeFolderIdRef.current = ID_LEFT
+		setActiveFolderId(activeFolderIdRef.current)
+	}
+	const onFocusRight = () => {
+		activeFolderIdRef.current = ID_RIGHT
+		setActiveFolderId(activeFolderIdRef.current)
+	}
 
 	const dialog = useContext(DialogContext)
 
 	const showViewerRef = useRef(false)
 
-	const getActiveFolder = useCallback(() => activeFolderId == ID_LEFT ? folderLeft.current : folderRight.current, [activeFolderId])
-	const getInactiveFolder = useCallback(() => activeFolderId == ID_LEFT ? folderRight.current : folderLeft.current, [activeFolderId])
+	const getActiveFolder = () => activeFolderIdRef.current == ID_LEFT ? folderLeft.current : folderRight.current
+	const getInactiveFolder = () => activeFolderIdRef.current == ID_LEFT ? folderRight.current : folderLeft.current
 
 	useEffect(() => {
 		folderLeft.current?.setFocus()
@@ -94,10 +102,10 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
     }, [getActiveFolder, getInactiveFolder, previewMode, showViewer])
 
 	const toggleShowHiddenAndRefresh = () => {
-		// showHiddenRef.current = !showHiddenRef.current
-		// setShowHidden(showHiddenRef.current)
-		// folderLeft.current?.refresh(showHiddenRef.current)
-		// folderRight.current?.refresh(showHiddenRef.current)
+		showHiddenRef.current = !showHiddenRef.current
+		setShowHidden(showHiddenRef.current)
+		folderLeft.current?.refresh(showHiddenRef.current)
+		folderRight.current?.refresh(showHiddenRef.current)
 	}
 	
 	const toggleShowViewer = () => {
@@ -106,21 +114,28 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 	}
 	
 	const onItemChanged = useCallback(
-		(path: string, isDirectory: boolean, latitude?: number, longitude?: number) => 
-			setItemProperty({ path, isDirectory, latitude, longitude })
+		(id: string, path: string, isDirectory: boolean, latitude?: number, longitude?: number) => {
+			if (id == activeFolderIdRef.current)
+				setItemProperty({ path, isDirectory, latitude, longitude })
+		}
 	, [])
 	
 	const onEnter = (item: Item) => {
 		getActiveFolder()?.processEnter(item, getInactiveFolder()?.getPath())
 	}
+
+	const setActiveItemCount = (id: string, count: ItemCount) => {
+		if (id == activeFolderIdRef.current)
+		setItemCount(count)
+	}
 	
 	const FolderLeft = () => (
 		<FolderView ref={folderLeft} id={ID_LEFT} onFocus={onFocusLeft} onItemChanged={onItemChanged} onEnter= {onEnter}
-			onItemsChanged={setItemCount} showHidden={showHidden} setStatusText={setStatusTextLeft} dialog={dialog} />
+			onItemsChanged={setActiveItemCount} showHidden={showHidden} setStatusText={setStatusTextLeft} dialog={dialog} />
 	)
 	const FolderRight = () => (
 		<FolderView ref={folderRight} id={ID_RIGHT} onFocus={onFocusRight} onItemChanged={onItemChanged} onEnter= {onEnter}
-			onItemsChanged={setItemCount} showHidden={showHidden} setStatusText={setStatusTextRight} dialog={dialog}/>
+			onItemsChanged={setActiveItemCount} showHidden={showHidden} setStatusText={setStatusTextRight} dialog={dialog}/>
 	)
 
 	const getStatusText = useCallback(() => 

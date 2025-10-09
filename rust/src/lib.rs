@@ -61,6 +61,7 @@ impl From<MyError> for Error {
 
 pub struct AsyncGetFiles {
 	path: String,
+	is_hidden: bool
 }
 
 
@@ -70,7 +71,7 @@ impl Task for AsyncGetFiles {
 	type JsValue = FileItemsResult;
  
 	fn compute(&mut self) -> Result<Self::Output> {
-		get_internal_files(self.path.clone())
+		get_internal_files(self.path.clone(), self.is_hidden)
 			.map_err(|e| { e.into() })
 	}
  
@@ -80,11 +81,11 @@ impl Task for AsyncGetFiles {
 }
  
 #[napi]
-pub fn get_files_async(path: String) -> AsyncTask<AsyncGetFiles> {
-	AsyncTask::new(AsyncGetFiles { path })
+pub fn get_files_async(path: String, is_hidden: bool) -> AsyncTask<AsyncGetFiles> {
+	AsyncTask::new(AsyncGetFiles { path, is_hidden })
 } 
 
-fn get_internal_files(path: String) -> std::result::Result<FileItemsResult, MyError> {
+fn get_internal_files(path: String, show_hidden: bool) -> std::result::Result<FileItemsResult, MyError> {
 
     let read_dir = read_dir(&path)?;
     let (mut dirs, mut files): (Vec<_>, Vec<_>) = read_dir.filter_map(|entry|{
@@ -103,7 +104,11 @@ fn get_internal_files(path: String) -> std::result::Result<FileItemsResult, MyEr
         		name,
         		time: get_datetime(metadata)
       		}
-    	}).partition_map(|item|{
+    	})
+		.filter(|item| {
+			show_hidden || !item.is_hidden
+		})
+		.partition_map(|item|{
 			if item.is_directory {
 				itertools::Either::Left(item)
 			} else {

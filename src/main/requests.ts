@@ -6,7 +6,8 @@ const require = createRequire(import.meta.url)
 const addon = require('rust') as typeof RustAddonType
 
 type GetFiles = {
-    path: string
+    path: string,
+    showHidden?: boolean
 }
 
 export const onRequest = async (request: Request) => {
@@ -19,7 +20,7 @@ export const onRequest = async (request: Request) => {
         case "json://getfiles/":
             const getfiles = await request.json() as GetFiles
             const normalizedPath =  path.normalize(getfiles.path)
-            const items = await addon.getFilesAsync(normalizedPath)
+            const items = await addon.getFilesAsync(normalizedPath, getfiles.showHidden == true)
             return writeJson(items)
         default:
             return writeJson({ ok: false })

@@ -23,11 +23,11 @@ export class FileItemProvider extends IItemsProvider {
         }
     }
     
-    async getItems(id: string, path: string) {
+    async getItems(id: string, path: string, showHidden?: boolean) {
 
         // TODO compare reqId with reqId from the BaseProvider, if smaller cancel. Do this also after result
 
-        const result = await getFiles(path)
+        const result = await getFiles(path, showHidden)
         return {
             items: [{
                 name: '..',

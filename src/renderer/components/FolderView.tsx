@@ -18,7 +18,7 @@ export type FolderViewHandle = {
     selectNone: () => void
 }
 
-interface ItemCount {
+export interface ItemCount {
     fileCount: number
     dirCount: number
 }
@@ -27,8 +27,8 @@ interface FolderViewProp {
     id: string,
     showHidden: boolean
     onFocus: () => void
-    onItemChanged: (path: string, isDir: boolean, latitude?: number, longitude?: number) => void
-    onItemsChanged: (count: ItemCount)=>void
+    onItemChanged: (id: string, path: string, isDir: boolean, latitude?: number, longitude?: number) => void
+    onItemsChanged: (id: string, count: ItemCount)=>void
     onEnter: (item: Item)=>void
     setStatusText: (text?: string) => void
     dialog: DialogHandle
@@ -84,7 +84,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     const onPositionChanged = useCallback((item: Item) =>
-        onItemChanged(itemsProvider.current?.appendPath(path, item.name) || "",
+        onItemChanged(id, itemsProvider.current?.appendPath(path, item.name) || "",
             item.isDirectory == true, (item as FileItem)?.exifData?.latitude, (item as FileItem)?.exifData?.longitude),
     [path, onItemChanged])         
     
@@ -93,7 +93,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         //refItems.current = items
         if (dirCount != undefined || fileCount != undefined) {
             itemCount.current = { dirCount: dirCount || 0, fileCount: fileCount || 0 }
-            onItemsChanged(itemCount.current)
+            onItemsChanged(id, itemCount.current)
         }
     }, [onItemsChanged])
     
@@ -109,7 +109,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             : columns
     }, [getWidthsId])
 
-    const changePath = useCallback(async (path?: string, forceShowHidden?: boolean, mount?: boolean, latestPath?: string, fromBacklog?: boolean, checkPosition?: (checkItem: Item) => boolean) => {
+    const changePath = useCallback(async (path?: string, forceShowHidden?: boolean, mount?: boolean, latestPath?: string, fromBacklog?: boolean,
+            checkPosition?: (checkItem: Item) => boolean) => {
         const newItemsProvider = getItemsProvider(path, itemsProvider.current)
         const result = await newItemsProvider.getItems(id, path, forceShowHidden === undefined ? showHidden : forceShowHidden, mount)
         if (result.cancelled)
@@ -158,7 +159,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         const item = pos < items.length ? items[pos] : null
         if (item)
             onPositionChanged(item)
-        onItemsChanged(itemCount.current)
+        onItemsChanged(id, itemCount.current)
     }, [items, onFocus, onPositionChanged, onItemsChanged]) 
 
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setPath(e.target.value)
