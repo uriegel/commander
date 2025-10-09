@@ -47,6 +47,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const [path, setPath] = useState("")
 
     const itemsProvider = useRef<IItemsProvider>(undefined)
+    const sortIndex = useRef(0)
+    const sortDescending = useRef(false)
 
     useImperativeHandle(ref, () => ({
         id,
@@ -72,15 +74,15 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         // eslint-disable-next-line react-hooks/exhaustive-deps        
     }, []) 
 
-    // const onSort = async (sort: OnSort) => {
-    //     sortIndex.current = sort.isSubColumn ? 10 : sort.column
-    //     sortDescending.current = sort.isDescending
-    //     const newItems = controller.current.sort(items, sortIndex.current, sortDescending.current)
-    //     setItems(newItems)
-    //     const name = items[virtualTable.current?.getPosition() ?? 0].name
-    //     virtualTable.current?.setPosition(newItems.findIndex(n => n.name == name))
-    // }
-    const onSort = (sort: OnSort) => {
+    const onSort = async (sort: OnSort) => {
+        sortIndex.current = sort.isSubColumn ? 10 : sort.column
+        sortDescending.current = sort.isDescending
+        const newItems = itemsProvider.current?.sort(items, sortIndex.current, sortDescending.current)
+        if (newItems) {
+            setItems(newItems)
+            const name = items[virtualTable.current?.getPosition() ?? 0].name
+            virtualTable.current?.setPosition(newItems.findIndex(n => n.name == name))
+        }
     }
 
     const onPositionChanged = useCallback((item: Item) =>
@@ -113,7 +115,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             checkPosition?: (checkItem: Item) => boolean) => {
         const newItemsProvider = getItemsProvider(path, itemsProvider.current)
         const result = await newItemsProvider.getItems(id, path, forceShowHidden === undefined ? showHidden : forceShowHidden, mount)
-        if (result.cancelled)
+        if (result.cancelled || !result.items)
             return
         // restrictionView.current?.reset()
         if (itemsProvider.current != newItemsProvider) {
@@ -123,8 +125,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         if (result.path)
             setPath(result.path)
         //const items = result.items && result.items?.length > 0 ? result.items : itemsProvider.current.getItems()
-        // const newItems = controller.current.sort(items, sortIndex.current, sortDescending.current)
-        const newItems = result.items!
+        const newItems = itemsProvider.current.sort(result.items, sortIndex.current, sortDescending.current)
         setItems(newItems, result.dirCount, result.fileCount)
         // getExtended({ id: result.id, folderId: id })
         const pos = latestPath

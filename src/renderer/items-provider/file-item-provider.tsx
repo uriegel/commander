@@ -62,6 +62,31 @@ export class FileItemProvider extends IItemsProvider {
             }
     }
 
+    sort(items: Item[], sortIndex: number, sortDescending: boolean): Item[] {
+        return this.sortItems(items, this.getSortFunction(sortIndex, sortDescending))
+    }
+
+    getSortFunction = (index: number, descending: boolean) => {
+        const ascDesc = (sortResult: number) => descending ? -sortResult : sortResult
+        const sf = index == 0
+            ? (a: FileItem, b: FileItem) => a.name.localeCompare(b.name) 
+            : index == 1
+                ? (a: FileItem, b: FileItem) => {	
+                    const aa = a.exifData?.dateTime ? a.exifData?.dateTime : a.time || ""
+                    const bb = b.exifData?.dateTime ? b.exifData?.dateTime : b.time || ""
+                    return aa.localeCompare(bb) 
+                } 
+            : index == 2
+            ? (a: FileItem, b: FileItem) => (a.size || 0) - (b.size || 0)
+            : index == 10
+            ? (a: FileItem, b: FileItem) => a.name.getExtension().localeCompare(b.name.getExtension()) 
+            : undefined
+        
+        return sf
+            ? (a: FileItem, b: FileItem) => ascDesc(sf(a, b))
+            : undefined
+    }
+
     constructor() { super() }
 }
 
