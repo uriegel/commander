@@ -44,8 +44,12 @@ impl AsRef<str> for MyError {
 }
 
 impl From<io::Error> for MyError {
-    fn from(_err: io::Error) -> Self {
-        MyError::IOError((5, "Zugriff verweigert".to_string()))
+    fn from(err: io::Error) -> Self {
+		match err.raw_os_error() {
+			Some(13) => MyError::IOError((5, "Zugriff verweigert".to_string())),
+			Some(2) => MyError::IOError((2, "Datei nicht gefunden".to_string())),
+			_ => MyError::IOError((1, "Allgemeiner IO-Fehler".to_string()))
+		}
     }
 }
 
