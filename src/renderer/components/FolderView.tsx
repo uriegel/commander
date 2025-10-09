@@ -6,6 +6,7 @@ import { Item, FileItem, RemotesItem } from "../items-provider/items"
 import { IItemsProvider } from "../items-provider/base-provider"
 import { DialogHandle } from "web-dialog-react"
 import { initializeHistory } from "../history"
+import RestrictionView, { RestrictionViewHandle } from "./RestrictionView"
 
 export type FolderViewHandle = {
     id: string
@@ -43,6 +44,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const virtualTable = useRef<VirtualTableHandle<Item>>(null)
     const itemCount = useRef({ fileCount: 0, dirCount: 0 })
+    const restrictionView = useRef<RestrictionViewHandle>(null)
 
     const [items, setStateItems] = useState([] as Item[])
     const [path, setPath] = useState("")
@@ -119,7 +121,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         const result = await newItemsProvider.getItems(id, path, forceShowHidden === undefined ? showHidden : forceShowHidden, mount)
         if (result.cancelled || !result.items)
             return
-        // restrictionView.current?.reset()
+        restrictionView.current?.reset()
         if (itemsProvider.current != newItemsProvider) {
             itemsProvider.current = newItemsProvider
             virtualTable.current?.setColumns(setWidths(itemsProvider.current.getColumns()))
@@ -177,13 +179,35 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const onKeyDown = async (evt: React.KeyboardEvent) => {
         switch (evt.code) {
+            case "Space": {
+                const ri = restrictionView.current?.checkKey(" ")
+                if (ri) {
+                    virtualTable.current?.setPosition(0)
+                    setItems(ri)
+                } else if (itemsProvider.current?.itemsSelectable)
+                    setItems(items.map((n, i) => i != virtualTable.current?.getPosition() ? n : toggleSelection(n)))
+                itemsProvider.current?.onSelectionChanged(items)
+                evt.preventDefault()
+                evt.stopPropagation()
+                break
+            }
             case "Backspace":
-                //if (!checkRestricted(evt.key)) {
+                if (!checkRestricted(evt.key)) {
                     const path = history.current?.get(evt.shiftKey)
                     if (path)
                         changePath(path, showHidden, undefined, undefined, true)
-        //        }
-            break
+                }
+                break
+            case "Escape":
+                if (!checkRestricted(evt.key)) {
+                    if (itemsProvider.current?.itemsSelectable) 
+                        setItems(items.map((n) => setSelection(n, false)))
+                    itemsProvider.current?.onSelectionChanged(items)                    
+                }
+                break                
+            default:
+                checkRestricted(evt.key)
+                break
         }
     }
 
@@ -238,13 +262,23 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         }
     }
 
+    const checkRestricted = (key: string) => {
+        const restrictedItems = restrictionView.current?.checkKey(key)
+        if (restrictedItems) {
+            virtualTable.current?.setPosition(0)
+            setItems(restrictedItems)
+            return true
+        } else
+            return false
+    }
+
     return (
         <div className="folder" onFocus={onFocusChanged}>
             <input ref={input} className="pathInput" spellCheck={false} value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
             <div className="tableContainer" onKeyDown={onKeyDown} >
                 <VirtualTable ref={virtualTable} items={items} onColumnWidths={onColumnWidths} onEnter={onEnter} onPosition={onPositionChanged} onSort={onSort} />
             </div>
-            {/* <RestrictionView items={items} ref={restrictionView} /> */}
+            <RestrictionView items={items} ref={restrictionView} /> 
         </div>
     )
 })
