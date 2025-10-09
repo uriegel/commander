@@ -134,13 +134,12 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     ? newItems.findIndex(n => checkPosition(n))
                     : 0
         virtualTable.current?.setInitialPosition(pos, newItems.length)
-        // if (result.path) {
-        //     localStorage.setItem(`${id}-lastPath`, result.path)
+        if (result.path) {
+            localStorage.setItem(`${id}-lastPath`, result.path)
         //     if (!fromBacklog)
         //         history.current.set(result.path)
-        // }
-        //    }, [id, setItems, setWidths, showHidden])
-    }, [id, setWidths, showHidden])
+        }
+    }, [id, setItems, setWidths, showHidden])
 
     const toggleSelection = (item: Item) => {
         if (!item.isParent && !(item as RemotesItem)?.isNew)
