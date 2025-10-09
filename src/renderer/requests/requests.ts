@@ -1,3 +1,4 @@
+import { ErrorType } from "../../main/error"
 import { FileItem } from "../items-provider/items"
 
 type RequestItem = {
@@ -19,5 +20,9 @@ const jsonRequest =  async <T>(cmd: string, msg: any) => {
         body: JSON.stringify(msg)
     }
     const response = await fetch(`json://${cmd}`, payload)
-    return response.json() as T
+    const res = await response.json() as (T | ErrorType)
+    if ((res as ErrorType).code && (res as ErrorType).msg) {
+        throw (res)
+    }
+    return res as T
 }

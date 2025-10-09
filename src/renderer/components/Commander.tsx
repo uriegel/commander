@@ -132,11 +132,11 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 	
 	const FolderLeft = () => (
 		<FolderView ref={folderLeft} id={ID_LEFT} onFocus={onFocusLeft} onItemChanged={onItemChanged} onEnter= {onEnter}
-			onItemsChanged={setActiveItemCount} showHidden={showHidden} setStatusText={setStatusTextLeft} dialog={dialog} />
+			onItemsChanged={setActiveItemCount} showHidden={showHidden} setStatusText={setStatusTextLeft} dialog={dialog} setErrorText={err => setErrorText(err||null)} />
 	)
 	const FolderRight = () => (
 		<FolderView ref={folderRight} id={ID_RIGHT} onFocus={onFocusRight} onItemChanged={onItemChanged} onEnter= {onEnter}
-			onItemsChanged={setActiveItemCount} showHidden={showHidden} setStatusText={setStatusTextRight} dialog={dialog}/>
+			onItemsChanged={setActiveItemCount} showHidden={showHidden} setStatusText={setStatusTextRight} dialog={dialog} setErrorText={err => setErrorText(err||null)} />
 	)
 
 	const getStatusText = useCallback(() => 

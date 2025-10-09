@@ -2,11 +2,6 @@
 A Norton Commander clone based on Electron and React with Typescript
 
 TODO
-* return ErrorType discriminated Union in request
-* base request function: catch error and throw ErrorType
-* get files: not found
-* get files: access denied
-* status bar: error text
 * get files: cancelling
 
 * viewer

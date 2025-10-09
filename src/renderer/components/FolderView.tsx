@@ -7,6 +7,7 @@ import { IItemsProvider } from "../items-provider/base-provider"
 import { DialogHandle } from "web-dialog-react"
 import { initializeHistory } from "../history"
 import RestrictionView, { RestrictionViewHandle } from "./RestrictionView"
+import { ErrorType } from "../../main/error"
 
 export type FolderViewHandle = {
     id: string
@@ -33,11 +34,12 @@ interface FolderViewProp {
     onItemsChanged: (id: string, count: ItemCount)=>void
     onEnter: (item: Item)=>void
     setStatusText: (text?: string) => void
+    setErrorText: (text?: string) => void
     dialog: DialogHandle
 }
 
 const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
-    { id, showHidden, onFocus, onEnter, onItemChanged, onItemsChanged, dialog },
+    { id, showHidden, onFocus, onEnter, onItemChanged, onItemsChanged, dialog, setErrorText },
     ref) => {
     
     const input = useRef<HTMLInputElement | null>(null)
@@ -117,32 +119,38 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const changePath = useCallback(async (path?: string, forceShowHidden?: boolean, mount?: boolean, latestPath?: string, fromBacklog?: boolean,
             checkPosition?: (checkItem: Item) => boolean) => {
-        const newItemsProvider = getItemsProvider(path, itemsProvider.current)
-        const result = await newItemsProvider.getItems(id, path, forceShowHidden === undefined ? showHidden : forceShowHidden, mount)
-        if (result.cancelled || !result.items)
-            return
-        restrictionView.current?.reset()
-        if (itemsProvider.current != newItemsProvider) {
-            itemsProvider.current = newItemsProvider
-            virtualTable.current?.setColumns(setWidths(itemsProvider.current.getColumns()))
-        }
-        if (result.path)
-            setPath(result.path)
-        //const items = result.items && result.items?.length > 0 ? result.items : itemsProvider.current.getItems()
-        const newItems = itemsProvider.current.sort(result.items, sortIndex.current, sortDescending.current)
-        setItems(newItems, result.dirCount, result.fileCount)
-        // getExtended({ id: result.id, folderId: id })
-        const pos = latestPath
-                    ? newItems.findIndex(n => n.name == latestPath)
-                    : checkPosition
+        try {
+            const newItemsProvider = getItemsProvider(path, itemsProvider.current)
+            const result = await newItemsProvider.getItems(id, path, forceShowHidden === undefined ? showHidden : forceShowHidden, mount)
+            if (result.cancelled || !result.items)
+                return
+            restrictionView.current?.reset()
+            if (itemsProvider.current != newItemsProvider) {
+                itemsProvider.current = newItemsProvider
+                virtualTable.current?.setColumns(setWidths(itemsProvider.current.getColumns()))
+            }
+            if (result.path)
+                setPath(result.path)
+            //const items = result.items && result.items?.length > 0 ? result.items : itemsProvider.current.getItems()
+            const newItems = itemsProvider.current.sort(result.items, sortIndex.current, sortDescending.current)
+            setItems(newItems, result.dirCount, result.fileCount)
+            // getExtended({ id: result.id, folderId: id })
+            const pos = latestPath
+                ? newItems.findIndex(n => n.name == latestPath)
+                : checkPosition
                     ? newItems.findIndex(n => checkPosition(n))
                     : 0
-        virtualTable.current?.setInitialPosition(pos, newItems.length)
-        if (result.path) {
-            localStorage.setItem(`${id}-lastPath`, result.path)
+            virtualTable.current?.setInitialPosition(pos, newItems.length)
+            if (result.path) {
+                localStorage.setItem(`${id}-lastPath`, result.path)
                 if (!fromBacklog)
                     history.current.set(result.path)
+            }
+        } catch (e) {
+            const err = e as ErrorType
+            setErrorText(err.msg)
         }
+
     }, [id, setItems, setWidths, showHidden])
 
     const toggleSelection = (item: Item) => {

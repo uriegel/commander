@@ -14,7 +14,7 @@ type GetFiles = {
 export const onRequest = async (request: Request) => {
     try {
         if (request.method != 'POST')
-            return writeJson({ ok: false })
+            return writeJson({ code: 0, msg: "HTTP-Methode POST verlangt!"})
         switch (request.url) {
             case "json://getdrives/":
                 const drives = await getDrives()
@@ -25,12 +25,11 @@ export const onRequest = async (request: Request) => {
                 const items = await addon.getFilesAsync(normalizedPath, getfiles.showHidden == true)
                 return writeJson(items)
             default:
-                return writeJson({ ok: false })
+                return writeJson({ code: 0, msg: "Allgemeiner Fehler aufgetreten"})
         }
     } catch (e) {
-        const { code, msg } = extractErrorFromException(e)
-        console.log("Error in request", code, msg)
-        return writeJson({ ok: false })
+        const err = extractErrorFromException(e)
+        return writeJson(err)
     }
 }
 
