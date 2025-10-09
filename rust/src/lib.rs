@@ -46,9 +46,9 @@ impl AsRef<str> for MyError {
 impl From<io::Error> for MyError {
     fn from(err: io::Error) -> Self {
 		match err.raw_os_error() {
-			Some(13) => MyError::IOError((5, "Zugriff verweigert".to_string())),
-			Some(2) => MyError::IOError((2, "Datei nicht gefunden".to_string())),
-			_ => MyError::IOError((1, "Allgemeiner IO-Fehler".to_string()))
+			Some(13) => MyError::IOError((3, "Zugriff verweigert".to_string())),
+			Some(2) => MyError::IOError((2, "Datei oder Verzeichnis nicht gefunden".to_string())),
+			_ => MyError::IOError((1, "Allgemeiner IO Fehler".to_string()))
 		}
     }
 }
@@ -57,8 +57,8 @@ impl From<MyError> for Error {
     fn from(err: MyError) -> Error {
         match err {
             MyError::NapiError(e) => e,
-            MyError::IOError((code,str)) => Error::new(Status::InvalidArg, format!("{}-{}", code, str)),
-            MyError::GeneralError((code,str)) => Error::new(Status::InvalidArg, format!("{}-{}", code, str))
+            MyError::IOError((code,str)) => Error::new(Status::InvalidArg, format!("{}$${}", code, str)),
+            MyError::GeneralError((code,str)) => Error::new(Status::InvalidArg, format!("{}$${}", code, str))
         }    
     }
 }
