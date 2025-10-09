@@ -5,6 +5,7 @@ import { getItemsProvider } from "../items-provider/provider"
 import { Item, FileItem, RemotesItem } from "../items-provider/items"
 import { IItemsProvider } from "../items-provider/base-provider"
 import { DialogHandle } from "web-dialog-react"
+import { initializeHistory } from "../history"
 
 export type FolderViewHandle = {
     id: string
@@ -49,6 +50,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const itemsProvider = useRef<IItemsProvider>(undefined)
     const sortIndex = useRef(0)
     const sortDescending = useRef(false)
+    const history = useRef(initializeHistory())
 
     useImperativeHandle(ref, () => ({
         id,
@@ -136,8 +138,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         virtualTable.current?.setInitialPosition(pos, newItems.length)
         if (result.path) {
             localStorage.setItem(`${id}-lastPath`, result.path)
-        //     if (!fromBacklog)
-        //         history.current.set(result.path)
+                if (!fromBacklog)
+                    history.current.set(result.path)
         }
     }, [id, setItems, setWidths, showHidden])
 
@@ -175,6 +177,13 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const onKeyDown = async (evt: React.KeyboardEvent) => {
         switch (evt.code) {
+            case "Backspace":
+                //if (!checkRestricted(evt.key)) {
+                    const path = history.current?.get(evt.shiftKey)
+                    if (path)
+                        changePath(path, showHidden, undefined, undefined, true)
+        //        }
+            break
         }
     }
 

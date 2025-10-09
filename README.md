@@ -2,17 +2,18 @@
 A Norton Commander clone based on Electron and React with Typescript
 
 TODO
-* lastOpened history
 * get files: restricting
+* lint check
 
 * get files: not found
 * get files: access denied
-* get files: cancelling
 * status bar: error text
+* get files: cancelling
+
+* viewer
 
 * get exif data
 * get drives: mount
-* lint check
 * images to gtk3 and if-modified since with starttime/theme-change-time
 
 * copy: refresh left 
