@@ -1,5 +1,5 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react"
-import VirtualTable, { type OnSort, type SelectableItem, type TableColumns, type VirtualTableHandle } from "virtual-table-react"
+import VirtualTable, { type OnSort, type TableColumns, type VirtualTableHandle } from "virtual-table-react"
 import './FolderView.css'
 import { getItemsProvider } from "../items-provider/provider"
 import { Item, FileItem, RemotesItem } from "../items-provider/items"
@@ -37,7 +37,7 @@ interface FolderViewProp {
 }
 
 const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
-    { id, showHidden, onFocus, onEnter, onItemChanged, onItemsChanged, setStatusText, dialog },
+    { id, showHidden, onFocus, onEnter, onItemChanged, onItemsChanged, dialog },
     ref) => {
     
     const input = useRef<HTMLInputElement | null>(null)
@@ -92,7 +92,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const onPositionChanged = useCallback((item: Item) =>
         onItemChanged(id, itemsProvider.current?.appendPath(path, item.name) || "",
             item.isDirectory == true, (item as FileItem)?.exifData?.latitude, (item as FileItem)?.exifData?.longitude),
-    [path, onItemChanged])         
+    [id, path, onItemChanged])         
     
     const setItems = useCallback((items: Item[], dirCount?: number, fileCount?: number) => {
         setStateItems(items)
@@ -101,7 +101,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             itemCount.current = { dirCount: dirCount || 0, fileCount: fileCount || 0 }
             onItemsChanged(id, itemCount.current)
         }
-    }, [onItemsChanged])
+    }, [id, onItemsChanged])
     
     const getWidthsId = useCallback(() => `${id}-${itemsProvider.current?.id}-widths`, [id])
 
@@ -164,7 +164,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         if (item)
             onPositionChanged(item)
         onItemsChanged(id, itemCount.current)
-    }, [items, onFocus, onPositionChanged, onItemsChanged]) 
+    }, [id, items, onFocus, onPositionChanged, onItemsChanged]) 
 
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setPath(e.target.value)
 

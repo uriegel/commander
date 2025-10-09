@@ -19,6 +19,7 @@ const LocationViewer = ({ latitude, longitude }: LocationViewerProps) => {
         myMap.current?.setView([latitude!, longitude!])
     }, [latitude, longitude])
 
+    console.log("root.current", root.current)
     useResizeObserver(root.current, () => {
         myMap.current?.invalidateSize({ debounceMoveend: true, animate: true })    
     })

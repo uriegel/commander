@@ -34,10 +34,6 @@ export type CommanderHandle = {
 }
 
 const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
-    useImperativeHandle(ref, () => ({
-        onKeyDown
-    }))
-
 	const folderLeft = useRef<FolderViewHandle>(null)
 	const folderRight = useRef<FolderViewHandle>(null)
 	const showHiddenRef = useRef(false)
@@ -50,9 +46,24 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 	const [statusTextLeft, setStatusTextLeft] = useState<string | undefined>(undefined)
 	const [statusTextRight, setStatusTextRight] = useState<string | undefined>(undefined)
 	const [errorText, setErrorText] = useState<string | null>(null)
-	const [previewMode, setPreviewMode] = useState(PreviewMode.Default)
-	const [activeFolderId, setActiveFolderId] = useState(activeFolderIdRef.current)
+	const [previewMode, _setPreviewMode] = useState(PreviewMode.Default)
+	const [activeFolderId, setActiveFolderId] = useState(ID_LEFT)
 		
+	const getActiveFolder = useCallback(() => activeFolderIdRef.current == ID_LEFT ? folderLeft.current : folderRight.current, [])
+	const getInactiveFolder = () => activeFolderIdRef.current == ID_LEFT ? folderRight.current : folderLeft.current
+
+	const onKeyDown = (evt: React.KeyboardEvent) => {
+		if (evt.code == "Tab" && !evt.shiftKey) {
+			getInactiveFolder()?.setFocus()
+			evt.preventDefault()
+			evt.stopPropagation()
+		}
+	}
+
+    useImperativeHandle(ref, () => ({
+        onKeyDown
+    }))
+
 	const onFocusLeft = () => {
 		activeFolderIdRef.current = ID_LEFT
 		setActiveFolderId(activeFolderIdRef.current)
@@ -66,20 +77,9 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 
 	const showViewerRef = useRef(false)
 
-	const getActiveFolder = () => activeFolderIdRef.current == ID_LEFT ? folderLeft.current : folderRight.current
-	const getInactiveFolder = () => activeFolderIdRef.current == ID_LEFT ? folderRight.current : folderLeft.current
-
 	useEffect(() => {
 		folderLeft.current?.setFocus()
 	}, [])
-
-	const onKeyDown = (evt: React.KeyboardEvent) => {
-        if (evt.code == "Tab" && !evt.shiftKey) {
-            getInactiveFolder()?.setFocus()
-            evt.preventDefault()
-            evt.stopPropagation()
-        }
-    }
 
     const onMenuAction = useCallback(async (key: string) => {
         switch (key) {
@@ -98,8 +98,9 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 			case "SHOW_DEV_TOOLS":
 				await cmdRequest(key)
                 break
-        }
-    }, [getActiveFolder, getInactiveFolder, previewMode, showViewer])
+		}
+	}, [getActiveFolder])
+    // TODO }, [getActiveFolder, getInactiveFolder, previewMode, showViewer])
 
 	const toggleShowHiddenAndRefresh = () => {
 		showHiddenRef.current = !showHiddenRef.current
@@ -126,7 +127,7 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 
 	const setActiveItemCount = (id: string, count: ItemCount) => {
 		if (id == activeFolderIdRef.current)
-		setItemCount(count)
+			setItemCount(count)
 	}
 	
 	const FolderLeft = () => (

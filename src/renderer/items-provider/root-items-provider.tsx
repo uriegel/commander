@@ -24,7 +24,7 @@ export class RootItemProvider extends IItemsProvider {
         }
     }
     
-    async getItems(id: string) {
+    async getItems() {
 
         // TODO compare reqId with reqId from the BaseProvider, if smaller cancel. Do this also after result
 
