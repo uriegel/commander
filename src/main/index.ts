@@ -13,6 +13,19 @@ export const rootDir = dirname(fileURLToPath(import.meta.url))
 
 let mainWindow: BrowserWindow | null = null
 
+
+import type * as RustAddonType from 'rust'
+import { createRequire } from 'module'
+import { extractErrorFromException } from './error.js'
+const require = createRequire(import.meta.url)
+const addon = require('rust') as typeof RustAddonType
+
+
+console.log("testexif", addon.testExif("/media/uwe/Daten/Bilder/Fotos/2025/20250106_072743.jpg"))
+console.log("testexif", addon.testExif("/media/uwe/Daten/Bilder/Fotos/2025/20250517_191658.jpg"))
+
+
+
 protocol.registerSchemesAsPrivileged([
 	{
 		scheme: 'cmd',

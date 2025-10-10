@@ -13,6 +13,7 @@ crate-type = ["cdylib"]
 [dependencies]
 chrono = "0.4.42"
 itertools = "0.14.0"
+kamadak-exif = "0.6.1"
 lexicmp = "0.2.0"
 napi = "3.0.0"
 napi-derive = "3.0.0"
