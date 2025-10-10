@@ -6,6 +6,7 @@ import * as settings from 'electron-settings'
 import { onCmd } from "./cmds.js"
 import { onRequest } from "./requests.js"
 import { registerGetIconProtocol } from "./icons.js"
+import { registerGetBinProtocol } from "./bin.js"
 
 export const rootDir = dirname(fileURLToPath(import.meta.url))
 
@@ -27,7 +28,12 @@ protocol.registerSchemesAsPrivileged([
 		privileges: {
 			standard: true, secure: true, supportFetchAPI: true
 		}
-	}
+	},	{
+		scheme: 'bin',
+		privileges: {
+			standard: true, secure: true, supportFetchAPI: true	
+		}
+	},
 ])
 
 const createWindow = () => {
@@ -41,6 +47,7 @@ const createWindow = () => {
 	})
 	protocol.handle("json", async req => await onRequest(req))
 	registerGetIconProtocol()
+	registerGetBinProtocol()
 
 	const bounds = {
 		x: settings.getSync("x") as number,
