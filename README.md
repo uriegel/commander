@@ -2,7 +2,8 @@
 A Norton Commander clone based on Electron and React with Typescript
 
 TODO
-* viewer
+* urldecoding in nodejs fpr viewer
+* media viewer
 
 * lint
 
@@ -19,3 +20,5 @@ TODO
 * menubar-react: Kurzschlüsse in console, Insert shortcut Ins and Einfg
 
 * CSP in index.html
+
+* functional-extensions: compile to js to use it in electron

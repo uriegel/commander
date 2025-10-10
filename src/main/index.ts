@@ -106,11 +106,8 @@ app.on("activate", () => {
 
 //TODO
 
-// display images
 // display mp4 media in mediaplayer
-// display pdf
 // Range?
-// if-modified-since
 /*
 
 Electron's protocol module allows you to register and handle custom protocols or intercept existing ones. This is useful for creating secure, custom URL schemes or handling specific resource requests in your application.
