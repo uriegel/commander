@@ -29,8 +29,8 @@ export abstract class IItemsProvider {
     abstract getItems(id: string, path?: string, showHidden?: boolean, mount?: boolean): Promise<ItemsResult>
     abstract onEnter(data: EnterData): Promise<OnEnterResult>
     abstract appendPath(path: string, subPath: string): string
-    sort(items: Item[], sortIndex: number, sortDescending: boolean): Item[] { return items }
-    onSelectionChanged(items: Item[]) { }
+    sort(items: Item[], _sortIndex: number, _sortDescending: boolean): Item[] { return items }
+    onSelectionChanged(_items: Item[]) { }
     
     sortItems(folderItemArray: Item[], sortFunction?: SortFunction, sortDirs?: boolean) {
         const unsortedDirs = folderItemArray.filter(n => n.isDirectory || n.isParent)

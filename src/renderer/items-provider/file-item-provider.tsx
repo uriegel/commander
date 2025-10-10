@@ -1,7 +1,7 @@
 import { TableColumns } from "virtual-table-react"
 import { EnterData, IItemsProvider, OnEnterResult } from "./base-provider"
-import { Item, FileItem } from "./items"
-import IconName, { IconNameType } from "../components/IconName"
+import { Item, FileItem, IconNameType } from "./items"
+import IconName from "../components/IconName"
 import { formatDateTime, formatSize } from "./provider"
 import { getFiles } from "../requests/requests"
 
@@ -46,7 +46,7 @@ export class FileItemProvider extends IItemsProvider {
     } 
 
     async onEnter(enterData: EnterData): Promise<OnEnterResult> {
-        const fileEnter = enterData.item as FileItem
+//        const fileEnter = enterData.item as FileItem
 
         if (!enterData.item.isDirectory) {
             // TODO await onEnter({ id: enterData.id ?? "", name: enterData.item.name, path: enterData.path })

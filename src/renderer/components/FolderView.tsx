@@ -151,7 +151,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             setErrorText(err.msg)
         }
 
-    }, [id, setItems, setWidths, showHidden])
+    }, [id, setItems, setWidths, setErrorText, showHidden])
 
     const toggleSelection = (item: Item) => {
         if (!item.isParent && !(item as RemotesItem)?.isNew)

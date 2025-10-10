@@ -17,7 +17,7 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
     useEffect(() => {
         if (errorText) {
             clearTimeout(timer.current)
-            timer.current = setTimeout(() => setErrorText(null), 5000) as any as number           
+            timer.current = setTimeout(() => setErrorText(null), 5000) as unknown as number           
         }
     }, [errorText, setErrorText])
 

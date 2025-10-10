@@ -1,21 +1,7 @@
+import { IconNameType } from "../items-provider/items"
 import Android from "../svg/Android"
 import New from "../svg/New"
 import "./IconName.css"
-
-export const IconNameType = {
-    Parent: 'Parent',
-    Root: 'Root',
-    RootEjectable: 'RootEjectable',
-    Home: 'Home',
-    Folder: 'Folder',
-    File: 'File',
-    Remote: 'Remote',
-    Android: 'Android',
-    New: 'New',
-    Service: 'Service',
-    Favorite: 'Favorite'
-}
-export type IconNameType = (typeof IconNameType)[keyof typeof IconNameType]
 
 interface IconNameProps {
     namePart: string

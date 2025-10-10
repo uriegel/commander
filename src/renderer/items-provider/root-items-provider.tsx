@@ -1,8 +1,8 @@
 import { TableColumns } from "virtual-table-react"
 import { getDrives } from "../requests/requests"
 import { EnterData, IItemsProvider, OnEnterResult } from "./base-provider"
-import { Item, RootItem } from "../items-provider/items"
-import IconName, { IconNameType } from "../components/IconName"
+import { IconNameType, Item, RootItem } from "../items-provider/items"
+import IconName from "../components/IconName"
 import { formatSize } from "./provider"
 
 export const ROOT = "Root"

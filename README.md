@@ -2,11 +2,11 @@
 A Norton Commander clone based on Electron and React with Typescript
 
 TODO
+* get exif data with cancelling
 * lint
 
-* get exif data with cancelling
 * get drives: mount
-* images to gtk3 and if-modified since with starttime/theme-change-time
+* images to gtk3 (C access from rust) and if-modified since with starttime/theme-change-time
 
 * copy: refresh left 
 * copy: refresh right 
