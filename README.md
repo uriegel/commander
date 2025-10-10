@@ -2,10 +2,9 @@
 A Norton Commander clone based on Electron and React with Typescript
 
 TODO
-* urldecoding in nodejs fpr viewer
-* media viewer
-
 * lint
+
+* media viewer
 
 * get exif data with cancelling
 * get drives: mount

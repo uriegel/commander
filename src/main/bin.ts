@@ -6,7 +6,7 @@ export function registerGetBinProtocol() {
     
         try {
             const url = new URL(request.url)
-            const filePath = url.pathname.slice(1)
+            const filePath = decodeURIComponent(url.pathname.slice(1))
             const host = url.host
             const ext = getExtension(filePath)
 
