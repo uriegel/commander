@@ -8,7 +8,7 @@ interface MediaPlayerProps {
 const MediaPlayer = ({ path }: MediaPlayerProps) => (
     <div className='viewer'>
         <video className='mediaPlayer' controls autoPlay
-            src={getViewerPath(path)} />        
+            src={getViewerPath(path, true)} />        
     </div>
 )
 

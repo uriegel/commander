@@ -1,5 +1,5 @@
 import { protocol } from "electron";
-import { readFile } from "fs/promises"
+import { readFile, stat } from "fs/promises"
 
 export function registerGetBinProtocol() {
     protocol.handle('bin', async (request) => {
@@ -7,12 +7,15 @@ export function registerGetBinProtocol() {
         try {
             const url = new URL(request.url)
             const filePath = decodeURIComponent(url.pathname.slice(1))
-            const host = url.host
             const ext = getExtension(filePath)
+            const stats = await stat(filePath)
 
             const data = await readFile(filePath)
             return new Response(data as any, {
-                headers: { 'Content-Type': getMime(ext) } 
+                headers: {
+                    'Content-Type': getMime(ext),
+                    'Content-Length': stats.size.toString()
+                } 
             })
         } catch (err) {
             console.error('Failed to load icon', err)

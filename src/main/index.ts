@@ -7,6 +7,7 @@ import { onCmd } from "./cmds.js"
 import { onRequest } from "./requests.js"
 import { registerGetIconProtocol } from "./icons.js"
 import { registerGetBinProtocol } from "./bin.js"
+import { registerGetMediaProtocol } from "./media.js"
 
 export const rootDir = dirname(fileURLToPath(import.meta.url))
 
@@ -33,7 +34,12 @@ protocol.registerSchemesAsPrivileged([
 		privileges: {
 			standard: true, secure: true, supportFetchAPI: true	
 		}
-	},
+	}, {
+		scheme: 'media',
+		privileges: {
+			standard: true, secure: true, supportFetchAPI: true
+		}
+	}
 ])
 
 const createWindow = () => {
@@ -48,6 +54,7 @@ const createWindow = () => {
 	protocol.handle("json", async req => await onRequest(req))
 	registerGetIconProtocol()
 	registerGetBinProtocol()
+	registerGetMediaProtocol()
 
 	const bounds = {
 		x: settings.getSync("x") as number,
