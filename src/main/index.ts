@@ -1,3 +1,4 @@
+import 'functional-extensions'
 import { app, BrowserWindow, protocol } from "electron"
 import * as path from "path"
 import { fileURLToPath } from "url"
