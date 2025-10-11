@@ -2,7 +2,9 @@ use std::{fs::File, io::BufReader};
 
 use chrono::{Local, NaiveDateTime, TimeZone};
 use exif::{In, Tag, Value};
+use napi::{bindgen_prelude::AsyncTask, Task};
 use napi_derive::napi;
+use napi::bindgen_prelude::*;
 
 #[napi(object)]
 pub struct ExifData {
@@ -10,16 +12,35 @@ pub struct ExifData {
     pub latitude: Option<f64>,
     pub longitude: Option<f64>,
 }
-#[napi]
-pub fn test_exif(path: String) -> ExifData {
-    get_exif(path).unwrap_or_else(|| { ExifData {
-        date_time: None,
-        latitude: None,
-        longitude: None
-    }})
-} 
 
-fn get_exif(path: String) -> Option<ExifData> {
+pub struct AsyncGetExifData {
+    path: String
+}
+
+#[napi]
+impl Task for AsyncGetExifData {
+    type Output = ExifData;
+    type JsValue = ExifData;
+ 
+    fn compute(&mut self) -> Result<Self::Output> {
+        Ok(get_exif_data(self.path.clone()).unwrap_or_else(|| { ExifData {
+            date_time: None,
+            latitude: None,
+            longitude: None
+        }}))
+    }
+ 
+    fn resolve(&mut self, _: Env, output: ExifData) -> Result<Self::JsValue> {
+        Ok(output)
+    }
+}
+
+#[napi]
+pub fn get_exif_data_async(path: String) -> AsyncTask<AsyncGetExifData> {
+    AsyncTask::new(AsyncGetExifData { path })
+}
+
+fn get_exif_data(path: String) -> Option<ExifData> {
     let file = File::open(path).ok()?;
     let mut bufreader = BufReader::new(file);
     let exif_reader = exif::Reader::new();

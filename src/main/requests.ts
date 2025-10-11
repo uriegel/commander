@@ -3,6 +3,7 @@ import { getDrives } from "./drives.js"
 import type * as RustAddonType from 'rust'
 import { createRequire } from 'module'
 import { extractErrorFromException } from './error.js'
+import { retrieveExifDatas } from './exif.js'
 const require = createRequire(import.meta.url)
 const addon = require('rust') as typeof RustAddonType
 
@@ -24,6 +25,7 @@ export const onRequest = async (request: Request) => {
                 const getfiles = await request.json() as GetFiles
                 const normalizedPath = path.normalize(getfiles.path)
                 const items = await addon.getFilesAsync(normalizedPath, getfiles.showHidden == true)
+                retrieveExifDatas(items)
                 return writeJson(items)
             default:
                 return writeJson({ code: 0, msg: "Allgemeiner Fehler aufgetreten"})
