@@ -44,6 +44,7 @@ export interface FavoritesItem extends Item {
 }
 
 export interface ItemsResult {
+    requestId: number
     items?: Item[]
     dirCount: number,
     fileCount: number,

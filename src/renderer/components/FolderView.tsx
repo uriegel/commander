@@ -47,6 +47,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const virtualTable = useRef<VirtualTableHandle<Item>>(null)
     const itemCount = useRef({ fileCount: 0, dirCount: 0 })
     const restrictionView = useRef<RestrictionViewHandle>(null)
+    const requestId = useRef(0)
 
     const [items, setStateItems] = useState([] as Item[])
     const [path, setPath] = useState("")
@@ -120,9 +121,10 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const changePath = useCallback(async (path?: string, forceShowHidden?: boolean, mount?: boolean, latestPath?: string, fromBacklog?: boolean,
             checkPosition?: (checkItem: Item) => boolean) => {
         try {
+            requestId.current = getRequestId()
             const newItemsProvider = getItemsProvider(path, itemsProvider.current)
-            const result = await newItemsProvider.getItems(id, path, forceShowHidden === undefined ? showHidden : forceShowHidden, mount)
-            if (result.cancelled || !result.items)
+            const result = await newItemsProvider.getItems(requestId.current, path, forceShowHidden === undefined ? showHidden : forceShowHidden, mount)
+            if (result.cancelled || !result.items || result.requestId != requestId.current)
                 return
             restrictionView.current?.reset()
             if (itemsProvider.current != newItemsProvider) {
@@ -290,5 +292,9 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         </div>
     )
 })
+
+const getRequestId = () => ++requestIdSeed
+
+var requestIdSeed = 0
 
 export default FolderView
