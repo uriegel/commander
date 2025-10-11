@@ -66,7 +66,7 @@
   "homepage": "https://github.com/uriegel/commander#readme",
   "dependencies": {
     "electron-settings": "^5.0.0",
-    "functional-extensions": "^1.9.17",
+    "functional-extensions": "^2.0.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "rust": "file:local_modules/rust"

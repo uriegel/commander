@@ -2,7 +2,10 @@
 A Norton Commander clone based on Electron and React with Typescript
 
 TODO
-* get exif data with cancelling
+* get exif data with cancelling:
+* use async iterable
+
+
 * lint
 
 * get drives: mount
@@ -23,4 +26,3 @@ TODO
 
 * CSP in index.html
 
-* functional-extensions: compile to js to use it in electron
