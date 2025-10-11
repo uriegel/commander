@@ -11,6 +11,7 @@ use crate::error::AddonError;
 #[derive(Clone)]
 #[napi(object)]
 pub struct FileItem {
+	pub idx: i32,
 	pub name: String,
 	pub is_hidden: bool,
 	pub is_directory: bool,
@@ -61,9 +62,12 @@ fn get_internal_files(path: String, show_hidden: bool) -> std::result::Result<Fi
           		None => None
         	}
       	})
-    }).map(|(entry, metadata)| {
-    	let name = entry.file_name().to_str().unwrap().to_string();
+    })
+    	.enumerate()
+		.map(|(i, (entry, metadata))| {
+	    	let name = entry.file_name().to_str().unwrap().to_string();
       		FileItem {
+				idx: (i + 1) as i32,
         		is_directory: metadata.is_dir(),
         		is_hidden: is_hidden(&name),
         		size: metadata.len() as i64,

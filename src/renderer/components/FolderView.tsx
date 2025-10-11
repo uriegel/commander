@@ -48,6 +48,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const itemCount = useRef({ fileCount: 0, dirCount: 0 })
     const restrictionView = useRef<RestrictionViewHandle>(null)
     const requestId = useRef(0)
+    const itemsDictionary = useRef<Map<number, Item>>(new Map)
 
     const [items, setStateItems] = useState([] as Item[])
     const [path, setPath] = useState("")
@@ -136,6 +137,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             //const items = result.items && result.items?.length > 0 ? result.items : itemsProvider.current.getItems()
             const newItems = itemsProvider.current.sort(result.items, sortIndex.current, sortDescending.current)
             setItems(newItems, result.dirCount, result.fileCount)
+            itemsDictionary.current = new Map(newItems.filter(n => n.idx).map(n => [n.idx!, n]))
+            console.log("itemsDictionar", itemsDictionary.current)
             // getExtended({ id: result.id, folderId: id })
             const pos = latestPath
                 ? newItems.findIndex(n => n.name == latestPath)

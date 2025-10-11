@@ -4,6 +4,7 @@ interface SelectableItem {
 
 export interface Item extends SelectableItem {
     name:         string
+    idx?:         number
     size?:        number
     isParent?:    boolean
     isDirectory?: boolean    
