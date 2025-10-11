@@ -24,7 +24,7 @@ export class FileItemProvider extends IItemsProvider {
     }
     
     async getItems(requestId: number, path: string, showHidden?: boolean) {
-        const result = await getFiles(path, showHidden)
+        const result = await getFiles(requestId, path, showHidden)
         return {
             requestId,
             items: [{

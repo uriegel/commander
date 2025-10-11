@@ -293,8 +293,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     )
 })
 
+let requestIdSeed = 0
 const getRequestId = () => ++requestIdSeed
-
-var requestIdSeed = 0
 
 export default FolderView

@@ -11,7 +11,7 @@ type RequestItem = {
 export const cmdRequest = async (cmd: string) => await fetch(`cmd://${cmd}`, { method: 'POST' })
 
 export const getDrives = () => jsonRequest<RequestItem>("getdrives", {})
-export const getFiles = (path: string, showHidden?: boolean) => jsonRequest<RequestItem>("getfiles", { path, showHidden })
+export const getFiles = (requestId: number, path: string, showHidden?: boolean) => jsonRequest<RequestItem>("getfiles", { requestId, path, showHidden })
 
 const jsonRequest =  async <T>(cmd: string, msg: unknown) => {
     const payload = {

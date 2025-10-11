@@ -7,6 +7,7 @@ const require = createRequire(import.meta.url)
 const addon = require('rust') as typeof RustAddonType
 
 type GetFiles = {
+    requestId: number,
     path: string,
     showHidden?: boolean
 }

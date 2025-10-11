@@ -19,9 +19,8 @@ const PictureViewer = ({ path, latitude, longitude }: PictureViewerProps) => {
     )
 }
 
+let noCacheId = 0
 const getNoCacheId = () => ++noCacheId
-
-var noCacheId = 0
 
 export default PictureViewer
 
