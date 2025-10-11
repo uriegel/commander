@@ -2,9 +2,10 @@
 A Norton Commander clone based on Electron and React with Typescript
 
 TODO
-* get exif data with cancelling:
-* use async iterable
-
+* get exif data: send them to renderer
+* get exif data: adapt items to show exif datas
+* get exif data: cancelling
+* get exif data: show in statusbar for the specific side
 
 * lint
 
