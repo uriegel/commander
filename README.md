@@ -2,8 +2,8 @@
 A Norton Commander clone based on Electron and React with Typescript
 
 TODO
-* get exif data: connect folderViews to event sinks via Observable per folderId so that only that folder receives the msg it was supposed to
-* get exif data: adapt items to show exif datas
+* get exif data: Create Observables for a certain folderId and certain msg types. replace unknown with { folderId, cmd, ExifData | ...}
+* get exif data: adapt items to show exif datas: ExifData: { requestId, Items[]} but only when not empty
 * get exif data: cancelling
 * get exif data: show in statusbar for the specific side
 

@@ -11,7 +11,7 @@ import { cmdRequest } from "../requests/requests"
 import { Item } from "../items-provider/items"
 import { DialogContext } from "web-dialog-react"
 import Statusbar from "./StatusBar"
-import { registerEvents } from "../requests/events"
+import { message$ } from "../requests/events"
 
 const ID_LEFT = "left"
 const ID_RIGHT = "right"
@@ -79,15 +79,9 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 	const showViewerRef = useRef(false)
 
 
-	const eventCallback = useCallback((msg: unknown) => console.log("From Main", msg), [])
 	useEffect(() => {
-		folderLeft.current?.setFocus()
-
-
-
-
-		registerEvents("einmal", eventCallback)
-
+		const sub = message$.subscribe(msg => console.log("From electron", msg))
+		return () => sub.unsubscribe()
 	}, [])
 
     const onMenuAction = useCallback(async (key: string) => {
