@@ -23,8 +23,8 @@ export class FileItemProvider extends IItemsProvider {
         }
     }
     
-    async getItems(requestId: number, path: string, showHidden?: boolean) {
-        const result = await getFiles(requestId, path, showHidden)
+    async getItems(folderId: string, requestId: number, path: string, showHidden?: boolean) {
+        const result = await getFiles(folderId, requestId, path, showHidden)
         return {
             requestId,
             items: [{

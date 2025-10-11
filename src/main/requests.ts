@@ -8,6 +8,7 @@ const require = createRequire(import.meta.url)
 const addon = require('rust') as typeof RustAddonType
 
 type GetFiles = {
+    folderId: string,
     requestId: number,
     path: string,
     showHidden?: boolean
@@ -25,7 +26,7 @@ export const onRequest = async (request: Request) => {
                 const getfiles = await request.json() as GetFiles
                 const normalizedPath = path.normalize(getfiles.path)
                 const items = await addon.getFilesAsync(normalizedPath, getfiles.showHidden == true)
-                retrieveExifDatas(items)
+                retrieveExifDatas(getfiles.folderId, getfiles.requestId, items)
                 return writeJson(items)
             default:
                 return writeJson({ code: 0, msg: "Allgemeiner Fehler aufgetreten"})

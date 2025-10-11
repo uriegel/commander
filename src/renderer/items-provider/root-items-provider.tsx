@@ -24,7 +24,7 @@ export class RootItemProvider extends IItemsProvider {
         }
     }
     
-    async getItems(requestId: number) {
+    async getItems(_: string, requestId: number) {
         const result = await getDrives()
         return {
             requestId,

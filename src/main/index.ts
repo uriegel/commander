@@ -9,12 +9,13 @@ import { onRequest } from "./requests.js"
 import { registerGetIconProtocol } from "./icons.js"
 import { registerGetBinProtocol } from "./bin.js"
 import { registerGetMediaProtocol } from "./media.js"
+import { Event } from './events.js'
 
 export const rootDir = dirname(fileURLToPath(import.meta.url))
 
 let mainWindow: BrowserWindow | null = null
 
-export function sendEvent(data: unknown) {
+export function sendEvent(data: Event) {
 	mainWindow?.webContents.send('fromMain', data)	
 }
 

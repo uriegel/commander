@@ -5,7 +5,7 @@ import { sendEvent } from './index.js'
 const require = createRequire(import.meta.url)
 const addon = require('rust') as typeof RustAddonType
 
-export async function retrieveExifDatas(itemsResult: RustAddonType.FileItemsResult) {
+export async function retrieveExifDatas(folderId: string, requestId: number, itemsResult: RustAddonType.FileItemsResult) {
     const exifDatas = await itemsResult
         .items
         .filter(n => n.name.toLowerCase().endsWith(".jpg") || n.name.toLowerCase().endsWith(".png") || n.name.toLowerCase().endsWith(".heic"))
@@ -13,5 +13,14 @@ export async function retrieveExifDatas(itemsResult: RustAddonType.FileItemsResu
         .toAsyncEnumerable()
         .mapAwait(addon.getExifDataAsync)
         .await()
-    sendEvent(exifDatas)
+    if (exifDatas.length > 0)
+        sendEvent({
+            folderId,
+            cmd: 'Exif',
+            msg: {
+
+                requestId,
+                items: exifDatas
+            }
+        })
 }
