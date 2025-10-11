@@ -2,7 +2,6 @@
 A Norton Commander clone based on Electron and React with Typescript
 
 TODO
-* get exif data: Create Observables for a certain folderId and certain msg types
 * get exif data: adapt items to show exif datas
 * get exif data: cancelling
 * get exif data: show in statusbar for the specific side: send start and stop event

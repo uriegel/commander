@@ -7,14 +7,21 @@ use napi_derive::napi;
 use napi::bindgen_prelude::*;
 
 #[napi(object)]
+pub struct ExifDataInput {
+    pub idx: i32,
+    pub path: String
+}
+
+#[napi(object)]
 pub struct ExifData {
+    pub idx: i32,
     pub date_time: Option<String>,
     pub latitude: Option<f64>,
     pub longitude: Option<f64>,
 }
 
 pub struct AsyncGetExifData {
-    path: String
+    input: ExifDataInput
 }
 
 #[napi]
@@ -23,7 +30,8 @@ impl Task for AsyncGetExifData {
     type JsValue = ExifData;
  
     fn compute(&mut self) -> Result<Self::Output> {
-        Ok(get_exif_data(self.path.clone()).unwrap_or_else(|| { ExifData {
+        Ok(get_exif_data(self.input.idx, self.input.path.clone()).unwrap_or_else(|| { ExifData {
+            idx: 0,
             date_time: None,
             latitude: None,
             longitude: None
@@ -36,11 +44,11 @@ impl Task for AsyncGetExifData {
 }
 
 #[napi]
-pub fn get_exif_data_async(path: String) -> AsyncTask<AsyncGetExifData> {
-    AsyncTask::new(AsyncGetExifData { path })
+pub fn get_exif_data_async(input: ExifDataInput) -> AsyncTask<AsyncGetExifData> {
+    AsyncTask::new(AsyncGetExifData { input })
 }
 
-fn get_exif_data(path: String) -> Option<ExifData> {
+fn get_exif_data(idx: i32, path: String) -> Option<ExifData> {
     let file = File::open(path).ok()?;
     let mut bufreader = BufReader::new(file);
     let exif_reader = exif::Reader::new();
@@ -65,11 +73,16 @@ fn get_exif_data(path: String) -> Option<ExifData> {
         gps_to_decimal(vec)
     } else { None });
 
-    Some(ExifData {
-        date_time,
-        latitude,
-        longitude
-    })
+    if date_time.is_some() || latitude.is_some() || longitude.is_some() {
+        Some(ExifData {
+            idx,
+            date_time,
+            latitude,
+            longitude
+        })
+    } else {
+        None
+    }
 }
 
 fn gps_to_decimal(rationals: &[exif::Rational]) -> Option<f64> {

@@ -9,16 +9,16 @@ export async function retrieveExifDatas(folderId: string, requestId: number, ite
     const exifDatas = await itemsResult
         .items
         .filter(n => n.name.toLowerCase().endsWith(".jpg") || n.name.toLowerCase().endsWith(".png") || n.name.toLowerCase().endsWith(".heic"))
-        .map(n => path.join(itemsResult.path, n.name))
+        .map(n => ({ idx: n.idx, path: path.join(itemsResult.path, n.name) }))
         .toAsyncEnumerable()
         .mapAwait(addon.getExifDataAsync)
+        .filter(n => !!n.dateTime || !!n.latitude || !!n.longitude)
         .await()
     if (exifDatas.length > 0)
         sendEvent({
             folderId,
             cmd: 'Exif',
             msg: {
-
                 requestId,
                 items: exifDatas
             }

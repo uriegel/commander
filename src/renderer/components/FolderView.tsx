@@ -8,6 +8,8 @@ import { DialogHandle } from "web-dialog-react"
 import { initializeHistory } from "../history"
 import RestrictionView, { RestrictionViewHandle } from "./RestrictionView"
 import { ErrorType } from "../../main/error"
+import { ID_LEFT } from "./Commander"
+import { exifDataEventsLeft$, exifDataEventsRight$ } from "../requests/events"
 
 export type FolderViewHandle = {
     id: string
@@ -81,6 +83,11 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         changePath(localStorage.getItem(`${id}-lastPath`) ?? "root", false, false)
         // eslint-disable-next-line react-hooks/exhaustive-deps        
     }, []) 
+    useEffect(() => {
+        const event$ = id == ID_LEFT ? exifDataEventsLeft$ : exifDataEventsRight$
+		const sub = event$.subscribe(msg => console.log(id, "From electron", msg))
+		return () => sub.unsubscribe()
+	}, [id])
 
     const onSort = async (sort: OnSort) => {
         sortIndex.current = sort.isSubColumn ? 10 : sort.column

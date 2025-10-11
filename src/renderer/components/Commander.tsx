@@ -11,10 +11,9 @@ import { cmdRequest } from "../requests/requests"
 import { Item } from "../items-provider/items"
 import { DialogContext } from "web-dialog-react"
 import Statusbar from "./StatusBar"
-import { message$ } from "../requests/events"
 
-const ID_LEFT = "left"
-const ID_RIGHT = "right"
+export const ID_LEFT = "left"
+export const ID_RIGHT = "right"
 
 const PreviewMode = {
     Default: 'Default',
@@ -77,12 +76,6 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 	const dialog = useContext(DialogContext)
 
 	const showViewerRef = useRef(false)
-
-
-	useEffect(() => {
-		const sub = message$.subscribe(msg => console.log("From electron", msg))
-		return () => sub.unsubscribe()
-	}, [])
 
     const onMenuAction = useCallback(async (key: string) => {
         switch (key) {
