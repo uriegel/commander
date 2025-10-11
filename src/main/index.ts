@@ -14,6 +14,10 @@ export const rootDir = dirname(fileURLToPath(import.meta.url))
 
 let mainWindow: BrowserWindow | null = null
 
+export function sendEvent(data: unknown) {
+	mainWindow?.webContents.send('fromMain', data)	
+}
+
 protocol.registerSchemesAsPrivileged([
 	{
 		scheme: 'cmd',
@@ -62,7 +66,10 @@ const createWindow = () => {
 		y: settings.getSync("y") as number,
 		width: settings.getSync("width") as number || 600,
 		height: settings.getSync("height") as number || 800,
-		icon: path.join(rootDir, "../../icons/64x64.png")
+		icon: path.join(rootDir, "../../icons/64x64.png"),
+		webPreferences: {
+			preload: path.join(rootDir, "../bridge/preload.js")
+		}
 	}
 
 	mainWindow = new BrowserWindow(bounds)
@@ -89,8 +96,7 @@ const createWindow = () => {
 				settings.setSync("height", bounds.height)
 			}
         }
-    })   
-
+	})   
 	mainWindow.removeMenu()
 
 	if (process.env.VITE_DEV_SERVER_URL) 

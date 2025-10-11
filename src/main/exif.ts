@@ -1,6 +1,7 @@
 import path from 'path'
 import type * as RustAddonType from 'rust'
 import { createRequire } from 'module'
+import { sendEvent } from './index.js'
 const require = createRequire(import.meta.url)
 const addon = require('rust') as typeof RustAddonType
 
@@ -12,6 +13,5 @@ export async function retrieveExifDatas(itemsResult: RustAddonType.FileItemsResu
         .toAsyncEnumerable()
         .mapAwait(addon.getExifDataAsync)
         .await()
-
-    console.log("ExifDatas", exifDatas)
+    sendEvent(exifDatas)
 }
