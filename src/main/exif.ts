@@ -6,14 +6,14 @@ const require = createRequire(import.meta.url)
 const addon = require('rust') as typeof RustAddonType
 
 export async function retrieveExifDatas(folderId: string, requestId: number, itemsResult: RustAddonType.FileItemsResult) {
-    const exifDatas = await itemsResult
+    const input = itemsResult
         .items
         .filter(n => n.name.toLowerCase().endsWith(".jpg") || n.name.toLowerCase().endsWith(".png") || n.name.toLowerCase().endsWith(".heic"))
         .map(n => ({ idx: n.idx, path: path.join(itemsResult.path, n.name) }))
-        .toAsyncEnumerable()
-        .mapAwait(addon.getExifDataAsync)
+    
+    const exifDatas = (await addon
+        .getExifDataAsync(input))
         .filter(n => !!n.dateTime || !!n.latitude || !!n.longitude)
-        .await()
     if (exifDatas.length > 0)
         sendEvent({
             folderId,

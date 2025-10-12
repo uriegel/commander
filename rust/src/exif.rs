@@ -7,6 +7,7 @@ use napi_derive::napi;
 use napi::bindgen_prelude::*;
 
 #[napi(object)]
+#[derive(Clone)]
 pub struct ExifDataInput {
     pub idx: i32,
     pub path: String
@@ -21,31 +22,40 @@ pub struct ExifData {
 }
 
 pub struct AsyncGetExifData {
-    input: ExifDataInput
+    input: Vec<ExifDataInput>
 }
 
 #[napi]
 impl Task for AsyncGetExifData {
-    type Output = ExifData;
-    type JsValue = ExifData;
+    type Output = Vec<ExifData>;
+    type JsValue = Vec<ExifData>;
  
     fn compute(&mut self) -> Result<Self::Output> {
-        Ok(get_exif_data(self.input.idx, self.input.path.clone()).unwrap_or_else(|| { ExifData {
-            idx: 0,
-            date_time: None,
-            latitude: None,
-            longitude: None
-        }}))
+        Ok(get_exif_datas(self.input.clone()))
     }
- 
-    fn resolve(&mut self, _: Env, output: ExifData) -> Result<Self::JsValue> {
+        // Ok(get_exif_datas(self.input.idx, self.input.path.clone()).unwrap_or_else(|| { ExifData {
+        //     idx: 0,
+        //     date_time: None,
+        //     latitude: None,
+        //     longitude: None
+        // }}))
+
+    
+    fn resolve(&mut self, _: Env, output: Vec<ExifData>) -> Result<Self::JsValue> {
         Ok(output)
     }
 }
 
 #[napi]
-pub fn get_exif_data_async(input: ExifDataInput) -> AsyncTask<AsyncGetExifData> {
+pub fn get_exif_data_async(input: Vec<ExifDataInput>) -> AsyncTask<AsyncGetExifData> {
     AsyncTask::new(AsyncGetExifData { input })
+}
+
+fn get_exif_datas(input: Vec<ExifDataInput>) -> Vec<ExifData> {
+    let result: Vec<_> = input.iter().filter_map(|i| {
+        get_exif_data(i.idx, i.path.clone())
+    }).collect();
+    result
 }
 
 fn get_exif_data(idx: i32, path: String) -> Option<ExifData> {
