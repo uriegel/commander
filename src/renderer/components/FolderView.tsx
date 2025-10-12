@@ -96,6 +96,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     useEffect(() => {
         const attachExifs = (exif: ExifDataType) => {
+            if (exif.requestId != requestId.current)
+                return
             exif.items.forEach(n => {
                 const item = itemsDictionary.current.get(n.idx) as FileItem
                 if (item) {

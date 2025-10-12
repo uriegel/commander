@@ -11,6 +11,8 @@ import { registerGetBinProtocol } from "./bin.js"
 import { registerGetMediaProtocol } from "./media.js"
 import { Event } from './events.js'
 
+process.env.UV_THREADPOOL_SIZE = "32"
+
 export const rootDir = dirname(fileURLToPath(import.meta.url))
 
 let mainWindow: BrowserWindow | null = null

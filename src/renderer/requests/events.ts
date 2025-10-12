@@ -23,7 +23,7 @@ type Event = {
     msg: EventData
 }
 
-let subscribers = new Set<Subscriber<Event>>
+const subscribers = new Set<Subscriber<Event>>
 window.electronAPI.onMessage(msg => {
     subscribers.values().forEach(s => s.next(msg as Event))
 })
