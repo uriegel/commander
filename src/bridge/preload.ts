@@ -1,3 +1,4 @@
+// eslint-disable-next-line 
 const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('electronAPI', {

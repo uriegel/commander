@@ -2,12 +2,12 @@
 A Norton Commander clone based on Electron and React with Typescript
 
 TODO
-* get exif data: adapt items to show exif datas
 * get exif data: cancelling
 * get exif data: show in statusbar for the specific side: send start and stop event
-
+* Location viewer
 * lint
 
+* Track viewer
 * get drives: mount
 * images to gtk3 (C access from rust) and if-modified since with starttime/theme-change-time
 

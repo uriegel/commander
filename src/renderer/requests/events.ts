@@ -1,9 +1,9 @@
-import { filter, map, Observable } from 'rxjs'
+import { filter, map, Observable, Subscriber } from 'rxjs'
 import { ID_LEFT, ID_RIGHT } from '../components/Commander'
 
 export type ExifData = {
     idx: number,
-    dateTime?: number,
+    dateTime?: string,
     latitude?: number,
     longitude?: number
 }
@@ -23,12 +23,14 @@ type Event = {
     msg: EventData
 }
 
-const message$ = new Observable<Event>(subscriber => {
-    window.electronAPI.onMessage(msg => subscriber.next(msg as Event))
-    // optional cleanup code
-    return () => {
-        console.log("unsubscribed from electron main")
-    }
+let subscribers = new Set<Subscriber<Event>>
+window.electronAPI.onMessage(msg => {
+    subscribers.values().forEach(s => s.next(msg as Event))
+})
+
+const message$ = new Observable<Event>(subscriberToSet => {
+    subscribers.add(subscriberToSet)
+    return () => subscribers.delete(subscriberToSet)
 })
 
 const exifDataEvents$ = message$.pipe(filter(n => n.cmd == "Exif"))

@@ -73,6 +73,10 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 		setActiveFolderId(activeFolderIdRef.current)
 	}
 
+	useEffect(() => {
+		folderLeft.current?.setFocus()
+	}, [])
+
 	const dialog = useContext(DialogContext)
 
 	const showViewerRef = useRef(false)

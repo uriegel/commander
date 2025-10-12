@@ -9,13 +9,13 @@ import { initializeHistory } from "../history"
 import RestrictionView, { RestrictionViewHandle } from "./RestrictionView"
 import { ErrorType } from "../../main/error"
 import { ID_LEFT } from "./Commander"
-import { exifDataEventsLeft$, exifDataEventsRight$ } from "../requests/events"
+import { exifDataEventsLeft$, exifDataEventsRight$, ExifDataType } from "../requests/events"
 
 export type FolderViewHandle = {
     id: string
-    setFocus: ()=>void
+    setFocus: () => void
     refresh: (forceShowHidden?: boolean) => void
-    processEnter: (item: Item, otherPath?: string)=>Promise<void>
+    processEnter: (item: Item, otherPath?: string) => Promise<void>
     getPath: () => string
     changePath: (path: string) => void
     insertSelection: () => void
@@ -33,8 +33,8 @@ interface FolderViewProp {
     showHidden: boolean
     onFocus: () => void
     onItemChanged: (id: string, path: string, isDir: boolean, latitude?: number, longitude?: number) => void
-    onItemsChanged: (id: string, count: ItemCount)=>void
-    onEnter: (item: Item)=>void
+    onItemsChanged: (id: string, count: ItemCount) => void
+    onEnter: (item: Item) => void
     setStatusText: (text?: string) => void
     setErrorText: (text?: string) => void
     dialog: DialogHandle
@@ -43,7 +43,7 @@ interface FolderViewProp {
 const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     { id, showHidden, onFocus, onEnter, onItemChanged, onItemsChanged, dialog, setErrorText },
     ref) => {
-    
+
     const input = useRef<HTMLInputElement | null>(null)
 
     const virtualTable = useRef<VirtualTableHandle<Item>>(null)
@@ -59,6 +59,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const sortIndex = useRef(0)
     const sortDescending = useRef(false)
     const history = useRef(initializeHistory())
+    const refItems = useRef<Item[]>([]) 
 
     useImperativeHandle(ref, () => ({
         id,
@@ -82,12 +83,38 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     useEffect(() => {
         changePath(localStorage.getItem(`${id}-lastPath`) ?? "root", false, false)
         // eslint-disable-next-line react-hooks/exhaustive-deps        
-    }, []) 
+    }, [])
+
+    const setItems = useCallback((items: Item[], dirCount?: number, fileCount?: number) => {
+        setStateItems(items)
+        refItems.current = items
+        if (dirCount != undefined || fileCount != undefined) {
+            itemCount.current = { dirCount: dirCount || 0, fileCount: fileCount || 0 }
+            onItemsChanged(id, itemCount.current)
+        }
+    }, [id, onItemsChanged])
+
     useEffect(() => {
+        const attachExifs = (exif: ExifDataType) => {
+            exif.items.forEach(n => {
+                const item = itemsDictionary.current.get(n.idx) as FileItem
+                if (item) {
+                    item.exifData = {
+                        dateTime: n.dateTime,
+                        longitude: n.longitude,
+                        latitude: n.latitude
+                    }
+                }
+            })
+            const newItems = itemsProvider.current?.sort(refItems.current, sortIndex.current, sortDescending.current)
+            if (newItems)
+                setItems(newItems)
+        }
+
         const event$ = id == ID_LEFT ? exifDataEventsLeft$ : exifDataEventsRight$
-		const sub = event$.subscribe(msg => console.log(id, "From electron", msg))
-		return () => sub.unsubscribe()
-	}, [id])
+        const sub = event$.subscribe(attachExifs)
+        return () => sub.unsubscribe()
+    }, [id, setItems])
 
     const onSort = async (sort: OnSort) => {
         sortIndex.current = sort.isSubColumn ? 10 : sort.column
@@ -103,17 +130,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const onPositionChanged = useCallback((item: Item) =>
         onItemChanged(id, itemsProvider.current?.appendPath(path, item.name) || "",
             item.isDirectory == true, (item as FileItem)?.exifData?.latitude, (item as FileItem)?.exifData?.longitude),
-    [id, path, onItemChanged])         
-    
-    const setItems = useCallback((items: Item[], dirCount?: number, fileCount?: number) => {
-        setStateItems(items)
-        //refItems.current = items
-        if (dirCount != undefined || fileCount != undefined) {
-            itemCount.current = { dirCount: dirCount || 0, fileCount: fileCount || 0 }
-            onItemsChanged(id, itemCount.current)
-        }
-    }, [id, onItemsChanged])
-    
+        [id, path, onItemChanged])
+
     const getWidthsId = useCallback(() => `${id}-${itemsProvider.current?.id}-widths`, [id])
 
     const setWidths = useCallback((columns: TableColumns<Item>) => {
@@ -121,13 +139,13 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         const widths = widthstr ? JSON.parse(widthstr) as number[] : null
         return widths
             ? {
-                ...columns, columns: columns.columns.map((n, i) => ({...n, width: widths![i]}))
+                ...columns, columns: columns.columns.map((n, i) => ({ ...n, width: widths![i] }))
             }
             : columns
     }, [getWidthsId])
 
     const changePath = useCallback(async (path?: string, forceShowHidden?: boolean, mount?: boolean, latestPath?: string, fromBacklog?: boolean,
-            checkPosition?: (checkItem: Item) => boolean) => {
+        checkPosition?: (checkItem: Item) => boolean) => {
         try {
             requestId.current = getRequestId()
             const newItemsProvider = getItemsProvider(path, itemsProvider.current)
@@ -145,7 +163,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             const newItems = itemsProvider.current.sort(result.items, sortIndex.current, sortDescending.current)
             setItems(newItems, result.dirCount, result.fileCount)
             itemsDictionary.current = new Map(newItems.filter(n => n.idx).map(n => [n.idx!, n]))
-            console.log("itemsDictionar", itemsDictionary.current)
             // getExtended({ id: result.id, folderId: id })
             const pos = latestPath
                 ? newItems.findIndex(n => n.name == latestPath)
@@ -184,7 +201,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         if (item)
             onPositionChanged(item)
         onItemsChanged(id, itemCount.current)
-    }, [id, items, onFocus, onPositionChanged, onItemsChanged]) 
+    }, [id, items, onFocus, onPositionChanged, onItemsChanged])
 
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setPath(e.target.value)
 
@@ -220,11 +237,11 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 break
             case "Escape":
                 if (!checkRestricted(evt.key)) {
-                    if (itemsProvider.current?.itemsSelectable) 
+                    if (itemsProvider.current?.itemsSelectable)
                         setItems(items.map((n) => setSelection(n, false)))
-                    itemsProvider.current?.onSelectionChanged(items)                    
+                    itemsProvider.current?.onSelectionChanged(items)
                 }
-                break                
+                break
             default:
                 checkRestricted(evt.key)
                 break
@@ -252,7 +269,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             : [checkParent(items[virtualTable.current?.getPosition() ?? 0])].filter(n => n != null) as Item[]
     }
 
-    const onInputFocus = (e: React.FocusEvent<HTMLInputElement>) => 
+    const onInputFocus = (e: React.FocusEvent<HTMLInputElement>) =>
         setTimeout(() => e.target.select())
 
     const onColumnWidths = (widths: number[]) => {
@@ -298,7 +315,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             <div className="tableContainer" onKeyDown={onKeyDown} >
                 <VirtualTable ref={virtualTable} items={items} onColumnWidths={onColumnWidths} onEnter={onEnter} onPosition={onPositionChanged} onSort={onSort} />
             </div>
-            <RestrictionView items={items} ref={restrictionView} /> 
+            <RestrictionView items={items} ref={restrictionView} />
         </div>
     )
 })
