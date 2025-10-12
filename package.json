@@ -17,6 +17,7 @@
     "files": [
       "dist/main/**/*",
       "dist/renderer/**/*",
+      "dist/bridge/**/*",
       "python/**/*",
       "package.json"
     ],
