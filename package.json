@@ -18,17 +18,7 @@
       "dist/main/**/*",
       "dist/renderer/**/*",
       "dist/bridge/**/*",
-      "python/**/*",
       "package.json"
-    ],
-    "extraResources": [
-      {
-        "from": "python/",
-        "to": "python/",
-        "filter": [
-          "**/*"
-        ]
-      }
     ],
     "directories": {
       "buildResources": "resources"
@@ -67,7 +57,7 @@
   "homepage": "https://github.com/uriegel/commander#readme",
   "dependencies": {
     "electron-settings": "^5.0.0",
-    "filesystem-utilities": "^6.1.1",
+    "filesystem-utilities": "^6.2.1",
     "functional-extensions": "^2.2.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

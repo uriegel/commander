@@ -2,21 +2,18 @@ import { app, protocol } from "electron"
 import { exec } from 'child_process'
 import path from "path"
 import { rootDir } from "./index.js"
-import { readFile } from "fs/promises"
+import { getIcon, getIconFromName } from "filesystem-utilities"
 
 export function registerGetIconProtocol() {
-    const isDev = !app.isPackaged
-    const iconFromNameScript = isDev  
-        ? path.join(rootDir, '..', '..', 'python', 'iconFromName.py')
-        : path.join(process.resourcesPath, 'python', 'iconFromName.py');
-    const iconFromExtensionScript = isDev  
-        ? path.join(rootDir, '..', '..', 'python', 'iconFromExtension.py')
-        : path.join(process.resourcesPath, 'python', 'iconFromExtension.py');
-
     protocol.handle('icon', async (request) => {
         const url = new URL(request.url)
         const iconName = url.pathname.slice(1) || "ddd"// e.g. icon://folder.png → 'folder.png'
-        const icon = (await runCmd(`python3 ${url.hostname == "name" ? iconFromNameScript : iconFromExtensionScript} ${iconName}`)).trimEnd()
+        const data = url.hostname == "name"
+            ? await getIconFromName(iconName) //await readFile((await runCmd(`python3 ${iconFromNameScript} ${iconName}`)).trimEnd()) 
+            : await getIcon(iconName)
+
+        if (data.length == 0)
+            console.log("icon not found", iconName)
 
         // Optional: you can store last-modified info in memory or on disk
         // const lastModified = getLastModifiedTimeForIcon(iconName)
@@ -24,15 +21,16 @@ export function registerGetIconProtocol() {
 
         // // Compare modification times
         // if (ifModifiedSince && new Date(ifModifiedSince) >= new Date(lastModified)) {
-        //     return new Response(null, { status: 304 }) 
+        //     return new Response(null, { status: 304 })
         // }
+        
         try {
-            const data = await readFile(icon) 
             return new Response(data as any, {
                 headers: {
-                    'Content-Type': icon.toLowerCase().endsWith('svg') ? 'image/svg+xml' : 'image/png',
+                    'Content-Type': isSvg(data) ? 'image/svg+xml' : 'image/png',
+                    'Content-Length': `${data.length}`,
 //                    'Last-Modified': lastModified,
-//                    'Cache-Control': 'public, max-age=3600'
+                    'Cache-Control': 'public, max-age=3600'
                 }
             })
         } catch (err) {
@@ -42,4 +40,13 @@ export function registerGetIconProtocol() {
     })
 }
 
-const runCmd = (cmd: string):Promise<string> => new Promise(res => exec(cmd, (_, stdout) => res(stdout)))
+function isSvg(bufferLike: Buffer<ArrayBufferLike> ) {
+  const bytes = bufferLike instanceof ArrayBuffer
+    ? new Uint8Array(bufferLike)
+    : new Uint8Array(bufferLike.buffer || bufferLike);
+
+  // Decode a small portion to avoid full parsing large files
+  const header = new TextDecoder().decode(bytes.slice(0, 200)).trimStart();
+  return header.startsWith('<svg') || header.startsWith('<?xml') && header.includes('<svg');
+}
+
