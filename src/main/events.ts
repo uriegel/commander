@@ -1,8 +1,14 @@
-import type * as RustAddonType from 'rust'
+export type ExifDataInfo = {
+    idx: number,
+    dateTime?: string,
+    latitude?: number,
+    longitude?: number
+}
+
 
 export type ExifData = {
     requestId: number,
-    items: RustAddonType.ExifData[]
+    items: ExifDataInfo[]
 }
 
 export type EventData = ExifData

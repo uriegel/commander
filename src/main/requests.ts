@@ -1,11 +1,7 @@
 import path from 'path'
-import { getDrives } from "./drives.js"
-import type * as RustAddonType from 'rust'
-import { createRequire } from 'module'
-import { extractErrorFromException } from './error.js'
+
 import { retrieveExifDatas } from './exif.js'
-const require = createRequire(import.meta.url)
-const addon = require('rust') as typeof RustAddonType
+import { ErrorType, getDrives, getFilesAsync } from 'filesystem-utilities'
 
 type GetFiles = {
     folderId: string,
@@ -25,15 +21,15 @@ export const onRequest = async (request: Request) => {
             case "json://getfiles/":
                 const getfiles = await request.json() as GetFiles
                 const normalizedPath = path.normalize(getfiles.path)
-                const items = await addon.getFilesAsync(normalizedPath, getfiles.showHidden == true)
+                const items = await getFilesAsync(normalizedPath, getfiles.showHidden == true)
                 retrieveExifDatas(getfiles.folderId, getfiles.requestId, items)
                 return writeJson(items)
             default:
                 return writeJson({ code: 0, msg: "Allgemeiner Fehler aufgetreten"})
         }
     } catch (e) {
-        const err = extractErrorFromException(e)
-        return writeJson(err)
+        const err = e as ErrorType
+        return writeJson({ code: err.code, message: err.message })
     }
 }
 

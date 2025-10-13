@@ -7,9 +7,9 @@ import { IItemsProvider } from "../items-provider/base-provider"
 import { DialogHandle } from "web-dialog-react"
 import { initializeHistory } from "../history"
 import RestrictionView, { RestrictionViewHandle } from "./RestrictionView"
-import { ErrorType } from "../../main/error"
 import { ID_LEFT } from "./Commander"
 import { exifDataEventsLeft$, exifDataEventsRight$, ExifDataType } from "../requests/events"
+import { ErrorType } from "filesystem-utilities"
 
 export type FolderViewHandle = {
     id: string
@@ -179,7 +179,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             }
         } catch (e) {
             const err = e as ErrorType
-            setErrorText(err.msg)
+            setErrorText(err.message)
         }
 
     }, [id, setItems, setWidths, setErrorText, showHidden])
