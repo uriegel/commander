@@ -1,7 +1,4 @@
-import { app, protocol } from "electron"
-import { exec } from 'child_process'
-import path from "path"
-import { rootDir } from "./index.js"
+import { protocol } from "electron"
 import { getIcon, getIconFromName } from "filesystem-utilities"
 
 export function registerGetIconProtocol() {
