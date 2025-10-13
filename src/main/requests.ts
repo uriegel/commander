@@ -1,13 +1,17 @@
 import path from 'path'
 
 import { retrieveExifDatas } from './exif.js'
-import { ErrorType, getDrives, getFilesAsync } from 'filesystem-utilities'
+import { cancel, ErrorType, getDrives, getFilesAsync } from 'filesystem-utilities'
 
 type GetFiles = {
     folderId: string,
     requestId: number,
     path: string,
     showHidden?: boolean
+}
+
+type CancelExifs = {
+    requestId: number
 }
 
 export const onRequest = async (request: Request) => {
@@ -24,6 +28,11 @@ export const onRequest = async (request: Request) => {
                 const items = await getFilesAsync(normalizedPath, getfiles.showHidden == true)
                 retrieveExifDatas(getfiles.folderId, getfiles.requestId, items)
                 return writeJson(items)
+            case "json://cancelexifs/":
+                const cancelExifs = await request.json() as CancelExifs
+                cancel(`${cancelExifs.requestId}`)
+                return writeJson({})
+                break
             default:
                 return writeJson({ code: 0, msg: "Allgemeiner Fehler aufgetreten"})
         }

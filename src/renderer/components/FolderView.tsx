@@ -10,6 +10,7 @@ import RestrictionView, { RestrictionViewHandle } from "./RestrictionView"
 import { ID_LEFT } from "./Commander"
 import { exifDataEventsLeft$, exifDataEventsRight$, ExifDataType } from "../requests/events"
 import { ErrorType } from "filesystem-utilities"
+import { cancelExifs } from "../requests/requests"
 
 export type FolderViewHandle = {
     id: string
@@ -41,7 +42,7 @@ interface FolderViewProp {
 }
 
 const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
-    { id, showHidden, onFocus, onEnter, onItemChanged, onItemsChanged, dialog, setErrorText },
+    { id, showHidden, onFocus, onEnter, onItemChanged, onItemsChanged, dialog, setErrorText, setStatusText },
     ref) => {
 
     const input = useRef<HTMLInputElement | null>(null)
@@ -148,7 +149,13 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const changePath = useCallback(async (path?: string, forceShowHidden?: boolean, mount?: boolean, latestPath?: string, fromBacklog?: boolean,
         checkPosition?: (checkItem: Item) => boolean) => {
+        
+        
+        //setStatusText(`FoolderId: ${id} öffne Pfad`)
+        //setTimeout(() => setStatusText(), 6000)
+        
         try {
+            cancelExifs(requestId.current)
             requestId.current = getRequestId()
             const newItemsProvider = getItemsProvider(path, itemsProvider.current)
             const result = await newItemsProvider.getItems(id, requestId.current, path, forceShowHidden === undefined ? showHidden : forceShowHidden, mount)

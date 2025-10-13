@@ -12,6 +12,7 @@ export const cmdRequest = async (cmd: string) => await fetch(`cmd://${cmd}`, { m
 
 export const getDrives = () => jsonRequest<RequestItem>("getdrives", {})
 export const getFiles = (folderId: string, requestId: number, path: string, showHidden?: boolean) => jsonRequest<RequestItem>("getfiles", { folderId, requestId, path, showHidden })
+export const cancelExifs = (requestId: number) => jsonRequest<RequestItem>("cancelExifs", { requestId })
 
 const jsonRequest =  async <T>(cmd: string, msg: unknown) => {
     const payload = {

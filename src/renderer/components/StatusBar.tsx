@@ -8,9 +8,10 @@ export interface StatusbarProps {
     errorText: string | null
     setErrorText: (text: string | null) => void
     statusText?: string
+    statusInfo?: string
 }
 
-const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusText  }: StatusbarProps) => {
+const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusText, statusInfo  }: StatusbarProps) => {
 
     const timer = useRef(0)
 
@@ -23,6 +24,8 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
 
     const getClasses = () => ["statusbar", errorText
                                             ? "error"
+                                            : statusInfo
+                                            ? "info"
                                             : statusText
                                             ? "status"
                                             : null]
@@ -30,6 +33,7 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
     return (
         <div className={getClasses()}>
             { errorText
+                || statusInfo
                 || (<>
                     <span>{statusText || path}</span>
                     <span className='fill'></span>
