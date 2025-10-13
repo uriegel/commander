@@ -123,13 +123,13 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         const event$ = id == ID_LEFT ? exifStartEventsLeft$ : exifStartEventsRight$
         const sub = event$.subscribe(() => setStatusText("Ermittle EXIF-Informationen..."))
         return () => sub.unsubscribe()
-    }, [id])
+    }, [id, setStatusText])
 
     useEffect(() => {
         const event$ = id == ID_LEFT ? exifStopEventsLeft$ : exifStopEventsRight$
         const sub = event$.subscribe(() => setStatusText())
         return () => sub.unsubscribe()
-    }, [id])
+    }, [id, setStatusText])
 
     const onSort = async (sort: OnSort) => {
         sortIndex.current = sort.isSubColumn ? 10 : sort.column
