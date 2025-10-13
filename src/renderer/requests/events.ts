@@ -13,9 +13,14 @@ export type ExifDataType = {
     items: ExifData[]
 }
 
-type EventData = ExifDataType
+export type ExifStatus = {
+    requestId: number
+}
 
-type EventCmd = "Exif"
+
+type EventData = ExifDataType | ExifStatus
+
+type EventCmd = "Exif" | "ExifStart" | "ExifStop"
 
 type Event = {
     folderId?: string,
@@ -34,6 +39,8 @@ const message$ = new Observable<Event>(subscriberToSet => {
 })
 
 const exifDataEvents$ = message$.pipe(filter(n => n.cmd == "Exif"))
+const exifStartEvents$ = message$.pipe(filter(n => n.cmd == "ExifStart"))
+const exifStopEvents$ = message$.pipe(filter(n => n.cmd == "ExifStop"))
 
 export const exifDataEventsLeft$ = exifDataEvents$
     .pipe(filter(n => n.folderId == ID_LEFT))
@@ -42,3 +49,19 @@ export const exifDataEventsLeft$ = exifDataEvents$
 export const exifDataEventsRight$ = exifDataEvents$
     .pipe(filter(n => n.folderId == ID_RIGHT))
     .pipe(map(n => n.msg as ExifDataType))
+
+export const exifStartEventsLeft$ = exifStartEvents$
+    .pipe(filter(n => n.folderId == ID_LEFT))
+    .pipe(map(n => n.msg as ExifStatus))
+
+export const exifStartEventsRight$ = exifStartEvents$
+    .pipe(filter(n => n.folderId == ID_RIGHT))
+    .pipe(map(n => n.msg as ExifStatus))
+
+export const exifStopEventsLeft$ = exifStopEvents$
+    .pipe(filter(n => n.folderId == ID_LEFT))
+    .pipe(map(n => n.msg as ExifStatus))
+
+export const exifStopEventsRight$ = exifStopEvents$
+    .pipe(filter(n => n.folderId == ID_RIGHT))
+    .pipe(map(n => n.msg as ExifStatus))

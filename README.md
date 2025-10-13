@@ -2,7 +2,6 @@
 A Norton Commander clone based on Electron and React with Typescript
 
 TODO
-* get exif data: show in statusbar for the specific side: send start and stop event to the folder state, set state on focus change
 * Location viewer
 * lint
 

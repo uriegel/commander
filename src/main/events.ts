@@ -11,9 +11,13 @@ export type ExifData = {
     items: ExifDataInfo[]
 }
 
-export type EventData = ExifData
+export type ExifStatus = {
+    requestId: number
+}
 
-export type EventCmd = "Exif"
+export type EventData = ExifData | ExifStatus
+
+export type EventCmd = "Exif" | "ExifStart" | "ExifStop"
 
 export type Event = {
     folderId?: string,

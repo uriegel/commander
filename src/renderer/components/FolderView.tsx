@@ -8,7 +8,7 @@ import { DialogHandle } from "web-dialog-react"
 import { initializeHistory } from "../history"
 import RestrictionView, { RestrictionViewHandle } from "./RestrictionView"
 import { ID_LEFT } from "./Commander"
-import { exifDataEventsLeft$, exifDataEventsRight$, ExifDataType } from "../requests/events"
+import { exifDataEventsLeft$, exifDataEventsRight$, ExifDataType, exifStartEventsLeft$, exifStartEventsRight$, exifStopEventsLeft$, exifStopEventsRight$ } from "../requests/events"
 import { ErrorType } from "filesystem-utilities"
 import { cancelExifs } from "../requests/requests"
 
@@ -119,6 +119,18 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         return () => sub.unsubscribe()
     }, [id, setItems])
 
+    useEffect(() => {
+        const event$ = id == ID_LEFT ? exifStartEventsLeft$ : exifStartEventsRight$
+        const sub = event$.subscribe(() => setStatusText("Ermittle EXIF-Informationen..."))
+        return () => sub.unsubscribe()
+    }, [id])
+
+    useEffect(() => {
+        const event$ = id == ID_LEFT ? exifStopEventsLeft$ : exifStopEventsRight$
+        const sub = event$.subscribe(() => setStatusText())
+        return () => sub.unsubscribe()
+    }, [id])
+
     const onSort = async (sort: OnSort) => {
         sortIndex.current = sort.isSubColumn ? 10 : sort.column
         sortDescending.current = sort.isDescending
@@ -149,11 +161,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const changePath = useCallback(async (path?: string, forceShowHidden?: boolean, mount?: boolean, latestPath?: string, fromBacklog?: boolean,
         checkPosition?: (checkItem: Item) => boolean) => {
-        
-        
-        //setStatusText(`FoolderId: ${id} öffne Pfad`)
-        //setTimeout(() => setStatusText(), 6000)
-        
         try {
             cancelExifs(requestId.current)
             requestId.current = getRequestId()
