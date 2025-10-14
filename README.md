@@ -23,7 +23,7 @@ TODO
 * Theming: SVG folder Icons per Theme
 * Theming: <tr> with padding 
 
-* menubar-react: Kurzschlüsse in console, Insert shortcut Ins and Einfg
+* menubar-react: Insert shortcut Ins and Einfg
 
 * CSP in index.html
 
