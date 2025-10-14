@@ -24,3 +24,5 @@ TODO
 
 * CSP in index.html
 
+* Bullet in menu
+* Strg + 2 restricts 2...

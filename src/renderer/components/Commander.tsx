@@ -1,5 +1,5 @@
 import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useRef, useState } from "react"
-import Menu from "./Menu"
+import Menu, { ViewerMode } from "./Menu"
 import ViewSplit from "view-split-react"
 import PictureViewer from "./viewers/PictureViewer"
 import LocationViewer from "./viewers/LocationViewer"
@@ -14,13 +14,6 @@ import Statusbar from "./StatusBar"
 
 export const ID_LEFT = "left"
 export const ID_RIGHT = "right"
-
-const PreviewMode = {
-    Default: 'Default',
-    Location: 'Location',
-    Both: 'Both'
-}
-type PreviewMode = (typeof PreviewMode)[keyof typeof PreviewMode]
 
 interface ItemProperty {
 	path: string
@@ -46,8 +39,8 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 	const [statusTextLeft, setStatusTextLeft] = useState<string | undefined>(undefined)
 	const [statusTextRight, setStatusTextRight] = useState<string | undefined>(undefined)
 	const [errorText, setErrorText] = useState<string | null>(null)
-	const [previewMode, _setPreviewMode] = useState(PreviewMode.Default)
 	const [activeFolderId, setActiveFolderId] = useState(ID_LEFT)
+	const [viewerMode, setViewerMode] = useState<ViewerMode>("Viewer")
 		
 	const getActiveFolder = useCallback(() => activeFolderIdRef.current == ID_LEFT ? folderLeft.current : folderRight.current, [])
 	const getInactiveFolder = () => activeFolderIdRef.current == ID_LEFT ? folderRight.current : folderLeft.current
@@ -100,7 +93,6 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
                 break
 		}
 	}, [getActiveFolder])
-    // TODO }, [getActiveFolder, getInactiveFolder, previewMode, showViewer])
 
 	const toggleShowHiddenAndRefresh = () => {
 		showHiddenRef.current = !showHiddenRef.current
@@ -154,9 +146,9 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 					.toLocaleLowerCase()
 		
 		return ext == ".jpg" || ext == ".png" || ext == ".jpeg"
-		 	? previewMode == PreviewMode.Default
+		 	? viewerMode == "Viewer"
 			? (<PictureViewer path={itemProperty.path} latitude={itemProperty.latitude} longitude={itemProperty.longitude} />)
-			: previewMode == PreviewMode.Location && itemProperty.latitude && itemProperty.longitude
+			: viewerMode == "Location" && itemProperty.latitude && itemProperty.longitude
 			? (<LocationViewer latitude={itemProperty.latitude} longitude={itemProperty.longitude} />)
 			: itemProperty.latitude && itemProperty.longitude
 			? <div className='bothViewer'>
@@ -177,7 +169,8 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
         <>
             <Menu autoMode={true} onMenuAction={onMenuAction}
 				showHidden={showHidden} toggleShowHidden={toggleShowHiddenAndRefresh}
-                showViewer={showViewer} toggleShowViewer={toggleShowViewer}
+				showViewer={showViewer} toggleShowViewer={toggleShowViewer}
+				viewerMode={viewerMode} setViewerMode={setViewerMode}
             />            
             <ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
 			<Statusbar path={itemProperty.path} dirCount={itemCount.dirCount} fileCount={itemCount.fileCount}
