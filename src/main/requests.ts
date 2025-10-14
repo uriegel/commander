@@ -42,7 +42,7 @@ export const onRequest = async (request: Request) => {
     }
 }
 
-function writeJson(msg: any) {
+export function writeJson(msg: any) {
     return new Response(JSON.stringify(msg), {
         headers: { 'Content-Type': 'application/json' }
     })

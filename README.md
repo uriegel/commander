@@ -10,7 +10,6 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* Track viewer
 * get drives: mount
 
 * copy: refresh left 

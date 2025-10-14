@@ -10,6 +10,7 @@ import { registerGetIconProtocol } from "./icons.js"
 import { registerGetBinProtocol } from "./bin.js"
 import { registerGetMediaProtocol } from "./media.js"
 import { Event } from './events.js'
+import { registerGetTrackProtocol } from './track.js'
 
 process.env.UV_THREADPOOL_SIZE = "32"
 
@@ -47,6 +48,11 @@ protocol.registerSchemesAsPrivileged([
 		privileges: {
 			standard: true, secure: true, supportFetchAPI: true
 		}
+	}, {
+		scheme: 'track',
+		privileges: {
+			standard: true, secure: true, supportFetchAPI: true
+		}
 	}
 ])
 
@@ -63,6 +69,7 @@ const createWindow = () => {
 	registerGetIconProtocol()
 	registerGetBinProtocol()
 	registerGetMediaProtocol()
+	registerGetTrackProtocol()
 
 	const bounds = {
 		x: settings.getSync("x") as number,
