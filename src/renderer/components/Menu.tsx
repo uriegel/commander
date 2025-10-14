@@ -139,22 +139,27 @@ const Menu = ({ autoMode, releaseMode, showHidden, toggleShowHidden, showViewer,
                 toggleChecked: toggleShowViewer,
                 shortcut: "F3"
             }, {
+                type: MenuItemType.Separator
+            }, {
                 name: "...ohne Ortsanzeige",
                 type: MenuItemType.MenuCheckItem,
                 checked: viewerMode == 'Viewer',
                 toggleChecked: toggleShowOnlyViewer,
+                bullet: true,
                 shortcut: "Strg+1"
             }, {
                 name: "...mit Ortsanzeige",
                 type: MenuItemType.MenuCheckItem,
                 checked: viewerMode == "ViewerLocation",
                 toggleChecked: toggleShowViewerLocation,
+                bullet: true,
                 shortcut: "Strg+2"
             }, {
                 name: "...nur Ortsanzeige",
                 type: MenuItemType.MenuCheckItem,
                 checked: viewerMode == "Location",
                 toggleChecked: toggleShowLocation,
+                bullet: true,
                 shortcut: "Strg+3"
             }, {
                 type: MenuItemType.Separator

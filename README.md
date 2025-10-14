@@ -4,8 +4,6 @@ A Norton Commander clone based on Electron and React with Typescript
 TODO
 * Track viewer
 * get drives: mount
-* Bullet in menu
-* menu Strg + 2 restricts 2...
 
 * copy: refresh left 
 * copy: refresh right 
