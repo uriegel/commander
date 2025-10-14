@@ -136,8 +136,5 @@ dist
 
 # Vite logs files
 vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
-rust/target
-rust/index.d.ts
-rust/index.node
-local_modules/rust
+vite.config.ts.timestamp-
+

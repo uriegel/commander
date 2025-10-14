@@ -1,6 +1,14 @@
 # Commander
 A Norton Commander clone based on Electron and React with Typescript
 
+## Prerequisites
+
+```
+suda apt update
+sudo apt install pkg-config
+sudo apt install libgtk-3-dev
+```
+
 TODO
 * Track viewer
 * get drives: mount
