@@ -11,6 +11,7 @@ import { cmdRequest } from "../requests/requests"
 import { Item } from "../items-provider/items"
 import { DialogContext } from "web-dialog-react"
 import Statusbar from "./StatusBar"
+import './viewers/viewers.css'
 
 export const ID_LEFT = "left"
 export const ID_RIGHT = "right"

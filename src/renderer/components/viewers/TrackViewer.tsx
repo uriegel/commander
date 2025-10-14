@@ -78,7 +78,7 @@ const TrackViewer = ({ path }: TrackViewerProps) => {
         getTrack(path)
     }, [path])
 
-    useResizeObserver(root.current, () => {
+    useResizeObserver(root, () => {
         myMap.current?.invalidateSize({ debounceMoveend: true, animate: true })    
     })
 

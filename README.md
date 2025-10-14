@@ -2,12 +2,10 @@
 A Norton Commander clone based on Electron and React with Typescript
 
 TODO
-* Location viewer
-* lint
-
 * Track viewer
 * get drives: mount
-* images to gtk3 (C access from rust) and if-modified since with starttime/theme-change-time
+* Bullet in menu
+* menu Strg + 2 restricts 2...
 
 * copy: refresh left 
 * copy: refresh right 
@@ -24,5 +22,3 @@ TODO
 
 * CSP in index.html
 
-* Bullet in menu
-* Strg + 2 restricts 2...

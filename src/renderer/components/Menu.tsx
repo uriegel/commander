@@ -1,5 +1,4 @@
 import Menubar, { MenuItemType } from 'menubar-react'
-import { useState } from 'react'
 
 export interface MenuProps {
     autoMode: boolean
