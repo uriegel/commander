@@ -13,9 +13,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@platform": [
-        "src/renderer/platform/platform.win32.ts",
-        "src/renderer/platform/platform.linux.ts"
+      "@platform/*": [
+        "src/renderer/platform/linux/*",
+        "src/renderer/platform/win32/*",
       ]
     }
   },

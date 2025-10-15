@@ -9,7 +9,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, "src"),
-      '@platform': path.resolve(__dirname, `src/renderer/platform/platform.${process.platform}.ts`)
+      '@platform': path.resolve(__dirname, `src/renderer/platform/${process.platform}`)
     }
   },
   build: {
