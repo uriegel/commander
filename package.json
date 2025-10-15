@@ -57,7 +57,7 @@
   "homepage": "https://github.com/uriegel/commander#readme",
   "dependencies": {
     "electron-settings": "^5.0.0",
-    "filesystem-utilities": "^6.3.4",
+    "filesystem-utilities": "^6.3.9",
     "functional-extensions": "^2.3.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
@@ -73,7 +73,7 @@
     "electron": "^38.2.1",
     "electron-builder": "^26.1.0",
     "eslint-plugin-react-hooks": "^7.0.0",
-    "eslint-plugin-react-refresh": "^0.4.23",
+    "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.0.0",
     "leaflet": "^1.9.4",
     "menubar-react": "^2.3.3",
