@@ -17,7 +17,11 @@ export const renderRow = (item: RootItem) => [
         // ? IconNameType.Remote
         // : item.name == FAVORITES
         // ? IconNameType.Favorite
-        : item.isEjectable ? IconNameType.RootEjectable : IconNameType.Root
+        : item.name == 'C:\\'
+        ? IconNameType.RootWindows
+        : item.type == "REMOVABLE"
+        ? IconNameType.RootEjectable
+        : IconNameType.Root
     } />),
     item.description ?? "",
     formatSize(item.size || -1)

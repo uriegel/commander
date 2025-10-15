@@ -1,3 +1,5 @@
+import { DriveType } from "filesystem-utilities"
+
 interface SelectableItem {
     isSelected?: boolean
 }
@@ -14,7 +16,7 @@ export interface RootItem extends Item {
     description?:  string
     mountPoint?:   string
     isMounted?:    boolean
-    isEjectable?:  boolean
+    type?:         DriveType
     //    driveKind?:    DriveKind    
 }
 
@@ -57,6 +59,7 @@ export const IconNameType = {
     Parent: 'Parent',
     Root: 'Root',
     RootEjectable: 'RootEjectable',
+    RootWindows: 'RootWindows',
     Home: 'Home',
     Folder: 'Folder',
     File: 'File',

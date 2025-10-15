@@ -18,6 +18,8 @@ const IconName = ({ namePart, type, iconPath }: IconNameProps) =>
         ? (<img className="image" src={`icon://name/drive-removable-media`} alt="" />)
         : type == IconNameType.RootEjectable
         ? (<img className="image" src={`icon://name/media-removable`} alt="" />)
+        : type == IconNameType.RootWindows
+        ? (<img className="image" src={`icon://name/drive-windows`} alt="" />)
         : type == IconNameType.Home
         ? (<img className="image" src={`icon://name/user-home`} alt="" />)
         : type == IconNameType.Android

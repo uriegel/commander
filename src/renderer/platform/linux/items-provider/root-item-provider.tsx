@@ -18,7 +18,7 @@ export const renderRow = (item: RootItem) => [
         // ? IconNameType.Remote
         // : item.name == FAVORITES
         // ? IconNameType.Favorite
-        : item.isEjectable ? IconNameType.RootEjectable : IconNameType.Root
+        : item.type == "REMOVABLE" ? IconNameType.RootEjectable : IconNameType.Root
     } />),
     item.description ?? "",
     item.mountPoint ?? "",
