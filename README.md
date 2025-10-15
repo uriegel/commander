@@ -15,6 +15,7 @@ sudo apt install libgtk-3-dev
 TODO
 * Windows version: missing icons
 * Windows version: exe-icons via platform
+* Windows version: exceptions: access denied, path not found
 * Windows version: when in root: parent goto root
 * Windows version: normalize path
 * Windows version: Track view: string as ascii string
