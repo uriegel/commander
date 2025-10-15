@@ -57,7 +57,7 @@
   "homepage": "https://github.com/uriegel/commander#readme",
   "dependencies": {
     "electron-settings": "^5.0.0",
-    "filesystem-utilities": "^6.4.0",
+    "filesystem-utilities": "^6.4.1",
     "functional-extensions": "^2.3.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
