@@ -27,6 +27,7 @@ export interface ExifData {
 }
 
 export interface FileItem extends Item {
+    iconPath?:  string
     time?:      string
     exifData?:  ExifData
     isHidden?:  boolean

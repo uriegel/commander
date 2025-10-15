@@ -26,6 +26,10 @@ export const onRequest = async (request: Request) => {
                 const getfiles = await request.json() as GetFiles
                 const normalizedPath = path.normalize(getfiles.path)
                 const items = await getFilesAsync(normalizedPath, getfiles.showHidden == true)
+                items.items = items.items.map(n => ({
+                    ...n, 
+                    iconPath: getIconPath(n.name, items.path)
+                }))
                 retrieveExifDatas(getfiles.folderId, getfiles.requestId, items)
                 return writeJson(items)
             case "json://cancelexifs/":
@@ -42,8 +46,26 @@ export const onRequest = async (request: Request) => {
     }
 }
 
+export function getExtension(filename: string) {
+    const index = filename.lastIndexOf(".")
+    return index > 0 ? filename.substring(index) : ""
+}
+
 export function writeJson(msg: any) {
     return new Response(JSON.stringify(msg), {
         headers: { 'Content-Type': 'application/json' }
     })
+}
+
+function getIconPath(name: string, path: string) {
+    const ext = getExtension(name)
+    return ext.toLowerCase() == ".exe"
+        ? appendPath(path, name)
+        : ext
+}
+
+function appendPath(path: string, subPath: string) {
+    return path.endsWith("\\") || subPath.startsWith('\\')
+        ? path + subPath
+        : path + "\\" + subPath
 }

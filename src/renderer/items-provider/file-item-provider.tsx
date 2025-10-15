@@ -101,7 +101,7 @@ const renderRow = (item: FileItem) => [
 			: item.isDirectory
 			? IconNameType.Folder
 			: IconNameType.File}
-		iconPath={item.name.getExtension()} />),
+		iconPath={item.iconPath} />),
 	(<span className={item.exifData?.dateTime ? "exif" : "" } >{formatDateTime(item?.exifData?.dateTime ?? item?.time)}</span>),
 	formatSize(item.size)
 ]

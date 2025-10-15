@@ -1,5 +1,6 @@
 import { protocol } from "electron";
 import { readFile, stat } from "fs/promises"
+import { getExtension } from "./requests.js";
 
 export function registerGetBinProtocol() {
     protocol.handle('bin', async (request) => {
@@ -22,11 +23,6 @@ export function registerGetBinProtocol() {
             return new Response('Icon not found', { status: 404 })
         }
     })
-}
-
-function getExtension(filename: string) {
-    const index = filename.lastIndexOf(".")
-    return index > 0 ? filename.substring(index) : ""
 }
 
 function getMime(ext: string) {
