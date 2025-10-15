@@ -9,7 +9,12 @@ sudo apt install pkg-config
 sudo apt install libgtk-3-dev
 ```
 
+
+
+
 TODO
+* Windows version drives
+* Windows version getItemsAsync
 * get drives: mount
 
 * copy: refresh left 

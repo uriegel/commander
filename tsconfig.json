@@ -9,7 +9,15 @@
     "esModuleInterop": true,
     "isolatedModules": true,
     "resolveJsonModule": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@platform": [
+        "src/renderer/platform/platform.win32.ts",
+        "src/renderer/platform/platform.linux.ts"
+      ]
+    }
   },
   "include": ["src"]
 }

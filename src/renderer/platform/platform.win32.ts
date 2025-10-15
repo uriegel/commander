@@ -1,0 +1,1 @@
+export const testPlatform = () => console.log("Ja das ist Windows")
