@@ -17,6 +17,7 @@ TODO
 * Windows version: exe-icons via platform
 * Windows version: when in root: parent goto root
 * Windows version: normalize path
+* Windows version: Track view: string as ascii string
 
 * get drives: mount
 
