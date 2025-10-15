@@ -5,9 +5,6 @@ import './themes/linux.css'
 import './App.css'
 import "./extensions/extensions"
 import { testPlatform } from '@platform/test'
-import { TestApp } from '@platform/TestApp'
-
-
 
 const App = () => {
 
@@ -19,14 +16,11 @@ const App = () => {
 		commander.current?.onKeyDown(evt)
 
 	return (
-		<>
-		<TestApp></TestApp>
 		<div className="App linuxTheme" onKeyDown={onKeyDown}>
 			<WithDialog>
 				<Commander ref={commander} ></Commander>
 			</WithDialog>
 		</div>
-		</>
 	)
 }
 

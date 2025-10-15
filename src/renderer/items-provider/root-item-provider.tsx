@@ -1,9 +1,8 @@
 import { TableColumns } from "virtual-table-react"
 import { getDrives } from "../requests/requests"
 import { EnterData, IItemsProvider, OnEnterResult } from "./base-provider"
-import { IconNameType, Item, RootItem } from "../items-provider/items"
-import IconName from "../components/IconName"
-import { formatSize } from "./provider"
+import { Item, RootItem } from "../items-provider/items"
+import { getColumns, renderRow } from '@platform/items-provider/root-item-provider'
 
 export const ROOT = "Root"
 
@@ -13,12 +12,7 @@ export class RootItemProvider extends IItemsProvider {
 
     getColumns(): TableColumns<Item> {
         return {
-            columns: [
-                { name: "Name" },
-                { name: "Bezeichnung" },
-                { name: "Mountpoint" },
-                { name: "Größe", isRightAligned: true }
-            ],
+            columns: getColumns(),
             getRowClasses,
             renderRow
         }
@@ -56,17 +50,3 @@ const getRowClasses = (item: RootItem) =>
         ? ["notMounted"]
         : []
 
-const renderRow = (item: RootItem) => [
-    (<IconName namePart={item.name} type={
-        item.name == '~'
-        ? IconNameType.Home
-        // : item.name == REMOTES
-        // ? IconNameType.Remote
-        // : item.name == FAVORITES
-        // ? IconNameType.Favorite
-        : item.isEjectable ? IconNameType.RootEjectable : IconNameType.Root
-    } />),
-    item.description ?? "",
-    item.mountPoint ?? "",
-    formatSize(item.size || -1)
-]
