@@ -13,8 +13,10 @@ sudo apt install libgtk-3-dev
 
 
 TODO
-* Windows version drives
+* Windows version drives: remove mountpoint
+* Windows version drives: get folder icons
 * Windows version getItemsAsync
+
 * get drives: mount
 
 * copy: refresh left 
