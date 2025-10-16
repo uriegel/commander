@@ -10,7 +10,7 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* get drives: mount
+* get drives: mount, also on Fedora
 
 * copy: refresh left 
 * copy: refresh right 
