@@ -60,7 +60,7 @@ export function writeJson(msg: any) {
 function getIconPath(name: string, filePath: string) {
     const ext = getExtension(name)
     return ext.toLowerCase() == ".exe"
-        ? process.platform == 'win32' ? path.join(filePath, name) : 'ext'
+        ? process.platform == 'win32' ? path.join(filePath, name) : ext
         : ext
 }
 
