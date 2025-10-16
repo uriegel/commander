@@ -1,7 +1,7 @@
 import path from 'path'
 
 import { retrieveExifDatas } from './exif.js'
-import { cancel, ErrorType, getDrives, getFilesAsync } from 'filesystem-utilities'
+import { cancel, getDrives, getFilesAsync, SystemError } from 'filesystem-utilities'
 
 type GetFiles = {
     folderId: string,
@@ -41,8 +41,8 @@ export const onRequest = async (request: Request) => {
                 return writeJson({ code: 0, msg: "Allgemeiner Fehler aufgetreten"})
         }
     } catch (e) {
-        const err = e as ErrorType
-        return writeJson({ code: err.code, message: err.message })
+        const err = e as SystemError
+        return writeJson(err)
     }
 }
 

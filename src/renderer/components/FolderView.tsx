@@ -9,7 +9,7 @@ import { initializeHistory } from "../history"
 import RestrictionView, { RestrictionViewHandle } from "./RestrictionView"
 import { ID_LEFT } from "./Commander"
 import { exifDataEventsLeft$, exifDataEventsRight$, ExifDataType, exifStartEventsLeft$, exifStartEventsRight$, exifStopEventsLeft$, exifStopEventsRight$ } from "../requests/events"
-import { ErrorType } from "filesystem-utilities"
+import { SystemError } from "filesystem-utilities"
 import { cancelExifs } from "../requests/requests"
 
 export type FolderViewHandle = {
@@ -192,7 +192,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     history.current.set(result.path)
             }
         } catch (e) {
-            const err = e as ErrorType
+            const err = e as SystemError
             setErrorText(err.message)
         }
 

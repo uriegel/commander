@@ -11,7 +11,7 @@ export const getColumns = () => [
             
 export const renderRow = (item: RootItem) => [
     (<IconName namePart={item.name} type={
-        item.name == '~'
+        item.type == 'HOME'
         ? IconNameType.Home
         // : item.name == REMOTES
         // ? IconNameType.Remote
