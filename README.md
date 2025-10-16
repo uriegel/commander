@@ -13,9 +13,9 @@ sudo apt install libgtk-3-dev
 
 
 TODO
+* Windows version: Track view: string as ascii string
 * Windows version: missing icons
 * Windows version: exceptions: access denied, path not found
-* Windows version: Track view: string as ascii string
 
 * get drives: mount
 
