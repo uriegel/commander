@@ -1,7 +1,7 @@
-import path from 'path'
-
-import { retrieveExifDatas } from './exif.js'
 import { cancel, getDrives, getFilesAsync, SystemError } from 'filesystem-utilities'
+import { spawn } from "child_process"
+import path from 'path'
+import { retrieveExifDatas } from './exif.js'
 
 type GetFiles = {
     folderId: string,
@@ -12,6 +12,10 @@ type GetFiles = {
 
 type CancelExifs = {
     requestId: number
+}
+
+type Mount = {
+    dev: string
 }
 
 export const onRequest = async (request: Request) => {
@@ -36,7 +40,12 @@ export const onRequest = async (request: Request) => {
                 const cancelExifs = await request.json() as CancelExifs
                 cancel(`${cancelExifs.requestId}`)
                 return writeJson({})
-                break
+            case "json://mount/": {
+                const dev = await request.json() as Mount
+                console.log("dev", dev)
+                const path = await mount(dev.dev)
+                return writeJson({ path })
+            }
             default:
                 return writeJson({ error: "UNKNOWN" , message: "Allgemeiner Fehler aufgetreten"})
         }
@@ -67,4 +76,24 @@ function getIconPath(name: string, filePath: string) {
         ? process.platform == 'win32' ? path.join(filePath, name) : ext
         : ext
 }
+
+const mount = async (drive: string) => new Promise<string>((res, rej) => {
+	let scriptOutput = ""
+	let scriptError = ""
+	const ud = spawn("udisksctl", ["mount",  "-b" , `/dev/${drive}`])   
+	ud.stdout.on("data", data => scriptOutput += data.toString())
+	ud.stderr.on("data", data => scriptError += data.toString())
+    ud.on("close", code => {
+        console.log("Could not mount", scriptError)
+        if (code) {
+            if (scriptError.includes("already mounted"))
+                rej({ nativeError: code, error: "UNKNOWN", message: "Bereits eingehangen" })
+            else
+                rej({ nativeError: code, error: "UNKNOWN", message: scriptError })
+        }
+		else
+			res(scriptOutput.substringAfter(" at ").trimEnd())
+	})
+})
+	
 

@@ -8,9 +8,14 @@ type RequestItem = {
     fileCount: number
 }
 
+type MountResult = {
+    path: string
+}
+
 export const cmdRequest = async (cmd: string) => await fetch(`cmd://${cmd}`, { method: 'POST' })
 
 export const getDrives = () => jsonRequest<RequestItem>("getdrives", {})
+export const mountRequest = (dev: string) => jsonRequest<MountResult>("mount", {dev})
 export const getFiles = (folderId: string, requestId: number, path: string, showHidden?: boolean) => jsonRequest<RequestItem>("getfiles", { folderId, requestId, path, showHidden })
 export const cancelExifs = (requestId: number) => jsonRequest<RequestItem>("cancelExifs", { requestId })
 

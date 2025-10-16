@@ -57,7 +57,6 @@ protocol.registerSchemesAsPrivileged([
 ])
 
 const createWindow = () => {
-
 	protocol.handle("cmd", async req => {
 		if (req.method == 'POST') 
 			onCmd(req, mainWindow)

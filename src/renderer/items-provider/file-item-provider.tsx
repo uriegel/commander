@@ -3,7 +3,7 @@ import { EnterData, IItemsProvider, OnEnterResult } from "./base-provider"
 import { Item, FileItem, IconNameType } from "./items"
 import IconName from "../components/IconName"
 import { formatDateTime, formatSize } from "./provider"
-import { getFiles } from "../requests/requests"
+import { getFiles, mountRequest } from "../requests/requests"
 import { appendPath } from '@platform/items-provider/file-item-provider'
 
 export const FILE = "File"
@@ -24,7 +24,13 @@ export class FileItemProvider extends IItemsProvider {
         }
     }
     
-    async getItems(folderId: string, requestId: number, path: string, showHidden?: boolean) {
+    async getItems(folderId: string, requestId: number, path: string, showHidden?: boolean, mount?: boolean) {
+
+        if (mount) {
+            const result = await mountRequest(path)
+            path = result.path
+        }
+            
         const result = await getFiles(folderId, requestId, path, showHidden)
         return {
             requestId,
