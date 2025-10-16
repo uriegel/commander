@@ -10,9 +10,6 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* Windows version: size 0: when directory, ignore size
-* Windows version: exceptions: access denied, path not found
-
 * get drives: mount
 
 * copy: refresh left 

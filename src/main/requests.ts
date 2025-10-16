@@ -38,11 +38,15 @@ export const onRequest = async (request: Request) => {
                 return writeJson({})
                 break
             default:
-                return writeJson({ code: 0, msg: "Allgemeiner Fehler aufgetreten"})
+                return writeJson({ error: "UNKNOWN" , message: "Allgemeiner Fehler aufgetreten"})
         }
     } catch (e) {
         const err = e as SystemError
-        return writeJson(err)
+        return writeJson({
+            message: err.message,
+            error: err.error,
+            nativeError: err.nativeError
+        })
     }
 }
 

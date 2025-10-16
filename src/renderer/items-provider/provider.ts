@@ -11,8 +11,8 @@ export const getItemsProvider = (path?: string, recentProvider?: IItemsProvider)
 }
 
 export const formatSize = (num?: number) => {
-    if (!num)
-        return "0"
+    if (num == undefined)
+        return ""
     if (num == -1)
         return ""
     let sizeStr = num.toString()
