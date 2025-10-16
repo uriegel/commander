@@ -3,7 +3,7 @@ import Commander, { CommanderHandle } from "./components/Commander"
 import WithDialog from 'web-dialog-react'
 import './themes/linux.css'
 import './App.css'
-import "./extensions/extensions"
+import 'functional-extensions'
 
 const App = () => {
 	const commander = useRef(null as CommanderHandle | null)

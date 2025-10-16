@@ -1,0 +1,1 @@
+export const appendPath: (path: string, subPath: string) => string

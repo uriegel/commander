@@ -4,6 +4,7 @@ import { Item, FileItem, IconNameType } from "./items"
 import IconName from "../components/IconName"
 import { formatDateTime, formatSize } from "./provider"
 import { getFiles } from "../requests/requests"
+import { appendPath } from '@platform/items-provider/file-item-provider'
 
 export const FILE = "File"
 
@@ -40,7 +41,7 @@ export class FileItemProvider extends IItemsProvider {
     }
 
     appendPath(path: string, subPath: string) {
-        return path.appendPath(subPath)
+        return appendPath(path, subPath)
     } 
 
     async onEnter(enterData: EnterData): Promise<OnEnterResult> {
@@ -55,8 +56,8 @@ export class FileItemProvider extends IItemsProvider {
         else
             return {
                 processed: false,
-                pathToSet: enterData.path.appendPath(enterData.item.name),
-                latestPath: enterData.item.isParent ? enterData.path.extractSubPath() : undefined 
+                pathToSet: appendPath(enterData.path, enterData.item.name),
+                latestPath: enterData.item.isParent ? extractSubPath(enterData.path) : undefined 
             }
     }
 
@@ -77,7 +78,7 @@ export class FileItemProvider extends IItemsProvider {
             : index == 2
             ? (a: FileItem, b: FileItem) => (a.size || 0) - (b.size || 0)
             : index == 10
-            ? (a: FileItem, b: FileItem) => a.name.getExtension().localeCompare(b.name.getExtension()) 
+                        ? (a: FileItem, b: FileItem) => a.name.getFileExtension().localeCompare(b.name.getFileExtension()) 
             : undefined
         
         return sf
@@ -105,4 +106,8 @@ const renderRow = (item: FileItem) => [
 	(<span className={item.exifData?.dateTime ? "exif" : "" } >{formatDateTime(item?.exifData?.dateTime ?? item?.time)}</span>),
 	formatSize(item.size)
 ]
+
+function extractSubPath(path: string): string {
+    return path.substring(path.lastIndexOfAny(["/", "\\"]))
+}
 

@@ -143,7 +143,7 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
     const ViewerView = () => {
 		const ext = itemProperty
 					.path
-					.getExtension()
+					.getFileExtension()
 					.toLocaleLowerCase()
 		
 		return ext == ".jpg" || ext == ".png" || ext == ".jpeg"
