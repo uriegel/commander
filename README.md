@@ -11,6 +11,13 @@ sudo apt install libgtk-3-dev
 
 TODO
 * Windows version: missing icons: folder, home -> Start
+folder-open
+user-home
+network-server
+starred
+go-up
+
+network-share
 
 * Windows version: home drive
 * Windows version: .<name> as hidden
