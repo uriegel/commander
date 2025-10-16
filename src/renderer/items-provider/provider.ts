@@ -1,9 +1,10 @@
+import { isRoot } from '@platform/items-provider/provider'
 import { IItemsProvider } from "./base-provider"
 import { FILE, FileItemProvider } from "./file-item-provider"
 import { ROOT, RootItemProvider } from "./root-item-provider"
 
 export const getItemsProvider = (path?: string, recentProvider?: IItemsProvider): IItemsProvider => {
-    if (path == "root" || !path || path == "/..")
+    if (isRoot(path))
         return recentProvider?.id == ROOT ? recentProvider : new RootItemProvider()
     else
         return recentProvider?.id == FILE ? recentProvider : new FileItemProvider()
