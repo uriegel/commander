@@ -57,15 +57,10 @@ export function writeJson(msg: any) {
     })
 }
 
-function getIconPath(name: string, path: string) {
+function getIconPath(name: string, filePath: string) {
     const ext = getExtension(name)
     return ext.toLowerCase() == ".exe"
-        ? appendPath(path, name)
+        ? process.platform == 'win32' ? path.join(filePath, name) : 'ext'
         : ext
 }
 
-function appendPath(path: string, subPath: string) {
-    return path.endsWith("\\") || subPath.startsWith('\\')
-        ? path + subPath
-        : path + "\\" + subPath
-}
