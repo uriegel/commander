@@ -28,15 +28,15 @@ const TrackViewer = ({ path }: TrackViewerProps) => {
     const [duration, setDuration] = useState(0)
     
     useEffect(() => {
-
         async function getTrack(path: string) {
             try {
                 const response = await fetch(`track://local/${path}`)
                 const track = await response.json() as GpxTrack
                 setPosition(0)
                 setPointCount(track.trackPoints?.length ?? 0)
-                if (track.trackPoints)
-                    setTrackPoints(track.trackPoints)
+                if (!track.trackPoints?.length)
+                    return
+                setTrackPoints(track.trackPoints)
                 setAverageVelocity(track.averageSpeed)
                 setDistance(track.distance)
                 setDuration(track.duration)
