@@ -9,12 +9,13 @@ sudo apt install pkg-config
 sudo apt install libgtk-3-dev
 ```
 
-
-
-
 TODO
+* Windows version: missing icons: folder, home -> Start
+
+* Windows version: home drive
+* Windows version: .<name> as hidden
+* Windows version: size 0: when directory, ignore size
 * Windows version: Track view: string as ascii string
-* Windows version: missing icons
 * Windows version: exceptions: access denied, path not found
 
 * get drives: mount
