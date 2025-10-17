@@ -97,6 +97,12 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 				if (path)
 					getInactiveFolder()?.changePath(path)
 				break
+			case "PROPERTIES":
+				getActiveFolder()?.showProperties()
+				break
+			case "OPENWITH":
+				getActiveFolder()?.openWith()
+				break
 		}
 	}, [getActiveFolder])
 

@@ -34,7 +34,7 @@ export class RootItemProvider extends IItemsProvider {
         return {
             processed: false,
             pathToSet: rootEnter.mountPoint || rootEnter.mountPoint?.length || 0 > 0 ? rootEnter.mountPoint : enterData.item.name,
-            mount: !rootEnter?.mountPoint            
+            mount: !rootEnter?.isMounted
         }
     }
 

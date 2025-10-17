@@ -10,7 +10,7 @@ import RestrictionView, { RestrictionViewHandle } from "./RestrictionView"
 import { ID_LEFT } from "./Commander"
 import { exifDataEventsLeft$, exifDataEventsRight$, ExifDataType, exifStartEventsLeft$, exifStartEventsRight$, exifStopEventsLeft$, exifStopEventsRight$ } from "../requests/events"
 import { SystemError } from "filesystem-utilities"
-import { cancelExifs } from "../requests/requests"
+import { cancelExifs, onEnter as reqOnEnter } from "../requests/requests"
 
 export type FolderViewHandle = {
     id: string
@@ -22,6 +22,8 @@ export type FolderViewHandle = {
     insertSelection: () => void
     selectAll: () => void
     selectNone: () => void
+    showProperties: () => void
+    openWith: () => void
 }
 
 export interface ItemCount {
@@ -72,6 +74,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         insertSelection,
         selectAll,
         selectNone,
+        openWith,
+        showProperties
         // copyItems,
         // deleteItems,
         // createFolder,
@@ -324,6 +328,9 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         } else
             return false
     }
+
+    const showProperties = () => reqOnEnter(getSelectedItems()[0].name, path, undefined, true)
+    const openWith = () => reqOnEnter(getSelectedItems()[0].name, path, true)
 
     return (
         <div className="folder" onFocus={onFocusChanged}>

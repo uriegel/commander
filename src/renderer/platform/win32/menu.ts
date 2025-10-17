@@ -9,7 +9,7 @@ export const getProcessFileMenu = () => [{
     name: "Öffnen _mit",
     type: MenuItemType.MenuItem,
     shortcut: "Strg+Enter",
-    key: "OPENAS"
+    key: "OPENWITH"
 }, {
     type: MenuItemType.Separator
 }] as MenuItemProps[]

@@ -1,4 +1,4 @@
-import { cancel, getDrives, getFilesAsync, SystemError } from 'filesystem-utilities'
+import { cancel, getDrives, getFilesAsync, openFile, openFileWith, showFileProperties, SystemError } from 'filesystem-utilities'
 import { spawn } from "child_process"
 import path from 'path'
 import { retrieveExifDatas } from './exif.js'
@@ -38,8 +38,13 @@ export const onRequest = async (request: Request) => {
                 return writeJson({ path })
             }
             case "json://onenter/": {
-                const input = await request.json() as { name: string, path: string}
-                toDOTest(path.join(input.path, input.name))
+                const input = await request.json() as { name: string, path: string, openWith?: boolean, showProperties?: boolean }
+                if (input.openWith)
+                    openFileWith(path.join(input.path, input.name))
+                else if (input.showProperties)
+                    showFileProperties(path.join(input.path, input.name))
+                else
+                    openFile(path.join(input.path, input.name))
                 return writeJson({})
             }
             default:

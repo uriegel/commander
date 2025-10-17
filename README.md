@@ -10,12 +10,6 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* filesystem-utilities: process_file
-* Linux enter 
-* Windows enter
-* Windows strg + enter (Windows)
-* Windows alt + enter (Windows)
-
 * F2
 * F7
 * del
