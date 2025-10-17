@@ -10,10 +10,11 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* F9
-* enter
-* strg + enter
-* alt + enter
+* filesystem-utilities: process_file
+* Linux enter 
+* Windows enter
+* Windows strg + enter (Windows)
+* Windows alt + enter (Windows)
 
 * F2
 * F7
@@ -45,3 +46,4 @@ TODO
 
 * CSP in index.html
 
+* alt + enter (KDE with QT program)

@@ -3,7 +3,7 @@ import { EnterData, IItemsProvider, OnEnterResult } from "./base-provider"
 import { Item, FileItem, IconNameType } from "./items"
 import IconName from "../components/IconName"
 import { formatDateTime, formatSize } from "./provider"
-import { getFiles, mountRequest } from "../requests/requests"
+import { getFiles, mountRequest, onEnter } from "../requests/requests"
 import { appendPath } from '@platform/items-provider/file-item-provider'
 
 export const FILE = "File"
@@ -54,7 +54,7 @@ export class FileItemProvider extends IItemsProvider {
 //        const fileEnter = enterData.item as FileItem
 
         if (!enterData.item.isDirectory) {
-            // TODO await onEnter({ id: enterData.id ?? "", name: enterData.item.name, path: enterData.path })
+            await onEnter( /*id: enterData.id ?? ""*/ enterData.item.name, enterData.path)
             return {
                 processed: true
             }

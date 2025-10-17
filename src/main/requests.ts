@@ -10,14 +10,6 @@ type GetFiles = {
     showHidden?: boolean
 }
 
-type CancelExifs = {
-    requestId: number
-}
-
-type Mount = {
-    dev: string
-}
-
 export const onRequest = async (request: Request) => {
     try {
         if (request.method != 'POST')
@@ -37,14 +29,18 @@ export const onRequest = async (request: Request) => {
                 retrieveExifDatas(getfiles.folderId, getfiles.requestId, items)
                 return writeJson(items)
             case "json://cancelexifs/":
-                const cancelExifs = await request.json() as CancelExifs
+                const cancelExifs = await request.json() as { requestId: number }
                 cancel(`${cancelExifs.requestId}`)
                 return writeJson({})
             case "json://mount/": {
-                const dev = await request.json() as Mount
-                console.log("dev", dev)
+                const dev = await request.json() as { dev: string }
                 const path = await mount(dev.dev)
                 return writeJson({ path })
+            }
+            case "json://onenter/": {
+                const input = await request.json() as { name: string, path: string}
+                toDOTest(path.join(input.path, input.name))
+                return writeJson({})
             }
             default:
                 return writeJson({ error: "UNKNOWN" , message: "Allgemeiner Fehler aufgetreten"})
@@ -95,5 +91,7 @@ const mount = async (drive: string) => new Promise<string>((res, rej) => {
 			res(scriptOutput.substringAfter(" at ").trimEnd())
 	})
 })
+
+
 	
 

@@ -15,7 +15,8 @@ type MountResult = {
 export const cmdRequest = async (cmd: string) => await fetch(`cmd://${cmd}`, { method: 'POST' })
 
 export const getDrives = () => jsonRequest<RequestItem>("getdrives", {})
-export const mountRequest = (dev: string) => jsonRequest<MountResult>("mount", {dev})
+export const mountRequest = (dev: string) => jsonRequest<MountResult>("mount", { dev })
+export const onEnter = (name: string, path: string) => jsonRequest<{}>("onenter", {name, path})
 export const getFiles = (folderId: string, requestId: number, path: string, showHidden?: boolean) => jsonRequest<RequestItem>("getfiles", { folderId, requestId, path, showHidden })
 export const cancelExifs = (requestId: number) => jsonRequest<RequestItem>("cancelExifs", { requestId })
 

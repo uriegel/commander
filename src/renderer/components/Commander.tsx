@@ -91,7 +91,12 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 				break
 			case "SHOW_DEV_TOOLS":
 				await cmdRequest(key)
-                break
+				break
+			case "ADAPT_PATH":
+				const path = getActiveFolder()?.getPath()
+				if (path)
+					getInactiveFolder()?.changePath(path)
+				break
 		}
 	}, [getActiveFolder])
 
