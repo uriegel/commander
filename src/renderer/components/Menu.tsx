@@ -47,7 +47,7 @@ const Menu = ({ autoMode, releaseMode, showHidden, toggleShowHidden, showViewer,
                 shortcut: "F5",
                 key: "COPY"
             }, {
-                name: "_Verschieden",
+                name: "_Verschieben",
                 type: MenuItemType.MenuItem,
                 shortcut: "F6",
                 key: "MOVE"
