@@ -16,7 +16,7 @@ export const cmdRequest = async (cmd: string) => await fetch(`cmd://${cmd}`, { m
 
 export const getDrives = () => jsonRequest<RequestItem>("getdrives", {})
 export const mountRequest = (dev: string) => jsonRequest<MountResult>("mount", { dev })
-export const onEnter = (name: string, path: string, openWith?: boolean, showProperties?: boolean) => jsonRequest<{}>("onenter", {name, path, openWith, showProperties })
+export const onEnter = (name: string, path: string, openWith?: boolean, showProperties?: boolean) => jsonRequest<void>("onenter", {name, path, openWith, showProperties })
 export const getFiles = (folderId: string, requestId: number, path: string, showHidden?: boolean) => jsonRequest<RequestItem>("getfiles", { folderId, requestId, path, showHidden })
 export const cancelExifs = (requestId: number) => jsonRequest<RequestItem>("cancelExifs", { requestId })
 
