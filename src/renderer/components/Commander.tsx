@@ -106,12 +106,12 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 				getActiveFolder()?.openWith()
 				break
 			case "COPY": 
-				copyItems(getActiveFolder(), getInactiveFolder(), false)
+				copyItems(getActiveFolder(), getInactiveFolder(), false, dialog)
 				break
 			case "MOVE":
 				break
 		}
-	}, [getActiveFolder])
+	}, [getActiveFolder, dialog])
 
 	const toggleShowHiddenAndRefresh = () => {
 		showHiddenRef.current = !showHiddenRef.current
