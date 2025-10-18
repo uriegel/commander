@@ -12,6 +12,7 @@ import { Item } from "../items-provider/items"
 import { DialogContext } from "web-dialog-react"
 import Statusbar from "./StatusBar"
 import './viewers/viewers.css'
+import { copyItems } from "../copy-processor"
 
 export const ID_LEFT = "left"
 export const ID_RIGHT = "right"
@@ -103,6 +104,11 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 				break
 			case "OPENWITH":
 				getActiveFolder()?.openWith()
+				break
+			case "COPY": 
+				copyItems(getActiveFolder(), getInactiveFolder(), false)
+				break
+			case "MOVE":
 				break
 		}
 	}, [getActiveFolder])

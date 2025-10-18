@@ -15,7 +15,7 @@ import { cancelExifs, onEnter as reqOnEnter } from "../requests/requests"
 export type FolderViewHandle = {
     id: string
     setFocus: () => void
-    refresh: (forceShowHidden?: boolean) => void
+    refresh: (forceShowHidden?: boolean) => Promise<void>
     processEnter: (item: Item, otherPath?: string) => Promise<void>
     getPath: () => string
     changePath: (path: string) => void
@@ -24,6 +24,7 @@ export type FolderViewHandle = {
     selectNone: () => void
     showProperties: () => void
     openWith: () => void
+    getSelectedItems: () => Item[]
 }
 
 export interface ItemCount {
@@ -54,6 +55,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const restrictionView = useRef<RestrictionViewHandle>(null)
     const requestId = useRef(0)
     const itemsDictionary = useRef<Map<number, Item>>(new Map)
+    const itemsRef = useRef<Item[]>([])
 
     const [items, setStateItems] = useState([] as Item[])
     const [path, setPath] = useState("")
@@ -75,8 +77,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         selectAll,
         selectNone,
         openWith,
-        showProperties
-        // copyItems,
+        showProperties,
+        getSelectedItems
         // deleteItems,
         // createFolder,
         // rename,
@@ -180,16 +182,16 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             if (result.path)
                 setPath(result.path)
             //const items = result.items && result.items?.length > 0 ? result.items : itemsProvider.current.getItems()
-            const newItems = itemsProvider.current.sort(result.items, sortIndex.current, sortDescending.current)
-            setItems(newItems, result.dirCount, result.fileCount)
-            itemsDictionary.current = new Map(newItems.filter(n => n.idx).map(n => [n.idx!, n]))
+            itemsRef.current = itemsProvider.current.sort(result.items, sortIndex.current, sortDescending.current)
+            setItems(itemsRef.current, result.dirCount, result.fileCount)
+            itemsDictionary.current = new Map(itemsRef.current.filter(n => n.idx).map(n => [n.idx!, n]))
             // getExtended({ id: result.id, folderId: id })
             const pos = latestPath
-                ? newItems.findIndex(n => n.name == latestPath)
+                ? itemsRef.current.findIndex(n => n.name == latestPath)
                 : checkPosition
-                    ? newItems.findIndex(n => checkPosition(n))
+                    ? itemsRef.current.findIndex(n => checkPosition(n))
                     : 0
-            virtualTable.current?.setInitialPosition(pos, newItems.length)
+            virtualTable.current?.setInitialPosition(pos, itemsRef.current.length)
             if (result.path) {
                 localStorage.setItem(`${id}-lastPath`, result.path)
                 if (!fromBacklog)
@@ -276,8 +278,23 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             refresh()
     }
 
-    const refresh = (forceShowHidden?: boolean, checkPosition?: (checkItem: Item) => boolean) =>
-        changePath(path, forceShowHidden || (forceShowHidden === false ? false : showHidden), undefined, undefined, undefined, checkPosition)
+    const refresh = async (forceShowHidden?: boolean, checkPosition?: (checkItem: Item) => boolean) => {
+        let selectedItems = getSelectedItems()
+        if (selectedItems.length == 1 && !selectedItems[0].isSelected)
+            selectedItems = []
+        const pos = virtualTable.current?.getPosition()
+        const currentItem = pos ? itemsRef.current[pos] : null
+        await changePath(path, forceShowHidden || (forceShowHidden === false ? false : showHidden), undefined, undefined, undefined, checkPosition)
+        const itemsNameDictionary = new Map(itemsRef.current.map(n => [n.name, n]))
+        selectedItems.forEach(n => {
+            const item = itemsNameDictionary.get(n.name)
+            if (item) 
+                item.isSelected = true
+        })
+        const idx = itemsRef.current.findIndex(n => n.name == currentItem?.name)
+        if (idx != -1)
+            virtualTable.current?.setInitialPosition(idx, itemsRef.current.length)
+    }
 
     const getSelectedItems = () => {
 
