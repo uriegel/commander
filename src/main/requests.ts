@@ -13,7 +13,7 @@ type GetFiles = {
 export const onRequest = async (request: Request) => {
     try {
         if (request.method != 'POST')
-            return writeJson({ code: 0, msg: "HTTP-Methode POST verlangt!"})
+            return writeJson({ error: "UNKNOWN", message: "HTTP-Methode POST verlangt!"})
         switch (request.url) {
             case "json://getdrives/":
                 const drives = await getDrives()

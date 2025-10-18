@@ -1,9 +1,12 @@
-import { DialogHandle, Slide } from "web-dialog-react"
+import { DialogHandle, ResultType, Slide } from "web-dialog-react"
 import { FolderViewHandle } from "./components/FolderView"
 import { ID_LEFT } from "./components/Commander"
+import { copy } from "./requests/requests"
 
 export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFolder: FolderViewHandle | null, move: boolean, dialog: DialogHandle) => {
-    if (sourceFolder == null || targetFolder == null)
+    const sourceAppendPath = sourceFolder?.getAppendPath()
+    const targetAppendPath = sourceFolder?.getAppendPath()
+    if (sourceFolder == null || targetFolder == null || sourceAppendPath == null || targetAppendPath == null)
         return
     const items = sourceFolder?.getSelectedItems()
     await Promise.all([
@@ -36,6 +39,16 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
         //defBtnYes: !defNo && prepareResult.conflicts.length > 0,
         //defBtnNo: defNo
     })
+    if (res.result == ResultType.Cancel)
+        return
+    
+    const source = items.map(n => sourceAppendPath(sourceFolder.getPath(), n.name))
+    const target = items.map(n => targetAppendPath(targetFolder.getPath(), n.name))
+    const result = await copy(15, source, target)
+
+    // TODO check filesystem-utilities:
+    // TODO move
+    // TODO overwrite, especially Windows
 
 
     // const defNo = prepareResult.conflicts.length > 0

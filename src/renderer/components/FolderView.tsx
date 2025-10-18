@@ -25,6 +25,7 @@ export type FolderViewHandle = {
     showProperties: () => void
     openWith: () => void
     getSelectedItems: () => Item[]
+    getAppendPath: () => ((path: string, subPath: string)=>string) | undefined
 }
 
 export interface ItemCount {
@@ -78,7 +79,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         selectNone,
         openWith,
         showProperties,
-        getSelectedItems
+        getSelectedItems,
+        getAppendPath
         // deleteItems,
         // createFolder,
         // rename,
@@ -305,6 +307,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             ? selected
             : [checkParent(items[virtualTable.current?.getPosition() ?? 0])].filter(n => n != null) as Item[]
     }
+
+    const getAppendPath = () => itemsProvider.current?.appendPath
 
     const onInputFocus = (e: React.FocusEvent<HTMLInputElement>) =>
         setTimeout(() => e.target.select())
