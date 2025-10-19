@@ -42,9 +42,9 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
     if (res.result == ResultType.Cancel)
         return
     
-    const source = items.map(n => sourceAppendPath(sourceFolder.getPath(), n.name))
-    const target = items.map(n => targetAppendPath(targetFolder.getPath(), n.name))
-    const result = await copy(15, source, target)
+    // const source = items.map(n => sourceAppendPath(sourceFolder.getPath(), n.name))
+    // const target = items.map(n => targetAppendPath(targetFolder.getPath(), n.name))
+    await copy(15, sourceFolder.getPath(), targetFolder.getPath(), items.map(n => n.name))
 
     // TODO check filesystem-utilities:
     // TODO move

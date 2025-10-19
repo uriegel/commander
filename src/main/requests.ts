@@ -1,4 +1,4 @@
-import { cancel, getDrives, getFilesAsync, openFile, openFileWith, showFileProperties, SystemError } from 'filesystem-utilities'
+import { cancel, copyFiles, getDrives, getFilesAsync, openFile, openFileWith, showFileProperties, SystemError } from 'filesystem-utilities'
 import { spawn } from "child_process"
 import path from 'path'
 import { retrieveExifDatas } from './exif.js'
@@ -45,6 +45,11 @@ export const onRequest = async (request: Request) => {
                     showFileProperties(path.join(input.path, input.name))
                 else
                     openFile(path.join(input.path, input.name))
+                return writeJson({})
+            }
+            case "json://copy/": {
+                const input = await request.json() as { requestId: number, sourcePath: string, targetPath: string, items: string[] }
+                await copyFiles(input.sourcePath, input.targetPath, input.items)
                 return writeJson({})
             }
             default:
