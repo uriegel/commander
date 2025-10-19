@@ -9,6 +9,8 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
     if (sourceFolder == null || targetFolder == null || sourceAppendPath == null || targetAppendPath == null)
         return
     const items = sourceFolder?.getSelectedItems()
+    if (items.length == 0)
+        return
     await Promise.all([
         sourceFolder.refresh(),
         targetFolder.refresh()
@@ -45,6 +47,9 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
     // const source = items.map(n => sourceAppendPath(sourceFolder.getPath(), n.name))
     // const target = items.map(n => targetAppendPath(targetFolder.getPath(), n.name))
     await copy(15, sourceFolder.getPath(), targetFolder.getPath(), items.map(n => n.name))
+    targetFolder.refresh()
+    if (move)
+        sourceFolder.refresh()
 
     // TODO check filesystem-utilities:
     // TODO move
