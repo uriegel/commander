@@ -10,15 +10,16 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
+* copy: flatten items
+* copy: then compare
+* copy: get conflicts
+* copy: then copy
+* copy: Linux progress as pie and dialog
+* Move
+
 * F2
 * F7
 * del
-
-* copy: refresh left 
-* copy: refresh right 
-* copy: then compare
-* copy: then copy
-* copy: get exifs for copied items
 
 * Extended rename
 
