@@ -2,9 +2,10 @@ import { TableColumns } from "virtual-table-react"
 import { EnterData, IItemsProvider, OnEnterResult } from "./base-provider"
 import { Item, FileItem, IconNameType } from "./items"
 import IconName from "../components/IconName"
-import { formatDateTime, formatSize } from "./provider"
-import { getFiles, mountRequest, onEnter } from "../requests/requests"
+import { formatDateTime, formatSize, getSelectedItemsText } from "./provider"
+import { deleteRequest, getFiles, mountRequest, onEnter } from "../requests/requests"
 import { appendPath } from '@platform/items-provider/file-item-provider'
+import { DialogHandle, ResultType } from "web-dialog-react"
 
 export const FILE = "File"
 
@@ -90,6 +91,19 @@ export class FileItemProvider extends IItemsProvider {
         return sf
             ? (a: FileItem, b: FileItem) => ascDesc(sf(a, b))
             : undefined
+    }
+
+    async deleteItems(path: string, items: Item[], dialog: DialogHandle) { 
+        if (items.length == 0)
+            return
+        const res = await dialog.show({
+            text: `Möchtest Du ${getSelectedItemsText(items)} löschen?`,
+            btnOk: true,
+            btnCancel: true
+        })
+        if (res.result == ResultType.Cancel)
+            return
+        await deleteRequest(path, items.map(n => n.name))
     }
 
     constructor() { super() }

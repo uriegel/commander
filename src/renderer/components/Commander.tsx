@@ -110,6 +110,9 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 				break
 			case "MOVE":
 				break
+			case "DELETE":
+				getActiveFolder()?.deleteItems()
+				break
 		}
 	}, [getActiveFolder, dialog])
 

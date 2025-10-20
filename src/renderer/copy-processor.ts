@@ -2,8 +2,14 @@ import { DialogHandle, ResultType, Slide } from "web-dialog-react"
 import { FolderViewHandle } from "./components/FolderView"
 import { ID_LEFT } from "./components/Commander"
 import { copy } from "./requests/requests"
+import { FILE } from "./items-provider/file-item-provider"
+import { getSelectedItemsText } from "./items-provider/provider"
 
 export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFolder: FolderViewHandle | null, move: boolean, dialog: DialogHandle) => {
+    const sourceProvider = sourceFolder?.getCurrentItemsProvider()
+    const targetProvider = targetFolder?.getCurrentItemsProvider()
+    if (sourceProvider?.id != FILE || targetProvider?.id != FILE)
+        return
     const sourceAppendPath = sourceFolder?.getAppendPath()
     const targetAppendPath = sourceFolder?.getAppendPath()
     if (sourceFolder == null || targetFolder == null || sourceAppendPath == null || targetAppendPath == null)
@@ -20,7 +26,7 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
     // TODO check conflicts
     const res = await dialog.show({
         //text: controller.current.getCopyText(prepareResult, move),
-        text: "Möchtest Du die selektierten Dateien kopieren?",
+        text: `Möchtest Du ${getSelectedItemsText(items)} kopieren?`,
         slide: sourceFolder.id == ID_LEFT ? Slide.Left : Slide.Right,
         //extension: prepareResult.conflicts.length ? CopyConflicts : undefined,
         // extensionProps: prepareResult.conflicts.map(n => ({

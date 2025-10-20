@@ -2,6 +2,7 @@ import { isRoot } from '@platform/items-provider/provider'
 import { IItemsProvider } from "./base-provider"
 import { FILE, FileItemProvider } from "./file-item-provider"
 import { ROOT, RootItemProvider } from "./root-item-provider"
+import { Item } from './items'
 
 export const getItemsProvider = (path?: string, recentProvider?: IItemsProvider): IItemsProvider => {
     if (isRoot(path))
@@ -46,5 +47,19 @@ export function formatDateTime(dateStr?: string) {
         return ''
     const date = Date.parse(dateStr)
     return dateFormat.format(date) + " " + timeFormat.format(date)  
+}
+
+export const getSelectedItemsText = (items: Item[]) => {
+    const dirs = items.filter(n => n.isDirectory)
+    const files = items.filter(n => !n.isDirectory)
+    return dirs.length == 1 && files.length == 0
+        ? "das markierte Verzeichnis"
+        : dirs.length > 1 && files.length == 0
+        ? "die markierten Verzeichnisse"
+        : dirs.length == 0 && files.length == 1
+        ? "die markierte Datei"
+        : dirs.length == 0 && files.length > 1
+        ? "die markierten Dateien"
+        : "die markierten Einträge"
 }
 

@@ -1,6 +1,6 @@
 import path from 'path'
 import { sendEvent } from './index.js'
-import { FileItemsResult, getExifInfosAsync } from 'filesystem-utilities'
+import { FileItemsResult, getExifInfos } from 'filesystem-utilities'
 
 export async function retrieveExifDatas(folderId: string, requestId: number, itemsResult: FileItemsResult) {
     const input = itemsResult
@@ -11,7 +11,7 @@ export async function retrieveExifDatas(folderId: string, requestId: number, ite
     if (input.length) {
         sendEvent({ folderId, cmd: 'ExifStart', msg: { requestId } })
 
-        const exifDatas = await getExifInfosAsync(input, `${requestId}`)
+        const exifDatas = await getExifInfos(input, `${requestId}`)
         if (exifDatas.length > 0)
             sendEvent({
                 folderId, cmd: 'Exif', msg: {

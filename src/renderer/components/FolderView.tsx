@@ -25,7 +25,9 @@ export type FolderViewHandle = {
     showProperties: () => void
     openWith: () => void
     getSelectedItems: () => Item[]
-    getAppendPath: () => ((path: string, subPath: string)=>string) | undefined
+    getCurrentItemsProvider: () => IItemsProvider|undefined
+    getAppendPath: () => ((path: string, subPath: string) => string) | undefined
+    deleteItems: () => void
 }
 
 export interface ItemCount {
@@ -80,8 +82,9 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         openWith,
         showProperties,
         getSelectedItems,
-        getAppendPath
-        // deleteItems,
+        getCurrentItemsProvider,
+        getAppendPath,
+        deleteItems
         // createFolder,
         // rename,
         // openFolder,
@@ -266,11 +269,16 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     itemsProvider.current?.onSelectionChanged(items)
                 }
                 break
+            case "Delete":
+                deleteItems()
+                break
             default:
                 checkRestricted(evt.key)
                 break
         }
     }
+
+    const getCurrentItemsProvider = () => itemsProvider.current
 
     const processEnter = async (item: Item, otherPath?: string) => {
         const res = await itemsProvider.current?.onEnter({ id, path, item, selectedItems: getSelectedItems(), dialog, otherPath })
@@ -296,6 +304,11 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         const idx = itemsRef.current.findIndex(n => n.name == currentItem?.name)
         if (idx != -1)
             virtualTable.current?.setInitialPosition(idx, itemsRef.current.length)
+    }
+
+    const deleteItems = async () => {
+        await getCurrentItemsProvider()?.deleteItems(path, getSelectedItems(), dialog)
+        refresh()
     }
 
     const getSelectedItems = () => {

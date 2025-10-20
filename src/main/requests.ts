@@ -1,4 +1,4 @@
-import { cancel, copyFiles, getDrives, getFilesAsync, openFile, openFileWith, showFileProperties, SystemError } from 'filesystem-utilities'
+import { cancel, copyFiles, getDrives, getFiles, openFile, openFileWith, showFileProperties, SystemError, trash } from 'filesystem-utilities'
 import { spawn } from "child_process"
 import path from 'path'
 import { retrieveExifDatas } from './exif.js'
@@ -21,7 +21,7 @@ export const onRequest = async (request: Request) => {
             case "json://getfiles/":
                 const getfiles = await request.json() as GetFiles
                 const normalizedPath = path.normalize(getfiles.path)
-                const items = await getFilesAsync(normalizedPath, getfiles.showHidden == true)
+                const items = await getFiles(normalizedPath, getfiles.showHidden == true)
                 items.items = items.items.map(n => ({
                     ...n, 
                     iconPath: getIconPath(n.name, items.path)
@@ -50,6 +50,12 @@ export const onRequest = async (request: Request) => {
             case "json://copy/": {
                 const input = await request.json() as { requestId: number, sourcePath: string, targetPath: string, items: string[] }
                 await copyFiles(input.sourcePath, input.targetPath, input.items)
+                return writeJson({})
+            }
+            case "json://delete/": {
+                const input = await request.json() as { path: string, items: string[] }
+                for (const n of input.items)
+                    await trash(path.join(input.path, n))
                 return writeJson({})
             }
             default:

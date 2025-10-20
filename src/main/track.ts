@@ -1,5 +1,5 @@
 import { protocol } from "electron"
-import { getGpxTrackAsync } from "filesystem-utilities"
+import { getGpxTrack } from "filesystem-utilities"
 import { writeJson } from "./requests.js"
 
 export function registerGetTrackProtocol() {
@@ -8,7 +8,7 @@ export function registerGetTrackProtocol() {
         try {
             const url = new URL(request.url)
             const filePath = decodeURIComponent(url.pathname.slice(1))
-            const track = await getGpxTrackAsync(filePath)
+            const track = await getGpxTrack(filePath)
             return writeJson(track)
         } catch (err) {
             console.error('Failed to load icon', err)

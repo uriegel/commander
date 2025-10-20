@@ -19,7 +19,8 @@ export const mountRequest = (dev: string) => jsonRequest<MountResult>("mount", {
 export const onEnter = (name: string, path: string, openWith?: boolean, showProperties?: boolean) => jsonRequest<void>("onenter", {name, path, openWith, showProperties })
 export const getFiles = (folderId: string, requestId: number, path: string, showHidden?: boolean) => jsonRequest<RequestItem>("getfiles", { folderId, requestId, path, showHidden })
 export const cancelExifs = (requestId: number) => jsonRequest<RequestItem>("cancelExifs", { requestId })
-export const copy = (requestId: number, sourcePath: string, targetPath: string, items: string[]) => jsonRequest<RequestItem>("copy", { requestId, sourcePath, targetPath, items  })
+export const copy = (requestId: number, sourcePath: string, targetPath: string, items: string[]) => jsonRequest<RequestItem>("copy", { requestId, sourcePath, targetPath, items })
+export const deleteRequest = (path: string, items: string[]) => jsonRequest<RequestItem>("delete", { path, items })
 
 const jsonRequest =  async <T>(cmd: string, msg: unknown) => {
     const payload = {

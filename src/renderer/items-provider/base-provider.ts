@@ -39,5 +39,7 @@ export abstract class IItemsProvider {
         files = sortFunction ? files.sort(sortFunction) : files
         return dirs.concat(files)
     }
+
+    async deleteItems(_path: string, _items: Item[], _dialog: DialogHandle) { }
 }
 

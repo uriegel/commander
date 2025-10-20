@@ -10,11 +10,13 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
+* copy: exceptions
 * copy: flatten items
 * copy: then compare
 * copy: get conflicts
 * copy: then copy
 * copy: Linux progress as pie and dialog
+* copy: cancel copy, prevent from close
 * Move
 
 * F2
