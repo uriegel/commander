@@ -106,9 +106,10 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 				getActiveFolder()?.openWith()
 				break
 			case "COPY": 
-				copyItems(getActiveFolder(), getInactiveFolder(), false, dialog)
+				copyItems(getActiveFolder(), getInactiveFolder(), false, dialog, setErrorText)
 				break
 			case "MOVE":
+				copyItems(getActiveFolder(), getInactiveFolder(), true, dialog, setErrorText)
 				break
 			case "DELETE":
 				getActiveFolder()?.deleteItems()

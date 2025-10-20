@@ -48,8 +48,8 @@ export const onRequest = async (request: Request) => {
                 return writeJson({})
             }
             case "json://copy/": {
-                const input = await request.json() as { requestId: number, sourcePath: string, targetPath: string, items: string[] }
-                await copyFiles(input.sourcePath, input.targetPath, input.items)
+                const input = await request.json() as { requestId: number, sourcePath: string, targetPath: string, items: string[], move: boolean }
+                await copyFiles(input.sourcePath, input.targetPath, input.items, { move: input.move, overwrite: true })
                 return writeJson({})
             }
             case "json://delete/": {

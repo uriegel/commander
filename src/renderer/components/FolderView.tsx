@@ -307,8 +307,13 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     const deleteItems = async () => {
-        await getCurrentItemsProvider()?.deleteItems(path, getSelectedItems(), dialog)
-        refresh()
+        try {
+            await getCurrentItemsProvider()?.deleteItems(path, getSelectedItems(), dialog)
+            refresh()
+        } catch (e) {
+            const err = e as SystemError
+            setErrorText(err.message)
+        }
     }
 
     const getSelectedItems = () => {
