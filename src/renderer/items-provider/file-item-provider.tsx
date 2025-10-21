@@ -106,6 +106,35 @@ export class FileItemProvider extends IItemsProvider {
         await deleteRequest(path, items.map(n => n.name))
     }
 
+    async renameItem(path: string, item: Item, dialog: DialogHandle, copy?: boolean) { 
+        // if (controller.current?.id == "REMOTES") {
+        //     if (await controller.current.rename(dialog, selected)) 
+        //         refresh(false, n => n.name == res.input)
+        //     return
+        // }
+        const res = await dialog.show({
+            text: copy ? "Kopie anlegen" : "Umbenennen",
+            inputText: item.name,
+            btnOk: true,
+            btnCancel: true,
+            defBtnOk: true
+        })        
+        if (res.result != ResultType.Ok || !res.input || item.name == res.input) 
+            return        
+    }
+
+    async createFolder(path: string, item: Item, dialog: DialogHandle) { 
+        const res = await dialog.show({
+            text: "Neuen Ordner anlegen",
+            inputText: !item.isParent ? item.name : "",
+            btnOk: true,
+            btnCancel: true,
+            defBtnOk: true
+        })
+        if (res.result != ResultType.Ok || !res.input) 
+            return        
+    }
+
     constructor() { super() }
 }
 

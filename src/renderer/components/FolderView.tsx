@@ -28,6 +28,8 @@ export type FolderViewHandle = {
     getCurrentItemsProvider: () => IItemsProvider|undefined
     getAppendPath: () => ((path: string, subPath: string) => string) | undefined
     deleteItems: () => void
+    renameItem: (asCopy?: boolean) => void
+    createFolder: () => void
 }
 
 export interface ItemCount {
@@ -84,9 +86,9 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         getSelectedItems,
         getCurrentItemsProvider,
         getAppendPath,
-        deleteItems
-        // createFolder,
-        // rename,
+        deleteItems,
+        createFolder,
+        renameItem,
         // openFolder,
         // extendedRename,
         // showFavorites
@@ -309,6 +311,30 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const deleteItems = async () => {
         try {
             await getCurrentItemsProvider()?.deleteItems(path, getSelectedItems(), dialog)
+            refresh()
+        } catch (e) {
+            const err = e as SystemError
+            setErrorText(err.message)
+        }
+    }
+
+    const renameItem = async (asCopy?: boolean) => {
+        try {
+            const selected = items[virtualTable.current?.getPosition() ?? 0]
+            if (selected.isParent || asCopy && selected.isDirectory)
+                return            
+            await getCurrentItemsProvider()?.renameItem(path, selected, dialog, asCopy)
+            refresh()
+        } catch (e) {
+            const err = e as SystemError
+            setErrorText(err.message)
+        }
+    }
+
+    const createFolder = async () => {
+        try {
+            const selected = items[virtualTable.current?.getPosition() ?? 0]
+            await getCurrentItemsProvider()?.createFolder(path, selected, dialog)
             refresh()
         } catch (e) {
             const err = e as SystemError

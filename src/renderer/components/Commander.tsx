@@ -114,6 +114,15 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 			case "DELETE":
 				getActiveFolder()?.deleteItems()
 				break
+			case "RENAME":
+				getActiveFolder()?.renameItem()
+				break
+			case "RENAME_AS_COPY":
+				getActiveFolder()?.renameItem(true)
+				break
+			case "CREATE_FOLDER":
+				getActiveFolder()?.createFolder()
+				break
 		}
 	}, [getActiveFolder, dialog])
 
