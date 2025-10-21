@@ -10,6 +10,8 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
+* CreateFolder: select newly created folder
+* renameItem: select renamed item
 * filesystem-utilities rename as copy
 * filesystem-utilities progress callback extended
 
@@ -19,6 +21,8 @@ TODO
 * copy: then copy
 * copy: Linux progress as pie and dialog
 * copy: cancel copy, prevent from close
+
+* Windows show file versions
 
 * Extended rename
 
