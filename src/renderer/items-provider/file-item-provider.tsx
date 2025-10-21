@@ -95,15 +95,16 @@ export class FileItemProvider extends IItemsProvider {
 
     async deleteItems(path: string, items: Item[], dialog: DialogHandle) { 
         if (items.length == 0)
-            return
+            return false
         const res = await dialog.show({
             text: `Möchtest Du ${getSelectedItemsText(items)} löschen?`,
             btnOk: true,
             btnCancel: true
         })
         if (res.result == ResultType.Cancel)
-            return
+            return false
         await deleteRequest(path, items.map(n => n.name))
+        return true
     }
 
     async renameItem(path: string, item: Item, dialog: DialogHandle, asCopy?: boolean) { 
