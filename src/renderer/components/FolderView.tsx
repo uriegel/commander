@@ -303,7 +303,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             if (item) 
                 item.isSelected = true
         })
-        const idx = itemsRef.current.findIndex(n => n.name == currentItem?.name)
+        const idx = !checkPosition ? itemsRef.current.findIndex(n => n.name == currentItem?.name) : -1
         if (idx != -1)
             virtualTable.current?.setInitialPosition(idx, itemsRef.current.length)
     }
