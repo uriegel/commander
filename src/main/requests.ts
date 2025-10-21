@@ -1,4 +1,4 @@
-import { cancel, copyFiles, getDrives, getFiles, openFile, openFileWith, showFileProperties, SystemError, trash } from 'filesystem-utilities'
+import { cancel, copyFiles, createFolder, getDrives, getFiles, openFile, openFileWith, rename, showFileProperties, SystemError, trash } from 'filesystem-utilities'
 import { spawn } from "child_process"
 import path from 'path'
 import { retrieveExifDatas } from './exif.js'
@@ -56,6 +56,17 @@ export const onRequest = async (request: Request) => {
                 const input = await request.json() as { path: string, items: string[] }
                 for (const n of input.items)
                     await trash(path.join(input.path, n))
+                return writeJson({})
+            }
+            case "json://rename/": {
+                const input = await request.json() as { path: string, item: string, newName: string, asCopy?: boolean }
+                // TODO as copy
+                await rename(input.path, input.item, input.newName)
+                return writeJson({})
+            }
+            case "json://createfolder/": {
+                const input = await request.json() as { path: string, item: string }
+                await createFolder(path.join(input.path, input.item))
                 return writeJson({})
             }
             default:

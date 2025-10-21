@@ -3,7 +3,7 @@ import { EnterData, IItemsProvider, OnEnterResult } from "./base-provider"
 import { Item, FileItem, IconNameType } from "./items"
 import IconName from "../components/IconName"
 import { formatDateTime, formatSize, getSelectedItemsText } from "./provider"
-import { deleteRequest, getFiles, mountRequest, onEnter } from "../requests/requests"
+import { createFolderRequest, deleteRequest, getFiles, mountRequest, onEnter, renameRequest } from "../requests/requests"
 import { appendPath } from '@platform/items-provider/file-item-provider'
 import { DialogHandle, ResultType } from "web-dialog-react"
 
@@ -106,14 +106,14 @@ export class FileItemProvider extends IItemsProvider {
         await deleteRequest(path, items.map(n => n.name))
     }
 
-    async renameItem(path: string, item: Item, dialog: DialogHandle, copy?: boolean) { 
+    async renameItem(path: string, item: Item, dialog: DialogHandle, asCopy?: boolean) { 
         // if (controller.current?.id == "REMOTES") {
         //     if (await controller.current.rename(dialog, selected)) 
         //         refresh(false, n => n.name == res.input)
         //     return
         // }
         const res = await dialog.show({
-            text: copy ? "Kopie anlegen" : "Umbenennen",
+            text: asCopy ? "Kopie anlegen" : "Umbenennen",
             inputText: item.name,
             btnOk: true,
             btnCancel: true,
@@ -121,6 +121,7 @@ export class FileItemProvider extends IItemsProvider {
         })        
         if (res.result != ResultType.Ok || !res.input || item.name == res.input) 
             return        
+        await renameRequest(path, item.name, res.input, asCopy)
     }
 
     async createFolder(path: string, item: Item, dialog: DialogHandle) { 
@@ -132,7 +133,8 @@ export class FileItemProvider extends IItemsProvider {
             defBtnOk: true
         })
         if (res.result != ResultType.Ok || !res.input) 
-            return        
+            return 
+        await createFolderRequest(path, res.input)
     }
 
     constructor() { super() }
