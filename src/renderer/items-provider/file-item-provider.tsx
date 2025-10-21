@@ -128,8 +128,9 @@ export class FileItemProvider extends IItemsProvider {
             defBtnOk: true
         })        
         if (res.result != ResultType.Ok || !res.input || item.name == res.input) 
-            return        
+            return ""       
         await renameRequest(path, item.name, res.input, asCopy)
+        return res.input
     }
 
     async createFolder(path: string, item: Item, dialog: DialogHandle) { 
@@ -141,8 +142,9 @@ export class FileItemProvider extends IItemsProvider {
             defBtnOk: true
         })
         if (res.result != ResultType.Ok || !res.input) 
-            return 
+            return ""
         await createFolderRequest(path, res.input)
+        return res.input
     }
 
     constructor() { super() }

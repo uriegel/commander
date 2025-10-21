@@ -10,8 +10,7 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* CreateFolder: select newly created folder
-* renameItem: select renamed item
+* CreateFolder: select newly created folder: setInitialPosition not working
 * filesystem-utilities rename as copy
 * filesystem-utilities progress callback extended
 

@@ -323,8 +323,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             const selected = items[virtualTable.current?.getPosition() ?? 0]
             if (selected.isParent || asCopy && selected.isDirectory)
                 return            
-            await getCurrentItemsProvider()?.renameItem(path, selected, dialog, asCopy)
-            refresh()
+            const res = await getCurrentItemsProvider()?.renameItem(path, selected, dialog, asCopy)
+            refresh(false, n => n.name == res)
         } catch (e) {
             const err = e as SystemError
             setErrorText(err.message)
@@ -334,8 +334,9 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const createFolder = async () => {
         try {
             const selected = items[virtualTable.current?.getPosition() ?? 0]
-            await getCurrentItemsProvider()?.createFolder(path, selected, dialog)
-            refresh()
+            const res = await getCurrentItemsProvider()?.createFolder(path, selected, dialog)
+            console.log("Was sektiert?", res)
+            refresh(false, n => n.name == res)
         } catch (e) {
             const err = e as SystemError
             setErrorText(err.message)
