@@ -1,7 +1,8 @@
-import { cancel, copyFile, copyFiles, createFolder, getDrives, getFiles, openFile, openFileWith, rename, showFileProperties, SystemError, trash } from 'filesystem-utilities'
+import { cancel, copyFile, copyFiles, createFolder, FileItem, getDrives, getFiles, openFile, openFileWith, rename, showFileProperties, SystemError, trash } from 'filesystem-utilities'
 import { spawn } from "child_process"
 import path from 'path'
 import { retrieveExifDatas } from './exif.js'
+import { AsyncEnumerable } from 'functional-extensions'
 
 type GetFiles = {
     folderId: string,
@@ -71,6 +72,15 @@ export const onRequest = async (request: Request) => {
                 await createFolder(path.join(input.path, input.item))
                 return writeJson({})
             }
+            case "json://flattenitems/": {
+                const input = await request.json() as { path: string, items: FileItem[] }
+                const flattened = await input
+                    .items
+                    .toAsyncEnumerable()
+                    .bind(n => n.isDirectory ? flattenDirectory(input.path, n) : [n].toAsyncEnumerable())
+                    .await()
+                return writeJson(flattened)
+            }
             default:
                 return writeJson({ error: "UNKNOWN" , message: "Allgemeiner Fehler aufgetreten"})
         }
@@ -121,6 +131,16 @@ const mount = async (drive: string) => new Promise<string>((res, rej) => {
 	})
 })
 
+const flattenDirectory = (dirPath: string, dir: FileItem): AsyncEnumerable<FileItem> => {
+    const directory = path.join(dirPath, dir.name)
+    const flatten = async () => {
+        const items = await getFiles(directory, true)        
+        return items.items.map(n => ({...n, iconPath: getIconPath(n.name, directory)}))
+    }
 
+    return AsyncEnumerable
+        .from(flatten())
+        .bind(n => n.isDirectory ? flattenDirectory(directory, n) : [n].toAsyncEnumerable())
+}
 	
 

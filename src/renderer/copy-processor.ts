@@ -1,7 +1,7 @@
 import { DialogHandle, ResultType, Slide } from "web-dialog-react"
 import { FolderViewHandle } from "./components/FolderView"
 import { ID_LEFT } from "./components/Commander"
-import { copy } from "./requests/requests"
+import { copy, flattenItems } from "./requests/requests"
 import { FILE } from "./items-provider/file-item-provider"
 import { getSelectedItemsText } from "./items-provider/provider"
 import { SystemError } from "filesystem-utilities"
@@ -16,7 +16,7 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
     const targetAppendPath = sourceFolder?.getAppendPath()
     if (sourceFolder == null || targetFolder == null || sourceAppendPath == null || targetAppendPath == null)
         return
-    const items = sourceFolder?.getSelectedItems()
+    let items = sourceFolder?.getSelectedItems()
     if (items.length == 0)
         return
     await Promise.all([
@@ -25,7 +25,8 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
     ])
 
     try {
-        // TODO resolve and flatten tree structure
+        if (items.findIndex(n => n.isDirectory) != -1)
+            items = await flattenItems(sourceFolder.getPath(), items)
         // TODO check conflicts
         const res = await dialog.show({
             //text: controller.current.getCopyText(prepareResult, move),
