@@ -10,7 +10,6 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* rename: select only filename!
 * filesystem-utilities rename as copy
 * filesystem-utilities progress callback extended
 

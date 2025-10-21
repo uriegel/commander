@@ -107,14 +107,22 @@ export class FileItemProvider extends IItemsProvider {
     }
 
     async renameItem(path: string, item: Item, dialog: DialogHandle, asCopy?: boolean) { 
-        // if (controller.current?.id == "REMOTES") {
-        //     if (await controller.current.rename(dialog, selected)) 
+        // TODO if (controller.current?.id == "REMOTES") {
+        //     if (await controller.current.rename(dialog, selected))
         //         refresh(false, n => n.name == res.input)
         //     return
         // }
+        const getInputRange = () => {
+            const pos = item.name.lastIndexOf(".")
+            return (pos == -1)
+                ? [0, item.name.length]
+                : [0, pos]
+        }
+        
         const res = await dialog.show({
             text: asCopy ? "Kopie anlegen" : "Umbenennen",
             inputText: item.name,
+            inputSelectRange: getInputRange(),
             btnOk: true,
             btnCancel: true,
             defBtnOk: true
