@@ -1,5 +1,5 @@
 import 'functional-extensions'
-import { app, BrowserWindow, protocol } from "electron"
+import { app, BrowserWindow, protocol, nativeTheme } from "electron"
 import * as path from "path"
 import { fileURLToPath } from "url"
 import { dirname } from "path"
@@ -75,6 +75,7 @@ const createWindow = () => {
 		y: settings.getSync("y") as number,
 		width: settings.getSync("width") as number || 600,
 		height: settings.getSync("height") as number || 800,
+		backgroundColor: nativeTheme.shouldUseDarkColors ? "#121212" : undefined,
 		icon: path.join(rootDir, "../../icons/64x64.png"),
 		webPreferences: {
 			preload: path.join(rootDir, "../bridge/preload.js")
