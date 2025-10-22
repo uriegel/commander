@@ -10,7 +10,6 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* flattenItems returns flattened items and target flattened items if available
 * copy: then compare direct files with target items
 * copy: get conflicts in sub folders
 * copy: then copy

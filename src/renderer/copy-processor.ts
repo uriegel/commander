@@ -37,7 +37,7 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
     try {
         const copyText = getSelectedItemsText(items)
         if (items.findIndex(n => n.isDirectory) != -1)
-            items = await flattenItems(sourceFolder.getPath(), items)
+            items = await flattenItems(sourceFolder.getPath(), targetFolder.getPath(), items)
         // TODO check conflicts
         const res = await dialog.show({
             text: `Möchtest Du ${copyText} ${move ? "verschieben" : "kopieren"}?`,

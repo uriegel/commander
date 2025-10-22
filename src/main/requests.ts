@@ -11,6 +11,17 @@ type GetFiles = {
     showHidden?: boolean
 }
 
+type CopyItem = {
+    idx:            number
+    name:           string
+    isDirectory:   boolean    
+    iconPath?:      string
+    time?:          Date
+    size?:          number
+    targetTime?:    Date
+    targetSize?:    number
+}
+
 export const onRequest = async (request: Request) => {
     try {
         if (request.method != 'POST')
@@ -73,11 +84,11 @@ export const onRequest = async (request: Request) => {
                 return writeJson({})
             }
             case "json://flattenitems/": {
-                const input = await request.json() as { path: string, items: FileItem[] }
+                const input = await request.json() as { path: string, targetPath: string, items: CopyItem[] }
                 const flattened = await input
                     .items
                     .toAsyncEnumerable()
-                    .bind(n => n.isDirectory ? flattenDirectory(input.path, n) : [n].toAsyncEnumerable())
+                    .bind(n => n.isDirectory ? flattenDirectory(input.path, input.targetPath, n) : [n].toAsyncEnumerable())
                     .await()
                 return writeJson(flattened)
             }
@@ -131,16 +142,26 @@ const mount = async (drive: string) => new Promise<string>((res, rej) => {
 	})
 })
 
-const flattenDirectory = (dirPath: string, dir: FileItem): AsyncEnumerable<FileItem> => {
+const flattenDirectory = (sourcePath: string, targetPath: string, dir: FileItem): AsyncEnumerable<CopyItem> => {
     const flatten = async () => {
-        const directory = path.join(dirPath, dir.name)
-        // TODO getFiles from target path, then merge
+        const directory = path.join(sourcePath, dir.name)
         const items = await getFiles(directory, true)        
-        return items.items.map(n => ({...n, name: path.join(dir.name, n.name), iconPath: getIconPath(n.name, directory)}))
+        let targetItems: FileItem[]| undefined
+        try {
+            targetItems = (await getFiles(path.join(targetPath, dir.name), true)).items
+        } catch {}
+        const targetItemsDictionary = targetItems ? new Map(targetItems.map(n => [path.join(dir.name, n.name), n])) : undefined
+        return items
+            .items
+            .map(n => ({ ...n, name: path.join(dir.name, n.name), iconPath: getIconPath(n.name, directory) }))
+            .map(n => {
+                const target = targetItemsDictionary?.get(n.name)
+                return target ? { ...n, targetSize: target.size, targetTime: target.time } : { ...n }
+            })
     }
 
     return AsyncEnumerable
         .from(flatten())
-    .bind(n => n.isDirectory ? flattenDirectory(dirPath, n) : [n].toAsyncEnumerable())
+    .bind(n => n.isDirectory ? flattenDirectory(sourcePath, targetPath, n) : [n].toAsyncEnumerable())
 }
 	
