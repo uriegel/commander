@@ -10,9 +10,7 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* copy: CopyConflicts: Filename over subpath
 * copy: then copy with overwrite yes or no
-* copy: test with > 1k files in sub dir
 * copy: Linux progress as pie and dialog
 * copy: cancel copy, prevent from close
 

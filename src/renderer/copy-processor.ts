@@ -41,6 +41,7 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
         if (items.findIndex(n => n.isDirectory) != -1)
             items = await flattenItems(sourceFolder.getPath(), targetFolder.getPath(), items)
         const copyConflicts = items.filter(n => n.targetTime)
+            .map(n => ({ name: n.name, iconPath: n.iconPath, time: n.time, size: n.size, targetSize: n.targetSize, targetTime: n.targetTime }))
 
         const defNo = copyConflicts.length > 0
             && copyConflicts

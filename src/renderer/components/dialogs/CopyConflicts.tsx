@@ -19,27 +19,32 @@ const CopyConflicts = ({ props }: ExtensionProps) => {
 		{ name: "Größe", isRightAligned: true }
 	]
 
-	const renderRowItem = ({ name, iconPath, time, targetTime, size, targetSize }: CopyItem) => [
-		(<div>
-			<IconName namePart={name} type={IconNameType.File} iconPath={iconPath} />
-			{/* <div className={subPath ? 'subPath' : 'subPath empty'}>{subPath ?? "___"}</div> */}
-		</div>),
-		(<div className=
-			{
-				(time || 0) > (targetTime || 0)
-				? "overwrite"
-				: (time || 0) < (targetTime || 0)
-				? "notOverwrite"
-				: "equal"
-			}>
-			<div>{formatDateTime(time)}</div>
-			<div>{formatDateTime(targetTime)}</div>
-		</div>),
-		(<div className={targetSize == size ? "equal" : ""}>
-			<div>{formatSize(size)}</div>
-			<div>{formatSize(targetSize)}</div>
-		</div>)
-	]
+	const renderRowItem = ({ name, iconPath, time, targetTime, size, targetSize }: CopyItem) => {
+		const index = name.lastIndexOfAny( ['\\', '/'])
+		const filename = index == -1 ? name : name.substring(index)
+		const subPath = index == -1 ? "" : name.substring(0, index - 1)
+		return [
+			(<div>
+				<IconName namePart={filename} type={IconNameType.File} iconPath={iconPath} />
+				<div className={subPath ? 'subPath' : 'subPath empty'}>{subPath ?? "___"}</div>
+			</div>),
+			(<div className=
+				{
+					(time || 0) > (targetTime || 0)
+						? "overwrite"
+						: (time || 0) < (targetTime || 0)
+							? "notOverwrite"
+							: "equal"
+				}>
+				<div>{formatDateTime(time)}</div>
+				<div>{formatDateTime(targetTime)}</div>
+			</div>),
+			(<div className={targetSize == size ? "equal" : ""}>
+				<div>{formatSize(size)}</div>
+				<div>{formatSize(targetSize)}</div>
+			</div>)
+		]
+	}
 
 	const renderRow = useCallback((item: CopyItem) => 
         renderRowItem(item),
