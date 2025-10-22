@@ -16,13 +16,13 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
     const targetAppendPath = sourceFolder?.getAppendPath()
     if (sourceFolder == null || targetFolder == null || sourceAppendPath == null || targetAppendPath == null)
         return
-    let items = sourceFolder?.getSelectedItems()
-    if (items.length == 0)
-        return
     await Promise.all([
         sourceFolder.refresh(),
         targetFolder.refresh()
     ])
+    let items = sourceFolder?.getSelectedItems()
+    if (items.length == 0)
+        return
 
     try {
         if (items.findIndex(n => n.isDirectory) != -1)
