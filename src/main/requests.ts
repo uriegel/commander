@@ -134,6 +134,7 @@ const mount = async (drive: string) => new Promise<string>((res, rej) => {
 const flattenDirectory = (dirPath: string, dir: FileItem): AsyncEnumerable<FileItem> => {
     const flatten = async () => {
         const directory = path.join(dirPath, dir.name)
+        // TODO getFiles from target path, then merge
         const items = await getFiles(directory, true)        
         return items.items.map(n => ({...n, name: path.join(dir.name, n.name), iconPath: getIconPath(n.name, directory)}))
     }
@@ -143,4 +144,3 @@ const flattenDirectory = (dirPath: string, dir: FileItem): AsyncEnumerable<FileI
     .bind(n => n.isDirectory ? flattenDirectory(dirPath, n) : [n].toAsyncEnumerable())
 }
 	
-
