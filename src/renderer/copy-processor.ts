@@ -4,7 +4,17 @@ import { ID_LEFT } from "./components/Commander"
 import { copy, flattenItems } from "./requests/requests"
 import { FILE } from "./items-provider/file-item-provider"
 import { getSelectedItemsText } from "./items-provider/provider"
-import { SystemError } from "filesystem-utilities"
+import { FileItem, SystemError } from "filesystem-utilities"
+
+export type CopyItem = {
+    name:           string
+    isDirectory?:   boolean    
+    iconPath?:      string
+    time?:          Date
+    size?:          number
+    targetTime?:    Date
+    targetSize?:    number
+}
 
 export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFolder: FolderViewHandle | null,
         move: boolean, dialog: DialogHandle, setErrorText: (txt: string)=>void) => {
@@ -20,7 +30,7 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
         sourceFolder.refresh(),
         targetFolder.refresh()
     ])
-    let items = sourceFolder?.getSelectedItems()
+    let items = makeCopyItems(sourceFolder?.getSelectedItems() as FileItem[], targetFolder.getItems() as FileItem[])
     if (items.length == 0)
         return
 
@@ -77,4 +87,12 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
         const err = e as SystemError
         setErrorText(err.message)
     }
+}
+
+const makeCopyItems = (items: FileItem[], targetItems: FileItem[]): CopyItem[] => {
+    const targetItemsDictionary = new Map(targetItems.map(n => [n.name, n]))    
+    return items.map(n => {
+        const target = targetItemsDictionary.get(n.name)
+        return target ? {...n, targetSize: target.size, targetTime: target.time} : {...n}
+    })
 }

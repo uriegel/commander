@@ -30,6 +30,7 @@ export type FolderViewHandle = {
     deleteItems: () => void
     renameItem: (asCopy?: boolean) => void
     createFolder: () => void
+    getItems: () => Item[]
 }
 
 export interface ItemCount {
@@ -89,6 +90,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         deleteItems,
         createFolder,
         renameItem,
+        getItems,
         // openFolder,
         // extendedRename,
         // showFavorites
@@ -154,6 +156,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             virtualTable.current?.setPosition(newItems.findIndex(n => n.name == name))
         }
     }
+
+    const getItems = () => itemsRef.current
 
     const onPositionChanged = useCallback((item: Item) =>
         onItemChanged(id, itemsProvider.current?.appendPath(path, item.name) || "",

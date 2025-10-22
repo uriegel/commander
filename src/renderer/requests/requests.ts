@@ -1,5 +1,6 @@
 import { SystemError } from "filesystem-utilities"
 import { FileItem } from "../items-provider/items"
+import { CopyItem } from "../copy-processor"
 
 type RequestItem = {
     items: FileItem[],
@@ -24,7 +25,7 @@ export const copy = (requestId: number, sourcePath: string, targetPath: string, 
 export const deleteRequest = (path: string, items: string[]) => jsonRequest<void>("delete", { path, items })
 export const renameRequest = (path: string, item: string, newName: string, asCopy?: boolean) => jsonRequest<void>("rename", { path, item, newName, asCopy })
 export const createFolderRequest = (path: string, item: string) => jsonRequest<void>("createfolder", { path, item })
-export const flattenItems = (path: string, items: FileItem[]) => jsonRequest<FileItem[]>("flattenitems", { path, items })
+export const flattenItems = (path: string, items: CopyItem[]) => jsonRequest<CopyItem[]>("flattenitems", { path, items })
 
 const jsonRequest =  async <T>(cmd: string, msg: unknown) => {
     const payload = {
