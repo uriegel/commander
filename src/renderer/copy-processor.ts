@@ -41,8 +41,6 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
         if (items.findIndex(n => n.isDirectory) != -1)
             items = await flattenItems(sourceFolder.getPath(), targetFolder.getPath(), items)
         const copyConflicts = items.filter(n => n.targetTime)
-            .map(n => ({ name: n.name, iconPath: n.iconPath, time: n.time, size: n.size, targetSize: n.targetSize, targetTime: n.targetTime }))
-
         const defNo = copyConflicts.length > 0
             && copyConflicts
                 .findIndex(n => (n.time ?? "") < (n.targetTime ?? "")) != -1
@@ -63,18 +61,11 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
         if (res.result == ResultType.Cancel)
             return
 
-        await copy(15, sourceFolder.getPath(), targetFolder.getPath(), items.map(n => n.name), move)
+        const itemsToCopy = res.result == ResultType.No ? items.diff(copyConflicts) : items
+        await copy(15, sourceFolder.getPath(), targetFolder.getPath(), itemsToCopy.map(n => n.name), move)
         targetFolder.refresh()
         if (move)
             sourceFolder.refresh()
-
-
-        // const result = await copy({ id, cancelled: res.result == ResultType.Cancel, notOverwrite: res.result == ResultType.No })
-        // if (!result.cancelled) {
-        //     inactiveFolder.refresh()
-        //     if (move)
-        //         refresh()
-        // }
     } catch (e) {
         const err = e as SystemError
         setErrorText(err.message)

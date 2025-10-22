@@ -55,8 +55,8 @@ const CopyConflicts = ({ props }: ExtensionProps) => {
 			columns: getColumns(), 
 			renderRow
         })
-        
-        setTimeout(() => setItems(props as CopyItem[]))
+		setTimeout(() => setItems(
+			(props as CopyItem[]).map(n => ({ name: n.name, iconPath: n.iconPath, time: n.time, size: n.size, targetSize: n.targetSize, targetTime: n.targetTime }))))
 		
     }, [setItems, props, renderRow])
     
