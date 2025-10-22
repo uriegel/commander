@@ -17,10 +17,15 @@ export type ExifStatus = {
     requestId: number
 }
 
+export type CopyProgress = {
+    idx: number,
+    current: number,
+    total: number
+}
 
-type EventData = ExifDataType | ExifStatus
+type EventData = ExifDataType | ExifStatus| CopyProgress
 
-type EventCmd = "Exif" | "ExifStart" | "ExifStop"
+type EventCmd = "Exif" | "ExifStart" | "ExifStop" | "CopyProgress"
 
 type Event = {
     folderId?: string,
@@ -38,9 +43,10 @@ const message$ = new Observable<Event>(subscriberToSet => {
     return () => subscribers.delete(subscriberToSet)
 })
 
-const exifDataEvents$ = message$.pipe(filter(n => n.cmd == "Exif"))
+export const copyProgressEvents$ = message$.pipe(filter(n => n.cmd == "CopyProgress")).pipe(map(n => n.msg as CopyProgress))
 const exifStartEvents$ = message$.pipe(filter(n => n.cmd == "ExifStart"))
 const exifStopEvents$ = message$.pipe(filter(n => n.cmd == "ExifStop"))
+const exifDataEvents$ = message$.pipe(filter(n => n.cmd == "Exif"))
 
 export const exifDataEventsLeft$ = exifDataEvents$
     .pipe(filter(n => n.folderId == ID_LEFT))

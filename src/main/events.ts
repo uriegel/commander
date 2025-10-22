@@ -5,7 +5,6 @@ export type ExifDataInfo = {
     longitude?: number
 }
 
-
 export type ExifData = {
     requestId: number,
     items: ExifDataInfo[]
@@ -15,9 +14,15 @@ export type ExifStatus = {
     requestId: number
 }
 
-export type EventData = ExifData | ExifStatus
+export type CopyProgress = {
+    idx: number,
+    current: number,
+    total: number
+}
 
-export type EventCmd = "Exif" | "ExifStart" | "ExifStop"
+export type EventData = ExifData | ExifStatus | CopyProgress
+
+export type EventCmd = "Exif" | "ExifStart" | "ExifStop" | "CopyProgress"
 
 export type Event = {
     folderId?: string,

@@ -7,6 +7,8 @@ import path from 'path'
 import { retrieveExifDatas } from './exif.js'
 import { AsyncEnumerable } from 'functional-extensions'
 import { filter, interval, merge, Observable, Subscriber, throttle } from 'rxjs'
+import { sendEvent } from './index.js'
+import { CopyProgress } from './events.js'
 
 type GetFiles = {
     folderId: string,
@@ -65,18 +67,18 @@ export const onRequest = async (request: Request) => {
             }
             case "json://copy/": {
                 const input = await request.json() as { requestId: number, sourcePath: string, targetPath: string, items: string[], move: boolean }
-                const subscribers = new Set<Subscriber<{idx: Number, current: Number, total: number}>>
-                const message$ = new Observable<{idx: Number, current: Number, total: number}>(subscriberToSet => {
+                const subscribers = new Set<Subscriber<CopyProgress>>
+                const message$ = new Observable<CopyProgress>(subscriberToSet => {
                     subscribers.add(subscriberToSet)
                     return () => subscribers.delete(subscriberToSet)
                 })
-                const progress$ = message$.pipe(filter(n => n.total != n.current)).pipe(throttle(() => interval(1000)))
+                const progress$ = message$.pipe(filter(n => n.total != n.current)).pipe(throttle(() => interval(40)))
                 const progressEnd$ = message$.pipe(filter(n => n.total == n.current))
 
-                merge(progress$, progressEnd$).subscribe(obj  => console.log("Copy progress", obj.idx, obj.current, obj.total))
+                merge(progress$, progressEnd$).subscribe(msg => sendEvent({ cmd: 'CopyProgress', msg })) 
 
                 await copyFiles(input.sourcePath, input.targetPath, input.items, {
-                    move: input.move, overwrite: true, progressCallback: (idx: Number, current: Number, total: number) => 
+                    move: input.move, overwrite: true, progressCallback: (idx: number, current: number, total: number) => 
                         subscribers.values().forEach(s => s.next({idx, current, total}))
                 })
                 

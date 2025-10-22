@@ -24,3 +24,18 @@
 .lastStatus {
     margin: 0 10px;
 }
+
+.pieContainer {
+    display: flex;
+    margin-right: 10px;
+    width: 0px;
+    transition: width 0.3s
+}
+
+.pieContainer.revealed {
+    width: 15px;
+}
+
+.finished .progressPie .progressPieCircle {
+    stroke: gray;
+}

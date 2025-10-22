@@ -23,6 +23,9 @@
         --mbr-menubar-submenu-background-color: var(--scaffolding-background-color);
         --mbr-menubar-selected-background-color: var(--vtr-selected-background-color);
 
+        --rpc-color: var(--vtr-selected-background-color);
+
+
         /* --wdr-main-background-color: #f6f5f4;
         --wdr-buttons-gap: 0px;
         --wdr-buttons-float: none;
@@ -97,6 +100,9 @@
         --mbr-menubar-selected-color: white;
         --mbr-menubar-selected-background-color: var(--vtr-selected-background-color);
         --mbr-menubar-separator-color: rgb(70, 70, 70);
+
+        --rpc-color: var(--vtr-selected-background-color);
+        --rpc-background-color: rgb(27, 27, 27);
     
         /* --wdr-main-color: white;
         --wdr-main-background-color: #353535;
@@ -135,7 +141,7 @@
         --wdr-button-cornerradius: 5px;
         --wdr-button-outlinestyle: solid;
         --wdr-button-outlineoffset: 0px;
-        --wdr-input-selection-color: #3584e4;
+        --wdr-input-selection-color: var(--vtr-selected-background-color);
         --wdr-cancel-hover-color: white;
         --wdr-cancel-active-color: white;
         --wdr-cancel-color: white;

@@ -1,5 +1,7 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import Pie from 'react-progress-control'
 import './StatusBar.css'
+import { CopyProgress } from '@/main/events'
 
 export interface StatusbarProps {
     path: string
@@ -9,9 +11,12 @@ export interface StatusbarProps {
     setErrorText: (text: string | null) => void
     statusText?: string
     statusInfo?: string
+    copyProgress: CopyProgress
+    progressRevealed: boolean
+    progressFinished: boolean
 }
 
-const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusText, statusInfo  }: StatusbarProps) => {
+const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusText, statusInfo, copyProgress, progressFinished, progressRevealed }: StatusbarProps) => {
 
     const timer = useRef(0)
 
@@ -22,6 +27,13 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
         }
     }, [errorText, setErrorText])
 
+    const [progress, setProgress] = useState(0)
+
+    useEffect(() => {
+        //setProgress((copyProgress.totalBytes + copyProgress.currentBytes) / copyProgress.totalMaxBytes)
+        setProgress((copyProgress.current) / copyProgress.total)
+    }, [copyProgress])
+
     const getClasses = () => ["statusbar", errorText
                                             ? "error"
                                             : statusInfo
@@ -29,7 +41,10 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
                                             : statusText
                                             ? "status"
                                             : null]
-                                                .join(' ')
+        .join(' ')
+    
+    // onClick={startProgressDialog}
+    
     return (
         <div className={getClasses()}>
             { errorText
@@ -37,6 +52,9 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
                 || (<>
                     <span>{statusText || path}</span>
                     <span className='fill'></span>
+                    <div className={`pieContainer${progressRevealed ? " revealed" : ""}${progressFinished ? " finished" : ""}`} > 
+                        <Pie progress={progress}/>
+                    </div>  
                     <span>{`${dirCount} Verz.`}</span>
                     <span className='lastStatus'>{`${fileCount} Dateien`}</span>
                 </>)}

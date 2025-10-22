@@ -13,6 +13,7 @@ import { DialogContext } from "web-dialog-react"
 import Statusbar from "./StatusBar"
 import './viewers/viewers.css'
 import { copyItems } from "../copy-processor"
+import { CopyProgress, copyProgressEvents$ } from "../requests/events"
 
 export const ID_LEFT = "left"
 export const ID_RIGHT = "right"
@@ -43,7 +44,10 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 	const [errorText, setErrorText] = useState<string | null>(null)
 	const [activeFolderId, setActiveFolderId] = useState(ID_LEFT)
 	const [viewerMode, setViewerMode] = useState<ViewerMode>("Viewer")
-		
+	const [progress, setProgress] = useState<CopyProgress>({ idx: 0, current: 0, total: 0})
+	const [progressRevealed, setProgressRevealed] = useState(false)
+	const [progressFinished, setProgressFinished] = useState(false)
+    	
 	const getActiveFolder = useCallback(() => activeFolderIdRef.current == ID_LEFT ? folderLeft.current : folderRight.current, [])
 	const getInactiveFolder = () => activeFolderIdRef.current == ID_LEFT ? folderRight.current : folderLeft.current
 
@@ -70,6 +74,16 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 
 	useEffect(() => {
 		folderLeft.current?.setFocus()
+	}, [])
+
+	useEffect(() => {
+		
+		
+		setProgressRevealed(true)
+
+		
+		const sub = copyProgressEvents$.subscribe(setProgress)
+		return () => sub.unsubscribe()
 	}, [])
 
 	const dialog = useContext(DialogContext)
@@ -205,8 +219,8 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 				viewerMode={viewerMode} setViewerMode={setViewerMode}
             />            
             <ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
-			<Statusbar path={itemProperty.path} dirCount={itemCount.dirCount} fileCount={itemCount.fileCount}
-					errorText={errorText} setErrorText={setErrorText} statusText={getStatusText()} />		
+			<Statusbar path={itemProperty.path} dirCount={itemCount.dirCount} fileCount={itemCount.fileCount} copyProgress={progress} progressFinished={progressFinished}
+					progressRevealed={progressRevealed} errorText={errorText} setErrorText={setErrorText} statusText={getStatusText()} />		
         </>
     )
 })
