@@ -10,7 +10,6 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* copy: ConflictDialog: other descriptiontexts: "Einträge beim kopieren/verschieben überschreiben"
 * copy: Linux progress as pie and dialog
 * copy: cancel copy, prevent from close
 

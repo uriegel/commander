@@ -46,7 +46,7 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
                 .findIndex(n => (n.time ?? "") < (n.targetTime ?? "")) != -1
 
         const res = await dialog.show({
-            text: `Möchtest Du ${copyText} ${move ? "verschieben" : "kopieren"}?`,
+            text: copyConflicts.length ? `Einträge beim ${move ? "Verschieben" : "Kopieren"} überschreiben?` : `Möchtest Du ${copyText} ${move ? "verschieben" : "kopieren"}?`,
             slide: sourceFolder.id == ID_LEFT ? Slide.Left : Slide.Right,
             extension: copyConflicts.length ? CopyConflicts : undefined,
             extensionProps: copyConflicts,
