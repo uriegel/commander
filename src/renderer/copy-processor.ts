@@ -4,15 +4,17 @@ import { ID_LEFT } from "./components/Commander"
 import { copy, flattenItems } from "./requests/requests"
 import { FILE } from "./items-provider/file-item-provider"
 import { getSelectedItemsText } from "./items-provider/provider"
-import { FileItem, SystemError } from "filesystem-utilities"
+import { SystemError } from "filesystem-utilities"
+import { FileItem } from "./items-provider/items"
+import CopyConflicts from "./components/dialogs/CopyConflicts"
 
 export type CopyItem = {
     name:           string
     isDirectory?:   boolean    
     iconPath?:      string
-    time?:          Date
+    time?:          string
     size?:          number
-    targetTime?:    Date
+    targetTime?:    string
     targetSize?:    number
 }
 
@@ -38,44 +40,33 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
         const copyText = getSelectedItemsText(items)
         if (items.findIndex(n => n.isDirectory) != -1)
             items = await flattenItems(sourceFolder.getPath(), targetFolder.getPath(), items)
-        // TODO check conflicts
+        const copyConflicts = items.filter(n => n.targetTime)
+
+        const defNo = copyConflicts.length > 0
+            && copyConflicts
+                .findIndex(n => (n.time ?? "") < (n.targetTime ?? "")) != -1
+
         const res = await dialog.show({
             text: `Möchtest Du ${copyText} ${move ? "verschieben" : "kopieren"}?`,
             slide: sourceFolder.id == ID_LEFT ? Slide.Left : Slide.Right,
-            //extension: prepareResult.conflicts.length ? CopyConflicts : undefined,
-            // extensionProps: prepareResult.conflicts.map(n => ({
-            //     name: n.source.name.getFileName(),
-            //     subPath: n.source.name.getParentPath(),
-            //     iconPath: n.source.name,
-            //     size: n.source.size,
-            //     time: n.source.time,
-            //     targetSize: n.target.size,
-            //     targetTime: n.target.time
-            // }) as ConflictItem),
-            //fullscreen: prepareResult.conflicts.length > 0,
-            //btnYes: prepareResult.conflicts.length > 0,
-            //btnNo: prepareResult.conflicts.length > 0,
-            //btnOk: prepareResult.conflicts.length == 0,
-            btnOk: true,
+            extension: copyConflicts.length ? CopyConflicts : undefined,
+            extensionProps: copyConflicts,
+            fullscreen: copyConflicts.length > 0,
+            btnYes: copyConflicts.length > 0,
+            btnNo: copyConflicts.length > 0,
+            btnOk: copyConflicts.length == 0,
             btnCancel: true,
-            //defBtnYes: !defNo && prepareResult.conflicts.length > 0,
-            //defBtnNo: defNo
+            defBtnYes: !defNo && copyConflicts.length > 0,
+            defBtnNo: defNo
         })
         if (res.result == ResultType.Cancel)
             return
 
-        // const source = items.map(n => sourceAppendPath(sourceFolder.getPath(), n.name))
-        // const target = items.map(n => targetAppendPath(targetFolder.getPath(), n.name))
         await copy(15, sourceFolder.getPath(), targetFolder.getPath(), items.map(n => n.name), move)
         targetFolder.refresh()
         if (move)
             sourceFolder.refresh()
 
-        // const defNo = prepareResult.conflicts.length > 0
-        //     && prepareResult
-        //         .conflicts
-        //         .filter(n => (n.source.time ?? "") < (n.target.time ?? ""))
-        //         .length > 0
 
         // const result = await copy({ id, cancelled: res.result == ResultType.Cancel, notOverwrite: res.result == ResultType.No })
         // if (!result.cancelled) {
