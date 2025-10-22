@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Pie from 'react-progress-control'
 import './StatusBar.css'
-import { CopyProgress } from '@/main/events'
+import { copyProgressEvents$ } from "../requests/events"
 
 export interface StatusbarProps {
     path: string
@@ -11,12 +11,10 @@ export interface StatusbarProps {
     setErrorText: (text: string | null) => void
     statusText?: string
     statusInfo?: string
-    copyProgress: CopyProgress
-    progressRevealed: boolean
-    progressFinished: boolean
+    setBackgroundAction: (set: boolean) => void
 }
 
-const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusText, statusInfo, copyProgress, progressFinished, progressRevealed }: StatusbarProps) => {
+const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusText, statusInfo, setBackgroundAction }: StatusbarProps) => {
 
     const timer = useRef(0)
 
@@ -28,11 +26,30 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
     }, [errorText, setErrorText])
 
     const [progress, setProgress] = useState(0)
+    const [progressRevealed, setProgressRevealed] = useState(false)
+    const [progressFinished, setProgressFinished] = useState(false)
+    const progressTimeout = useRef(0)
 
     useEffect(() => {
-        //setProgress((copyProgress.totalBytes + copyProgress.currentBytes) / copyProgress.totalMaxBytes)
-        setProgress((copyProgress.current) / copyProgress.total)
-    }, [copyProgress])
+        const sub = copyProgressEvents$.subscribe(msg => {
+            //setProgress((copyProgress.totalBytes + copyProgress.currentBytes) / copyProgress.totalMaxBytes)
+            if (msg.current == 0) {
+                if (progressTimeout.current)
+                    clearTimeout(progressTimeout.current)
+                setBackgroundAction(true)
+                setProgressRevealed(true)
+                setProgressFinished(false)
+            }
+            else if (msg.current == msg.total) {
+                setProgressFinished(true)
+                setBackgroundAction(false)
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                progressTimeout.current = setTimeout(() => setProgressRevealed(false), 5000) as any 
+            }
+            setProgress((msg.current) / msg.total)
+        })
+        return () => sub.unsubscribe()
+    }, [setBackgroundAction])
 
     const getClasses = () => ["statusbar", errorText
                                             ? "error"

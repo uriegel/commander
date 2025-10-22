@@ -19,7 +19,12 @@ export type CopyItem = {
 }
 
 export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFolder: FolderViewHandle | null,
-        move: boolean, dialog: DialogHandle, setErrorText: (txt: string)=>void) => {
+        move: boolean, dialog: DialogHandle, setErrorText: (txt: string) => void, backgroundAction: boolean) => {
+    if (backgroundAction) {
+        setErrorText("Eine Hintergrundaktion ist bereits am Laufen!")
+        return
+    }
+    
     const sourceProvider = sourceFolder?.getCurrentItemsProvider()
     const targetProvider = targetFolder?.getCurrentItemsProvider()
     if (sourceProvider?.id != FILE || targetProvider?.id != FILE)
