@@ -35,12 +35,12 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
         return
 
     try {
+        const copyText = getSelectedItemsText(items)
         if (items.findIndex(n => n.isDirectory) != -1)
             items = await flattenItems(sourceFolder.getPath(), items)
         // TODO check conflicts
         const res = await dialog.show({
-            //text: controller.current.getCopyText(prepareResult, move),
-            text: `Möchtest Du ${getSelectedItemsText(items)} ${move ? "verschieben" : "kopieren"}?`,
+            text: `Möchtest Du ${copyText} ${move ? "verschieben" : "kopieren"}?`,
             slide: sourceFolder.id == ID_LEFT ? Slide.Left : Slide.Right,
             //extension: prepareResult.conflicts.length ? CopyConflicts : undefined,
             // extensionProps: prepareResult.conflicts.map(n => ({
