@@ -1,8 +1,12 @@
-import { cancel, copyFile, copyFiles, createFolder, FileItem, getDrives, getFiles, openFile, openFileWith, rename, showFileProperties, SystemError, trash } from 'filesystem-utilities'
+import {
+    cancel, copyFile, copyFiles, createFolder, FileItem, getDrives, getFiles, openFile,
+    openFileWith, rename, showFileProperties, SystemError, trash
+} from 'filesystem-utilities'
 import { spawn } from "child_process"
 import path from 'path'
 import { retrieveExifDatas } from './exif.js'
 import { AsyncEnumerable } from 'functional-extensions'
+import { filter, interval, merge, Observable, Subscriber, throttle } from 'rxjs'
 
 type GetFiles = {
     folderId: string,
@@ -61,7 +65,21 @@ export const onRequest = async (request: Request) => {
             }
             case "json://copy/": {
                 const input = await request.json() as { requestId: number, sourcePath: string, targetPath: string, items: string[], move: boolean }
-                await copyFiles(input.sourcePath, input.targetPath, input.items, { move: input.move, overwrite: true })
+                const subscribers = new Set<Subscriber<{idx: Number, current: Number, total: number}>>
+                const message$ = new Observable<{idx: Number, current: Number, total: number}>(subscriberToSet => {
+                    subscribers.add(subscriberToSet)
+                    return () => subscribers.delete(subscriberToSet)
+                })
+                const progress$ = message$.pipe(filter(n => n.total != n.current)).pipe(throttle(() => interval(1000)))
+                const progressEnd$ = message$.pipe(filter(n => n.total == n.current))
+
+                merge(progress$, progressEnd$).subscribe(obj  => console.log("Copy progress", obj.idx, obj.current, obj.total))
+
+                await copyFiles(input.sourcePath, input.targetPath, input.items, {
+                    move: input.move, overwrite: true, progressCallback: (idx: Number, current: Number, total: number) => 
+                        subscribers.values().forEach(s => s.next({idx, current, total}))
+                })
+                
                 return writeJson({})
             }
             case "json://delete/": {
@@ -85,6 +103,7 @@ export const onRequest = async (request: Request) => {
             }
             case "json://flattenitems/": {
                 const input = await request.json() as { path: string, targetPath: string, items: CopyItem[] }
+                const subscribers = new Set<Subscriber<{ idx: number, current: number, total: number }>>
                 const flattened = await input
                     .items
                     .toAsyncEnumerable()

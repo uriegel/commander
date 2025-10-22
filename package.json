@@ -57,10 +57,11 @@
   "homepage": "https://github.com/uriegel/commander#readme",
   "dependencies": {
     "electron-settings": "^5.0.0",
-    "filesystem-utilities": "^7.0.2",
+    "filesystem-utilities": "^7.0.3",
     "functional-extensions": "^2.4.2",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "rxjs": "^7.8.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.37.0",
@@ -70,10 +71,10 @@
     "@vitejs/plugin-react": "^5.0.4",
     "concurrently": "^9.2.1",
     "cross-env": "^10.1.0",
-    "electron": "^38.3.0",
+    "electron": "^38.4.0",
     "electron-builder": "^26.1.0",
-    "eslint-plugin-react-refresh": "^0.4.24",
     "eslint-plugin-react-hooks": "^7.0.0",
+    "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.0.0",
     "leaflet": "^1.9.4",
     "menubar-react": "^2.3.3",
