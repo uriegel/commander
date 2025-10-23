@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import Pie from 'react-progress-control'
-import './StatusBar.css'
+import './Statusbar.css'
 import { copyProgressEvents$ } from "../requests/events"
 import { DialogContext, ResultType } from 'web-dialog-react'
 import CopyProgressPart, { CopyProgressProps } from './dialogs/CopyProgressPart'

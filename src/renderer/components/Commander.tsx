@@ -10,7 +10,7 @@ import FolderView, { FolderViewHandle, ItemCount } from "./FolderView"
 import { cmdRequest } from "../requests/requests"
 import { Item } from "../items-provider/items"
 import { DialogContext } from "web-dialog-react"
-import Statusbar from "./StatusBar"
+import Statusbar from "./Statusbar"
 import './viewers/viewers.css'
 import { copyItems } from "../copy-processor"
 
