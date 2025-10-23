@@ -9,6 +9,11 @@ const secondsToTime = (timeInSecs: number) => {
     return `${min.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
 }
 
+export type CopyProgressProps = {
+    items: string[],
+    index: number
+}
+
 const CopyProgressPart = ({ props }: ExtensionProps) => {
     const [totalCount, setTotalCount] = useState(0)
     const [currentCount, setCurrentCount] = useState(0)
@@ -22,6 +27,16 @@ const CopyProgressPart = ({ props }: ExtensionProps) => {
     const idx = useRef(-1)
 
     useEffect(() => {
+        const cpp = props as CopyProgressProps 
+        if (files.current == null) {
+            files.current = cpp.items
+            setTotalCount(files.current.length)
+        }
+        if (cpp.index != idx.current) {
+            idx.current = cpp.index
+            setCurrentCount(idx.current + 1)
+            setFileName(files.current[idx.current])
+        }
         const subscription = copyProgressEvents$.subscribe(e => {
             if (files.current == null) {
                 files.current = props as string[]

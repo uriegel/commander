@@ -3,7 +3,7 @@ import Pie from 'react-progress-control'
 import './StatusBar.css'
 import { copyProgressEvents$ } from "../requests/events"
 import { DialogContext, ResultType } from 'web-dialog-react'
-import CopyProgressPart from './dialogs/CopyProgressPart'
+import CopyProgressPart, { CopyProgressProps } from './dialogs/CopyProgressPart'
 import './dialogs/CopyProgressPart.css'
 
 export interface StatusbarProps {
@@ -35,6 +35,7 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
     const [progressTotalMaxBytes, setProgresstotalMaxBytes] = useState(0)
     const progressTimeout = useRef(0)
     const progressFiles = useRef<string[]>([])    
+    const progressFilesIndex = useRef(-1)    
 
     useEffect(() => {
         const sub = copyProgressEvents$.subscribe(msg => {
@@ -56,6 +57,7 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
                 progressTimeout.current = setTimeout(() => setProgressRevealed(false), 5000) as any 
                 progressFiles.current = []
             }
+            progressFilesIndex.current = msg.idx
             setProgress((msg.totalBytes) / msg.totalMaxBytes)
         })
         return () => sub.unsubscribe()
@@ -74,7 +76,7 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
                 btnOk: true,
                 btnOkText: "Stoppen",
                 extension: CopyProgressPart,
-                extensionProps: progressFiles.current
+                extensionProps: {items: progressFiles.current, index: progressFilesIndex.current } as CopyProgressProps
              })
             dialogOpen.current = false
             // if (res?.result == ResultType.Ok)
