@@ -10,7 +10,7 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* copy: Linux progress dialog
+* copy: Linux progress dialog: durations, caption, file indexes
 * copy: Linux cancel copy, prevent from close
 * copy: Windows without progress
 
