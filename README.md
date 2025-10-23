@@ -14,26 +14,6 @@ TODO
 * copy: Linux cancel copy, prevent from close
 * copy: Windows without progress
 
-/*
-In HTML, <table> cannot be a descendant of <p>.
-This will cause a hydration error.
-  <App>
-    <div className="App linuxT..." onKeyDown={function onKeyDown}>
-      <WithDialog>
-        <Menu>
-        <ViewSplit>
-        <Statusbar>
-        <div className="wdr--dialo...">
-          <div>
-          <div className="wdr--conta..." onKeyDown={function onKeyDown}>
-            <div ref={{current:null}} className="wdr--dialog" onFocus={function onFocus}>
-              <div className="wdr--content">
-                <p>
-                <div className="copyProgress">
->                 <p>
->                   <table>
-*/
-
 * Windows show file versions
 
 * Extended rename

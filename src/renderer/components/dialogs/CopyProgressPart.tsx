@@ -44,7 +44,7 @@ const CopyProgressPart = ({ props }: ExtensionProps) => {
     
     return (
         <div className='copyProgress'>
-            <p>
+            <div className="p">
                 <table>
                     <tbody>
                         <tr>
@@ -61,7 +61,7 @@ const CopyProgressPart = ({ props }: ExtensionProps) => {
                         </tr>
                     </tbody>
                 </table>
-            </p>
+            </div>
             <progress className='currentProgress' max={max} value={value}></progress>
             <p>Gesamt:</p>
             <progress className='totalProgress' max={totalMax} value={totalValue}></progress>
