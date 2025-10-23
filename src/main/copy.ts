@@ -3,7 +3,7 @@ import { sendEvent } from './index.js'
 import { CopyProgress } from './events.js'
 import { copyFiles } from "filesystem-utilities"
 
-export const copyItems = async (requestId: number, sourcePath: string, targetPath: string, items: string[], totalBytes: number, move: boolean) => {
+export const copyItems = async (requestId: number, sourcePath: string, targetPath: string, items: string[], totalMaxBytes: number, move: boolean) => {
     if (items.length == 0)
         return
     
@@ -12,24 +12,23 @@ export const copyItems = async (requestId: number, sourcePath: string, targetPat
         subscribers.add(subscriberToSet)
         return () => subscribers.delete(subscriberToSet)
     })
-    const progress$ = message$.pipe(filter(n => n.totalBytes != n.copiedBytes + n.current)).pipe(throttle(() => interval(40)))
-    const progressEnd$ = message$.pipe(filter(n => n.totalBytes == n.copiedBytes + n.current))
+    const progress$ = message$.pipe(filter(n => n.totalBytes != n.totalMaxBytes)).pipe(throttle(() => interval(40)))
+    const progressEnd$ = message$.pipe(filter(n => n.totalBytes == n.totalMaxBytes))
 
     merge(progress$, progressEnd$).subscribe(msg => sendEvent({ cmd: 'CopyProgress', msg })) 
 
     let previousCopiedBytes = 0
     let currentIndex = -1
     let copiedBytes = 0
-    subscribers.values().forEach(s => s.next({idx: 0, current: 0, currentTotal: 0, copiedBytes, totalBytes }))
+    subscribers.values().forEach(s => s.next({idx: 0, currentBytes: 0, currentMaxBytes: 0, totalBytes: 0, totalMaxBytes }))
     await copyFiles(sourcePath, targetPath, items, {
-        move, overwrite: true, progressCallback: (idx: number, current: number, currentTotal: number) => {
+        move, overwrite: true, progressCallback: (idx: number, currentBytes: number, currentMaxBytes: number) => {
             if (currentIndex != idx) {
                 copiedBytes = previousCopiedBytes
-                previousCopiedBytes += currentTotal
+                previousCopiedBytes += currentMaxBytes
                 currentIndex = idx
             }
-            console.log({ idx, current, currentTotal, copiedBytes, totalBytes })
-            subscribers.values().forEach(s => s.next({ idx, current, currentTotal, copiedBytes, totalBytes }))
+            subscribers.values().forEach(s => s.next({ idx, currentBytes, currentMaxBytes, totalBytes: copiedBytes + currentBytes, totalMaxBytes }))
         }
     })
 }

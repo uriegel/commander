@@ -1,0 +1,15 @@
+.copyProgress {
+    min-width: 400px;
+}
+
+.copyProgress progress {
+    width: 100%;
+}
+
+.copyProgress table {
+    width: 100%;
+}
+
+.copyProgress .rightAligned {
+    text-align: end;
+}

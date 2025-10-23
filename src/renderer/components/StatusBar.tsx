@@ -1,7 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import Pie from 'react-progress-control'
 import './StatusBar.css'
 import { copyProgressEvents$ } from "../requests/events"
+import { DialogContext, ResultType } from 'web-dialog-react'
+import CopyProgressPart from './dialogs/CopyProgressPart'
+import './dialogs/CopyProgressPart.css'
 
 export interface StatusbarProps {
     path: string
@@ -32,23 +35,46 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
 
     useEffect(() => {
         const sub = copyProgressEvents$.subscribe(msg => {
-            if (msg.current == 0 && msg.copiedBytes == 0) {
+            if (msg.currentBytes == 0 && msg.totalBytes == 0) {
                 if (progressTimeout.current)
                     clearTimeout(progressTimeout.current)
                 setBackgroundAction(true)
                 setProgressRevealed(true)
                 setProgressFinished(false)
             }
-            else if (msg.current + msg.copiedBytes == msg.totalBytes) {
+            else if (msg.totalBytes == msg.totalMaxBytes) {
                 setProgressFinished(true)
                 setBackgroundAction(false)
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 progressTimeout.current = setTimeout(() => setProgressRevealed(false), 5000) as any 
             }
-            setProgress((msg.current + msg.copiedBytes) / msg.totalBytes)
+            setProgress((msg.totalBytes) / msg.totalMaxBytes)
         })
         return () => sub.unsubscribe()
     }, [setBackgroundAction])
+
+    const dialog = useContext(DialogContext)
+
+    const dialogOpen = useRef(false)
+
+    const startProgressDialog = useCallback(() => {
+        const start = async () => {
+            dialogOpen.current = true
+            const res = await dialog.show({
+                //text: `Fortschritt beim ${copyProgress.move ? "Verschieben" : "Kopieren"} (${copyProgress.totalMaxBytes.byteCountToString()})`,
+                text: "Das ist die Überschrift",
+                btnCancel: true,
+                btnOk: true,
+                btnOkText: "Stoppen",
+                extension: CopyProgressPart
+             })
+            dialogOpen.current = false
+            // if (res?.result == ResultType.Ok)
+            //     await cancelCopy({})
+        }
+
+        start()
+    }, [dialog])    
 
     const getClasses = () => ["statusbar", errorText
                                             ? "error"
@@ -68,7 +94,7 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
                 || (<>
                     <span>{statusText || path}</span>
                     <span className='fill'></span>
-                    <div className={`pieContainer${progressRevealed ? " revealed" : ""}${progressFinished ? " finished" : ""}`} > 
+                    <div className={`pieContainer${progressRevealed ? " revealed" : ""}${progressFinished ? " finished" : ""}`} onClick={startProgressDialog} > 
                         <Pie progress={progress}/>
                     </div>  
                     <span>{`${dirCount} Verz.`}</span>
