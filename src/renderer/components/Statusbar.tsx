@@ -104,9 +104,11 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
                 || (<>
                     <span>{statusText || path}</span>
                     <span className='fill'></span>
-                    <div className={`pieContainer${progressRevealed ? " revealed" : ""}${progressFinished ? " finished" : ""}`} onClick={startProgressDialog} > 
-                        <Pie progress={progress}/>
-                    </div>  
+                    {(window.env.platform != 'win32')
+                    ? (<div className={`pieContainer${progressRevealed ? " revealed" : ""}${progressFinished ? " finished" : ""}`} onClick={startProgressDialog} >
+                        <Pie progress={progress} />
+                        </div>)
+                    : <></>}
                     <span>{`${dirCount} Verz.`}</span>
                     <span className='lastStatus'>{`${fileCount} Dateien`}</span>
                 </>)}

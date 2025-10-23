@@ -12,7 +12,8 @@ sudo apt install libgtk-3-dev
 TODO
 * copy: Linux progress dialog: durations
 * copy: Linux cancel copy, prevent from close
-* copy: Windows without progress
+
+* Shift Pos1/End
 
 * Windows show file versions
 
