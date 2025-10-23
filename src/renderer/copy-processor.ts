@@ -67,7 +67,7 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
             return
 
         const itemsToCopy = res.result == ResultType.No ? items.diff(copyConflicts) : items
-        await copy(15, sourceFolder.getPath(), targetFolder.getPath(), itemsToCopy.map(n => n.name), move)
+        await copy(15, sourceFolder.getPath(), targetFolder.getPath(), itemsToCopy.map(n => n.name), itemsToCopy.reduce((previousValue, current) => (current.size || 0) + previousValue, 0),  move)
         targetFolder.refresh()
         if (move)
             sourceFolder.refresh()

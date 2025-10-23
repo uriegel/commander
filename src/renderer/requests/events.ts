@@ -20,7 +20,10 @@ export type ExifStatus = {
 export type CopyProgress = {
     idx: number,
     current: number,
-    total: number
+    total: number,
+    copiedBytes: number
+    totalBytes: number
+
 }
 
 type EventData = ExifDataType | ExifStatus| CopyProgress

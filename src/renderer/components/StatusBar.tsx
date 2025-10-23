@@ -32,21 +32,20 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
 
     useEffect(() => {
         const sub = copyProgressEvents$.subscribe(msg => {
-            //setProgress((copyProgress.totalBytes + copyProgress.currentBytes) / copyProgress.totalMaxBytes)
-            if (msg.current == 0) {
+            if (msg.current == 0 && msg.copiedBytes == 0) {
                 if (progressTimeout.current)
                     clearTimeout(progressTimeout.current)
                 setBackgroundAction(true)
                 setProgressRevealed(true)
                 setProgressFinished(false)
             }
-            else if (msg.current == msg.total) {
+            else if (msg.current + msg.copiedBytes == msg.totalBytes) {
                 setProgressFinished(true)
                 setBackgroundAction(false)
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 progressTimeout.current = setTimeout(() => setProgressRevealed(false), 5000) as any 
             }
-            setProgress((msg.current) / msg.total)
+            setProgress((msg.current + msg.copiedBytes) / msg.totalBytes)
         })
         return () => sub.unsubscribe()
     }, [setBackgroundAction])
