@@ -31,22 +31,30 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
     const [progress, setProgress] = useState(0)
     const [progressRevealed, setProgressRevealed] = useState(false)
     const [progressFinished, setProgressFinished] = useState(false)
+    const [progressMove, setProgressMove] = useState(false)
+    const [progressTotalMaxBytes, setProgresstotalMaxBytes] = useState(0)
     const progressTimeout = useRef(0)
+    const progressFiles = useRef<string[]>([])    
 
     useEffect(() => {
         const sub = copyProgressEvents$.subscribe(msg => {
             if (msg.currentBytes == 0 && msg.totalBytes == 0) {
                 if (progressTimeout.current)
                     clearTimeout(progressTimeout.current)
+                setProgressMove(msg.move == true)
+                setProgresstotalMaxBytes(msg.totalMaxBytes)
                 setBackgroundAction(true)
                 setProgressRevealed(true)
                 setProgressFinished(false)
+                if (msg.items != undefined)
+                    progressFiles.current = msg.items
             }
             else if (msg.totalBytes == msg.totalMaxBytes) {
                 setProgressFinished(true)
                 setBackgroundAction(false)
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 progressTimeout.current = setTimeout(() => setProgressRevealed(false), 5000) as any 
+                progressFiles.current = []
             }
             setProgress((msg.totalBytes) / msg.totalMaxBytes)
         })
@@ -61,12 +69,12 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
         const start = async () => {
             dialogOpen.current = true
             const res = await dialog.show({
-                //text: `Fortschritt beim ${copyProgress.move ? "Verschieben" : "Kopieren"} (${copyProgress.totalMaxBytes.byteCountToString()})`,
-                text: "Das ist die Überschrift",
+                text: `Fortschritt beim ${progressMove ? "Verschieben" : "Kopieren"} (${progressTotalMaxBytes.byteCountToString()})`,
                 btnCancel: true,
                 btnOk: true,
                 btnOkText: "Stoppen",
-                extension: CopyProgressPart
+                extension: CopyProgressPart,
+                extensionProps: progressFiles.current
              })
             dialogOpen.current = false
             // if (res?.result == ResultType.Ok)
@@ -74,7 +82,7 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
         }
 
         start()
-    }, [dialog])    
+    }, [dialog, progressMove, progressTotalMaxBytes])    
 
     const getClasses = () => ["statusbar", errorText
                                             ? "error"

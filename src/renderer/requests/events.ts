@@ -23,6 +23,8 @@ export type CopyProgress = {
     currentMaxBytes: number,
     totalBytes: number,
     totalMaxBytes: number,
+    move?: boolean,
+    items?: string[]
 }
 
 type EventData = ExifDataType | ExifStatus| CopyProgress
