@@ -43,7 +43,7 @@ export const onRequest = async (request: Request) => {
                     ...n, 
                     iconPath: getIconPath(n.name, items.path)
                 }))
-                retrieveExifDatas(getfiles.folderId, getfiles.requestId, items)
+                retrieveExifDatas(getfiles.folderId, getfiles.requestId.toString(), items)
                 return writeJson(items)
             case "json://cancelexifs/":
                 const cancelExifs = await request.json() as { requestId: number }

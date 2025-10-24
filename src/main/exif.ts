@@ -2,7 +2,7 @@ import path from 'path'
 import { sendEvent } from './index.js'
 import { FileItemsResult, getExifInfos } from 'filesystem-utilities'
 
-export async function retrieveExifDatas(folderId: string, requestId: number, itemsResult: FileItemsResult) {
+export async function retrieveExifDatas(folderId: string, requestId: string, itemsResult: FileItemsResult) {
     const input = itemsResult
         .items
         .filter(n => n.name.toLowerCase().endsWith(".jpg") || n.name.toLowerCase().endsWith(".png") || n.name.toLowerCase().endsWith(".heic"))
@@ -11,7 +11,7 @@ export async function retrieveExifDatas(folderId: string, requestId: number, ite
     if (input.length) {
         sendEvent({ folderId, cmd: 'ExifStart', msg: { requestId } })
 
-        const exifDatas = await getExifInfos(input, `${requestId}`)
+        const exifDatas = await getExifInfos(input, `${folderId}-${requestId}`)
         if (exifDatas.length > 0)
             sendEvent({
                 folderId, cmd: 'Exif', msg: {

@@ -19,7 +19,7 @@ export const getDrives = () => jsonRequest<RequestItem>("getdrives", {})
 export const mountRequest = (dev: string) => jsonRequest<MountResult>("mount", { dev })
 export const onEnter = (name: string, path: string, openWith?: boolean, showProperties?: boolean) => jsonRequest<void>("onenter", {name, path, openWith, showProperties })
 export const getFiles = (folderId: string, requestId: number, path: string, showHidden?: boolean) => jsonRequest<RequestItem>("getfiles", { folderId, requestId, path, showHidden })
-export const cancelExifs = (requestId: number) => jsonRequest<void>("cancelExifs", { requestId })
+export const cancelExifs = (requestId: string) => jsonRequest<void>("cancelExifs", { requestId })
 export const copy = (requestId: number, sourcePath: string, targetPath: string, items: string[], totalSize: number, move: boolean) => jsonRequest<void>(
     "copy", { requestId, sourcePath, targetPath, items, totalSize, move })
 export const deleteRequest = (path: string, items: string[]) => jsonRequest<void>("delete", { path, items })

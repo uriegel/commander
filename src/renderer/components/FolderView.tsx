@@ -179,7 +179,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const changePath = useCallback(async (path?: string, forceShowHidden?: boolean, mount?: boolean, latestPath?: string, fromBacklog?: boolean,
         checkPosition?: (checkItem: Item) => boolean) => {
         try {
-            cancelExifs(requestId.current)
+            cancelExifs(`${id}-${requestId.current}`)
             requestId.current = getRequestId()
             const newItemsProvider = getItemsProvider(path, itemsProvider.current)
             const result = await newItemsProvider.getItems(id, requestId.current, path, forceShowHidden === undefined ? showHidden : forceShowHidden, mount)
