@@ -49,6 +49,9 @@ export const onRequest = async (request: Request) => {
                 const cancelExifs = await request.json() as { requestId: number }
                 cancel(`${cancelExifs.requestId}`)
                 return writeJson({})
+            case "json://cancelcopy/":
+                cancel("copy")
+                return writeJson({})
             case "json://mount/": {
                 const dev = await request.json() as { dev: string }
                 const path = await mount(dev.dev)

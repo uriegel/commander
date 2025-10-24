@@ -5,6 +5,7 @@ import { copyProgressEvents$, copyProgressShowDialogEvents$ } from "../requests/
 import { DialogContext, ResultType } from 'web-dialog-react'
 import CopyProgressPart, { CopyProgressProps } from './dialogs/CopyProgressPart'
 import './dialogs/CopyProgressPart.css'
+import { cancelCopy } from '../requests/requests'
 
 export interface StatusbarProps {
     path: string
@@ -52,8 +53,8 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
                 extensionProps: {items: progressFiles.current, index: progressFilesIndex.current } as CopyProgressProps
              })
             dialogOpen.current = false
-            // if (res?.result == ResultType.Ok)
-            //     await cancelCopy({})
+            if (res?.result == ResultType.Ok)
+                await cancelCopy()
         }
 
         start()

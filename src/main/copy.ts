@@ -27,7 +27,7 @@ export const copyItems = async (requestId: number, sourcePath: string, targetPat
     subscribers.values().forEach(s => s.next({ idx: 0, currentBytes: 0, currentMaxBytes: 0, totalBytes: 0, totalMaxBytes, move, items }))
     try {
         await copyFiles(sourcePath, targetPath, items, {
-            move, overwrite: true, progressCallback: (idx: number, currentBytes: number, currentMaxBytes: number) => {
+            move, overwrite: true, cancellation: "copy", progressCallback: (idx: number, currentBytes: number, currentMaxBytes: number) => {
                 if (currentIndex != idx) {
                     copiedBytes = previousCopiedBytes
                     previousCopiedBytes += currentMaxBytes

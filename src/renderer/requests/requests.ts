@@ -26,6 +26,7 @@ export const deleteRequest = (path: string, items: string[]) => jsonRequest<void
 export const renameRequest = (path: string, item: string, newName: string, asCopy?: boolean) => jsonRequest<void>("rename", { path, item, newName, asCopy })
 export const createFolderRequest = (path: string, item: string) => jsonRequest<void>("createfolder", { path, item })
 export const flattenItems = (path: string, targetPath: string, items: CopyItem[]) => jsonRequest<CopyItem[]>("flattenitems", { path, targetPath, items })
+export const cancelCopy = () => jsonRequest<void>("cancelcopy", {})
 
 const jsonRequest =  async <T>(cmd: string, msg: unknown) => {
     const payload = {
