@@ -36,8 +36,10 @@ export const copyItems = async (requestId: number, sourcePath: string, targetPat
                 subscribers.values().forEach(s => s.next({ idx, currentBytes, currentMaxBytes, totalBytes: copiedBytes + currentBytes, totalMaxBytes }))
             }
         })
+        sendEvent({ cmd: 'CopyStop', msg: {} })
         setClosePrevent(false)
     } catch (e) {
+        sendEvent({ cmd: 'CopyStop', msg: {} })
         setClosePrevent(false)
         throw e
     }

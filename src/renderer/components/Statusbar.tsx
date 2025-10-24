@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import Pie from 'react-progress-control'
 import './Statusbar.css'
-import { copyProgressEvents$, copyProgressShowDialogEvents$ } from "../requests/events"
+import { copyProgressEvents$, copyProgressShowDialogEvents$, copyStopEvents$ } from "../requests/events"
 import { DialogContext, ResultType } from 'web-dialog-react'
 import CopyProgressPart, { CopyProgressProps } from './dialogs/CopyProgressPart'
 import './dialogs/CopyProgressPart.css'
@@ -73,13 +73,6 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
                 if (msg.items != undefined)
                     progressFiles.current = msg.items
             }
-            else if (msg.totalBytes == msg.totalMaxBytes) {
-                setProgressFinished(true)
-                setBackgroundAction(false)
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                progressTimeout.current = setTimeout(() => setProgressRevealed(false), 5000) as any 
-                progressFiles.current = []
-            }
             progressFilesIndex.current = msg.idx
             setProgress((msg.totalBytes) / msg.totalMaxBytes)
         })
@@ -88,6 +81,17 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
 
     useEffect(() => {
         const sub = copyProgressShowDialogEvents$.subscribe(() => startProgressDialog())
+        return () => sub.unsubscribe()
+    })
+
+    useEffect(() => {
+        const sub = copyStopEvents$.subscribe(() => {
+            setProgressFinished(true)
+            setBackgroundAction(false)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            progressTimeout.current = setTimeout(() => setProgressRevealed(false), 5000) as any 
+            progressFiles.current = []
+        })
         return () => sub.unsubscribe()
     })
 

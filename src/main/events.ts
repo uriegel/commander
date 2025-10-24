@@ -28,7 +28,7 @@ export type NullData = {}
 
 export type EventData = ExifData | ExifStatus | CopyProgress | NullData
 
-export type EventCmd = "Exif" | "ExifStart" | "ExifStop" | "CopyProgress" | "CopyProgressShowDialog"
+export type EventCmd = "Exif" | "ExifStart" | "ExifStop" | "CopyStop" |"CopyProgress" | "CopyProgressShowDialog"
 
 export type Event = {
     folderId?: string,

@@ -10,8 +10,6 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* copy: Linux copy finished event has to come after total = totalMax
-* copy: Linux cancel copy finished event, refresh when cancelled
 * copy: Linux progress dialog: durations
 
 * Shift Pos1/End
