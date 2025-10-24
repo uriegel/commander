@@ -11,6 +11,7 @@ import { registerGetBinProtocol } from "./bin.js"
 import { registerGetMediaProtocol } from "./media.js"
 import { Event } from './events.js'
 import { registerGetTrackProtocol } from './track.js'
+import { canClose } from './close-control.js'
 
 process.env.UV_THREADPOOL_SIZE = "32"
 
@@ -96,7 +97,11 @@ const createWindow = () => {
     })
 
     mainWindow.on('unmaximize', () => settings.set("isMaximized", false))    
- 	mainWindow.on("close", () => {
+	mainWindow.on("close", evt => {
+		if (!canClose()) {
+			sendEvent({ cmd: 'CopyProgressShowDialog', msg: {} })
+			evt.preventDefault()
+		}
         if (!mainWindow?.isMaximized()) {
 			const bounds = mainWindow?.getBounds()
 			if (bounds) {

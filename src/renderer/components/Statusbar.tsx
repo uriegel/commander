@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import Pie from 'react-progress-control'
 import './Statusbar.css'
-import { copyProgressEvents$ } from "../requests/events"
+import { copyProgressEvents$, copyProgressShowDialogEvents$ } from "../requests/events"
 import { DialogContext, ResultType } from 'web-dialog-react'
 import CopyProgressPart, { CopyProgressProps } from './dialogs/CopyProgressPart'
 import './dialogs/CopyProgressPart.css'
@@ -36,6 +36,28 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
     const progressTimeout = useRef(0)
     const progressFiles = useRef<string[]>([])    
     const progressFilesIndex = useRef(-1)    
+    const dialog = useContext(DialogContext)
+
+    const dialogOpen = useRef(false)
+
+    const startProgressDialog = useCallback(() => {
+        const start = async () => {
+            dialogOpen.current = true
+            const res = await dialog.show({
+                text: `Fortschritt beim ${progressMove ? "Verschieben" : "Kopieren"} (${progressTotalMaxBytes.byteCountToString()})`,
+                btnCancel: true,
+                btnOk: true,
+                btnOkText: "Stoppen",
+                extension: CopyProgressPart,
+                extensionProps: {items: progressFiles.current, index: progressFilesIndex.current } as CopyProgressProps
+             })
+            dialogOpen.current = false
+            // if (res?.result == ResultType.Ok)
+            //     await cancelCopy({})
+        }
+
+        start()
+    }, [dialog, progressMove, progressTotalMaxBytes])    
 
     useEffect(() => {
         const sub = copyProgressEvents$.subscribe(msg => {
@@ -63,28 +85,10 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
         return () => sub.unsubscribe()
     }, [setBackgroundAction])
 
-    const dialog = useContext(DialogContext)
-
-    const dialogOpen = useRef(false)
-
-    const startProgressDialog = useCallback(() => {
-        const start = async () => {
-            dialogOpen.current = true
-            const res = await dialog.show({
-                text: `Fortschritt beim ${progressMove ? "Verschieben" : "Kopieren"} (${progressTotalMaxBytes.byteCountToString()})`,
-                btnCancel: true,
-                btnOk: true,
-                btnOkText: "Stoppen",
-                extension: CopyProgressPart,
-                extensionProps: {items: progressFiles.current, index: progressFilesIndex.current } as CopyProgressProps
-             })
-            dialogOpen.current = false
-            // if (res?.result == ResultType.Ok)
-            //     await cancelCopy({})
-        }
-
-        start()
-    }, [dialog, progressMove, progressTotalMaxBytes])    
+    useEffect(() => {
+        const sub = copyProgressShowDialogEvents$.subscribe(() => startProgressDialog())
+        return () => sub.unsubscribe()
+    })
 
     const getClasses = () => ["statusbar", errorText
                                             ? "error"
