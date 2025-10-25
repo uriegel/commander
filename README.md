@@ -4,12 +4,14 @@ A Norton Commander clone based on Electron and React with Typescript
 ## Prerequisites
 
 ```
-suda apt update
+sudo apt update
 sudo apt install pkg-config
+sudo apt install build-essential
 sudo apt install libgtk-3-dev
 ```
 
 TODO
+* Move files on Linux: remove empty folders
 * Windows show file versions
 
 * Extended rename
