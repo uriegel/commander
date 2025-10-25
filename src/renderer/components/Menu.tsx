@@ -33,7 +33,7 @@ const Menu = ({ autoMode, releaseMode, showHidden, toggleShowHidden, showViewer,
             }, {
                 name: "Er_weitertes Umbenennen",
                 type: MenuItemType.MenuItem,
-                shortcut: "Strg+F2",
+                shortcut: "F12",
                 key: "EXTENDED_RENAME"
             }, {
                 name: "Kopie _anlegen",

@@ -1,16 +1,17 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react"
+import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useRef, useState } from "react"
 import VirtualTable, { type OnSort, type TableColumns, type VirtualTableHandle } from "virtual-table-react"
 import './FolderView.css'
 import { getItemsProvider } from "../items-provider/provider"
 import { Item, FileItem, RemotesItem } from "../items-provider/items"
 import { IItemsProvider } from "../items-provider/base-provider"
-import { DialogHandle } from "web-dialog-react"
 import { initializeHistory } from "../history"
 import RestrictionView, { RestrictionViewHandle } from "./RestrictionView"
 import { ID_LEFT } from "./Commander"
 import { exifDataEventsLeft$, exifDataEventsRight$, ExifDataType, exifStartEventsLeft$, exifStartEventsRight$, exifStopEventsLeft$, exifStopEventsRight$ } from "../requests/events"
 import { SystemError } from "filesystem-utilities"
 import { cancelExifs, onEnter as reqOnEnter } from "../requests/requests"
+import { showExtendedRename } from "../items-provider/extended-rename"
+import { DialogContext } from "web-dialog-react"
 
 export type FolderViewHandle = {
     id: string
@@ -31,6 +32,7 @@ export type FolderViewHandle = {
     renameItem: (asCopy?: boolean) => void
     createFolder: () => void
     getItems: () => Item[]
+    extendedRename: () => Promise<void>
 }
 
 export interface ItemCount {
@@ -47,11 +49,10 @@ interface FolderViewProp {
     onEnter: (item: Item) => void
     setStatusText: (text?: string) => void
     setErrorText: (text?: string) => void
-    dialog: DialogHandle
 }
 
 const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
-    { id, showHidden, onFocus, onEnter, onItemChanged, onItemsChanged, dialog, setErrorText, setStatusText },
+    { id, showHidden, onFocus, onEnter, onItemChanged, onItemsChanged, setErrorText, setStatusText },
     ref) => {
 
     const input = useRef<HTMLInputElement | null>(null)
@@ -71,6 +72,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const sortDescending = useRef(false)
     const history = useRef(initializeHistory())
     const refItems = useRef<Item[]>([]) 
+
+    const dialog = useContext(DialogContext)
 
     useImperativeHandle(ref, () => ({
         id,
@@ -92,7 +95,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         renameItem,
         getItems,
         // openFolder,
-        // extendedRename,
+        extendedRename
         // showFavorites
     }))
 
@@ -348,6 +351,16 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             const err = e as SystemError
             setErrorText(err.message)
         }
+    }
+
+    const extendedRename = async () => {
+        restrictionView.current?.reset()
+        const newController = await showExtendedRename(itemsProvider.current, dialog)
+        // if (newController) {
+        //     controller.current = newController
+        //     virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
+        // }
+        // controller.current.onSelectionChanged(items)
     }
 
     const createFolder = async () => {

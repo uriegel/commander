@@ -122,6 +122,9 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 			case "RENAME_AS_COPY":
 				getActiveFolder()?.renameItem(true)
 				break
+			case "EXTENDED_RENAME":
+				getActiveFolder()?.extendedRename()
+				break
 			case "CREATE_FOLDER":
 				getActiveFolder()?.createFolder()
 				break
@@ -158,11 +161,11 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 	
 	const FolderLeft = () => (
 		<FolderView ref={folderLeft} id={ID_LEFT} onFocus={onFocusLeft} onItemChanged={onItemChanged} onEnter= {onEnter}
-			onItemsChanged={setActiveItemCount} showHidden={showHidden} setStatusText={setStatusTextLeft} dialog={dialog} setErrorText={err => setErrorText(err||null)} />
+			onItemsChanged={setActiveItemCount} showHidden={showHidden} setStatusText={setStatusTextLeft} setErrorText={err => setErrorText(err||null)} />
 	)
 	const FolderRight = () => (
 		<FolderView ref={folderRight} id={ID_RIGHT} onFocus={onFocusRight} onItemChanged={onItemChanged} onEnter= {onEnter}
-			onItemsChanged={setActiveItemCount} showHidden={showHidden} setStatusText={setStatusTextRight} dialog={dialog} setErrorText={err => setErrorText(err||null)} />
+			onItemsChanged={setActiveItemCount} showHidden={showHidden} setStatusText={setStatusTextRight} setErrorText={err => setErrorText(err||null)} />
 	)
 
 	const getStatusText = useCallback(() => 
