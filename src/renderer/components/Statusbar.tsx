@@ -37,6 +37,7 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
     const progressTimeout = useRef(0)
     const progressFiles = useRef<string[]>([])    
     const progressFilesIndex = useRef(-1)    
+    const progressStartTime = useRef(new Date())    
     const dialog = useContext(DialogContext)
 
     const dialogOpen = useRef(false)
@@ -50,7 +51,7 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
                 btnOk: true,
                 btnOkText: "Stoppen",
                 extension: CopyProgressPart,
-                extensionProps: {items: progressFiles.current, index: progressFilesIndex.current } as CopyProgressProps
+                extensionProps: { items: progressFiles.current, index: progressFilesIndex.current, progressStartTime: progressStartTime.current } as CopyProgressProps
              })
             dialogOpen.current = false
             if (res?.result == ResultType.Ok)
@@ -70,6 +71,7 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
                 setBackgroundAction(true)
                 setProgressRevealed(true)
                 setProgressFinished(false)
+                progressStartTime.current = new Date()
                 if (msg.items != undefined)
                     progressFiles.current = msg.items
             }

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import "./CopyProgressPart.css"
-import { copyProgressEvents$ } from "../../requests/events"
+import { copyProgressEvents$, copyStopEvents$ } from "../../requests/events"
 import { ExtensionProps } from "web-dialog-react"
 
 const secondsToTime = (timeInSecs: number) => {
@@ -12,18 +12,21 @@ const secondsToTime = (timeInSecs: number) => {
 export type CopyProgressProps = {
     items: string[],
     index: number
+    progressStartTime: Date
 }
 
 const CopyProgressPart = ({ props }: ExtensionProps) => {
     const [totalCount, setTotalCount] = useState(0)
     const [currentCount, setCurrentCount] = useState(0)
     const [currentTime, setCurrentTime] = useState(0)
+    const [remainingTime, setRemainingTime] = useState(0)
     const [value, setValue] = useState(0)
     const [max, setMax] = useState(0)
     const [totalValue, setTotalValue] = useState(0)
     const [totalMax, setTotalMax] = useState(0)
     const [fileName, setFileName] = useState("")
     const files = useRef<string[]>(null)
+    const timerHandle = useRef(0)
     const idx = useRef(-1)
 
     useEffect(() => {
@@ -48,7 +51,6 @@ const CopyProgressPart = ({ props }: ExtensionProps) => {
                 setFileName(files.current[idx.current])
             }
 
-            //setCurrentTime(e.duration)
             setMax(e.currentMaxBytes)
             setValue(e.currentBytes)
             setTotalMax(e.totalMaxBytes)
@@ -57,6 +59,21 @@ const CopyProgressPart = ({ props }: ExtensionProps) => {
         return () => subscription.unsubscribe()
     }, [props])
     
+    useEffect(() => {
+        const cpp = props as CopyProgressProps
+        timerHandle.current = setInterval(() => {
+            setCurrentTime(Math.floor((new Date().getTime() - cpp.progressStartTime.getTime()) / 1000))
+            setRemainingTime(Math.floor(currentTime * totalMax / totalValue) - currentTime)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any            
+        }) as any
+        return () => clearInterval(timerHandle.current)
+    }, [props, totalMax, totalValue, currentTime])
+
+    useEffect(() => {
+        const sub = copyStopEvents$.subscribe(() => clearInterval(timerHandle.current))
+        return () => sub.unsubscribe()
+    })
+
     return (
         <div className='copyProgress'>
             <div className="p">
@@ -72,7 +89,7 @@ const CopyProgressPart = ({ props }: ExtensionProps) => {
                         </tr>
                         <tr>
                             <td>Geschätzte Restdauer:</td>
-                            <td className="rightAligned">{secondsToTime(Math.floor(currentTime * totalMax / totalValue) - currentTime)}</td>
+                            <td className="rightAligned">{secondsToTime(remainingTime)}</td>
                         </tr>
                     </tbody>
                 </table>
