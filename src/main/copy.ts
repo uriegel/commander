@@ -10,7 +10,6 @@ export const copyItems = async (requestId: number, sourcePath: string, targetPat
     
     setClosePrevent(true)
 
-
     const subscribers = new Set<Subscriber<CopyProgress>>
     const message$ = new Observable<CopyProgress>(subscriberToSet => {
         subscribers.add(subscriberToSet)

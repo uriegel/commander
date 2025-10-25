@@ -99,7 +99,8 @@ const createWindow = () => {
     mainWindow.on('unmaximize', () => settings.set("isMaximized", false))    
 	mainWindow.on("close", evt => {
 		if (!canClose()) {
-			sendEvent({ cmd: 'CopyProgressShowDialog', msg: {} })
+			if (process.platform == "linux")
+				sendEvent({ cmd: 'CopyProgressShowDialog', msg: {} })
 			evt.preventDefault()
 		}
         if (!mainWindow?.isMaximized()) {

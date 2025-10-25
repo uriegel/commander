@@ -1,0 +1,1 @@
+export const canCopy: (backgroundAction: boolean) => boolean

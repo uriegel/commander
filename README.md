@@ -18,7 +18,7 @@ TODO
 
 * Remotes
 
-* Windows Services
+* Windows Services (perhaps elevatable sub process)
 
 * Theming: adapt gray color from KDE/Gtk3 (/Neon/Ubuntu/Fedora)
 * Theming: Unify Titlebar, path input and table columns, margins like Gtk4/Adwaita

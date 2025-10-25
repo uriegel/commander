@@ -7,6 +7,7 @@ import { getSelectedItemsText } from "./items-provider/provider"
 import { SystemError } from "filesystem-utilities"
 import { FileItem } from "./items-provider/items"
 import CopyConflicts from "./components/dialogs/CopyConflicts"
+import { canCopy } from '@platform/copy-processor'
 
 export type CopyItem = {
     name:           string
@@ -20,7 +21,7 @@ export type CopyItem = {
 
 export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFolder: FolderViewHandle | null,
         move: boolean, dialog: DialogHandle, setErrorText: (txt: string) => void, backgroundAction: boolean) => {
-    if (backgroundAction) {
+    if (!canCopy(backgroundAction)) {
         setErrorText("Eine Hintergrundaktion ist bereits am Laufen!")
         return
     }

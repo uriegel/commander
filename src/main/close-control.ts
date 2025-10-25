@@ -1,4 +1,4 @@
 export const canClose = () => closePrevent != true
-export const setClosePrevent = (prevent: boolean) => closePrevent = process.platform == "win32" ? false : prevent
+export const setClosePrevent = (prevent: boolean) => closePrevent = prevent
 
 let closePrevent = false
