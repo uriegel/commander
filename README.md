@@ -10,8 +10,6 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* Shift Pos1/End
-
 * Windows show file versions
 
 * Extended rename

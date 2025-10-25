@@ -249,6 +249,20 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const onKeyDown = async (evt: React.KeyboardEvent) => {
         switch (evt.code) {
+            case "Home":
+                if (evt.shiftKey && itemsProvider.current?.itemsSelectable) {
+                    setItems(items.map((n, i) => setSelection(n, i <= (virtualTable.current?.getPosition() ?? 0))))
+                    evt.preventDefault()
+                    evt.stopPropagation()
+                }
+                break
+            case "End":
+                if (evt.shiftKey && itemsProvider.current?.itemsSelectable) {
+                    setItems(items.map((n, i) => setSelection(n, i >= (virtualTable.current?.getPosition() ?? 0))))
+                    evt.preventDefault()
+                    evt.stopPropagation()
+                }
+                break            
             case "Space": {
                 const ri = restrictionView.current?.checkKey(" ")
                 if (ri) {
