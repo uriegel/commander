@@ -18,6 +18,8 @@ TODO
 
 * Remotes
 
+* Windows Services
+
 * Theming: adapt gray color from KDE/Gtk3 (/Neon/Ubuntu/Fedora)
 * Theming: Unify Titlebar, path input and table columns, margins like Gtk4/Adwaita
 * Theming: SVG folder Icons per Theme
