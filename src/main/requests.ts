@@ -6,8 +6,8 @@ import { spawn } from "child_process"
 import path from 'path'
 import { retrieveExifDatas } from './exif.js'
 import { AsyncEnumerable } from 'functional-extensions'
-import { filter, interval, merge, Observable, Subscriber, throttle } from 'rxjs'
 import { copyItems } from './copy.js'
+import { ExtendedRenameItem } from '@/renderer/items-provider/items.js'
 
 type GetFiles = {
     folderId: string,
@@ -93,13 +93,24 @@ export const onRequest = async (request: Request) => {
             }
             case "json://flattenitems/": {
                 const input = await request.json() as { path: string, targetPath: string, items: CopyItem[] }
-                const subscribers = new Set<Subscriber<{ idx: number, current: number, total: number }>>
                 const flattened = await input
                     .items
                     .toAsyncEnumerable()
                     .bind(n => n.isDirectory ? flattenDirectory(input.path, input.targetPath, n) : [n].toAsyncEnumerable())
                     .await()
                 return writeJson(flattened)
+            }
+            case "json://extendedrename/": {
+                const input = await request.json() as { path: string, items: ExtendedRenameItem[] }
+                for (const item of input.items) {
+                    if (item.newName)
+                        await rename(input.path, item.name, "__RENAMING__" + item.newName)
+                }
+                for (const item of input.items) {
+                    if (item.newName)
+                        await rename(input.path, "__RENAMING__"+ item.newName, item.newName)
+                }
+                return writeJson({ success: true })
             }
             default:
                 return writeJson({ error: "UNKNOWN" , message: "Allgemeiner Fehler aufgetreten"})

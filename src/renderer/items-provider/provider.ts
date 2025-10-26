@@ -3,12 +3,13 @@ import { IItemsProvider } from "./base-provider"
 import { FILE, FileItemProvider } from "./file-item-provider"
 import { ROOT, RootItemProvider } from "./root-item-provider"
 import { Item } from './items'
+import { EXTENDED_RENAME } from './extended-rename'
 
 export const getItemsProvider = (path?: string, recentProvider?: IItemsProvider): IItemsProvider => {
     if (isRoot(path))
         return recentProvider?.getId() == ROOT ? recentProvider : new RootItemProvider()
     else
-        return recentProvider?.getId() == FILE ? recentProvider : new FileItemProvider()
+        return recentProvider?.getId() == FILE || recentProvider?.getId() == EXTENDED_RENAME ? recentProvider : new FileItemProvider()
 }
 
 export const formatSize = (num?: number) => {

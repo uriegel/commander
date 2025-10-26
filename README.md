@@ -11,8 +11,6 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* Extended rename
-
 * Move files on Linux: dont't resolve directories, show directory conflicts like file conflicts, move complete directories
 
 * Windows show file versions
