@@ -11,7 +11,7 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* Move files on Linux: dont't resolve directories, show directory conflicts like file conflicts, move complete directories
+* Move files: dont't resolve directories, show directory conflicts like file conflicts, move complete directories
 
 * Windows show file versions
 

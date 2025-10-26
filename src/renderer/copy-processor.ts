@@ -44,7 +44,7 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
 
     try {
         const copyText = getSelectedItemsText(items)
-        if (items.findIndex(n => n.isDirectory) != -1)
+        if (!move && items.findIndex(n => n.isDirectory) != -1)
             items = await flattenItems(sourceFolder.getPath(), targetFolder.getPath(), items)
         const copyConflicts = items.filter(n => n.targetTime)
         const defNo = copyConflicts.length > 0
@@ -68,7 +68,7 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
             return
 
         const itemsToCopy = res.result == ResultType.No ? items.diff(copyConflicts) : items
-        await copy(15, sourceFolder.getPath(), targetFolder.getPath(), itemsToCopy.map(n => n.name), itemsToCopy.reduce((previousValue, current) => (current.size || 0) + previousValue, 0),  move)
+        await copy(sourceFolder.getPath(), targetFolder.getPath(), itemsToCopy.map(n => n.name), itemsToCopy.reduce((previousValue, current) => (current.size || 0) + previousValue, 0),  move)
         targetFolder.refresh()
         if (move)
             sourceFolder.refresh()

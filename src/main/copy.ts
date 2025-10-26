@@ -4,7 +4,7 @@ import { CopyProgress } from './events.js'
 import { copyFiles } from "filesystem-utilities"
 import { setClosePrevent } from "./close-control.js"
 
-export const copyItems = async (requestId: number, sourcePath: string, targetPath: string, items: string[], totalMaxBytes: number, move: boolean) => {
+export const copyItems = async (sourcePath: string, targetPath: string, items: string[], totalMaxBytes: number, move: boolean) => {
     if (items.length == 0)
         return
     
