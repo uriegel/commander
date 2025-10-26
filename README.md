@@ -11,11 +11,12 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* Move files: dont't resolve directories, show directory conflicts like file conflicts, move complete directories
-
 * Windows show file versions
 
 * F1
+
+* Move files: Linux: files are not being moved to different drives
+* Move files: Windows: Commander crashes
 
 * Remotes
 
