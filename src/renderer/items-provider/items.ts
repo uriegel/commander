@@ -33,6 +33,10 @@ export interface FileItem extends Item {
     isHidden?:  boolean
 }
 
+export interface ExtendedRenameFileItem extends FileItem {
+    newName?:   string
+}
+
 export interface RemotesItem extends Item {
     ipAddress?: string
     isAndroid?: boolean

@@ -10,8 +10,9 @@ import { ID_LEFT } from "./Commander"
 import { exifDataEventsLeft$, exifDataEventsRight$, ExifDataType, exifStartEventsLeft$, exifStartEventsRight$, exifStopEventsLeft$, exifStopEventsRight$ } from "../requests/events"
 import { SystemError } from "filesystem-utilities"
 import { cancelExifs, onEnter as reqOnEnter } from "../requests/requests"
-import { showExtendedRename } from "../items-provider/extended-rename"
+import { EXTENDED_RENAME, showExtendedRename } from "../items-provider/extended-rename"
 import { DialogContext } from "web-dialog-react"
+import { FILE } from "../items-provider/file-item-provider"
 
 export type FolderViewHandle = {
     id: string
@@ -167,7 +168,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             item.isDirectory == true, (item as FileItem)?.exifData?.latitude, (item as FileItem)?.exifData?.longitude),
         [id, path, onItemChanged])
 
-    const getWidthsId = useCallback(() => `${id}-${itemsProvider.current?.id}-widths`, [id])
+    const getWidthsId = useCallback(() => `${id}-${itemsProvider.current?.getId()}-widths`, [id])
 
     const setWidths = useCallback((columns: TableColumns<Item>) => {
         const widthstr = localStorage.getItem(getWidthsId())
@@ -354,13 +355,20 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     const extendedRename = async () => {
+        if (itemsProvider.current?.getId() != FILE && itemsProvider.current?.getId() != EXTENDED_RENAME)
+            return
         restrictionView.current?.reset()
-        const newController = await showExtendedRename(itemsProvider.current, dialog)
-        // if (newController) {
-        //     controller.current = newController
-        //     virtualTable.current?.setColumns(setWidths(controller.current.getColumns()))
-        // }
-        // controller.current.onSelectionChanged(items)
+        const newProvider = await showExtendedRename(itemsProvider.current, dialog)
+
+
+        console.log("newProvider", newProvider?.getId())
+        
+        
+        if (newProvider) {
+            itemsProvider.current = newProvider
+            virtualTable.current?.setColumns(setWidths(itemsProvider.current.getColumns()))
+        }
+        itemsProvider.current.onSelectionChanged(items)
     }
 
     const createFolder = async () => {

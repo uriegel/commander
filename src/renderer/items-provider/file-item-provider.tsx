@@ -10,7 +10,7 @@ import { DialogHandle, ResultType } from "web-dialog-react"
 export const FILE = "File"
 
 export class FileItemProvider extends IItemsProvider {
-    readonly id = FILE
+    getId() { return FILE }
     readonly itemsSelectable = true
 
     getColumns(): TableColumns<Item> {
@@ -151,7 +151,7 @@ export class FileItemProvider extends IItemsProvider {
     constructor() { super() }
 }
 
-const getRowClasses = (item: FileItem) => {
+export const getRowClasses = (item: FileItem) => {
     return item.isHidden
         ? ["hidden"]
         : []

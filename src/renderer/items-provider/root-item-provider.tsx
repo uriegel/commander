@@ -7,7 +7,7 @@ import { getColumns, renderRow } from '@platform/items-provider/root-item-provid
 export const ROOT = "Root"
 
 export class RootItemProvider extends IItemsProvider {
-    readonly id = ROOT
+    getId() { return ROOT }
     readonly itemsSelectable = false
 
     getColumns(): TableColumns<Item> {

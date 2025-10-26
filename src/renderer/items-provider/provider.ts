@@ -6,9 +6,9 @@ import { Item } from './items'
 
 export const getItemsProvider = (path?: string, recentProvider?: IItemsProvider): IItemsProvider => {
     if (isRoot(path))
-        return recentProvider?.id == ROOT ? recentProvider : new RootItemProvider()
+        return recentProvider?.getId() == ROOT ? recentProvider : new RootItemProvider()
     else
-        return recentProvider?.id == FILE ? recentProvider : new FileItemProvider()
+        return recentProvider?.getId() == FILE ? recentProvider : new FileItemProvider()
 }
 
 export const formatSize = (num?: number) => {

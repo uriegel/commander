@@ -22,7 +22,7 @@ export interface OnEnterResult {
 export type SortFunction = (a: Item, b: Item) => number
 
 export abstract class IItemsProvider {
-    abstract readonly id: string
+    abstract getId(): string
     abstract readonly itemsSelectable: boolean
 
     abstract getColumns(): TableColumns<Item>

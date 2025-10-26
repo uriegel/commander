@@ -28,7 +28,7 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
     
     const sourceProvider = sourceFolder?.getCurrentItemsProvider()
     const targetProvider = targetFolder?.getCurrentItemsProvider()
-    if (sourceProvider?.id != FILE || targetProvider?.id != FILE)
+    if (sourceProvider?.getId() != FILE || targetProvider?.getId() != FILE)
         return
     const sourceAppendPath = sourceFolder?.getAppendPath()
     const targetAppendPath = sourceFolder?.getAppendPath()
