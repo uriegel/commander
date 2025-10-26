@@ -6,6 +6,7 @@ import { TableColumns } from "virtual-table-react"
 import IconName from "../components/IconName"
 import { ExtendedRenameFileItem, IconNameType, Item } from "./items"
 import { formatDateTime, formatSize } from "./provider"
+import { extendedRenameRequest } from "../requests/requests"
 
 export const EXTENDED_RENAME = "EXTENDED_RENAME"
 
@@ -67,7 +68,7 @@ export class ExtendedRenameProvider extends FileItemProvider {
         return sorted
      }
      
-     async onEnter(enterData: EnterData): Promise<OnEnterResult> {
+     onEnter(enterData: EnterData): Promise<OnEnterResult> {
           return enterData.id && enterData.dialog && enterData.selectedItems?.find(n => (n as ExtendedRenameFileItem).newName)
           ? this.onRename(enterData.id, enterData.path, enterData.selectedItems, enterData.dialog)
           : super.onEnter(enterData)
@@ -82,11 +83,9 @@ export class ExtendedRenameProvider extends FileItemProvider {
           return (res.result == ResultType.Ok)
                ? {
                     processed: true,
-                    //refresh: (await onExtendedRename({ id, path, items })).success 
+                    refresh: (await extendedRenameRequest(path, items)).success 
                }
-               : {
-                    processed: true,
-               }
+               : { processed: true }
      }
 }
 

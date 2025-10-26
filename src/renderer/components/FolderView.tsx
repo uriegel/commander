@@ -305,11 +305,16 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const getCurrentItemsProvider = () => itemsProvider.current
 
     const processEnter = async (item: Item, otherPath?: string) => {
-        const res = await itemsProvider.current?.onEnter({ id, path, item, selectedItems: getSelectedItems(), dialog, otherPath })
-        if (res && !res.processed)
-            changePath(res.pathToSet, showHidden, res.mount, res.latestPath)
-        if (res?.refresh)
-            refresh()
+        try {
+            const res = await itemsProvider.current?.onEnter({ id, path, item, selectedItems: getSelectedItems(), dialog, otherPath })
+            if (res && !res.processed)
+                changePath(res.pathToSet, showHidden, res.mount, res.latestPath)
+            if (res?.refresh)
+                refresh()
+        } catch (e) {
+            const err = e as SystemError
+            setErrorText(err.message)
+        }
     }
 
     const refresh = async (forceShowHidden?: boolean, checkPosition?: (checkItem: Item) => boolean) => {
@@ -359,11 +364,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             return
         restrictionView.current?.reset()
         const newProvider = await showExtendedRename(itemsProvider.current, dialog)
-
-
-        console.log("newProvider", newProvider?.getId())
-        
-        
         if (newProvider) {
             itemsProvider.current = newProvider
             virtualTable.current?.setColumns(setWidths(itemsProvider.current.getColumns()))
