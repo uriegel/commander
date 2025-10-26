@@ -10,6 +10,27 @@ export const copyItems = async (sourcePath: string, targetPath: string, items: s
     
     setClosePrevent(true)
 
+    // TODO move to a different drive, flatten folders before
+    // const getParentPath = (n: string) => {
+    //     return n.length > 1 && (n.charAt(n.length - 1) == "/" || n.charAt(n.length - 1) == "\\")
+    //         ? n.substring(0, n.substring(0, n.length - 1).lastIndexOfAny(["/", "\\"]))
+    //         : n.substring(0, n.lastIndexOfAny(["/", "\\"]))
+    // }
+
+    // const deleteRecursive = (n: string) => {
+    //     console.log("lösche", n)
+            // g_file_delete
+    //     const parent = getParentPath(n)
+    //     if (parent)
+    //         deleteRecursive(parent)
+    // }
+
+    // const folders = new Set<string>
+    // items.forEach(n => folders.add(getParentPath(n)))
+    
+    // folders.forEach(deleteRecursive)
+    
+
     const subscribers = new Set<Subscriber<CopyProgress>>
     const message$ = new Observable<CopyProgress>(subscriberToSet => {
         subscribers.add(subscriberToSet)
