@@ -11,8 +11,6 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* Move files: Windows: Commander crashes
-
 * Windows show file versions
 
 * F1
