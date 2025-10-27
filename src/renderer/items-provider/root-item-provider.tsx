@@ -19,12 +19,15 @@ export class RootItemProvider extends IItemsProvider {
     }
     
     async getItems(_: string, requestId: number) {
-        const result = await getDrives()
+        const drives = await getDrives()
+        const [mounted, unmounted] = drives.items.partition(n => (n as RootItem)?.isMounted == true)
         return {
             requestId,
-            items: result.items,
-            path: result.path,
-            dirCount: result.items.length,
+            items: [...mounted, {
+                name: "Favoriten", isDirectory: true, mountPoint: "fav", isMounted: true 
+            }, ...unmounted],
+            path: drives.path,
+            dirCount: drives.items.length,
             fileCount: 0
         }
     }

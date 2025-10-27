@@ -58,7 +58,7 @@
   "dependencies": {
     "electron-settings": "^5.0.0",
     "filesystem-utilities": "^7.0.7",
-    "functional-extensions": "^2.4.2",
+    "functional-extensions": "^2.5.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "rxjs": "^7.8.2"
