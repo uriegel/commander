@@ -13,8 +13,6 @@ sudo apt install libgtk-3-dev
 TODO
 * Windows show file versions
 
-* F1
-
 * Remotes
 
 * Windows Services (perhaps elevatable sub process)

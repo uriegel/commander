@@ -43,5 +43,14 @@ export abstract class IItemsProvider {
     async deleteItems(_path: string, _items: Item[], _dialog: DialogHandle) { return false }
     async renameItem(_path: string, _item: Item, _dialog: DialogHandle, _copy?: boolean) { return "" }
     async createFolder(_path: string, _item: Item, _dialog: DialogHandle) { return "" }
+
+    getParent() {
+        return {
+            name: '..',
+            isParent: true,
+            isDirectory: true,
+            size: -1
+        }        
+    }
 }
 

@@ -35,12 +35,7 @@ export class FileItemProvider extends IItemsProvider {
         const result = await getFiles(folderId, requestId, path, showHidden)
         return {
             requestId,
-            items: [{
-                name: '..',
-                isParent: true,
-                isDirectory: true,
-                size: -1
-            }, ...result.items as FileItem[]],
+            items: [super.getParent(), ...result.items as FileItem[]],
             path: result.path,
             dirCount: result.dirCount,
             fileCount: result.fileCount

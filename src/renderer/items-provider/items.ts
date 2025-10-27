@@ -47,7 +47,8 @@ export interface ExtendedRenameItem extends Item {
     newName?:   string 
 }
 
-export interface FavoritesItem extends Item {
+export interface FavoriteItem extends Item {
+    isNew?: boolean
     path?:  string
 }
 
