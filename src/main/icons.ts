@@ -7,7 +7,7 @@ export function registerGetIconProtocol() {
         const iconName = url.pathname.slice(1) || "ddd"// e.g. icon://folder.png → 'folder.png'
         const data = url.hostname == "name"
             ? await getIconFromName(iconName) //await readFile((await runCmd(`python3 ${iconFromNameScript} ${iconName}`)).trimEnd()) 
-            : await getIcon(iconName)
+            : await getIcon(decodeURIComponent(iconName))
 
         if (data.length == 0)
             console.log("icon not found", iconName)
