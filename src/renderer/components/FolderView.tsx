@@ -34,6 +34,7 @@ export type FolderViewHandle = {
     createFolder: () => void
     getItems: () => Item[]
     extendedRename: () => Promise<void>
+    showFavorites: () => void
 }
 
 export interface ItemCount {
@@ -96,8 +97,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         renameItem,
         getItems,
         // openFolder,
-        extendedRename
-        // showFavorites
+        extendedRename,
+        showFavorites
     }))
 
     useEffect(() => {
@@ -382,6 +383,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             setErrorText(err.message)
         }
     }
+
+    const showFavorites = () => changePath("fav")
 
     const getSelectedItems = () => {
 

@@ -128,6 +128,9 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 			case "CREATE_FOLDER":
 				getActiveFolder()?.createFolder()
 				break
+			case "FAVORITES":
+				getActiveFolder()?.showFavorites()
+				break
 		}
 	}, [getActiveFolder, dialog])
 

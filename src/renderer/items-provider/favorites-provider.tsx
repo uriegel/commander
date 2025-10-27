@@ -8,7 +8,7 @@ export const FAVORITES = "FAVORITES"
 
 export class FavoritesProvider extends IItemsProvider {
     getId() { return FAVORITES }
-    readonly itemsSelectable = false
+    readonly itemsSelectable = true
 
     getColumns(): TableColumns<Item> {
         return {
@@ -52,6 +52,24 @@ export class FavoritesProvider extends IItemsProvider {
                 pathToSet: favEnter.name
             }
     }
+
+    async deleteItems(_path: string, items: FavoriteItem[], dialog: DialogHandle) {
+        const itemsToDelete = items.filter(n => !n.isNew && !n.isParent)
+        if (itemsToDelete.length == 0)
+            return true
+        const res = await dialog.show({
+		    text: `Möchtest Du ${itemsToDelete.length > 1 ? "die Favoriten" : "den Favoriten"} löschen?`,
+    		btnOk: true,
+	    	btnCancel: true,
+		    defBtnOk: true
+        })
+        if (res.result != ResultType.Ok)
+            return false
+        
+        const favs = getFavoriteItems().filter(x => !items.find(n => n.name == x.name))
+        localStorage.setItem(FAVORITES, JSON.stringify(favs))
+        return true
+    }    
 
     appendPath(_: string, subPath: string) {
         return subPath
