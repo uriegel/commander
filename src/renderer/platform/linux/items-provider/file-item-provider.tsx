@@ -26,4 +26,4 @@ export const renderRow = (item: FileItem) => [
 	formatSize(item.size)
 ]
 
-export const sortVersion = (a: FileItem, b: FileItem) => 0
+export const sortVersion = () => 0
