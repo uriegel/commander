@@ -1,5 +1,6 @@
 import { filter, map, Observable, Subscriber } from 'rxjs'
 import { ID_LEFT, ID_RIGHT } from '../components/Commander'
+import { VersionInfoResult } from 'filesystem-utilities'
 
 export type ExifData = {
     idx: number,
@@ -27,9 +28,14 @@ export type CopyProgress = {
     items?: string[]
 }
 
-type EventData = ExifDataType | ExifStatus| CopyProgress
+export type Version = {
+    requestId: number,
+    items: VersionInfoResult[]
+}
 
-type EventCmd = "Exif" | "ExifStart" | "ExifStop" | "CopyProgress" | "CopyStop" |"CopyProgressShowDialog"
+type EventData = ExifDataType | ExifStatus| CopyProgress | Version
+
+type EventCmd = "Exif" | "ExifStart" | "ExifStop" | "CopyProgress" | "CopyStop" |"CopyProgressShowDialog" | "VersionsStart" |"VersionsStop" |"Versions"
 
 type Event = {
     folderId?: string,
@@ -38,9 +44,7 @@ type Event = {
 }
 
 const subscribers = new Set<Subscriber<Event>>
-window.electronAPI.onMessage(msg => {
-    subscribers.values().forEach(s => s.next(msg as Event))
-})
+window.electronAPI.onMessage(msg => subscribers.values().forEach(s => s.next(msg as Event)))
 
 const message$ = new Observable<Event>(subscriberToSet => {
     subscribers.add(subscriberToSet)
@@ -53,6 +57,9 @@ export const copyStopEvents$ = message$.pipe(filter(n => n.cmd == "CopyStop"))
 const exifStartEvents$ = message$.pipe(filter(n => n.cmd == "ExifStart"))
 const exifStopEvents$ = message$.pipe(filter(n => n.cmd == "ExifStop"))
 const exifDataEvents$ = message$.pipe(filter(n => n.cmd == "Exif"))
+const versionsStartEvents$ = message$.pipe(filter(n => n.cmd == "VersionsStart"))
+const versionsDataEvents$ = message$.pipe(filter(n => n.cmd == "Versions"))
+const versionsStopEvents$ = message$.pipe(filter(n => n.cmd == "VersionsStop"))
 
 export const exifDataEventsLeft$ = exifDataEvents$
     .pipe(filter(n => n.folderId == ID_LEFT))
@@ -77,3 +84,27 @@ export const exifStopEventsLeft$ = exifStopEvents$
 export const exifStopEventsRight$ = exifStopEvents$
     .pipe(filter(n => n.folderId == ID_RIGHT))
     .pipe(map(n => n.msg as ExifStatus))
+
+export const versionsDataEventsLeft$ = versionsDataEvents$
+    .pipe(filter(n => n.folderId == ID_LEFT))
+    .pipe(map(n => n.msg as Version))
+
+export const versionsDataEventsRight$ = versionsDataEvents$
+    .pipe(filter(n => n.folderId == ID_RIGHT))
+    .pipe(map(n => n.msg as Version))
+
+export const versionsStartEventsLeft$ = versionsStartEvents$
+    .pipe(filter(n => n.folderId == ID_LEFT))
+    .pipe(map(n => n.msg as Version))
+
+export const versionsStartEventsRight$ = versionsStartEvents$
+    .pipe(filter(n => n.folderId == ID_RIGHT))
+    .pipe(map(n => n.msg as Version))
+
+export const versionsStopEventsLeft$ = versionsStopEvents$
+    .pipe(filter(n => n.folderId == ID_LEFT))
+    .pipe(map(n => n.msg as Version))
+
+export const versionsStopEventsRight$ = versionsStopEvents$
+    .pipe(filter(n => n.folderId == ID_RIGHT))
+    .pipe(map(n => n.msg as Version))

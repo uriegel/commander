@@ -1,11 +1,11 @@
 import { TableColumns } from "virtual-table-react"
 import { EnterData, IItemsProvider, OnEnterResult } from "./base-provider"
-import { Item, FileItem, IconNameType } from "./items"
-import IconName from "../components/IconName"
-import { formatDateTime, formatSize, getSelectedItemsText } from "./provider"
+import { Item, FileItem } from "./items"
+import { getSelectedItemsText } from "./provider"
 import { createFolderRequest, deleteRequest, getFiles, mountRequest, onEnter, renameRequest } from "../requests/requests"
-import { appendPath } from '@platform/items-provider/file-item-provider'
+import { appendPath, getColumns, sortVersion } from '@platform/items-provider/file-item-provider'
 import { DialogHandle, ResultType } from "web-dialog-react"
+import { renderRow } from "@platform/items-provider/file-item-provider"
 
 export const FILE = "File"
 
@@ -15,11 +15,7 @@ export class FileItemProvider extends IItemsProvider {
 
     getColumns(): TableColumns<Item> {
         return {
-            columns: [
-    	        { name: "Name", isSortable: true, subColumn: "Erw." },
-		        { name: "Datum", isSortable: true },
-                { name: "Größe", isSortable: true, isRightAligned: true }
-            ],
+            columns: getColumns(),
             getRowClasses,
             renderRow
         }
@@ -79,6 +75,8 @@ export class FileItemProvider extends IItemsProvider {
                 } 
             : index == 2
             ? (a: FileItem, b: FileItem) => (a.size || 0) - (b.size || 0)
+            : index == 3
+            ? sortVersion
             : index == 10
                         ? (a: FileItem, b: FileItem) => a.name.getFileExtension().localeCompare(b.name.getFileExtension()) 
             : undefined
@@ -151,18 +149,6 @@ export const getRowClasses = (item: FileItem) => {
         ? ["hidden"]
         : []
 }
-
-const renderRow = (item: FileItem) => [
-	(<IconName namePart={item.name} type={
-			item.isParent
-			? IconNameType.Parent
-			: item.isDirectory
-			? IconNameType.Folder
-			: IconNameType.File}
-		iconPath={item.iconPath} />),
-	(<span className={item.exifData?.dateTime ? "exif" : "" } >{formatDateTime(item?.exifData?.dateTime ?? item?.time)}</span>),
-	formatSize(item.size)
-]
 
 function extractSubPath(path: string): string {
     return path.substring(path.lastIndexOfAny(["/", "\\"]))

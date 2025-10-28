@@ -1,3 +1,5 @@
+import { VersionInfoResult } from "filesystem-utilities"
+
 export type ExifDataInfo = {
     idx: number,
     dateTime?: string,
@@ -8,6 +10,11 @@ export type ExifDataInfo = {
 export type ExifData = {
     requestId: number,
     items: ExifDataInfo[]
+}
+
+export type Version = {
+    requestId: number,
+    items: VersionInfoResult
 }
 
 export type ExifStatus = {
@@ -26,9 +33,10 @@ export type CopyProgress = {
 
 export type NullData = {}
 
-export type EventData = ExifData | ExifStatus | CopyProgress | NullData
+export type EventData = ExifData | ExifStatus | CopyProgress | NullData | Version
 
-export type EventCmd = "Exif" | "ExifStart" | "ExifStop" | "CopyStop" |"CopyProgress" | "CopyProgressShowDialog"
+export type EventCmd = "Exif" | "ExifStart" | "ExifStop" | "CopyStop" |"CopyProgress"
+                     | "CopyProgressShowDialog" | "VersionsStart" |"VersionsStop" |"Versions"
 
 export type Event = {
     folderId?: string,

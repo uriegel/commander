@@ -1,4 +1,4 @@
-import { DriveType } from "filesystem-utilities"
+import { DriveType, VersionInfo } from "filesystem-utilities"
 
 interface SelectableItem {
     isSelected?: boolean
@@ -27,10 +27,11 @@ export interface ExifData {
 }
 
 export interface FileItem extends Item {
-    iconPath?:  string
-    time?:      string
-    exifData?:  ExifData
-    isHidden?:  boolean
+    iconPath?:      string
+    time?:          string
+    exifData?:      ExifData
+    isHidden?:      boolean
+    fileVersion?:   VersionInfo
 }
 
 export interface ExtendedRenameFileItem extends FileItem {

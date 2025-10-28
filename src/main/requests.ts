@@ -8,6 +8,7 @@ import { retrieveExifDatas } from './exif.js'
 import { AsyncEnumerable } from 'functional-extensions'
 import { copyItems } from './copy.js'
 import { ExtendedRenameItem } from '@/renderer/items-provider/items.js'
+import { retrieveVersions } from './version.js'
 
 type GetFiles = {
     folderId: string,
@@ -44,6 +45,8 @@ export const onRequest = async (request: Request) => {
                     iconPath: getIconPath(n.name, items.path)
                 }))
                 retrieveExifDatas(getfiles.folderId, getfiles.requestId.toString(), items)
+                if (process.platform == "win32")
+                    retrieveVersions(getfiles.folderId, getfiles.requestId.toString(), items)
                 return writeJson(items)
             case "json://cancelexifs/":
                 const cancelExifs = await request.json() as { requestId: number }

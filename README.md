@@ -11,8 +11,8 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
+* Windows versions: refresh clears versions!
 * Windows map file share
-* Windows show file versions
 
 * Remotes
 

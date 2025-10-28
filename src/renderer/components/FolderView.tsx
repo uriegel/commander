@@ -7,7 +7,7 @@ import { IItemsProvider } from "../items-provider/base-provider"
 import { initializeHistory } from "../history"
 import RestrictionView, { RestrictionViewHandle } from "./RestrictionView"
 import { ID_LEFT } from "./Commander"
-import { exifDataEventsLeft$, exifDataEventsRight$, ExifDataType, exifStartEventsLeft$, exifStartEventsRight$, exifStopEventsLeft$, exifStopEventsRight$ } from "../requests/events"
+import { exifDataEventsLeft$, exifDataEventsRight$, ExifDataType, exifStartEventsLeft$, exifStartEventsRight$, exifStopEventsLeft$, exifStopEventsRight$, Version, versionsDataEventsLeft$, versionsDataEventsRight$, versionsStartEventsLeft$, versionsStartEventsRight$, versionsStopEventsLeft$, versionsStopEventsRight$ } from "../requests/events"
 import { SystemError } from "filesystem-utilities"
 import { cancelExifs, onEnter as reqOnEnter } from "../requests/requests"
 import { EXTENDED_RENAME, showExtendedRename } from "../items-provider/extended-rename"
@@ -140,6 +140,25 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }, [id, setItems])
 
     useEffect(() => {
+        const attachVersions = (version: Version) => {
+            if (version.requestId != requestId.current)
+                return
+            version.items.forEach(n => {
+                const item = itemsDictionary.current.get(n.idx) as FileItem
+                if (item) 
+                    item.fileVersion = n.info
+            })
+            const newItems = itemsProvider.current?.sort(refItems.current, sortIndex.current, sortDescending.current)
+            if (newItems)
+                setItems(newItems)
+        }
+
+        const event$ = id == ID_LEFT ? versionsDataEventsLeft$ : versionsDataEventsRight$
+        const sub = event$.subscribe(attachVersions)
+        return () => sub.unsubscribe()
+    }, [id, setItems])
+
+    useEffect(() => {
         const event$ = id == ID_LEFT ? exifStartEventsLeft$ : exifStartEventsRight$
         const sub = event$.subscribe(() => setStatusText("Ermittle EXIF-Informationen..."))
         return () => sub.unsubscribe()
@@ -147,6 +166,18 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     useEffect(() => {
         const event$ = id == ID_LEFT ? exifStopEventsLeft$ : exifStopEventsRight$
+        const sub = event$.subscribe(() => setStatusText())
+        return () => sub.unsubscribe()
+    }, [id, setStatusText])
+
+    useEffect(() => {
+        const event$ = id == ID_LEFT ? versionsStartEventsLeft$ : versionsStartEventsRight$
+        const sub = event$.subscribe(() => setStatusText("Ermittle Datei-Versionen..."))
+        return () => sub.unsubscribe()
+    }, [id, setStatusText])
+
+    useEffect(() => {
+        const event$ = id == ID_LEFT ? versionsStopEventsLeft$ : versionsStopEventsRight$
         const sub = event$.subscribe(() => setStatusText())
         return () => sub.unsubscribe()
     }, [id, setStatusText])
