@@ -438,6 +438,11 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             localStorage.setItem(getWidthsId(), JSON.stringify(widths))
     }
 
+    const onItemClick = (item: Item, _: number, ctrlKey: boolean) => {
+		if (itemsProvider.current?.itemsSelectable && ctrlKey == true)
+			toggleSelection(item)
+    }    
+    
     const insertSelection = () => {
         if (itemsProvider.current?.itemsSelectable) {
             setItems(items.map((n, i) => i != virtualTable.current?.getPosition() ? n : toggleSelection(n)))
@@ -477,7 +482,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         <div className="folder" onFocus={onFocusChanged}>
             <input ref={input} className="pathInput" spellCheck={false} value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
             <div className="tableContainer" onKeyDown={onKeyDown} >
-                <VirtualTable ref={virtualTable} items={items} onColumnWidths={onColumnWidths} onEnter={onEnter} onPosition={onPositionChanged} onSort={onSort} />
+                <VirtualTable ref={virtualTable} items={items} onColumnWidths={onColumnWidths} onEnter={onEnter} onPosition={onPositionChanged} onSort={onSort} onItemClick={onItemClick} />
             </div>
             <RestrictionView items={items} ref={restrictionView} />
         </div>
