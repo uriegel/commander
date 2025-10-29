@@ -3,9 +3,10 @@ import { EnterData, IItemsProvider, OnEnterResult } from "./base-provider"
 import { Item, FileItem } from "./items"
 import { getSelectedItemsText } from "./provider"
 import { createFolderRequest, deleteRequest, getFiles, mountRequest, onEnter, renameRequest } from "../requests/requests"
-import { appendPath, getColumns, sortVersion } from '@platform/items-provider/file-item-provider'
+import { appendPath, getColumns, onGetItemsError, sortVersion } from '@platform/items-provider/file-item-provider'
 import { DialogHandle, ResultType } from "web-dialog-react"
 import { renderRow } from "@platform/items-provider/file-item-provider"
+import { retryOnErrorAsync } from 'functional-extensions'
 
 export const FILE = "File"
 
@@ -21,14 +22,14 @@ export class FileItemProvider extends IItemsProvider {
         }
     }
     
-    async getItems(folderId: string, requestId: number, path: string, showHidden?: boolean, mount?: boolean) {
+    async getItems(folderId: string, requestId: number, path: string, showHidden?: boolean, mount?: boolean, dialog?: DialogHandle) {
 
         if (mount) {
             const result = await mountRequest(path)
             path = result.path
         }
             
-        const result = await getFiles(folderId, requestId, path, showHidden)
+        const result = await retryOnErrorAsync(async () => await getFiles(folderId, requestId, path, showHidden), e => onGetItemsError(e, dialog))
         return {
             requestId,
             items: [super.getParent(), ...result.items as FileItem[]],

@@ -11,7 +11,9 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
+* Windows map file share Dialog retryOnError 00 until cancel
 * Windows map file share
+
 
 * Windows Commander completely implemented
 

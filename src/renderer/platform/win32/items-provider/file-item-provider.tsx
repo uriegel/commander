@@ -1,7 +1,9 @@
+import Credentials, { CredentialsProps } from "@/renderer/components/dialogs/Credentials"
 import IconName from "@/renderer/components/IconName"
 import { FileItem, IconNameType } from "@/renderer/items-provider/items"
 import { formatDateTime, formatSize } from "@/renderer/items-provider/provider"
-import { VersionInfo } from "filesystem-utilities"
+import { SystemError, VersionInfo } from "filesystem-utilities"
+import { DialogHandle, ResultType } from "web-dialog-react"
 
 export const appendPath = (path: string, subPath: string) => {
     return path.endsWith("\\") || subPath.startsWith('\\')
@@ -56,4 +58,28 @@ export const sortVersion = (a: FileItem, b: FileItem) =>
 
 const formatVersion = (version?: VersionInfo) => 
     version ? `${version.major}.${version.minor}.${version.build}.${version.patch}` : ""
+
+export const onGetItemsError = async (e: unknown, dialog?: DialogHandle) => {
+	const se = e as SystemError
+	if (se.error == "ACCESS_DENIED") {
+		let name = ""
+        let password = ""
+		const res = await dialog?.show({
+			text: "Zugriff verweigert",
+			extension: Credentials,
+			extensionProps: { name, password },
+			onExtensionChanged: (e: CredentialsProps) => {
+				name = e.name
+				password = e.password
+			},          
+			btnOk: true,
+			btnCancel: true,
+			defBtnOk: true,      
+		})
+		if (res?.result == ResultType.Cancel) 
+			return
+	}
+	else
+		throw e
+}
 

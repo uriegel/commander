@@ -1,6 +1,7 @@
 import IconName from "@/renderer/components/IconName"
 import { FileItem, IconNameType } from "@/renderer/items-provider/items"
 import { formatDateTime, formatSize } from "@/renderer/items-provider/provider"
+import { DialogHandle } from "web-dialog-react"
 
 export const appendPath = (path: string, subPath: string) => {
     return path.endsWith("/") || subPath.startsWith('/')
@@ -25,5 +26,9 @@ export const renderRow = (item: FileItem) => [
 	(<span className={item.exifData?.dateTime ? "exif" : "" } >{formatDateTime(item?.exifData?.dateTime ?? item?.time)}</span>),
 	formatSize(item.size)
 ]
+
+export const onGetItemsError = async (e: unknown, _dialog?: DialogHandle) => {
+	throw e
+}
 
 export const sortVersion = () => 0

@@ -218,7 +218,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             cancelExifs(`${id}-${requestId.current}`)
             requestId.current = getRequestId()
             const newItemsProvider = getItemsProvider(path, itemsProvider.current)
-            const result = await newItemsProvider.getItems(id, requestId.current, path, forceShowHidden === undefined ? showHidden : forceShowHidden, mount)
+            const result = await newItemsProvider.getItems(id, requestId.current, path, forceShowHidden === undefined ? showHidden : forceShowHidden, mount, dialog)
             if (result.cancelled || !result.items || result.requestId != requestId.current)
                 return
             restrictionView.current?.reset()
@@ -250,7 +250,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             getItemsFinished(id)            
         }
 
-    }, [id, setItems, setWidths, setErrorText, showHidden])
+    }, [id, setItems, setWidths, setErrorText, showHidden, dialog])
 
     const toggleSelection = (item: Item) => {
         if (!item.isParent && !(item as RemotesItem)?.isNew)
