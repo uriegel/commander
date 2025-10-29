@@ -11,7 +11,9 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* Windows versions: refresh clears versions!
+* Windows versions: refresh clears versions: getitems sets semaphore(folderId) and releases the old, getexifs and getVersions take the semaphore (if available yet) and wait 
+* if items are set in changepath, function releaseSemaphore => map<string, semaphore>
+
 * Windows map file share
 
 * Remotes

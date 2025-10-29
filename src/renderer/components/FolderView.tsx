@@ -232,7 +232,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             itemsRef.current = itemsProvider.current.sort(result.items, sortIndex.current, sortDescending.current)
             setItems(itemsRef.current, result.dirCount, result.fileCount)
             itemsDictionary.current = new Map(itemsRef.current.filter(n => n.idx).map(n => [n.idx!, n]))
-            // getExtended({ id: result.id, folderId: id })
             const pos = latestPath
                 ? itemsRef.current.findIndex(n => n.name == latestPath)
                 : checkPosition
