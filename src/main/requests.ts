@@ -42,22 +42,17 @@ export const onRequest = async (request: Request) => {
             case "json://getfiles/":
                 const getfiles = await request.json() as GetFiles
                 getItemsSemaphores.get(getfiles.folderId)?.release()
-                const semaphore = getItemsSemaphores.set(getfiles.folderId, createSemaphore(1, 1))
-                try {
-                    const normalizedPath = path.normalize(getfiles.path)
-                    const items = await getFiles(normalizedPath, getfiles.showHidden == true)
-                    items.items = items.items.map(n => ({
-                        ...n, 
-                        iconPath: getIconPath(n.name, items.path)
-                    }))
-                    retrieveExifDatas(getfiles.folderId, getfiles.requestId.toString(), items)
-                    if (process.platform == "win32")
-                        retrieveVersions(getfiles.folderId, getfiles.requestId.toString(), items)
-                    return writeJson(items)
-                } catch (e) {
-                    semaphore.clear()
-                    throw e
-                }
+                getItemsSemaphores.set(getfiles.folderId, createSemaphore(0, 1))
+                const normalizedPath = path.normalize(getfiles.path)
+                const items = await getFiles(normalizedPath, getfiles.showHidden == true)
+                items.items = items.items.map(n => ({
+                    ...n, 
+                    iconPath: getIconPath(n.name, items.path)
+                }))
+                retrieveExifDatas(getfiles.folderId, getfiles.requestId.toString(), items)
+                if (process.platform == "win32")
+                    retrieveVersions(getfiles.folderId, getfiles.requestId.toString(), items)
+                return writeJson(items)
             case "json://cancelexifs/":
                 const cancelExifs = await request.json() as { requestId: number }
                 cancel(`${cancelExifs.requestId}`)
@@ -125,6 +120,10 @@ export const onRequest = async (request: Request) => {
                 }
                 return writeJson({ success: true })
             }
+            case "json://getitemsfinished/":
+                const input = await request.json() as { folderId: string }
+                getItemsSemaphores.get(input.folderId)?.release()
+                return writeJson({})
             default:
                 return writeJson({ error: "UNKNOWN" , message: "Allgemeiner Fehler aufgetreten"})
         }

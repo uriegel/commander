@@ -9,7 +9,7 @@ import RestrictionView, { RestrictionViewHandle } from "./RestrictionView"
 import { ID_LEFT } from "./Commander"
 import { exifDataEventsLeft$, exifDataEventsRight$, ExifDataType, exifStartEventsLeft$, exifStartEventsRight$, exifStopEventsLeft$, exifStopEventsRight$, Version, versionsDataEventsLeft$, versionsDataEventsRight$, versionsStartEventsLeft$, versionsStartEventsRight$, versionsStopEventsLeft$, versionsStopEventsRight$ } from "../requests/events"
 import { SystemError } from "filesystem-utilities"
-import { cancelExifs, onEnter as reqOnEnter } from "../requests/requests"
+import { cancelExifs, getItemsFinished, onEnter as reqOnEnter } from "../requests/requests"
 import { EXTENDED_RENAME, showExtendedRename } from "../items-provider/extended-rename"
 import { DialogContext } from "web-dialog-react"
 import { FILE } from "../items-provider/file-item-provider"
@@ -246,6 +246,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         } catch (e) {
             const err = e as SystemError
             setErrorText(err.message)
+        } finally {
+            getItemsFinished(id)            
         }
 
     }, [id, setItems, setWidths, setErrorText, showHidden])

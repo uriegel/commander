@@ -11,12 +11,13 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* Windows versions: refresh clears versions: 
-* function releaseSemaphore when items are set in FolderView
-
 * Windows map file share
 
+* Windows Commander completely implemented
+
 * Remotes
+
+* Linux Commander completely implemented
 
 * Windows Services (perhaps elevatable sub process)
 
