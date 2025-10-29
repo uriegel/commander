@@ -1,6 +1,7 @@
 import path from 'path'
 import { sendEvent } from './index.js'
 import { FileItemsResult, getExifInfos } from 'filesystem-utilities'
+import { getItemsSemaphores } from './requests.js'
 
 export async function retrieveExifDatas(folderId: string, requestId: string, itemsResult: FileItemsResult) {
     const input = itemsResult
@@ -9,6 +10,7 @@ export async function retrieveExifDatas(folderId: string, requestId: string, ite
         .map(n => ({ idx: n.idx, path: path.join(itemsResult.path, n.name) }))
     
     if (input.length) {
+        await getItemsSemaphores.get(folderId)?.wait()
         sendEvent({ folderId, cmd: 'ExifStart', msg: { requestId } })
 
         const exifDatas = await getExifInfos(input, `${folderId}-${requestId}`)

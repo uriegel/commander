@@ -5,10 +5,13 @@ import {
 import { spawn } from "child_process"
 import path from 'path'
 import { retrieveExifDatas } from './exif.js'
-import { AsyncEnumerable } from 'functional-extensions'
+import { AsyncEnumerable, createSemaphore } from 'functional-extensions'
 import { copyItems } from './copy.js'
 import { ExtendedRenameItem } from '@/renderer/items-provider/items.js'
 import { retrieveVersions } from './version.js'
+import { Semaphore } from "functional-extensions"
+
+export const getItemsSemaphores = new Map<string, Semaphore>()
 
 type GetFiles = {
     folderId: string,
@@ -38,16 +41,23 @@ export const onRequest = async (request: Request) => {
                 return writeJson({ items: drives, path: "root" })
             case "json://getfiles/":
                 const getfiles = await request.json() as GetFiles
-                const normalizedPath = path.normalize(getfiles.path)
-                const items = await getFiles(normalizedPath, getfiles.showHidden == true)
-                items.items = items.items.map(n => ({
-                    ...n, 
-                    iconPath: getIconPath(n.name, items.path)
-                }))
-                retrieveExifDatas(getfiles.folderId, getfiles.requestId.toString(), items)
-                if (process.platform == "win32")
-                    retrieveVersions(getfiles.folderId, getfiles.requestId.toString(), items)
-                return writeJson(items)
+                getItemsSemaphores.get(getfiles.folderId)?.release()
+                const semaphore = getItemsSemaphores.set(getfiles.folderId, createSemaphore(1, 1))
+                try {
+                    const normalizedPath = path.normalize(getfiles.path)
+                    const items = await getFiles(normalizedPath, getfiles.showHidden == true)
+                    items.items = items.items.map(n => ({
+                        ...n, 
+                        iconPath: getIconPath(n.name, items.path)
+                    }))
+                    retrieveExifDatas(getfiles.folderId, getfiles.requestId.toString(), items)
+                    if (process.platform == "win32")
+                        retrieveVersions(getfiles.folderId, getfiles.requestId.toString(), items)
+                    return writeJson(items)
+                } catch (e) {
+                    semaphore.clear()
+                    throw e
+                }
             case "json://cancelexifs/":
                 const cancelExifs = await request.json() as { requestId: number }
                 cancel(`${cancelExifs.requestId}`)

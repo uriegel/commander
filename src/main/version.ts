@@ -1,6 +1,7 @@
 import path from 'path'
 import { FileItemsResult, getVersionInfos } from "filesystem-utilities"
 import { sendEvent } from './index.js'
+import { getItemsSemaphores } from './requests.js'
 
 export async function retrieveVersions(folderId: string, requestId: string, itemsResult: FileItemsResult) {
     const input = itemsResult
@@ -9,6 +10,7 @@ export async function retrieveVersions(folderId: string, requestId: string, item
         .map(n => ({ idx: n.idx, path: path.join(itemsResult.path, n.name) }))
     
     if (input.length) {
+        await getItemsSemaphores.get(folderId)?.wait()
         sendEvent({ folderId, cmd: 'VersionsStart', msg: { requestId } })
 
         const versions = await getVersionInfos(input, `${folderId}-${requestId}`)
