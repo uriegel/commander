@@ -11,8 +11,8 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* Windows network share: to electron main
 * Windows network share: on exception try again, throw CancelException to stop trying and use original error
+* Windows network share: to electron main
 
 * Windows Commander completely implemented
 
