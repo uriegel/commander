@@ -2,7 +2,7 @@ import Credentials, { CredentialsProps } from "@/renderer/components/dialogs/Cre
 import IconName from "@/renderer/components/IconName"
 import { FileItem, IconNameType } from "@/renderer/items-provider/items"
 import { formatDateTime, formatSize } from "@/renderer/items-provider/provider"
-import { addNetworkShare, SystemError, VersionInfo } from "filesystem-utilities"
+import { SystemError, VersionInfo } from "filesystem-utilities"
 import { DialogHandle, ResultType } from "web-dialog-react"
 
 export const appendPath = (path: string, subPath: string) => {
@@ -59,7 +59,7 @@ export const sortVersion = (a: FileItem, b: FileItem) =>
 const formatVersion = (version?: VersionInfo) => 
     version ? `${version.major}.${version.minor}.${version.build}.${version.patch}` : ""
 
-export const onGetItemsError = async (e: unknown, share: string, dialog?: DialogHandle) => {
+export const onGetItemsError = async (e: unknown, share: string, cancel: ()=>void, dialog?: DialogHandle) => {
 	const se = e as SystemError
 	if (se.error == "ACCESS_DENIED") {
 		let name = ""
@@ -76,9 +76,11 @@ export const onGetItemsError = async (e: unknown, share: string, dialog?: Dialog
 			btnCancel: true,
 			defBtnOk: true,      
 		})
-		if (res?.result == ResultType.Cancel) 
+		if (res?.result == ResultType.Cancel) {
+            cancel()
 			throw e
-        await addNetworkShare(share, name, password)
+        }
+        //await addNetworkShare(share, name, password)
 	}
 	else
 		throw e

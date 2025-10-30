@@ -29,7 +29,8 @@ export class FileItemProvider extends IItemsProvider {
             path = result.path
         }
             
-        const result = await retryOnErrorAsync(async () => await getFiles(folderId, requestId, path, showHidden), e => onGetItemsError(e, dialog), 15)
+        const result = await retryOnErrorAsync(async () => await getFiles(folderId, requestId, path, showHidden), 
+            (e, cancel: ()=>void) => onGetItemsError(e, cancel, dialog), 15)
         return {
             requestId,
             items: [super.getParent(), ...result.items as FileItem[]],
