@@ -77,7 +77,7 @@ export const onGetItemsError = async (e: unknown, dialog?: DialogHandle) => {
 			defBtnOk: true,      
 		})
 		if (res?.result == ResultType.Cancel) 
-			return
+			throw e
 	}
 	else
 		throw e
