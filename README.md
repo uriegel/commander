@@ -11,15 +11,16 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* Windows map file share Dialog retryOnError 00 until cancel
-* Windows map file share
-
+* Windows network share: to electron main
+* Windows network share: on exception try again, throw CancelException to stop trying and use original error
 
 * Windows Commander completely implemented
 
 * Remotes
 
 * Linux Commander completely implemented
+
+* Switch to dark mode and vice versa: adapt windows color
 
 * Windows Services (perhaps elevatable sub process)
 
