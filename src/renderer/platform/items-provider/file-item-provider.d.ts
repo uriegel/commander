@@ -7,4 +7,4 @@ export const appendPath: (path: string, subPath: string) => string
 export const getColumns: () => Column[]
 export const renderRow: (item: FileItem) => (string|JSX.Element)[]
 export const sortVersion: (a: FileItem, b: FileItem) => 1 | -1 | 0
-export const onGetItemsError: (e: unknown, cancel: ()=>void, dialog?: DialogHandle)=>Promise<void>
+export const onGetItemsError: (e: unknown, share: string, dialog?: DialogHandle, setErrorText?: (msg: string)=>void)=>Promise<void>

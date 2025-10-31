@@ -218,7 +218,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             cancelExifs(`${id}-${requestId.current}`)
             requestId.current = getRequestId()
             const newItemsProvider = getItemsProvider(path, itemsProvider.current)
-            const result = await newItemsProvider.getItems(id, requestId.current, path, forceShowHidden === undefined ? showHidden : forceShowHidden, mount, dialog)
+            const result = await newItemsProvider.getItems(id, requestId.current, path, forceShowHidden === undefined ? showHidden : forceShowHidden, 
+                mount, dialog, setErrorText)
             if (result.cancelled || !result.items || result.requestId != requestId.current)
                 return
             restrictionView.current?.reset()

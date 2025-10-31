@@ -1,4 +1,5 @@
 import {
+    addNetworkShare,
     cancel, copyFile, copyFiles, createFolder, FileItem, getDrives, getFiles, openFile,
     openFileWith, rename, showFileProperties, SystemError, trash
 } from 'filesystem-utilities'
@@ -124,6 +125,11 @@ export const onRequest = async (request: Request) => {
                 const input = await request.json() as { folderId: string }
                 getItemsSemaphores.get(input.folderId)?.release()
                 return writeJson({})
+            case "json://addnetworkshare/": {
+                const input = await request.json() as { share: string, name: string, passwd: string }
+                await addNetworkShare(input.share, input.name, input.passwd)
+                return writeJson({})
+            }
             default:
                 return writeJson({ error: "UNKNOWN" , message: "Allgemeiner Fehler aufgetreten"})
         }

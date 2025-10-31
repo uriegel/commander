@@ -2,6 +2,7 @@ import Credentials, { CredentialsProps } from "@/renderer/components/dialogs/Cre
 import IconName from "@/renderer/components/IconName"
 import { FileItem, IconNameType } from "@/renderer/items-provider/items"
 import { formatDateTime, formatSize } from "@/renderer/items-provider/provider"
+import { addNetworkShare } from "@/renderer/requests/requests"
 import { SystemError, VersionInfo } from "filesystem-utilities"
 import { DialogHandle, ResultType } from "web-dialog-react"
 
@@ -59,30 +60,35 @@ export const sortVersion = (a: FileItem, b: FileItem) =>
 const formatVersion = (version?: VersionInfo) => 
     version ? `${version.major}.${version.minor}.${version.build}.${version.patch}` : ""
 
-export const onGetItemsError = async (e: unknown, share: string, cancel: ()=>void, dialog?: DialogHandle) => {
+export const onGetItemsError = async (e: unknown, share: string, dialog?: DialogHandle, setErrorText?: (msg: string)=>void) => {
+    if (!dialog || !setErrorText)
+        throw "wrong parameters"
 	const se = e as SystemError
-	if (se.error == "ACCESS_DENIED") {
-		let name = ""
-        let password = ""
-		const res = await dialog?.show({
-			text: "Zugriff verweigert",
-			extension: Credentials,
-			extensionProps: { name, password },
-			onExtensionChanged: (e: CredentialsProps) => {
-				name = e.name
-				password = e.password
-			}, 
-			btnOk: true,
-			btnCancel: true,
-			defBtnOk: true,      
-		})
-		if (res?.result == ResultType.Cancel) {
-            cancel()
-			throw e
-        }
-        //await addNetworkShare(share, name, password)
-	}
-	else
-		throw e
+    let name = ""
+    let password = ""
+    const res = await dialog?.show({
+        text: "Zugriff verweigert",
+        extension: Credentials,
+        extensionProps: { name, password },
+        onExtensionChanged: (e: CredentialsProps) => {
+            name = e.name
+            password = e.password
+        }, 
+        btnOk: true,
+        btnCancel: true,
+        defBtnOk: true,      
+    })
+    if (res?.result == ResultType.Cancel) 
+        throw e
+    
+    try {
+        await addNetworkShare(share, name, password)
+    } catch (e) {
+        const se = e as SystemError
+        if (setErrorText)
+            setErrorText(se.message)
+        if (se.error != "ACCESS_DENIED" && se.error != "WRONG_CREDENTIALS" && se.error != "NETWORK_NAME_NOT_FOUND" )
+            throw (e)
+    }
 }
 

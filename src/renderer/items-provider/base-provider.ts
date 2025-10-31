@@ -26,7 +26,8 @@ export abstract class IItemsProvider {
     abstract readonly itemsSelectable: boolean
 
     abstract getColumns(): TableColumns<Item>
-    abstract getItems(folderId: string, requestId: number, path?: string, showHidden?: boolean, mount?: boolean, dialog?: DialogHandle): Promise<ItemsResult>
+    abstract getItems(folderId: string, requestId: number, path?: string, showHidden?: boolean, mount?: boolean, 
+        dialog?: DialogHandle, setErrorText?: (msg: string)=>void): Promise<ItemsResult>
     abstract onEnter(data: EnterData): Promise<OnEnterResult>
     abstract appendPath(path: string, subPath: string): string
     sort(items: Item[], _sortIndex: number, _sortDescending: boolean): Item[] { return items }

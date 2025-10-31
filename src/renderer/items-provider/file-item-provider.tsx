@@ -3,10 +3,8 @@ import { EnterData, IItemsProvider, OnEnterResult } from "./base-provider"
 import { Item, FileItem } from "./items"
 import { getSelectedItemsText } from "./provider"
 import { createFolderRequest, deleteRequest, getFiles, mountRequest, onEnter, renameRequest } from "../requests/requests"
-import { appendPath, getColumns, onGetItemsError, sortVersion } from '@platform/items-provider/file-item-provider'
+import { appendPath, getColumns, onGetItemsError, sortVersion, renderRow } from '@platform/items-provider/file-item-provider'
 import { DialogHandle, ResultType } from "web-dialog-react"
-import { renderRow } from "@platform/items-provider/file-item-provider"
-import { retryOnErrorAsync } from 'functional-extensions'
 
 export const FILE = "File"
 
@@ -22,7 +20,8 @@ export class FileItemProvider extends IItemsProvider {
         }
     }
     
-    async getItems(folderId: string, requestId: number, path: string, showHidden?: boolean, mount?: boolean, dialog?: DialogHandle) {
+    async getItems(folderId: string, requestId: number, path: string, showHidden?: boolean, mount?: boolean, 
+        dialog?: DialogHandle, setErrorText?: (msg: string)=>void) {
 
         if (mount) {
             const result = await mountRequest(path)
@@ -30,7 +29,7 @@ export class FileItemProvider extends IItemsProvider {
         }
             
         const result = await retryOnErrorAsync(async () => await getFiles(folderId, requestId, path, showHidden), 
-            (e, cancel: ()=>void) => onGetItemsError(e, cancel, dialog), 15)
+            e => onGetItemsError(e, path, dialog, setErrorText), 1)
         return {
             requestId,
             items: [super.getParent(), ...result.items as FileItem[]],
@@ -154,5 +153,18 @@ export const getRowClasses = (item: FileItem) => {
 
 function extractSubPath(path: string): string {
     return path.substring(path.lastIndexOfAny(["/", "\\"]))
+}
+
+async function retryOnErrorAsync<T>(action: () => Promise<T>, onError: (e: unknown)=>Promise<void>, retryCount = 3) {
+    for (let n = 0; n <= retryCount; n++) {
+        try {
+            return await action()
+        } catch (e) {
+            if (n == retryCount)
+                throw e
+            await onError(e)
+        }
+    }
+    throw "too many iterations"
 }
 
