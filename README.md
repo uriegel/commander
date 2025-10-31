@@ -16,6 +16,8 @@ TODO
 * Linux Commander completely implemented
 
 * Windows Alt+F4 close
+* Windows Versions in own computer system32 not shown
+* Windows Versions in copy dialog
 * Switch to dark mode and vice versa: adapt windows color
 
 * Windows Services (perhaps elevatable sub process)
