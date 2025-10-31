@@ -5,6 +5,7 @@ import { getSelectedItemsText } from "./provider"
 import { createFolderRequest, deleteRequest, getFiles, mountRequest, onEnter, renameRequest } from "../requests/requests"
 import { appendPath, getColumns, onGetItemsError, sortVersion, renderRow } from '@platform/items-provider/file-item-provider'
 import { DialogHandle, ResultType } from "web-dialog-react"
+import { retryOnErrorAsync } from "functional-extensions"
 
 export const FILE = "File"
 
@@ -29,7 +30,7 @@ export class FileItemProvider extends IItemsProvider {
         }
             
         const result = await retryOnErrorAsync(async () => await getFiles(folderId, requestId, path, showHidden), 
-            e => onGetItemsError(e, path, dialog, setErrorText), 1)
+            e => onGetItemsError(e, path, dialog, setErrorText))
         return {
             requestId,
             items: [super.getParent(), ...result.items as FileItem[]],
@@ -153,18 +154,5 @@ export const getRowClasses = (item: FileItem) => {
 
 function extractSubPath(path: string): string {
     return path.substring(path.lastIndexOfAny(["/", "\\"]))
-}
-
-async function retryOnErrorAsync<T>(action: () => Promise<T>, onError: (e: unknown)=>Promise<void>, retryCount = 3) {
-    for (let n = 0; n <= retryCount; n++) {
-        try {
-            return await action()
-        } catch (e) {
-            if (n == retryCount)
-                throw e
-            await onError(e)
-        }
-    }
-    throw "too many iterations"
 }
 

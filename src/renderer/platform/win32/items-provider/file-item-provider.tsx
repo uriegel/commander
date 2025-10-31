@@ -4,6 +4,8 @@ import { FileItem, IconNameType } from "@/renderer/items-provider/items"
 import { formatDateTime, formatSize } from "@/renderer/items-provider/provider"
 import { addNetworkShare } from "@/renderer/requests/requests"
 import { SystemError, VersionInfo } from "filesystem-utilities"
+import { delayAsync, retryOnErrorAsync } from "functional-extensions"
+import { delay } from "rxjs"
 import { DialogHandle, ResultType } from "web-dialog-react"
 
 export const appendPath = (path: string, subPath: string) => {
@@ -67,33 +69,30 @@ export const onGetItemsError = async (e: unknown, share: string, dialog?: Dialog
     if (se.error != "ACCESS_DENIED"&& se.error != "WRONG_CREDENTIALS")
         throw e
 
-    // TODO retryOnErrorAsync(... 10)
+    await retryOnErrorAsync(async () => {
+        let name = ""
+        let password = ""
 
-    let name = ""
-    let password = ""
-    const res = await dialog?.show({
-        text: "Netzwerklaufwerk verbinden",
-        extension: Credentials,
-        extensionProps: { name, password },
-        onExtensionChanged: (e: CredentialsProps) => {
-            name = e.name
-            password = e.password
-        }, 
-        btnOk: true,
-        btnCancel: true,
-        defBtnOk: true,      
-    })
-    if (res?.result == ResultType.Cancel) 
-        throw e
-    
-    try {
+        const res = await dialog?.show({
+            text: "Netzwerklaufwerk verbinden",
+            extension: Credentials,
+            extensionProps: { name, password },
+            onExtensionChanged: (e: CredentialsProps) => {
+                name = e.name
+                password = e.password
+            }, 
+            btnOk: true,
+            btnCancel: true,
+            defBtnOk: true,      
+        })
+        if (res?.result == ResultType.Cancel) 
+            return
         await addNetworkShare(share, name, password)
-    } catch (e) {
+    }, async e => {
         const se = e as SystemError
         if (setErrorText)
             setErrorText(se.message)
-        if (se.error != "ACCESS_DENIED" && se.error != "WRONG_CREDENTIALS" && se.error != "NETWORK_NAME_NOT_FOUND" )
-            throw (e)
-    }
+    }, 3)
 }
+
 

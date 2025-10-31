@@ -55,7 +55,7 @@ const TrackViewer = ({ path }: TrackViewerProps) => {
                     myMap.current?.fitBounds([[maxLat, maxLng], [minLat, minLng]])
                 }
             }
-            catch (e) { console.error("error in tract", e) }
+            catch (e) { console.error("error in track", e) }
         }
 
         getTrack(path)
