@@ -14,10 +14,10 @@ export const renderRow = (item: RootItem) => [
     (<IconName namePart={item.name} type={
         item.type == 'HOME'
         ? IconNameType.Home
-        // : item.name == REMOTES
-        // ? IconNameType.Remote
-        // : item.name == FAVORITES
-        // ? IconNameType.Favorite
+        : item.name == "remotes"
+        ? IconNameType.Remote
+        : item.name == "fav"
+        ? IconNameType.Favorite
         : item.type == "REMOVABLE"
         ? IconNameType.RootEjectable
         : IconNameType.Root

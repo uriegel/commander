@@ -24,7 +24,9 @@ export class RootItemProvider extends IItemsProvider {
         return {
             requestId,
             items: [...mounted, {
-                name: "Favoriten", isDirectory: true, mountPoint: "fav", isMounted: true 
+                name: "fav", description: "Favoriten", isDirectory: true, mountPoint: "fav", isMounted: true,
+            }, {
+                name: "remotes", description:  "Zugriff auf entfernte Geräte", isDirectory: true, mountPoint: "remotes", isMounted: true,
             }, ...unmounted],
             path: drives.path,
             dirCount: drives.items.length,

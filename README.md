@@ -11,7 +11,7 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* Remotes
+* Remotes: Linux description, Windows name
 
 * Linux Commander completely implemented
 

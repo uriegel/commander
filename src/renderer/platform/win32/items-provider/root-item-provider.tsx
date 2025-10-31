@@ -1,4 +1,5 @@
 import IconName from "@/renderer/components/IconName"
+import { FAVORITES } from "@/renderer/items-provider/favorites-provider"
 import { IconNameType, RootItem } from "@/renderer/items-provider/items"
 import { formatSize } from "@/renderer/items-provider/provider"
 import { Column } from "virtual-table-react"
@@ -13,10 +14,10 @@ export const renderRow = (item: RootItem) => [
     (<IconName namePart={item.name} type={
         item.type == 'HOME'
         ? IconNameType.Home
-        // : item.name == REMOTES
-        // ? IconNameType.Remote
-        // : item.name == FAVORITES
-        // ? IconNameType.Favorite
+        : item.name == "remotes"
+        ? IconNameType.Remote
+        : item.name == "fav"
+        ? IconNameType.Favorite
         : item.name == 'C:\\'
         ? IconNameType.RootWindows
         : item.type == "REMOVABLE"
