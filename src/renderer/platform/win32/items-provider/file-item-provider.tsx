@@ -64,10 +64,15 @@ export const onGetItemsError = async (e: unknown, share: string, dialog?: Dialog
     if (!dialog || !setErrorText)
         throw "wrong parameters"
 	const se = e as SystemError
+    if (se.error != "ACCESS_DENIED"&& se.error != "WRONG_CREDENTIALS")
+        throw e
+
+    // TODO retryOnErrorAsync(... 10)
+
     let name = ""
     let password = ""
     const res = await dialog?.show({
-        text: "Zugriff verweigert",
+        text: "Netzwerklaufwerk verbinden",
         extension: Credentials,
         extensionProps: { name, password },
         onExtensionChanged: (e: CredentialsProps) => {

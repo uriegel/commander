@@ -27,7 +27,7 @@ export const renderRow = (item: FileItem) => [
 	formatSize(item.size)
 ]
 
-export const onGetItemsError = async (e: unknown, share: string, _dialog?: DialogHandle, _setErrorText?: (msg: string)=>void) => {
+export const onGetItemsError = async (e: unknown, _share: string, _dialog?: DialogHandle, _setErrorText?: (msg: string)=>void) => {
 	throw e
 }
 
