@@ -1,5 +1,4 @@
 import IconName from "@/renderer/components/IconName"
-import { FAVORITES } from "@/renderer/items-provider/favorites-provider"
 import { IconNameType, RootItem } from "@/renderer/items-provider/items"
 import { formatSize } from "@/renderer/items-provider/provider"
 import { Column } from "virtual-table-react"
