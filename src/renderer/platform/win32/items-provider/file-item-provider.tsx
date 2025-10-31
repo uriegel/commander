@@ -4,13 +4,12 @@ import { FileItem, IconNameType } from "@/renderer/items-provider/items"
 import { formatDateTime, formatSize } from "@/renderer/items-provider/provider"
 import { addNetworkShare } from "@/renderer/requests/requests"
 import { SystemError, VersionInfo } from "filesystem-utilities"
-import { delayAsync, retryOnErrorAsync } from "functional-extensions"
-import { delay } from "rxjs"
+import { retryOnErrorAsync } from "functional-extensions"
 import { DialogHandle, ResultType } from "web-dialog-react"
 
 export const appendPath = (path: string, subPath: string) => {
     return path.endsWith("\\") || subPath.startsWith('\\')
-        ? path + subPath
+        ? path + subPath    
         : path + "\\" + subPath
 }
 

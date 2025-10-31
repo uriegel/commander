@@ -11,12 +11,11 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* Windows Commander completely implemented
-
 * Remotes
 
 * Linux Commander completely implemented
 
+* Windows Alt+F4 close
 * Switch to dark mode and vice versa: adapt windows color
 
 * Windows Services (perhaps elevatable sub process)
