@@ -16,8 +16,7 @@ TODO
 * Linux Commander completely implemented
 
 * Windows Alt+F4 close
-* Windows Versions in own computer system32 not shown
-* Windows Versions in copy dialog
+* Windows Versions in copy dialog: resolve versions in CopyConflicts, before showing, but with timeout 5s
 * Switch to dark mode and vice versa: adapt windows color
 
 * Windows Services (perhaps elevatable sub process)
