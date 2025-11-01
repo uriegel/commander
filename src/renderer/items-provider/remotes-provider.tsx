@@ -48,7 +48,7 @@ export class RemotesItemProvider extends IItemsProvider {
                 processed: false,
                 pathToSet: "root"
             }
-            : remotesEnter.isNew && enterData.dialog && enterData.otherPath && await this.createRemote(enterData.dialog, enterData.item)
+            : remotesEnter.isNew && enterData.dialog && enterData.otherPath && await this.createRemote(enterData.dialog)
             ? {
                 processed: true,
                 refresh: true
@@ -59,7 +59,7 @@ export class RemotesItemProvider extends IItemsProvider {
             }
     }
 
-    async createRemote(dialog: DialogHandle, item: RemotesItem) {
+    async createRemote(dialog: DialogHandle, item?: RemotesItem) {
         let name = item?.name
         let ipAddress = item?.ipAddress
         let isAndroid = item?.isAndroid ?? true
