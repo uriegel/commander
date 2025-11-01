@@ -50,9 +50,12 @@ export const onRequest = async (request: Request) => {
                     ...n, 
                     iconPath: getIconPath(n.name, items.path)
                 }))
-                retrieveExifDatas(getfiles.folderId, getfiles.requestId.toString(), items)
-                if (process.platform == "win32")
-                    retrieveVersions(getfiles.folderId, getfiles.requestId.toString(), items)
+                const retrieveExtended = async () => {
+                    await retrieveExifDatas(getfiles.folderId, getfiles.requestId.toString(), items)
+                    if (process.platform == "win32")
+                        await retrieveVersions(getfiles.folderId, getfiles.requestId.toString(), items)
+                }
+                retrieveExtended()
                 return writeJson(items)
             case "json://cancelexifs/":
                 const cancelExifs = await request.json() as { requestId: number }
