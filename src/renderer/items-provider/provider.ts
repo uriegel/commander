@@ -5,12 +5,15 @@ import { ROOT, RootItemProvider } from "./root-item-provider"
 import { Item } from './items'
 import { EXTENDED_RENAME } from './extended-rename'
 import { FAVORITES, FavoritesProvider } from './favorites-provider'
+import { Remotes, RemotesItemProvider } from './remotes-provider'
 
 export const getItemsProvider = (path?: string, recentProvider?: IItemsProvider): IItemsProvider => {
     if (isRoot(path))
         return recentProvider?.getId() == ROOT ? recentProvider : new RootItemProvider()
     else if (path == "fav")
         return recentProvider?.getId() == FAVORITES ? recentProvider : new FavoritesProvider()
+    else if (path == "remotes")
+        return recentProvider?.getId() == Remotes ? recentProvider : new RemotesItemProvider()
     else
         return recentProvider?.getId() == FILE || recentProvider?.getId() == EXTENDED_RENAME ? recentProvider : new FileItemProvider()
 }

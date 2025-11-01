@@ -22,7 +22,8 @@ export class FavoritesProvider extends IItemsProvider {
     }
 
     async getItems(_: string, requestId: number) { 
-        const items = [super.getParent(), ...getFavoriteItems(), {
+        const items = [super.getParent(),
+            ...getFavoriteItems(), {
                 name: "Favoriten hinzufügen...",
                 isNew: true
             }]
