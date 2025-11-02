@@ -48,7 +48,7 @@ export class RemotesItemProvider extends IItemsProvider {
                 processed: false,
                 pathToSet: "root"
             }
-            : remotesEnter.isNew && enterData.dialog && enterData.otherPath && await this.createRemote(enterData.dialog)
+            : remotesEnter.isNew && enterData.dialog && enterData.otherPath && await this.showRemoteDialog(enterData.dialog) != null
             ? {
                 processed: true,
                 refresh: true
@@ -59,13 +59,13 @@ export class RemotesItemProvider extends IItemsProvider {
             }
     }
 
-    async createRemote(dialog: DialogHandle, item?: RemotesItem) {
+    async showRemoteDialog(dialog: DialogHandle, item?: RemotesItem) {
         let name = item?.name
         let ipAddress = item?.ipAddress
         let isAndroid = item?.isAndroid ?? true
         const items = getItems().filter(n => n.name != item?.name) as RemotesItem[]
         const result = await dialog.show({
-            text: "Entferntes Gerät hinzufügen",
+            text: item ? "Entferntes Gerät ändern" : "Entferntes Gerät hinzufügen",
             extension: Remote,
             extensionProps: { name, ipAddress, isAndroid },
             onExtensionChanged: (e: RemotesItem) => {
@@ -77,13 +77,12 @@ export class RemotesItemProvider extends IItemsProvider {
             btnCancel: true,
             defBtnOk: true
         })
-        if (name && result.result == ResultType.Ok ) {
+        if (name && result.result == ResultType.Ok) {
             const newItems = items.concat([{ name, ipAddress, isAndroid }])
             localStorage.setItem(Remotes, JSON.stringify(newItems))
-            return true
+            return name
         }
-        else
-            return false
+        return ""
     }
 
     async deleteItems(_path: string, items: RemotesItem[], dialog: DialogHandle) {
@@ -102,6 +101,10 @@ export class RemotesItemProvider extends IItemsProvider {
         const remoteItems = getItems().filter(x => !items.find(n => n.name == x.name))
         localStorage.setItem(Remotes, JSON.stringify(remoteItems))
         return true
+    }
+
+    async renameItem(_: string, item: Item, dialog: DialogHandle) {
+        return await this.showRemoteDialog(dialog, item)
     }
 }
 
