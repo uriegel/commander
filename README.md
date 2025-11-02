@@ -11,7 +11,7 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* Remotes
+* RemoteItemProvider
 
 * Linux Commander completely implemented
 

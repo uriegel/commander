@@ -55,7 +55,7 @@ export class RemotesItemProvider extends IItemsProvider {
             }
             : {
                 processed: false,
-                pathToSet: remotesEnter.name
+                pathToSet: `remote/${remotesEnter.ipAddress}`
             }
     }
 
