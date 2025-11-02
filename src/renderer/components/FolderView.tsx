@@ -290,6 +290,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             case "Home":
                 if (evt.shiftKey && itemsProvider.current?.itemsSelectable) {
                     setItems(items.map((n, i) => setSelection(n, i <= (virtualTable.current?.getPosition() ?? 0))))
+                    itemsProvider.current?.onSelectionChanged(items)
                     evt.preventDefault()
                     evt.stopPropagation()
                 }
@@ -297,6 +298,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             case "End":
                 if (evt.shiftKey && itemsProvider.current?.itemsSelectable) {
                     setItems(items.map((n, i) => setSelection(n, i >= (virtualTable.current?.getPosition() ?? 0))))
+                    itemsProvider.current?.onSelectionChanged(items)
                     evt.preventDefault()
                     evt.stopPropagation()
                 }
@@ -440,8 +442,10 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     const onItemClick = (item: Item, _: number, ctrlKey: boolean) => {
-		if (itemsProvider.current?.itemsSelectable && ctrlKey == true)
-			toggleSelection(item)
+        if (itemsProvider.current?.itemsSelectable && ctrlKey == true) {
+            toggleSelection(item)
+            itemsProvider.current.onSelectionChanged(items)
+        }
     }    
     
     const insertSelection = () => {
