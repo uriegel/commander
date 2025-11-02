@@ -12,8 +12,6 @@ sudo apt install libgtk-3-dev
 
 TODO
 * RemoteItemProvider
-* getfiles: exception handling
-* show jpg, show pdf, show movie
 * rename
 * delete
 * create folder
