@@ -140,9 +140,11 @@ export const onRequest = async (request: Request) => {
                 const items = await remoteGetRequest<FileItem[]>(ip, `/getfiles${remotePath}`)
                 const dirCount = items.filter(n => n.isDirectory).length
                 return writeJson({
-                    items: items.map(n => ({
+                    items: items
+                        .filter(n => getfiles.showHidden || !n.isHidden)
+                        .map(n => ({
                         ...n,
-                        time: undefined,
+                        time: n.time ? new Date(n.time) : undefined,
                         iconPath: getIconPath(n.name, "")
                     })),
                     dirCount,

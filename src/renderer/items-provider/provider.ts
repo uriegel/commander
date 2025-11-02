@@ -15,7 +15,7 @@ export const getItemsProvider = (path?: string, recentProvider?: IItemsProvider)
     ? recentProvider?.getId() == FAVORITES ? recentProvider : new FavoritesProvider()
     : path == "remotes"
     ? recentProvider?.getId() == Remotes ? recentProvider : new RemotesItemProvider()
-    : path && path.startsWith("remote") && path.endsWith("..") && path.substring(8).indexOf('/') == -1
+    : path && path.startsWith("remote") && path.endsWith("..") && path.substring(7).substringUntil("/..").indexOf('/') == -1
     ? new RemotesItemProvider()
     : path?.startsWith("remote") 
     ? new RemoteItemProvider()
