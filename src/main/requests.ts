@@ -133,6 +133,23 @@ export const onRequest = async (request: Request) => {
                 await addNetworkShare(input.share, input.name, input.passwd)
                 return writeJson({})
             }
+            case "json://getremotefiles/": {
+                const getfiles = await request.json() as GetFiles
+                const ip = getfiles.path.substring(7).substringUntil('/')
+                const remotePath = path.normalize('/' + getfiles.path.substring(7).substringAfter('/'))
+                const items = await remoteGetRequest<FileItem[]>(ip, `/getfiles${remotePath}`)
+                const dirCount = items.filter(n => n.isDirectory).length
+                return writeJson({
+                    items: items.map(n => ({
+                        ...n,
+                        time: undefined,
+                        iconPath: getIconPath(n.name, "")
+                    })),
+                    dirCount,
+                    fileCount: items.length - dirCount,
+                    path: `remote/${ip}${remotePath}`
+                })
+            }
             default:
                 return writeJson({ error: "UNKNOWN" , message: "Allgemeiner Fehler aufgetreten"})
         }
@@ -206,3 +223,11 @@ const flattenDirectory = (sourcePath: string, targetPath: string, dir: FileItem)
     .bind(n => n.isDirectory ? flattenDirectory(sourcePath, targetPath, n) : [n].toAsyncEnumerable())
 }
 	
+const remoteGetRequest = async <T>(ip: string, path: string) => {
+    const response = await fetch(`http://${ip}:8080${path}`, )
+    const res = await response.json() as (T | SystemError)
+    if ((res as SystemError).error && (res as SystemError).message) {
+        throw (res)
+    }
+    return res as T
+}

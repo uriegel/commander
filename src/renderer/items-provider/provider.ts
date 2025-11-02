@@ -6,7 +6,7 @@ import { Item } from './items'
 import { EXTENDED_RENAME } from './extended-rename'
 import { FAVORITES, FavoritesProvider } from './favorites-provider'
 import { Remotes, RemotesItemProvider } from './remotes-provider'
-import { RemoteItemProvider } from './remote-controller'
+import { RemoteItemProvider } from './remote-provider'
 
 export const getItemsProvider = (path?: string, recentProvider?: IItemsProvider): IItemsProvider => 
     isRoot(path)

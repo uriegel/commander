@@ -30,6 +30,7 @@ export const cancelCopy = () => jsonRequest<void>("cancelcopy", {})
 export const extendedRenameRequest = (path: string, items: ExtendedRenameItem[]) => jsonRequest<{success: boolean}>("extendedrename", { path, items })
 export const getItemsFinished = (folderId: string) => jsonRequest<void>("getitemsfinished", { folderId })
 export const addNetworkShare = (share: string, name: string, passwd: string) => jsonRequest<void>("addnetworkshare", { share, name, passwd })
+export const getRemoteFiles = (folderId: string, requestId: number, path: string, showHidden?: boolean) => jsonRequest<RequestItem>("getremotefiles", { folderId, requestId, path, showHidden })
 
 const jsonRequest = async <T>(cmd: string, msg: unknown) => {
     const payload = {

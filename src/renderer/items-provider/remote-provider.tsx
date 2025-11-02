@@ -2,9 +2,8 @@ import { TableColumns } from "virtual-table-react"
 import { EnterData, IItemsProvider, OnEnterResult } from "./base-provider"
 import { Item, FileItem, IconNameType } from "./items"
 import { formatDateTime, formatSize, getSelectedItemsText } from "./provider"
-import { createFolderRequest, deleteRequest, getFiles, onEnter, renameRequest } from "../requests/requests"
+import { createFolderRequest, deleteRequest, getRemoteFiles, onEnter, renameRequest } from "../requests/requests"
 import { DialogHandle, ResultType } from "web-dialog-react"
-import { retryOnErrorAsync } from "functional-extensions"
 import IconName from "../components/IconName"
 
 export const REMOTE = "REMOTE"
@@ -26,7 +25,7 @@ export class RemoteItemProvider extends IItemsProvider {
     }
     
     async getItems(folderId: string, requestId: number, path: string, showHidden?: boolean) {
-        const result = await retryOnErrorAsync(async () => await getFiles(folderId, requestId, path, showHidden), e => { throw e })
+        const result = await getRemoteFiles(folderId, requestId, path, showHidden)
         return {
             requestId,
             items: [super.getParent(), ...result.items as FileItem[]],

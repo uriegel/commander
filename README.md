@@ -12,9 +12,19 @@ sudo apt install libgtk-3-dev
 
 TODO
 * RemoteItemProvider
+* getfiles: back to remotes not possible
+* getfiles: exception handling
+* rename
+* delete
+* create folder
+* copy from remote 
+* copy to remote 
 
 * Linux Commander completely implemented
 
+* Linux: gpx icon not implemented
+
+* Windows Remote Provider
 * Windows Alt+F4 close
 * Windows Versions in copy dialog: resolve versions in CopyConflicts, before showing, but with timeout 5s
 * Switch to dark mode and vice versa: adapt windows color
