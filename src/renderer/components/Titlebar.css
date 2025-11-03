@@ -6,6 +6,7 @@
     border-top: 1px solid transparent;
 }
 
+
 body:focus-within .titlebar {
     border-top: 1px solid var(--vtr-selected-background-color);
 }
@@ -22,7 +23,9 @@ body:focus-within .titlebar {
     margin: 3px 3px 0px 0px;    
     display: flex;
     align-items: center;  
+    app-region: drag;
 }
+
 .titlebarGrip>span {
     flex-grow: 1;   
     margin-top: -3px; 

@@ -15,6 +15,7 @@
     "asar": true,
     "asarUnpack": [],
     "files": [
+      "icons/64x64.png",
       "dist/main/**/*",
       "dist/renderer/**/*",
       "dist/bridge/**/*",

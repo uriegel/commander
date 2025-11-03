@@ -12,6 +12,7 @@ import { registerGetMediaProtocol } from "./media.js"
 import { Event } from './events.js'
 import { registerGetTrackProtocol } from './track.js'
 import { canClose } from './close-control.js'
+import { registerGetWindowIconProtocol } from './windowicon.js'
 
 process.env.UV_THREADPOOL_SIZE = "32"
 
@@ -54,6 +55,11 @@ protocol.registerSchemesAsPrivileged([
 		privileges: {
 			standard: true, secure: true, supportFetchAPI: true
 		}
+	}, {
+		scheme: 'windowicon',
+		privileges: {
+			standard: true, secure: true, supportFetchAPI: true
+		}
 	}
 ])
 
@@ -70,26 +76,30 @@ const createWindow = () => {
 	registerGetBinProtocol()
 	registerGetMediaProtocol()
 	registerGetTrackProtocol()
+	if (process.platform == "win32")
+		registerGetWindowIconProtocol()
 
-	const bounds = {
+	let bounds = {
 		x: settings.getSync("x") as number,
 		y: settings.getSync("y") as number,
 		width: settings.getSync("width") as number || 600,
 		height: settings.getSync("height") as number || 800,
 		backgroundColor: nativeTheme.shouldUseDarkColors ? "#121212" : undefined,
 		icon: path.join(rootDir, "../../icons/64x64.png"),
-		
-		// Windows
-// 		titleBarStyle: "hidden",
-// titleBarOverlay: {
-//     color: "gray",
-//     symbolColor: 'white',
-//     height: 30
-//   },		
 		webPreferences: {
 			preload: path.join(rootDir, "../bridge/preload.js")
 		}
 	} as Electron.BrowserViewConstructorOptions
+
+	if (process.platform == "win32")
+		bounds = { ...bounds, 
+			titleBarStyle: "hidden",
+			titleBarOverlay: {
+    			color: nativeTheme.shouldUseDarkColors ? "#262626" : "#ebebeb",
+    			symbolColor: 'white',
+    			height: 30
+  			}
+		} as Electron.BrowserViewConstructorOptions
 
 	mainWindow = new BrowserWindow(bounds)
     if (settings.getSync("isMaximized"))

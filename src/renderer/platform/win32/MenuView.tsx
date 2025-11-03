@@ -1,14 +1,12 @@
 import Menu from "@/renderer/components/Menu"
 import { MenuViewProps } from "../MenuView"
-import Titlebar, { TitlebarHandle } from "@/renderer/components/Titlebar"
-import { useRef } from "react"
+import Titlebar from "@/renderer/components/Titlebar"
 
 const MenuView = ({ onMenuAction, showHidden, showViewer, viewerMode,
         toggleShowHiddenAndRefresh, toggleShowViewer, setViewerMode }: MenuViewProps) => {
-    const titlebar = useRef(null as TitlebarHandle|null)
     return (
-        <Titlebar ref={titlebar} menu={(
-            <Menu autoMode={true} onMenuAction={onMenuAction}
+        <Titlebar menu={(
+            <Menu autoMode={false} onMenuAction={onMenuAction}
                 showHidden={showHidden} toggleShowHidden={toggleShowHiddenAndRefresh}
                 showViewer={showViewer} toggleShowViewer={toggleShowViewer}
                 viewerMode={viewerMode} setViewerMode={setViewerMode}
