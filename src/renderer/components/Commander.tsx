@@ -1,5 +1,5 @@
 import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useRef, useState } from "react"
-import Menu, { ViewerMode } from "./Menu"
+import { ViewerMode } from "./Menu"
 import ViewSplit from "view-split-react"
 import PictureViewer from "./viewers/PictureViewer"
 import LocationViewer from "./viewers/LocationViewer"
@@ -13,6 +13,7 @@ import { DialogContext } from "web-dialog-react"
 import Statusbar from "./Statusbar"
 import './viewers/viewers.css'
 import { copyItems } from "../copy-processor"
+import MenuView from "@platform/MenuView"
 
 export const ID_LEFT = "left"
 export const ID_RIGHT = "right"
@@ -207,8 +208,8 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
     
     return (
         <>
-            <Menu autoMode={true} onMenuAction={onMenuAction}
-				showHidden={showHidden} toggleShowHidden={toggleShowHiddenAndRefresh}
+            <MenuView onMenuAction={onMenuAction}
+				showHidden={showHidden} toggleShowHiddenAndRefresh={toggleShowHiddenAndRefresh}
 				showViewer={showViewer} toggleShowViewer={toggleShowViewer}
 				viewerMode={viewerMode} setViewerMode={setViewerMode}
             />            
