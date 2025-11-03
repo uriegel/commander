@@ -76,12 +76,19 @@ const createWindow = () => {
 		y: settings.getSync("y") as number,
 		width: settings.getSync("width") as number || 600,
 		height: settings.getSync("height") as number || 800,
-		backgroundColor: nativeTheme.shouldUseDarkColors ? "#121212" : undefined,
+		//backgroundColor: nativeTheme.shouldUseDarkColors ? "#121212" : undefined,
 		icon: path.join(rootDir, "../../icons/64x64.png"),
+		titleBarStyle: "hidden",
+		transparent: true,
+titleBarOverlay: {
+    color: '#2f3241',
+    symbolColor: '#74b1be',
+    height: 60
+  },		
 		webPreferences: {
 			preload: path.join(rootDir, "../bridge/preload.js")
 		}
-	}
+	} as Electron.BrowserViewConstructorOptions
 
 	mainWindow = new BrowserWindow(bounds)
     if (settings.getSync("isMaximized"))
