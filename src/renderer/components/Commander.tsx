@@ -7,7 +7,7 @@ import MediaPlayer from "./viewers/MediaPlayer"
 import FileViewer from "./viewers/FileViewer"
 import TrackViewer from "./viewers/TrackViewer"
 import FolderView, { FolderViewHandle, ItemCount } from "./FolderView"
-import { cmdRequest } from "../requests/requests"
+import { closeWindow, cmdRequest } from "../requests/requests"
 import { Item } from "../items-provider/items"
 import { DialogContext } from "web-dialog-react"
 import Statusbar from "./Statusbar"
@@ -131,6 +131,9 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 				break
 			case "FAVORITES":
 				getActiveFolder()?.showFavorites()
+				break
+			case "END":
+				closeWindow()
 				break
 		}
 	}, [getActiveFolder, dialog])

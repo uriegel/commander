@@ -141,6 +141,8 @@ const createWindow = () => {
 	// mainWindow.webContents.openDevTools()
 }
 
+export const closeWindow = () => mainWindow?.close()
+
 app.setName("commander")
 app.on("ready", createWindow)
 app.on("window-all-closed", () => {

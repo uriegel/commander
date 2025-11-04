@@ -11,6 +11,7 @@ import { copyItems } from './copy.js'
 import { ExtendedRenameItem } from '@/renderer/items-provider/items.js'
 import { retrieveVersions } from './version.js'
 import { Semaphore } from "functional-extensions"
+import { closeWindow } from './index.js'
 
 export const getItemsSemaphores = new Map<string, Semaphore>()
 
@@ -152,6 +153,9 @@ export const onRequest = async (request: Request) => {
                     path: `remote/${ip}${remotePath}`
                 })
             }
+            case "json://closewindow/":
+                closeWindow()
+                return writeJson({})
             default:
                 return writeJson({ error: "UNKNOWN" , message: "Allgemeiner Fehler aufgetreten"})
         }
