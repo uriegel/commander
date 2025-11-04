@@ -18,9 +18,10 @@ body:focus-within .titlebar {
 
 .titlebarGrip {
     flex-grow: 1;
-    text-align: center;
+    text-align: left;
     vertical-align: middle;
-    margin: 3px 3px 0px 0px;    
+    margin-top: 3px;    
+    padding-left: 25px;
     display: flex;
     align-items: center;  
     app-region: drag;
@@ -31,42 +32,3 @@ body:focus-within .titlebar {
     margin-top: -3px; 
 }
 
-.titlebarButton {
-    width: 44px;
-    text-align: center;
-    font-size: 12pt;
-    display: flex;
-    align-items: center;        
-    cursor: pointer;
-    color: var(--color);
-}
-.titlebarButton>span {
-    flex-grow: 1;   
-    margin-top: -3px;
-    user-select: none;
-}
-.titlebarButton:hover {
-    background-color: var(--titlebar-hover-color);
-}
-.titlebarButton.close:hover {
-    background-color: red;
-    color: white;
-}
-.titlebarButton>span.dash {
-    vertical-align: sub;
-    margin-top: 0px;
-}
-.pieContainer {
-    display: flex;
-    margin: 4px;
-    width: 0px;
-    transition: width 0.3s
-}
-
-.pieContainer.revealed {
-    width: 20px;
-}
-
-.finished .progressPie .progressPieCircle {
-    stroke: gray;
-}
