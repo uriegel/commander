@@ -96,7 +96,7 @@ const createWindow = () => {
 			titleBarStyle: "hidden",
 			titleBarOverlay: {
     			color: nativeTheme.shouldUseDarkColors ? "#262626" : "#ebebeb",
-    			symbolColor: 'white',
+    			symbolColor: nativeTheme.shouldUseDarkColors ? 'white' : 'black',
     			height: 30
   			}
 		} as Electron.BrowserViewConstructorOptions
