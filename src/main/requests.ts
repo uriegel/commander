@@ -153,6 +153,20 @@ export const onRequest = async (request: Request) => {
                     path: `remote/${ip}${remotePath}`
                 })
             }
+            case "json://createremotefolder/": {
+                const input = await request.json() as { path: string, item: string }
+                const ip = input.path.substring(7).substringUntil('/')
+                const remotePath = path.normalize('/' + input.path.substring(7).substringAfter('/'))
+                await remotePostRequest(ip, `/createdirectory${remotePath}`)
+                return writeJson({})
+            }
+            case "json://remotedelete/": {
+                const input = await request.json() as { path: string, item: string }
+                const ip = input.path.substring(7).substringUntil('/')
+                const remotePath = path.normalize('/' + input.path.substring(7).substringAfter('/'))
+                await remoteDeleteRequest(ip, `/deletefile${remotePath}`)
+                return writeJson({})
+            }
             case "json://closewindow/":
                 closeWindow()
                 return writeJson({})
@@ -229,8 +243,12 @@ const flattenDirectory = (sourcePath: string, targetPath: string, dir: FileItem)
     .bind(n => n.isDirectory ? flattenDirectory(sourcePath, targetPath, n) : [n].toAsyncEnumerable())
 }
 	
-const remoteGetRequest = async <T>(ip: string, path: string) => {
-    const response = await fetch(`http://${ip}:8080${path}`, )
+const remoteGetRequest = async <T>(ip: string, path: string) => remoteRequest<T>(ip, path, "GET")
+const remotePostRequest = async <T>(ip: string, path: string) => remoteRequest<T>(ip, path, "POST")
+const remoteDeleteRequest = async <T>(ip: string, path: string) => remoteRequest<T>(ip, path, "DELETE")
+
+const remoteRequest = async <T>(ip: string, path: string, method: string) => {
+    const response = await fetch(`http://${ip}:8080${path}`, { method })
     const res = await response.json() as (T | SystemError)
     if ((res as SystemError).error && (res as SystemError).message) {
         throw (res)

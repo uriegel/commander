@@ -2,7 +2,7 @@ import { TableColumns } from "virtual-table-react"
 import { EnterData, IItemsProvider, OnEnterResult } from "./base-provider"
 import { Item, FileItem, IconNameType } from "./items"
 import { formatDateTime, formatSize, getSelectedItemsText } from "./provider"
-import { createFolderRequest, deleteRequest, getRemoteFiles, onEnter, renameRequest } from "../requests/requests"
+import { createRemoteFolderRequest, getRemoteFiles, onEnter, remoteDeleteRequest } from "../requests/requests"
 import { DialogHandle, ResultType } from "web-dialog-react"
 import IconName from "../components/IconName"
 
@@ -91,35 +91,8 @@ export class RemoteItemProvider extends IItemsProvider {
         })
         if (res.result == ResultType.Cancel)
             return false
-        await deleteRequest(path, items.map(n => n.name))
+        await remoteDeleteRequest(path, items.map(n => n.name))
         return true
-    }
-
-    async renameItem(path: string, item: Item, dialog: DialogHandle, asCopy?: boolean) { 
-        // TODO if (controller.current?.id == "REMOTES") {
-        //     if (await controller.current.rename(dialog, selected))
-        //         refresh(false, n => n.name == res.input)
-        //     return
-        // }
-        const getInputRange = () => {
-            const pos = item.name.lastIndexOf(".")
-            return (pos == -1)
-                ? [0, item.name.length]
-                : [0, pos]
-        }
-        
-        const res = await dialog.show({
-            text: asCopy ? "Kopie anlegen" : "Umbenennen",
-            inputText: item.name,
-            inputSelectRange: getInputRange(),
-            btnOk: true,
-            btnCancel: true,
-            defBtnOk: true
-        })        
-        if (res.result != ResultType.Ok || !res.input || item.name == res.input) 
-            return ""       
-        await renameRequest(path, item.name, res.input, asCopy)
-        return res.input
     }
 
     async createFolder(path: string, item: Item, dialog: DialogHandle) { 
@@ -132,7 +105,7 @@ export class RemoteItemProvider extends IItemsProvider {
         })
         if (res.result != ResultType.Ok || !res.input) 
             return ""
-        await createFolderRequest(path, res.input)
+        await createRemoteFolderRequest(path, res.input)
         return res.input
     }
 

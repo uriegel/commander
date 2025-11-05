@@ -12,9 +12,9 @@ sudo apt install libgtk-3-dev
 
 TODO
 * RemoteItemProvider
-* rename
-* delete
-* create folder
+* delete test, test if delete directories
+* create folder test 
+
 * copy from remote 
 * copy to remote 
 
