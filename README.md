@@ -16,6 +16,8 @@ TODO
 * copy from remote 
 * copy to remote 
 
+* delete remote with progress
+
 * Linux Commander completely implemented
 
 * Linux: gpx icon not implemented
