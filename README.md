@@ -14,7 +14,12 @@ TODO
 * RemoteItemProvider
 
 * copy from remote 
+* copy from remote: manually refresh remote
+* copy from remote: prevent move
+
 * copy to remote 
+* copy to remote: manually refresh remote
+* copy to remote: prevent move
 
 * delete remote with progress
 
@@ -23,7 +28,7 @@ TODO
 * Linux: gpx icon not implemented
 
 * Windows Remote Provider
-* Windows Versions in copy dialog: resolve versions in CopyConflicts, before showing, but with timeout 5s
+* Windows Versions in copy dialog: resolve versions in CopyConflictsDialog, adapt button, no default button when not ready
 * Switch to dark mode and vice versa: adapt windows color
 
 * Windows Services (perhaps elevatable sub process)

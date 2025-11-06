@@ -8,6 +8,7 @@ import { SystemError } from "filesystem-utilities"
 import { FileItem } from "./items-provider/items"
 import CopyConflicts from "./components/dialogs/CopyConflicts"
 import { canCopy } from '@platform/copy-processor'
+import { REMOTE } from "./items-provider/remote-provider"
 
 export type CopyItem = {
     name:           string
@@ -28,7 +29,8 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
     
     const sourceProvider = sourceFolder?.getCurrentItemsProvider()
     const targetProvider = targetFolder?.getCurrentItemsProvider()
-    if (sourceProvider?.getId() != FILE || targetProvider?.getId() != FILE)
+    const copyProcessor = getCopyProcessor(sourceProvider?.getId(), targetProvider?.getId())
+    if (!copyProcessor)
         return
     const sourceAppendPath = sourceFolder?.getAppendPath()
     const targetAppendPath = sourceFolder?.getAppendPath()
@@ -68,7 +70,7 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
             return
 
         const itemsToCopy = res.result == ResultType.No ? items.diff(copyConflicts) : items
-        await copy(sourceFolder.getPath(), targetFolder.getPath(), itemsToCopy.map(n => n.name), itemsToCopy.reduce((previousValue, current) => (current.size || 0) + previousValue, 0),  move)
+        await copyProcessor.copy(sourceFolder.getPath(), targetFolder.getPath(), itemsToCopy.map(n => n.name), itemsToCopy.reduce((previousValue, current) => (current.size || 0) + previousValue, 0),  move)
         targetFolder.refresh()
         if (move)
             sourceFolder.refresh()
@@ -84,4 +86,27 @@ const makeCopyItems = (items: FileItem[], targetItems: FileItem[]): CopyItem[] =
         const target = targetItemsDictionary.get(n.name)
         return target ? {...n, targetSize: target.size, targetTime: target.time} : {...n}
     })
+}
+
+const getCopyProcessor = (sourceId?: string, targetId?: string) => 
+    sourceId == FILE && targetId == FILE
+    ? new CopyProcessor()
+    : sourceId == REMOTE && targetId == FILE
+    ? new RemoteToLocalProcessor() as ICopyProcessor
+    : undefined
+
+abstract class ICopyProcessor {
+    abstract copy(sourcePath: string, targetPath: string, items: string[], totalSize: number, move: boolean): Promise<void>
+}
+
+class CopyProcessor extends ICopyProcessor {
+    copy(sourcePath: string, targetPath: string, items: string[], totalSize: number, move: boolean) {
+        return copy(sourcePath, targetPath, items, totalSize, move)
+    }
+}
+
+class RemoteToLocalProcessor extends ICopyProcessor {
+    async copy(sourcePath: string, targetPath: string, items: string[], totalSize: number, move: boolean) {
+        alert("Kopiere vom Handy")
+    }
 }
