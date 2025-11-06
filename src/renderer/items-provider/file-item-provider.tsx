@@ -45,8 +45,6 @@ export class FileItemProvider extends IItemsProvider {
     } 
 
     async onEnter(enterData: EnterData): Promise<OnEnterResult> {
-//        const fileEnter = enterData.item as FileItem
-
         if (!enterData.item.isDirectory) {
             await onEnter( /*id: enterData.id ?? ""*/ enterData.item.name, enterData.path)
             return {
@@ -103,11 +101,6 @@ export class FileItemProvider extends IItemsProvider {
     }
 
     async renameItem(path: string, item: Item, dialog: DialogHandle, asCopy?: boolean) { 
-        // TODO if (controller.current?.id == "REMOTES") {
-        //     if (await controller.current.rename(dialog, selected))
-        //         refresh(false, n => n.name == res.input)
-        //     return
-        // }
         const getInputRange = () => {
             const pos = item.name.lastIndexOf(".")
             return (pos == -1)
