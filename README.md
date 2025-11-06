@@ -21,6 +21,8 @@ TODO
 
 * Linux Commander completely implemented
 
+* Exif data wrong time (Bild 4.5.23 14:20 => 15:20 in GEZ winter, 14.11.23 is ok)
+
 * Linux: gpx icon not implemented
 
 * Windows Remote Provider

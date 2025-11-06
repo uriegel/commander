@@ -1,6 +1,7 @@
-import { FileItem, FileItemsResult, SystemError } from "filesystem-utilities"
+import fs from 'fs'
 import path from 'path'
-import { GetFiles, getIconPath } from "./requests.js"
+import { FileItem, FileItemsResult, SystemError } from 'filesystem-utilities'
+import { GetFiles, getIconPath } from './requests.js'
 
 export const getRemoteFiles = async (input: GetFiles) => {
     const ip = input.path.substring(7).substringUntil('/')
@@ -37,10 +38,29 @@ export const remoteDelete = async (filePath: string, items: string[]) => {
 
 export const copyFromRemote = async (sourcePath: string, targetPath: string, items: string[], totalSize: number) => {
     const ip = sourcePath.substring(7).substringUntil('/')
-    const remotePath = path.normalize(`/${sourcePath.substring(7).substringAfter('/')}`)
+    const remotePath = path.normalize(`/${sourcePath.substring(7).substringAfter('/')}/`)
+    for (let n of items) {
+        const response = await fetch(`http://${ip}:8080/downloadfile${remotePath}${n}`)
+        if (!response.ok) 
+            throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`)
 
-    console.log("ip", ip, remotePath)
-
+        const total = Number(response.headers.get("content-length"))
+        const reader = response.body?.getReader()
+        let downloaded = 0
+        const fileStream = fs.createWriteStream(`${targetPath}/${n}`)
+        while (true && reader) {
+            const { done, value } = await reader.read()
+            if (done)
+                break
+            downloaded += value.length
+            fileStream.write(value)
+            if (total) {
+                const percent = ((downloaded / total) * 100).toFixed(2)
+                process.stdout.write(`\rProgress: ${percent}%`)
+            } else
+                process.stdout.write(`\rDownloaded ${downloaded} bytes`)
+        }
+    }
 }
 
 const remoteGetRequest = async <T>(ip: string, path: string) => remoteJsonRequest<T>(ip, path, "GET")
