@@ -14,14 +14,14 @@ TODO
 * RemoteItemProvider
 
 * copy from remote 
+* Adapt file time
 
 * copy to remote 
+* Adapt file time
 
 * delete remote with progress
 
 * Linux Commander completely implemented
-
-* Exif data wrong time (Bild 4.5.23 14:20 => 15:20 in GEZ winter, 14.11.23 is ok)
 
 * Linux: gpx icon not implemented
 

@@ -58,14 +58,14 @@
   "homepage": "https://github.com/uriegel/commander#readme",
   "dependencies": {
     "electron-settings": "^5.0.0",
-    "filesystem-utilities": "^7.2.3",
+    "filesystem-utilities": "^7.2.4",
     "functional-extensions": "^2.7.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
-    "@eslint/js": "^9.37.0",
+    "@eslint/js": "^9.37.1",
     "@types/leaflet": "^1.9.21",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.2.2",
@@ -82,7 +82,7 @@
     "react-leaflet": "^5.0.0",
     "react-progress-control": "^1.1.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.0",
+    "typescript-eslint": "^8.46.3",
     "view-split-react": "^1.2.0",
     "virtual-table-react": "^10.10.0",
     "vite": "^7.1.10",
