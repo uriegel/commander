@@ -1,7 +1,7 @@
 import { DialogHandle, ResultType, Slide } from "web-dialog-react"
 import { FolderViewHandle } from "./components/FolderView"
 import { ID_LEFT } from "./components/Commander"
-import { copy, flattenItems } from "./requests/requests"
+import { copy, copyFromRemote, flattenItems } from "./requests/requests"
 import { FILE } from "./items-provider/file-item-provider"
 import { getSelectedItemsText } from "./items-provider/provider"
 import { SystemError } from "filesystem-utilities"
@@ -26,22 +26,29 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
         setErrorText("Eine Hintergrundaktion ist bereits am Laufen!")
         return
     }
-    
+
     const sourceProvider = sourceFolder?.getCurrentItemsProvider()
     const targetProvider = targetFolder?.getCurrentItemsProvider()
     const copyProcessor = getCopyProcessor(sourceProvider?.getId(), targetProvider?.getId())
     if (!copyProcessor)
         return
+
+    if (!copyProcessor.canMove() && move)
+        return
+
     const sourceAppendPath = sourceFolder?.getAppendPath()
     const targetAppendPath = sourceFolder?.getAppendPath()
     if (sourceFolder == null || targetFolder == null || sourceAppendPath == null || targetAppendPath == null)
         return
     await Promise.all([
-        sourceFolder.refresh(),
-        targetFolder.refresh()
+        copyProcessor.refresh(sourceFolder),
+        copyProcessor.refresh(targetFolder)
     ])
     let items = makeCopyItems(sourceFolder?.getSelectedItems() as FileItem[], targetFolder.getItems() as FileItem[])
     if (items.length == 0)
+        return
+
+    if (!copyProcessor.canCopyDirectories() && items.findIndex(n => n.isDirectory) != -1)
         return
 
     try {
@@ -52,7 +59,7 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
         const defNo = copyConflicts.length > 0
             && copyConflicts
                 .findIndex(n => (n.time ?? "") < (n.targetTime ?? "")) != -1
-
+ 
         const res = await dialog.show({
             text: copyConflicts.length ? `Einträge beim ${move ? "Verschieben" : "Kopieren"} überschreiben?` : `Möchtest Du ${copyText} ${move ? "verschieben" : "kopieren"}?`,
             slide: sourceFolder.id == ID_LEFT ? Slide.Left : Slide.Right,
@@ -97,6 +104,9 @@ const getCopyProcessor = (sourceId?: string, targetId?: string) =>
 
 abstract class ICopyProcessor {
     abstract copy(sourcePath: string, targetPath: string, items: string[], totalSize: number, move: boolean): Promise<void>
+    refresh(folder: FolderViewHandle) { return folder.refresh() }
+    canMove() { return true }
+    canCopyDirectories() { return true }
 }
 
 class CopyProcessor extends ICopyProcessor {
@@ -106,7 +116,13 @@ class CopyProcessor extends ICopyProcessor {
 }
 
 class RemoteToLocalProcessor extends ICopyProcessor {
-    async copy(sourcePath: string, targetPath: string, items: string[], totalSize: number, move: boolean) {
-        alert("Kopiere vom Handy")
+    copy(sourcePath: string, targetPath: string, items: string[], totalSize: number) {
+        return copyFromRemote(sourcePath, targetPath, items, totalSize)
     }
+
+    async refresh() { }
+
+    canMove() { return false }
+
+    canCopyDirectories() { return false }
 }

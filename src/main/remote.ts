@@ -1,0 +1,61 @@
+import { FileItem, FileItemsResult, SystemError } from "filesystem-utilities"
+import path from 'path'
+import { GetFiles, getIconPath } from "./requests.js"
+
+export const getRemoteFiles = async (input: GetFiles) => {
+    const ip = input.path.substring(7).substringUntil('/')
+    const remotePath = path.normalize('/' + input.path.substring(7).substringAfter('/'))
+    const items = await remoteGetRequest<FileItem[]>(ip, `/getfiles${remotePath}`)
+    const dirCount = items.filter(n => n.isDirectory).length
+    return {
+        items: items
+            .filter(n => input.showHidden || !n.isHidden)
+            .map(n => ({
+            ...n,
+            time: n.time ? new Date(n.time) : undefined,
+            iconPath: getIconPath(n.name, "")
+        })),
+        dirCount,
+        fileCount: items.length - dirCount,
+        path: `remote/${ip}${remotePath}`
+    } as FileItemsResult
+}
+
+export const createRemoteFolder = async (filePath: string, item: string) => {
+    const ip = filePath.substring(7).substringUntil('/')
+    const remotePath = path.normalize(`/${filePath.substring(7).substringAfter('/')}/${item}`)
+    await remotePostRequest(ip, `/createdirectory${remotePath}`)
+}
+
+export const remoteDelete = async (filePath: string, items: string[]) => {
+    const ip = filePath.substring(7).substringUntil('/')
+    const remotePath = path.normalize(`/${filePath.substring(7).substringAfter('/')}/`)
+    for (let n of items) {
+        await remoteDeleteRequest(ip, `/deletefile${remotePath}${n}`)
+    }
+}
+
+export const copyFromRemote = async (sourcePath: string, targetPath: string, items: string[], totalSize: number) => {
+    const ip = sourcePath.substring(7).substringUntil('/')
+    const remotePath = path.normalize(`/${sourcePath.substring(7).substringAfter('/')}`)
+
+    console.log("ip", ip, remotePath)
+
+}
+
+const remoteGetRequest = async <T>(ip: string, path: string) => remoteJsonRequest<T>(ip, path, "GET")
+const remotePostRequest = async (ip: string, path: string) => remoteRequest(ip, path, "POST")
+const remoteDeleteRequest = async (ip: string, path: string) => remoteRequest(ip, path, "DELETE")
+
+const remoteJsonRequest = async <T>(ip: string, path: string, method: string) => {
+    const response = await fetch(`http://${ip}:8080${path}`, { method })
+    const res = await response.json() as (T | SystemError)
+    if ((res as SystemError).error && (res as SystemError).message) {
+        throw (res)
+    }
+    return res as T
+}
+
+const remoteRequest = async (ip: string, path: string, method: string) => {
+    await fetch(`http://${ip}:8080${path}`, { method })
+}

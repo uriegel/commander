@@ -1,6 +1,6 @@
 import {
     addNetworkShare,
-    cancel, copyFile, copyFiles, createFolder, FileItem, getDrives, getFiles, openFile,
+    cancel, copyFile, createFolder, FileItem, getDrives, getFiles, openFile,
     openFileWith, rename, showFileProperties, SystemError, trash
 } from 'filesystem-utilities'
 import { spawn } from "child_process"
@@ -12,10 +12,11 @@ import { ExtendedRenameItem } from '@/renderer/items-provider/items.js'
 import { retrieveVersions } from './version.js'
 import { Semaphore } from "functional-extensions"
 import { closeWindow } from './index.js'
+import { copyFromRemote, createRemoteFolder, getRemoteFiles, remoteDelete } from './remote.js'
 
 export const getItemsSemaphores = new Map<string, Semaphore>()
 
-type GetFiles = {
+export type GetFiles = {
     folderId: string,
     requestId: number,
     path: string,
@@ -135,38 +136,22 @@ export const onRequest = async (request: Request) => {
                 return writeJson({})
             }
             case "json://getremotefiles/": {
-                const getfiles = await request.json() as GetFiles
-                const ip = getfiles.path.substring(7).substringUntil('/')
-                const remotePath = path.normalize('/' + getfiles.path.substring(7).substringAfter('/'))
-                const items = await remoteGetRequest<FileItem[]>(ip, `/getfiles${remotePath}`)
-                const dirCount = items.filter(n => n.isDirectory).length
-                return writeJson({
-                    items: items
-                        .filter(n => getfiles.showHidden || !n.isHidden)
-                        .map(n => ({
-                        ...n,
-                        time: n.time ? new Date(n.time) : undefined,
-                        iconPath: getIconPath(n.name, "")
-                    })),
-                    dirCount,
-                    fileCount: items.length - dirCount,
-                    path: `remote/${ip}${remotePath}`
-                })
+                const res = await getRemoteFiles(await request.json())
+                return writeJson(res)
             }
             case "json://createremotefolder/": {
                 const input = await request.json() as { path: string, item: string }
-                const ip = input.path.substring(7).substringUntil('/')
-                const remotePath = path.normalize(`/${input.path.substring(7).substringAfter('/')}/${input.item}`)
-                await remotePostRequest(ip, `/createdirectory${remotePath}`)
+                await createRemoteFolder(input.path, input.item)
                 return writeJson({})
             }
             case "json://remotedelete/": {
                 const input = await request.json() as { path: string, items: string[] }
-                const ip = input.path.substring(7).substringUntil('/')
-                const remotePath = path.normalize(`/${input.path.substring(7).substringAfter('/')}/`)
-                for (let n of input.items) {
-                    await remoteDeleteRequest(ip, `/deletefile${remotePath}${n}`)
-                }
+                await remoteDelete(input.path, input.items)
+                return writeJson({})
+            }
+            case "json://copyfromremote/": {
+                const input = await request.json() as { sourcePath: string, targetPath: string, items: string[], totalSize: number }
+                copyFromRemote(input.sourcePath, input.targetPath, input.items, input.totalSize)
                 return writeJson({})
             }
             case "json://closewindow/":
@@ -196,7 +181,7 @@ export function writeJson(msg: any) {
     })
 }
 
-function getIconPath(name: string, filePath: string) {
+export function getIconPath(name: string, filePath: string) {
     const ext = getExtension(name)
     return ext.toLowerCase() == ".exe"
         ? process.platform == 'win32' ? path.join(filePath, name) : ext
@@ -245,19 +230,3 @@ const flattenDirectory = (sourcePath: string, targetPath: string, dir: FileItem)
     .bind(n => n.isDirectory ? flattenDirectory(sourcePath, targetPath, n) : [n].toAsyncEnumerable())
 }
 	
-const remoteGetRequest = async <T>(ip: string, path: string) => remoteJsonRequest<T>(ip, path, "GET")
-const remotePostRequest = async (ip: string, path: string) => remoteRequest(ip, path, "POST")
-const remoteDeleteRequest = async (ip: string, path: string) => remoteRequest(ip, path, "DELETE")
-
-const remoteJsonRequest = async <T>(ip: string, path: string, method: string) => {
-    const response = await fetch(`http://${ip}:8080${path}`, { method })
-    const res = await response.json() as (T | SystemError)
-    if ((res as SystemError).error && (res as SystemError).message) {
-        throw (res)
-    }
-    return res as T
-}
-
-const remoteRequest = async (ip: string, path: string, method: string) => {
-    await fetch(`http://${ip}:8080${path}`, { method })
-}

@@ -33,6 +33,8 @@ export const addNetworkShare = (share: string, name: string, passwd: string) => 
 export const getRemoteFiles = (folderId: string, requestId: number, path: string, showHidden?: boolean) => jsonRequest<RequestItem>("getremotefiles", { folderId, requestId, path, showHidden })
 export const createRemoteFolderRequest = (path: string, item: string) => jsonRequest<void>("createremotefolder", { path, item })
 export const remoteDeleteRequest = (path: string, items: string[]) => jsonRequest<void>("remotedelete", { path, items })
+export const copyFromRemote = (sourcePath: string, targetPath: string, items: string[], totalSize: number) => jsonRequest<void>(
+    "copyfromremote", { sourcePath, targetPath, items, totalSize })
 export const closeWindow = () => jsonRequest<void>("closewindow", {})
 
 const jsonRequest = async <T>(cmd: string, msg: unknown) => {

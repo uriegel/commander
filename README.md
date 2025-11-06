@@ -14,12 +14,8 @@ TODO
 * RemoteItemProvider
 
 * copy from remote 
-* copy from remote: manually refresh remote
-* copy from remote: prevent move
 
 * copy to remote 
-* copy to remote: manually refresh remote
-* copy to remote: prevent move
 
 * delete remote with progress
 
