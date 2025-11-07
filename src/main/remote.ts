@@ -12,10 +12,10 @@ export const getRemoteFiles = async (input: GetFiles) => {
         items: items
             .filter(n => input.showHidden || !n.isHidden)
             .map(n => ({
-            ...n,
-            time: n.time ? new Date(n.time) : undefined,
-            iconPath: getIconPath(n.name, "")
-        })),
+                ...n,
+                time: n.time ? new Date(n.time) : undefined,
+                iconPath: getIconPath(n.name, "")
+            })),
         dirCount,
         fileCount: items.length - dirCount,
         path: `remote/${ip}${remotePath}`
@@ -38,31 +38,35 @@ export const remoteDelete = async (filePath: string, items: string[]) => {
 
 export const copyFromRemote = async (sourcePath: string, targetPath: string, items: string[],
         progressCallback: (idx: number, currentBytes: number, totalBytes: number)=>void) => {
-    const ip = sourcePath.substring(7).substringUntil('/')
-    const remotePath = path.normalize(`/${sourcePath.substring(7).substringAfter('/')}/`)
-    let idx = -1
-    for (let n of items) {
-        idx++
-        const response = await fetch(`http://${ip}:8080/downloadfile${remotePath}${n}`)
-        if (!response.ok) 
-            throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`)
+    try {
+        const ip = sourcePath.substring(7).substringUntil('/')
+        const remotePath = path.normalize(`/${sourcePath.substring(7).substringAfter('/')}/`)
+        let idx = -1
+        for (let n of items) {
+            idx++
+            const response = await fetch(`http://${ip}:8080/downloadfile${remotePath}${n}`)
+            if (!response.ok) 
+                throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`)
 
-        const total = Number(response.headers.get("content-length"))
-        const date = Number(response.headers.get("x-file-date"))
-        console.log("datew", date)
-        const reader = response.body?.getReader()
-        let downloaded = 0
-        const fileStream = fs.createWriteStream(`${targetPath}/${n}`)
-        while (true && reader) {
-            const { done, value } = await reader.read()
-            if (done)
-                break
-            downloaded += value.length
-            fileStream.write(value)
-            progressCallback(idx, downloaded, total)
+            const total = Number(response.headers.get("content-length"))
+            const date = Number(response.headers.get("x-file-date"))
+            console.log("datew", date)
+            const reader = response.body?.getReader()
+            let downloaded = 0
+            const fileStream = fs.createWriteStream(`${targetPath}/${n}`)
+            while (true && reader) {
+                const { done, value } = await reader.read()
+                if (done)
+                    break
+                downloaded += value.length
+                fileStream.write(value)
+                progressCallback(idx, downloaded, total)
+            }
+            const mtime = new Date(date)
+            fileStream.close(() => fs.utimesSync(`${targetPath}/${n}`, mtime, mtime))
         }
-        const mtime = new Date(date)
-        fileStream.close(() => fs.utimesSync(`${targetPath}/${n}`, mtime, mtime))
+    } catch (e) {
+        throw makeSystemError(e)
     }
 }
 
@@ -71,14 +75,24 @@ const remotePostRequest = async (ip: string, path: string) => remoteRequest(ip, 
 const remoteDeleteRequest = async (ip: string, path: string) => remoteRequest(ip, path, "DELETE")
 
 const remoteJsonRequest = async <T>(ip: string, path: string, method: string) => {
-    const response = await fetch(`http://${ip}:8080${path}`, { method })
-    const res = await response.json() as (T | SystemError)
-    if ((res as SystemError).error && (res as SystemError).message) {
-        throw (res)
+    try {
+        const response = await fetch(`http://${ip}:8080${path}`, { method })
+        const res = await response.json() as (T | SystemError)
+        if ((res as SystemError).error && (res as SystemError).message) {
+            throw (res)
+        }
+        return res as T
+    } catch (e) {
+        throw makeSystemError(e)
     }
-    return res as T
 }
 
 const remoteRequest = async (ip: string, path: string, method: string) => {
     await fetch(`http://${ip}:8080${path}`, { method })
+}
+
+const makeSystemError = (e: unknown) => {
+    const ete = ((e as TypeError).cause as { code: string }).code
+    console.log(e, ete)
+    return {error: "FILE_EXISTS", message: "Das ist ein Fehler", nativeError: 99 } as SystemError
 }
