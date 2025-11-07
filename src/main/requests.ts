@@ -155,7 +155,9 @@ export const onRequest = async (request: Request) => {
             }
             case "json://copyfromremote/": {
                 const input = await request.json() as { sourcePath: string, targetPath: string, items: string[], totalSize: number }
-                copyFromRemote(input.sourcePath, input.targetPath, input.items, input.totalSize)
+                await withProgress(input.items, input.totalSize, false,
+                    async (progressCallback: (idx: number, currentBytes: number, totalBytes: number) => void) =>
+                        copyFromRemote(input.sourcePath, input.targetPath, input.items, progressCallback))
                 return writeJson({})
             }
             case "json://closewindow/":

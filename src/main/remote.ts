@@ -36,15 +36,20 @@ export const remoteDelete = async (filePath: string, items: string[]) => {
     }
 }
 
-export const copyFromRemote = async (sourcePath: string, targetPath: string, items: string[], totalSize: number) => {
+export const copyFromRemote = async (sourcePath: string, targetPath: string, items: string[],
+        progressCallback: (idx: number, currentBytes: number, totalBytes: number)=>void) => {
     const ip = sourcePath.substring(7).substringUntil('/')
     const remotePath = path.normalize(`/${sourcePath.substring(7).substringAfter('/')}/`)
+    let idx = -1
     for (let n of items) {
+        idx++
         const response = await fetch(`http://${ip}:8080/downloadfile${remotePath}${n}`)
         if (!response.ok) 
             throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`)
 
         const total = Number(response.headers.get("content-length"))
+        const date = Number(response.headers.get("x-file-date"))
+        console.log("datew", date)
         const reader = response.body?.getReader()
         let downloaded = 0
         const fileStream = fs.createWriteStream(`${targetPath}/${n}`)
@@ -54,12 +59,10 @@ export const copyFromRemote = async (sourcePath: string, targetPath: string, ite
                 break
             downloaded += value.length
             fileStream.write(value)
-            if (total) {
-                const percent = ((downloaded / total) * 100).toFixed(2)
-                process.stdout.write(`\rProgress: ${percent}%`)
-            } else
-                process.stdout.write(`\rDownloaded ${downloaded} bytes`)
+            progressCallback(idx, downloaded, total)
         }
+        const mtime = new Date(date)
+        fileStream.close(() => fs.utimesSync(`${targetPath}/${n}`, mtime, mtime))
     }
 }
 

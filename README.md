@@ -13,10 +13,6 @@ sudo apt install libgtk-3-dev
 TODO
 * RemoteItemProvider
 
-* copy from remote 
-* Adapt file time
-* with progress
-
 * copy to remote 
 * Adapt file time
 * with progress
