@@ -15,13 +15,15 @@ TODO
 
 * copy from remote 
 * Adapt file time
+* with progress
 
 * copy to remote 
 * Adapt file time
-
-* delete remote with progress
+* with progress
 
 * Linux Commander completely implemented
+
+* delete remote with progress
 
 * Linux: gpx icon not implemented
 
