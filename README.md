@@ -17,6 +17,11 @@ TODO
 * Adapt file time
 * with progress
 
+* error handling in remote provider:
+    Networkname not found
+    no connection
+    ...
+
 * Linux Commander completely implemented
 
 * delete remote with progress
