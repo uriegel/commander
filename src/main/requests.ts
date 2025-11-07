@@ -1,13 +1,13 @@
 import {
     addNetworkShare,
-    cancel, copyFile, createFolder, FileItem, getDrives, getFiles, openFile,
+    cancel, copyFile, copyFiles, createFolder, FileItem, getDrives, getFiles, openFile,
     openFileWith, rename, showFileProperties, SystemError, trash
 } from 'filesystem-utilities'
 import { spawn } from "child_process"
 import path from 'path'
 import { retrieveExifDatas } from './exif.js'
 import { AsyncEnumerable, createSemaphore } from 'functional-extensions'
-import { copyItems } from './copy.js'
+import { withProgress } from './copy.js'
 import { ExtendedRenameItem } from '@/renderer/items-provider/items.js'
 import { retrieveVersions } from './version.js'
 import { Semaphore } from "functional-extensions"
@@ -83,7 +83,11 @@ export const onRequest = async (request: Request) => {
             }
             case "json://copy/": {
                 const input = await request.json() as { sourcePath: string, targetPath: string, items: string[], totalSize: number, move: boolean }
-                await copyItems(input.sourcePath, input.targetPath, input.items, input.totalSize, input.move)
+                await withProgress(input.items, input.totalSize, input.move,
+                    async (progressCallback: (idx: number, currentBytes: number, totalBytes: number) => void) =>
+                        copyFiles(input.sourcePath, input.targetPath, input.items, {
+                            move: input.move, overwrite: true, cancellation: "copy", progressCallback
+                        }))
                 return writeJson({})
             }
             case "json://delete/": {

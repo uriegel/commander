@@ -1,10 +1,10 @@
 import { filter, interval, merge, Observable, Subscriber, throttle } from "rxjs"
 import { sendEvent } from './index.js'
 import { CopyProgress } from './events.js'
-import { copyFiles } from "filesystem-utilities"
 import { setClosePrevent } from "./close-control.js"
 
-export const copyItems = async (sourcePath: string, targetPath: string, items: string[], totalMaxBytes: number, move: boolean) => {
+export const withProgress = async (items: string[], totalMaxBytes: number, move: boolean,
+    copy: (progressCallback: (idx: number, currentBytes: number, currentMaxBytes: number)=>void)=>Promise<void>) => {
     if (items.length == 0)
         return
     
@@ -46,16 +46,15 @@ export const copyItems = async (sourcePath: string, targetPath: string, items: s
     let copiedBytes = 0
     subscribers.values().forEach(s => s.next({ idx: 0, currentBytes: 0, currentMaxBytes: 0, totalBytes: 0, totalMaxBytes, move, items }))
     try {
-        await copyFiles(sourcePath, targetPath, items, {
-            move, overwrite: true, cancellation: "copy", progressCallback: (idx: number, currentBytes: number, currentMaxBytes: number) => {
-                if (currentIndex != idx) {
-                    copiedBytes = previousCopiedBytes
-                    previousCopiedBytes += currentMaxBytes
-                    currentIndex = idx
-                }
-                subscribers.values().forEach(s => s.next({ idx, currentBytes, currentMaxBytes, totalBytes: copiedBytes + currentBytes, totalMaxBytes }))
+        await copy((idx: number, currentBytes: number, currentMaxBytes: number) => {
+            if (currentIndex != idx) {
+                copiedBytes = previousCopiedBytes
+                previousCopiedBytes += currentMaxBytes
+                currentIndex = idx
             }
+            subscribers.values().forEach(s => s.next({ idx, currentBytes, currentMaxBytes, totalBytes: copiedBytes + currentBytes, totalMaxBytes }))
         })
+        
         sendEvent({ cmd: 'CopyStop', msg: {} })
         setClosePrevent(false)
     } catch (e) {
@@ -64,3 +63,4 @@ export const copyItems = async (sourcePath: string, targetPath: string, items: s
         throw e
     }
 }
+
