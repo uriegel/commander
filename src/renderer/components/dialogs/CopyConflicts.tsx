@@ -30,9 +30,9 @@ const CopyConflicts = ({ props }: ExtensionProps) => {
 			</div>),
 			(<div className=
 				{
-					(time || 0) > (targetTime || 0)
+					(time?.substring(0, 16) || 0) > (targetTime?.substring(0, 16) || 0)
 						? "overwrite"
-						: (time || 0) < (targetTime || 0)
+						: (time?.substring(0, 16) || 0) < (targetTime?.substring(0, 16) || 0)
 							? "notOverwrite"
 							: "equal"
 				}>

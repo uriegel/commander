@@ -11,12 +11,6 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* copy to remote 
-* cancel copy
-
-* copy from remote 
-* cancel copy
-
 * error handling in remote provider:
     Networkname not found
     no connection
@@ -24,7 +18,11 @@ TODO
 
 * Linux Commander completely implemented
 
-* remote file time has ms, file time not
+* copy to remote 
+* cancel copy
+
+* copy from remote 
+* cancel copy
 
 * copy: geschätzte Restdauer: Nan:Nan
 * copy: stop progress has to stop time counter and close Dialog

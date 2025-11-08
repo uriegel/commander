@@ -56,9 +56,10 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
         if (!move && items.findIndex(n => n.isDirectory) != -1)
             items = await flattenItems(sourceFolder.getPath(), targetFolder.getPath(), items)
         const copyConflicts = items.filter(n => n.targetTime)
+
         const defNo = copyConflicts.length > 0
             && copyConflicts
-                .findIndex(n => (n.time ?? "") < (n.targetTime ?? "")) != -1
+                .findIndex(n => (n.time?.substring(0, 16) ?? "") < (n.targetTime?.substring(0, 16) ?? "")) != -1
  
         const res = await dialog.show({
             text: copyConflicts.length ? `Einträge beim ${move ? "Verschieben" : "Kopieren"} überschreiben?` : `Möchtest Du ${copyText} ${move ? "verschieben" : "kopieren"}?`,
