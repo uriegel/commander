@@ -16,8 +16,6 @@ TODO
     no connection
     ...
 
-* Linux Commander completely implemented
-
 * copy to remote 
 * cancel copy
 
