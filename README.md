@@ -11,11 +11,6 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* error handling in remote provider:
-    Networkname not found
-    no connection
-    ...
-
 * copy to remote 
 * cancel copy
 

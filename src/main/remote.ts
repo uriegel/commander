@@ -133,7 +133,17 @@ const remoteRequest = async (ip: string, path: string, method: string) => {
 const makeSystemError = (e: unknown) => {
     const ete = ((e as TypeError).cause as { code: string })?.code
     if (ete)
-        return { error: "FILE_EXISTS", message: "Das ist ein Fehler", nativeError: 99 } as SystemError
+        return {
+            error: "UNKNOWN",
+            message: ete == "ECONNREFUSED"
+                ? "Keine Verbindung zum entfernten Gerät"
+                : ete == "ENETUNREACH"
+                ? "Unbekanntes Netzwerk"
+                : ete == "EHOSTUNREACH"
+                ? "Unbekanntes Gerät"
+                : "Fehler aufgetreten",
+            nativeError: 99
+        } as SystemError
     else
         return { error: "UNKNOWN", message: (e as any).message, nativeError: -1 } as SystemError
 }
