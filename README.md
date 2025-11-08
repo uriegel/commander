@@ -29,6 +29,8 @@ TODO
 * copy: geschätzte Restdauer: Nan:Nan
 * copy: stop progress has to stop time counter and close Dialog
 
+* copy dir to remote: check if dir is existent
+
 * delete remote with progress
 
 * Linux: gpx icon not implemented
