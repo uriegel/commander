@@ -35,6 +35,8 @@ export const createRemoteFolderRequest = (path: string, item: string) => jsonReq
 export const remoteDeleteRequest = (path: string, items: string[]) => jsonRequest<void>("remotedelete", { path, items })
 export const copyFromRemote = (sourcePath: string, targetPath: string, items: string[], totalSize: number) => jsonRequest<void>(
     "copyfromremote", { sourcePath, targetPath, items, totalSize })
+export const copyToRemote = (sourcePath: string, targetPath: string, items: string[], totalSize: number) => jsonRequest<void>(
+    "copytoremote", { sourcePath, targetPath, items, totalSize })
 export const closeWindow = () => jsonRequest<void>("closewindow", {})
 
 const jsonRequest = async <T>(cmd: string, msg: unknown) => {

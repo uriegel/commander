@@ -12,7 +12,7 @@ import { ExtendedRenameItem } from '@/renderer/items-provider/items.js'
 import { retrieveVersions } from './version.js'
 import { Semaphore } from "functional-extensions"
 import { closeWindow } from './index.js'
-import { copyFromRemote, createRemoteFolder, getRemoteFiles, remoteDelete } from './remote.js'
+import { copyFromRemote, copyToRemote, createRemoteFolder, getRemoteFiles, remoteDelete } from './remote.js'
 
 export const getItemsSemaphores = new Map<string, Semaphore>()
 
@@ -158,6 +158,13 @@ export const onRequest = async (request: Request) => {
                 await withProgress(input.items, input.totalSize, false,
                     async (progressCallback: (idx: number, currentBytes: number, totalBytes: number) => void) =>
                         copyFromRemote(input.sourcePath, input.targetPath, input.items, progressCallback))
+                return writeJson({})
+            }
+            case "json://copytoremote/": {
+                const input = await request.json() as { sourcePath: string, targetPath: string, items: string[], totalSize: number }
+                await withProgress(input.items, input.totalSize, false,
+                    async (progressCallback: (idx: number, currentBytes: number, totalBytes: number) => void) =>
+                        copyToRemote(input.sourcePath, input.targetPath, input.items, progressCallback))
                 return writeJson({})
             }
             case "json://closewindow/":

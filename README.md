@@ -11,11 +11,11 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* RemoteItemProvider
-
 * copy to remote 
-* Adapt file time
-* with progress
+* cancel copy
+
+* copy from remote 
+* cancel copy
 
 * error handling in remote provider:
     Networkname not found
@@ -23,6 +23,11 @@ TODO
     ...
 
 * Linux Commander completely implemented
+
+* remote file time has ms, file time not
+
+* copy: geschätzte Restdauer: Nan:Nan
+* copy: stop progress has to stop time counter and close Dialog
 
 * delete remote with progress
 

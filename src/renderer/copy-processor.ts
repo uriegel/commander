@@ -1,7 +1,7 @@
 import { DialogHandle, ResultType, Slide } from "web-dialog-react"
 import { FolderViewHandle } from "./components/FolderView"
 import { ID_LEFT } from "./components/Commander"
-import { copy, copyFromRemote, flattenItems } from "./requests/requests"
+import { copy, copyFromRemote, copyToRemote, flattenItems } from "./requests/requests"
 import { FILE } from "./items-provider/file-item-provider"
 import { getSelectedItemsText } from "./items-provider/provider"
 import { SystemError } from "filesystem-utilities"
@@ -100,6 +100,8 @@ const getCopyProcessor = (sourceId?: string, targetId?: string) =>
     ? new CopyProcessor()
     : sourceId == REMOTE && targetId == FILE
     ? new RemoteToLocalProcessor() as ICopyProcessor
+    : sourceId == FILE && targetId == REMOTE
+    ? new LocalToRemoteProcessor() as ICopyProcessor
     : undefined
 
 abstract class ICopyProcessor {
@@ -125,4 +127,16 @@ class RemoteToLocalProcessor extends ICopyProcessor {
     canMove() { return false }
 
     canCopyDirectories() { return false }
+}
+
+class LocalToRemoteProcessor extends ICopyProcessor {
+    copy(sourcePath: string, targetPath: string, items: string[], totalSize: number) {
+        return copyToRemote(sourcePath, targetPath, items, totalSize)
+    }
+
+    async refresh() { }
+
+    canMove() { return false }
+
+    canCopyDirectories() { return true }
 }

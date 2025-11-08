@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import { Transform } from "stream"
 import { FileItem, FileItemsResult, SystemError } from 'filesystem-utilities'
 import { GetFiles, getIconPath } from './requests.js'
 
@@ -50,7 +51,6 @@ export const copyFromRemote = async (sourcePath: string, targetPath: string, ite
 
             const total = Number(response.headers.get("content-length"))
             const date = Number(response.headers.get("x-file-date"))
-            console.log("datew", date)
             const reader = response.body?.getReader()
             let downloaded = 0
             const fileStream = fs.createWriteStream(`${targetPath}/${n}`)
@@ -64,6 +64,45 @@ export const copyFromRemote = async (sourcePath: string, targetPath: string, ite
             }
             const mtime = new Date(date)
             fileStream.close(() => fs.utimesSync(`${targetPath}/${n}`, mtime, mtime))
+        }
+    } catch (e) {
+        throw makeSystemError(e)
+    }
+}
+
+export const copyToRemote = async (sourcePath: string, targetPath: string, items: string[],
+        progressCallback: (idx: number, currentBytes: number, totalBytes: number)=>void) => {
+    try {
+        const ip = targetPath.substring(7).substringUntil('/')
+        const remotePath = path.normalize(`/${targetPath.substring(7).substringAfter('/')}/`)
+        let idx = -1
+        for (let n of items) {
+            idx++
+            const stat = await fs.promises.stat(`${sourcePath}/${n}`)
+            const total = stat.size
+            let uploaded = 0
+            
+            const fileStream = fs.createReadStream(`${sourcePath}/${n}`)
+            const progressStream = new Transform({
+                transform(chunk, _, callback) {
+                    uploaded += chunk.length
+                    progressCallback(idx, uploaded, total)                    
+                    callback(null, chunk)
+                }
+            })
+            fileStream.pipe(progressStream)
+
+            const response = await fetch(`http://${ip}:8080/putfile${remotePath}${n}`, {
+                method: "PUT",
+                body: progressStream as unknown as BodyInit,
+                headers: {
+                    "Content-Length": total.toString(),
+                    "x-file-date": Math.floor(stat.mtimeMs).toString()
+                },
+                duplex: "half"
+            } as RequestInit & { duplex: "half" })
+            if (!response.ok) 
+                throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`)
         }
     } catch (e) {
         throw makeSystemError(e)
@@ -92,7 +131,9 @@ const remoteRequest = async (ip: string, path: string, method: string) => {
 }
 
 const makeSystemError = (e: unknown) => {
-    const ete = ((e as TypeError).cause as { code: string }).code
-    console.log(e, ete)
-    return {error: "FILE_EXISTS", message: "Das ist ein Fehler", nativeError: 99 } as SystemError
+    const ete = ((e as TypeError).cause as { code: string })?.code
+    if (ete)
+        return { error: "FILE_EXISTS", message: "Das ist ein Fehler", nativeError: 99 } as SystemError
+    else
+        return { error: "UNKNOWN", message: (e as any).message, nativeError: -1 } as SystemError
 }
