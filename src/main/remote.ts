@@ -40,11 +40,15 @@ export const remoteDelete = async (filePath: string, items: string[]) => {
 export const copyFromRemote = async (sourcePath: string, targetPath: string, items: string[],
         progressCallback: (idx: number, currentBytes: number, totalBytes: number)=>void) => {
     try {
+        remoteWorking = true
         const ip = sourcePath.substring(7).substringUntil('/')
         const remotePath = path.normalize(`/${sourcePath.substring(7).substringAfter('/')}/`)
         let idx = -1
         for (let n of items) {
             idx++
+            if (!remoteWorking)
+                throw { error: "CANCELLED", message: "Aktion wurde abgebrochen", nativeError: -1 } as SystemError
+
             const response = await fetch(`http://${ip}:8080/downloadfile${remotePath}${n}`)
             if (!response.ok) 
                 throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`)
@@ -68,11 +72,15 @@ export const copyFromRemote = async (sourcePath: string, targetPath: string, ite
     } catch (e) {
         throw makeSystemError(e)
     }
+    finally {
+        remoteWorking = false
+    }
 }
 
 export const copyToRemote = async (sourcePath: string, targetPath: string, items: string[],
         progressCallback: (idx: number, currentBytes: number, totalBytes: number)=>void) => {
     try {
+        remoteWorking = true
         const ip = targetPath.substring(7).substringUntil('/')
         const remotePath = path.normalize(`/${targetPath.substring(7).substringAfter('/')}/`)
         let idx = -1
@@ -82,6 +90,9 @@ export const copyToRemote = async (sourcePath: string, targetPath: string, items
             const total = stat.size
             let uploaded = 0
             
+            if (!remoteWorking)
+                throw { error: "CANCELLED", message: "Aktion wurde abgebrochen", nativeError: -1 } as SystemError
+
             const fileStream = fs.createReadStream(`${sourcePath}/${n}`)
             const progressStream = new Transform({
                 transform(chunk, _, callback) {
@@ -107,7 +118,12 @@ export const copyToRemote = async (sourcePath: string, targetPath: string, items
     } catch (e) {
         throw makeSystemError(e)
     }
+    finally {
+        remoteWorking = false
+    }
 }
+
+export const remoteCancel = () => remoteWorking = false
 
 const remoteGetRequest = async <T>(ip: string, path: string) => remoteJsonRequest<T>(ip, path, "GET")
 const remotePostRequest = async (ip: string, path: string) => remoteRequest(ip, path, "POST")
@@ -138,12 +154,14 @@ const makeSystemError = (e: unknown) => {
             message: ete == "ECONNREFUSED"
                 ? "Keine Verbindung zum entfernten Gerät"
                 : ete == "ENETUNREACH"
-                ? "Unbekanntes Netzwerk"
-                : ete == "EHOSTUNREACH"
-                ? "Unbekanntes Gerät"
-                : "Fehler aufgetreten",
+                    ? "Unbekanntes Netzwerk"
+                    : ete == "EHOSTUNREACH"
+                        ? "Unbekanntes Gerät"
+                        : "Fehler aufgetreten",
             nativeError: 99
         } as SystemError
     else
         return { error: "UNKNOWN", message: (e as any).message, nativeError: -1 } as SystemError
 }
+
+let remoteWorking = false

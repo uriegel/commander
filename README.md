@@ -11,12 +11,6 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* copy to remote 
-* cancel copy
-
-* copy from remote 
-* cancel copy
-
 * copy: geschätzte Restdauer: Nan:Nan
 * copy: stop progress has to stop time counter and close Dialog
 
@@ -32,6 +26,7 @@ TODO
 
 * Windows Services (perhaps elevatable sub process)
 
+* Theming: selected color in table view lightgray
 * Theming: adapt gray color from KDE/Gtk3 (/Neon/Ubuntu/Fedora)
 * Theming: Unify Titlebar, path input and table columns, margins like Gtk4/Adwaita
 * Theming: SVG folder Icons per Theme

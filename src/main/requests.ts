@@ -12,7 +12,7 @@ import { ExtendedRenameItem } from '@/renderer/items-provider/items.js'
 import { retrieveVersions } from './version.js'
 import { Semaphore } from "functional-extensions"
 import { closeWindow } from './index.js'
-import { copyFromRemote, copyToRemote, createRemoteFolder, getRemoteFiles, remoteDelete } from './remote.js'
+import { copyFromRemote, copyToRemote, createRemoteFolder, getRemoteFiles, remoteCancel, remoteDelete } from './remote.js'
 
 export const getItemsSemaphores = new Map<string, Semaphore>()
 
@@ -65,6 +65,7 @@ export const onRequest = async (request: Request) => {
                 return writeJson({})
             case "json://cancelcopy/":
                 cancel("copy")
+                remoteCancel()
                 return writeJson({})
             case "json://mount/": {
                 const dev = await request.json() as { dev: string }
