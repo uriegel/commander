@@ -227,7 +227,9 @@ const flattenDirectory = (sourcePath: string, targetPath: string, dir: FileItem)
         const items = await getFiles(directory, true)        
         let targetItems: FileItem[]| undefined
         try {
-            targetItems = (await getFiles(path.join(targetPath, dir.name), true)).items
+            targetItems = targetPath.startsWith("remote")
+                ? (await getRemoteFiles({ folderId: "", requestId: 0, path: path.join(targetPath, dir.name), showHidden: true })).items
+                : (await getFiles(path.join(targetPath, dir.name), true)).items
         } catch {}
         const targetItemsDictionary = targetItems ? new Map(targetItems.map(n => [path.join(dir.name, n.name), n])) : undefined
         return items
