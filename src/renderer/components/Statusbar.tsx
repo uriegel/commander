@@ -44,6 +44,8 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
 
     const startProgressDialog = useCallback(() => {
         const start = async () => {
+            if (progressFinished)
+                return
             dialogOpen.current = true
             const res = await dialog.show({
                 text: `Fortschritt beim ${progressMove ? "Verschieben" : "Kopieren"} (${progressTotalMaxBytes.byteCountToString()})`,
@@ -59,7 +61,7 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
         }
 
         start()
-    }, [dialog, progressMove, progressTotalMaxBytes])    
+    }, [dialog, progressMove, progressTotalMaxBytes, progressFinished])    
 
     useEffect(() => {
         const sub = copyProgressEvents$.subscribe(msg => {
@@ -105,8 +107,6 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
                                             ? "status"
                                             : null]
         .join(' ')
-    
-    // onClick={startProgressDialog}
     
     return (
         <div className={getClasses()}>
