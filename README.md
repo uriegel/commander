@@ -16,7 +16,7 @@ TODO
 
 * copy dir to remote: check if dir is existent
 
-* delete remote with progress
+* delete (remote) with progress
 
 * Linux: gpx icon not implemented
 
