@@ -11,7 +11,6 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* copy: geschätzte Restdauer: Nan:Nan
 * copy: stop progress has to stop time counter and close Dialog
 
 * copy dir to remote: check if dir is existent
@@ -32,7 +31,7 @@ TODO
 * Theming: SVG folder Icons per Theme
 * Theming: <tr> with padding 
 
-* F11
+* F11 Full screen
 
 * menubar-react: Insert shortcut Ins and Einfg
 
@@ -43,3 +42,4 @@ TODO
 
 * alt + enter (KDE with QT program)
 
+* Initial scrollbar in table view out of range

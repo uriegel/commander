@@ -63,7 +63,7 @@ const CopyProgressPart = ({ props }: ExtensionProps) => {
         const cpp = props as CopyProgressProps
         timerHandle.current = setInterval(() => {
             setCurrentTime(Math.floor((new Date().getTime() - cpp.progressStartTime.getTime()) / 1000))
-            setRemainingTime(Math.floor(currentTime * totalMax / totalValue) - currentTime)
+            setRemainingTime(totalValue ? Math.floor(currentTime * totalMax / totalValue) - currentTime : 0)
 // eslint-disable-next-line @typescript-eslint/no-explicit-any            
         }) as any
         return () => clearInterval(timerHandle.current)
