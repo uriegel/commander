@@ -15,7 +15,7 @@ export type CopyProgressProps = {
     progressStartTime: Date
 }
 
-const CopyProgressPart = ({ props }: ExtensionProps) => {
+const CopyProgressPart = ({ props, close }: ExtensionProps) => {
     const [totalCount, setTotalCount] = useState(0)
     const [currentCount, setCurrentCount] = useState(0)
     const [currentTime, setCurrentTime] = useState(0)
@@ -70,7 +70,10 @@ const CopyProgressPart = ({ props }: ExtensionProps) => {
     }, [props, totalMax, totalValue, currentTime])
 
     useEffect(() => {
-        const sub = copyStopEvents$.subscribe(() => clearInterval(timerHandle.current))
+        const sub = copyStopEvents$.subscribe(() => {
+            clearInterval(timerHandle.current)
+            setTimeout(close, 5000)
+        })
         return () => sub.unsubscribe()
     })
 

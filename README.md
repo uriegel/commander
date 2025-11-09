@@ -11,8 +11,6 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* copy: stop progress and cancel has to close Dialog
-
 * copy dir to remote: check if dir is existent
 
 * delete (remote) with progress
