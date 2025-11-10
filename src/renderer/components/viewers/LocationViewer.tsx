@@ -1,9 +1,26 @@
 import 'leaflet/dist/leaflet.css'
+import markerIcon from 'leaflet/dist/images/marker-icon.png'
+import markerIcon2x from 'leaflet/dist/images/marker-icon.png'
+import markerShadow from 'leaflet/dist/images/marker-shadow.png'
+import L from 'leaflet'
 import './LocationViewer.css'
 import useResizeObserver from '@react-hook/resize-observer'
 import { Map as LMap } from "leaflet"
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
 import { useEffect, useRef } from 'react'
+
+export const DefaultIcon = L.icon({
+    iconRetinaUrl: markerIcon2x,
+    iconUrl: markerIcon,
+    shadowUrl: markerShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41],
+})
+
+// Replace the default icon globally
+L.Marker.prototype.options.icon = DefaultIcon
 
 type LocationViewerProps = {
     latitude: number
