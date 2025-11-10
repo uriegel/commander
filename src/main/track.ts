@@ -12,7 +12,7 @@ export function registerGetTrackProtocol() {
             return writeJson(track)
         } catch (err) {
             console.error('Failed to load icon', err)
-            return new Response('Icon not found', { status: 404 })
+            return new Response('Track not found', { status: 404 })
         }
     })
 }

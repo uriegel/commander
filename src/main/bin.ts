@@ -20,7 +20,7 @@ export function registerGetBinProtocol() {
             })
         } catch (err) {
             console.error('Failed to load icon', err)
-            return new Response('Icon not found', { status: 404 })
+            return new Response('File not found', { status: 404 })
         }
     })
 }

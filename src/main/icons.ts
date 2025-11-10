@@ -9,8 +9,10 @@ export function registerGetIconProtocol() {
             ? await getIconFromName(iconName) //await readFile((await runCmd(`python3 ${iconFromNameScript} ${iconName}`)).trimEnd()) 
             : await getIcon(decodeURIComponent(iconName))
 
-        if (data.length == 0)
+        if (data.length == 0) {
             console.log("icon not found", iconName)
+            return new Response('Icon not found', { status: 404 })
+        }
 
         // Optional: you can store last-modified info in memory or on disk
         // const lastModified = getLastModifiedTimeForIcon(iconName)

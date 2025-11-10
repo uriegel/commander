@@ -41,7 +41,7 @@ export function registerGetMediaProtocol() {
             }
         } catch (err) {
             console.error('Failed to load icon', err)
-            return new Response('Icon not found', { status: 404 })
+            return new Response('Media file not found', { status: 404 })
         }
     })
 }
