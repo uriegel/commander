@@ -39,3 +39,6 @@ TODO
 * alt + enter (KDE with QT program)
 
 * Initial scrollbar in table view out of range
+
+// Drag n Drop:
+Commander Branch Neon-Rust folder.ts

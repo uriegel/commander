@@ -7,6 +7,7 @@ declare global {
         },
         env: {
             platform: string;
+            getDropPath: (file: File) => string
         }
     }
 }

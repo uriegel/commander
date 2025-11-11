@@ -483,10 +483,24 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const showProperties = () => reqOnEnter(getSelectedItems()[0].name, path, undefined, true)
     const openWith = () => reqOnEnter(getSelectedItems()[0].name, path, true)
 
+    const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        console.log("dropped", e)
+        console.log(e.dataTransfer.files, Array.from(e.dataTransfer.files).map(window.env.getDropPath))
+        e.preventDefault()
+        e.stopPropagation()
+    }
+
+    const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        console.log("on drag over")
+        e.dataTransfer.dropEffect = "copy"
+        e.preventDefault()
+        e.stopPropagation()
+    }
+
     return (
         <div className="folder" onFocus={onFocusChanged}>
             <input ref={input} className="pathInput" spellCheck={false} value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
-            <div className="tableContainer" onKeyDown={onKeyDown} >
+            <div className="tableContainer" onKeyDown={onKeyDown} onDragOver={onDragOver} onDrop={onDrop} >
                 <VirtualTable ref={virtualTable} items={items} onColumnWidths={onColumnWidths} onEnter={onEnter} onPosition={onPositionChanged} onSort={onSort} onItemClick={onItemClick} />
             </div>
             <RestrictionView items={items} ref={restrictionView} />
