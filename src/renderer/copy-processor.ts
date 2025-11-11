@@ -88,7 +88,7 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
     }
 }
 
-export const onFilesDrop = async (path: string, files: FileItem[], targetFolder: FolderViewHandle | null, 
+export const onFilesDrop = async (fileList: FileList, targetFolder: FolderViewHandle | null, 
         move: boolean, dialog: DialogHandle, setErrorText: (txt: string) => void, backgroundAction: boolean) => {
     if (!canCopy(backgroundAction)) {
         setErrorText("Eine Hintergrundaktion ist bereits am Laufen!")
@@ -109,6 +109,18 @@ export const onFilesDrop = async (path: string, files: FileItem[], targetFolder:
     if (targetFolder == null || sourceAppendPath == null || targetAppendPath == null)
         return
     await copyProcessor.refresh(targetFolder)
+
+    const path = window.env.getDropPath(fileList[0]).getParentPath()
+    console.log("Jetz", window.env.getDropPath(fileList[0]), path,     (fileList[0] as any).webkitGetAsEntry())
+    const files = Array.from(fileList).map(f => ({
+        name: f.name,
+        iconPath: ".txt", // TODO getIconPath from main
+        size: f.size,
+        isDirectory: false, // TODO from main
+        time: (new Date(f.lastModified)).toISOString()
+    } as FileItem))
+    // TODO call extendCopyItems via main and add iconPath and isDirectory
+
     let items = makeCopyItems(files, targetFolder.getItems() as FileItem[])
     if (items.length == 0)
         return

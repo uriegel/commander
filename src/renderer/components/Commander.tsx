@@ -12,7 +12,7 @@ import { Item } from "../items-provider/items"
 import { DialogContext } from "web-dialog-react"
 import Statusbar from "./Statusbar"
 import './viewers/viewers.css'
-import { copyItems } from "../copy-processor"
+import { copyItems, onFilesDrop } from "../copy-processor"
 import MenuView from "@platform/MenuView"
 
 export const ID_LEFT = "left"
@@ -165,13 +165,18 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 		if (id == activeFolderIdRef.current)
 			setItemCount(count)
 	}
+
+	const filesDrop = (files: FileList, move: boolean, folderView: FolderViewHandle|null) => 
+        onFilesDrop(files, folderView, move, dialog, setErrorText, backgroundAction.current)
 	
 	const FolderLeft = () => (
-		<FolderView ref={folderLeft} id={ID_LEFT} onFocus={onFocusLeft} onItemChanged={onItemChanged} onEnter= {onEnter}
+		<FolderView ref={folderLeft} id={ID_LEFT} onFocus={onFocusLeft} onItemChanged={onItemChanged} onEnter={onEnter}
+			onFilesDrop={(files, move) => filesDrop(files, move, folderLeft.current)}
 			onItemsChanged={setActiveItemCount} showHidden={showHidden} setStatusText={setStatusTextLeft} setErrorText={err => setErrorText(err||null)} />
 	)
 	const FolderRight = () => (
-		<FolderView ref={folderRight} id={ID_RIGHT} onFocus={onFocusRight} onItemChanged={onItemChanged} onEnter= {onEnter}
+		<FolderView ref={folderRight} id={ID_RIGHT} onFocus={onFocusRight} onItemChanged={onItemChanged} onEnter={onEnter}
+			onFilesDrop={(files, move) => filesDrop(files, move, folderRight.current)}
 			onItemsChanged={setActiveItemCount} showHidden={showHidden} setStatusText={setStatusTextRight} setErrorText={err => setErrorText(err||null)} />
 	)
 

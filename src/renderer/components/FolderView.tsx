@@ -51,10 +51,11 @@ interface FolderViewProp {
     onEnter: (item: Item) => void
     setStatusText: (text?: string) => void
     setErrorText: (text?: string) => void
+    onFilesDrop: (fileList: FileList, move: boolean)=>void
 }
 
 const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
-    { id, showHidden, onFocus, onEnter, onItemChanged, onItemsChanged, setErrorText, setStatusText },
+    { id, showHidden, onFocus, onEnter, onItemChanged, onItemsChanged, setErrorText, setStatusText, onFilesDrop },
     ref) => {
 
     const input = useRef<HTMLInputElement | null>(null)
@@ -485,17 +486,16 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         // TODO only when targetProvider is FILE or REMOTE
-        e.dataTransfer.dropEffect = "copy"
+        // TODO move or copy console.log(e.getModifierState("Shift"), e.shiftKey)
+        e.dataTransfer.dropEffect = e.getModifierState("Shift") ? "move" : "copy"
         e.preventDefault()
         e.stopPropagation()
     }
 
     const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
-
-
-        // TODO call copyProvider.onFilesDrop
-        console.log("dropped", e)
-        console.log(e.dataTransfer.files, Array.from(e.dataTransfer.files).map(window.env.getDropPath))
+        if (e.dataTransfer.dropEffect != "move" && e.dataTransfer.dropEffect != "copy")
+            return
+        onFilesDrop(e.dataTransfer.files, e.dataTransfer.dropEffect == "move")
         e.preventDefault()
         e.stopPropagation()
     }
