@@ -11,13 +11,12 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
-* Windows Drop files
-
 * delete (remote) with progress
 
 * Linux: gpx icon not implemented
 
-* Windows Remote Provider
+* Windows Remote root has /
+* Windows Remote copy progress
 * Windows Versions in copy dialog: resolve versions in CopyConflictsDialog, adapt button, no default button when not ready
 * Switch to dark mode and vice versa: adapt windows color
 

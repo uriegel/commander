@@ -13,6 +13,7 @@ import { cancelExifs, getItemsFinished, onEnter as reqOnEnter } from "../request
 import { EXTENDED_RENAME, showExtendedRename } from "../items-provider/extended-rename"
 import { DialogContext } from "web-dialog-react"
 import { FILE } from "../items-provider/file-item-provider"
+import { REMOTE } from "../items-provider/remote-provider"
 
 export type FolderViewHandle = {
     id: string
@@ -485,9 +486,9 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const openWith = () => reqOnEnter(getSelectedItems()[0].name, path, true)
 
     const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-        // TODO only when targetProvider is FILE or REMOTE
-        // TODO move or copy console.log(e.getModifierState("Shift"), e.shiftKey)
-        e.dataTransfer.dropEffect = e.getModifierState("Shift") ? "move" : "copy"
+        if (itemsProvider.current?.getId() != FILE && itemsProvider.current?.getId() != REMOTE)
+            return
+        e.dataTransfer.dropEffect = e.shiftKey ? "move" : "copy"
         e.preventDefault()
         e.stopPropagation()
     }

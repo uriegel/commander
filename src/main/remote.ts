@@ -6,7 +6,7 @@ import { GetFiles, getIconPath } from './requests.js'
 
 export const getRemoteFiles = async (input: GetFiles) => {
     const ip = input.path.substring(7).substringUntil('/')
-    const remotePath = path.normalize('/' + input.path.substring(7).substringAfter('/'))
+    const remotePath = path.normalize('/' + input.path.substring(7).substringAfter('/')).replaceAll("\\", "/")
     const items = await remoteGetRequest<FileItem[]>(ip, `/getfiles${remotePath}`)
     const dirCount = items.filter(n => n.isDirectory).length
     return {
@@ -25,13 +25,13 @@ export const getRemoteFiles = async (input: GetFiles) => {
 
 export const createRemoteFolder = async (filePath: string, item: string) => {
     const ip = filePath.substring(7).substringUntil('/')
-    const remotePath = path.normalize(`/${filePath.substring(7).substringAfter('/')}/${item}`)
+    const remotePath = path.normalize(`/${filePath.substring(7).substringAfter('/')}/${item}`).replaceAll("\\", "/")
     await remotePostRequest(ip, `/createdirectory${remotePath}`)
 }
 
 export const remoteDelete = async (filePath: string, items: string[]) => {
     const ip = filePath.substring(7).substringUntil('/')
-    const remotePath = path.normalize(`/${filePath.substring(7).substringAfter('/')}/`)
+    const remotePath = path.normalize(`/${filePath.substring(7).substringAfter('/')}/`).replaceAll("\\", "/")
     for (let n of items) {
         await remoteDeleteRequest(ip, `/deletefile${remotePath}${n}`)
     }
@@ -42,7 +42,7 @@ export const copyFromRemote = async (sourcePath: string, targetPath: string, ite
     try {
         remoteWorking = true
         const ip = sourcePath.substring(7).substringUntil('/')
-        const remotePath = path.normalize(`/${sourcePath.substring(7).substringAfter('/')}/`)
+        const remotePath = path.normalize(`/${sourcePath.substring(7).substringAfter('/')}/`).replaceAll("\\", "/")
         let idx = -1
         for (let n of items) {
             idx++
@@ -82,7 +82,7 @@ export const copyToRemote = async (sourcePath: string, targetPath: string, items
     try {
         remoteWorking = true
         const ip = targetPath.substring(7).substringUntil('/')
-        const remotePath = path.normalize(`/${targetPath.substring(7).substringAfter('/')}/`)
+        const remotePath = path.normalize(`/${targetPath.substring(7).substringAfter('/')}/`).replaceAll("\\", "/")
         let idx = -1
         for (let n of items) {
             idx++
