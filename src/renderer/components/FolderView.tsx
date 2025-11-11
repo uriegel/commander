@@ -483,16 +483,19 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const showProperties = () => reqOnEnter(getSelectedItems()[0].name, path, undefined, true)
     const openWith = () => reqOnEnter(getSelectedItems()[0].name, path, true)
 
-    const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
-        console.log("dropped", e)
-        console.log(e.dataTransfer.files, Array.from(e.dataTransfer.files).map(window.env.getDropPath))
+    const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        // TODO only when targetProvider is FILE or REMOTE
+        e.dataTransfer.dropEffect = "copy"
         e.preventDefault()
         e.stopPropagation()
     }
 
-    const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-        console.log("on drag over")
-        e.dataTransfer.dropEffect = "copy"
+    const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
+
+
+        // TODO call copyProvider.onFilesDrop
+        console.log("dropped", e)
+        console.log(e.dataTransfer.files, Array.from(e.dataTransfer.files).map(window.env.getDropPath))
         e.preventDefault()
         e.stopPropagation()
     }
