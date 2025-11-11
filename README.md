@@ -11,6 +11,8 @@ sudo apt install libgtk-3-dev
 ```
 
 TODO
+* Windows Drop files
+
 * delete (remote) with progress
 
 * Linux: gpx icon not implemented

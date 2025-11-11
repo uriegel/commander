@@ -4,6 +4,7 @@ import {
     openFileWith, rename, showFileProperties, SystemError, trash
 } from 'filesystem-utilities'
 import { spawn } from "child_process"
+import fs from 'fs'
 import path from 'path'
 import { retrieveExifDatas } from './exif.js'
 import { AsyncEnumerable, createSemaphore } from 'functional-extensions'
@@ -130,6 +131,19 @@ export const onRequest = async (request: Request) => {
                         await rename(input.path, "__RENAMING__"+ item.newName, item.newName)
                 }
                 return writeJson({ success: true })
+            }
+            case "json://extendcopyitems/": {
+                const input = await request.json() as { path: string, items: FileItem[] }
+                const files = await input
+                    .items
+                    .toAsyncEnumerable()
+                    .mapAwait(async n => ({
+                        ...n,
+                        isDirectory: (await fs.promises.stat(`${input.path}/${n.name}`)).isDirectory(),
+                        iconPath: getIconPath(n.name, input.path)
+                    }))
+                    .await()
+                return writeJson(files)
             }
             case "json://getitemsfinished/":
                 const input = await request.json() as { folderId: string }

@@ -1,7 +1,7 @@
 import { DialogHandle, ResultType, Slide } from "web-dialog-react"
 import { FolderViewHandle } from "./components/FolderView"
 import { ID_LEFT, ID_RIGHT } from "./components/Commander"
-import { copy, copyFromRemote, copyToRemote, flattenItems } from "./requests/requests"
+import { copy, copyFromRemote, copyToRemote, extendCopyItems, flattenItems } from "./requests/requests"
 import { FILE, FileItemProvider } from "./items-provider/file-item-provider"
 import { getSelectedItemsText } from "./items-provider/provider"
 import { SystemError } from "filesystem-utilities"
@@ -111,16 +111,11 @@ export const onFilesDrop = async (fileList: FileList, targetFolder: FolderViewHa
     await copyProcessor.refresh(targetFolder)
 
     const path = window.env.getDropPath(fileList[0]).getParentPath()
-    console.log("Jetz", window.env.getDropPath(fileList[0]), path,     (fileList[0] as any).webkitGetAsEntry())
-    const files = Array.from(fileList).map(f => ({
+    const files = await extendCopyItems(path, Array.from(fileList).map(f => ({
         name: f.name,
-        iconPath: ".txt", // TODO getIconPath from main
         size: f.size,
-        isDirectory: false, // TODO from main
         time: (new Date(f.lastModified)).toISOString()
-    } as FileItem))
-    // TODO call extendCopyItems via main and add iconPath and isDirectory
-
+    } as FileItem)))
     let items = makeCopyItems(files, targetFolder.getItems() as FileItem[])
     if (items.length == 0)
         return
