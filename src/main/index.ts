@@ -1,11 +1,9 @@
 import 'functional-extensions'
-import { app, BrowserWindow, protocol, nativeTheme, ipcMain, IpcMainEvent } from "electron"
-import * as fs from "fs"
+import { app, BrowserWindow, protocol, nativeTheme, ipcMain, IpcMainEvent, nativeImage } from "electron"
 import * as path from "path"
-import * as https from "https"
 import { fileURLToPath } from "url"
 import { dirname } from "path"
-import * as settings from 'electron-settings'
+import settings from 'electron-settings'
 import { onCmd } from "./cmds.js"
 import { onRequest } from "./requests.js"
 import { registerGetIconProtocol } from "./icons.js"
@@ -156,20 +154,23 @@ app.on("activate", () => {
 		createWindow()
 })
 app.getPath("temp")
-const iconName = path.join(rootDir, 'iconForDragAndDrop.png')
-const transparentPNG = Buffer.from(
-    'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAAAAAA6fptVAAAAG0lEQVR4nGNgGAWjYBSMglEwCkbAoAAAzjwBf9s7kxwAAAAASUVORK5CYII=',
-    'base64'
-)
 
-if (!fs.existsSync(iconName)) 
-    fs.writeFileSync(iconName, transparentPNG)
+const width = 32;
+const height = 32;
+const transparentPixelData = Buffer.alloc(width * height * 4); // all zeros = transparent
+
+// Create nativeImage from raw data
+const icon = nativeImage.createFromBuffer(transparentPixelData, {
+  	width,
+  	height,
+	scaleFactor: 1
+})
 
 ipcMain.on('ondragstart', (event: IpcMainEvent, filePaths: string[]) => {
   	event.sender.startDrag({
 		file: "",
 		files: filePaths,
-    	icon: iconName // nativeImage.createFromPath(path.join(rootDir, 'drag-icon.png')),
+    	icon
   	})
 })
 
