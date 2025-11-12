@@ -502,7 +502,12 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     const onDragStart = (e: React.DragEvent<Element>) => {
-        console.log("Drag")
+        if (itemsProvider.current && itemsProvider.current.getId() == FILE)
+        {
+            e.preventDefault()
+            const items = getSelectedItems().map(n => itemsProvider.current?.appendPath(path, n.name)??"")
+            window.electronAPI.startDrag(items)
+        }
     }
 
     return (

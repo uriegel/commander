@@ -1,6 +1,8 @@
 import 'functional-extensions'
-import { app, BrowserWindow, protocol, nativeTheme } from "electron"
+import { app, BrowserWindow, protocol, nativeTheme, ipcMain, IpcMainEvent } from "electron"
+import * as fs from "fs"
 import * as path from "path"
+import * as https from "https"
 import { fileURLToPath } from "url"
 import { dirname } from "path"
 import * as settings from 'electron-settings'
@@ -153,6 +155,23 @@ app.on("activate", () => {
 	if (BrowserWindow.getAllWindows().length === 0)
 		createWindow()
 })
+app.getPath("temp")
+const iconName = path.join(rootDir, 'iconForDragAndDrop.png')
+const transparentPNG = Buffer.from(
+    'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAAAAAA6fptVAAAAG0lEQVR4nGNgGAWjYBSMglEwCkbAoAAAzjwBf9s7kxwAAAAASUVORK5CYII=',
+    'base64'
+)
+
+if (!fs.existsSync(iconName)) 
+    fs.writeFileSync(iconName, transparentPNG)
+
+ipcMain.on('ondragstart', (event: IpcMainEvent, filePaths: string[]) => {
+  	event.sender.startDrag({
+		file: "",
+		files: filePaths,
+    	icon: iconName // nativeImage.createFromPath(path.join(rootDir, 'drag-icon.png')),
+  	})
+})
 
 /*TODO
 
@@ -214,34 +233,3 @@ By leveraging protocol.handle, you can create robust and secure custom protocols
 
 */
 
-/*
-TODO Drag files
-
-const { ipcRenderer } = require('electron');
-
-const filePath = '/path/to/file/or/folder';
-
-const dragSource = document.getElementById('drag-source');
-
-dragSource.addEventListener('dragstart', (event) => {
-  // Tell the main process to start the native drag
-  ipcRenderer.send('ondragstart', filePath);
-});
-
-import { ipcMain, nativeImage, IpcMainEvent } from 'electron';
-import path from 'path';
-
-ipcMain.on('ondragstart', (event: IpcMainEvent, filePaths: string[]) => {
-  event.sender.startDrag({
-    files: filePaths, // e.g., ['/path/to/file1.txt', '/path/to/folder']
-    icon: nativeImage.createFromPath(path.join(__dirname, 'drag-icon.png')),
-  });
-});
-
-ipcMain.on('ondragstart', (event, filePaths) => {
-  event.sender.startDrag({
-    files: filePaths, // e.g., ['/path/to/file1.txt', '/path/to/folder']
-    icon: nativeImage.createFromPath('drag-icon.png'),
-  });
-});
-*/
