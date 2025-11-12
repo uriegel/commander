@@ -213,3 +213,35 @@ Session-Specific Protocols: If using custom sessions, explicitly register the pr
 By leveraging protocol.handle, you can create robust and secure custom protocols tailored to your application's needs.
 
 */
+
+/*
+TODO Drag files
+
+const { ipcRenderer } = require('electron');
+
+const filePath = '/path/to/file/or/folder';
+
+const dragSource = document.getElementById('drag-source');
+
+dragSource.addEventListener('dragstart', (event) => {
+  // Tell the main process to start the native drag
+  ipcRenderer.send('ondragstart', filePath);
+});
+
+import { ipcMain, nativeImage, IpcMainEvent } from 'electron';
+import path from 'path';
+
+ipcMain.on('ondragstart', (event: IpcMainEvent, filePaths: string[]) => {
+  event.sender.startDrag({
+    files: filePaths, // e.g., ['/path/to/file1.txt', '/path/to/folder']
+    icon: nativeImage.createFromPath(path.join(__dirname, 'drag-icon.png')),
+  });
+});
+
+ipcMain.on('ondragstart', (event, filePaths) => {
+  event.sender.startDrag({
+    files: filePaths, // e.g., ['/path/to/file1.txt', '/path/to/folder']
+    icon: nativeImage.createFromPath('drag-icon.png'),
+  });
+});
+*/

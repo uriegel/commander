@@ -501,11 +501,16 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         e.stopPropagation()
     }
 
+    const onDragStart = (e: React.DragEvent<Element>) => {
+        console.log("Drag")
+    }
+
     return (
         <div className="folder" onFocus={onFocusChanged}>
             <input ref={input} className="pathInput" spellCheck={false} value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
             <div className="tableContainer" onKeyDown={onKeyDown} onDragOver={onDragOver} onDrop={onDrop} >
-                <VirtualTable ref={virtualTable} items={items} onColumnWidths={onColumnWidths} onEnter={onEnter} onPosition={onPositionChanged} onSort={onSort} onItemClick={onItemClick} />
+                <VirtualTable ref={virtualTable} items={items} onColumnWidths={onColumnWidths} onEnter={onEnter} onPosition={onPositionChanged} onSort={onSort} 
+                    onItemClick={onItemClick} onDragStart={onDragStart} />
             </div>
             <RestrictionView items={items} ref={restrictionView} />
         </div>

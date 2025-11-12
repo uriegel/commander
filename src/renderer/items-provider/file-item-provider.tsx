@@ -17,6 +17,7 @@ export class FileItemProvider extends IItemsProvider {
         return {
             columns: getColumns(),
             getRowClasses,
+            draggable: true,
             renderRow
         }
     }
