@@ -13,7 +13,7 @@ sudo apt install libgtk-3-dev
 TODO
 * delete (remote) with progress
 
-* Linux: gpx icon not implemented
+* Linux: KDE gpx icon not implemented
 
 * Windows Remote root has /
 * Windows Remote copy progress
