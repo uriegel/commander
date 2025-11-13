@@ -1,5 +1,5 @@
 import { filter, interval, merge, Observable, Subscriber, throttle } from "rxjs"
-import { sendEvent } from './index.js'
+import { sendEvent } from './main.js'
 import { CopyProgress } from './events.js'
 import { setClosePrevent } from "./close-control.js"
 

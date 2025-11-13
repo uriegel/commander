@@ -1,7 +1,7 @@
 import { protocol } from "electron"
 import { readFile, stat } from "fs/promises"
 import path from "path"
-import { rootDir } from "./index.js"
+import { rootDir } from "./main.js"
 
 export function registerGetWindowIconProtocol() {
     protocol.handle('windowicon', async (request) => {

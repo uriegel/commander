@@ -1,6 +1,6 @@
 import path from 'path'
 import { FileItemsResult, getVersionInfos } from "filesystem-utilities"
-import { sendEvent } from './index.js'
+import { sendEvent } from './main.js'
 import { getItemsSemaphores } from './requests.js'
 
 export async function retrieveVersions(folderId: string, requestId: string, itemsResult: FileItemsResult) {

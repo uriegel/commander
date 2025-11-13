@@ -28,7 +28,7 @@ TODO
 * Theming: SVG folder Icons per Theme
 * Theming: <tr> with padding 
 
-* F11 Full screen
+* F11 Full screen Windows: hide titlebar
 
 * menubar-react: Insert shortcut Ins and Einfg
 

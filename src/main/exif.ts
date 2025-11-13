@@ -1,5 +1,5 @@
 import path from 'path'
-import { sendEvent } from './index.js'
+import { sendEvent } from './main.js'
 import { FileItemsResult, getExifInfos } from 'filesystem-utilities'
 import { getItemsSemaphores } from './requests.js'
 

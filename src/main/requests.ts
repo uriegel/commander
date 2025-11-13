@@ -12,7 +12,7 @@ import { withProgress } from './copy.js'
 import { ExtendedRenameItem } from '@/renderer/items-provider/items.js'
 import { retrieveVersions } from './version.js'
 import { Semaphore } from "functional-extensions"
-import { closeWindow } from './index.js'
+import { closeWindow } from './main.js'
 import { copyFromRemote, copyToRemote, createRemoteFolder, getRemoteFiles, remoteCancel, remoteDelete } from './remote.js'
 
 export const getItemsSemaphores = new Map<string, Semaphore>()

@@ -132,6 +132,9 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 			case "FAVORITES":
 				getActiveFolder()?.showFavorites()
 				break
+			case "SHOW_FULLSCREEN":
+				await cmdRequest(key)
+				break
 			case "END":
 				closeWindow()
 				break
