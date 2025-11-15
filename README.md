@@ -10,6 +10,10 @@ sudo apt install build-essential
 sudo apt install libgtk-3-dev
 ```
 
+## Show react devtools
+* add ```<script src="http://localhost:8097"></script>``` before ```<script type="module" src="/main.tsx"></script>``` in index.html
+* run npm script 'react dev tools'
+
 TODO
 * delete (remote) with progress
 
@@ -38,8 +42,6 @@ TODO
 * CSP in index.html
 
 * alt + enter (KDE with QT program)
-
-* Initial scrollbar in table view out of range
 
 // Drag n Drop:
 Commander Branch Neon-Rust folder.ts
