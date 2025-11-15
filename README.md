@@ -45,3 +45,5 @@ TODO
 
 // Drag n Drop:
 Commander Branch Neon-Rust folder.ts
+
+* Fullscreen menu item as checkbox
