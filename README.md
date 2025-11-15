@@ -26,7 +26,6 @@ TODO
 
 * Windows Services (perhaps elevatable sub process)
 
-* Theming: selected color in table view lightgray if not focused
 * Theming: adapt gray color from KDE/Gtk3 (/Neon/Ubuntu/Fedora)
 * Theming: Unify Titlebar, path input and table columns, margins like Gtk4/Adwaita
 * Theming: SVG folder Icons per Theme
