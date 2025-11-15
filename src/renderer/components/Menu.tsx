@@ -11,12 +11,14 @@ export interface MenuProps {
     onMenuAction: (key: string) => void
     viewerMode: ViewerMode,
     setViewerMode: (mode: ViewerMode) => void
+    fullscreen: boolean
+    toggleFullscreen: () => void,
 }
 
 export type ViewerMode = "Viewer" | "Location" | "ViewerLocation"
 
 const Menu = ({ autoMode, releaseMode, showHidden, toggleShowHidden, showViewer, toggleShowViewer,
-    onMenuAction, viewerMode, setViewerMode }: MenuProps) => {
+    onMenuAction, viewerMode, setViewerMode, fullscreen, toggleFullscreen }: MenuProps) => {
     
     const toggleShowOnlyViewer = () => { setViewerMode('Viewer') }
     const toggleShowViewerLocation = () => { setViewerMode('ViewerLocation') }
@@ -156,8 +158,9 @@ const Menu = ({ autoMode, releaseMode, showHidden, toggleShowHidden, showViewer,
                 type: MenuItemType.Separator
             }, {
                 name: "_Vollbild",
-                type: MenuItemType.MenuItem,
-                key: "SHOW_FULLSCREEN",
+                type: MenuItemType.MenuCheckItem,
+                checked: fullscreen,
+                toggleChecked: toggleFullscreen,
                 shortcut: "F11"
             }, {
                 type: MenuItemType.Separator,

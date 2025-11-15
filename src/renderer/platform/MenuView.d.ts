@@ -9,6 +9,8 @@ export interface MenuViewProps {
     setViewerMode: (mode: ViewerMode) => void
     toggleShowHiddenAndRefresh: () => void
     toggleShowViewer: () => void
+    fullscreen: boolean
+    toggleFullscreen: () => void,
 }
 export const MenuView: ({ onMenuAction, showHidden, showViewer, viewerMode,
-        toggleShowHiddenAndRefresh, toggleShowViewer, setViewerMode }: MenuViewProps) => JSX.Element
+        toggleShowHiddenAndRefresh, toggleShowViewer, setViewerMode, fullscreen, toggleFullscreen }: MenuViewProps) => JSX.Element

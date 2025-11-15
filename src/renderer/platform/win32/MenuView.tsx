@@ -2,7 +2,7 @@ import Menu from "@/renderer/components/Menu"
 import { MenuViewProps } from "../MenuView"
 import Titlebar from "@/renderer/components/Titlebar"
 
-const MenuView = ({ onMenuAction, showHidden, showViewer, viewerMode,
+const MenuView = ({ onMenuAction, showHidden, showViewer, viewerMode, fullscreen, toggleFullscreen,
         toggleShowHiddenAndRefresh, toggleShowViewer, setViewerMode }: MenuViewProps) => {
     return (
         <Titlebar menu={(
@@ -10,6 +10,7 @@ const MenuView = ({ onMenuAction, showHidden, showViewer, viewerMode,
                 showHidden={showHidden} toggleShowHidden={toggleShowHiddenAndRefresh}
                 showViewer={showViewer} toggleShowViewer={toggleShowViewer}
                 viewerMode={viewerMode} setViewerMode={setViewerMode}
+                fullscreen={fullscreen} toggleFullscreen={toggleFullscreen}
             />            
         )} />		
     )

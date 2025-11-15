@@ -78,6 +78,7 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 	const dialog = useContext(DialogContext)
 
 	const showViewerRef = useRef(false)
+	const [fullscreen, setFullscreen] = useState(false)
 
     const onMenuAction = useCallback(async (key: string) => {
         switch (key) {
@@ -132,9 +133,6 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 			case "FAVORITES":
 				getActiveFolder()?.showFavorites()
 				break
-			case "SHOW_FULLSCREEN":
-				await cmdRequest(key)
-				break
 			case "END":
 				closeWindow()
 				break
@@ -152,7 +150,15 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 		showViewerRef.current = !showViewerRef.current
 		setShowViewer(showViewerRef.current)
 	}
+
+	const fullscreenRef = useRef(false)
 	
+	const toggleFullscreen = async () => {
+		setFullscreen(!fullscreenRef.current)
+		fullscreenRef.current = !fullscreenRef.current
+		await cmdRequest("show_fullscreen")
+	}
+
 	const onItemChanged = useCallback(
 		(id: string, path: string, isDirectory: boolean, latitude?: number, longitude?: number) => {
 			if (id == activeFolderIdRef.current)
@@ -223,6 +229,7 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 				showHidden={showHidden} toggleShowHiddenAndRefresh={toggleShowHiddenAndRefresh}
 				showViewer={showViewer} toggleShowViewer={toggleShowViewer}
 				viewerMode={viewerMode} setViewerMode={setViewerMode}
+				fullscreen={fullscreen} toggleFullscreen={toggleFullscreen}
             />            
             <ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
 			<Statusbar path={itemProperty.path} dirCount={itemCount.dirCount} fileCount={itemCount.fileCount}
