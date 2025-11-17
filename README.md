@@ -3,12 +3,19 @@ A Norton Commander clone based on Electron and React with Typescript
 
 ## Prerequisites
 
+### Ubuntu:
 ```
 sudo apt update
 sudo apt install pkg-config
 sudo apt install build-essential
 sudo apt install libgtk-3-dev
 ```
+
+### Fedora:
+
+``` 
+sudo dnf install gcc-c++ gtk3-devel
+``` 
 
 ## Show react devtools
 * add ```<script src="http://localhost:8097"></script>``` before ```<script type="module" src="/main.tsx"></script>``` in index.html
