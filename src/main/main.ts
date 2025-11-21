@@ -105,6 +105,17 @@ const createWindow = () => {
     if (settings.getSync("isMaximized"))
 		mainWindow.maximize()
 	
+	nativeTheme.addListener("updated", () => {
+ 		const color = nativeTheme.shouldUseDarkColors ? "#121212" : "white"
+		mainWindow?.setBackgroundColor(color)
+		if (process.platform == "win32")
+			mainWindow?.setTitleBarOverlay({
+				color: nativeTheme.shouldUseDarkColors ? "#262626" : "#ebebeb",
+				symbolColor: nativeTheme.shouldUseDarkColors ? "white" : "black",
+				height: 30
+			})
+	})
+
 	mainWindow.on('maximize', () => {
 		const bounds = mainWindow?.getBounds()
 		if (bounds) {

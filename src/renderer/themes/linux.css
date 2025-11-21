@@ -151,7 +151,7 @@
 
 .App.linuxTheme {
     font-size: 80%;
-    --accent-color: red;
+    --accent-color: #ED754B;
     --vtr-current-focus-color: var(--accent-color);
     --vtr-selected-background-color: var(--accent-color);
     --vtr-current-selected-focus-color-invert: 1;
