@@ -24,18 +24,14 @@ sudo dnf install gcc-c++ gtk3-devel
 TODO
 * delete (remote) with progress
 
-* Linux: KDE gpx icon not implemented
-
 * Windows Remote root has /
 * Windows Remote copy progress
 * Windows Versions in copy dialog: resolve versions in CopyConflictsDialog, adapt button, no default button when not ready
-* Switch to dark mode and vice versa: adapt windows color
 
 * Windows Services (perhaps elevatable sub process)
 
 * Theming: adapt gray color from KDE/Gtk3 (/Neon/Ubuntu/Fedora)
 * Theming: Unify Titlebar, path input and table columns, margins like Gtk4/Adwaita
-* Theming: SVG folder Icons per Theme
 * Theming: <tr> with padding 
 
 * F11 Full screen Windows: hide titlebar
