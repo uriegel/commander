@@ -6,9 +6,8 @@
         --restriction-background-color: white;
         --exif-color: darkblue;
         --selected-exif-color: yellow;
-        
+       
         --vtr-background-color: transparent;
-        --vtr-selected-background-color: #3584e4;
         --vtr-scrollbar-grip-active-color: var(--vtr-selected-background-color);
         --vtr-caption-color: #737373;
         --vtr-caption-background-color: var(--scaffolding-background-color);
@@ -77,7 +76,6 @@
         
         --vtr-color: white;
         --vtr-background-color: transparent;
-        --vtr-selected-background-color: #3584e4;
         --vtr-scrollbar-grip-active-color: var(--vtr-selected-background-color);
         --vtr-caption-color: #ddd;
         --vtr-caption-background-color: #353535;
@@ -153,6 +151,10 @@
 
 .App.linuxTheme {
     font-size: 80%;
+    --accent-color: red;
+    --vtr-current-focus-color: var(--accent-color);
+    --vtr-selected-background-color: var(--accent-color);
+    --vtr-current-selected-focus-color-invert: 1;
 }
 
  
