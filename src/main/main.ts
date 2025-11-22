@@ -108,6 +108,7 @@ const createWindow = () => {
 		mainWindow.maximize()
 
 	nativeTheme.addListener("updated", () => {
+		sendEvent({cmd: 'ThemeChanged', msg: {}})
 		const color = nativeTheme.shouldUseDarkColors ? "#121212" : "white"
 		mainWindow?.setBackgroundColor(color)
 		if (process.platform == "win32")

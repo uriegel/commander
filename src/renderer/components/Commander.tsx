@@ -14,6 +14,7 @@ import Statusbar from "./Statusbar"
 import './viewers/viewers.css'
 import { copyItems, onFilesDrop } from "../copy-processor"
 import MenuView from "@platform/MenuView"
+import { themeChangedEvents$ } from "../requests/events"
 
 export const ID_LEFT = "left"
 export const ID_RIGHT = "right"
@@ -75,6 +76,14 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 		const box = document.querySelector('.App.linuxTheme') as HTMLBaseElement
 		box?.style.setProperty('--accent-color', window.electronAPI.getAccentColor())
 		folderLeft.current?.setFocus()
+	}, [])
+
+	useEffect(() => {
+		const themeChanges = themeChangedEvents$.subscribe(() => {
+			const box = document.querySelector('.App.linuxTheme') as HTMLBaseElement
+			box?.style.setProperty('--accent-color', window.electronAPI.getAccentColor())
+		})
+		return () => themeChanges.unsubscribe()
 	}, [])
 
 	const dialog = useContext(DialogContext)

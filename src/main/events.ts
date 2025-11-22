@@ -35,8 +35,8 @@ export type NullData = {}
 
 export type EventData = ExifData | ExifStatus | CopyProgress | NullData | Version
 
-export type EventCmd = "Exif" | "ExifStart" | "ExifStop" | "CopyStop" |"CopyProgress"
-                     | "CopyProgressShowDialog" | "VersionsStart" |"VersionsStop" |"Versions"
+export type EventCmd = "Exif" | "ExifStart" | "ExifStop" | "CopyStop" | "CopyProgress" | "CopyProgressShowDialog" |
+                        "VersionsStart" | "VersionsStop" | "Versions" | "ThemeChanged"
 
 export type Event = {
     folderId?: string,
