@@ -3,7 +3,8 @@ const { contextBridge, ipcRenderer, webUtils } = require('electron')
 
 contextBridge.exposeInMainWorld('electronAPI', {
     onMessage: (callback: (msg: unknown) => void) => ipcRenderer.on('fromMain', (_: unknown, data: unknown) => callback(data)),
-    startDrag: (files: string[]) => ipcRenderer.send('ondragstart', files)
+    startDrag: (files: string[]) => ipcRenderer.send('ondragstart', files),
+    getAccentColor: () => ipcRenderer.sendSync('getAccentColor') 
 })
 
 contextBridge.exposeInMainWorld('env', {

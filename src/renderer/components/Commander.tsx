@@ -73,7 +73,7 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 
 	useEffect(() => {
 		const box = document.querySelector('.App.linuxTheme') as HTMLBaseElement
-		box?.style.setProperty('--accent-color', 'red')
+		box?.style.setProperty('--accent-color', window.electronAPI.getAccentColor())
 		folderLeft.current?.setFocus()
 	}, [])
 

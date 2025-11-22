@@ -185,6 +185,10 @@ ipcMain.on('ondragstart', (event: IpcMainEvent, filePaths: string[]) => {
   	})
 })
 
+ipcMain.on('getAccentColor', (event: IpcMainEvent) => {
+	event.returnValue = "#0000ff"
+})
+
 /*TODO
 
 Electron's protocol module allows you to register and handle custom protocols or intercept existing ones. This is useful for creating secure, custom URL schemes or handling specific resource requests in your application.
