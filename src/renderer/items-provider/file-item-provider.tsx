@@ -87,9 +87,13 @@ export class FileItemProvider extends IItemsProvider {
             : undefined
     }
 
-    async deleteItems(path: string, items: Item[], dialog: DialogHandle) { 
+    async deleteItems(path: string, items: Item[], dialog: DialogHandle, backgroundAction: boolean, setErrorText: (msg: string)=>void) { 
         if (items.length == 0)
             return false
+        if (backgroundAction) {
+            setErrorText("Eine Hintergrundaktion ist bereits am Laufen!")
+            return false
+        }        
         const res = await dialog.show({
             text: `Möchtest Du ${getSelectedItemsText(items)} löschen?`,
             btnOk: true,

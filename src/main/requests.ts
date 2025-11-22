@@ -8,7 +8,7 @@ import fs from 'fs'
 import path from 'path'
 import { retrieveExifDatas } from './exif.js'
 import { AsyncEnumerable, createSemaphore } from 'functional-extensions'
-import { withProgress } from './copy.js'
+import { withCopyProgress } from './progress.js'
 import { ExtendedRenameItem } from '@/renderer/items-provider/items.js'
 import { retrieveVersions } from './version.js'
 import { Semaphore } from "functional-extensions"
@@ -85,7 +85,7 @@ export const onRequest = async (request: Request) => {
             }
             case "json://copy/": {
                 const input = await request.json() as { sourcePath: string, targetPath: string, items: string[], totalSize: number, move: boolean }
-                await withProgress(input.items, input.totalSize, input.move,
+                await withCopyProgress(input.items, input.totalSize, input.move,
                     async (progressCallback: (idx: number, currentBytes: number, totalBytes: number) => void) =>
                         copyFiles(input.sourcePath, input.targetPath, input.items, {
                             move: input.move, overwrite: true, cancellation: "copy", progressCallback
@@ -170,14 +170,14 @@ export const onRequest = async (request: Request) => {
             }
             case "json://copyfromremote/": {
                 const input = await request.json() as { sourcePath: string, targetPath: string, items: string[], totalSize: number }
-                await withProgress(input.items, input.totalSize, false,
+                await withCopyProgress(input.items, input.totalSize, false,
                     async (progressCallback: (idx: number, currentBytes: number, totalBytes: number) => void) =>
                         copyFromRemote(input.sourcePath, input.targetPath, input.items, progressCallback))
                 return writeJson({})
             }
             case "json://copytoremote/": {
                 const input = await request.json() as { sourcePath: string, targetPath: string, items: string[], totalSize: number }
-                await withProgress(input.items, input.totalSize, false,
+                await withCopyProgress(input.items, input.totalSize, false,
                     async (progressCallback: (idx: number, currentBytes: number, totalBytes: number) => void) =>
                         copyToRemote(input.sourcePath, input.targetPath, input.items, progressCallback))
                 return writeJson({})

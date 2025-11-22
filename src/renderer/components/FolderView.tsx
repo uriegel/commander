@@ -50,13 +50,14 @@ interface FolderViewProp {
     onItemChanged: (id: string, path: string, isDir: boolean, latitude?: number, longitude?: number) => void
     onItemsChanged: (id: string, count: ItemCount) => void
     onEnter: (item: Item) => void
+    backgroundAction: boolean
     setStatusText: (text?: string) => void
     setErrorText: (text?: string) => void
     onFilesDrop: (fileList: FileList, move: boolean)=>void
 }
 
 const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
-    { id, showHidden, onFocus, onEnter, onItemChanged, onItemsChanged, setErrorText, setStatusText, onFilesDrop },
+    { id, showHidden, onFocus, onEnter, onItemChanged, onItemsChanged, setErrorText, setStatusText, onFilesDrop, backgroundAction },
     ref) => {
 
     const input = useRef<HTMLInputElement | null>(null)
@@ -375,7 +376,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const deleteItems = async () => {
         try {
-            if (await getCurrentItemsProvider()?.deleteItems(path, getSelectedItems(), dialog))
+            if (await getCurrentItemsProvider()?.deleteItems(path, getSelectedItems(), dialog, backgroundAction, setErrorText))
                 refresh()
         } catch (e) {
             const err = e as SystemError
