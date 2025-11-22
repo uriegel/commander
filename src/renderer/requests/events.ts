@@ -35,7 +35,7 @@ export type Version = {
 
 type EventData = ExifDataType | ExifStatus| CopyProgress | Version
 
-type EventCmd = "Exif" | "ExifStart" | "ExifStop" | "CopyProgress" | "CopyStop" |"CopyProgressShowDialog" | "VersionsStart" |"VersionsStop" |"Versions"
+type EventCmd = "Exif" | "ExifStart" | "ExifStop" | "CopyProgress" | "CopyStop" |"CopyProgressShowDialog" | "VersionsStart" |"VersionsStop" |"Versions" | "ThemeChanged"
 
 type Event = {
     folderId?: string,
@@ -54,6 +54,7 @@ const message$ = new Observable<Event>(subscriberToSet => {
 export const copyProgressEvents$ = message$.pipe(filter(n => n.cmd == "CopyProgress")).pipe(map(n => n.msg as CopyProgress))
 export const copyProgressShowDialogEvents$ = message$.pipe(filter(n => n.cmd == "CopyProgressShowDialog"))
 export const copyStopEvents$ = message$.pipe(filter(n => n.cmd == "CopyStop"))
+export const themeChangedEvents$ = message$.pipe(filter(n => n.cmd == "ThemeChanged"))
 const exifStartEvents$ = message$.pipe(filter(n => n.cmd == "ExifStart"))
 const exifStopEvents$ = message$.pipe(filter(n => n.cmd == "ExifStop"))
 const exifDataEvents$ = message$.pipe(filter(n => n.cmd == "Exif"))
