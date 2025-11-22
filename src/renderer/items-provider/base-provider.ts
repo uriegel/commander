@@ -41,7 +41,7 @@ export abstract class IItemsProvider {
         return dirs.concat(files)
     }
 
-    async deleteItems(_path: string, _items: Item[], _dialog: DialogHandle) { return false }
+    async deleteItems(_path: string, _items: Item[], _dialog: DialogHandle, _backgroundAction: boolean, _setErrorText: (msg: string)=>void) { return false }
     async renameItem(_path: string, _item: Item, _dialog: DialogHandle, _copy?: boolean) { return "" }
     async createFolder(_path: string, _item: Item, _dialog: DialogHandle) { return "" }
 

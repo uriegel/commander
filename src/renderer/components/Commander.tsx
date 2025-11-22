@@ -180,12 +180,12 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 	
 	const FolderLeft = () => (
 		<FolderView ref={folderLeft} id={ID_LEFT} onFocus={onFocusLeft} onItemChanged={onItemChanged} onEnter={onEnter}
-			onFilesDrop={(files, move) => filesDrop(files, move, folderLeft.current)}
+			onFilesDrop={(files, move) => filesDrop(files, move, folderLeft.current)} backgroundAction={backgroundAction.current}
 			onItemsChanged={setActiveItemCount} showHidden={showHidden} setStatusText={setStatusTextLeft} setErrorText={err => setErrorText(err||null)} />
 	)
 	const FolderRight = () => (
 		<FolderView ref={folderRight} id={ID_RIGHT} onFocus={onFocusRight} onItemChanged={onItemChanged} onEnter={onEnter}
-			onFilesDrop={(files, move) => filesDrop(files, move, folderRight.current)}
+			onFilesDrop={(files, move) => filesDrop(files, move, folderRight.current)} backgroundAction={backgroundAction.current}
 			onItemsChanged={setActiveItemCount} showHidden={showHidden} setStatusText={setStatusTextRight} setErrorText={err => setErrorText(err||null)} />
 	)
 
