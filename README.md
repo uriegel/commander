@@ -30,6 +30,8 @@ TODO
 
 * Windows Services (perhaps elevatable sub process)
 
+* Theming: Dialog blue color (buttons, progress)
+* Theming: select edit blue color
 * Theming: adapt gray color from KDE/Gtk3 (/Neon/Ubuntu/Fedora)
 * Theming: Unify Titlebar, path input and table columns, margins like Gtk4/Adwaita
 * Theming: <tr> with padding 
