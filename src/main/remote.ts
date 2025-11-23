@@ -29,12 +29,10 @@ export const createRemoteFolder = async (filePath: string, item: string) => {
     await remotePostRequest(ip, `/createdirectory${remotePath}`)
 }
 
-export const remoteDelete = async (filePath: string, items: string[]) => {
-    const ip = filePath.substring(7).substringUntil('/')
-    const remotePath = path.normalize(`/${filePath.substring(7).substringAfter('/')}/`).replaceAll("\\", "/")
-    for (let n of items) {
-        await remoteDeleteRequest(ip, `/deletefile${remotePath}${n}`)
-    }
+export const remoteDelete = async (remoteFile: string) => {
+    const ip = remoteFile.substring(7).substringUntil('/')
+    const remotePath = path.normalize(`/${remoteFile.substring(7).substringAfter('/')}/`).replaceAll("\\", "/")
+    await remoteDeleteRequest(ip, `/deletefile${remotePath}`)
 }
 
 export const copyFromRemote = async (sourcePath: string, targetPath: string, items: string[],

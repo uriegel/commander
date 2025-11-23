@@ -8,7 +8,7 @@ import fs from 'fs'
 import path from 'path'
 import { retrieveExifDatas } from './exif.js'
 import { AsyncEnumerable, createSemaphore } from 'functional-extensions'
-import { withCopyProgress } from './progress.js'
+import { withCopyProgress, withDeleteProgress } from './progress.js'
 import { ExtendedRenameItem } from '@/renderer/items-provider/items.js'
 import { retrieveVersions } from './version.js'
 import { Semaphore } from "functional-extensions"
@@ -94,8 +94,7 @@ export const onRequest = async (request: Request) => {
             }
             case "json://delete/": {
                 const input = await request.json() as { path: string, items: string[] }
-                for (const n of input.items)
-                    await trash(path.join(input.path, n))
+                await withDeleteProgress(input.items.map(n => path.join(input.path, n)), trash)
                 return writeJson({})
             }
             case "json://rename/": {
@@ -165,7 +164,7 @@ export const onRequest = async (request: Request) => {
             }
             case "json://remotedelete/": {
                 const input = await request.json() as { path: string, items: string[] }
-                await remoteDelete(input.path, input.items)
+                await withDeleteProgress(input.items.map(n => path.join(input.path, n)), remoteDelete)
                 return writeJson({})
             }
             case "json://copyfromremote/": {
