@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import "./CopyProgressPart.css"
 import { copyProgressEvents$, copyStopEvents$ } from "../../requests/events"
 import { ExtensionProps } from "web-dialog-react"
+import ProgressBar from "../ProgressBar"
 
 const secondsToTime = (timeInSecs: number) => {
     const secs = timeInSecs % 60
@@ -97,9 +98,9 @@ const CopyProgressPart = ({ props, close }: ExtensionProps) => {
                     </tbody>
                 </table>
             </div>
-            <progress className='currentProgress' max={max} value={value}></progress>
+            <ProgressBar value={value/max} />
             <p>Gesamt:</p>
-            <progress className='totalProgress' max={totalMax} value={totalValue}></progress>
+            <ProgressBar value={totalValue/totalMax} />
         </div>
     )
 }
