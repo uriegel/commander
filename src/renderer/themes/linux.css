@@ -1,3 +1,11 @@
+.App.linuxTheme {
+    font-size: 80%;
+    --accent-color: blue;
+    --vtr-current-focus-color: var(--accent-color);
+    --vtr-selected-background-color: var(--accent-color);
+    --vtr-current-selected-focus-color-invert: 1;
+}
+
 @media (prefers-color-scheme: light) {
     :root .linuxTheme {
         --color: black;
@@ -53,13 +61,13 @@
         --wdr-button-padding: 5px 25px;
         --wdr-button-hover-background-color: #dcdcdc;
         --wdr-button-active-background-color: #bebebe;   
-        --wdr-button-focus-color: blue;    
+        --wdr-button-focus-color: var(--accent-color);    
         --wdr-button-bordercolor: lightgray;
         --wdr-button-borderstyle: solid;
         --wdr-button-cornerradius: 5px;
         --wdr-button-outlinestyle: solid;
         --wdr-button-outlineoffset: 0px;
-        --wdr-input-selection-color: #3584e4;        
+        --wdr-input-selection-color: var(--accent-color);        
     }
 }
 
@@ -149,12 +157,3 @@
     }   
 }
 
-.App.linuxTheme {
-    font-size: 80%;
-    --accent-color: #ED754B;
-    --vtr-current-focus-color: var(--accent-color);
-    --vtr-selected-background-color: var(--accent-color);
-    --vtr-current-selected-focus-color-invert: 1;
-}
-
- 
