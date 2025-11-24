@@ -31,12 +31,18 @@ export type CopyProgress = {
     items?: string[]
 }
 
+export type DeleteProgress = {
+    idx: number,
+    totalCount: number,
+    items?: string[]
+}
+
 export type NullData = {}
 
 export type EventData = ExifData | ExifStatus | CopyProgress | NullData | Version
 
 export type EventCmd = "Exif" | "ExifStart" | "ExifStop" | "CopyStop" | "CopyProgress" | "CopyProgressShowDialog" |
-                        "VersionsStart" | "VersionsStop" | "Versions" | "ThemeChanged"
+                        "VersionsStart" | "VersionsStop" | "Versions" | "ThemeChanged" | "DeleteProgress" | "DeleteStop"
 
 export type Event = {
     folderId?: string,

@@ -1,6 +1,6 @@
 import { filter, interval, merge, Observable, Subscriber, throttle } from "rxjs"
 import { sendEvent } from './main.js'
-import { CopyProgress } from './events.js'
+import { CopyProgress, DeleteProgress } from './events.js'
 import { setClosePrevent } from "./close-control.js"
 
 export const withCopyProgress = async (items: string[], totalMaxBytes: number, move: boolean,
@@ -38,7 +38,6 @@ export const withCopyProgress = async (items: string[], totalMaxBytes: number, m
     })
     const progress$ = message$.pipe(filter(n => n.totalBytes != n.totalMaxBytes)).pipe(throttle(() => interval(40)))
     const progressEnd$ = message$.pipe(filter(n => n.totalBytes == n.totalMaxBytes))
-
     merge(progress$, progressEnd$).subscribe(msg => sendEvent({ cmd: 'CopyProgress', msg })) 
 
     let previousCopiedBytes = 0
@@ -67,25 +66,24 @@ export const withDeleteProgress = async (items: string[], del: (file: string)=>P
     
     setClosePrevent(true)
 
-    // const subscribers = new Set<Subscriber<CopyProgress>>
-    // const message$ = new Observable<CopyProgress>(subscriberToSet => {
-    //     subscribers.add(subscriberToSet)
-    //     return () => subscribers.delete(subscriberToSet)
-    // })
-    // const progress$ = message$.pipe(filter(n => n.totalBytes != n.totalMaxBytes)).pipe(throttle(() => interval(40)))
-    // const progressEnd$ = message$.pipe(filter(n => n.totalBytes == n.totalMaxBytes))
-
-//    merge(progress$, progressEnd$).subscribe(msg => sendEvent({ cmd: 'CopyProgress', msg })) 
+    const subscribers = new Set<Subscriber<DeleteProgress>>
+    const message$ = new Observable<DeleteProgress>(subscriberToSet => {
+        subscribers.add(subscriberToSet)
+        return () => subscribers.delete(subscriberToSet)
+    })
+    const progress$ = message$.pipe(filter(n => n.idx != n.totalCount)).pipe(throttle(() => interval(40)))
+    const progressEnd$ = message$.pipe(filter(n => n.idx == n.totalCount))
+    merge(progress$, progressEnd$).subscribe(msg => sendEvent({ cmd: 'DeleteProgress', msg })) 
 
     let currentIndex = -1
-//    subscribers.values().forEach(s => s.next({ idx: 0, currentBytes: 0, currentMaxBytes: 0, totalBytes: 0, totalMaxBytes, move, items }))
+    subscribers.values().forEach(s => s.next({ idx: 0, totalCount: items.length, items: items.map(n => n.getFileName()) }))
     try {
         for (let n of items) {
             await del(n)
-            //subscribers.values().forEach(s => s.next({ idx, currentBytes, currentMaxBytes, totalBytes: copiedBytes + currentBytes, totalMaxBytes }))
+            subscribers.values().forEach(s => s.next({ idx: ++currentIndex, totalCount: items.length }))
         }
     } finally {
-        sendEvent({ cmd: 'CopyStop', msg: {} })
+        sendEvent({ cmd: 'DeleteStop', msg: {} })
         setClosePrevent(false)
     }
 }
