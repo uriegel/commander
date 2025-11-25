@@ -28,14 +28,21 @@ export type CopyProgress = {
     items?: string[]
 }
 
+export type DeleteProgress = {
+    idx: number,
+    totalCount: number,
+    items?: string[]
+}
+
 export type Version = {
     requestId: number,
     items: VersionInfoResult[]
 }
 
-type EventData = ExifDataType | ExifStatus| CopyProgress | Version
+type EventData = ExifDataType | ExifStatus| CopyProgress | Version | DeleteProgress
 
-type EventCmd = "Exif" | "ExifStart" | "ExifStop" | "CopyProgress" | "CopyStop" |"CopyProgressShowDialog" | "VersionsStart" |"VersionsStop" |"Versions" | "ThemeChanged"
+type EventCmd = "Exif" | "ExifStart" | "ExifStop" | "CopyProgress" | "CopyStop" | "CopyProgressShowDialog"
+    | "VersionsStart" | "VersionsStop" | "Versions" | "ThemeChanged" | "DeleteProgress" | "DeleteStop"
 
 type Event = {
     folderId?: string,
@@ -53,6 +60,9 @@ const message$ = new Observable<Event>(subscriberToSet => {
 
 export const copyProgressEvents$ = message$.pipe(filter(n => n.cmd == "CopyProgress")).pipe(map(n => n.msg as CopyProgress))
 export const copyProgressShowDialogEvents$ = message$.pipe(filter(n => n.cmd == "CopyProgressShowDialog"))
+export const deleteProgressEvents$ = message$.pipe(filter(n => n.cmd == "DeleteProgress")).pipe(map(n => n.msg as DeleteProgress))
+//export const copyProgressShowDialogEvents$ = message$.pipe(filter(n => n.cmd == "CopyProgressShowDialog"))
+export const deleteStopEvents$ = message$.pipe(filter(n => n.cmd == "DeleteStop"))
 export const copyStopEvents$ = message$.pipe(filter(n => n.cmd == "CopyStop"))
 export const themeChangedEvents$ = message$.pipe(filter(n => n.cmd == "ThemeChanged"))
 const exifStartEvents$ = message$.pipe(filter(n => n.cmd == "ExifStart"))

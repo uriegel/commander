@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import Pie from 'react-progress-control'
 import './Statusbar.css'
-import { copyProgressEvents$, copyProgressShowDialogEvents$, copyStopEvents$ } from "../requests/events"
+import { copyProgressEvents$, copyProgressShowDialogEvents$, copyStopEvents$, deleteProgressEvents$, deleteStopEvents$ } from "../requests/events"
 import { DialogContext, ResultType } from 'web-dialog-react'
 import CopyProgressPart, { CopyProgressProps } from './dialogs/CopyProgressPart'
 import './dialogs/CopyProgressPart.css'
@@ -73,12 +73,38 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
                 setBackgroundAction(true)
                 setProgressRevealed(true)
                 setProgressFinished(false)
+                setProgress(0)
                 progressStartTime.current = new Date()
                 if (msg.items != undefined)
                     progressFiles.current = msg.items
             }
             progressFilesIndex.current = msg.idx
-            setProgress((msg.totalBytes) / msg.totalMaxBytes)
+            setProgress(msg.totalBytes / msg.totalMaxBytes)
+        })
+        return () => sub.unsubscribe()
+    }, [setBackgroundAction])
+
+    useEffect(() => {
+        const sub = deleteProgressEvents$.subscribe(msg => {
+
+            console.log("delete", msg)
+
+            if (msg.idx == 0 && msg.totalCount == 0) {
+                if (progressTimeout.current)
+                    clearTimeout(progressTimeout.current)
+                setBackgroundAction(true)
+                setProgressRevealed(true)
+                setProgressFinished(false)
+                setProgress(0)
+                progressStartTime.current = new Date()
+                if (msg.items != undefined)
+                    progressFiles.current = msg.items
+            }
+            progressFilesIndex.current = msg.idx
+            if (msg.totalCount > 0) {
+                console.log("SetProgress", msg.idx / msg.totalCount)
+                setProgress(msg.idx / msg.totalCount)
+            }
         })
         return () => sub.unsubscribe()
     }, [setBackgroundAction])
@@ -90,6 +116,17 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
 
     useEffect(() => {
         const sub = copyStopEvents$.subscribe(() => {
+            setProgressFinished(true)
+            setBackgroundAction(false)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            progressTimeout.current = setTimeout(() => setProgressRevealed(false), 5000) as any 
+            progressFiles.current = []
+        })
+        return () => sub.unsubscribe()
+    })
+
+    useEffect(() => {
+        const sub = deleteStopEvents$.subscribe(() => {
             setProgressFinished(true)
             setBackgroundAction(false)
             // eslint-disable-next-line @typescript-eslint/no-explicit-any

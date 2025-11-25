@@ -2,6 +2,7 @@ import { filter, interval, merge, Observable, Subscriber, throttle } from "rxjs"
 import { sendEvent } from './main.js'
 import { CopyProgress, DeleteProgress } from './events.js'
 import { setClosePrevent } from "./close-control.js"
+import { delayAsync } from "functional-extensions"
 
 export const withCopyProgress = async (items: string[], totalMaxBytes: number, move: boolean,
     copy: (progressCallback: (idx: number, currentBytes: number, currentMaxBytes: number)=>void)=>Promise<void>) => {
@@ -75,12 +76,14 @@ export const withDeleteProgress = async (items: string[], del: (file: string)=>P
     const progressEnd$ = message$.pipe(filter(n => n.idx == n.totalCount))
     merge(progress$, progressEnd$).subscribe(msg => sendEvent({ cmd: 'DeleteProgress', msg })) 
 
-    let currentIndex = -1
-    subscribers.values().forEach(s => s.next({ idx: 0, totalCount: items.length, items: items.map(n => n.getFileName()) }))
+    let currentIndex = 0
+    subscribers.values().forEach(s => s.next({ idx: 0, totalCount: 0, items: items.map(n => n.getFileName()) }))
     try {
         for (let n of items) {
             await del(n)
-            subscribers.values().forEach(s => s.next({ idx: ++currentIndex, totalCount: items.length }))
+            await delayAsync(2000)
+            const idx = ++currentIndex
+            subscribers.values().forEach(s => s.next({ idx, totalCount: items.length }))
         }
     } finally {
         sendEvent({ cmd: 'DeleteStop', msg: {} })
