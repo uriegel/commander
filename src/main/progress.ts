@@ -61,11 +61,14 @@ export const withCopyProgress = async (items: string[], totalMaxBytes: number, m
     }
 }
 
+export const deleteCancel = () => deleteWorking = false
+
 export const withDeleteProgress = async (items: string[], del: (file: string)=>Promise<void>) => {
     if (items.length == 0)
         return
     
     setClosePrevent(true)
+    deleteWorking = true
 
     const subscribers = new Set<Subscriber<DeleteProgress>>
     const message$ = new Observable<DeleteProgress>(subscriberToSet => {
@@ -80,13 +83,17 @@ export const withDeleteProgress = async (items: string[], del: (file: string)=>P
     subscribers.values().forEach(s => s.next({ idx: 0, totalCount: 0, items: items.map(n => n.getFileName()) }))
     try {
         for (let n of items) {
+            if (!deleteWorking)
+                break
             await del(n)
-            await delayAsync(2000)
             const idx = ++currentIndex
             subscribers.values().forEach(s => s.next({ idx, totalCount: items.length }))
         }
     } finally {
         sendEvent({ cmd: 'DeleteStop', msg: {} })
         setClosePrevent(false)
+        deleteWorking = false
     }
 }
+
+let deleteWorking = false

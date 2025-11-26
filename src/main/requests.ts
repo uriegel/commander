@@ -8,7 +8,7 @@ import fs from 'fs'
 import path from 'path'
 import { retrieveExifDatas } from './exif.js'
 import { AsyncEnumerable, createSemaphore } from 'functional-extensions'
-import { withCopyProgress, withDeleteProgress } from './progress.js'
+import { deleteCancel, withCopyProgress, withDeleteProgress } from './progress.js'
 import { ExtendedRenameItem } from '@/renderer/items-provider/items.js'
 import { retrieveVersions } from './version.js'
 import { Semaphore } from "functional-extensions"
@@ -64,9 +64,10 @@ export const onRequest = async (request: Request) => {
                 const cancelExifs = await request.json() as { requestId: number }
                 cancel(`${cancelExifs.requestId}`)
                 return writeJson({})
-            case "json://cancelcopy/":
+            case "json://cancelbackground/":
                 cancel("copy")
                 remoteCancel()
+                deleteCancel()
                 return writeJson({})
             case "json://mount/": {
                 const dev = await request.json() as { dev: string }

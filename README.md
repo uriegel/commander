@@ -22,10 +22,7 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* delete with progress:
-* delete: Cancel delete
-* delete remote with progress:
-* remove delay
+* check delete remote with progress:
 
 * Windows Remote root has /
 * Windows Remote copy progress

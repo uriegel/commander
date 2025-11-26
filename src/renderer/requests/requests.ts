@@ -26,7 +26,7 @@ export const deleteRequest = (path: string, items: string[]) => jsonRequest<void
 export const renameRequest = (path: string, item: string, newName: string, asCopy?: boolean) => jsonRequest<void>("rename", { path, item, newName, asCopy })
 export const createFolderRequest = (path: string, item: string) => jsonRequest<void>("createfolder", { path, item })
 export const flattenItems = (path: string, targetPath: string, items: CopyItem[]) => jsonRequest<CopyItem[]>("flattenitems", { path, targetPath, items })
-export const cancelCopy = () => jsonRequest<void>("cancelcopy", {})
+export const cancelBackground = () => jsonRequest<void>("cancelbackground", {})
 export const extendedRenameRequest = (path: string, items: ExtendedRenameItem[]) => jsonRequest<{success: boolean}>("extendedrename", { path, items })
 export const getItemsFinished = (folderId: string) => jsonRequest<void>("getitemsfinished", { folderId })
 export const addNetworkShare = (share: string, name: string, passwd: string) => jsonRequest<void>("addnetworkshare", { share, name, passwd })

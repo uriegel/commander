@@ -5,7 +5,7 @@ import { copyProgressEvents$, copyProgressShowDialogEvents$, copyStopEvents$, de
 import { DialogContext, ResultType } from 'web-dialog-react'
 import CopyProgressPart from './dialogs/CopyProgressPart'
 import DeleteProgressPart from './dialogs/DeleteProgressPart' 
-import { cancelCopy } from '../requests/requests'
+import { cancelBackground } from '../requests/requests'
 
 export interface StatusbarProps {
     path: string
@@ -66,7 +66,7 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
              })
             dialogOpen.current = false
             if (res?.result == ResultType.Ok)
-                await cancelCopy()
+                await cancelBackground()
         }
 
         start()
