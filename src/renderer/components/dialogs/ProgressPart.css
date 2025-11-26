@@ -1,0 +1,15 @@
+.progress {
+    min-width: 400px;
+}
+
+.progress progress {
+    width: 100%;
+}
+
+.progress table {
+    width: 100%;
+}
+
+.progress .rightAligned {
+    text-align: end;
+}

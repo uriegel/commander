@@ -3,8 +3,8 @@ import Pie from 'react-progress-control'
 import './Statusbar.css'
 import { copyProgressEvents$, copyProgressShowDialogEvents$, copyStopEvents$, deleteProgressEvents$, deleteStopEvents$ } from "../requests/events"
 import { DialogContext, ResultType } from 'web-dialog-react'
-import CopyProgressPart, { CopyProgressProps } from './dialogs/CopyProgressPart'
-import './dialogs/CopyProgressPart.css'
+import CopyProgressPart from './dialogs/CopyProgressPart'
+import DeleteProgressPart from './dialogs/DeleteProgressPart' 
 import { cancelCopy } from '../requests/requests'
 
 export interface StatusbarProps {
@@ -16,6 +16,12 @@ export interface StatusbarProps {
     statusText?: string
     statusInfo?: string
     setBackgroundAction: (set: boolean) => void
+}
+
+export type ProgressProps = {
+    items: string[],
+    index: number
+    progressStartTime: Date
 }
 
 const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusText, statusInfo, setBackgroundAction }: StatusbarProps) => {
@@ -41,6 +47,7 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
     const dialog = useContext(DialogContext)
 
     const dialogOpen = useRef(false)
+    const isCopying = useRef(false)
 
     const startProgressDialog = useCallback(() => {
         const start = async () => {
@@ -48,12 +55,14 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
                 return
             dialogOpen.current = true
             const res = await dialog.show({
-                text: `Fortschritt beim ${progressMove ? "Verschieben" : "Kopieren"} (${progressTotalMaxBytes.byteCountToString()})`,
+                text: isCopying.current
+                    ? `Fortschritt beim ${progressMove ? "Verschieben" : "Kopieren"} (${progressTotalMaxBytes.byteCountToString()})`
+                    : `Fortschritt beim Löschen`,
                 btnCancel: true,
                 btnOk: true,
                 btnOkText: "Stoppen",
-                extension: CopyProgressPart,
-                extensionProps: { items: progressFiles.current, index: progressFilesIndex.current, progressStartTime: progressStartTime.current } as CopyProgressProps
+                extension: isCopying.current ? CopyProgressPart : DeleteProgressPart,
+                extensionProps: { items: progressFiles.current, index: progressFilesIndex.current, progressStartTime: progressStartTime.current } as ProgressProps
              })
             dialogOpen.current = false
             if (res?.result == ResultType.Ok)
@@ -62,6 +71,7 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
 
         start()
     }, [dialog, progressMove, progressTotalMaxBytes, progressFinished])    
+
 
     useEffect(() => {
         const sub = copyProgressEvents$.subscribe(msg => {
@@ -74,6 +84,7 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
                 setProgressRevealed(true)
                 setProgressFinished(false)
                 setProgress(0)
+                isCopying.current = true
                 progressStartTime.current = new Date()
                 if (msg.items != undefined)
                     progressFiles.current = msg.items
@@ -86,9 +97,6 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
 
     useEffect(() => {
         const sub = deleteProgressEvents$.subscribe(msg => {
-
-            console.log("delete", msg)
-
             if (msg.idx == 0 && msg.totalCount == 0) {
                 if (progressTimeout.current)
                     clearTimeout(progressTimeout.current)
@@ -96,15 +104,14 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
                 setProgressRevealed(true)
                 setProgressFinished(false)
                 setProgress(0)
+                isCopying.current = false
                 progressStartTime.current = new Date()
                 if (msg.items != undefined)
                     progressFiles.current = msg.items
             }
             progressFilesIndex.current = msg.idx
-            if (msg.totalCount > 0) {
-                console.log("SetProgress", msg.idx / msg.totalCount)
+            if (msg.totalCount > 0) 
                 setProgress(msg.idx / msg.totalCount)
-            }
         })
         return () => sub.unsubscribe()
     }, [setBackgroundAction])

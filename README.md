@@ -23,11 +23,9 @@ sudo dnf install gcc-c++ gtk3-devel
 
 TODO
 * delete with progress:
-* delete: show delete dialog
-* delete: Close commander when deleting
-* remove delay
+* delete: Cancel delete
 * delete remote with progress:
-
+* remove delay
 
 * Windows Remote root has /
 * Windows Remote copy progress
