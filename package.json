@@ -1,6 +1,6 @@
 {
   "name": "commander",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "A Norton Commander clone based on Electron and React with Typescript",
   "main": "dist/main/main.js",
   "type": "module",
