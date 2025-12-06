@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useRef, useState } from "react"
+import { forwardRef, useCallback, useContext, useEffect, useEffectEvent, useImperativeHandle, useRef, useState } from "react"
 import VirtualTable, { type OnSort, type TableColumns, type VirtualTableHandle } from "virtual-table-react"
 import './FolderView.css'
 import { getItemsProvider } from "../items-provider/provider"
@@ -102,10 +102,10 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         showFavorites
     }))
 
-    useEffect(() => {
+    const onInit = useEffectEvent(() => {
         changePath(localStorage.getItem(`${id}-lastPath`) ?? "root", false, false)
-        // eslint-disable-next-line react-hooks/exhaustive-deps        
-    }, [])
+    })
+    useEffect(() => onInit(), [])
 
     const setNewItems = useCallback((items: Item[], dirCount?: number, fileCount?: number) => {
         setItems(items)

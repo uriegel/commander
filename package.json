@@ -1,6 +1,6 @@
 {
   "name": "commander",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "A Norton Commander clone based on Electron and React with Typescript",
   "main": "dist/main/main.js",
   "type": "module",
@@ -58,7 +58,7 @@
   },
   "homepage": "https://github.com/uriegel/commander#readme",
   "dependencies": {
-    "electron-settings": "^5.0.0",
+    "electron-settings": "^4.0.4",
     "filesystem-utilities": "^7.5.0",
     "functional-extensions": "^2.8.0",
     "react": "^19.2.1",
@@ -80,7 +80,7 @@
     "globals": "^16.5.0",
     "leaflet": "^1.9.4",
     "menubar-react": "^2.3.3",
-    "react-devtools": "^7.0.1",
+    "react-devtools": "^1.0.5",
     "react-leaflet": "^5.0.0",
     "react-progress-control": "^1.1.0",
     "typescript": "^5.9.3",
