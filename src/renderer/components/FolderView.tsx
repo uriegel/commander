@@ -67,16 +67,14 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const restrictionView = useRef<RestrictionViewHandle>(null)
     const requestId = useRef(0)
     const itemsDictionary = useRef<Map<number, Item>>(new Map)
-    const itemsRef = useRef<Item[]>([])
 
-    const [items, setStateItems] = useState([] as Item[])
+    const [items, setItems] = useState([] as Item[])
     const [path, setPath] = useState("")
 
     const itemsProvider = useRef<IItemsProvider>(undefined)
     const sortIndex = useRef(0)
     const sortDescending = useRef(false)
     const history = useRef(initializeHistory())
-    const refItems = useRef<Item[]>([]) 
 
     const dialog = useContext(DialogContext)
 
@@ -109,9 +107,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         // eslint-disable-next-line react-hooks/exhaustive-deps        
     }, [])
 
-    const setItems = useCallback((items: Item[], dirCount?: number, fileCount?: number) => {
-        setStateItems(items)
-        refItems.current = items
+    const setNewItems = useCallback((items: Item[], dirCount?: number, fileCount?: number) => {
+        setItems(items)
         if (dirCount != undefined || fileCount != undefined) {
             itemCount.current = { dirCount: dirCount || 0, fileCount: fileCount || 0 }
             onItemsChanged(id, itemCount.current)
@@ -132,15 +129,16 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                     }
                 }
             })
-            const newItems = itemsProvider.current?.sort(refItems.current, sortIndex.current, sortDescending.current)
-            if (newItems)
-                setItems(newItems)
+            setItems(prev => {
+                const newItems = itemsProvider.current?.sort(prev, sortIndex.current, sortDescending.current)
+                return newItems || prev
+            })
         }
 
         const event$ = id == ID_LEFT ? exifDataEventsLeft$ : exifDataEventsRight$
         const sub = event$.subscribe(attachExifs)
         return () => sub.unsubscribe()
-    }, [id, setItems])
+    }, [id])
 
     useEffect(() => {
         const attachVersions = (version: Version) => {
@@ -151,15 +149,16 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 if (item) 
                     item.fileVersion = n.info
             })
-            const newItems = itemsProvider.current?.sort(refItems.current, sortIndex.current, sortDescending.current)
-            if (newItems)
-                setItems(newItems)
+            setItems(prev => {
+                const newItems = itemsProvider.current?.sort(prev, sortIndex.current, sortDescending.current)
+                return newItems || prev
+            })
         }
 
         const event$ = id == ID_LEFT ? versionsDataEventsLeft$ : versionsDataEventsRight$
         const sub = event$.subscribe(attachVersions)
         return () => sub.unsubscribe()
-    }, [id, setItems])
+    }, [id])
 
     useEffect(() => {
         const event$ = id == ID_LEFT ? exifStartEventsLeft$ : exifStartEventsRight$
@@ -196,7 +195,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         }
     }
 
-    const getItems = () => itemsRef.current
+    const getItems = () => items
 
     const onPositionChanged = useCallback((item: Item) =>
         onItemChanged(id, itemsProvider.current?.appendPath(path, item.name) || "",
@@ -224,7 +223,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             const result = await newItemsProvider.getItems(id, requestId.current, path, forceShowHidden === undefined ? showHidden : forceShowHidden, 
                 mount, dialog, setErrorText)
             if (result.cancelled || !result.items || result.requestId != requestId.current)
-                return
+                return items
             restrictionView.current?.reset()
             if (itemsProvider.current != newItemsProvider) {
                 itemsProvider.current = newItemsProvider
@@ -233,28 +232,30 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             if (result.path)
                 setPath(result.path)
             //const items = result.items && result.items?.length > 0 ? result.items : itemsProvider.current.getItems()
-            itemsRef.current = itemsProvider.current.sort(result.items, sortIndex.current, sortDescending.current)
-            setItems(itemsRef.current, result.dirCount, result.fileCount)
-            itemsDictionary.current = new Map(itemsRef.current.filter(n => n.idx).map(n => [n.idx!, n]))
+            const newItems = itemsProvider.current.sort(result.items, sortIndex.current, sortDescending.current)
+            setNewItems(newItems, result.dirCount, result.fileCount)
+            itemsDictionary.current = new Map(newItems.filter(n => n.idx).map(n => [n.idx!, n]))
             const pos = latestPath
-                ? itemsRef.current.findIndex(n => n.name == latestPath)
+                ? newItems.findIndex(n => n.name == latestPath)
                 : checkPosition
-                    ? itemsRef.current.findIndex(n => checkPosition(n))
+                    ? newItems.findIndex(n => checkPosition(n))
                     : 0
-            virtualTable.current?.setInitialPosition(pos, itemsRef.current.length)
+            virtualTable.current?.setInitialPosition(pos, newItems.length)
             if (result.path) {
                 localStorage.setItem(`${id}-lastPath`, result.path)
                 if (!fromBacklog)
                     history.current.set(result.path)
             }
+            return newItems
         } catch (e) {
             const err = e as SystemError
             setErrorText(err.message)
+            return items
         } finally {
             getItemsFinished(id)            
         }
 
-    }, [id, setItems, setWidths, setErrorText, showHidden, dialog])
+    }, [id, items, setNewItems, setWidths, setErrorText, showHidden, dialog])
 
     const toggleSelection = (item: Item) => {
         if (!item.isParent && !(item as RemotesItem)?.isNew)
@@ -361,17 +362,17 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         if (selectedItems.length == 1 && !selectedItems[0].isSelected)
             selectedItems = []
         const pos = virtualTable.current?.getPosition()
-        const currentItem = pos ? itemsRef.current[pos] : null
-        await changePath(path, forceShowHidden || (forceShowHidden === false ? false : showHidden), undefined, undefined, undefined, checkPosition)
-        const itemsNameDictionary = new Map(itemsRef.current.map(n => [n.name, n]))
+        const currentItem = pos ? items[pos] : null
+        const newItems = await changePath(path, forceShowHidden || (forceShowHidden === false ? false : showHidden), undefined, undefined, undefined, checkPosition)
+        const itemsNameDictionary = new Map(newItems.map(n => [n.name, n]))
         selectedItems.forEach(n => {
             const item = itemsNameDictionary.get(n.name)
             if (item) 
                 item.isSelected = true
         })
-        const idx = !checkPosition ? itemsRef.current.findIndex(n => n.name == currentItem?.name) : -1
+        const idx = !checkPosition ? newItems.findIndex(n => n.name == currentItem?.name) : -1
         if (idx != -1)
-            virtualTable.current?.setInitialPosition(idx, itemsRef.current.length)
+            virtualTable.current?.setInitialPosition(idx, newItems.length)
     }
 
     const deleteItems = async () => {
