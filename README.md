@@ -30,6 +30,7 @@ TODO
 
 * Windows Services (perhaps elevatable sub process)
 
+* Theming: Statusbar lightblue instead of red!
 * Theming: Dialog blue color (buttons)
 * Theming: select edit blue color
 * Theming: adapt gray color from KDE/Gtk3 (/Neon/Ubuntu/Fedora)
