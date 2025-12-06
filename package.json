@@ -63,7 +63,8 @@
     "functional-extensions": "^2.8.0",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
-    "rxjs": "^7.8.2"
+    "rxjs": "^7.8.2",
+    "native": "file:local_modules/native"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

@@ -1,0 +1,58 @@
+{
+    "targets": [{
+        "target_name": "native",
+        "sources": [ 
+            'source/addon.cpp',
+            'source/get_files_worker.cpp'
+        ],
+        'include_dirs': [
+            "<!@(node -p \"require('node-addon-api').include\")",
+            "<!@(node -p \"var a = require('node-addon-api').include; var b = a.substr(0, a.length - 15); b + 'event-source-base' + a[a.length-1]\")"
+        ],
+        'dependencies': ["<!(node -p \"require('node-addon-api').gyp\")"],
+        "cflags": ["-Wall", "-std=c++20"],
+        'cflags_cc': ["-Wall", "-std=c++20"],
+        'cflags!': [ '-fno-exceptions' ],
+        'cflags_cc!': [ '-fno-exceptions' ],
+        'link_settings': {
+            "libraries": []
+        },            
+        'conditions': [
+            ['OS=="win"', {
+                'defines': [
+                    'WINDOWS', 
+                    '_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING' 
+                ],
+                "msvs_settings": {
+                    "VCCLCompilerTool": {
+                        "ExceptionHandling": 1,
+    					'AdditionalOptions': [
+						    '-std:c++20',
+						]
+                    }
+                },
+                'sources': [
+                    'source/windows/files.cpp',
+                ],
+                "libraries": [ 
+                    "gdiplus.lib",
+                    "Mincore.lib"
+                ]                
+            }],
+            ['OS=="linux"', {
+                'defines': ['LINUX'],
+                "libraries": ["<!@(pkg-config --libs gtk+-3.0)"],
+                "cflags": [ "<!@(pkg-config --cflags gtk+-3.0)" ],
+                'cflags_cc': [ "<!@(pkg-config --cflags gtk+-3.0)" ],
+                "ldflags": ["<!@(pkg-config --libs gtk+-3.0)"],
+                'link_settings': {
+                    "libraries": [ 
+                    ]
+                },
+                'sources': [ 
+                    'source/linux/files.cpp'
+                ]
+            }],
+        ]          
+    }]
+}

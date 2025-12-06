@@ -14,6 +14,7 @@ import { registerGetTrackProtocol } from './track.js'
 import { canClose } from './close-control.js'
 import { registerGetWindowIconProtocol } from './windowicon.js'
 import { getAccentColor } from 'filesystem-utilities'
+import { getFiles } from 'native'
 
 process.env.UV_THREADPOOL_SIZE = "32"
 
@@ -24,6 +25,11 @@ let mainWindow: BrowserWindow | null = null
 export function sendEvent(data: Event) {
 	mainWindow?.webContents.send('fromMain', data)
 }
+
+
+const affe = getFiles("hallo path", false)
+
+
 
 protocol.registerSchemesAsPrivileged([
 	{

@@ -1,0 +1,9 @@
+{
+  "name": "native",
+  "version": "1.0.0",
+  "main": "./index.js",
+  "types": "index.d.ts",
+  "dependencies": {
+    "node-addon-api": "^8.5.0"
+  }
+}

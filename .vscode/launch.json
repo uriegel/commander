@@ -20,13 +20,22 @@
             "args" : ["."],            
             "outputCapture": "std"
         }, {
-            "name": "Launch Rust (Linux)",
-            "type": "lldb",
+            "name": "Launch Native (Linux)",
+            "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/node_modules/electron/dist/electron",
-            "args": [ "" ],
+            "args": [ "." ],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "build",
+        }, {
+            "name": "Launch Native (Windows)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/node_modules/electron/dist/electron",
+            "args": [ "." ],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "build",
         }
     ]
 }
+
