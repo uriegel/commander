@@ -1,4 +1,4 @@
-import {DriveItem, DriveType } from "../../src/main/drives"
+import {DriveItem } from "../../src/main/drives"
 
 declare module 'native' {
 
