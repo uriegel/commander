@@ -27,7 +27,14 @@ export function sendEvent(data: Event) {
 }
 
 
-const affe = getFiles("hallo path", false)
+try {
+	//const affe = await getFiles("/home/uwe")
+	const affe2 = await getFiles("/lost+found")
+}
+catch (e)
+{
+	console.log("e", e)
+}
 
 
 

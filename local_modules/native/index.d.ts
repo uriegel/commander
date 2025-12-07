@@ -22,5 +22,5 @@ declare module 'native' {
      * @param showHidden When 'true', retrieves hidden files too
      * @throws SystemError
      */
-    function getFiles(path: string, showHidden?: boolean): Promise<FileItemsResult>
+    function getFiles(path: string, showHidden?: boolean): Promise<FileItem[]>
 }

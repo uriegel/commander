@@ -1,8 +1,9 @@
 import {
     addNetworkShare,
-    cancel, copyFile, copyFiles, createFolder, FileItem, getDrives, getFiles, openFile,
+    cancel, copyFile, copyFiles, createFolder, FileItem, getDrives, openFile,
     openFileWith, rename, showFileProperties, SystemError, trash
 } from 'filesystem-utilities'
+import { getFiles } from "native"
 import { spawn } from "child_process"
 import fs from 'fs'
 import path from 'path'
@@ -48,7 +49,7 @@ export const onRequest = async (request: Request) => {
                 getItemsSemaphores.get(getfiles.folderId)?.release()
                 getItemsSemaphores.set(getfiles.folderId, createSemaphore(0, 1))
                 const normalizedPath = path.normalize(getfiles.path)
-                const items = await getFiles(normalizedPath, getfiles.showHidden == true)
+                const items = await getFilesResult(normalizedPath, getfiles.showHidden == true)
                 items.items = items.items.map(n => ({
                     ...n, 
                     iconPath: getIconPath(n.name, items.path)
@@ -238,12 +239,12 @@ const mount = async (drive: string) => new Promise<string>((res, rej) => {
 const flattenDirectory = (sourcePath: string, targetPath: string, dir: FileItem): AsyncEnumerable<CopyItem> => {
     const flatten = async () => {
         const directory = path.join(sourcePath, dir.name)
-        const items = await getFiles(directory, true)        
+        const items = await getFilesResult(directory, true)        
         let targetItems: FileItem[]| undefined
         try {
             targetItems = targetPath.startsWith("remote")
                 ? (await getRemoteFiles({ folderId: "", requestId: 0, path: path.join(targetPath, dir.name), showHidden: true })).items
-                : (await getFiles(path.join(targetPath, dir.name), true)).items
+                : (await getFilesResult(path.join(targetPath, dir.name), true)).items
         } catch {}
         const targetItemsDictionary = targetItems ? new Map(targetItems.map(n => [path.join(dir.name, n.name), n])) : undefined
         return items
@@ -260,3 +261,18 @@ const flattenDirectory = (sourcePath: string, targetPath: string, dir: FileItem)
     .bind(n => n.isDirectory ? flattenDirectory(sourcePath, targetPath, n) : [n].toAsyncEnumerable())
 }
 	
+const getFilesResult = async (path: string, showHidden?: boolean ) => {
+    const fileItems = await getFiles(path, showHidden == true)
+    let dirs = fileItems.filter(n => n.isDirectory)
+    let files = fileItems.filter(n => !n.isDirectory)
+    let dirCount = dirs.length
+    let fileCount = files.length
+    const items =  dirs.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()))
+        .concat(files.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase())))
+    return {
+        dirCount,
+        fileCount,
+        path,
+        items
+    }    
+}
