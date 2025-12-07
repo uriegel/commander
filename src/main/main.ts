@@ -14,7 +14,6 @@ import { registerGetTrackProtocol } from './track.js'
 import { canClose } from './close-control.js'
 import { registerGetWindowIconProtocol } from './windowicon.js'
 import { getAccentColor } from 'filesystem-utilities'
-import { getFiles } from 'native'
 
 process.env.UV_THREADPOOL_SIZE = "32"
 
@@ -25,18 +24,6 @@ let mainWindow: BrowserWindow | null = null
 export function sendEvent(data: Event) {
 	mainWindow?.webContents.send('fromMain', data)
 }
-
-
-try {
-	//const affe = await getFiles("/home/uwe")
-	const affe2 = await getFiles("/lost+found")
-}
-catch (e)
-{
-	console.log("e", e)
-}
-
-
 
 protocol.registerSchemesAsPrivileged([
 	{
@@ -202,7 +189,8 @@ ipcMain.on('ondragstart', (event: IpcMainEvent, filePaths: string[]) => {
 })
 
 ipcMain.on('getAccentColor', (event: IpcMainEvent) => {
-	const accent = getAccentColor()
+
+	const accent = process.platform == "win32" ? "lightblue" : getAccentColor()
 	event.returnValue = accent == "orange"
 		? nativeTheme.shouldUseDarkColors ? "#d34615" : "#cb4314"
 		: event.returnValue = accent == "teal"

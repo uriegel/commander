@@ -34,8 +34,8 @@
             "name": "Launch Native (Windows)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}\\node_modules\\electron\\dist\\electron.exe",
-            "args": [ "." ],
+            "program": "node",
+            "args": [ "${workspaceFolder}/native/dev/windows.js" ],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "build",
         }

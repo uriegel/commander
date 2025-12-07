@@ -1,3 +1,4 @@
 import { getFiles } from "native"
 
-getFiles("Pfädchen", false)
+const files = await getFiles("c:\\")
+console.log("files", files)
