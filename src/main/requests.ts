@@ -1,6 +1,6 @@
 import {
     addNetworkShare,
-    cancel, copyFile, copyFiles, createFolder, FileItem, getDrives, openFile,
+    cancel, copyFile, copyFiles, createFolder, FileItem, openFile,
     openFileWith, rename, showFileProperties, SystemError, trash
 } from 'filesystem-utilities'
 import { getFiles } from "native"
@@ -15,6 +15,7 @@ import { retrieveVersions } from './version.js'
 import { Semaphore } from "functional-extensions"
 import { closeWindow } from './main.js'
 import { copyFromRemote, copyToRemote, createRemoteFolder, getRemoteFiles, remoteCancel, remoteDelete } from './remote.js'
+import { getDrives } from './drives.js'
 
 export const getItemsSemaphores = new Map<string, Semaphore>()
 
