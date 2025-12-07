@@ -27,7 +27,14 @@ export function sendEvent(data: Event) {
 }
 
 
-const affe = getFiles("hallo path", false)
+try {
+	//const affe = await getFiles("/home/uwe")
+	const affe2 = await getFiles("/lost+found")
+}
+catch (e)
+{
+	console.log("e", e)
+}
 
 
 
@@ -94,7 +101,7 @@ const createWindow = () => {
 		backgroundColor: nativeTheme.shouldUseDarkColors ? "#121212" : undefined,
 		icon: path.join(rootDir, "../../icons/64x64.png"),
 		webPreferences: {
-			preload: path.join(rootDir, "../bridge/preload.js")
+			preload: path.join(rootDir, "./bridge/preload.js")
 		}
 	} as Electron.BrowserViewConstructorOptions
 

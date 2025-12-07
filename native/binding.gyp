@@ -33,6 +33,7 @@
                 },
                 'sources': [
                     'source/windows/files.cpp',
+                    'source/linux/error.cpp'
                 ],
                 "libraries": [ 
                     "gdiplus.lib",
@@ -50,7 +51,8 @@
                     ]
                 },
                 'sources': [ 
-                    'source/linux/files.cpp'
+                    'source/linux/files.cpp',
+                    'source/linux/error.cpp'
                 ]
             }],
         ]          

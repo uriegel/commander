@@ -1,6 +1,6 @@
 {
   "name": "commander",
-  "version": "1.4.1",
+  "version": "1.4.3",
   "description": "A Norton Commander clone based on Electron and React with Typescript",
   "main": "dist/main/main.js",
   "type": "module",
@@ -17,8 +17,8 @@
     "files": [
       "icons/64x64.png",
       "dist/main/**/*",
-      "dist/renderer/**/*",
-      "dist/bridge/**/*",
+      "dist/renderer/index.html",
+      "dist/renderer/assets/**/*",
       "package.json"
     ],
     "directories": {
@@ -42,10 +42,10 @@
     }
   },
   "scripts": {
-    "dev": "npm run build && concurrently \"vite\" \"wait-on http://localhost:5173\"",
+    "dev": "npm run build && vite",
     "lint": "npm run build && eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "react dev tools": "./node_modules/.bin/electron ./node_modules/react-devtools/app.js",
-    "dist": "vite build && npm run build && electron-builder",
+    "dist": "npm --prefix ./native run rebuild && vite build && npm run build && electron-builder",
     "build": "tsc -p tsconfig.json"
   },
   "repository": {
@@ -72,7 +72,6 @@
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
-    "concurrently": "^9.2.1",
     "cross-env": "^10.1.0",
     "electron": "^39.2.6",
     "electron-builder": "^26.3.4",

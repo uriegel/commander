@@ -4,18 +4,21 @@
   "main": "index.js",
   "gypfile": true,
   "scripts": {
-    "start-linux": "node dev/linux.js",
-    "debug-linux": "node --nolazy --inspect-brk=9229 dev/linux.js",
     "start-windows": "node dev/windows.js",
     "debug-windows": "node --nolazy --inspect-brk=9229 dev/windows.js",
-    "build-dev": "node-gyp build --debug",
-    "build": "node-gyp build",
-    "rebuild-dev": "node-gyp rebuild --debug",
-    "rebuild": "node-gyp rebuild",
+    "build": "node-gyp build && npm run postbuild",
+    "rebuild": "node-gyp rebuild && npm run postbuild",
+    "build-dev": "node-gyp build --debug && npm run postbuild-dev",
+    "rebuild-dev": "node-gyp rebuild --debug && npm run postbuild-dev",
+    "postbuild": "cpx build/Release/native.node ../local_modules/native",
+    "postbuild-dev": "cpx build/Debug/native.node ../local_modules/native",
     "clean": "node-gyp clean"
   },
   "types": "index.d.ts",
   "dependencies": {
     "node-addon-api": "^8.5.0"
+  },
+  "devDependencies": {
+    "cpx": "^1.5.0"
   }
 }

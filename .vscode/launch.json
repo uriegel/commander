@@ -22,6 +22,9 @@
         }, {
             "name": "Launch Native (Linux)",
             "type": "cppdbg",
+            "environment": [
+                { "name": "VITE_DEV_SERVER_URL", "value": "http://localhost:5173" }
+            ],           
             "request": "launch",
             "program": "${workspaceFolder}/node_modules/electron/dist/electron",
             "args": [ "." ],
