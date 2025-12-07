@@ -45,7 +45,7 @@
     "dev": "npm run build && vite",
     "lint": "npm run build && eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "react dev tools": "./node_modules/.bin/electron ./node_modules/react-devtools/app.js",
-    "dist": "vite build && npm run build && electron-builder",
+    "dist": "npm --prefix ./native run rebuild && vite build && npm run build && electron-builder",
     "build": "tsc -p tsconfig.json"
   },
   "repository": {
