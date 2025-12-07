@@ -94,7 +94,7 @@ const createWindow = () => {
 		backgroundColor: nativeTheme.shouldUseDarkColors ? "#121212" : undefined,
 		icon: path.join(rootDir, "../../icons/64x64.png"),
 		webPreferences: {
-			preload: path.join(rootDir, "../bridge/preload.js")
+			preload: path.join(rootDir, "./bridge/preload.js")
 		}
 	} as Electron.BrowserViewConstructorOptions
 
