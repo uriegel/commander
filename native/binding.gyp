@@ -3,7 +3,8 @@
         "target_name": "native",
         "sources": [ 
             'source/addon.cpp',
-            'source/get_files_worker.cpp'
+            'source/get_files_worker.cpp',
+            'source/std_utils.cpp'
         ],
         'include_dirs': [
             "<!@(node -p \"require('node-addon-api').include\")",
@@ -33,6 +34,7 @@
                 },
                 'sources': [
                     'source/windows/files.cpp',
+                    'source/windows/get_drives_worker.cpp',
                     'source/windows/error.cpp'
                 ],
                 "libraries": [ 

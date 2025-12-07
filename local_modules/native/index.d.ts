@@ -1,3 +1,5 @@
+import {DriveItem, DriveType } from "../../src/main/drives"
+
 declare module 'native' {
 
     export interface FileItem {
@@ -23,4 +25,10 @@ declare module 'native' {
      * @throws SystemError
      */
     function getFiles(path: string, showHidden?: boolean): Promise<FileItem[]>
+
+    /**
+     * Retrieves all drives from the file system
+     * @returns drives 
+     */
+    function getDrives(): Promise<DriveItem[]>
 }

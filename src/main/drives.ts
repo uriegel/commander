@@ -1,5 +1,6 @@
 import { exec } from "child_process"
 import { homedir } from 'os'
+import { getDrives as getWindowsDrives } from 'native'
 
 export type UNKNOWN = "UNKNOWN"
 export type HARDDRIVE = "HARDDRIVE"
@@ -20,11 +21,16 @@ export interface DriveItem {
     isMounted?: boolean
 }
 
+export const getDrives = () => 
+    process.platform == "win32"
+    ? getWindowsDrives()
+    : getLinuxDrives()
+
 interface InnerDriveItem extends DriveItem {
     isRoot: boolean
 }
 
-export const getDrives = async () => {
+const getLinuxDrives = async () => {
     const drivesString = (await runCmd('lsblk --bytes --output SIZE,NAME,LABEL,MOUNTPOINT,FSTYPE')) as string
     const driveStrings = drivesString.split("\n")
     const columnsPositions = (() => {
