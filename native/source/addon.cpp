@@ -7,11 +7,15 @@
     #include "linux/accent_color.h"
 #endif
 #include "get_files_worker.h"
+#include "get_icon_worker.h"
+#include "get_icon_from_name_worker.h"
 
 using namespace Napi;
 
 Object Init(Env env, Object exports) {
     exports.Set(String::New(env, "getFiles"), Function::New(env, GetFiles));
+    exports.Set(String::New(env, "getIcon"), Function::New(env, GetIcon));
+    exports.Set(String::New(env, "getIconFromName"), Function::New(env, GetIconFromName));
 #if WINDOWS    
     exports.Set(String::New(env, "getDrives"), Function::New(env, GetDrives));
 #else

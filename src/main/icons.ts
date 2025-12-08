@@ -1,5 +1,5 @@
 import { protocol } from "electron"
-import { getIcon, getIconFromName } from "filesystem-utilities"
+import { getIcon, getIconFromName } from "native"
 
 export function registerGetIconProtocol() {
     protocol.handle('icon', async (request) => {

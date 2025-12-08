@@ -4,6 +4,8 @@
         "sources": [ 
             'source/addon.cpp',
             'source/get_files_worker.cpp',
+            'source/get_icon_worker.cpp',
+            'source/get_icon_from_name_worker.cpp',
             'source/std_utils.cpp'
         ],
         'include_dirs': [
@@ -35,7 +37,8 @@
                 'sources': [
                     'source/windows/files.cpp',
                     'source/windows/get_drives_worker.cpp',
-                    'source/windows/error.cpp'
+                    'source/windows/error.cpp',
+                    'source/windows/icon.cpp'
                 ],
                 "libraries": [ 
                     "gdiplus.lib",
@@ -55,7 +58,8 @@
                 'sources': [ 
                     'source/linux/files.cpp',
                     'source/linux/error.cpp',
-                    'source/linux/accent_color.cpp'
+                    'source/linux/accent_color.cpp',
+                    'source/linux/icon.cpp'
                 ]
             }],
         ]          
