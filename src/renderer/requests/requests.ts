@@ -1,4 +1,4 @@
-import { SystemError } from "filesystem-utilities"
+import { SystemError } from "native"
 import { ExtendedRenameItem, FileItem } from "../items-provider/items"
 import { CopyItem } from "../copy-processor"
 

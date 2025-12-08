@@ -9,6 +9,8 @@
 #include "get_files_worker.h"
 #include "get_icon_worker.h"
 #include "get_icon_from_name_worker.h"
+#include "get_exif_infos_worker.h"
+#include "cancellation.h"
 
 using namespace Napi;
 
@@ -16,6 +18,8 @@ Object Init(Env env, Object exports) {
     exports.Set(String::New(env, "getFiles"), Function::New(env, GetFiles));
     exports.Set(String::New(env, "getIcon"), Function::New(env, GetIcon));
     exports.Set(String::New(env, "getIconFromName"), Function::New(env, GetIconFromName));
+    exports.Set(String::New(env, "getExifInfos"), Function::New(env, GetExifInfos));
+    exports.Set(String::New(env, "cancel"), Function::New(env, Cancel));
 #if WINDOWS    
     exports.Set(String::New(env, "getDrives"), Function::New(env, GetDrives));
 #else

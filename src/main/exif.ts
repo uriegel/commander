@@ -1,6 +1,6 @@
 import path from 'path'
 import { sendEvent } from './main.js'
-import { FileItemsResult, getExifInfos } from 'filesystem-utilities'
+import { FileItemsResult, getExifInfos } from 'native'
 import { getItemsSemaphores } from './requests.js'
 
 export async function retrieveExifDatas(folderId: string, requestId: string, itemsResult: FileItemsResult) {

@@ -1,9 +1,9 @@
 import {
     addNetworkShare,
     cancel, copyFile, copyFiles, createFolder, FileItem, openFile,
-    openFileWith, rename, showFileProperties, SystemError, trash
+    openFileWith, rename, showFileProperties, trash
 } from 'filesystem-utilities'
-import { getFiles } from "native"
+import { getFiles, SystemError } from "native"
 import { spawn } from "child_process"
 import fs from 'fs'
 import path from 'path'

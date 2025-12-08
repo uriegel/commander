@@ -6,7 +6,10 @@
             'source/get_files_worker.cpp',
             'source/get_icon_worker.cpp',
             'source/get_icon_from_name_worker.cpp',
-            'source/std_utils.cpp'
+            "source/get_exif_infos_worker.cpp",
+            'source/std_utils.cpp',
+            'source/exif_reader.cpp',
+            'source/cancellation.cpp'
         ],
         'include_dirs': [
             "<!@(node -p \"require('node-addon-api').include\")",

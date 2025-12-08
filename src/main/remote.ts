@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { Transform } from "stream"
-import { FileItem, FileItemsResult, SystemError } from 'filesystem-utilities'
+import { FileItem, FileItemsResult, SystemError } from 'native'
 import { GetFiles, getIconPath } from './requests.js'
 
 export const getRemoteFiles = async (input: GetFiles) => {

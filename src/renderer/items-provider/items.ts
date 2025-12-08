@@ -1,4 +1,5 @@
-import { DriveType, VersionInfo } from "filesystem-utilities"
+import { VersionInfo } from "filesystem-utilities"
+import { DriveType } from "../../main/drives.js"
 
 interface SelectableItem {
     isSelected?: boolean

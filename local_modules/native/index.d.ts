@@ -1,6 +1,25 @@
 import {DriveItem } from "../../src/main/drives"
 
 declare module 'native' {
+    export type UNKNOWN = "UNKNOWN"
+    export type ACCESS_DENIED = "ACCESS_DENIED"
+    export type PATH_NOT_FOUND = "PATH_NOT_FOUND"
+    export type TRASH_NOT_POSSIBLE = "TRASH_NOT_POSSIBLE"
+    export type CANCELLED = "CANCELLED"
+    export type FILE_EXISTS = "FILE_EXISTS"
+    export type WRONG_CREDENTIALS = "WRONG_CREDENTIALS"
+    export type NETWORK_NAME_NOT_FOUND = "NETWORK_NAME_NOT_FOUND"
+    export type NETWORK_PATH_NOT_FOUND = "NETWORK_PATH_NOT_FOUND"
+
+    export type ErrorType = ACCESS_DENIED | PATH_NOT_FOUND | TRASH_NOT_POSSIBLE | CANCELLED 
+                            | FILE_EXISTS | WRONG_CREDENTIALS | NETWORK_NAME_NOT_FOUND
+                            | NETWORK_PATH_NOT_FOUND | UNKNOWN
+
+    export interface SystemError {
+        error: ErrorType,
+        nativeError: number,
+        message: string
+    }
 
     export interface FileItem {
         name: string
@@ -16,6 +35,18 @@ declare module 'native' {
         dirCount: number  
         fileCount: number
         path: string
+    }
+
+    export interface ExifInfosInput {
+        path: string,
+        idx: number
+    }
+
+    export interface ExifInfo {
+        idx: number,
+        date: Date,
+        latitude: number,
+        longitude: number
     }
 
     /**
@@ -60,4 +91,13 @@ declare module 'native' {
      * @result The icon as binary data
      */
     function getIconFromName(name: string): Promise<Buffer>
+
+    /**
+     * 
+     * Retrieves the exif datas of a png or jpg file, if included
+     * @param file Pathes to the png or jpg files, together with an index.
+     * @param cancellation When included as string, the operation can be cancelled by calling function 'cancel' with this string as parameter
+     * @returns An array of exif informations. Each entry belongs to the file path entry with the same index
+     */
+    function getExifInfos(files: ExifInfosInput[], cancellation?: string): Promise<ExifInfo[]>
 }
