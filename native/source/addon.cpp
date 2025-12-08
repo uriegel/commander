@@ -4,6 +4,7 @@
     #include "windows/get_drives_worker.h"
 #elif LINUX
     #include "linux/platform.h"
+    #include "linux/accent_color.h"
 #endif
 #include "get_files_worker.h"
 
@@ -14,6 +15,7 @@ Object Init(Env env, Object exports) {
 #if WINDOWS    
     exports.Set(String::New(env, "getDrives"), Function::New(env, GetDrives));
 #else
+    exports.Set(String::New(env, "getAccentColor"), Function::New(env, GetAccentColor));
 #endif
     return exports;    
 }

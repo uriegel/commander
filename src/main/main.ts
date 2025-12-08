@@ -13,7 +13,7 @@ import { Event } from './events.js'
 import { registerGetTrackProtocol } from './track.js'
 import { canClose } from './close-control.js'
 import { registerGetWindowIconProtocol } from './windowicon.js'
-import { getAccentColor } from 'filesystem-utilities'
+import { getAccentColor } from 'native'
 
 process.env.UV_THREADPOOL_SIZE = "32"
 

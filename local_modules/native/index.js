@@ -4,3 +4,5 @@ const inner= require("./native")
 
 exports.getFiles = inner.getFiles
 exports.getDrives = inner.getDrives
+exports.getDrives = inner.getDrives
+exports.getAccentColor = inner.getAccentColor

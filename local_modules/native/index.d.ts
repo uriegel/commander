@@ -31,4 +31,9 @@ declare module 'native' {
      * @returns drives 
      */
     function getDrives(): Promise<DriveItem[]>
+
+    /**
+     * Gets the Gnome (or Ubuntu) accent color as string
+     */
+    function getAccentColor(): string
 }

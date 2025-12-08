@@ -54,7 +54,8 @@
                 },
                 'sources': [ 
                     'source/linux/files.cpp',
-                    'source/linux/error.cpp'
+                    'source/linux/error.cpp',
+                    'source/linux/accent_color.cpp'
                 ]
             }],
         ]          
