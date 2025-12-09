@@ -1,5 +1,5 @@
 import { protocol } from "electron"
-import { getGpxTrack } from "filesystem-utilities"
+import { getGpxTrack } from "native"
 import { writeJson } from "./requests.js"
 
 export function registerGetTrackProtocol() {

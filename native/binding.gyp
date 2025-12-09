@@ -8,6 +8,7 @@
             'source/get_icon_from_name_worker.cpp',
             "source/get_exif_infos_worker.cpp",
             'source/get_gpx_track_worker.cpp',
+            'source/trash_worker.cpp',
             'source/std_utils.cpp',
             'source/exif_reader.cpp',
             'source/cancellation.cpp'
@@ -60,10 +61,12 @@
                     ]
                 },
                 'sources': [ 
+                    'source/linux/copy_worker.cpp',
                     'source/linux/files.cpp',
                     'source/linux/error.cpp',
                     'source/linux/accent_color.cpp',
-                    'source/linux/icon.cpp'
+                    'source/linux/icon.cpp',
+                    'source/linux/trash.cpp',
                 ]
             }],
         ]          

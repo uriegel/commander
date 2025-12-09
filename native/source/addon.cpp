@@ -11,7 +11,10 @@
 #include "get_icon_from_name_worker.h"
 #include "get_exif_infos_worker.h"
 #include "get_gpx_track_worker.h"
+#include "copy_worker.h"
+#include "trash_worker.h"
 #include "cancellation.h"
+#include "error.h"
 
 using namespace Napi;
 
@@ -21,6 +24,8 @@ Object Init(Env env, Object exports) {
     exports.Set(String::New(env, "getIconFromName"), Function::New(env, GetIconFromName));
     exports.Set(String::New(env, "getExifInfos"), Function::New(env, GetExifInfos));
     exports.Set(String::New(env, "getGpxTrackAsync"), Function::New(env, GetGpxTrack));
+    exports.Set(String::New(env, "trash"), Function::New(env, Trash));
+    exports.Set(String::New(env, "copy"), Function::New(env, Copy));
     exports.Set(String::New(env, "cancel"), Function::New(env, Cancel));
 #if WINDOWS    
     exports.Set(String::New(env, "getDrives"), Function::New(env, GetDrives));
@@ -28,6 +33,7 @@ Object Init(Env env, Object exports) {
     setlocale(LC_MESSAGES, "");
     setlocale(LC_CTYPE, "");
     exports.Set(String::New(env, "getAccentColor"), Function::New(env, GetAccentColor));
+    exports.Set(String::New(env, "getErrorMessage"), Function::New(env, GetErrorMessage));
 #endif
     return exports;    
 }

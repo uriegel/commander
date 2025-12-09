@@ -129,4 +129,60 @@ declare module 'native' {
      * Cancels an operation by calling this function with the cancellation token you have also set in the operation to cancel
      */
     function cancel(cancellation: string): void
+
+    /**
+     * Deletes files/a file to the trash
+     * @param files the file/s to delete
+     * @throws SystemError
+     */
+    function trash(files: string|string[]): Promise<void>
+
+    /**
+     * Copies a file
+     * @param sourceFile 
+     * @param targetFile 
+     * @throws SystemError
+     */
+    function copyFile(sourceFile: string, targetFile: string): Promise<void>
+
+    /**
+     * 
+     */
+    type CopyOptions = {
+        /**
+         * error when target file exits or overwrite it?
+         */
+        overwrite?: boolean,
+        /**
+         * Moves the specified files instead of copying
+         */
+        move?: boolean
+        /**
+         * When set, you can cancel the copy process with 'cancel(cancellation)'
+         */
+        cancellation?: string
+        /**
+         * Progress callback function, only working on Linux. On Windows there is a builtin progress dialog from the shell
+         * @param fileIndex index of the copied file
+         * @param currentBytes current bytes copied of the current file
+         * @param totalBytes total bytes of all flies to be copied
+         */
+        progressCallback?: (fileIndex: number, currentBytes: number, totalBytes: number) => void
+    }
+    
+    /**
+     * Copy files 'items' from 'sourcePath'>' to 'targetPath'. Sub pathes in 'items' will be copied to sub pathes in 'targetPath' (will be generated there if necessary)
+     * @param sourcePath source path of items to be copied
+     * @param targetPath target path of the copied items
+     * @param items the file names of the items to be copied
+     * @param options: options of Type CopyOptions
+     * @throws SystemError
+     */
+    function copyFiles(sourcePath: string, targetPath: string, items: string[], options?: CopyOptions): Promise<void>
+
+    /**
+     * Retrieves the error message of a native linux code
+     * @param e Linux native error code
+     */
+    function getErrorMessage(e: number): string
 }

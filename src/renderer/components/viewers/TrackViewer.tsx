@@ -4,7 +4,7 @@ import useResizeObserver from '@react-hook/resize-observer'
 import { Map as LMap, type LatLngExpression } from "leaflet"
 import { MapContainer, Marker, Polyline, TileLayer } from 'react-leaflet'
 import { useEffect, useRef, useState } from 'react'
-import { GpxTrack, GpxPoint } from 'filesystem-utilities'
+import { GpxTrack, GpxPoint } from 'native'
 
 type TrackViewerProps = {
     path: string
