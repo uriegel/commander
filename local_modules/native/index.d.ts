@@ -49,6 +49,24 @@ declare module 'native' {
         longitude: number
     }
 
+    export interface GpxPoint {
+        lat: number
+        lon: number
+        ele: number
+        time: string
+        heartrate: number
+        velocity: number
+    }
+
+    export interface GpxTrack {
+        name: string
+        distance: number
+        duration: number
+        date: string
+        averageSpeed: number
+        trackPoints: GpxPoint[]
+    }    
+
     /**
      * Retrieves all files from a directory. 
      * @param path parent directory containing directories and files to be retrieved
@@ -100,4 +118,15 @@ declare module 'native' {
      * @returns An array of exif informations. Each entry belongs to the file path entry with the same index
      */
     function getExifInfos(files: ExifInfosInput[], cancellation?: string): Promise<ExifInfo[]>
+
+    /**
+     * Retrieves the content of a gpx track as JSON output
+     * @param path File path to a gpx track
+     */
+    function getGpxTrack(path: string): Promise<GpxTrack>
+
+    /**
+     * Cancels an operation by calling this function with the cancellation token you have also set in the operation to cancel
+     */
+    function cancel(cancellation: string): void
 }

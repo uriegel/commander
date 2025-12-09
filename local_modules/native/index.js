@@ -9,4 +9,5 @@ exports.getAccentColor = inner.getAccentColor
 exports.getIcon = inner.getIcon
 exports.getIconFromName = inner.getIconFromName
 exports.getExifInfos = inner.getExifInfos
+exports.getGpxTrack = inner.getGpxTrackAsync
 exports.cancel = inner.cancel
