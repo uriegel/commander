@@ -49,6 +49,23 @@ declare module 'native' {
         longitude: number
     }
 
+    export interface VersionsInput {
+        path: string,
+        idx: number
+    }
+
+    export interface VersionInfo {
+        major: number
+        minor: number
+        build: number
+        patch: number
+    }
+
+    export interface VersionInfoResult {
+        idx: number
+        info: VersionInfo
+    }
+
     export interface GpxPoint {
         lat: number
         lon: number
@@ -185,4 +202,56 @@ declare module 'native' {
      * @param e Linux native error code
      */
     function getErrorMessage(e: number): string
+
+    /**
+     * Creates a new folder 
+     * @param path path of the folder to be created
+     * @throws SystemError
+     */    
+    function createFolder(path: string): Promise<void>
+
+    /**
+     * Opens a file
+     * @param path File path
+     */
+    function openFile(path: string): void    
+
+    /**
+     * Opens a file in Windows by showing "open with" dialog
+     * @param path File path
+     */
+    function openFileWith(path: string): void    
+
+    /**
+     * Shows file properties in Windows
+     * @param path File path
+     */
+    function showFileProperties(path: string): void    
+
+    /**
+     * Renames a file or directory
+     * @param path File path
+     * @param name File name 
+     * @param newName New file name
+     * @throws SystemError
+     */
+    function rename(path: string, name: string, newName: string): Promise<void>
+
+    /**
+     * connect a network share like '\\\\host\\sharename' in Windows
+     * @param share The share name like '\\\\host\\sharename'
+     * @param name the name to connect with, domain included: domain\\username
+     * @param passwd the password to connect with
+     * @throws SystemError with ErrorType: WRONG_CREDENTIALS, ACCESS_DENIED or NETWORK_NAME_NOT_FOUND
+     */
+    function addNetworkShare(share: string, name: string, passwd: string): Promise<void>
+
+    /**
+     * 
+     * Retrieves the file version of a exe or dll files in Windows, if included. Only available in Windows
+     * @param file Pathes to the exe or dll files, together with an index.
+     * @param cancellation When included as string, the operation can be cancelled by calling function 'cancel' with this string as parameter
+     * @returns An array of VersionInfo informations. Each entry belongs to the file path entry with the same index
+     */
+    function getVersionInfos(files: VersionsInput[], cancellation?: string): Promise<VersionInfoResult[]>
 }

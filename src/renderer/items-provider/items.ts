@@ -1,4 +1,4 @@
-import { VersionInfo } from "filesystem-utilities"
+import { VersionInfo } from "native"
 import { DriveType } from "../../main/drives.js"
 
 interface SelectableItem {

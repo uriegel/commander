@@ -1,4 +1,4 @@
-import { VersionInfoResult } from "filesystem-utilities"
+import { VersionInfoResult } from "native"
 
 export type ExifDataInfo = {
     idx: number,

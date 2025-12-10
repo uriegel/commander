@@ -1,6 +1,5 @@
 import path from 'path'
-import { getVersionInfos } from "filesystem-utilities"
-import { FileItemsResult } from "native"
+import { FileItemsResult, getVersionInfos } from "native"
 import { sendEvent } from './main.js'
 import { getItemsSemaphores } from './requests.js'
 

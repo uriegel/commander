@@ -1,8 +1,7 @@
 import {
+    cancel, getFiles, SystemError, FileItem, trash, copyFile, copyFiles, getErrorMessage,
     addNetworkShare, createFolder as createFolderWindows, openFile as openFileWindows,
-    openFileWith, rename as renameWindows, showFileProperties
-} from 'filesystem-utilities'
-import { cancel, getFiles, SystemError, FileItem, trash, copyFile, copyFiles, getErrorMessage } from "native"
+    openFileWith, rename as renameWindows, showFileProperties } from "native"
 import { spawn } from "child_process"
 import fs from 'fs'
 import path from 'path'
