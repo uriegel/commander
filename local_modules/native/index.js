@@ -22,6 +22,6 @@ if (process.platform == "linux") {
     }
 
     exports.copyFile = async (source, target) => {
-        await inner.copy([source, target], (c, t) => { }, false, false)
+        await inner.copy([{ source, target }], (c, t) => { }, false, false)
     }
 }

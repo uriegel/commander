@@ -1,8 +1,8 @@
 import {
-    addNetworkShare, createFolder, openFile,
-    openFileWith, rename, showFileProperties
+    addNetworkShare, createFolder as createFolderWindows, openFile as openFileWindows,
+    openFileWith, rename as renameWindows, showFileProperties
 } from 'filesystem-utilities'
-import { cancel, getFiles, SystemError, FileItem, trash, copyFile, copyFiles } from "native"
+import { cancel, getFiles, SystemError, FileItem, trash, copyFile, copyFiles, getErrorMessage } from "native"
 import { spawn } from "child_process"
 import fs from 'fs'
 import path from 'path'
@@ -81,8 +81,9 @@ export const onRequest = async (request: Request) => {
                     openFileWith(path.join(input.path, input.name))
                 else if (input.showProperties)
                     showFileProperties(path.join(input.path, input.name))
-                else
-                    openFile(path.join(input.path, input.name))
+                else process.platform == "win32"
+                    ? openFileWindows(path.join(input.path, input.name))
+                    : spawn("xdg-open", [`${path.join(input.path, input.name)}`])
                 return writeJson({})
             }
             case "json://copy/": {
@@ -101,7 +102,7 @@ export const onRequest = async (request: Request) => {
             }
             case "json://rename/": {
                 const input = await request.json() as { path: string, item: string, newName: string, asCopy?: boolean }
-                if (!input.asCopy)
+                if (!input.asCopy) 
                     await rename(input.path, input.item, input.newName)
                 else
                     await copyFile(path.join(input.path, input.item), path.join(input.path, input.newName))
@@ -109,7 +110,9 @@ export const onRequest = async (request: Request) => {
             }
             case "json://createfolder/": {
                 const input = await request.json() as { path: string, item: string }
-                await createFolder(path.join(input.path, input.item))
+                process.platform == 'win32'
+                    ? await createFolderWindows(path.join(input.path, input.item))
+                    : await createFolderLinux(path.join(input.path, input.item))
                 return writeJson({})
             }
             case "json://flattenitems/": {
@@ -276,3 +279,52 @@ const getFilesResult = async (path: string, showHidden?: boolean ) => {
         items
     }    
 }
+
+const createFolderLinux = async (path: string) => {
+        try {
+            await fs.promises.mkdir(path, { recursive: true })   
+        } catch (e: any) {
+            const message = getErrorMessage(-e.errno)
+            switch (e.errno) {
+                case -13:
+                    throw ({
+                        error: "ACCESS_DENIED",
+                        nativeError: -e.errno,
+                        message
+                    })
+                default:
+                    throw ({
+                        error: "UNKNOWN",
+                        nativeError: -e.errno,
+                        message
+                    })
+            }
+        }
+}
+    
+const renameLinux = async (filePath: string, name: string, newName: string) => {
+    try {
+        await fs.promises.rename(path.join(filePath, name), path.join(filePath, newName))
+    } catch (e: any) {
+        const message = getErrorMessage(-e.errno)
+        switch (e.errno) {
+            case -13:
+                throw ({
+                    error: "ACCESS_DENIED",
+                    nativeError: -e.errno,
+                    message
+                })
+            default:
+                throw ({
+                    error: "UNKNOWN",
+                    nativeError: -e.errno,
+                    message
+                })
+        }
+    }
+}
+
+const rename = async (filePath: string, name: string, newName: string) =>
+    process.platform == 'win32'
+        ? await renameWindows(filePath, name, newName)
+        : await renameLinux(filePath, name, newName)
