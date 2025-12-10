@@ -1,6 +1,6 @@
 #include <napi.h>
 #include <gtk/gtk.h>
-#include "copy_worker.h"
+#include "../copy_worker.h"
 #include "../error.h"
 #include "../cancellation.h"
 using namespace Napi;
