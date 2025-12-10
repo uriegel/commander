@@ -6,7 +6,7 @@
     #include "windows/shell.h"
 #elif LINUX
     #include "linux/platform.h"
-    #include "trash.h"
+    #include "linux/trash.h"
 #endif
 
 using namespace Napi;

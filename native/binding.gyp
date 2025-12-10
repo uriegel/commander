@@ -11,7 +11,8 @@
             'source/trash_worker.cpp',
             'source/std_utils.cpp',
             'source/exif_reader.cpp',
-            'source/cancellation.cpp'
+            'source/cancellation.cpp',
+            'source/tinyxml2.cpp'
         ],
         'include_dirs': [
             "<!@(node -p \"require('node-addon-api').include\")",
@@ -42,8 +43,11 @@
                 'sources': [
                     'source/windows/files.cpp',
                     'source/windows/get_drives_worker.cpp',
+                    'source/windows/copy_worker.cpp',
                     'source/windows/error.cpp',
-                    'source/windows/icon.cpp'
+                    'source/windows/icon.cpp',
+                    'source/windows/shell.cpp',
+                    'source/windows/utils.cpp'
                 ],
                 "libraries": [ 
                     "gdiplus.lib",

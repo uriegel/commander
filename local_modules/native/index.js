@@ -24,4 +24,14 @@ if (process.platform == "linux") {
     exports.copyFile = async (source, target) => {
         await inner.copy([{ source, target }], (c, t) => { }, false, false)
     }
+} else {
+    exports.copyFiles = async (sourcePath, targetPath, items, options) => {
+        const source = items.map(n => path.join(sourcePath, n)) 
+        const target = items.map(n => path.join(targetPath, n)) 
+        await inner.copy(source, target, options?.move || false, options?.overwrite || false)
+    }
+
+    exports.copyFile = async (source, target) => {
+        await inner.copy([source], [target], false, false)
+    }
 }
