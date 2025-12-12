@@ -1,12 +1,10 @@
-import { MenuItemProps } from "menubar-react"
+import { MenuItemProps, MenuItemType } from "menubar-react"
 
-export const getProcessFileMenu = () => [
-    // {
-    // name: "_Eigenschaften",
-    // type: MenuItemType.MenuItem,
-    // shortcut: "Alt+Enter",
-    // key: "PROPERTIES"
-    // }, {
-    //     type: MenuItemType.Separator
-    // }
-] as MenuItemProps[]
+export const getProcessFileMenu = () => [{
+    name: "Öffnen _mit",
+    type: MenuItemType.MenuItem,
+    shortcut: "Strg+Enter",
+    key: "OPENWITH"
+}, {
+    type: MenuItemType.Separator
+}] as MenuItemProps[]

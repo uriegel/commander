@@ -13,7 +13,7 @@ import { Event } from './events.js'
 import { registerGetTrackProtocol } from './track.js'
 import { canClose } from './close-control.js'
 import { registerGetWindowIconProtocol } from './windowicon.js'
-import { getAccentColor } from 'native'
+import { getAccentColor, getRecommendedApps } from 'native'
 
 process.env.UV_THREADPOOL_SIZE = "32"
 
@@ -25,6 +25,10 @@ export function sendEvent(data: Event) {
 	mainWindow?.webContents.send('fromMain', data)
 }
 
+
+
+const affe = await getRecommendedApps("/home/uwe/Dokumente/Entwässerung.pdf")
+console.log("affe", affe)
 protocol.registerSchemesAsPrivileged([
 	{
 		scheme: 'cmd',

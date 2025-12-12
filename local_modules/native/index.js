@@ -15,6 +15,7 @@ exports.cancel = inner.cancel
 exports.trash = async files => await inner.trash(Array.isArray(files) ? files : [files])
 if (process.platform == "linux") {
     exports.getErrorMessage = inner.getErrorMessage
+    exports.getRecommendedApps = inner.getRecommendedApps
     exports.copyFiles = async (sourcePath, targetPath, items, options) => {
         let copyItems = items.map(item => ({ source: path.join(sourcePath, item), target: path.join(targetPath, item) }))
         await inner.copy(copyItems, options?.progressCallback ? (idx, c, t) => options.progressCallback(idx, c, t) : (() => { }), options?.move || false, options?.overwrite || false, options?.cancellation || "")

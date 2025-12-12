@@ -7,13 +7,18 @@ import { IItemsProvider } from "../items-provider/base-provider"
 import { initializeHistory } from "../history"
 import RestrictionView, { RestrictionViewHandle } from "./RestrictionView"
 import { ID_LEFT } from "./Commander"
-import { exifDataEventsLeft$, exifDataEventsRight$, ExifDataType, exifStartEventsLeft$, exifStartEventsRight$, exifStopEventsLeft$, exifStopEventsRight$, Version, versionsDataEventsLeft$, versionsDataEventsRight$, versionsStartEventsLeft$, versionsStartEventsRight$, versionsStopEventsLeft$, versionsStopEventsRight$ } from "../requests/events"
+import {
+    exifDataEventsLeft$, exifDataEventsRight$, ExifDataType, exifStartEventsLeft$, exifStartEventsRight$, exifStopEventsLeft$,
+    exifStopEventsRight$, Version, versionsDataEventsLeft$, versionsDataEventsRight$, versionsStartEventsLeft$,
+    versionsStartEventsRight$, versionsStopEventsLeft$, versionsStopEventsRight$
+} from "../requests/events"
 import { SystemError } from "native"
 import { cancelExifs, getItemsFinished, onEnter as reqOnEnter } from "../requests/requests"
 import { EXTENDED_RENAME, showExtendedRename } from "../items-provider/extended-rename"
 import { DialogContext } from "web-dialog-react"
 import { FILE } from "../items-provider/file-item-provider"
 import { REMOTE } from "../items-provider/remote-provider"
+import { openWith as openWithPlatform } from '@platform/folderview'
 
 export type FolderViewHandle = {
     id: string
@@ -485,7 +490,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     const showProperties = () => reqOnEnter(getSelectedItems()[0].name, path, undefined, true)
-    const openWith = () => reqOnEnter(getSelectedItems()[0].name, path, true)
+    const openWith = () => openWithPlatform(getSelectedItems()[0].name, path, dialog)
 
     const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         if (itemsProvider.current?.getId() != FILE && itemsProvider.current?.getId() != REMOTE)

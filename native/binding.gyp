@@ -70,6 +70,7 @@
                 },
                 'sources': [ 
                     'source/linux/copy_worker.cpp',
+                    'source/linux/get_recommended_apps_worker.cpp',
                     'source/linux/files.cpp',
                     'source/linux/error.cpp',
                     'source/linux/accent_color.cpp',
