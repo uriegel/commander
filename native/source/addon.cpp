@@ -4,6 +4,7 @@
     #include "windows/get_drives_worker.h"
     #include "windows/create_directory_worker.h"
     #include "windows/process_file.h"
+    #include "windows/rename_worker.h"
     #include "windows/get_versions_worker.h"
     #include "windows/network_share_worker.h"
 #elif LINUX
@@ -40,6 +41,7 @@ Object Init(Env env, Object exports) {
     exports.Set(String::New(env, "showFileProperties"), Function::New(env, ShowFileProperties));
     exports.Set(String::New(env, "getVersionInfos"), Function::New(env, GetVersions));
     exports.Set(String::New(env, "addNetworkShare"), Function::New(env, AddNetworkShare));
+    exports.Set(String::New(env, "rename"), Function::New(env, Rename));
     //exports.Set(String::New(env, "getServices"), Function::New(env, GetServices));    
 #else 
     setlocale(LC_MESSAGES, "");

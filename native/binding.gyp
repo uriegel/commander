@@ -48,6 +48,7 @@
                     'source/windows/process_file.cpp',
                     'source/windows/get_versions_worker.cpp',
                     'source/windows/network_share_worker.cpp',
+                    'source/windows/rename_worker.cpp',
                     'source/windows/error.cpp',
                     'source/windows/icon.cpp',
                     'source/windows/shell.cpp',
