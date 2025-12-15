@@ -1,0 +1,16 @@
+.file {
+    font-weight: bold;
+    margin: 0 5px;
+}
+
+.openWith {
+    width: 500px;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+}
+
+.openWith .tableContainer {
+    margin-top: 20PX;
+}
+
