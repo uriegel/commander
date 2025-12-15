@@ -7,10 +7,11 @@ import { App } from "native"
 
 export type OpenWithProps = {
     fileName: string,
-    filePath: string
+    filePath: string,
+    app?: App
 }
 
-export default function OpenWith({ props }: ExtensionProps) {
+export default function OpenWith({ props, onChange }: ExtensionProps) {
 
     const [apps, setApps] = useState<App[]>([])
     
@@ -29,7 +30,11 @@ export default function OpenWith({ props }: ExtensionProps) {
             renderRow: s => [s.name]
         })
     }, [props])
-    
+
+    const onPosition = (app: App) => {
+        if (onChange)
+            onChange({ ...props, app })
+    }
 
     return (
         <div className="openWith">
@@ -39,7 +44,7 @@ export default function OpenWith({ props }: ExtensionProps) {
                 <span>zu öffnen</span>
             </div>
             <div className="tableContainer">
-	            <VirtualTable className='wdr-focusable' ref={virtualTable} items={apps} />
+	            <VirtualTable className='wdr-focusable' ref={virtualTable} items={apps} onPosition={onPosition} />
             </div>
         </div>
     )

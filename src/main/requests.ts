@@ -194,6 +194,12 @@ export const onRequest = async (request: Request) => {
                 const apps = await getRecommendedApps(input.file)
                 return writeJson(apps)
             }
+            case "json://openfile/": {
+                const input = await request.json() as { executable: string, file: string }
+                console.log("feile öffnen", input.file)
+                spawn(input.executable, [ input.file])
+                return writeJson({})
+            }
             default:
                 return writeJson({ error: "UNKNOWN" , message: "Allgemeiner Fehler aufgetreten"})
         }
