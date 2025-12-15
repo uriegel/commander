@@ -1,7 +1,9 @@
 import { ExtensionProps } from "web-dialog-react"
 import './OpenWith.css'
 import VirtualTable, { VirtualTableHandle } from "virtual-table-react"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
+import { getRecommendedApps } from "@/renderer/requests/requests"
+import { App } from "native"
 
 export type OpenWithProps = {
     fileName: string,
@@ -10,16 +12,23 @@ export type OpenWithProps = {
 
 export default function OpenWith({ props }: ExtensionProps) {
 
-    const apps = [...Array(50).keys()].map(n => `Äpp #${n + 100}`)
+    const [apps, setApps] = useState<App[]>([])
     
-    const virtualTable = useRef<VirtualTableHandle<string>>(null)
+    const virtualTable = useRef<VirtualTableHandle<App>>(null)
 
     useEffect(() => {
+        const getApps = async () => {
+            const apps = await getRecommendedApps((props as OpenWithProps).filePath + '/' + (props as OpenWithProps).fileName)
+            setApps(apps)
+        }
+
+        getApps()
+
         virtualTable.current?.setColumns({
             columns: [{ name: "" }], 
-            renderRow: s => [s]
+            renderRow: s => [s.name]
         })
-    }, [])
+    }, [props])
     
 
     return (

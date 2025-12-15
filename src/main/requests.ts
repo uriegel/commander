@@ -1,7 +1,8 @@
 import {
     cancel, getFiles, SystemError, FileItem, trash, copyFile, copyFiles, getErrorMessage,
     addNetworkShare, createFolder as createFolderWindows, openFile as openFileWindows,
-    openFileWith, rename as renameWindows, showFileProperties } from "native"
+    openFileWith, rename as renameWindows, showFileProperties, 
+    getRecommendedApps} from "native"
 import { spawn } from "child_process"
 import fs from 'fs'
 import path from 'path'
@@ -188,6 +189,11 @@ export const onRequest = async (request: Request) => {
             case "json://closewindow/":
                 closeWindow()
                 return writeJson({})
+            case "json://getrecommendedapps/": {
+                const input = await request.json() as { file: string }
+                const apps = await getRecommendedApps(input.file)
+                return writeJson(apps)
+            }
             default:
                 return writeJson({ error: "UNKNOWN" , message: "Allgemeiner Fehler aufgetreten"})
         }

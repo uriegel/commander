@@ -1,4 +1,4 @@
-import { SystemError } from "native"
+import { App, SystemError } from "native"
 import { ExtendedRenameItem, FileItem } from "../items-provider/items"
 import { CopyItem } from "../copy-processor"
 
@@ -39,6 +39,7 @@ export const copyFromRemote = (sourcePath: string, targetPath: string, items: st
 export const copyToRemote = (sourcePath: string, targetPath: string, items: string[], totalSize: number) => jsonRequest<void>(
     "copytoremote", { sourcePath, targetPath, items, totalSize })
 export const closeWindow = () => jsonRequest<void>("closewindow", {})
+export const getRecommendedApps = (file: string) => jsonRequest<App[]>("getrecommendedapps", { file })
 
 const jsonRequest = async <T>(cmd: string, msg: unknown) => {
     const payload = {
