@@ -13,7 +13,8 @@ import { Event } from './events.js'
 import { registerGetTrackProtocol } from './track.js'
 import { canClose } from './close-control.js'
 import { registerGetWindowIconProtocol } from './windowicon.js'
-import { getAccentColor, getRecommendedApps } from 'native'
+import { getAccentColor } from 'native'
+import { registerGetAppIconProtocol } from './appIcon.js'
 
 process.env.UV_THREADPOOL_SIZE = "32"
 
@@ -25,10 +26,6 @@ export function sendEvent(data: Event) {
 	mainWindow?.webContents.send('fromMain', data)
 }
 
-
-
-const affe = await getRecommendedApps("/home/uwe/Dokumente/Entwässerung.pdf")
-console.log("affe", affe)
 protocol.registerSchemesAsPrivileged([
 	{
 		scheme: 'cmd',
@@ -42,6 +39,11 @@ protocol.registerSchemesAsPrivileged([
 		}
 	}, {
 		scheme: 'icon',
+		privileges: {
+			standard: true, secure: true, supportFetchAPI: true
+		}
+	}, {
+		scheme: 'appicon',
 		privileges: {
 			standard: true, secure: true, supportFetchAPI: true
 		}
@@ -81,6 +83,7 @@ const createWindow = () => {
 	registerGetBinProtocol()
 	registerGetMediaProtocol()
 	registerGetTrackProtocol()
+	registerGetAppIconProtocol()
 	if (process.platform == "win32")
 		registerGetWindowIconProtocol()
 

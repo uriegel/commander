@@ -14,3 +14,10 @@
     margin-top: 20PX;
 }
 
+.appImage {
+    width: 32px;
+    height: 32px;
+    vertical-align: middle;
+    margin-right: 10px;
+    margin-left: 1px;
+}
