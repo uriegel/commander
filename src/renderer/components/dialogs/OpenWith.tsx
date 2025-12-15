@@ -27,10 +27,10 @@ export default function OpenWith({ props, onChange }: ExtensionProps) {
 
         virtualTable.current?.setColumns({
             columns: [{ name: "" }], 
-            renderRow: s => [
+            renderRow: app => [
                 (<span>
-                    <img className="appImage" src={`appicon://name/user-home`} alt="" />
-                    <span>{s.name}</span>
+                    <img className="appImage" src={`appicon://name/${app.name}${app.executable}`} alt="" />
+                    <span>{app.name}</span>
                 </span>)
             ]
         })

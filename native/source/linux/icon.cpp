@@ -91,3 +91,29 @@ vector<char> get_icon_from_name(const string& name) {
     return result;
 }
 
+vector<char> get_app_icon(const string& app, const string& executable) {
+
+    cout << "Das ist gut " << app.c_str() << " und " << executable.c_str() << endl;
+
+    auto all_apps = g_app_info_get_all();
+    for (auto l = all_apps; l != NULL; l = l->next) {
+        auto a = G_APP_INFO(l->data);
+        auto an = g_app_info_get_name(a);
+        if (app == an)
+        {
+            auto ae = g_app_info_get_executable(a);
+            if (executable == ae) {
+                vector<char> result;
+                cout << "Das ist sehr gut " << endl;
+                return result;
+            }
+        }
+
+        g_object_unref(a);
+    }
+
+    g_list_free(all_apps);
+    vector<char> result;
+    return result;
+}
+

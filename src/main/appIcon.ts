@@ -1,14 +1,14 @@
 import { protocol } from "electron"
-import { getIcon, getIconFromName } from "native"
+import { getAppIcon } from "native"
 import { isSvg } from "./icons.js"
 
 export function registerGetAppIconProtocol() {
     protocol.handle('appicon', async (request) => {
         const url = new URL(request.url)
         const iconName = url.pathname.slice(1) || "ddd"// e.g. icon://folder.png → 'folder.png'
-        const data = url.hostname == "name"
-            ? await getIconFromName(iconName) //await readFile((await runCmd(`python3 ${iconFromNameScript} ${iconName}`)).trimEnd()) 
-            : await getIcon(decodeURIComponent(iconName))
+        const app = decodeURIComponent(iconName.substringUntil("/"))
+        const executable = "/" + decodeURIComponent(iconName.substringAfter("/"))
+        const data = await getAppIcon(app, executable)
 
         if (data.length == 0) {
             console.log("icon not found", iconName)

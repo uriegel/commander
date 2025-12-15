@@ -11,6 +11,7 @@
     #include "linux/platform.h"
     #include "linux/accent_color.h"
     #include "linux/get_recommended_apps_worker.h"
+    #include "linux/get_app_icon_worker.h"
 #endif
 #include "get_files_worker.h"
 #include "get_icon_worker.h"
@@ -49,6 +50,7 @@ Object Init(Env env, Object exports) {
     exports.Set(String::New(env, "getAccentColor"), Function::New(env, GetAccentColor));
     exports.Set(String::New(env, "getErrorMessage"), Function::New(env, GetErrorMessage));
     exports.Set(String::New(env, "getRecommendedApps"), Function::New(env, GetRecommendedApps));
+    exports.Set(String::New(env, "getAppIcon"), Function::New(env, GetAppIcon));
 #endif
     return exports;    
 }

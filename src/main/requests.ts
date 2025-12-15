@@ -196,7 +196,6 @@ export const onRequest = async (request: Request) => {
             }
             case "json://openfile/": {
                 const input = await request.json() as { executable: string, file: string }
-                console.log("feile öffnen", input.file)
                 spawn(input.executable, [ input.file])
                 return writeJson({})
             }

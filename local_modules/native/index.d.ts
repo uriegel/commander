@@ -268,4 +268,11 @@ declare module 'native' {
      * @returns An array of VersionInfo informations. Each entry belongs to the file path entry with the same index
      */
     function getRecommendedApps(file: string): Promise<App[]>
+
+    /**
+     * Retrieves system icon in 16x16, as png or svg for dedicated file extensions
+     * @param ext The file extension to retrieve the icon for. like '.mp4'
+     * @result The icon as binary data
+     */
+    function getAppIcon(app: string, executable: string): Promise<Buffer>
 }

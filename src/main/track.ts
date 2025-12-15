@@ -11,7 +11,6 @@ export function registerGetTrackProtocol() {
             const track = await getGpxTrack(filePath)
             return writeJson(track)
         } catch (err) {
-            console.error('Failed to load icon', err)
             return new Response('Track not found', { status: 404 })
         }
     })
