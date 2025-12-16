@@ -2,7 +2,7 @@ import { ExtensionProps } from "web-dialog-react"
 import './OpenWith.css'
 import VirtualTable, { VirtualTableHandle } from "virtual-table-react"
 import { useEffect, useRef, useState } from "react"
-import { getRecommendedApps } from "@/renderer/requests/requests"
+import { getAllApps, getRecommendedApps } from "@/renderer/requests/requests"
 import { App } from "native"
 import New from "@/renderer/svg/New"
 
@@ -15,6 +15,7 @@ export type OpenWithProps = {
 export default function OpenWith({ props, onChange }: ExtensionProps) {
 
     const [apps, setApps] = useState<App[]>([])
+    const all = useRef(false)
     
     const virtualTable = useRef<VirtualTableHandle<App>>(null)
 
@@ -52,12 +53,28 @@ export default function OpenWith({ props, onChange }: ExtensionProps) {
     }, [apps])
 
     const onPosition = (app: App) => {
+        all.current = !app.executable
         if (onChange)
             onChange({ ...props, app })
     }
 
+    const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (e.key == "Enter" && all.current) {
+            e.isDefaultPrevented()
+            e.stopPropagation()
+            virtualTable.current?.setPosition(0)
+
+            const fill = async () => {
+                const apps = await getAllApps()
+                console.log("appis", apps)
+                setApps(apps);
+            }
+            fill()
+        }
+    }
+
     return (
-        <div className="openWith">
+        <div className="openWith" onKeyDown={onKeyDown}>
             <div>
                 <span>Wähle eine Anwendung, um</span>
                 <span className="file">{(props as OpenWithProps).fileName}</span>

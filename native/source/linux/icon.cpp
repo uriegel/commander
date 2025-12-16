@@ -97,13 +97,13 @@ GdkPixbuf* load_app_icon_gtk3_compat(GAppInfo *app)
     if (!icon) 
         return nullptr;
         
-    GError *error = nullptr;
     if (G_IS_THEMED_ICON(icon)) {
         GtkIconTheme *theme = gtk_icon_theme_get_default();
 
         auto names = g_themed_icon_get_names(G_THEMED_ICON(icon));
-
+    
         for (int i = 0u; names[i]; i++) {
+            GError *error = nullptr;
             GdkPixbuf *pixbuf =
                 gtk_icon_theme_load_icon(
                     theme,
@@ -124,6 +124,7 @@ GdkPixbuf* load_app_icon_gtk3_compat(GAppInfo *app)
         char *path = g_file_get_path(file);
 
         if (path) {
+            GError *error = nullptr;
             GdkPixbuf *pixbuf =
                 gdk_pixbuf_new_from_file_at_size(
                     path,

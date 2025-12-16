@@ -72,6 +72,7 @@
                 'sources': [ 
                     'source/linux/copy_worker.cpp',
                     'source/linux/get_recommended_apps_worker.cpp',
+                    'source/linux/get_all_apps_worker.cpp',
                     'source/linux/get_app_icon_worker.cpp',
                     'source/linux/files.cpp',
                     'source/linux/error.cpp',

@@ -2,7 +2,8 @@ import {
     cancel, getFiles, SystemError, FileItem, trash, copyFile, copyFiles, getErrorMessage,
     addNetworkShare, createFolder as createFolderWindows, openFile as openFileWindows,
     openFileWith, rename as renameWindows, showFileProperties, 
-    getRecommendedApps} from "native"
+    getRecommendedApps,
+    getAllApps} from "native"
 import { spawn } from "child_process"
 import fs from 'fs'
 import path from 'path'
@@ -192,7 +193,11 @@ export const onRequest = async (request: Request) => {
             case "json://getrecommendedapps/": {
                 const input = await request.json() as { file: string }
                 const apps = await getRecommendedApps(input.file)
-                return writeJson(apps)
+                return writeJson(apps.sort((a, b) => a.name.localeCompare(b.name)))
+            }
+            case "json://getallapps/": {
+                const apps = await getAllApps()
+                return writeJson(apps.sort((a, b) => a.name.localeCompare(b.name)))
             }
             case "json://openfile/": {
                 const input = await request.json() as { executable: string, file: string }

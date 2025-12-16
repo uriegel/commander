@@ -261,14 +261,9 @@ declare module 'native' {
      */
     function getVersionInfos(files: VersionsInput[], cancellation?: string): Promise<VersionInfoResult[]>
 
-    /**
-     * 
-     * Retrieves the file version of a exe or dll files in Windows, if included. Only available in Windows
-     * @param file Pathes to the exe or dll files, together with an index.
-     * @param cancellation When included as string, the operation can be cancelled by calling function 'cancel' with this string as parameter
-     * @returns An array of VersionInfo informations. Each entry belongs to the file path entry with the same index
-     */
     function getRecommendedApps(file: string): Promise<App[]>
+
+    function getAllApps(): Promise<App[]>
 
     /**
      * 

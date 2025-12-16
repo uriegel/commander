@@ -16,6 +16,7 @@ exports.trash = async files => await inner.trash(Array.isArray(files) ? files : 
 if (process.platform == "linux") {
     exports.getErrorMessage = inner.getErrorMessage
     exports.getRecommendedApps = inner.getRecommendedApps
+    exports.getAllApps = inner.getAllApps
     exports.unrefApp = inner.unrefApp
     exports.getAppIcon = inner.getAppIcon
     exports.copyFiles = async (sourcePath, targetPath, items, options) => {
