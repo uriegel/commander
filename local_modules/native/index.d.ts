@@ -270,9 +270,15 @@ declare module 'native' {
     function getRecommendedApps(file: string): Promise<App[]>
 
     /**
-     * Retrieves system icon in 16x16, as png or svg for dedicated file extensions
-     * @param ext The file extension to retrieve the icon for. like '.mp4'
+     * 
+     * @param app Unrefs an app
+     */
+    function unrefApp(app: number): void
+
+    /**
+     * Retrieves app icon in 32x32, as png
+     * @param app: pointer to the app 
      * @result The icon as binary data
      */
-    function getAppIcon(app: string, executable: string): Promise<Buffer>
+    function getAppIcon(app: number): Promise<Buffer>
 }

@@ -51,6 +51,7 @@ Object Init(Env env, Object exports) {
     exports.Set(String::New(env, "getErrorMessage"), Function::New(env, GetErrorMessage));
     exports.Set(String::New(env, "getRecommendedApps"), Function::New(env, GetRecommendedApps));
     exports.Set(String::New(env, "getAppIcon"), Function::New(env, GetAppIcon));
+    exports.Set(String::New(env, "unrefApp"), Function::New(env, UnrefApp));
 #endif
     return exports;    
 }

@@ -8,6 +8,7 @@ using namespace std;
 struct App {
     string name;
     string executable;
+    GAppInfo* app;
 };
 
 vector<App> get_recommended_apps(string file_path) {
@@ -30,8 +31,12 @@ vector<App> get_recommended_apps(string file_path) {
     auto recommended = g_app_info_get_recommended_for_type(content_type);
     for (auto l = recommended; l != nullptr; l = l->next) {
         auto app = G_APP_INFO(l->data);
-        result.push_back({g_app_info_get_name(app), g_app_info_get_executable(app)});
-        g_object_unref(app);
+
+        result.push_back({
+            g_app_info_get_name(app), 
+            g_app_info_get_executable(app),
+            app
+        });
     }
     g_list_free(recommended);
     g_object_unref(file);
@@ -68,6 +73,7 @@ void Get_recommended_apps::OnOK() {
         auto obj = Object::New(Env());
         obj.Set("name", String::New(Env(), item.name));
         obj.Set("executable", String::New(Env(), item.executable));
+        obj.Set("app", Number::New(Env(), (uint64_t)item.app));
         array.Set(i++, obj);
     }
     deferred.Resolve(array);
@@ -78,4 +84,10 @@ Value GetRecommendedApps(const CallbackInfo& info) {
     auto worker = new Get_recommended_apps(info.Env(), file);
     worker->Queue();
     return worker->Promise();
+}
+
+Value UnrefApp(const CallbackInfo& info) {
+    auto app = (GAppInfo*)info[0].As<Number>().Int64Value();
+    g_object_unref(app);
+    return info.Env().Undefined();
 }
