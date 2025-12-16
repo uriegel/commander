@@ -4,6 +4,7 @@ import VirtualTable, { VirtualTableHandle } from "virtual-table-react"
 import { useEffect, useRef, useState } from "react"
 import { getRecommendedApps } from "@/renderer/requests/requests"
 import { App } from "native"
+import New from "@/renderer/svg/New"
 
 export type OpenWithProps = {
     fileName: string,
@@ -20,7 +21,7 @@ export default function OpenWith({ props, onChange }: ExtensionProps) {
     useEffect(() => {
         const getApps = async () => {
             const apps = await getRecommendedApps((props as OpenWithProps).filePath + '/' + (props as OpenWithProps).fileName)
-            setApps(apps)
+            setApps([...apps, { name: "Alle Apps anzeigen...", executable: "" } as App])
         }
 
         getApps()
@@ -28,13 +29,27 @@ export default function OpenWith({ props, onChange }: ExtensionProps) {
         virtualTable.current?.setColumns({
             columns: [{ name: "" }], 
             renderRow: app => [
-                (<span>
-                    <img className="appImage" src={`appicon://app/${app.app}`} alt="" />
-                    <span>{app.name}</span>
-                </span>)
+                app.executable != ""
+                    ? (<span>
+                        <img className="appImage" src={`appicon://app/${app.app}`} alt="" />
+                        <span>{app.name}</span>
+                    </span>)
+                    : (<span>
+                        <span className="appImage new">
+                            <New />
+                        </span>
+                        <span>{app.name}</span>
+                    </span>)
             ]
         })
     }, [props])
+
+    useEffect(() => {
+        return () => {
+            // TODO cleanup all apps
+            console.log("cleaning up...", apps)
+        }
+    }, [apps])
 
     const onPosition = (app: App) => {
         if (onChange)

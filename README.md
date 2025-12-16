@@ -46,8 +46,6 @@ TODO
 
 * CSP in index.html
 
-* alt + enter (KDE with QT program)
-
 // Drag n Drop:
 Commander Branch Neon-Rust folder.ts
 
