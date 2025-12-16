@@ -1,5 +1,6 @@
 #include <napi.h>
 #include <vector>
+#include <gio/gio.h>
 #include "get_app_icon_worker.h"
 #include "../icon.h"
 #include "../std_utils.h"
@@ -8,15 +9,14 @@ using namespace std;
 
 class Get_app_icon_worker : public AsyncWorker {
 public:
-    Get_app_icon_worker(const Napi::Env& env, const stdstring& app, const stdstring& executable)
+    Get_app_icon_worker(const Napi::Env& env, GAppInfo* app)
     : AsyncWorker(env)
     , deferred(Promise::Deferred::New(Env())) 
-    , app(app)
-    , executable(executable) {}
+    , app(app) {}
     ~Get_app_icon_worker() {}
 
     void Execute () { 
-        icon_bytes = move(get_app_icon(app, executable)); 
+        icon_bytes = move(get_app_icon(app)); 
     }
 
     void OnOK();
@@ -25,8 +25,7 @@ public:
 
 private:
     Promise::Deferred deferred;
-    stdstring app;
-    stdstring executable;
+    GAppInfo *app;
     vector<char> icon_bytes;
 };
 
@@ -44,9 +43,8 @@ void Get_app_icon_worker::OnOK() {
 
 Value GetAppIcon(const CallbackInfo& info) {
     checkInitializeIcons();
-    auto app = (stdstring)info[0].As<nodestring>();
-    auto executable = (stdstring)info[1].As<nodestring>();
-    auto worker = new Get_app_icon_worker(info.Env(), app, executable);
+    auto app = (GAppInfo*)info[0].As<Number>().Int64Value();
+    auto worker = new Get_app_icon_worker(info.Env(), app);
     worker->Queue();
     return worker->Promise();
 }

@@ -5,14 +5,12 @@ import { isSvg } from "./icons.js"
 export function registerGetAppIconProtocol() {
     protocol.handle('appicon', async (request) => {
         const url = new URL(request.url)
-        const iconName = url.pathname.slice(1) || "ddd"// e.g. icon://folder.png → 'folder.png'
-        const app = decodeURIComponent(iconName.substringUntil("/"))
-        const executable = "/" + decodeURIComponent(iconName.substringAfter("/"))
-        const data = await getAppIcon(app, executable)
+        const app = Number.parseInt(url.pathname.slice(1) || "ddd") // e.g. icon://folder.png → 'folder.png'
+        const data = await getAppIcon(app)
 
         if (data.length == 0) {
-            console.log("icon not found", iconName)
-            return new Response('Icon not found', { status: 404 })
+            console.log("app icon not found")
+            return new Response('App icon not found', { status: 404 })
         }
 
         try {

@@ -87,6 +87,7 @@ declare module 'native' {
     export interface App {
         name: string
         executable: string
+        app: number
     }    
 
     /**
@@ -273,6 +274,7 @@ declare module 'native' {
      * 
      * @param app Unrefs an app
      */
+    // TODO call for complete list
     function unrefApp(app: number): void
 
     /**

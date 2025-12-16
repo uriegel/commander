@@ -29,7 +29,7 @@ export default function OpenWith({ props, onChange }: ExtensionProps) {
             columns: [{ name: "" }], 
             renderRow: app => [
                 (<span>
-                    <img className="appImage" src={`appicon://name/${app.name}${app.executable}`} alt="" />
+                    <img className="appImage" src={`appicon://app/${app.app}`} alt="" />
                     <span>{app.name}</span>
                 </span>)
             ]

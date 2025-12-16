@@ -91,29 +91,69 @@ vector<char> get_icon_from_name(const string& name) {
     return result;
 }
 
-vector<char> get_app_icon(const string& app, const string& executable) {
+GdkPixbuf* load_app_icon_gtk3_compat(GAppInfo *app)
+{
+    GIcon *icon = g_app_info_get_icon(app);
+    if (!icon) 
+        return nullptr;
+        
+    GError *error = nullptr;
+    if (G_IS_THEMED_ICON(icon)) {
+        GtkIconTheme *theme = gtk_icon_theme_get_default();
 
-    cout << "Das ist gut " << app.c_str() << " und " << executable.c_str() << endl;
+        auto names = g_themed_icon_get_names(G_THEMED_ICON(icon));
 
-    auto all_apps = g_app_info_get_all();
-    for (auto l = all_apps; l != NULL; l = l->next) {
-        auto a = G_APP_INFO(l->data);
-        auto an = g_app_info_get_name(a);
-        if (app == an)
-        {
-            auto ae = g_app_info_get_executable(a);
-            if (executable == ae) {
-                vector<char> result;
-                cout << "Das ist sehr gut " << endl;
-                return result;
+        for (int i = 0u; names[i]; i++) {
+            GdkPixbuf *pixbuf =
+                gtk_icon_theme_load_icon(
+                    theme,
+                    names[i],
+                    32,
+                    GTK_ICON_LOOKUP_FORCE_SIZE,
+                    &error
+                );
+
+            if (pixbuf) 
+                return pixbuf;
+
+            if (error)
+                g_error_free(error);
+        }
+    } else if (G_IS_FILE_ICON(icon)) {
+        GFile *file = g_file_icon_get_file(G_FILE_ICON(icon));
+        char *path = g_file_get_path(file);
+
+        if (path) {
+            GdkPixbuf *pixbuf =
+                gdk_pixbuf_new_from_file_at_size(
+                    path,
+                    32,
+                    32,
+                    &error
+                );
+            g_free(path);
+
+            if (pixbuf)
+                return pixbuf;
+
+            if (error) {
+                g_error_free(error);
+                error = NULL;
             }
         }
-
-        g_object_unref(a);
     }
+    return nullptr;
+}
 
-    g_list_free(all_apps);
+vector<char> get_app_icon(GAppInfo* app) {
+    auto pixbuf = load_app_icon_gtk3_compat(app);
+    gchar *buffer = nullptr;
+    gsize size = 0;
+    gdk_pixbuf_save_to_buffer(pixbuf, &buffer, &size, "png", nullptr, nullptr);
     vector<char> result;
+    for (auto i = 0u; i < size; i++)
+        result.push_back(buffer[i]);
+    g_free(buffer);
     return result;
 }
 
