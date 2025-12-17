@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
+#if LINUX
 #include <gio/gio.h>
+#endif
 #include "std_utils.h"
 
 void checkInitializeIcons();
