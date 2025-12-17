@@ -269,7 +269,6 @@ declare module 'native' {
      * 
      * @param app Unrefs an app
      */
-    // TODO call for complete list
     function unrefApp(app: number): void
 
     /**

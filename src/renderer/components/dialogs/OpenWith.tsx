@@ -2,7 +2,7 @@ import { ExtensionProps } from "web-dialog-react"
 import './OpenWith.css'
 import VirtualTable, { VirtualTableHandle } from "virtual-table-react"
 import { useEffect, useRef, useState } from "react"
-import { getAllApps, getRecommendedApps } from "@/renderer/requests/requests"
+import { cleanupApps, getAllApps, getRecommendedApps } from "@/renderer/requests/requests"
 import { App } from "native"
 import New from "@/renderer/svg/New"
 
@@ -47,8 +47,8 @@ export default function OpenWith({ props, onChange }: ExtensionProps) {
 
     useEffect(() => {
         return () => {
-            // TODO cleanup all apps
-            console.log("cleaning up...", apps)
+            console.log("clean", apps.length)
+            cleanupApps(apps)
         }
     }, [apps])
 
@@ -66,7 +66,6 @@ export default function OpenWith({ props, onChange }: ExtensionProps) {
 
             const fill = async () => {
                 const apps = await getAllApps()
-                console.log("appis", apps)
                 setApps(apps);
             }
             fill()

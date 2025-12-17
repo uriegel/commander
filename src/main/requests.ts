@@ -2,8 +2,10 @@ import {
     cancel, getFiles, SystemError, FileItem, trash, copyFile, copyFiles, getErrorMessage,
     addNetworkShare, createFolder as createFolderWindows, openFile as openFileWindows,
     openFileWith, rename as renameWindows, showFileProperties, 
-    getRecommendedApps,
-    getAllApps} from "native"
+    getRecommendedApps, 
+    getAllApps,
+    App,
+    unrefApp} from "native"
 import { spawn } from "child_process"
 import fs from 'fs'
 import path from 'path'
@@ -202,6 +204,12 @@ export const onRequest = async (request: Request) => {
             case "json://openfile/": {
                 const input = await request.json() as { executable: string, file: string }
                 spawn(input.executable, [ input.file])
+                return writeJson({})
+            }
+            case "json://cleanupapps/": {
+                const input = await request.json() as { apps: App[] }
+                for (const app of input.apps.filter(n => n.app))
+                    unrefApp(app.app)
                 return writeJson({})
             }
             default:

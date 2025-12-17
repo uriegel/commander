@@ -42,6 +42,7 @@ export const closeWindow = () => jsonRequest<void>("closewindow", {})
 export const getRecommendedApps = (file: string) => jsonRequest<App[]>("getrecommendedapps", { file })
 export const getAllApps = () => jsonRequest<App[]>("getallapps", {})
 export const openFile = (executable: string, file: string) => jsonRequest<void>("openfile", { executable, file })
+export const cleanupApps = (apps: App[]) => jsonRequest<void>("cleanupapps", { apps })
 
 const jsonRequest = async <T>(cmd: string, msg: unknown) => {
     const payload = {
