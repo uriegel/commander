@@ -33,6 +33,8 @@ function getMime(ext: string) {
             return 'image/png'
         case ".pdf":
             return 'application/pdf'
+        case ".html":
+            return 'text/html'
         default:
             return 'text/plain'
     }
