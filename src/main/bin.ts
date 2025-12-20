@@ -34,7 +34,7 @@ function getMime(ext: string) {
         case ".pdf":
             return 'application/pdf'
         case ".html":
-            return 'text/html'
+            return 'text/html; charset=UTF-8'
         default:
             return 'text/plain'
     }
