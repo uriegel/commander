@@ -22,8 +22,6 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* check delete remote with progress:
-
 * Unmount and release external drive
 
 * Open directories in Nautilus
