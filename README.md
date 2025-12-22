@@ -24,6 +24,10 @@ sudo dnf install gcc-c++ gtk3-devel
 TODO
 * check delete remote with progress:
 
+* Unmount and release external drive
+
+* Open directories in Nautilus
+
 * Windows Remote root has /
 * Windows Remote copy progress
 * Windows Versions in copy dialog: resolve versions in CopyConflictsDialog, adapt button, no default button when not ready
@@ -36,6 +40,8 @@ TODO
 * Theming: adapt gray color from KDE/Gtk3 (/Neon/Ubuntu/Fedora)
 * Theming: Unify Titlebar, path input and table columns, margins like Gtk4/Adwaita
 * Theming: <tr> with padding 
+
+* Show directory info in preview
 
 * F11 Full screen Windows: hide titlebar
 
