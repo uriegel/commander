@@ -5,9 +5,9 @@ import { FileItem, FileItemsResult, SystemError } from 'native'
 import { GetFiles, getIconPath } from './requests.js'
 
 export const getRemoteFiles = async (input: GetFiles) => {
-    const ip = input.path.substring(7).substringUntil('/')
+    const baseUrl = input.path.substring(7).substringUntil('/')
     const remotePath = path.normalize('/' + input.path.substring(7).substringAfter('/')).replaceAll("\\", "/")
-    const items = await remoteGetRequest<FileItem[]>(ip, `/getfiles${remotePath}`)
+    const items = await remoteGetRequest<FileItem[]>(baseUrl, `/getfiles${remotePath}`)
     const dirCount = items.filter(n => n.isDirectory).length
     return {
         items: items
@@ -19,27 +19,27 @@ export const getRemoteFiles = async (input: GetFiles) => {
             })),
         dirCount,
         fileCount: items.length - dirCount,
-        path: `remote/${ip}${remotePath}`
+        path: `remote/${baseUrl}${remotePath}`
     } as FileItemsResult
 }
 
 export const createRemoteFolder = async (filePath: string, item: string) => {
-    const ip = filePath.substring(7).substringUntil('/')
+    const baseUrl = filePath.substring(7).substringUntil('/')
     const remotePath = path.normalize(`/${filePath.substring(7).substringAfter('/')}/${item}`).replaceAll("\\", "/")
-    await remotePostRequest(ip, `/createdirectory${remotePath}`)
+    await remotePostRequest(baseUrl, `/createdirectory${remotePath}`)
 }
 
 export const remoteDelete = async (remoteFile: string) => {
-    const ip = remoteFile.substring(7).substringUntil('/')
+    const baseUrl = remoteFile.substring(7).substringUntil('/')
     const remotePath = path.normalize(`/${remoteFile.substring(7).substringAfter('/')}/`).replaceAll("\\", "/")
-    await remoteDeleteRequest(ip, `/deletefile${remotePath}`)
+    await remoteDeleteRequest(baseUrl, `/deletefile${remotePath}`)
 }
 
 export const copyFromRemote = async (sourcePath: string, targetPath: string, items: string[],
         progressCallback: (idx: number, currentBytes: number, totalBytes: number)=>void) => {
     try {
         remoteWorking = true
-        const ip = sourcePath.substring(7).substringUntil('/')
+        const baseUrl = sourcePath.substring(7).substringUntil('/')
         const remotePath = path.normalize(`/${sourcePath.substring(7).substringAfter('/')}/`).replaceAll("\\", "/")
         let idx = -1
         for (let n of items) {
@@ -47,7 +47,7 @@ export const copyFromRemote = async (sourcePath: string, targetPath: string, ite
             if (!remoteWorking)
                 throw { error: "CANCELLED", message: "Aktion wurde abgebrochen", nativeError: -1 } as SystemError
 
-            const response = await fetch(`http://${ip}:8080/downloadfile${remotePath}${n}`)
+            const response = await fetch(`http://${baseUrl}/downloadfile${remotePath}${n}`)
             if (!response.ok) 
                 throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`)
 
@@ -79,7 +79,7 @@ export const copyToRemote = async (sourcePath: string, targetPath: string, items
         progressCallback: (idx: number, currentBytes: number, totalBytes: number)=>void) => {
     try {
         remoteWorking = true
-        const ip = targetPath.substring(7).substringUntil('/')
+        const baseUrl = targetPath.substring(7).substringUntil('/')
         const remotePath = path.normalize(`/${targetPath.substring(7).substringAfter('/')}/`).replaceAll("\\", "/")
         let idx = -1
         for (let n of items) {
@@ -101,7 +101,7 @@ export const copyToRemote = async (sourcePath: string, targetPath: string, items
             })
             fileStream.pipe(progressStream)
 
-            const response = await fetch(`http://${ip}:8080/putfile${remotePath}${n}`, {
+            const response = await fetch(`http://${baseUrl}/putfile${remotePath}${n}`, {
                 method: "PUT",
                 body: progressStream as unknown as BodyInit,
                 headers: {
@@ -123,13 +123,13 @@ export const copyToRemote = async (sourcePath: string, targetPath: string, items
 
 export const remoteCancel = () => remoteWorking = false
 
-const remoteGetRequest = async <T>(ip: string, path: string) => remoteJsonRequest<T>(ip, path, "GET")
-const remotePostRequest = async (ip: string, path: string) => remoteRequest(ip, path, "POST")
-const remoteDeleteRequest = async (ip: string, path: string) => remoteRequest(ip, path, "DELETE")
+const remoteGetRequest = async <T>(baseUrl: string, path: string) => remoteJsonRequest<T>(baseUrl, path, "GET")
+const remotePostRequest = async (baseUrl: string, path: string) => remoteRequest(baseUrl, path, "POST")
+const remoteDeleteRequest = async (baseUrl: string, path: string) => remoteRequest(baseUrl, path, "DELETE")
 
-const remoteJsonRequest = async <T>(ip: string, path: string, method: string) => {
+const remoteJsonRequest = async <T>(baseUrl: string, path: string, method: string) => {
     try {
-        const response = await fetch(`http://${ip}:8080${path}`, { method })
+        const response = await fetch(`http://${baseUrl}${path}`, { method })
         const res = await response.json() as (T | SystemError)
         if ((res as SystemError).error && (res as SystemError).message) {
             throw (res)
@@ -140,8 +140,8 @@ const remoteJsonRequest = async <T>(ip: string, path: string, method: string) =>
     }
 }
 
-const remoteRequest = async (ip: string, path: string, method: string) => {
-    await fetch(`http://${ip}:8080${path}`, { method })
+const remoteRequest = async (baseUrl: string, path: string, method: string) => {
+    await fetch(`http://${baseUrl}${path}`, { method })
 }
 
 const makeSystemError = (e: unknown) => {

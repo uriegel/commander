@@ -78,7 +78,11 @@ export class RemotesItemProvider extends IItemsProvider {
             defBtnOk: true
         })
         if (name && result.result == ResultType.Ok) {
-            const newItems = items.concat([{ name, ipAddress, isAndroid }])
+            const newItems = items.concat([{
+                name,
+                ipAddress: ipAddress?.includes(":") ? ipAddress: `${ipAddress}:8080`,
+                isAndroid
+            }])
             localStorage.setItem(Remotes, JSON.stringify(newItems))
             return name
         }
