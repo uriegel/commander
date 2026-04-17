@@ -14,7 +14,6 @@
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
       "@platform/*": [
         "src/renderer/platform/linux/*",
         "src/renderer/platform/win32/*",
