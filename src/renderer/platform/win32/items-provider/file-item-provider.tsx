@@ -1,9 +1,8 @@
 import Credentials, { CredentialsProps } from "@/renderer/components/dialogs/Credentials"
 import IconName from "@/renderer/components/IconName"
-import { FileItem, IconNameType } from "@/renderer/items-provider/items"
+import { FileItem, IconNameType, VersionInfo } from "@/renderer/items-provider/items"
 import { formatDateTime, formatSize } from "@/renderer/items-provider/provider"
 import { addNetworkShare } from "@/renderer/requests/requests"
-import { SystemError, VersionInfo } from "native"
 import { retryOnErrorAsync } from "functional-extensions"
 import { DialogHandle, ResultType } from "web-dialog-react"
 
@@ -64,9 +63,9 @@ const formatVersion = (version?: VersionInfo) =>
 export const onGetItemsError = async (e: unknown, share: string, dialog?: DialogHandle, setErrorText?: (msg: string)=>void) => {
     if (!dialog || !setErrorText)
         throw "wrong parameters"
-	const se = e as SystemError
-    if (se.error != "ACCESS_DENIED"&& se.error != "WRONG_CREDENTIALS")
-        throw e
+	// const se = e as SystemError
+    // if (se.error != "ACCESS_DENIED"&& se.error != "WRONG_CREDENTIALS")
+    //     throw e
 
     await retryOnErrorAsync(async () => {
         let name = ""
@@ -88,9 +87,9 @@ export const onGetItemsError = async (e: unknown, share: string, dialog?: Dialog
             return
         await addNetworkShare(share, name, password)
     }, async e => {
-        const se = e as SystemError
-        if (setErrorText)
-            setErrorText(se.message)
+        // const se = e as SystemError
+        // if (setErrorText)
+        //     setErrorText(se.message)
     }, 3)
 }
 

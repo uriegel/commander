@@ -1,5 +1,14 @@
-import { VersionInfo } from "native"
-import { DriveType } from "../../main/drives.js"
+
+type DriveType = {
+
+}
+
+export type VersionInfo = {
+    major: number,
+    minor: number,
+    build: number,
+    patch: number
+}
 
 interface SelectableItem {
     isSelected?: boolean

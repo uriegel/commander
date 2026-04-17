@@ -4,7 +4,6 @@ import { ID_LEFT, ID_RIGHT } from "./components/Commander"
 import { copy, copyFromRemote, copyToRemote, extendCopyItems, flattenItems } from "./requests/requests"
 import { FILE, FileItemProvider } from "./items-provider/file-item-provider"
 import { getSelectedItemsText } from "./items-provider/provider"
-import { SystemError } from "native"
 import { FileItem } from "./items-provider/items"
 import CopyConflicts from "./components/dialogs/CopyConflicts"
 import { canCopy } from '@platform/copy-processor'
@@ -83,8 +82,8 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
         if (move)
             sourceFolder.refresh()
     } catch (e) {
-        const err = e as SystemError
-        setErrorText(err.message)
+        // const err = e as SystemError
+        // setErrorText(err.message)
     }
 }
 
@@ -153,8 +152,8 @@ export const onFilesDrop = async (fileList: FileList, targetFolder: FolderViewHa
         await copyProcessor.copy(path, targetFolder.getPath(), itemsToCopy.map(n => n.name), itemsToCopy.reduce((previousValue, current) => (current.size || 0) + previousValue, 0),  move)
         targetFolder.refresh()
     } catch (e) {
-        const err = e as SystemError
-        setErrorText(err.message)
+        // const err = e as SystemError
+        // setErrorText(err.message)
     }
 }
 

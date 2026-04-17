@@ -1,4 +1,3 @@
-import { App, SystemError } from "native"
 import { ExtendedRenameItem, FileItem } from "../items-provider/items"
 import { CopyItem } from "../copy-processor"
 
@@ -39,10 +38,9 @@ export const copyFromRemote = (sourcePath: string, targetPath: string, items: st
 export const copyToRemote = (sourcePath: string, targetPath: string, items: string[], totalSize: number) => jsonRequest<void>(
     "copytoremote", { sourcePath, targetPath, items, totalSize })
 export const closeWindow = () => jsonRequest<void>("closewindow", {})
-export const getRecommendedApps = (file: string) => jsonRequest<App[]>("getrecommendedapps", { file })
-export const getAllApps = () => jsonRequest<App[]>("getallapps", {})
+//export const getAllApps = () => jsonRequest<App[]>("getallapps", {})
 export const openFile = (executable: string, file: string) => jsonRequest<void>("openfile", { executable, file })
-export const cleanupApps = (apps: App[]) => jsonRequest<void>("cleanupapps", { apps })
+
 
 const jsonRequest = async <T>(cmd: string, msg: unknown) => {
     const payload = {
@@ -51,9 +49,9 @@ const jsonRequest = async <T>(cmd: string, msg: unknown) => {
         body: JSON.stringify(msg)
     }
     const response = await fetch(`json://${cmd}`, payload)
-    const res = await response.json() as (T | SystemError)
-    if ((res as SystemError).error && (res as SystemError).message) {
-        throw (res)
-    }
-    return res as T
+    // const res = await response.json() as (T | SystemError)
+    // if ((res as SystemError).error && (res as SystemError).message) {
+    //     throw (res)
+    // }
+    return null as T //res as T
 }

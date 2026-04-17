@@ -1,6 +1,6 @@
 import { filter, map, Observable, Subscriber } from 'rxjs'
 import { ID_LEFT, ID_RIGHT } from '../components/Commander'
-import { VersionInfoResult } from 'native'
+//import { VersionInfoResult } from 'native'
 
 export type ExifData = {
     idx: number,
@@ -36,7 +36,7 @@ export type DeleteProgress = {
 
 export type Version = {
     requestId: number,
-    items: VersionInfoResult[]
+    //items: VersionInfoResult[]
 }
 
 type EventData = ExifDataType | ExifStatus| CopyProgress | Version | DeleteProgress
@@ -51,7 +51,7 @@ type Event = {
 }
 
 const subscribers = new Set<Subscriber<Event>>
-window.electronAPI.onMessage(msg => subscribers.values().forEach(s => s.next(msg as Event)))
+//window.electronAPI.onMessage(msg => subscribers.values().forEach(s => s.next(msg as Event)))
 
 const message$ = new Observable<Event>(subscriberToSet => {
     subscribers.add(subscriberToSet)

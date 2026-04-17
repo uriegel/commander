@@ -2,71 +2,67 @@ import { ExtensionProps } from "web-dialog-react"
 import './OpenWith.css'
 import VirtualTable, { VirtualTableHandle } from "virtual-table-react"
 import { useEffect, useRef, useState } from "react"
-import { cleanupApps, getAllApps, getRecommendedApps } from "@/renderer/requests/requests"
-import { App } from "native"
 import New from "@/renderer/svg/New"
 
 export type OpenWithProps = {
     fileName: string,
     filePath: string,
-    app?: App
 }
 
 export default function OpenWith({ props, onChange }: ExtensionProps) {
 
-    const [apps, setApps] = useState<App[]>([])
     const all = useRef(false)
     
-    const virtualTable = useRef<VirtualTableHandle<App>>(null)
+//    const virtualTable = useRef<VirtualTableHandle<App>>(null)
 
     useEffect(() => {
         const getApps = async () => {
-            const apps = await getRecommendedApps((props as OpenWithProps).filePath + '/' + (props as OpenWithProps).fileName)
-            setApps([...apps, { name: "Alle Apps anzeigen...", executable: "" } as App])
+            //const apps = await getRecommendedApps((props as OpenWithProps).filePath + '/' + (props as OpenWithProps).fileName)
+            //setApps([...apps, { name: "Alle Apps anzeigen...", executable: "" } as App])
         }
 
         getApps()
 
-        virtualTable.current?.setColumns({
-            columns: [{ name: "" }], 
-            renderRow: app => [
-                app.executable != ""
-                    ? (<span>
-                        <img className="appImage" src={`appicon://app/${app.app}`} alt="" />
-                        <span>{app.name}</span>
-                    </span>)
-                    : (<span>
-                        <span className="appImage new">
-                            <New />
-                        </span>
-                        <span>{app.name}</span>
-                    </span>)
-            ]
-        })
+        // virtualTable.current?.setColumns({
+        //     columns: [{ name: "" }], 
+        //     renderRow: app => [
+        //         app.executable != ""
+        //             ? (<span>
+        //                 <img className="appImage" src={`appicon://app/${app.app}`} alt="" />
+        //                 <span>{app.name}</span>
+        //             </span>)
+        //             : (<span>
+        //                 <span className="appImage new">
+        //                     <New />
+        //                 </span>
+        //                 <span>{app.name}</span>
+        //             </span>)
+        //     ]
+        // })
     }, [props])
 
     useEffect(() => {
         return () => {
-            console.log("clean", apps.length)
-            cleanupApps(apps)
+//            console.log("clean", apps.length)
+  //          cleanupApps(apps)
         }
-    }, [apps])
+    }, [])
 
-    const onPosition = (app: App) => {
-        all.current = !app.executable
-        if (onChange)
-            onChange({ ...props, app })
-    }
+    // const onPosition = (app: App) => {
+    //     all.current = !app.executable
+    //     if (onChange)
+    //         onChange({ ...props, app })
+    // }
 
     const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
         if (e.key == "Enter" && all.current) {
             e.isDefaultPrevented()
             e.stopPropagation()
-            virtualTable.current?.setPosition(0)
+//            virtualTable.current?.setPosition(0)
 
             const fill = async () => {
-                const apps = await getAllApps()
-                setApps(apps);
+//                const apps = await getAllApps()
+  //              setApps(apps);
             }
             fill()
         }
@@ -80,7 +76,6 @@ export default function OpenWith({ props, onChange }: ExtensionProps) {
                 <span>zu öffnen</span>
             </div>
             <div className="tableContainer">
-	            <VirtualTable className='wdr-focusable' ref={virtualTable} items={apps} onPosition={onPosition} />
             </div>
         </div>
     )
