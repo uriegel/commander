@@ -27,6 +27,10 @@
     <SelfContained>true</SelfContained>
   </PropertyGroup> 
 
+  <ItemGroup>
+    <PackageReference Include="WebWindowNetCore" Version="11.0.19-beta-19" />
+  </ItemGroup> 
+
   <!-- <ItemGroup>
     <EmbeddedResource Include="../webroot/index.html">
       <LogicalName>/$([System.String]::new('%(RelativeDir)').SubString(11).Replace('\','/'))%(FileName)%(Extension)</LogicalName>

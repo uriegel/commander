@@ -138,5 +138,5 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-
 
-native/build
-local_modules/native/native.node
+Commander/bin
+Commander/obj
