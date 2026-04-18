@@ -25,6 +25,10 @@ TODO
 * GetDrives has to return sdd
 * Ubuntu Style
 * Root Icons
+* Release version
+* Windows version (with Release)
+* Linux with HeaderBar
+* Windows with Custom Frame
 
 * Unmount and release external drive
 
