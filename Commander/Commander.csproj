@@ -28,6 +28,7 @@
   </PropertyGroup> 
 
   <ItemGroup>
+    <PackageReference Include="WebServerLight" Version="1.0.5" />
     <PackageReference Include="WebWindowNetCore" Version="11.0.19-beta-19" />
   </ItemGroup> 
 

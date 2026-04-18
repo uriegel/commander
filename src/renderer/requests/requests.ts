@@ -48,7 +48,7 @@ const jsonRequest = async <T>(cmd: string, msg: unknown) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(msg)
     }
-    const response = await fetch(`json://${cmd}`, payload)
+    const response = await fetch(`http://localhost:8080/requests/${cmd}`, payload)
     // const res = await response.json() as (T | SystemError)
     // if ((res as SystemError).error && (res as SystemError).message) {
     //     throw (res)
