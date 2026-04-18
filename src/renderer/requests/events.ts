@@ -39,7 +39,11 @@ export type Version = {
     //items: VersionInfoResult[]
 }
 
-type EventData = ExifDataType | ExifStatus| CopyProgress | Version | DeleteProgress
+export type ThemeChangeEvent = {
+    accentColor: string
+}
+
+type EventData = ExifDataType | ExifStatus| CopyProgress | Version | DeleteProgress | ThemeChangeEvent
 
 type EventCmd = "Exif" | "ExifStart" | "ExifStop" | "CopyProgress" | "CopyStop" | "CopyProgressShowDialog"
     | "VersionsStart" | "VersionsStop" | "Versions" | "ThemeChanged" | "DeleteProgress" | "DeleteStop"
@@ -52,32 +56,19 @@ type CommanderEvent = {
 
 let ws = new WebSocket("ws://localhost:8080/events")
 
-const $wsToEventObservable = fromEvent(ws, 'message')
+const $wsToEventObservable = fromEvent(ws, 'message').pipe(map(n => {
+    const evt = n as MessageEvent
+    return JSON.parse(evt.data) as CommanderEvent
+}))
 
-
-
-
-
-
-$wsToEventObservable.subscribe(m => {
-    const evt = m as MessageEvent
-    console.log("Jetzt kommts", evt.data)
-})
+$wsToEventObservable.subscribe(msg => subscribers.values().forEach(s => s.next(msg)))
 
 const subscribers = new Set<Subscriber<CommanderEvent>>
-//window.electronAPI.onMessage(msg => subscribers.values().forEach(s => s.next(msg as Event)))
 
 const message$ = new Observable<CommanderEvent>(subscriberToSet => {
     subscribers.add(subscriberToSet)
     return () => subscribers.delete(subscriberToSet)
 })
-
-
-// const message$ = wsToEventObservable().subscribe({
-//     next: ev => 
-//     subscribers.add(subscriberToSet)
-//     return () => subscribers.delete(subscriberToSet)
-// })
 
 export const copyProgressEvents$ = message$.pipe(filter(n => n.cmd == "CopyProgress")).pipe(map(n => n.msg as CopyProgress))
 export const copyProgressShowDialogEvents$ = message$.pipe(filter(n => n.cmd == "CopyProgressShowDialog"))
@@ -85,7 +76,7 @@ export const deleteProgressEvents$ = message$.pipe(filter(n => n.cmd == "DeleteP
 //export const copyProgressShowDialogEvents$ = message$.pipe(filter(n => n.cmd == "CopyProgressShowDialog"))
 export const deleteStopEvents$ = message$.pipe(filter(n => n.cmd == "DeleteStop"))
 export const copyStopEvents$ = message$.pipe(filter(n => n.cmd == "CopyStop"))
-export const themeChangedEvents$ = message$.pipe(filter(n => n.cmd == "ThemeChanged"))
+export const themeChangedEvents$ = message$.pipe(filter(n => n.cmd == "ThemeChanged")).pipe(map(n => (n.msg as ThemeChangeEvent).accentColor))
 const exifStartEvents$ = message$.pipe(filter(n => n.cmd == "ExifStart"))
 const exifStopEvents$ = message$.pipe(filter(n => n.cmd == "ExifStop"))
 const exifDataEvents$ = message$.pipe(filter(n => n.cmd == "Exif"))

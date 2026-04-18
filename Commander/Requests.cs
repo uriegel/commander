@@ -34,7 +34,7 @@ static class Requests
         return true;
     }
 
-    public static Task SendJson<T>(T t) => socket?.SendJson(t) ?? Task.CompletedTask;
+    public static Task SendJson(CommanderEvent evt) => socket?.SendJson(evt) ?? Task.CompletedTask;
 
     public static void WebSocket(IWebSocket webSocket)
         => socket = webSocket;
@@ -49,3 +49,27 @@ record CancelExifs(string RequestId);
 record NullData();
 record GetItemsFinished(string FolderId);
 record GetAccentColor(string Color);
+
+class EventCmd
+{
+    public const string Exif = "Exif";
+    public const string ExifStart = "ExifStart";
+    public const string ExifStop = "ExifStop";
+    public const string CopyProgress = "CopyProgress";
+    public const string CopyStop = "CopyStop";
+    public const string CopyProgressShowDialog = "CopyProgressShowDialog";
+    public const string VersionsStart = "VersionsStart";
+    public const string VersionsStop = "VersionsStop";
+    public const string Versions = "Versions";
+    public const string ThemeChanged = "ThemeChanged";
+    public const string DeleteProgress = "DeleteProgress";
+    public const string DeleteStop = "DeleteStop";
+}
+
+record EventData(string? AccentColor)
+{
+    public EventData() : this((string?)null) {  }
+};
+
+record CommanderEvent(string? FolderId, string Cmd, EventData Msg);
+

@@ -22,12 +22,12 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Theme changed/WebSockets
 * WebSocket Job into Channel
 * Root Icons
 * Release version
 * Windows version (with Release)
 * Linux with HeaderBar
+* DevTools
 * Windows with Custom Frame
 
 * Unmount and release external drive

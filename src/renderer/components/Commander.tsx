@@ -82,9 +82,9 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 	}, [])
 
 	useEffect(() => {
-		const themeChanges = themeChangedEvents$.subscribe(() => {
+		const themeChanges = themeChangedEvents$.subscribe(accentColor => {
 			const box = document.querySelector('.App.linuxTheme') as HTMLBaseElement
-			//box?.style.setProperty('--accent-color', window.electronAPI.getAccentColor())
+			box?.style.setProperty('--accent-color', accentColor)
 		})
 		return () => themeChanges.unsubscribe()
 	}, [])

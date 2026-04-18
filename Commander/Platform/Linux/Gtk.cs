@@ -42,10 +42,10 @@ static class Gtk
 
 		GtkDotNet.Gtk.SignalConnect(settings, "changed::gtk-theme", Changed);
 
-		void Changed()
+		static void Changed()
 		{
 			var color = GetAccentColor();
-			Requests.SendJson(new { AccentColor = color });
+			Requests.SendJson(new(null, EventCmd.ThemeChanged, new EventData { AccentColor = color }));
 		}
 	}
 
