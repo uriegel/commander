@@ -22,7 +22,6 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* GetDrives has to return sdd
 * Ubuntu Style
 * Root Icons
 * Release version
