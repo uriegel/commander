@@ -12,6 +12,10 @@ type MountResult = {
     path: string
 }
 
+type SystemError = {
+    
+}
+
 export const cmdRequest = async (cmd: string) => await fetch(`cmd://${cmd}`, { method: 'POST' })
 
 export const getDrives = () => jsonRequest<RequestItem>("getdrives", {})
@@ -49,9 +53,9 @@ const jsonRequest = async <T>(cmd: string, msg: unknown) => {
         body: JSON.stringify(msg)
     }
     const response = await fetch(`http://localhost:8080/requests/${cmd}`, payload)
-    // const res = await response.json() as (T | SystemError)
-    // if ((res as SystemError).error && (res as SystemError).message) {
+    const res = await response.json() as (T | SystemError)
+    //if ((res as SystemError).error && (res as SystemError).message) {
     //     throw (res)
-    // }
-    return null as T //res as T
+    //}
+    return res as T
 }
