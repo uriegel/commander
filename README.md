@@ -23,6 +23,7 @@ sudo dnf install gcc-c++ gtk3-devel
 
 TODO
 * Theme changed/WebSockets
+* WebSocket Job into Channel
 * Root Icons
 * Release version
 * Windows version (with Release)

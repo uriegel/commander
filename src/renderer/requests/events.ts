@@ -1,4 +1,4 @@
-import { filter, map, Observable, Subscriber } from 'rxjs'
+import { filter, fromEvent, map, merge, Observable, Subscriber } from 'rxjs'
 import { ID_LEFT, ID_RIGHT } from '../components/Commander'
 //import { VersionInfoResult } from 'native'
 
@@ -44,19 +44,40 @@ type EventData = ExifDataType | ExifStatus| CopyProgress | Version | DeleteProgr
 type EventCmd = "Exif" | "ExifStart" | "ExifStop" | "CopyProgress" | "CopyStop" | "CopyProgressShowDialog"
     | "VersionsStart" | "VersionsStop" | "Versions" | "ThemeChanged" | "DeleteProgress" | "DeleteStop"
 
-type Event = {
+type CommanderEvent = {
     folderId?: string,
     cmd: EventCmd,
     msg: EventData
 }
 
-const subscribers = new Set<Subscriber<Event>>
+let ws = new WebSocket("ws://localhost:8080/events")
+
+const $wsToEventObservable = fromEvent(ws, 'message')
+
+
+
+
+
+
+$wsToEventObservable.subscribe(m => {
+    const evt = m as MessageEvent
+    console.log("Jetzt kommts", evt.data)
+})
+
+const subscribers = new Set<Subscriber<CommanderEvent>>
 //window.electronAPI.onMessage(msg => subscribers.values().forEach(s => s.next(msg as Event)))
 
-const message$ = new Observable<Event>(subscriberToSet => {
+const message$ = new Observable<CommanderEvent>(subscriberToSet => {
     subscribers.add(subscriberToSet)
     return () => subscribers.delete(subscriberToSet)
 })
+
+
+// const message$ = wsToEventObservable().subscribe({
+//     next: ev => 
+//     subscribers.add(subscriberToSet)
+//     return () => subscribers.delete(subscriberToSet)
+// })
 
 export const copyProgressEvents$ = message$.pipe(filter(n => n.cmd == "CopyProgress")).pipe(map(n => n.msg as CopyProgress))
 export const copyProgressShowDialogEvents$ = message$.pipe(filter(n => n.cmd == "CopyProgressShowDialog"))
@@ -119,3 +140,5 @@ export const versionsStopEventsLeft$ = versionsStopEvents$
 export const versionsStopEventsRight$ = versionsStopEvents$
     .pipe(filter(n => n.folderId == ID_RIGHT))
     .pipe(map(n => n.msg as Version))
+
+

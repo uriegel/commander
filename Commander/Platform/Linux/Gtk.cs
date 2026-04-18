@@ -45,6 +45,7 @@ static class Gtk
 		void Changed()
 		{
 			var color = GetAccentColor();
+			Requests.SendJson(new { AccentColor = color });
 		}
 	}
 

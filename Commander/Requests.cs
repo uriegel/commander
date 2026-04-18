@@ -33,6 +33,13 @@ static class Requests
         await request.SendJsonAsync(new GetAccentColor(color));
         return true;
     }
+
+    public static Task SendJson<T>(T t) => socket?.SendJson(t) ?? Task.CompletedTask;
+
+    public static void WebSocket(IWebSocket webSocket)
+        => socket = webSocket;
+
+    static IWebSocket? socket;
 }
 
 record FileItem();

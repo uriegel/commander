@@ -32,6 +32,7 @@ var server =
                 .Add(PathRoute.New("/requests/getitemsfinished").Request(Requests.GetItemsFinished))
                 .Add(PathRoute.New("/requests/getaccentcolor").Request(Requests.GetAccentColor))
             )
+        .WebSocket(Requests.WebSocket)
         .Build();
 
 Gtk.StartThemeChangeDetecting();
