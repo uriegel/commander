@@ -5,8 +5,9 @@ static class Requests
 {
     public static async Task<bool> GetDrives(IRequest request)
     {
-        var data = await request.DeserializeAsync<NullData>();
-        var response = new RequestItem([], "root", 0, 0);
+        var _ = await request.DeserializeAsync<NullData>();
+        var drives = await Drive.Get();
+        var response = new DriveItemResponse(drives, "root", drives.Length);
         await request.SendJsonAsync(response);
         return true;
     }
@@ -31,5 +32,4 @@ record FileItem();
 record GetDrives(string FolderId, string RequestId, string Path, bool ShowHidden);
 record CancelExifs(string RequestId);
 record NullData();
-record RequestItem(FileItem[] Items, string Path, int DirCount, int FileCount);
 record GetItemsFinished(string FolderId);
