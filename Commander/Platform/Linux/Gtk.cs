@@ -3,14 +3,14 @@ using GtkDotNet;
 
 static class Gtk
 {
-    public static string GetAccentColor()
+	public static string GetAccentColor()
 	{
 		var settings = Settings.New("org.gnome.desktop.interface");
 		var theme = settings.GetString("gtk-theme");
 		var dark = theme?.EndsWith("-dark") == true;
 		var color = settings.GetString("accent-color") ?? "blue";
 		// const accent = process.platform == "win32" ? "lightblue" : getAccentColor()
-        return (color, dark) switch
+		return (color, dark) switch
 		{
 			("orange", true) => "#d34615",
 			("orange", false) => "#cb4314",
@@ -33,6 +33,24 @@ static class Gtk
 			(_, true) => "#0073e5",
 			(_, false) => "#0070de",
 		};
-    }
+	}
+
+	public static void StartThemeChangeDetecting()
+	{
+		var settings = Settings.New("org.gnome.desktop.interface");
+		changedDelegate = new VoidDelegate(Changed);
+
+		GtkDotNet.Gtk.SignalConnect(settings, "changed::gtk-theme", Changed);
+
+		void Changed()
+		{
+			var color = GetAccentColor();
+		}
+	}
+
+	static VoidDelegate? changedDelegate = null;
 }
+
+delegate void VoidDelegate();
+
 #endif

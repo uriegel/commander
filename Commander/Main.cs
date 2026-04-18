@@ -34,7 +34,9 @@ var server =
             )
         .Build();
 
+Gtk.StartThemeChangeDetecting();
 server.Start();
 webView.Run();
 server.Stop();    
+
 
