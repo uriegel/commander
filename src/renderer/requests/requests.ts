@@ -16,9 +16,14 @@ type SystemError = {
     
 }
 
+type GetAccentColor = {
+    color: string
+}
+
 export const cmdRequest = async (cmd: string) => await fetch(`cmd://${cmd}`, { method: 'POST' })
 
 export const getDrives = () => jsonRequest<RequestItem>("getdrives", {})
+export const getAccentColor = () => jsonRequest<GetAccentColor>("getaccentcolor", {})
 export const mountRequest = (dev: string) => jsonRequest<MountResult>("mount", { dev })
 export const onEnter = (name: string, path: string, openWith?: boolean, showProperties?: boolean) => jsonRequest<void>("onenter", {name, path, openWith, showProperties })
 export const getFiles = (folderId: string, requestId: number, path: string, showHidden?: boolean) => jsonRequest<RequestItem>("getfiles", { folderId, requestId, path, showHidden })

@@ -25,6 +25,14 @@ static class Requests
         await request.SendJsonAsync(new NullData());
         return true;
     }
+
+    public static async Task<bool> GetAccentColor(IRequest request)
+    {
+        var _ = await request.DeserializeAsync<NullData>();
+        var color = Gtk.GetAccentColor();
+        await request.SendJsonAsync(new GetAccentColor(color));
+        return true;
+    }
 }
 
 record FileItem();
@@ -33,3 +41,4 @@ record GetDrives(string FolderId, string RequestId, string Path, bool ShowHidden
 record CancelExifs(string RequestId);
 record NullData();
 record GetItemsFinished(string FolderId);
+record GetAccentColor(string Color);

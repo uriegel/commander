@@ -22,7 +22,9 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Ubuntu Style
+* GetAccentColor
+* DarkTheme/LightTheme
+* Theme changed/WebSockets
 * Root Icons
 * Release version
 * Windows version (with Release)

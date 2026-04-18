@@ -7,7 +7,7 @@ import MediaPlayer from "./viewers/MediaPlayer"
 import FileViewer from "./viewers/FileViewer"
 import TrackViewer from "./viewers/TrackViewer"
 import FolderView, { FolderViewHandle, ItemCount } from "./FolderView"
-import { closeWindow, cmdRequest } from "../requests/requests"
+import { closeWindow, cmdRequest, getAccentColor } from "../requests/requests"
 import { Item } from "../items-provider/items"
 import { DialogContext } from "web-dialog-react"
 import Statusbar from "./Statusbar"
@@ -73,9 +73,12 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 	}
 
 	useEffect(() => {
-		const box = document.querySelector('.App.linuxTheme') as HTMLBaseElement
-		//box?.style.setProperty('--accent-color', window.electronAPI.getAccentColor())
-		folderLeft.current?.setFocus()
+		const process = async () => {
+			const box = document.querySelector('.App.linuxTheme') as HTMLBaseElement
+			box?.style.setProperty('--accent-color', (await getAccentColor()).color)
+			folderLeft.current?.setFocus()	
+		}
+		process()
 	}, [])
 
 	useEffect(() => {

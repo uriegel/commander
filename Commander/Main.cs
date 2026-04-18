@@ -30,6 +30,7 @@ var server =
                 .Add(PathRoute.New("/requests/getdrives").Request(Requests.GetDrives))
                 .Add(PathRoute.New("/requests/cancelexifs").Request(Requests.CancelExifs))
                 .Add(PathRoute.New("/requests/getitemsfinished").Request(Requests.GetItemsFinished))
+                .Add(PathRoute.New("/requests/getaccentcolor").Request(Requests.GetAccentColor))
             )
         .Build();
 
