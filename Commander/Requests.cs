@@ -35,6 +35,13 @@ static class Requests
         return true;
     }
 
+    public static async Task<bool> GetIcon(IRequest request)
+    {
+        var subPath = request.SubPath;
+        Console.WriteLine($"Das will ich: {subPath}");
+        return false;
+    }
+
     public static void SendJson(CommanderEvent evt) => websocketChannel.Writer.TryWrite(evt);
 
     public static void WebSocket(IWebSocket webSocket)

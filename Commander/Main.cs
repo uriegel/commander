@@ -32,6 +32,9 @@ var server =
                 .Add(PathRoute.New("/requests/getitemsfinished").Request(Requests.GetItemsFinished))
                 .Add(PathRoute.New("/requests/getaccentcolor").Request(Requests.GetAccentColor))
             )
+        .Route(MethodRoute
+            .New(Method.Get)
+                .Add(PathRoute.New("/icon")).Request(Requests.GetIcon))
         .WebSocket(Requests.WebSocket)
         .Build();
 
