@@ -1,5 +1,4 @@
 #if Linux
-using System.Runtime.CompilerServices;
 using CsTools.Async;
 using CsTools.Extensions;
 using static CsTools.ProcessCmd;

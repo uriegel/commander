@@ -8,45 +8,14 @@
     "name": "Uwe Riegel",
     "email": "uriegel@hotmail.de"
   },
-  "build": {
-    "appId": "de.uriegel.commander",
-    "productName": "Commander",
-    "removePackageScripts": true,
-    "asar": true,
-    "asarUnpack": [],
-    "files": [
-      "icons/64x64.png",
-      "dist/main/**/*",
-      "dist/renderer/index.html",
-      "dist/renderer/assets/**/*",
-      "package.json"
-    ],
-    "directories": {
-      "buildResources": "resources"
-    },
-    "win": {
-      "target": "nsis"
-    },
-    "linux": {
-      "target": [
-        "AppImage",
-        "deb"
-      ],
-      "category": "Utility",
-      "icon": "icons",
-      "desktop": {
-        "entry": {
-          "StartupWMClass": "commander"
-        }
-      }
-    }
-  },
   "scripts": {
     "dev": "npm run build && vite",
     "lint": "npm run build && eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "react dev tools": "./node_modules/.bin/electron ./node_modules/react-devtools/app.js",
-    "dist": "npm --prefix ./native run rebuild && vite build && npm run build && electron-builder",
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc && vite build && npm run copy",
+    "build Windows": "tsc && vite build && npm run wincopy",
+    "copy": "cp dist/renderer/index.html Commander/Resources/index.html && cp dist/renderer/assets/*.js Commander/Resources/assets/ && cp dist/renderer/assets/*.css Commander/Resources/assets/",
+    "wincopy": "xcopy .\\dist\\assets\\*.js .\\resources\\script.js /y &&  copy .\\dist\\assets\\*.css .\\resources\\style.css /y"
+
   },
   "repository": {
     "type": "git",
@@ -58,9 +27,7 @@
   },
   "homepage": "https://github.com/uriegel/commander#readme",
   "dependencies": {
-    "electron-settings": "^4.0.4",
     "functional-extensions": "^2.8.0",
-    "native": "file:local_modules/native",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "rxjs": "^7.8.2"
@@ -72,8 +39,6 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
     "cross-env": "^10.1.0",
-    "electron": "^40.6.0",
-    "electron-builder": "^26.3.6",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.0",
     "globals": "^17.3.0",

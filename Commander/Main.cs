@@ -5,7 +5,7 @@ using WebServerLight.Routing;
 
 var webView = WebView
     .Create()
-    .AppId("de.uriegel.commander")
+    .AppId(Globals.APP_ID)
     .Title("Commander")
     .InitialBounds(600, 800)
     .SaveBounds()
@@ -16,15 +16,18 @@ var webView = WebView
     .ResourceIcon("icon")
 #endif
     .DebugUrl("http://localhost:5173/")
-    .Url("https://github.com")
+    .Url("http://localhost:8080")
     .CanClose(() => true);
 
 var server =
     WebServer
         .New()
         .Http(8080)
-        //.WebsiteFromResource()
+#if DEBUG        
         .AddAllowedOrigin("http://localhost:5173")
+#else
+        .WebsiteFromResource()
+#endif        
         .Route(MethodRoute
             .New(Method.Post)
                 .Add(PathRoute.New("/requests/getdrives").Request(Requests.GetDrives))
@@ -38,6 +41,7 @@ var server =
         .WebSocket(Requests.WebSocket)
         .Build();
 
+Globals.InitializeResourceFiles();
 Gtk.StartThemeChangeDetecting();
 server.Start();
 webView.Run();

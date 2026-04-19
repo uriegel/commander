@@ -1,6 +1,5 @@
 #if Linux
 using System.Diagnostics;
-using System.Reflection.Metadata.Ecma335;
 
 static class Icon
 {
@@ -67,7 +66,7 @@ static class Icon
     {
         var psi = new ProcessStartInfo
         {
-            FileName = "Native/icon",
+            FileName = Globals.IconProcessor,
             Arguments = "",
             RedirectStandardInput = true,
             RedirectStandardOutput = true,

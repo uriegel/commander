@@ -141,3 +141,5 @@ vite.config.ts.timestamp-
 Commander/bin
 Commander/obj
 Native/icon
+Commander/Resources/index.html
+Commander/Resources/assets

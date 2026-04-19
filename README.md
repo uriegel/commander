@@ -22,11 +22,12 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Release version
+* Relase version in Linux with .desktop starter
 * Windows version (with Release)
 * Linux with HeaderBar
 * DevTools
 * Windows with Custom Frame
+* getfiles
 
 * Unmount and release external drive
 
