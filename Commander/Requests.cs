@@ -1,4 +1,5 @@
 
+using System.Threading.Channels;
 using WebServerLight;
 
 static class Requests
@@ -34,11 +35,22 @@ static class Requests
         return true;
     }
 
-    public static Task SendJson(CommanderEvent evt) => socket?.SendJson(evt) ?? Task.CompletedTask;
+    public static void SendJson(CommanderEvent evt) => websocketChannel.Writer.TryWrite(evt);
 
     public static void WebSocket(IWebSocket webSocket)
         => socket = webSocket;
 
+    static async Task StartChannelProcessing()
+    {
+        await foreach (var job in websocketChannel.Reader.ReadAllAsync())
+            await (socket?.SendJson(job) ?? Task.CompletedTask);
+    }
+
+    static Requests() => channelTask = StartChannelProcessing();
+
+    static readonly Channel<CommanderEvent> websocketChannel
+        = Channel.CreateUnbounded<CommanderEvent>(new() { SingleReader = true });
+    static readonly Task channelTask;
     static IWebSocket? socket;
 }
 
