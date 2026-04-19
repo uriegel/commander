@@ -13,7 +13,7 @@ var webView = WebView
     .BackgroundColor(Color.Transparent)
     //.DefaultContextMenuDisabled()
 #if Windows
-    .ResourceIcon("icon")
+    //.ResourceIcon("icon")
 #endif
     .DebugUrl("http://localhost:5173/")
     .Url("http://localhost:8080")
@@ -42,7 +42,7 @@ var server =
         .Build();
 
 Globals.InitializeResourceFiles();
-Gtk.StartThemeChangeDetecting();
+Theme.StartChangeDetecting();
 server.Start();
 webView.Run();
 Icon.StopProcessing();    

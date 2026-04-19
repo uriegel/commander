@@ -22,7 +22,10 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Windows version (with Release)
+* Windows version AccentColor and Theme changing
+* Windows version GetDrives
+* Windows version Resource icon
+* Windows version Release
 * Linux with HeaderBar
 * DevTools
 * Windows with Custom Frame

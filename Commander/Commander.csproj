@@ -16,7 +16,7 @@
     <TargetFramework>net10.0-windows</TargetFramework>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>false</SelfContained>
-    <ApplicationIcon>../icon.ico</ApplicationIcon>
+    <!-- <ApplicationIcon>../icon.ico</ApplicationIcon> -->
   </PropertyGroup> 
 
   <PropertyGroup Condition="'$(IsLinux)'=='true'">

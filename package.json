@@ -9,12 +9,12 @@
     "email": "uriegel@hotmail.de"
   },
   "scripts": {
-    "dev": "npm run build && vite",
+    "dev": "vite",
     "lint": "npm run build && eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "build": "tsc && vite build && npm run copy",
     "build Windows": "tsc && vite build && npm run wincopy",
     "copy": "cp dist/renderer/index.html Commander/Resources/index.html && cp dist/renderer/assets/*.js Commander/Resources/assets/ && cp dist/renderer/assets/*.css Commander/Resources/assets/",
-    "wincopy": "xcopy .\\dist\\assets\\*.js .\\resources\\script.js /y &&  copy .\\dist\\assets\\*.css .\\resources\\style.css /y"
+    "wincopy": "xcopy .\\dist\\renderer\\index.html .\\Commander\\Resources\\index.html && xcopy .\\dist\\renderer\\assets\\*.js .\\Commander\\Resources\\assets /y &&  copy .\\dist\\renderer\\assets\\*.css .\\Commander\\Resources\\assets /y"
 
   },
   "repository": {

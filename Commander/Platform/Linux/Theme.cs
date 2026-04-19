@@ -1,7 +1,7 @@
 #if Linux
 using GtkDotNet;
 
-static class Gtk
+static class Theme
 {
 	public static string GetAccentColor()
 	{
@@ -35,7 +35,7 @@ static class Gtk
 		};
 	}
 
-	public static void StartThemeChangeDetecting()
+	public static void StartChangeDetecting()
 	{
 		var settings = Settings.New("org.gnome.desktop.interface");
 		changedDelegate = new VoidDelegate(Changed);

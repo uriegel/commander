@@ -30,7 +30,7 @@ static class Requests
     public static async Task<bool> GetAccentColor(IRequest request)
     {
         var _ = await request.DeserializeAsync<NullData>();
-        var color = Gtk.GetAccentColor();
+        var color = Theme.GetAccentColor();
         await request.SendJsonAsync(new GetAccentColor(color));
         return true;
     }
