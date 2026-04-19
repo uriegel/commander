@@ -13,7 +13,8 @@ var webView = WebView
     .BackgroundColor(Color.Transparent)
     //.DefaultContextMenuDisabled()
 #if Windows
-    //.ResourceIcon("icon")
+    .ResourceIcon("icon")
+    //.WithoutNativeTitlebar()
 #endif
     .DebugUrl("http://localhost:5173/")
     .Url("http://localhost:8080")
