@@ -3,6 +3,8 @@ using WebWindowNetCore;
 using WebServerLight;
 using WebServerLight.Routing;
 
+// Icon.Get("affe");
+
 var webView = WebView
     .Create()
     .AppId("de.uriegel.commander")
