@@ -40,7 +40,8 @@ static class Requests
         var subPath = request.SubPath;
         if (subPath == null)
             return false;
-        Icon.Get(subPath);
+        var payload = await Icon.GetAsync(subPath);
+        await request.SendAsync(payload, payload.IsSvg() ? "image/svg+xml" : "image/png");
         return false;
     }
 

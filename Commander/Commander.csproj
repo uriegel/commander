@@ -30,7 +30,7 @@
   <ItemGroup>
     <PackageReference Include="CsTools" Version="7.25.8" />
     <PackageReference Include="Gtk4DotNet" Version="8.0.0" />
-    <PackageReference Include="WebServerLight" Version="1.0.5" />
+    <PackageReference Include="WebServerLight" Version="1.0.6" />
     <PackageReference Include="WebWindowNetCore" Version="11.0.19-beta-19" />
   </ItemGroup> 
 
