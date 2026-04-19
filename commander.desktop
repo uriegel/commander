@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Commander
+Exec=/home/uwe/Projekte/commander/Commander/bin/Release/net10.0/linux-x64/publish/Commander %U
+Terminal=false
+Type=Application
+Icon=./commander.png
+StartupWMClass=de.uriegel.commander
+Comment=A Norton Commander clone based on Electron and React with Typescript
+Categories=Utility;

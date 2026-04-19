@@ -22,7 +22,6 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Relase version in Linux with .desktop starter
 * Windows version (with Release)
 * Linux with HeaderBar
 * DevTools
