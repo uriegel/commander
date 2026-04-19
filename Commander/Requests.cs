@@ -38,7 +38,9 @@ static class Requests
     public static async Task<bool> GetIcon(IRequest request)
     {
         var subPath = request.SubPath;
-        Console.WriteLine($"Das will ich: {subPath}");
+        if (subPath == null)
+            return false;
+        Icon.Get(subPath);
         return false;
     }
 
