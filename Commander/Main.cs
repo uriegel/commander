@@ -39,6 +39,7 @@ var server =
                 .Add(PathRoute.New("/requests/closewindow").Request(Requests.CloseWindow))
                 .Add(PathRoute.New("/requests/minimize").Request(Requests.Minimize))
                 .Add(PathRoute.New("/requests/maximize").Request(Requests.Maximize))
+                .Add(PathRoute.New("/requests/restore").Request(Requests.Restore))
             )
         .Route(MethodRoute
             .New(Method.Get)

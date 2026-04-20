@@ -22,8 +22,7 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Windows version Windows Controls restore
-* Windows version Resource icon
+* Windows version Resource icon icons64x64
 * Windows version GetDrives
 * Windows version Release
 * Linux with HeaderBar

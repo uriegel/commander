@@ -43,10 +43,14 @@ export type ThemeChangeEvent = {
     accentColor: string
 }
 
-type EventData = ExifDataType | ExifStatus| CopyProgress | Version | DeleteProgress | ThemeChangeEvent
+export type WindowStateEvent = {
+    maximized: boolean
+}
+
+type EventData = ExifDataType | ExifStatus| CopyProgress | Version | DeleteProgress | ThemeChangeEvent | WindowStateEvent
 
 type EventCmd = "Exif" | "ExifStart" | "ExifStop" | "CopyProgress" | "CopyStop" | "CopyProgressShowDialog"
-    | "VersionsStart" | "VersionsStop" | "Versions" | "ThemeChanged" | "DeleteProgress" | "DeleteStop"
+    | "VersionsStart" | "VersionsStop" | "Versions" | "ThemeChanged" | "DeleteProgress" | "DeleteStop" | "WindowState"
 
 type CommanderEvent = {
     folderId?: string,
@@ -77,6 +81,7 @@ export const deleteProgressEvents$ = message$.pipe(filter(n => n.cmd == "DeleteP
 export const deleteStopEvents$ = message$.pipe(filter(n => n.cmd == "DeleteStop"))
 export const copyStopEvents$ = message$.pipe(filter(n => n.cmd == "CopyStop"))
 export const themeChangedEvents$ = message$.pipe(filter(n => n.cmd == "ThemeChanged")).pipe(map(n => (n.msg as ThemeChangeEvent).accentColor))
+export const windowStateEvents$ = message$.pipe(filter(n => n.cmd == "WindowState")).pipe(map(n => (n.msg as WindowStateEvent).maximized))
 const exifStartEvents$ = message$.pipe(filter(n => n.cmd == "ExifStart"))
 const exifStopEvents$ = message$.pipe(filter(n => n.cmd == "ExifStop"))
 const exifDataEvents$ = message$.pipe(filter(n => n.cmd == "Exif"))

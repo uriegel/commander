@@ -62,6 +62,15 @@ static class Requests
         return true;
     }
         
+    public static async Task<bool> Restore(IRequest request)
+    {
+        var _ = await request.DeserializeAsync<NullData>();
+#if Windows        
+        Form.Restore();
+#endif        
+        return true;
+    }
+
     public static async Task<bool> GetIcon(IRequest request)
     {
         var subPath = request.SubPath;
@@ -113,12 +122,10 @@ class EventCmd
     public const string ThemeChanged = "ThemeChanged";
     public const string DeleteProgress = "DeleteProgress";
     public const string DeleteStop = "DeleteStop";
+    public const string WindowState = "WindowState";
 }
 
-record EventData(string? AccentColor)
-{
-    public EventData() : this((string?)null) {  }
-};
+record EventData(string? AccentColor = null, bool? Maximized = null);
 
 record CommanderEvent(string? FolderId, string Cmd, EventData Msg);
 

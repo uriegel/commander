@@ -36,6 +36,11 @@ body:focus-within .titlebar {
     width: 45px;
     text-align: center;
     align-content: center;
+    user-select: none;
+}
+
+.control.invisible {
+    display: none;
 }
 
 .control.close {
