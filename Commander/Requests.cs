@@ -35,6 +35,33 @@ static class Requests
         return true;
     }
 
+    public static async Task<bool> CloseWindow(IRequest request)
+    {
+        var _ = await request.DeserializeAsync<NullData>();
+#if Windows        
+        Form.Close();
+#endif        
+        return true;
+    }
+
+    public static async Task<bool> Maximize(IRequest request)
+    {
+        var _ = await request.DeserializeAsync<NullData>();
+#if Windows        
+        Form.Maximize();
+#endif        
+        return true;
+    }
+
+    public static async Task<bool> Minimize(IRequest request)
+    {
+        var _ = await request.DeserializeAsync<NullData>();
+#if Windows        
+        Form.Minimize();
+#endif        
+        return true;
+    }
+        
     public static async Task<bool> GetIcon(IRequest request)
     {
         var subPath = request.SubPath;

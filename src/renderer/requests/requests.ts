@@ -47,6 +47,8 @@ export const copyFromRemote = (sourcePath: string, targetPath: string, items: st
 export const copyToRemote = (sourcePath: string, targetPath: string, items: string[], totalSize: number) => jsonRequest<void>(
     "copytoremote", { sourcePath, targetPath, items, totalSize })
 export const closeWindow = () => jsonRequest<void>("closewindow", {})
+export const minimize = () => jsonRequest<void>("minimize", {})
+export const maximize = () => jsonRequest<void>("maximize", {})
 //export const getAllApps = () => jsonRequest<App[]>("getallapps", {})
 export const openFile = (executable: string, file: string) => jsonRequest<void>("openfile", { executable, file })
 

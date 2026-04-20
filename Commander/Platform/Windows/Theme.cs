@@ -6,36 +6,20 @@ using System.Runtime.Versioning;
 
 static class Theme
 {
-    static bool darkMode = false;
-    public static string GetAccentColor() => darkMode ? "#0073e5" : "#0070de";
+    public static string GetAccentColor() => GetDark() ? "red" /*"#0073e5"*/ : "#0070de";
 
     public static string GetThemeName(this string osTheme)
         => osTheme;
-
-    public static string Get()
-    {
-        var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
-
-        return GetThemeFromKey(key);
-
-        string GetThemeFromKey(RegistryKey? key) 
-        {
-            var value = key?.GetValue("SystemUsesLightTheme");
-            return value == null || (int)value == 1 
-            ? "windows"
-            : "windowsDark";
-        } 
-    }
 
     public static void StartChangeDetecting()
     {
         if (started)
             return;
         started = true;
-        
+
         var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
 
-        var currentTheme = Get();    
+        var currentTheme = GetDark();
 
         new Thread(_ =>
         {
@@ -45,16 +29,35 @@ static class Theme
                 if (status != 0)
                     break;
 
-                var theme = Get();
-                if (currentTheme != theme) {
+                var theme = GetDark();
+                if (currentTheme != theme)
+                {
                     currentTheme = theme;
-                    onChanged(theme);
+           			var color = GetAccentColor();
+        			Requests.SendJson(new(null, EventCmd.ThemeChanged, new EventData { AccentColor = color }));
                 }
             }
-        }){
+        })
+        {
             IsBackground = true
         }.Start();
     }
+    
+    static bool GetDark()
+    {
+        var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+
+        return GetDarkThemeFromKey(key) ; 
+
+        bool GetDarkThemeFromKey(RegistryKey? key) 
+        {
+            var value = key?.GetValue("SystemUsesLightTheme");
+            return value == null || (int)value == 1 
+            ? false
+            : true;
+        } 
+    }
+
 
     static bool started;
 }

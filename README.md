@@ -22,8 +22,7 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Windows version AccentColor and Theme changing
-* Windows version Windows Controls 🗖 🗗 — ━ ❌ ✕
+* Windows version Windows Controls restore
 * Windows version Resource icon
 * Windows version GetDrives
 * Windows version Release

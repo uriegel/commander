@@ -32,3 +32,31 @@ body:focus-within .titlebar {
     margin-top: -3px; 
 }
 
+.control {
+    width: 45px;
+    text-align: center;
+    align-content: center;
+}
+
+.control.close {
+    font-size: medium;
+}
+
+.control:hover {
+    background-color: lightgray;
+}
+
+.control:hover {
+    background-color: lightgray;
+}
+
+.control.close:hover {
+    background-color: #C42B1C;
+    color: white;
+}
+
+@media (prefers-color-scheme: dark) {
+    .control:hover {
+        background-color: rgb(55, 55, 55);
+    }
+}

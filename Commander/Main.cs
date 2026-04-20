@@ -13,8 +13,9 @@ var webView = WebView
     .BackgroundColor(Color.Transparent)
     //.DefaultContextMenuDisabled()
 #if Windows
+    .OnFormCreating(Form.OnCreate)
     .ResourceIcon("icon")
-    //.WithoutNativeTitlebar()
+    .WithoutNativeTitlebar()
 #endif
     .DebugUrl("http://localhost:5173/")
     .Url("http://localhost:8080")
@@ -35,6 +36,9 @@ var server =
                 .Add(PathRoute.New("/requests/cancelexifs").Request(Requests.CancelExifs))
                 .Add(PathRoute.New("/requests/getitemsfinished").Request(Requests.GetItemsFinished))
                 .Add(PathRoute.New("/requests/getaccentcolor").Request(Requests.GetAccentColor))
+                .Add(PathRoute.New("/requests/closewindow").Request(Requests.CloseWindow))
+                .Add(PathRoute.New("/requests/minimize").Request(Requests.Minimize))
+                .Add(PathRoute.New("/requests/maximize").Request(Requests.Maximize))
             )
         .Route(MethodRoute
             .New(Method.Get)
