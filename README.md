@@ -26,7 +26,7 @@ TODO
 * Windows version GetDrives
 * Windows version Release
 * Linux with HeaderBar
-* DevTools
+* DevTools / dev menu disabled
 * getfiles
 
 * Unmount and release external drive
