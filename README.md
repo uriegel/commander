@@ -1,5 +1,5 @@
 # Commander
-A Norton Commander clone based on Electron and React with Typescript
+A Norton Commander clone based on C# and React with Typescript
 
 ## Prerequisites
 
@@ -23,12 +23,12 @@ sudo dnf install gcc-c++ gtk3-devel
 
 TODO
 * Windows version AccentColor and Theme changing
-* Windows version GetDrives
+* Windows version Windows Controls
 * Windows version Resource icon
+* Windows version GetDrives
 * Windows version Release
 * Linux with HeaderBar
 * DevTools
-* Windows with Custom Frame
 * getfiles
 
 * Unmount and release external drive
