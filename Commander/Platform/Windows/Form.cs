@@ -1,3 +1,5 @@
+#if Windows
+
 static class Form
 {
     public static async void OnCreate(System.Windows.Forms.Form form)
@@ -14,6 +16,8 @@ static class Form
     public static void Minimize() => form?.BeginInvoke(() => form?.WindowState = System.Windows.Forms.FormWindowState.Minimized);
     public static void Maximize() => form?.BeginInvoke(() => form?.WindowState = System.Windows.Forms.FormWindowState.Maximized);
     public static void Restore() => form?.BeginInvoke(() => form?.WindowState = System.Windows.Forms.FormWindowState.Normal);
-    
+
     static System.Windows.Forms.Form? form = null;
 }
+
+#endif
