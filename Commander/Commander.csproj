@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows> 
-	<IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>  
+	  <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>  
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PublishSingleFile>true</PublishSingleFile>
@@ -15,7 +15,7 @@
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <TargetFramework>net10.0-windows</TargetFramework>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <SelfContained>false</SelfContained>
+    <SelfContained>true</SelfContained>
     <ApplicationIcon>Resources/Kirk.ico</ApplicationIcon>
   </PropertyGroup> 
 
@@ -57,6 +57,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Resources/64x64.png">
       <LogicalName>kirk</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources/drive-removable-media.png">
+      <LogicalName>drive-removable-media</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources/drive-windows.png">
+      <LogicalName>drive-windows</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources/folder-open.png">
+      <LogicalName>folder-open</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources/network-server.png">
+      <LogicalName>network-server</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources/starred.png">
+      <LogicalName>starred</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources/user-home.png">
+      <LogicalName>user-home</LogicalName>
     </EmbeddedResource>
   </ItemGroup> 
   

@@ -2,21 +2,24 @@
 
 static class Drive
 {
-    public static async Task<DriveItem[]> Get()
-    {
-        return [];
-    }
+    public static async Task<DriveItem[]> Get() =>
+        [ new DriveItem(Globals.HomeDir, "Start", 0, true, "", "HOME"),
+            .. DriveInfo
+                .GetDrives()
+                .Select(DriveItem.Create)];
 }
 
 record DriveItem(
     string Name,
     string Description,
     long Size,
-    string MountPoint,
     bool IsMounted,
     string DriveType,
-    string Type = "HARDDRIVE" // TODO: Drive types
-);
+    string Type = "HARDDRIVE") // TODO: Drive types
+{
+    public static DriveItem Create(DriveInfo info)
+        => new(info.Name, info.VolumeLabel, info.TotalSize, true, "disk");
+};
 record DriveItemResponse(DriveItem[] Items, string Path, int DirCount);
 
 enum DriveType

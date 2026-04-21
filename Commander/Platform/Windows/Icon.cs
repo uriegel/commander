@@ -6,14 +6,15 @@ static class Icon
 {
     public static async Task<byte[]> GetAsync(string name)
     {
-        if (name == "kirk")
+        var icon = Resources.Get(name);
+        if (icon != null)
         {
-            var icon = Resources.Get(name);
             using var ms = new MemoryStream();
             await (icon?.CopyToAsync(ms) ?? Task.CompletedTask);
             return ms.ToArray();
         }
-        return [];
+        else
+            return [];
     }
 
     public static void StopProcessing() { }

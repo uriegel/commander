@@ -22,9 +22,6 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Windows version GetDrives
-* Windows version drive icon
-* Windows version Release
 * Linux with HeaderBar
 * DevTools / dev menu disabled
 * getfiles
