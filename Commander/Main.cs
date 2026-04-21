@@ -43,7 +43,8 @@ var server =
             )
         .Route(MethodRoute
             .New(Method.Get)
-                .Add(PathRoute.New("/icon")).Request(Requests.GetIcon))
+                .Add(PathRoute.New("/icon")).Request(Requests.GetIcon)
+            )
         .WebSocket(Requests.WebSocket)
         .Build();
 

@@ -20,7 +20,7 @@ const Titlebar = ({ menu }: TitlebarProps) => {
     }, [])
         
     return (<div className="titlebar">
-        <img alt="" src={`windowicon://localhost/`} />
+        <img alt="" src={`http://localhost:8080/icon/kirk`} />
         {menu}
         <div className="titlebarGrip">
             <span>Commander</span>
