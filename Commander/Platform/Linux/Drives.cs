@@ -45,7 +45,8 @@ static class Drive
                     0,
                     CsTools.Directory.GetHomeDir(),
                     true,
-                    "")
+                    "",
+                    "HOME")
                 : new(
                     GetString(1, 2).TrimName(),
                     GetString(2, 3),
