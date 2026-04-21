@@ -16,6 +16,8 @@ var webView = WebView
     .OnFormCreating(Form.OnCreate)
     .ResourceIcon("icon")
     .WithoutNativeTitlebar()
+#else
+    .FromResourceTemplate("template", Commander.Platform.Linux.Window.Register)
 #endif
     .DebugUrl("http://localhost:5173/")
     .Url("http://localhost:8080")

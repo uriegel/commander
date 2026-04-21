@@ -50,6 +50,9 @@
     <EmbeddedResource Include="../Native/icon">
       <LogicalName>icon</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/template.ui">
+      <LogicalName>template</LogicalName>
+    </EmbeddedResource>
   </ItemGroup> 
   <ItemGroup Condition="'$(IsWindows)'=='true'">
     <EmbeddedResource Include="Resources/Kirk.ico">

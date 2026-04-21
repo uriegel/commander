@@ -22,8 +22,7 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Linux with HeaderBar
-* DevTools / dev menu disabled
+* Windows: DevTools / dev menu disabled
 * getfiles
 
 * Unmount and release external drive
