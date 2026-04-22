@@ -1,4 +1,3 @@
-
 using System.Threading.Channels;
 using WebServerLight;
 
@@ -16,9 +15,8 @@ static class Requests
     public static async Task<bool> GetFiles(IRequest request)
     {
         var getFiles = await request.DeserializeAsync<GetFiles>();
-        var drives = Directory.Get(getFiles!);
-        // var response = new DriveItemResponse(drives, "root", drives.Length);
-        // await request.SendJsonAsync(response);
+        var response = Directory.Get(getFiles);
+        await request.SendJsonAsync(response);
         return true;
     }
 
@@ -94,17 +92,27 @@ static class Requests
 
         return true;
     }
-    
-    public static async Task<bool> GetIcon(IRequest request)
+
+    public static async Task<bool> GetIconFromName(IRequest request)
     {
         var subPath = request.SubPath;
         if (subPath == null)
             return false;
         var payload = await Icon.GetAsync(subPath);
         await request.SendAsync(payload, payload.IsSvg() ? "image/svg+xml" : "image/png");
-        return false;
+        return true;
     }
-
+    
+    public static async Task<bool> GetIconFromExtension(IRequest request)
+    {
+        var subPath = request.SubPath;
+        if (subPath == null)
+            return false;
+        var payload = await Icon.GetAsync($"ext:{subPath}");
+        await request.SendAsync(payload, payload.IsSvg() ? "image/svg+xml" : "image/png");
+        return true;
+    }
+    
     public static void SendJson(CommanderEvent evt) => websocketChannel.Writer.TryWrite(evt);
 
     public static void WebSocket(IWebSocket webSocket)
@@ -155,3 +163,12 @@ record CommanderEvent(string? FolderId, string Cmd, EventData Msg);
 
 record Command(string Cmd);
 
+record GetFiles(string FolderId, int RequestId, string Path, bool ShowHidden);
+
+
+record ItemResult(
+    DirectoryItem[] Items,
+    string Path,
+    int DirCount,
+    int FileCount
+);

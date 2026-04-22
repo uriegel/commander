@@ -11,26 +11,26 @@ interface IconNameProps {
 
 const IconName = ({ namePart, type, iconPath }: IconNameProps) => 
     (<span> { type == IconNameType.Folder
-        ? (<img className="image" src={`http://localhost:8080/icon/folder-open`} alt="" />)
+        ? (<img className="image" src={`http://localhost:8080/iconfromname/folder-open`} alt="" />)
         : type == IconNameType.File
-        ? (<img className="iconImage" src={`icon://ext/${iconPath}`} alt="" />)
+        ? (<img className="iconImage" src={`http://localhost:8080/iconfromext/${iconPath}`} alt="" />)
         : type == IconNameType.Root
-        ? (<img className="image" src={`http://localhost:8080/icon/drive-removable-media`} alt="" />)
+        ? (<img className="image" src={`http://localhost:8080/iconfromname/drive-removable-media`} alt="" />)
         : type == IconNameType.RootEjectable
-        ? (<img className="image" src={`http://localhost:8080/icon/media-removable`} alt="" />)
+        ? (<img className="image" src={`http://localhost:8080/iconfromname/media-removable`} alt="" />)
         : type == IconNameType.RootWindows
-        ? (<img className="image" src={`http://localhost:8080/icon/drive-windows`} alt="" />)
+        ? (<img className="image" src={`http://localhost:8080/iconfromname/drive-windows`} alt="" />)
         : type == IconNameType.Home
-        ? (<img className="image" src={`http://localhost:8080/icon/user-home`} alt="" />)
+        ? (<img className="image" src={`http://localhost:8080/iconfromname/user-home`} alt="" />)
         : type == IconNameType.Android
         ? (<Android />)
         : type == IconNameType.Remote
-        ? (<img className="image" src={`http://localhost:8080/icon/network-server`} alt="" />)
+        ? (<img className="image" src={`http://localhost:8080/iconfromname/network-server`} alt="" />)
         : type == IconNameType.New
         ? (<New />)
         : type == IconNameType.Favorite
-        ? (<img className="image" src={`http://localhost:8080/icon/starred`} alt="" />)
-        : (<img className="image" src={`http://localhost:8080/icon/go-up`} alt="" />)
+        ? (<img className="image" src={`http://localhost:8080/iconfromname/starred`} alt="" />)
+        : (<img className="image" src={`http://localhost:8080/iconfromname/go-up`} alt="" />)
         }
         <span>{namePart}</span>
     </span>)
