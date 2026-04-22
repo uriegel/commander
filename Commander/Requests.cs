@@ -13,6 +13,15 @@ static class Requests
         return true;
     }
 
+    public static async Task<bool> GetFiles(IRequest request)
+    {
+        var getFiles = await request.DeserializeAsync<GetFiles>();
+        var drives = Directory.Get(getFiles!);
+        // var response = new DriveItemResponse(drives, "root", drives.Length);
+        // await request.SendJsonAsync(response);
+        return true;
+    }
+
     public static async Task<bool> CancelExifs(IRequest request)
     {
         var data = await request.DeserializeAsync<CancelExifs>();
@@ -145,3 +154,4 @@ record EventData(string? AccentColor = null, bool? Maximized = null);
 record CommanderEvent(string? FolderId, string Cmd, EventData Msg);
 
 record Command(string Cmd);
+

@@ -11,9 +11,55 @@
 // using static CsTools.Core;
 // using CsTools.HttpRequest;
 
-// static partial class Directory
-// {
-//     public static AsyncResult<GetFilesResult, RequestError> GetFiles(GetFiles getFiles)
+static partial class Directory
+{
+    public static DirectoryItem[] Get(GetFiles getFiles)
+    {   var dirInfo = new DirectoryInfo(getFiles.Path);
+        var items = dirInfo
+                        .GetDirectories()
+                        .Select(DirectoryItem.CreateDirItem)
+                        .Where(n => getFiles.ShowHidden || !n.IsHidden)
+                        .OrderBy(n => n.Name).Concat(
+                    dirInfo
+                        .GetFiles()
+                        .Select(DirectoryItem.CreateFileItem)
+                        .Where(n => getFiles.ShowHidden || !n.IsHidden)
+                        ).ToArray();
+        return items;
+     //   DirectoryWatcher.Initialize(getFiles.FolderId, getFiles.Path);
+    }
+}
+
+record GetFiles(string FolderId, int RequestId, string Path, bool ShowHidden);
+
+record DirectoryItem(
+    string Name,
+    long Size,
+    bool IsDirectory,
+    string? IconPath,
+    bool IsHidden,
+    DateTime Time
+) {
+    public static DirectoryItem CreateDirItem(DirectoryInfo info)
+        => new(
+            info.Name,
+            0,
+            true,
+            null,
+            (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden,
+            info.LastWriteTime);
+
+    public static DirectoryItem CreateFileItem(FileInfo info)
+        => new(
+            info.Name,
+            info.Length,
+            false,
+            "Directory.GetIconPath(info)",
+            (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden,
+            info.LastWriteTime);
+};
+
+
 //         => getFiles
 //             .Path
 //             .If(getFiles.Mount == true,
@@ -223,32 +269,6 @@
 //     static DirectoryInfo CreateDirectoryInfo(this string path) => new(path);
 // }
 
-// record DirectoryItem(
-//     string Name,
-//     long Size,
-//     bool IsDirectory,
-//     string? IconPath,
-//     bool IsHidden,
-//     DateTime Time
-// ) {
-//     public static DirectoryItem CreateDirItem(DirectoryInfo info)
-//         => new(
-//             info.Name,
-//             0,
-//             true,
-//             null,
-//             (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden,
-//             info.LastWriteTime);
-
-//     public static DirectoryItem CreateFileItem(FileInfo info)
-//         => new(
-//             info.Name,
-//             info.Length,
-//             false,
-//             Directory.GetIconPath(info),
-//             (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden,
-//             info.LastWriteTime);
-// };
 
 // record GetFiles(
 //     string Id, 
@@ -408,3 +428,4 @@
 //     bool Ctrl,
 //     bool Shift
 // );
+
