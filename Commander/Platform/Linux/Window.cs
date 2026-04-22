@@ -2,16 +2,15 @@
 using GtkDotNet;
 using GtkDotNet.SafeHandles;
 using GtkDotNet.SubClassing;
-using WebWindowNetCore;
 
 namespace Commander.Platform.Linux;
 
 public static class Window
 {
-    public static void Register(ApplicationHandle app, WebView webView, string resourceTemplate)
+    public static void Register(ApplicationHandle app, WebWindowNetCore.WebView webView, string resourceTemplate)
         => app.SubClass(new CustomWindowClass(webView, resourceTemplate));
     
-    class CustomWindowClass(WebView webView, string resourceTemplate)
+    class CustomWindowClass(WebWindowNetCore.WebView webView, string resourceTemplate)
         : SubClass<ApplicationWindowHandle>(GTypeEnum.ApplicationWindow, "CustomWindow", p => new CustomWindow(p, webView))
     {
         protected override void ClassInit(nint cls, nint _)
@@ -24,7 +23,7 @@ public static class Window
         }
     }
 
-    class CustomWindow(nint obj, WebView webView) : SubClassInst<ApplicationWindowHandle>(obj)
+    class CustomWindow(nint obj, WebWindowNetCore.WebView webView) : SubClassInst<ApplicationWindowHandle>(obj)
     {
         protected override void OnCreate()
         {
