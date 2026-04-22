@@ -18,7 +18,9 @@ record DriveItem(
     string Type = "HARDDRIVE") // TODO: Drive types
 {
     public static DriveItem Create(DriveInfo info)
-        => new(info.Name, info.VolumeLabel, info.TotalSize, true, "disk");
+        => info.IsReady 
+            ? new(info.Name, info.VolumeLabel, info.TotalSize, true, "disk") 
+            : new(info.Name, "Not ready", 0, false, "disk");
 };
 record DriveItemResponse(DriveItem[] Items, string Path, int DirCount);
 

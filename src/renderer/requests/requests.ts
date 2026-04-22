@@ -20,8 +20,7 @@ type GetAccentColor = {
     color: string
 }
 
-export const cmdRequest = async (cmd: string) => await fetch(`cmd://${cmd}`, { method: 'POST' })
-
+export const cmdRequest = (cmd: string) => jsonRequest<void>("cmd", { cmd})
 export const getDrives = () => jsonRequest<RequestItem>("getdrives", {})
 export const getAccentColor = () => jsonRequest<GetAccentColor>("getaccentcolor", {})
 export const mountRequest = (dev: string) => jsonRequest<MountResult>("mount", { dev })

@@ -12,6 +12,8 @@ static class Form
             Requests.SendJson(new(null, EventCmd.WindowState, new EventData { Maximized = true }));
     }
 
+    public static void BeginInvoke(Action action) => form?.BeginInvoke(action);
+
     public static void Close() => form?.BeginInvoke(() => form?.Close());
     public static void Minimize() => form?.BeginInvoke(() => form?.WindowState = System.Windows.Forms.FormWindowState.Minimized);
     public static void Maximize() => form?.BeginInvoke(() => form?.WindowState = System.Windows.Forms.FormWindowState.Maximized);

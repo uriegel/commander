@@ -1,27 +1,5 @@
-using System.Drawing;
-using WebWindowNetCore;
 using WebServerLight;
 using WebServerLight.Routing;
-
-var webView = WebView
-    .Create()
-    .AppId(Globals.APP_ID)
-    .Title("Commander")
-    .InitialBounds(600, 800)
-    .SaveBounds()
-    .DevTools()
-    .BackgroundColor(Color.Transparent)
-    //.DefaultContextMenuDisabled()
-#if Windows
-    .OnFormCreating(Form.OnCreate)
-    .ResourceIcon("icon")
-    .WithoutNativeTitlebar()
-#else
-    .FromResourceTemplate("template", Commander.Platform.Linux.Window.Register)
-#endif
-    .DebugUrl("http://localhost:5173/")
-    .Url("http://localhost:8080")
-    .CanClose(() => true);
 
 var server =
     WebServer
@@ -42,6 +20,7 @@ var server =
                 .Add(PathRoute.New("/requests/minimize").Request(Requests.Minimize))
                 .Add(PathRoute.New("/requests/maximize").Request(Requests.Maximize))
                 .Add(PathRoute.New("/requests/restore").Request(Requests.Restore))
+                .Add(PathRoute.New("/requests/cmd").Request(Requests.Cmd))
             )
         .Route(MethodRoute
             .New(Method.Get)
@@ -53,7 +32,7 @@ var server =
 Globals.InitializeResourceFiles();
 Theme.StartChangeDetecting();
 server.Start();
-webView.Run();
+WebView.Run();
 Icon.StopProcessing();    
 server.Stop();
 

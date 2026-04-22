@@ -71,6 +71,21 @@ static class Requests
         return true;
     }
 
+    public static async Task<bool> Cmd(IRequest request)
+    {
+        var cmd = await request.DeserializeAsync<Command>();
+        switch (cmd?.Cmd)
+        {
+            case "SHOW_DEV_TOOLS":
+            #if Windows
+                Commands.ShowDevTools();
+            #endif
+                break;
+        }
+
+        return true;
+    }
+    
     public static async Task<bool> GetIcon(IRequest request)
     {
         var subPath = request.SubPath;
@@ -129,3 +144,4 @@ record EventData(string? AccentColor = null, bool? Maximized = null);
 
 record CommanderEvent(string? FolderId, string Cmd, EventData Msg);
 
+record Command(string Cmd);
