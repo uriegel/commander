@@ -25,8 +25,10 @@ TODO
 * Icons Windows: media-removable
 * Icons Windows: go-up
 * Icons Windows: android
-* getfiles Exceptions
+* Icons Windows: from exe \\<>\
 * Linux Accelerators
+* getfiles showHidden
+* getfiles Exceptions
 * FileItem inherited from Item
 
 * Unmount and release external drive
