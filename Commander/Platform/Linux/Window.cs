@@ -25,16 +25,19 @@ public static class Window
 
     class CustomWindow(nint obj, WebWindowNetCore.WebView webView) : SubClassInst<ApplicationWindowHandle>(obj)
     {
-        protected override void OnCreate()
+        protected override async void OnCreate()
         {
-            Handle.InitTemplate();  
+            Handle.InitTemplate();
             Handle
                 .GetTemplateChild<ButtonHandle, ApplicationWindowHandle>("devtools")
                 ?.OnClicked(webView.ShowDevTools);
+
+            await Task.Delay(50);
+
             Handle.AddActions(
                 [
                     new("quit", Handle.CloseWindow, "<Ctrl>Q"),
-                    new("devtools", webView.ShowDevTools, "<Ctrl><Shift>I"),
+                    new("devtools", webView.ShowDevTools, "<Ctrl><Shift>J"),
                 ]);
         } 
         
