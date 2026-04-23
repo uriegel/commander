@@ -25,7 +25,6 @@ TODO
 * Icons Windows: media-removable
 * Icons Windows: go-up
 * Icons Windows: android
-* Windows getfiles showHidden
 * getfiles Exceptions
 * FileItem inherited from Item
 

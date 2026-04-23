@@ -33,7 +33,7 @@ record DirectoryItem(
             null,
             true,
             null,
-            (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden,
+            (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden || info.Name.StartsWith("."),
             info.LastWriteTime);
 
     public static DirectoryItem CreateFileItem(FileInfo info)
@@ -42,7 +42,7 @@ record DirectoryItem(
             info.Length,
             false,
             Directory.GetIconPath(info.Name, info.DirectoryName),
-            (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden,
+            (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden  || info.Name.StartsWith("."),
             info.LastWriteTime);
 };
 
