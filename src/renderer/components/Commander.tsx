@@ -14,7 +14,7 @@ import Statusbar from "./Statusbar"
 import './viewers/viewers.css'
 import { copyItems, onFilesDrop } from "../copy-processor"
 import MenuView from "@platform/MenuView"
-import { themeChangedEvents$ } from "../requests/events"
+import { showHiddenEvents$, themeChangedEvents$ } from "../requests/events"
 
 export const ID_LEFT = "left"
 export const ID_RIGHT = "right"
@@ -87,6 +87,17 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 			box?.style.setProperty('--accent-color', accentColor)
 		})
 		return () => themeChanges.unsubscribe()
+	}, [])
+
+	useEffect(() => {
+		const showHidden = showHiddenEvents$.subscribe(show => {
+			console.log("Zeig Hidden", show)
+			showHiddenRef.current = show == true
+			setShowHidden(showHiddenRef.current)
+			folderLeft.current?.refresh(showHiddenRef.current)
+			folderRight.current?.refresh(showHiddenRef.current)
+		})
+		return () => showHidden.unsubscribe()
 	}, [])
 
 	const dialog = useContext(DialogContext)

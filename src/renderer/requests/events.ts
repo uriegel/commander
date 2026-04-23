@@ -47,10 +47,14 @@ export type WindowStateEvent = {
     maximized: boolean
 }
 
-type EventData = ExifDataType | ExifStatus| CopyProgress | Version | DeleteProgress | ThemeChangeEvent | WindowStateEvent
+export type ShowHiddenEvent = {
+    showHidden?: boolean
+}
+
+type EventData = ExifDataType | ExifStatus| CopyProgress | Version | DeleteProgress | ThemeChangeEvent | WindowStateEvent | ShowHiddenEvent
 
 type EventCmd = "Exif" | "ExifStart" | "ExifStop" | "CopyProgress" | "CopyStop" | "CopyProgressShowDialog"
-    | "VersionsStart" | "VersionsStop" | "Versions" | "ThemeChanged" | "DeleteProgress" | "DeleteStop" | "WindowState"
+    | "VersionsStart" | "VersionsStop" | "Versions" | "ThemeChanged" | "DeleteProgress" | "DeleteStop" | "WindowState" | "ShowHidden"
 
 type CommanderEvent = {
     folderId?: string,
@@ -82,6 +86,7 @@ export const deleteStopEvents$ = message$.pipe(filter(n => n.cmd == "DeleteStop"
 export const copyStopEvents$ = message$.pipe(filter(n => n.cmd == "CopyStop"))
 export const themeChangedEvents$ = message$.pipe(filter(n => n.cmd == "ThemeChanged")).pipe(map(n => (n.msg as ThemeChangeEvent).accentColor))
 export const windowStateEvents$ = message$.pipe(filter(n => n.cmd == "WindowState")).pipe(map(n => (n.msg as WindowStateEvent).maximized))
+export const showHiddenEvents$ = message$.pipe(filter(n => n.cmd == "ShowHidden")).pipe(map(n => (n.msg as ShowHiddenEvent).showHidden))
 const exifStartEvents$ = message$.pipe(filter(n => n.cmd == "ExifStart"))
 const exifStopEvents$ = message$.pipe(filter(n => n.cmd == "ExifStop"))
 const exifDataEvents$ = message$.pipe(filter(n => n.cmd == "Exif"))

@@ -36,6 +36,7 @@ public static class Window
 
             Handle.AddActions(
                 [
+                    new("showhidden", false, show => Requests.SendJson(new(null, EventCmd.ShowHidden, new EventData { ShowHidden = show })), "<Ctrl>H"),
                     new("quit", Handle.CloseWindow, "<Ctrl>Q"),
                     new("devtools", webView.ShowDevTools, "<Ctrl><Shift>J"),
                 ]);

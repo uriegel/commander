@@ -155,9 +155,10 @@ class EventCmd
     public const string DeleteProgress = "DeleteProgress";
     public const string DeleteStop = "DeleteStop";
     public const string WindowState = "WindowState";
+    public const string ShowHidden = "ShowHidden";
 }
 
-record EventData(string? AccentColor = null, bool? Maximized = null);
+record EventData(string? AccentColor = null, bool? Maximized = null, bool? ShowHidden = null);
 
 record CommanderEvent(string? FolderId, string Cmd, EventData Msg);
 

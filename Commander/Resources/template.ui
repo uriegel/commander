@@ -29,7 +29,7 @@
       </item>
       <item>
         <attribute name="label">_Versteckte Dateien</attribute>
-        <attribute name="action">app.showhidden</attribute>
+        <attribute name="action">win.showhidden</attribute>
       </item>
     </section>
     <section>
