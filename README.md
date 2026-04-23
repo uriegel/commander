@@ -25,6 +25,7 @@ TODO
 * getfiles Windows
 * getfiles Exceptions
 * Linux Accelerators
+* FileItem inherited from Item
 
 * Unmount and release external drive
 
