@@ -17,7 +17,7 @@ static class Icon
         if (name.StartsWith("ext:"))
         {
             var ext = name["res:".Length..];
-            return await GetIconStream(ext);
+            return await GetIconStream(ext.Replace('/', '\\'));
         } 
         else
         {

@@ -25,7 +25,6 @@ TODO
 * Icons Windows: media-removable
 * Icons Windows: go-up
 * Icons Windows: android
-* Icons Windows: from exe \\<>\
 * Linux Accelerators
 * getfiles showHidden
 * getfiles Exceptions
