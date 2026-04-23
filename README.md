@@ -22,7 +22,9 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* getfiles Windows
+* Icons Windows: media-removable
+* Icons Windows: go-up
+* Icons Windows: android
 * getfiles Exceptions
 * Linux Accelerators
 * FileItem inherited from Item
