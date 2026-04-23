@@ -25,8 +25,9 @@ TODO
 * Icons Windows: media-removable
 * Icons Windows: go-up
 * Icons Windows: android
-* getfiles Exceptions
 * FileItem inherited from Item
+* Remove Main ts
+* update package.json
 
 * Unmount and release external drive
 

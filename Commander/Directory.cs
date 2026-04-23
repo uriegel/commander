@@ -1,7 +1,8 @@
 static partial class Directory
 {
     public static ItemResult Get(GetFiles? getFiles)
-    {   var dirInfo = new DirectoryInfo(getFiles?.Path ?? "");
+    {
+        var dirInfo = new DirectoryInfo(getFiles?.Path ?? "");
         var dirs = dirInfo
                         .GetDirectories()
                         .Select(DirectoryItem.CreateDirItem)
@@ -13,8 +14,8 @@ static partial class Directory
                         .Select(DirectoryItem.CreateFileItem)
                         .Where(n => getFiles?.ShowHidden == true || !n.IsHidden)
                         .ToArray();
-        return new ItemResult([..dirs, ..files], dirInfo.FullName, dirs.Length, files.Length);
-     //   DirectoryWatcher.Initialize(getFiles.FolderId, getFiles.Path);
+        return new ItemResult([.. dirs, .. files], dirInfo.FullName, dirs.Length, files.Length);
+        //   DirectoryWatcher.Initialize(getFiles.FolderId, getFiles.Path);
     }
 }
 

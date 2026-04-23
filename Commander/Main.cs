@@ -1,5 +1,6 @@
 using WebServerLight;
 using WebServerLight.Routing;
+using static Requests;
 
 var server =
     WebServer
@@ -11,17 +12,17 @@ var server =
         .WebsiteFromResource()
 #endif        
         .Route(MethodRoute
-            .New(Method.Post)
+            .New(Method.Post, OnPostError)
                 .Add(PathRoute.New("/requests/getdrives").Request(Requests.GetDrives))
                 .Add(PathRoute.New("/requests/getfiles").Request(Requests.GetFiles))
                 .Add(PathRoute.New("/requests/cancelexifs").Request(Requests.CancelExifs))
                 .Add(PathRoute.New("/requests/getitemsfinished").Request(Requests.GetItemsFinished))
                 .Add(PathRoute.New("/requests/getaccentcolor").Request(Requests.GetAccentColor))
-                .Add(PathRoute.New("/requests/closewindow").Request(Requests.CloseWindow))
-                .Add(PathRoute.New("/requests/minimize").Request(Requests.Minimize))
-                .Add(PathRoute.New("/requests/maximize").Request(Requests.Maximize))
-                .Add(PathRoute.New("/requests/restore").Request(Requests.Restore))
-                .Add(PathRoute.New("/requests/cmd").Request(Requests.Cmd))
+                .Add(PathRoute.New("/requests/closewindow").Request(CloseWindow))
+                .Add(PathRoute.New("/requests/minimize").Request(Minimize))
+                .Add(PathRoute.New("/requests/maximize").Request(Maximize))
+                .Add(PathRoute.New("/requests/restore").Request(Restore))
+                .Add(PathRoute.New("/requests/cmd").Request(Cmd))
             )
         .Route(MethodRoute
             .New(Method.Get)

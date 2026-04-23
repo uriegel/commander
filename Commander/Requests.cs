@@ -102,7 +102,7 @@ static class Requests
         await request.SendAsync(payload, payload.IsSvg() ? "image/svg+xml" : "image/png");
         return true;
     }
-    
+
     public static async Task<bool> GetIconFromExtension(IRequest request)
     {
         var subPath = request.SubPath;
@@ -111,6 +111,22 @@ static class Requests
         var payload = await Icon.GetAsync($"ext:{subPath}");
         await request.SendAsync(payload, payload.IsSvg() ? "image/svg+xml" : "image/png");
         return true;
+    }
+    
+    public static async Task OnPostError(Exception e, IRequest request)
+    {
+        try
+        {
+            throw e;
+        }
+        catch (DirectoryNotFoundException)
+        {
+            await request.SendJsonAsync(new SystemError(ErrorType.PathNotFound, "Datei oder Verzeichnis nicht gefunden"));
+        }
+        catch (UnauthorizedAccessException)
+        {
+            await request.SendJsonAsync(new SystemError(ErrorType.AccessDenied, "Keine Berechtigung"));
+        }
     }
     
     public static void SendJson(CommanderEvent evt) => websocketChannel.Writer.TryWrite(evt);

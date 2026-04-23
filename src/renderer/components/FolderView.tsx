@@ -12,7 +12,7 @@ import {
     exifStopEventsRight$, Version, versionsDataEventsLeft$, versionsDataEventsRight$, versionsStartEventsLeft$,
     versionsStartEventsRight$, versionsStopEventsLeft$, versionsStopEventsRight$
 } from "../requests/events"
-import { cancelExifs, getItemsFinished, onEnter as reqOnEnter } from "../requests/requests"
+import { cancelExifs, getItemsFinished, onEnter as reqOnEnter, SystemError } from "../requests/requests"
 import { EXTENDED_RENAME, showExtendedRename } from "../items-provider/extended-rename"
 import { DialogContext } from "web-dialog-react"
 import { FILE } from "../items-provider/file-item-provider"
@@ -252,8 +252,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             }
             return newItems
         } catch (e) {
-            // const err = e as SystemError
-            // setErrorText(err.message)
+            const err = e as SystemError
+            setErrorText(err.message)
             return items
         } finally {
             getItemsFinished(id)            
@@ -356,8 +356,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             if (res?.refresh)
                 refresh()
         } catch (e) {
-            // const err = e as SystemError
-            // setErrorText(err.message)
+            const err = e as SystemError
+            setErrorText(err.message)
         }
     }
 
@@ -384,8 +384,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             if (await getCurrentItemsProvider()?.deleteItems(path, getSelectedItems(), dialog, backgroundAction, setErrorText))
                 refresh()
         } catch (e) {
-            // const err = e as SystemError
-            // setErrorText(err.message)
+            const err = e as SystemError
+            setErrorText(err.message)
         }
     }
 
@@ -398,8 +398,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             if (res)
                 refresh(false, n => n.name == res)
         } catch (e) {
-            // const err = e as SystemError
-            // setErrorText(err.message)
+            const err = e as SystemError
+            setErrorText(err.message)
         }
     }
 
@@ -422,8 +422,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             if (res)
                 refresh(false, n => n.name == res)
         } catch (e) {
-            // const err = e as SystemError
-            // setErrorText(err.message)
+            const err = e as SystemError
+            setErrorText(err.message)
         }
     }
 
