@@ -23,10 +23,14 @@ sudo dnf install gcc-c++ gtk3-devel
 
 TODO
 * FileItem inherited from Item
-* Remove Main ts
-* update package.json
+* mount unmounted drive Linux
+* Viewer
+* mount unmounted drive Windows
+
 
 * Windows Mark removable drive type "REMOVABLE"
+
+* update package.json
 
 * Unmount and release external drive
 
