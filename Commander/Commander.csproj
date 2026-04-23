@@ -79,6 +79,12 @@
     <EmbeddedResource Include="Resources/user-home.png">
       <LogicalName>user-home</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources/go-up.png">
+      <LogicalName>go-up</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources/media-removable.png">
+      <LogicalName>media-removable</LogicalName>
+    </EmbeddedResource>
   </ItemGroup> 
   
 </Project>

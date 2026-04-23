@@ -22,12 +22,11 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Icons Windows: media-removable
-* Icons Windows: go-up
-* Icons Windows: android
 * FileItem inherited from Item
 * Remove Main ts
 * update package.json
+
+* Windows Mark removable drive type "REMOVABLE"
 
 * Unmount and release external drive
 
