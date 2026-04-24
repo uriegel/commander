@@ -26,6 +26,16 @@ export interface Item extends SelectableItem {
     isDirectory?: boolean    
 }
 
+type DriveType = 'HOME' | "REMOVABLE" | "HARDDRIVE"
+
+export interface RootItem extends Item {
+    description?:  string
+    mountPoint?:   string
+    isMounted?:    boolean
+    type?:         DriveType
+    //    driveKind?:    DriveKind    
+}
+
 export interface DirectoryItem extends Item {
     iconPath?:      string
     time?:          string

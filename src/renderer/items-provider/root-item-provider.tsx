@@ -1,9 +1,8 @@
 import { TableColumns } from "virtual-table-react"
 import { getDrives } from "../requests/requests"
 import { EnterData, IItemsProvider, OnEnterResult } from "./base-provider"
-import { RootItem } from "../items-provider/items"
 import { getColumns, renderRow } from '@platform/items-provider/root-item-provider'
-import { Item } from "../requests/model"
+import { Item, RootItem } from "../requests/model"
 
 export const ROOT = "Root"
 

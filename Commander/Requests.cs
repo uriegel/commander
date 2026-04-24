@@ -7,7 +7,7 @@ static class Requests
     {
         var _ = await request.DeserializeAsync<NullData>();
         var drives = await Drive.Get();
-        var response = new DriveItemResponse(drives, "root", drives.Length);
+        var response = new GetRootItemsOutput(drives, "root", 0, drives.Length);
         await request.SendJsonAsync(response);
         return true;
     }

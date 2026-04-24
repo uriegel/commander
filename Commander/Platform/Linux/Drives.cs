@@ -5,7 +5,7 @@ using static CsTools.ProcessCmd;
 
 static class Drive
 {
-    public static async Task<DriveItem[]> Get()
+    public static async Task<RootItem[]> Get()
     {
         var items = await
             (from n in RunAsync("lsblk", "--bytes --output SIZE,NAME,LABEL,MOUNTPOINT,FSTYPE")
@@ -32,7 +32,7 @@ static class Drive
                 && !items.Any(i => i.Name != n.Name && i.Name.StartsWith(n.Name))
             )];
 
-        DriveItem CreateRootItem(string driveString, int[] columnPositions)
+        RootItem CreateRootItem(string driveString, int[] columnPositions)
         {
             var mountPoint = driveString != "home"
                 ? GetString(3, 4)
@@ -45,8 +45,7 @@ static class Drive
                     0,
                     CsTools.Directory.GetHomeDir(),
                     true,
-                    "",
-                    "HOME")
+                    DriveType.Home)
                 : new(
                     GetString(1, 2).TrimName(),
                     GetString(2, 3),
@@ -55,8 +54,8 @@ static class Drive
                         ?? 0,
                     mountPoint,
                     mountPoint.Length > 0,
-                    driveString[columnPositions[4]..]
-                        .Trim()
+                    DriveType.Harddrive
+                    //driveString[columnPositions[4]..].Trim()
                 );
 
             string GetString(int pos1, int pos2)
@@ -73,27 +72,6 @@ static class Drive
     //     driveString == "home"
     //     //|| driveString[columnPositions[1]] > '~';
     //     || driveString[columnPositions[3].start];
-}
-
-record DriveItem(
-    string Name,
-    string Description,
-    long Size,
-    string MountPoint,
-    bool IsMounted,
-    string DriveType,
-    string Type = "HARDDRIVE" // TODO: Drive types
-);
-record DriveItemResponse(DriveItem[] Items, string Path, int DirCount);
-
-enum DriveType
-{
-    UNKNOWN,
-    HARDDRIVE,
-    ROM,
-    REMOVABLE,
-    NETWORK,
-    HOME
 }
 
 #endif

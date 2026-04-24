@@ -1,6 +1,7 @@
 import IconName from "@/renderer/components/IconName"
-import { IconNameType, RootItem } from "@/renderer/items-provider/items"
+import { IconNameType } from "@/renderer/items-provider/items"
 import { formatSize } from "@/renderer/items-provider/provider"
+import { RootItem } from "@/renderer/requests/model"
 import { Column } from "virtual-table-react"
 
 export const getColumns = () => [

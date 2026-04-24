@@ -1,17 +1,5 @@
 import { DirectoryItem, Item } from "../requests/model"
 
-type DriveType = {
-
-}
-
-export interface RootItem extends Item {
-    description?:  string
-    mountPoint?:   string
-    isMounted?:    boolean
-    type?:         DriveType
-    //    driveKind?:    DriveKind    
-}
-
 export interface ExtendedRenameFileItem extends DirectoryItem {
     newName?:   string
 }
