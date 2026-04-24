@@ -1,6 +1,7 @@
 import IconName from "@/renderer/components/IconName"
-import { FileItem, IconNameType } from "@/renderer/items-provider/items"
+import { IconNameType } from "@/renderer/items-provider/items"
 import { formatDateTime, formatSize } from "@/renderer/items-provider/provider"
+import { DirectoryItem } from "@/renderer/requests/model"
 import { DialogHandle } from "web-dialog-react"
 
 export const appendPath = (path: string, subPath: string) => {
@@ -15,7 +16,7 @@ export const getColumns = () => [
         { name: "Größe", isSortable: true, isRightAligned: true }
     ]
 
-export const renderRow = (item: FileItem) => [
+export const renderRow = (item: DirectoryItem) => [
 	(<IconName namePart={item.name} type={
 			item.isParent
 			? IconNameType.Parent

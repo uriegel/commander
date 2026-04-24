@@ -6,47 +6,18 @@ static partial class Directory
         var dirs = dirInfo
                         .GetDirectories()
                         .Select(DirectoryItem.CreateDirItem)
-                        .Where(n => getFiles?.ShowHidden == true || !n.IsHidden)
+                        .Where(n => getFiles?.ShowHidden == true || !n.IsHidden == true)
                         .OrderBy(n => n.Name)
                         .ToArray();
         var files = dirInfo
                         .GetFiles()
                         .Select(DirectoryItem.CreateFileItem)
-                        .Where(n => getFiles?.ShowHidden == true || !n.IsHidden)
+                        .Where(n => getFiles?.ShowHidden == true || !n.IsHidden == true)
                         .ToArray();
         return new ItemResult([.. dirs, .. files], dirInfo.FullName, dirs.Length, files.Length);
         //   DirectoryWatcher.Initialize(getFiles.FolderId, getFiles.Path);
     }
 }
-
-record DirectoryItem(
-    string Name,
-    long? Size,
-    bool IsDirectory,
-    string? IconPath,
-    bool IsHidden,
-    DateTime Time
-)
-{
-    public static DirectoryItem CreateDirItem(DirectoryInfo info)
-        => new(
-            info.Name,
-            null,
-            true,
-            null,
-            (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden || info.Name.StartsWith("."),
-            info.LastWriteTime);
-
-    public static DirectoryItem CreateFileItem(FileInfo info)
-        => new(
-            info.Name,
-            info.Length,
-            false,
-            Directory.GetIconPath(info.Name, info.DirectoryName),
-            (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden  || info.Name.StartsWith("."),
-            info.LastWriteTime);
-};
-
 
 // using System.Data;
 // using System.Collections.Immutable;

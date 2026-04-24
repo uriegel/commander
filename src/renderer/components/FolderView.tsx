@@ -2,7 +2,7 @@ import { forwardRef, useCallback, useContext, useEffect, useEffectEvent, useImpe
 import VirtualTable, { type OnSort, type TableColumns, type VirtualTableHandle } from "virtual-table-react"
 import './FolderView.css'
 import { getItemsProvider } from "../items-provider/provider"
-import { Item, FileItem, RemotesItem } from "../items-provider/items"
+import { RemotesItem } from "../items-provider/items"
 import { IItemsProvider } from "../items-provider/base-provider"
 import { initializeHistory } from "../history"
 import RestrictionView, { RestrictionViewHandle } from "./RestrictionView"
@@ -18,6 +18,7 @@ import { DialogContext } from "web-dialog-react"
 import { FILE } from "../items-provider/file-item-provider"
 import { REMOTE } from "../items-provider/remote-provider"
 import { openWith as openWithPlatform } from '@platform/folderview'
+import { DirectoryItem, Item } from "../requests/model"
 
 export type FolderViewHandle = {
     id: string
@@ -124,7 +125,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             if (exif.requestId != requestId.current)
                 return
             exif.items.forEach(n => {
-                const item = itemsDictionary.current.get(n.idx) as FileItem
+                const item = itemsDictionary.current.get(n.idx) as DirectoryItem
                 if (item) {
                     item.exifData = {
                         dateTime: n.dateTime,
@@ -149,7 +150,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             if (version.requestId != requestId.current)
                 return
             // version.items.forEach(n => {
-            //     const item = itemsDictionary.current.get(n.idx) as FileItem
+            //     const item = itemsDictionary.current.get(n.idx) as DirectoryItem
             //     if (item) 
             //         item.fileVersion = n.info
             // })
@@ -203,7 +204,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const onPositionChanged = useCallback((item: Item) =>
         onItemChanged(id, itemsProvider.current?.appendPath(path, item.name) || "",
-            item.isDirectory == true, (item as FileItem)?.exifData?.latitude, (item as FileItem)?.exifData?.longitude),
+            item.isDirectory == true, (item as DirectoryItem)?.exifData?.latitude, (item as DirectoryItem)?.exifData?.longitude),
         [id, path, onItemChanged])
 
     const getWidthsId = useCallback(() => `${id}-${itemsProvider.current?.getId()}-widths`, [id])

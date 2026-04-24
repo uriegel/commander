@@ -1,11 +1,11 @@
 import { TableColumns } from "virtual-table-react"
 import { EnterData, IItemsProvider, OnEnterResult } from "./base-provider"
-import { Item, FileItem } from "./items"
 import { getSelectedItemsText } from "./provider"
 import { createFolderRequest, deleteRequest, getFiles, mountRequest, onEnter, renameRequest } from "../requests/requests"
 import { appendPath, getColumns, onGetItemsError, sortVersion, renderRow } from '@platform/items-provider/file-item-provider'
 import { DialogHandle, ResultType } from "web-dialog-react"
 import { retryOnErrorAsync } from "functional-extensions"
+import { DirectoryItem, Item } from "../requests/model"
 
 export const FILE = "File"
 
@@ -34,7 +34,7 @@ export class FileItemProvider extends IItemsProvider {
             e => onGetItemsError(e, path, dialog, setErrorText))
         return {
             requestId,
-            items: [super.getParent(), ...result.items as FileItem[]],
+            items: [super.getParent(), ...result.items as DirectoryItem[]],
             path: result.path,
             dirCount: result.dirCount,
             fileCount: result.fileCount
@@ -67,23 +67,23 @@ export class FileItemProvider extends IItemsProvider {
     getSortFunction = (index: number, descending: boolean) => {
         const ascDesc = (sortResult: number) => descending ? -sortResult : sortResult
         const sf = index == 0
-            ? (a: FileItem, b: FileItem) => a.name.localeCompare(b.name) 
+            ? (a: DirectoryItem, b: DirectoryItem) => a.name.localeCompare(b.name) 
             : index == 1
-                ? (a: FileItem, b: FileItem) => {	
+                ? (a: DirectoryItem, b: DirectoryItem) => {	
                     const aa = a.exifData?.dateTime ? a.exifData?.dateTime : a.time || ""
                     const bb = b.exifData?.dateTime ? b.exifData?.dateTime : b.time || ""
                     return aa.localeCompare(bb) 
                 } 
             : index == 2
-            ? (a: FileItem, b: FileItem) => (a.size || 0) - (b.size || 0)
+            ? (a: DirectoryItem, b: DirectoryItem) => (a.size || 0) - (b.size || 0)
             : index == 3
             ? sortVersion
             : index == 10
-                        ? (a: FileItem, b: FileItem) => a.name.getFileExtension().localeCompare(b.name.getFileExtension()) 
+                        ? (a: DirectoryItem, b: DirectoryItem) => a.name.getFileExtension().localeCompare(b.name.getFileExtension()) 
             : undefined
         
         return sf
-            ? (a: FileItem, b: FileItem) => ascDesc(sf(a, b))
+            ? (a: DirectoryItem, b: DirectoryItem) => ascDesc(sf(a, b))
             : undefined
     }
 
@@ -144,7 +144,7 @@ export class FileItemProvider extends IItemsProvider {
     constructor() { super() }
 }
 
-export const getRowClasses = (item: FileItem) => {
+export const getRowClasses = (item: DirectoryItem) => {
     return item.isHidden
         ? ["hidden"]
         : []

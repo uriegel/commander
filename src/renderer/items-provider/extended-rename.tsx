@@ -4,9 +4,10 @@ import ExtendedRename, { ExtendedRenameProps } from "../components/dialogs/Exten
 import { FileItemProvider, getRowClasses } from "./file-item-provider"
 import { TableColumns } from "virtual-table-react"
 import IconName from "../components/IconName"
-import { ExtendedRenameFileItem, IconNameType, Item } from "./items"
+import { ExtendedRenameFileItem, IconNameType } from "./items"
 import { formatDateTime, formatSize } from "./provider"
 import { extendedRenameRequest } from "../requests/requests"
+import { Item } from "../requests/model"
 
 export const EXTENDED_RENAME = "EXTENDED_RENAME"
 

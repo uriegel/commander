@@ -1,6 +1,7 @@
 import { TableColumns } from "virtual-table-react";
-import { Item, ItemsResult } from "../items-provider/items"
+import { ItemsResult } from "../items-provider/items"
 import { DialogHandle } from "web-dialog-react";
+import { Item } from "../requests/model";
 
 export interface EnterData {
     id?: string

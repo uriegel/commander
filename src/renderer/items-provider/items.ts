@@ -1,25 +1,7 @@
+import { DirectoryItem, Item } from "../requests/model"
 
 type DriveType = {
 
-}
-
-export type VersionInfo = {
-    major: number,
-    minor: number,
-    build: number,
-    patch: number
-}
-
-interface SelectableItem {
-    isSelected?: boolean
-}
-
-export interface Item extends SelectableItem {
-    name:         string
-    idx?:         number
-    size?:        number
-    isParent?:    boolean
-    isDirectory?: boolean    
 }
 
 export interface RootItem extends Item {
@@ -30,21 +12,7 @@ export interface RootItem extends Item {
     //    driveKind?:    DriveKind    
 }
 
-export interface ExifData {
-    dateTime?: string
-    latitude?: number
-    longitude?: number
-}
-
-export interface FileItem extends Item {
-    iconPath?:      string
-    time?:          string
-    exifData?:      ExifData
-    isHidden?:      boolean
-    fileVersion?:   VersionInfo
-}
-
-export interface ExtendedRenameFileItem extends FileItem {
+export interface ExtendedRenameFileItem extends DirectoryItem {
     newName?:   string
 }
 

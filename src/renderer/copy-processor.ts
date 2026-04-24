@@ -4,10 +4,10 @@ import { ID_LEFT, ID_RIGHT } from "./components/Commander"
 import { copy, copyFromRemote, copyToRemote, extendCopyItems, flattenItems, SystemError } from "./requests/requests"
 import { FILE, FileItemProvider } from "./items-provider/file-item-provider"
 import { getSelectedItemsText } from "./items-provider/provider"
-import { FileItem } from "./items-provider/items"
 import CopyConflicts from "./components/dialogs/CopyConflicts"
 import { canCopy } from '@platform/copy-processor'
 import { REMOTE } from "./items-provider/remote-provider"
+import { DirectoryItem } from "./requests/model"
 
 export type CopyItem = {
     name:           string
@@ -43,7 +43,7 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
         copyProcessor.refresh(sourceFolder),
         copyProcessor.refresh(targetFolder)
     ])
-    let items = makeCopyItems(sourceFolder?.getSelectedItems() as FileItem[], targetFolder.getItems() as FileItem[])
+    let items = makeCopyItems(sourceFolder?.getSelectedItems() as DirectoryItem[], targetFolder.getItems() as DirectoryItem[])
     if (items.length == 0)
         return
 
@@ -114,8 +114,8 @@ export const onFilesDrop = async (fileList: FileList, targetFolder: FolderViewHa
         name: f.name,
         size: f.size,
         time: (new Date(f.lastModified)).toISOString()
-    } as FileItem)))
-    let items = makeCopyItems(files, targetFolder.getItems() as FileItem[])
+    } as DirectoryItem)))
+    let items = makeCopyItems(files, targetFolder.getItems() as DirectoryItem[])
     if (items.length == 0)
         return
 
@@ -157,7 +157,7 @@ export const onFilesDrop = async (fileList: FileList, targetFolder: FolderViewHa
     }
 }
 
-const makeCopyItems = (items: FileItem[], targetItems: FileItem[]): CopyItem[] => {
+const makeCopyItems = (items: DirectoryItem[], targetItems: DirectoryItem[]): CopyItem[] => {
     const targetItemsDictionary = new Map(targetItems.map(n => [n.name, n]))    
     return items.map(n => {
         const target = targetItemsDictionary.get(n.name)

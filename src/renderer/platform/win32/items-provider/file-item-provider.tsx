@@ -1,7 +1,8 @@
 import Credentials, { CredentialsProps } from "@/renderer/components/dialogs/Credentials"
 import IconName from "@/renderer/components/IconName"
-import { FileItem, IconNameType, VersionInfo } from "@/renderer/items-provider/items"
+import { IconNameType } from "@/renderer/items-provider/items"
 import { formatDateTime, formatSize } from "@/renderer/items-provider/provider"
+import { DirectoryItem, VersionInfo } from "@/renderer/requests/model"
 import { addNetworkShare } from "@/renderer/requests/requests"
 import { retryOnErrorAsync } from "functional-extensions"
 import { DialogHandle, ResultType } from "web-dialog-react"
@@ -19,7 +20,7 @@ export const getColumns = () => [
         { name: "Version", isSortable: true }        
     ]
 
-export const renderRow = (item: FileItem) => [
+export const renderRow = (item: DirectoryItem) => [
 	(<IconName namePart={item.name} type={
 			item.isParent
 			? IconNameType.Parent
@@ -32,7 +33,7 @@ export const renderRow = (item: FileItem) => [
     formatVersion(item.fileVersion)
 ]
 
-export const sortVersion = (a: FileItem, b: FileItem) =>
+export const sortVersion = (a: DirectoryItem, b: DirectoryItem) =>
     a.fileVersion && !b.fileVersion
     ? 1
     : !a.fileVersion && b.fileVersion   

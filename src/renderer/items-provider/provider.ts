@@ -2,11 +2,11 @@ import { isRoot } from '@platform/items-provider/provider'
 import { IItemsProvider } from "./base-provider"
 import { FILE, FileItemProvider } from "./file-item-provider"
 import { ROOT, RootItemProvider } from "./root-item-provider"
-import { Item } from './items'
 import { EXTENDED_RENAME } from './extended-rename'
 import { FAVORITES, FavoritesProvider } from './favorites-provider'
 import { Remotes, RemotesItemProvider } from './remotes-provider'
 import { RemoteItemProvider } from './remote-provider'
+import { Item } from '../requests/model'
 
 export const getItemsProvider = (path?: string, recentProvider?: IItemsProvider): IItemsProvider => 
     isRoot(path)

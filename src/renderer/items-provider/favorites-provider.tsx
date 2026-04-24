@@ -1,8 +1,9 @@
 import { TableColumns } from "virtual-table-react"
 import { EnterData, IItemsProvider, OnEnterResult } from "./base-provider"
-import { FavoriteItem, IconNameType, Item } from "./items"
+import { FavoriteItem, IconNameType } from "./items"
 import IconName from "../components/IconName"
 import { DialogHandle, ResultType } from "web-dialog-react"
+import { Item } from "../requests/model"
 
 export const FAVORITES = "FAVORITES"
 

@@ -1,10 +1,11 @@
 import { TableColumns } from "virtual-table-react"
 import { EnterData, IItemsProvider, OnEnterResult } from "./base-provider"
-import { Item, FileItem, IconNameType } from "./items"
+import { IconNameType } from "./items"
 import { formatDateTime, formatSize, getSelectedItemsText } from "./provider"
 import { createRemoteFolderRequest, getRemoteFiles, onEnter, remoteDeleteRequest } from "../requests/requests"
 import { DialogHandle, ResultType } from "web-dialog-react"
 import IconName from "../components/IconName"
+import { DirectoryItem, Item } from "../requests/model"
 
 export const REMOTE = "REMOTE"
 
@@ -28,7 +29,7 @@ export class RemoteItemProvider extends IItemsProvider {
         const result = await getRemoteFiles(folderId, requestId, path, showHidden)
         return {
             requestId,
-            items: [super.getParent(), ...result.items as FileItem[]],
+            items: [super.getParent(), ...result.items as DirectoryItem[]],
             path: result.path,
             dirCount: result.dirCount,
             fileCount: result.fileCount
@@ -63,21 +64,21 @@ export class RemoteItemProvider extends IItemsProvider {
     getSortFunction = (index: number, descending: boolean) => {
         const ascDesc = (sortResult: number) => descending ? -sortResult : sortResult
         const sf = index == 0
-            ? (a: FileItem, b: FileItem) => a.name.localeCompare(b.name) 
+            ? (a: DirectoryItem, b: DirectoryItem) => a.name.localeCompare(b.name) 
             : index == 1
-                ? (a: FileItem, b: FileItem) => {	
+                ? (a: DirectoryItem, b: DirectoryItem) => {	
                     const aa = a.exifData?.dateTime ? a.exifData?.dateTime : a.time || ""
                     const bb = b.exifData?.dateTime ? b.exifData?.dateTime : b.time || ""
                     return aa.localeCompare(bb) 
                 } 
             : index == 2
-            ? (a: FileItem, b: FileItem) => (a.size || 0) - (b.size || 0)
+            ? (a: DirectoryItem, b: DirectoryItem) => (a.size || 0) - (b.size || 0)
             : index == 10
-                        ? (a: FileItem, b: FileItem) => a.name.getFileExtension().localeCompare(b.name.getFileExtension()) 
+                        ? (a: DirectoryItem, b: DirectoryItem) => a.name.getFileExtension().localeCompare(b.name.getFileExtension()) 
             : undefined
         
         return sf
-            ? (a: FileItem, b: FileItem) => ascDesc(sf(a, b))
+            ? (a: DirectoryItem, b: DirectoryItem) => ascDesc(sf(a, b))
             : undefined
     }
 
@@ -116,7 +117,7 @@ export class RemoteItemProvider extends IItemsProvider {
     constructor() { super() }
 }
 
-export const getRowClasses = (item: FileItem) => {
+export const getRowClasses = (item: DirectoryItem) => {
     return item.isHidden
         ? ["hidden"]
         : []
@@ -126,7 +127,7 @@ function extractSubPath(path: string): string {
     return path.substring(path.lastIndexOfAny(["/", "\\"]))
 }
 
-const renderRow = (item: FileItem) => [
+const renderRow = (item: DirectoryItem) => [
 	(<IconName namePart={item.name} type={
 			item.isParent
 			? IconNameType.Parent
