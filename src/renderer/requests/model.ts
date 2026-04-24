@@ -60,12 +60,6 @@ export interface DirectoryItem extends Item {
     fileVersion?:   VersionInfo
 }
 
-export interface ExifData {
-    dateTime?: string
-    latitude?: number
-    longitude?: number
-}
-
 export type VersionInfo = {
     major: number,
     minor: number,
@@ -74,3 +68,81 @@ export type VersionInfo = {
 }
 
 
+type UNKNOWN = "UNKNOWN"
+type ACCESS_DENIED = "ACCESS_DENIED"
+type PATH_NOT_FOUND = "PATH_NOT_FOUND"
+type TRASH_NOT_POSSIBLE = "TRASH_NOT_POSSIBLE"
+type CANCELLED = "CANCELLED"
+type FILE_EXISTS = "FILE_EXISTS"
+type WRONG_CREDENTIALS = "WRONG_CREDENTIALS"
+type NETWORK_NAME_NOT_FOUND = "NETWORK_NAME_NOT_FOUND"
+type NETWORK_PATH_NOT_FOUND = "NETWORK_PATH_NOT_FOUND"
+
+export type ErrorType = ACCESS_DENIED | PATH_NOT_FOUND | TRASH_NOT_POSSIBLE | CANCELLED 
+                        | FILE_EXISTS | WRONG_CREDENTIALS | NETWORK_NAME_NOT_FOUND
+                        | NETWORK_PATH_NOT_FOUND | UNKNOWN
+
+export type SystemError = {
+    error: ErrorType,
+    message: string
+}
+
+type EventData = ExifDataType | ExifStatus| CopyProgress | Version | DeleteProgress | ThemeChangeEvent | WindowStateEvent | ShowHiddenEvent
+
+type EventCmd = "Exif" | "ExifStart" | "ExifStop" | "CopyProgress" | "CopyStop" | "CopyProgressShowDialog"
+    | "VersionsStart" | "VersionsStop" | "Versions" | "ThemeChanged" | "DeleteProgress" | "DeleteStop" | "WindowState" | "ShowHidden"
+
+export type CommanderEvent = {
+    folderId?: string,
+    cmd: EventCmd,
+    msg: EventData
+}
+
+export type ExifData = {
+    idx?: number,
+    dateTime?: string,
+    latitude?: number,
+    longitude?: number
+}
+
+export type ExifDataType = {
+    requestId: number,
+    items: ExifData[]
+}
+
+export type ExifStatus = {
+    requestId: number
+}
+
+export type CopyProgress = {
+    idx: number,
+    currentBytes: number,
+    currentMaxBytes: number,
+    totalBytes: number,
+    totalMaxBytes: number,
+    move?: boolean,
+    items?: string[]
+}
+
+export type DeleteProgress = {
+    idx: number,
+    totalCount: number,
+    items?: string[]
+}
+
+export type Version = {
+    requestId: number,
+    //items: VersionInfoResult[]
+}
+
+export type ThemeChangeEvent = {
+    accentColor: string
+}
+
+export type WindowStateEvent = {
+    maximized: boolean
+}
+
+export type ShowHiddenEvent = {
+    showHidden?: boolean
+}

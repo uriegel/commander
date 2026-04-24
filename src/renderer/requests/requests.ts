@@ -1,28 +1,9 @@
 import { ExtendedRenameItem } from "../items-provider/items"
 import { CopyItem } from "../copy-processor"
-import { CancelExifsInput, CmdInput, DirectoryItem, GetAccentColorOutput, GetFilesInput, GetItemsFinishedInput, GetItemsOutput, NullData } from "./model"
+import { CancelExifsInput, CmdInput, DirectoryItem, GetAccentColorOutput, GetFilesInput, GetItemsFinishedInput, GetItemsOutput, NullData, SystemError } from "./model"
 
 type MountResult = {
     path: string
-}
-
-type UNKNOWN = "UNKNOWN"
-type ACCESS_DENIED = "ACCESS_DENIED"
-type PATH_NOT_FOUND = "PATH_NOT_FOUND"
-type TRASH_NOT_POSSIBLE = "TRASH_NOT_POSSIBLE"
-type CANCELLED = "CANCELLED"
-type FILE_EXISTS = "FILE_EXISTS"
-type WRONG_CREDENTIALS = "WRONG_CREDENTIALS"
-type NETWORK_NAME_NOT_FOUND = "NETWORK_NAME_NOT_FOUND"
-type NETWORK_PATH_NOT_FOUND = "NETWORK_PATH_NOT_FOUND"
-
-export type ErrorType = ACCESS_DENIED | PATH_NOT_FOUND | TRASH_NOT_POSSIBLE | CANCELLED 
-                        | FILE_EXISTS | WRONG_CREDENTIALS | NETWORK_NAME_NOT_FOUND
-                        | NETWORK_PATH_NOT_FOUND | UNKNOWN
-
-export type SystemError = {
-    error: ErrorType,
-    message: string
 }
 
 export const cmdRequest = (cmd: string) => jsonRequest<CmdInput, NullData>("cmd", { cmd })
@@ -72,16 +53,4 @@ const jsonRequest = async <TIn, TOut>(cmd: string, msg: TIn) => {
     return res as TOut
 }
 
-const jsonRequestA = async <T>(cmd: string, msg: unknown) => {
-    const payload = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(msg)
-    }
-    const response = await fetch(`http://localhost:8080/requests/${cmd}`, payload)
-    const res = await response.json() as (T | SystemError)
-    if ((res as SystemError).error && (res as SystemError).message) {
-        throw (res)
-    }
-    return res as T
-}
+const jsonRequestA = async <T>(cmd: string, msg: unknown) => await fetch(`http://localhost:8080/requests/${cmd}`) as T

@@ -1,66 +1,7 @@
 import { filter, fromEvent, map, merge, Observable, Subscriber } from 'rxjs'
 import { ID_LEFT, ID_RIGHT } from '../components/Commander'
+import { CommanderEvent, CopyProgress, DeleteProgress, ExifData, ExifDataType, ExifStatus, ShowHiddenEvent, ThemeChangeEvent, Version, WindowStateEvent } from './model'
 //import { VersionInfoResult } from 'native'
-
-export type ExifData = {
-    idx: number,
-    dateTime?: string,
-    latitude?: number,
-    longitude?: number
-}
-
-export type ExifDataType = {
-    requestId: number,
-    items: ExifData[]
-}
-
-export type ExifStatus = {
-    requestId: number
-}
-
-export type CopyProgress = {
-    idx: number,
-    currentBytes: number,
-    currentMaxBytes: number,
-    totalBytes: number,
-    totalMaxBytes: number,
-    move?: boolean,
-    items?: string[]
-}
-
-export type DeleteProgress = {
-    idx: number,
-    totalCount: number,
-    items?: string[]
-}
-
-export type Version = {
-    requestId: number,
-    //items: VersionInfoResult[]
-}
-
-export type ThemeChangeEvent = {
-    accentColor: string
-}
-
-export type WindowStateEvent = {
-    maximized: boolean
-}
-
-export type ShowHiddenEvent = {
-    showHidden?: boolean
-}
-
-type EventData = ExifDataType | ExifStatus| CopyProgress | Version | DeleteProgress | ThemeChangeEvent | WindowStateEvent | ShowHiddenEvent
-
-type EventCmd = "Exif" | "ExifStart" | "ExifStop" | "CopyProgress" | "CopyStop" | "CopyProgressShowDialog"
-    | "VersionsStart" | "VersionsStop" | "Versions" | "ThemeChanged" | "DeleteProgress" | "DeleteStop" | "WindowState" | "ShowHidden"
-
-type CommanderEvent = {
-    folderId?: string,
-    cmd: EventCmd,
-    msg: EventData
-}
 
 let ws = new WebSocket("ws://localhost:8080/events")
 

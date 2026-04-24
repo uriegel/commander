@@ -8,17 +8,17 @@ import { initializeHistory } from "../history"
 import RestrictionView, { RestrictionViewHandle } from "./RestrictionView"
 import { ID_LEFT } from "./Commander"
 import {
-    exifDataEventsLeft$, exifDataEventsRight$, ExifDataType, exifStartEventsLeft$, exifStartEventsRight$, exifStopEventsLeft$,
-    exifStopEventsRight$, Version, versionsDataEventsLeft$, versionsDataEventsRight$, versionsStartEventsLeft$,
+    exifDataEventsLeft$, exifDataEventsRight$, exifStartEventsLeft$, exifStartEventsRight$, exifStopEventsLeft$,
+    exifStopEventsRight$, versionsDataEventsLeft$, versionsDataEventsRight$, versionsStartEventsLeft$,
     versionsStartEventsRight$, versionsStopEventsLeft$, versionsStopEventsRight$
 } from "../requests/events"
-import { cancelExifs, getItemsFinished, onEnter as reqOnEnter, SystemError } from "../requests/requests"
+import { cancelExifs, getItemsFinished, onEnter as reqOnEnter } from "../requests/requests"
 import { EXTENDED_RENAME, showExtendedRename } from "../items-provider/extended-rename"
 import { DialogContext } from "web-dialog-react"
 import { FILE } from "../items-provider/file-item-provider"
 import { REMOTE } from "../items-provider/remote-provider"
 import { openWith as openWithPlatform } from '@platform/folderview'
-import { DirectoryItem, Item } from "../requests/model"
+import { DirectoryItem, ExifDataType, Item, SystemError, Version } from "../requests/model"
 
 export type FolderViewHandle = {
     id: string
@@ -124,8 +124,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         const attachExifs = (exif: ExifDataType) => {
             if (exif.requestId != requestId.current)
                 return
-            exif.items.forEach(n => {
-                const item = itemsDictionary.current.get(n.idx) as DirectoryItem
+            exif.items.filter(n => n.idx).forEach(n => {
+                const item = itemsDictionary.current.get(n.idx!) as DirectoryItem
                 if (item) {
                     item.exifData = {
                         dateTime: n.dateTime,

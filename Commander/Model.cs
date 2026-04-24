@@ -64,8 +64,22 @@ record DirectoryItem(
             IsHidden = (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden || info.Name.StartsWith('.'),
             Time = info.LastWriteTime
         };
-
 }
+
+static class ErrorType
+{
+    public const string Unknown = "UNKNOWN";
+    public const string AccessDenied = "ACCESS_DENIED";
+    public const string PathNotFound = "PATH_NOT_FOUND";
+    public const string TrashNotPossible = "TRASH_NOT_POSSIBLE";
+    public const string Cancelled = "CANCELLED";
+    public const string FileExists = "FILE_EXISTS";
+    public const string WrongCredentials = "WRONG_CREDENTIALS";
+    public const string NetworkNameNotFound = "NETWORK_NAME_NOT_FOUND";
+    public const string NetworkPathNotFound = "NETWORK_PATH_NOT_FOUND";
+}
+
+record SystemError(string Error, string Message);
 
 class EventCmd
 {
@@ -84,3 +98,8 @@ class EventCmd
     public const string WindowState = "WindowState";
     public const string ShowHidden = "ShowHidden";
 }
+
+record EventData(string? AccentColor = null, bool? Maximized = null, bool? ShowHidden = null);
+
+record CommanderEvent(string? FolderId, string Cmd, EventData Msg);
+

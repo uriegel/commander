@@ -1,13 +1,13 @@
 import { DialogHandle, ResultType, Slide } from "web-dialog-react"
 import { FolderViewHandle } from "./components/FolderView"
 import { ID_LEFT, ID_RIGHT } from "./components/Commander"
-import { copy, copyFromRemote, copyToRemote, extendCopyItems, flattenItems, SystemError } from "./requests/requests"
+import { copy, copyFromRemote, copyToRemote, extendCopyItems, flattenItems } from "./requests/requests"
 import { FILE, FileItemProvider } from "./items-provider/file-item-provider"
 import { getSelectedItemsText } from "./items-provider/provider"
 import CopyConflicts from "./components/dialogs/CopyConflicts"
 import { canCopy } from '@platform/copy-processor'
 import { REMOTE } from "./items-provider/remote-provider"
-import { DirectoryItem } from "./requests/model"
+import { DirectoryItem, SystemError } from "./requests/model"
 
 export type CopyItem = {
     name:           string

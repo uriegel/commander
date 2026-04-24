@@ -153,9 +153,6 @@ static class Requests
     static IWebSocket? socket;
 }
 
-record EventData(string? AccentColor = null, bool? Maximized = null, bool? ShowHidden = null);
-
-record CommanderEvent(string? FolderId, string Cmd, EventData Msg);
 
 
 
