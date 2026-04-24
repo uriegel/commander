@@ -7,11 +7,27 @@ export type GetFilesInput = {
     showHidden?: boolean
 }
 
+export type CancelExifsInput = {
+    requestId: string
+}
+
+export type GetItemsFinishedInput = {
+    folderId: string
+}
+
+export type CmdInput = {
+    cmd: string
+}
+
 export type GetItemsOutput = {
     items: Item[],
     path: string,
     dirCount: number,
     fileCount: number
+}
+
+export type GetAccentColorOutput = {
+    color: string
 }
 
 interface SelectableItem {
@@ -56,3 +72,5 @@ export type VersionInfo = {
     build: number,
     patch: number
 }
+
+

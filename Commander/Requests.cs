@@ -38,7 +38,7 @@ static class Requests
     {
         var _ = await request.DeserializeAsync<NullData>();
         var color = Theme.GetAccentColor();
-        await request.SendJsonAsync(new GetAccentColorResponse(color));
+        await request.SendJsonAsync(new GetAccentColorOutput(color));
         return true;
     }
 
@@ -48,24 +48,27 @@ static class Requests
 #if Windows        
         Form.Close();
 #endif        
+        await request.SendJsonAsync(new NullData());
         return true;
     }
 
     public static async Task<bool> Maximize(IRequest request)
     {
         var _ = await request.DeserializeAsync<NullData>();
-#if Windows        
+#if Windows
         Form.Maximize();
-#endif        
+#endif
+        await request.SendJsonAsync(new NullData());
         return true;
     }
 
     public static async Task<bool> Minimize(IRequest request)
     {
         var _ = await request.DeserializeAsync<NullData>();
-#if Windows        
+#if Windows
         Form.Minimize();
-#endif        
+#endif
+        await request.SendJsonAsync(new NullData());
         return true;
     }
         
@@ -75,12 +78,13 @@ static class Requests
 #if Windows        
         Form.Restore();
 #endif        
+        await request.SendJsonAsync(new NullData());
         return true;
     }
 
     public static async Task<bool> Cmd(IRequest request)
     {
-        var cmd = await request.DeserializeAsync<Command>();
+        var cmd = await request.DeserializeAsync<CmdInput>();
         switch (cmd?.Cmd)
         {
             case "SHOW_DEV_TOOLS":
@@ -90,6 +94,7 @@ static class Requests
                 break;
         }
 
+        await request.SendJsonAsync(new NullData());
         return true;
     }
 
@@ -148,27 +153,9 @@ static class Requests
     static IWebSocket? socket;
 }
 
-class EventCmd
-{
-    public const string Exif = "Exif";
-    public const string ExifStart = "ExifStart";
-    public const string ExifStop = "ExifStop";
-    public const string CopyProgress = "CopyProgress";
-    public const string CopyStop = "CopyStop";
-    public const string CopyProgressShowDialog = "CopyProgressShowDialog";
-    public const string VersionsStart = "VersionsStart";
-    public const string VersionsStop = "VersionsStop";
-    public const string Versions = "Versions";
-    public const string ThemeChanged = "ThemeChanged";
-    public const string DeleteProgress = "DeleteProgress";
-    public const string DeleteStop = "DeleteStop";
-    public const string WindowState = "WindowState";
-    public const string ShowHidden = "ShowHidden";
-}
-
 record EventData(string? AccentColor = null, bool? Maximized = null, bool? ShowHidden = null);
 
 record CommanderEvent(string? FolderId, string Cmd, EventData Msg);
 
-record Command(string Cmd);
+
 

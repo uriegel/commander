@@ -3,12 +3,12 @@ record NullData();
 record GetFilesInput(string FolderId, int RequestId, string Path, bool ShowHidden);
 record CancelExifsInput(string RequestId);
 record GetItemsFinishedInput(string FolderId);
-
+record CmdInput(string Cmd);
 
 record GetItemsOutput(string Path, int DirCount, int FileCount);
 record GetRootItemsOutput(RootItem[] Items, string Path, int DirCount, int FileCount) : GetItemsOutput(Path, DirCount, FileCount) { }
 record GetDirectoryItemsOutput(DirectoryItem[] Items, string Path, int DirCount, int FileCount) : GetItemsOutput(Path, DirCount, FileCount) {}
-record GetAccentColorResponse(string Color);
+record GetAccentColorOutput(string Color);
 
 record Item(
     string Name,
@@ -67,3 +67,20 @@ record DirectoryItem(
 
 }
 
+class EventCmd
+{
+    public const string Exif = "Exif";
+    public const string ExifStart = "ExifStart";
+    public const string ExifStop = "ExifStop";
+    public const string CopyProgress = "CopyProgress";
+    public const string CopyStop = "CopyStop";
+    public const string CopyProgressShowDialog = "CopyProgressShowDialog";
+    public const string VersionsStart = "VersionsStart";
+    public const string VersionsStop = "VersionsStop";
+    public const string Versions = "Versions";
+    public const string ThemeChanged = "ThemeChanged";
+    public const string DeleteProgress = "DeleteProgress";
+    public const string DeleteStop = "DeleteStop";
+    public const string WindowState = "WindowState";
+    public const string ShowHidden = "ShowHidden";
+}

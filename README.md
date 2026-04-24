@@ -22,7 +22,7 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* All Items to model, requests
+* All Items to model, errors
 * All Items to model, events
 * Exif
 * Version
