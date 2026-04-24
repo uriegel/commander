@@ -2,7 +2,6 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "node",
     "skipLibCheck": true,
     "jsx": "react-jsx",
     "forceConsistentCasingInFileNames": true,
@@ -11,6 +10,8 @@
     "esModuleInterop": true,
     "isolatedModules": true,
     "resolveJsonModule": true,
+    "ignoreDeprecations": "6.0",
+    "rootDir": "src/renderer",
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
