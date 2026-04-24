@@ -3,7 +3,7 @@ import { ID_LEFT, ID_RIGHT } from '../components/Commander'
 import { CommanderEvent, CopyProgress, DeleteProgress, ExifData, ExifDataType, ExifStatus, ShowHiddenEvent, ThemeChangeEvent, Version, WindowStateEvent } from './model'
 //import { VersionInfoResult } from 'native'
 
-let ws = new WebSocket("ws://localhost:8080/events")
+const ws = new WebSocket("ws://localhost:8080/events")
 
 const $wsToEventObservable = fromEvent(ws, 'message').pipe(map(n => {
     const evt = n as MessageEvent
