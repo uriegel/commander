@@ -1,3 +1,19 @@
+export type NullData = {}
+
+export type GetFilesInput = {
+    folderId: string,
+    requestId: number,
+    path: string,
+    showHidden?: boolean
+}
+
+export type GetItemsOutput = {
+    items: Item[],
+    path: string,
+    dirCount: number,
+    fileCount: number
+}
+
 interface SelectableItem {
     isSelected?: boolean
 }

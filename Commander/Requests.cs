@@ -14,7 +14,7 @@ static class Requests
 
     public static async Task<bool> GetFiles(IRequest request)
     {
-        var getFiles = await request.DeserializeAsync<GetFiles>();
+        var getFiles = await request.DeserializeAsync<GetFilesInput>();
         var response = Directory.Get(getFiles);
         await request.SendJsonAsync(response);
         return true;
@@ -22,14 +22,14 @@ static class Requests
 
     public static async Task<bool> CancelExifs(IRequest request)
     {
-        var data = await request.DeserializeAsync<CancelExifs>();
+        var data = await request.DeserializeAsync<CancelExifsInput>();
         await request.SendJsonAsync(new NullData());
         return true;
     }
 
     public static async Task<bool> GetItemsFinished(IRequest request)
     {
-        var data = await request.DeserializeAsync<GetItemsFinished>();
+        var data = await request.DeserializeAsync<GetItemsFinishedInput>();
         await request.SendJsonAsync(new NullData());
         return true;
     }
@@ -38,7 +38,7 @@ static class Requests
     {
         var _ = await request.DeserializeAsync<NullData>();
         var color = Theme.GetAccentColor();
-        await request.SendJsonAsync(new GetAccentColor(color));
+        await request.SendJsonAsync(new GetAccentColorResponse(color));
         return true;
     }
 
@@ -148,14 +148,6 @@ static class Requests
     static IWebSocket? socket;
 }
 
-record FileItem();
-
-record GetDrives(string FolderId, string RequestId, string Path, bool ShowHidden);
-record CancelExifs(string RequestId);
-record NullData();
-record GetItemsFinished(string FolderId);
-record GetAccentColor(string Color);
-
 class EventCmd
 {
     public const string Exif = "Exif";
@@ -180,12 +172,3 @@ record CommanderEvent(string? FolderId, string Cmd, EventData Msg);
 
 record Command(string Cmd);
 
-record GetFiles(string FolderId, int RequestId, string Path, bool ShowHidden);
-
-
-record ItemResult(
-    DirectoryItem[] Items,
-    string Path,
-    int DirCount,
-    int FileCount
-);

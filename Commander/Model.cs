@@ -1,3 +1,13 @@
+record NullData();
+
+record GetFilesInput(string FolderId, int RequestId, string Path, bool ShowHidden);
+record CancelExifsInput(string RequestId);
+record GetItemsFinishedInput(string FolderId);
+
+
+record GetItemsOutput(Item[] Items, string Path, int DirCount, int FileCount);
+record GetAccentColorResponse(string Color);
+
 record Item(
     string Name,
     int? Idx,

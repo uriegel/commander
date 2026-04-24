@@ -13,11 +13,11 @@ var server =
 #endif        
         .Route(MethodRoute
             .New(Method.Post, OnPostError)
-                .Add(PathRoute.New("/requests/getdrives").Request(Requests.GetDrives))
-                .Add(PathRoute.New("/requests/getfiles").Request(Requests.GetFiles))
-                .Add(PathRoute.New("/requests/cancelexifs").Request(Requests.CancelExifs))
-                .Add(PathRoute.New("/requests/getitemsfinished").Request(Requests.GetItemsFinished))
-                .Add(PathRoute.New("/requests/getaccentcolor").Request(Requests.GetAccentColor))
+                .Add(PathRoute.New("/requests/getdrives").Request(GetDrives))
+                .Add(PathRoute.New("/requests/getfiles").Request(GetFiles))
+                .Add(PathRoute.New("/requests/cancelexifs").Request(CancelExifs))
+                .Add(PathRoute.New("/requests/getitemsfinished").Request(GetItemsFinished))
+                .Add(PathRoute.New("/requests/getaccentcolor").Request(GetAccentColor))
                 .Add(PathRoute.New("/requests/closewindow").Request(CloseWindow))
                 .Add(PathRoute.New("/requests/minimize").Request(Minimize))
                 .Add(PathRoute.New("/requests/maximize").Request(Maximize))
@@ -26,10 +26,10 @@ var server =
             )
         .Route(MethodRoute
             .New(Method.Get)
-                .Add(PathRoute.New("/iconfromname").Request(Requests.GetIconFromName))
-                .Add(PathRoute.New("/iconfromext").Request(Requests.GetIconFromExtension))
+                .Add(PathRoute.New("/iconfromname").Request(GetIconFromName))
+                .Add(PathRoute.New("/iconfromext").Request(GetIconFromExtension))
             )
-        .WebSocket(Requests.WebSocket)
+        .WebSocket(WebSocket)
         .Build();
 
 Globals.InitializeResourceFiles();
