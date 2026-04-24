@@ -2,35 +2,16 @@
 
 static class Drive
 {
-    public static async Task<DriveItem[]> Get() =>
-        [ new DriveItem(Globals.HomeDir, "Start", 0, true, "", "HOME"),
+    public static async Task<RootItem[]> Get() =>
+        [ new RootItem(Globals.HomeDir, "Start", 0, "", true, DriveType.Home),
             .. DriveInfo
                 .GetDrives()
-                .Select(DriveItem.Create)];
+                .Select(Create)];
+
+    static RootItem Create(DriveInfo info)
+        => info.IsReady
+            ? new(info.Name, info.VolumeLabel, info.TotalSize, "", true)
+            : new(info.Name, "Not ready", 0, "", false);
 }
 
-record DriveItem(
-    string Name,
-    string Description,
-    long Size,
-    bool IsMounted,
-    string DriveType,
-    string Type = "HARDDRIVE") // TODO: Drive types
-{
-    public static DriveItem Create(DriveInfo info)
-        => info.IsReady 
-            ? new(info.Name, info.VolumeLabel, info.TotalSize, true, "disk") 
-            : new(info.Name, "Not ready", 0, false, "disk");
-};
-record DriveItemResponse(DriveItem[] Items, string Path, int DirCount);
-
-enum DriveType
-{
-    UNKNOWN,
-    HARDDRIVE,
-    ROM,
-    REMOVABLE,
-    NETWORK,
-    HOME
-}
 #endif
