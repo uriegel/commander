@@ -23,6 +23,8 @@ sudo dnf install gcc-c++ gtk3-devel
 
 TODO
 * All Items to model
+* Exif
+* Version
 * mount unmounted drive Linux
 * Viewer
 * mount unmounted drive Windows
