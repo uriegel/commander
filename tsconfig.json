@@ -1,26 +1,7 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "skipLibCheck": true,
-    "jsx": "react-jsx",
-    "forceConsistentCasingInFileNames": true,
-    "sourceMap": true,
-    "strict": true,
-    "esModuleInterop": true,
-    "isolatedModules": true,
-    "resolveJsonModule": true,
-    "ignoreDeprecations": "6.0",
-    "rootDir": "src/renderer",
-    "outDir": "dist",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"],
-      "@platform/*": [
-        "src/renderer/platform/linux/*",
-        "src/renderer/platform/win32/*",
-      ]
-    }
-  },
-  "include": ["src"]
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
 }
