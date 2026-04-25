@@ -83,8 +83,8 @@ record SystemError(string Error, string Message);
 class EventCmd
 {
     public const string ExtendedInfos = "ExtendedInfos";
-    public const string ExifStart = "ExifStart";
-    public const string ExifStop = "ExifStop";
+    public const string ExtendedInfosStart = "ExtendedInfosStart";
+    public const string ExtendedInfosStop = "ExtendedInfosStop";
     public const string CopyProgress = "CopyProgress";
     public const string CopyStop = "CopyStop";
     public const string CopyProgressShowDialog = "CopyProgressShowDialog";

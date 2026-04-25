@@ -1,6 +1,6 @@
 import { filter, fromEvent, map, merge, Observable, Subscriber } from 'rxjs'
 import { ID_LEFT, ID_RIGHT } from '../components/Commander'
-import { CommanderEvent, CopyProgress, DeleteProgress, ExifStatus, ExtendedInfos, ShowHiddenEvent, ThemeChangeEvent, Version, WindowStateEvent } from './model'
+import { CommanderEvent, CopyProgress, DeleteProgress, ExifStatus, ExtendedInfos, ExtendedInfosStatus, ShowHiddenEvent, ThemeChangeEvent, Version, WindowStateEvent } from './model'
 //import { VersionInfoResult } from 'native'
 
 const ws = new WebSocket("ws://localhost:8080/events")
@@ -28,12 +28,9 @@ export const copyStopEvents$ = message$.pipe(filter(n => n.cmd == "CopyStop"))
 export const themeChangedEvents$ = message$.pipe(filter(n => n.cmd == "ThemeChanged")).pipe(map(n => (n.msg as ThemeChangeEvent).accentColor))
 export const windowStateEvents$ = message$.pipe(filter(n => n.cmd == "WindowState")).pipe(map(n => (n.msg as WindowStateEvent).maximized))
 export const showHiddenEvents$ = message$.pipe(filter(n => n.cmd == "ShowHidden")).pipe(map(n => (n.msg as ShowHiddenEvent).showHidden))
-const exifStartEvents$ = message$.pipe(filter(n => n.cmd == "ExifStart"))
-const exifStopEvents$ = message$.pipe(filter(n => n.cmd == "ExifStop"))
+const extendedInfosStartEvents$ = message$.pipe(filter(n => n.cmd == "ExtendedInfosStart"))
+const extendedInfosStopEvents$ = message$.pipe(filter(n => n.cmd == "ExtendedInfosStop"))
 const extendedInfosEvents$ = message$.pipe(filter(n => n.cmd == "ExtendedInfos"))
-const versionsStartEvents$ = message$.pipe(filter(n => n.cmd == "VersionsStart"))
-const versionsDataEvents$ = message$.pipe(filter(n => n.cmd == "Versions"))
-const versionsStopEvents$ = message$.pipe(filter(n => n.cmd == "VersionsStop"))
 
 export const extendedInfosEventsLeft$ = extendedInfosEvents$
     .pipe(filter(n => n.folderId == ID_LEFT))
@@ -43,44 +40,21 @@ export const extendedInfosEventsRight$ = extendedInfosEvents$
     .pipe(filter(n => n.folderId == ID_RIGHT))
     .pipe(map(n => n.msg as ExtendedInfos))
 
-export const exifStartEventsLeft$ = exifStartEvents$
+export const extendedInfosStartEventsLeft$ = extendedInfosStartEvents$
     .pipe(filter(n => n.folderId == ID_LEFT))
-    .pipe(map(n => n.msg as ExifStatus))
+    .pipe(map(n => n.msg as ExtendedInfosStatus))
 
-export const exifStartEventsRight$ = exifStartEvents$
+export const extendedInfosStartEventsRight$ = extendedInfosStartEvents$
     .pipe(filter(n => n.folderId == ID_RIGHT))
-    .pipe(map(n => n.msg as ExifStatus))
+    .pipe(map(n => n.msg as ExtendedInfosStatus))
 
-export const exifStopEventsLeft$ = exifStopEvents$
+export const extendedInfosStopEventsLeft$ = extendedInfosStopEvents$
     .pipe(filter(n => n.folderId == ID_LEFT))
-    .pipe(map(n => n.msg as ExifStatus))
+    .pipe(map(n => n.msg as ExtendedInfosStatus))
 
-export const exifStopEventsRight$ = exifStopEvents$
+export const extendedInfosStopEventsRight$ = extendedInfosStopEvents$
     .pipe(filter(n => n.folderId == ID_RIGHT))
-    .pipe(map(n => n.msg as ExifStatus))
+    .pipe(map(n => n.msg as ExtendedInfosStatus))
 
-export const versionsDataEventsLeft$ = versionsDataEvents$
-    .pipe(filter(n => n.folderId == ID_LEFT))
-    .pipe(map(n => n.msg as Version))
-
-export const versionsDataEventsRight$ = versionsDataEvents$
-    .pipe(filter(n => n.folderId == ID_RIGHT))
-    .pipe(map(n => n.msg as Version))
-
-export const versionsStartEventsLeft$ = versionsStartEvents$
-    .pipe(filter(n => n.folderId == ID_LEFT))
-    .pipe(map(n => n.msg as Version))
-
-export const versionsStartEventsRight$ = versionsStartEvents$
-    .pipe(filter(n => n.folderId == ID_RIGHT))
-    .pipe(map(n => n.msg as Version))
-
-export const versionsStopEventsLeft$ = versionsStopEvents$
-    .pipe(filter(n => n.folderId == ID_LEFT))
-    .pipe(map(n => n.msg as Version))
-
-export const versionsStopEventsRight$ = versionsStopEvents$
-    .pipe(filter(n => n.folderId == ID_RIGHT))
-    .pipe(map(n => n.msg as Version))
 
 

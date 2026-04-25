@@ -33,7 +33,7 @@ static partial class Directory
     {
         if (extendedItemsDatas.TryRemove(folderId, out var data))
             data.Cancellation.Cancel();
-        Requests.SendJson(new(folderId, EventCmd.ExifStop, new EventData { RequestId = 0 }));
+        Requests.SendJson(new(folderId, EventCmd.ExtendedInfosStop, new EventData { RequestId = 0 }));
     }
 
     static void StartGettingExtendedInfos(string folderId, int requestId, string path, DirectoryItem[] items)
@@ -57,7 +57,7 @@ static partial class Directory
                             .Where(n => n.Name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase) || n.Name.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase));
         if (!checkItems.Any())
             return;
-        Requests.SendJson(new(folderId, EventCmd.ExifStart, new EventData { RequestId = requestId }));
+        Requests.SendJson(new(folderId, EventCmd.ExtendedInfosStart, new EventData { RequestId = requestId }));
 await Task.Delay(500, cancellation);
 
         var exifItems = checkItems
@@ -70,7 +70,7 @@ await Task.Delay(500, cancellation);
                             .ToArray();
         if (!cancellation.IsCancellationRequested)
             Requests.SendJson(new(folderId, EventCmd.ExtendedInfos, new EventData { RequestId = requestId, Exifs = exifItems }));
-        Requests.SendJson(new(folderId, EventCmd.ExifStop, new EventData { RequestId = requestId }));
+        Requests.SendJson(new(folderId, EventCmd.ExtendedInfosStop, new EventData { RequestId = requestId }));
     }
 
     static readonly ConcurrentDictionary<string, ExtendedItemsData> extendedItemsDatas = [];

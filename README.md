@@ -22,7 +22,6 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* SetText Erweiterte Infos werden ermittelt..., set and reset only when requestId is correct
 * ConcurrentDictionary<requestId, SemaphoreSlim> till GetItemsFinished
 * Cleanup ConcurrentDictionary<requestId, SemaphoreSlim>
 * Version

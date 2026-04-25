@@ -86,8 +86,8 @@ export type SystemError = {
 
 type EventData = ExtendedInfos | ExifStatus| CopyProgress | Version | DeleteProgress | ThemeChangeEvent | WindowStateEvent | ShowHiddenEvent
 
-type EventCmd = "ExtendedInfos" | "ExifStart" | "ExifStop" | "CopyProgress" | "CopyStop" | "CopyProgressShowDialog"
-    | "VersionsStart" | "VersionsStop" | "Versions" | "ThemeChanged" | "DeleteProgress" | "DeleteStop" | "WindowState" | "ShowHidden"
+type EventCmd = "ExtendedInfos" | "ExtendedInfosStart" | "ExtendedInfosStop" | "CopyProgress" | "CopyStop" | "CopyProgressShowDialog"
+            | "ThemeChanged" | "DeleteProgress" | "DeleteStop" | "WindowState" | "ShowHidden"
 
 export type CommanderEvent = {
     folderId?: string,
@@ -107,7 +107,7 @@ export type ExtendedInfos = {
     exifs?: ExifData[]
 }
 
-export type ExifStatus = {
+export type ExtendedInfosStatus = {
     requestId: number
 }
 

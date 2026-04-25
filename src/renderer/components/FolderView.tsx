@@ -8,9 +8,11 @@ import { initializeHistory } from "../history"
 import RestrictionView, { RestrictionViewHandle } from "./RestrictionView"
 import { ID_LEFT } from "./Commander"
 import {
-    extendedInfosEventsLeft$, extendedInfosEventsRight$, exifStartEventsLeft$, exifStartEventsRight$, exifStopEventsLeft$,
-    exifStopEventsRight$, versionsDataEventsLeft$, versionsDataEventsRight$, versionsStartEventsLeft$,
-    versionsStartEventsRight$, versionsStopEventsLeft$, versionsStopEventsRight$
+    extendedInfosEventsLeft$, extendedInfosEventsRight$,
+    extendedInfosStartEventsLeft$,
+    extendedInfosStartEventsRight$,
+    extendedInfosStopEventsLeft$,
+    extendedInfosStopEventsRight$
 } from "../requests/events"
 import { getItemsFinished, onEnter as reqOnEnter } from "../requests/requests"
 import { EXTENDED_RENAME, showExtendedRename } from "../items-provider/extended-rename"
@@ -150,46 +152,34 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         return () => sub.unsubscribe()
     }, [id])
 
-    useEffect(() => {
-        const attachVersions = (version: Version) => {
-            if (version.requestId != requestId.current)
-                return
-            // version.items.forEach(n => {
-            //     const item = itemsDictionary.current.get(n.idx) as DirectoryItem
-            //     if (item) 
-            //         item.fileVersion = n.info
-            // })
-            setItems(prev => {
-                const newItems = itemsProvider.current?.sort(prev, sortIndex.current, sortDescending.current)
-                return newItems || prev
-            })
-        }
+    // useEffect(() => {
+    //     const attachVersions = (version: Version) => {
+    //         if (version.requestId != requestId.current)
+    //             return
+    //         // version.items.forEach(n => {
+    //         //     const item = itemsDictionary.current.get(n.idx) as DirectoryItem
+    //         //     if (item) 
+    //         //         item.fileVersion = n.info
+    //         // })
+    //         setItems(prev => {
+    //             const newItems = itemsProvider.current?.sort(prev, sortIndex.current, sortDescending.current)
+    //             return newItems || prev
+    //         })
+    //     }
 
-        const event$ = id == ID_LEFT ? versionsDataEventsLeft$ : versionsDataEventsRight$
-        const sub = event$.subscribe(attachVersions)
-        return () => sub.unsubscribe()
-    }, [id])
-
-    useEffect(() => {
-        const event$ = id == ID_LEFT ? exifStartEventsLeft$ : exifStartEventsRight$
-        const sub = event$.subscribe(() => setStatusText("Ermittle EXIF-Informationen..."))
-        return () => sub.unsubscribe()
-    }, [id, setStatusText])
+    //     const event$ = id == ID_LEFT ? versionsDataEventsLeft$ : versionsDataEventsRight$
+    //     const sub = event$.subscribe(attachVersions)
+    //     return () => sub.unsubscribe()
+    // }, [id])
 
     useEffect(() => {
-        const event$ = id == ID_LEFT ? exifStopEventsLeft$ : exifStopEventsRight$
-        const sub = event$.subscribe(() => setStatusText())
+        const event$ = id == ID_LEFT ? extendedInfosStartEventsLeft$ : extendedInfosStartEventsRight$
+        const sub = event$.subscribe(() => setStatusText("Ermittle erweiterte Informationen..."))
         return () => sub.unsubscribe()
     }, [id, setStatusText])
 
     useEffect(() => {
-        const event$ = id == ID_LEFT ? versionsStartEventsLeft$ : versionsStartEventsRight$
-        const sub = event$.subscribe(() => setStatusText("Ermittle Datei-Versionen..."))
-        return () => sub.unsubscribe()
-    }, [id, setStatusText])
-
-    useEffect(() => {
-        const event$ = id == ID_LEFT ? versionsStopEventsLeft$ : versionsStopEventsRight$
+        const event$ = id == ID_LEFT ? extendedInfosStopEventsLeft$ : extendedInfosStopEventsRight$
         const sub = event$.subscribe(() => setStatusText())
         return () => sub.unsubscribe()
     }, [id, setStatusText])
