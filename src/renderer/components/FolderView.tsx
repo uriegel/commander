@@ -12,7 +12,7 @@ import {
     exifStopEventsRight$, versionsDataEventsLeft$, versionsDataEventsRight$, versionsStartEventsLeft$,
     versionsStartEventsRight$, versionsStopEventsLeft$, versionsStopEventsRight$
 } from "../requests/events"
-import { cancelExifs, getItemsFinished, onEnter as reqOnEnter } from "../requests/requests"
+import { getItemsFinished, onEnter as reqOnEnter } from "../requests/requests"
 import { EXTENDED_RENAME, showExtendedRename } from "../items-provider/extended-rename"
 import { DialogContext } from "web-dialog-react"
 import { FILE } from "../items-provider/file-item-provider"
@@ -222,7 +222,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const changePath = useCallback(async (path?: string, forceShowHidden?: boolean, mount?: boolean, latestPath?: string, fromBacklog?: boolean,
         checkPosition?: (checkItem: Item) => boolean) => {
         try {
-            cancelExifs(id)
             requestId.current = getRequestId()
             const newItemsProvider = getItemsProvider(path, itemsProvider.current)
             const result = await newItemsProvider.getItems(id, requestId.current, path, forceShowHidden === undefined ? showHidden : forceShowHidden, 

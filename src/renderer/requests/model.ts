@@ -8,10 +8,6 @@ export type GetFilesInput = {
     showHidden?: boolean
 }
 
-export type CancelExifsInput = {
-    folderId: string
-}
-
 export type GetItemsFinishedInput = {
     folderId: string
 }

@@ -5,6 +5,7 @@ static partial class Directory
 {
     public static GetDirectoryItemsOutput Get(GetFilesInput? getFiles)
     {
+        CancelExifs(getFiles?.FolderId ?? "");
         var dirInfo = new DirectoryInfo(getFiles?.Path ?? "");
         var dirs = dirInfo
                         .GetDirectories()
@@ -23,17 +24,18 @@ static partial class Directory
         //   DirectoryWatcher.Initialize(getFiles.FolderId, getFiles.Path);
     }
 
-    public static void CancelExifs(string folderId)
-    {
-        if (extendedItemsDatas.TryRemove(folderId, out var data))
-            data.Cancellation.Cancel();
-    }
-
     public static void GetItemsFinished(string folderId)
     {
         if (extendedItemsDatas.TryGetValue(folderId, out var data))
             data.Locker.Release();
     }
+    static void CancelExifs(string folderId)
+    {
+        if (extendedItemsDatas.TryRemove(folderId, out var data))
+            data.Cancellation.Cancel();
+        Requests.SendJson(new(folderId, EventCmd.ExifStop, new EventData { RequestId = 0 }));
+    }
+
     static void StartGettingExtendedInfos(string folderId, int requestId, string path, DirectoryItem[] items)
     {
         var cancellation = new CancellationTokenSource();
@@ -56,6 +58,11 @@ static partial class Directory
         if (!checkItems.Any())
             return;
         Requests.SendJson(new(folderId, EventCmd.ExifStart, new EventData { RequestId = requestId }));
+        await Task.Delay(5000, cancellation);
+        if (cancellation.IsCancellationRequested)
+        {
+            int u = 0;
+        }
 
         var exifItems = checkItems
                             .Where(_ => !cancellation.IsCancellationRequested)

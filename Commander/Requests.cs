@@ -20,15 +20,6 @@ static class Requests
         return true;
     }
 
-    public static async Task<bool> CancelExifs(IRequest request)
-    {
-        var data = await request.DeserializeAsync<CancelExifsInput>();
-        if (data?.FolderId != null)
-            Directory.CancelExifs(data.FolderId);
-        await request.SendJsonAsync(new NullData());
-        return true;
-    }
-
     public static async Task<bool> GetItemsFinished(IRequest request)
     {
         var data = await request.DeserializeAsync<GetItemsFinishedInput>();

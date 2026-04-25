@@ -15,7 +15,6 @@ var server =
             .New(Method.Post, OnPostError)
                 .Add(PathRoute.New("/requests/getdrives").Request(GetDrives))
                 .Add(PathRoute.New("/requests/getfiles").Request(GetFiles))
-                .Add(PathRoute.New("/requests/cancelexifs").Request(CancelExifs))
                 .Add(PathRoute.New("/requests/getitemsfinished").Request(GetItemsFinished))
                 .Add(PathRoute.New("/requests/getaccentcolor").Request(GetAccentColor))
                 .Add(PathRoute.New("/requests/closewindow").Request(CloseWindow))

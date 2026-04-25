@@ -1,6 +1,6 @@
 import { ExtendedRenameItem } from "../items-provider/items"
 import { CopyItem } from "../copy-processor"
-import { CancelExifsInput, CmdInput, DirectoryItem, GetAccentColorOutput, GetFilesInput, GetItemsFinishedInput, GetItemsOutput, NullData, SystemError } from "./model"
+import { CmdInput, DirectoryItem, GetAccentColorOutput, GetFilesInput, GetItemsFinishedInput, GetItemsOutput, NullData, SystemError } from "./model"
 
 type MountResult = {
     path: string
@@ -12,7 +12,6 @@ export const getAccentColor = () => jsonRequest<NullData, GetAccentColorOutput>(
 export const mountRequest = (dev: string) => jsonRequestA<MountResult>("mount", { dev })
 export const onEnter = (name: string, path: string, openWith?: boolean, showProperties?: boolean) => jsonRequestA<void>("onenter", { name, path, openWith, showProperties })
 export const getFiles = (folderId: string, requestId: number, path: string, showHidden?: boolean) => jsonRequest<GetFilesInput, GetItemsOutput>("getfiles", { folderId, requestId, path, showHidden })
-export const cancelExifs = (folderId: string) => jsonRequest<CancelExifsInput, NullData>("cancelexifs", { folderId })
 export const copy = (sourcePath: string, targetPath: string, items: string[], totalSize: number, move: boolean) => jsonRequestA<void>(
     "copy", { sourcePath, targetPath, items, totalSize, move })
 export const deleteRequest = (path: string, items: string[]) => jsonRequestA<void>("delete", { path, items })

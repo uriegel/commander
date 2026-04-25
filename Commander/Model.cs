@@ -1,7 +1,6 @@
 record NullData();
 
 record GetFilesInput(string FolderId, int RequestId, string Path, bool ShowHidden);
-record CancelExifsInput(string FolderId);
 record GetItemsFinishedInput(string FolderId);
 record CmdInput(string Cmd);
 
