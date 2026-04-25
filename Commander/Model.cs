@@ -82,7 +82,7 @@ record SystemError(string Error, string Message);
 
 class EventCmd
 {
-    public const string Exif = "Exif";
+    public const string ExtendedInfos = "ExtendedInfos";
     public const string ExifStart = "ExifStart";
     public const string ExifStop = "ExifStop";
     public const string CopyProgress = "CopyProgress";
@@ -98,7 +98,7 @@ class EventCmd
     public const string ShowHidden = "ShowHidden";
 }
 
-record EventData(string? AccentColor = null, bool? Maximized = null, bool? ShowHidden = null, int? RequestId = null, ExifData[]? Items = null);
+record EventData(string? AccentColor = null, bool? Maximized = null, bool? ShowHidden = null, int? RequestId = null, ExifData[]? Exifs = null);
 
 record CommanderEvent(string? FolderId, string Cmd, EventData Msg);
 

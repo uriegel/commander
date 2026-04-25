@@ -84,9 +84,9 @@ export type SystemError = {
     message: string
 }
 
-type EventData = ExifDataType | ExifStatus| CopyProgress | Version | DeleteProgress | ThemeChangeEvent | WindowStateEvent | ShowHiddenEvent
+type EventData = ExtendedInfos | ExifStatus| CopyProgress | Version | DeleteProgress | ThemeChangeEvent | WindowStateEvent | ShowHiddenEvent
 
-type EventCmd = "Exif" | "ExifStart" | "ExifStop" | "CopyProgress" | "CopyStop" | "CopyProgressShowDialog"
+type EventCmd = "ExtendedInfos" | "ExifStart" | "ExifStop" | "CopyProgress" | "CopyStop" | "CopyProgressShowDialog"
     | "VersionsStart" | "VersionsStop" | "Versions" | "ThemeChanged" | "DeleteProgress" | "DeleteStop" | "WindowState" | "ShowHidden"
 
 export type CommanderEvent = {
@@ -102,9 +102,9 @@ export type ExifData = {
     longitude?: number
 }
 
-export type ExifDataType = {
+export type ExtendedInfos = {
     requestId: number,
-    items: ExifData[]
+    exifs?: ExifData[]
 }
 
 export type ExifStatus = {

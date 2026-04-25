@@ -1,6 +1,6 @@
 import { filter, fromEvent, map, merge, Observable, Subscriber } from 'rxjs'
 import { ID_LEFT, ID_RIGHT } from '../components/Commander'
-import { CommanderEvent, CopyProgress, DeleteProgress, ExifData, ExifDataType, ExifStatus, ShowHiddenEvent, ThemeChangeEvent, Version, WindowStateEvent } from './model'
+import { CommanderEvent, CopyProgress, DeleteProgress, ExifStatus, ExtendedInfos, ShowHiddenEvent, ThemeChangeEvent, Version, WindowStateEvent } from './model'
 //import { VersionInfoResult } from 'native'
 
 const ws = new WebSocket("ws://localhost:8080/events")
@@ -30,18 +30,18 @@ export const windowStateEvents$ = message$.pipe(filter(n => n.cmd == "WindowStat
 export const showHiddenEvents$ = message$.pipe(filter(n => n.cmd == "ShowHidden")).pipe(map(n => (n.msg as ShowHiddenEvent).showHidden))
 const exifStartEvents$ = message$.pipe(filter(n => n.cmd == "ExifStart"))
 const exifStopEvents$ = message$.pipe(filter(n => n.cmd == "ExifStop"))
-const exifDataEvents$ = message$.pipe(filter(n => n.cmd == "Exif"))
+const extendedInfosEvents$ = message$.pipe(filter(n => n.cmd == "ExtendedInfos"))
 const versionsStartEvents$ = message$.pipe(filter(n => n.cmd == "VersionsStart"))
 const versionsDataEvents$ = message$.pipe(filter(n => n.cmd == "Versions"))
 const versionsStopEvents$ = message$.pipe(filter(n => n.cmd == "VersionsStop"))
 
-export const exifDataEventsLeft$ = exifDataEvents$
+export const extendedInfosEventsLeft$ = extendedInfosEvents$
     .pipe(filter(n => n.folderId == ID_LEFT))
-    .pipe(map(n => n.msg as ExifDataType))
+    .pipe(map(n => n.msg as ExtendedInfos))
 
-export const exifDataEventsRight$ = exifDataEvents$
+export const extendedInfosEventsRight$ = extendedInfosEvents$
     .pipe(filter(n => n.folderId == ID_RIGHT))
-    .pipe(map(n => n.msg as ExifDataType))
+    .pipe(map(n => n.msg as ExtendedInfos))
 
 export const exifStartEventsLeft$ = exifStartEvents$
     .pipe(filter(n => n.folderId == ID_LEFT))

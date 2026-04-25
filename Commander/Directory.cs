@@ -58,11 +58,7 @@ static partial class Directory
         if (!checkItems.Any())
             return;
         Requests.SendJson(new(folderId, EventCmd.ExifStart, new EventData { RequestId = requestId }));
-        await Task.Delay(5000, cancellation);
-        if (cancellation.IsCancellationRequested)
-        {
-            int u = 0;
-        }
+await Task.Delay(500, cancellation);
 
         var exifItems = checkItems
                             .Where(_ => !cancellation.IsCancellationRequested)
@@ -73,7 +69,7 @@ static partial class Directory
                             })
                             .ToArray();
         if (!cancellation.IsCancellationRequested)
-            Requests.SendJson(new(folderId, EventCmd.Exif, new EventData { RequestId = requestId, Items = exifItems }));
+            Requests.SendJson(new(folderId, EventCmd.ExtendedInfos, new EventData { RequestId = requestId, Exifs = exifItems }));
         Requests.SendJson(new(folderId, EventCmd.ExifStop, new EventData { RequestId = requestId }));
     }
 

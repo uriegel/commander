@@ -8,7 +8,7 @@ import { initializeHistory } from "../history"
 import RestrictionView, { RestrictionViewHandle } from "./RestrictionView"
 import { ID_LEFT } from "./Commander"
 import {
-    exifDataEventsLeft$, exifDataEventsRight$, exifStartEventsLeft$, exifStartEventsRight$, exifStopEventsLeft$,
+    extendedInfosEventsLeft$, extendedInfosEventsRight$, exifStartEventsLeft$, exifStartEventsRight$, exifStopEventsLeft$,
     exifStopEventsRight$, versionsDataEventsLeft$, versionsDataEventsRight$, versionsStartEventsLeft$,
     versionsStartEventsRight$, versionsStopEventsLeft$, versionsStopEventsRight$
 } from "../requests/events"
@@ -18,7 +18,7 @@ import { DialogContext } from "web-dialog-react"
 import { FILE } from "../items-provider/file-item-provider"
 import { REMOTE } from "../items-provider/remote-provider"
 import { openWith as openWithPlatform } from '@platform/folderview'
-import { DirectoryItem, ExifDataType, Item, SystemError, Version } from "../requests/model"
+import { DirectoryItem, ExtendedInfos, Item, SystemError, Version } from "../requests/model"
 
 export type FolderViewHandle = {
     id: string
@@ -121,10 +121,15 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }, [id, onItemsChanged])
 
     useEffect(() => {
-        const attachExifs = (exif: ExifDataType) => {
-            if (exif.requestId != requestId.current)
+        const attachExtendedInfos = (infos: ExtendedInfos) => {
+
+            console.log("Attatsche", infos)
+
+
+            if (infos.requestId != requestId.current)
                 return
-            exif.items.filter(n => n.idx).forEach(n => {
+            console.log("Attatsche 2", infos)
+            infos?.exifs?.filter(n => n.idx).forEach(n => {
                 const item = itemsDictionary.current.get(n.idx!) as DirectoryItem
                 if (item) {
                     item.exifData = {
@@ -140,8 +145,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             })
         }
 
-        const event$ = id == ID_LEFT ? exifDataEventsLeft$ : exifDataEventsRight$
-        const sub = event$.subscribe(attachExifs)
+        const event$ = id == ID_LEFT ? extendedInfosEventsLeft$ : extendedInfosEventsRight$
+        const sub = event$.subscribe(attachExtendedInfos)
         return () => sub.unsubscribe()
     }, [id])
 
@@ -256,7 +261,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             setErrorText(err.message)
             return items
         } finally {
-            getItemsFinished(id)            
+            // getItemsFinished(id)            
         }
 
     }, [id, items, setNewItems, setWidths, setErrorText, showHidden, dialog])
