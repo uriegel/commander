@@ -37,15 +37,15 @@ record RootItem(
 
 record DirectoryItem(
     string Name,
-    int? Idx = null,
+    int? Idx= null,
     long? Size = null,
     bool? IsParent = null,
     bool? IsDirectory = null,
     string? IconPath = null,
     DateTime? Time = null,
-    bool? IsHidden = null
-//    exifData?:      ExifData
-//fileVersion?:   VersionInfo
+    bool? IsHidden = null,
+    ExifData? ExifData = null
+    //fileVersion?:   VersionInfo
 ) : Item(Name, Idx, Size, IsParent, IsDirectory)
 {
     public static DirectoryItem CreateDirItem(DirectoryInfo info)
@@ -56,8 +56,8 @@ record DirectoryItem(
             Time = info.LastWriteTime
         };
 
-    public static DirectoryItem CreateFileItem(FileInfo info)
-        => new(info.Name)
+    public static DirectoryItem CreateFileItem(FileInfo info, int idx)
+        => new(info.Name, idx + 1)
         {
             Size = info.Length,
             IconPath = Directory.GetIconPath(info.Name, info.DirectoryName),
@@ -99,7 +99,9 @@ class EventCmd
     public const string ShowHidden = "ShowHidden";
 }
 
-record EventData(string? AccentColor = null, bool? Maximized = null, bool? ShowHidden = null, int? RequestId = null);
+record EventData(string? AccentColor = null, bool? Maximized = null, bool? ShowHidden = null, int? RequestId = null, ExifData[]? Items = null);
 
 record CommanderEvent(string? FolderId, string Cmd, EventData Msg);
+
+record ExifData(int Idx, DateTime? DateTime, double? Latitude, double? Longitude);
 

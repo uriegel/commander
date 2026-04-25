@@ -22,7 +22,7 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Exif
+* start exif when semaphore is release by getitemsfinished
 * Version
 * mount unmounted drive Linux
 * Viewer

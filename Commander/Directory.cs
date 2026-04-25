@@ -43,32 +43,28 @@ static partial class Directory
 
     static void RetrieveExifDatas(string folderId, int requestId, string path, DirectoryItem[] items, CancellationToken cancellation)
     {
-        var exifItems = items.Where(n => n.Name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase) || n.Name.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase));
-        if (!exifItems.Any())
+        // TODO start when semaphore is release by getitemsfinished
+        var checkItems = items
+                            .SelectFilterNull(n => n.Idx.HasValue ? n : null)
+                            .Where(n => n.Name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase) || n.Name.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase));
+        if (!checkItems.Any())
             return;
         Requests.SendJson(new(folderId, EventCmd.ExifStart, new EventData { RequestId = requestId }));
-        foreach (var item in exifItems)
-        {
-            if (cancellation.IsCancellationRequested)
-                break;
-            var exif = ExifReader.GetExifData(path.AppendPath(item.Name));
-            Thread.Sleep(10);
-            if (exif?.Latitude != null)
-            {
 
-            }
-            var test = exif?.DateTime;
-        }
-        Requests.SendJson(new(folderId, EventCmd.ExifStop, new EventData { RequestId = requestId }));
-        //Requests.SendJson(new(folderId, EventCmd.ExifStop, new EventData { RequestId = requestId }));
-
+        var exifItems = checkItems
+                            .Where(_ => !cancellation.IsCancellationRequested)
+                            .SelectFilterNull(n =>
+                            {
+                                var exif = ExifReader.GetExifData(path.AppendPath(n.Name));
+                                return exif != null ? new ExifData(n.Idx ?? -1, exif.DateTime, exif?.Latitude, exif?.Longitude) : null;
+                            })
+                            .ToArray();
         if (!cancellation.IsCancellationRequested)
-        {
-            
-        }
+            Requests.SendJson(new(folderId, EventCmd.Exif, new EventData { RequestId = requestId, Items = exifItems }));
+        Requests.SendJson(new(folderId, EventCmd.ExifStop, new EventData { RequestId = requestId }));
     }
 
-    static readonly ConcurrentDictionary<string, ExtendedItemsData> extendedItemsDatas = new();
+    static readonly ConcurrentDictionary<string, ExtendedItemsData> extendedItemsDatas = [];
 }
 
 record ExtendedItemsData(Task Task, CancellationTokenSource Cancellation);
