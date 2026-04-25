@@ -6,6 +6,7 @@ static partial class Directory
     public static GetDirectoryItemsOutput Get(GetFilesInput? getFiles)
     {
         CancelExifs(getFiles?.FolderId ?? "");
+        lockers.TryAdd(getFiles?.FolderId ?? "", new(0, 1));
         var dirInfo = new DirectoryInfo(getFiles?.Path ?? "");
         var dirs = dirInfo
                         .GetDirectories()
@@ -26,27 +27,30 @@ static partial class Directory
 
     public static void GetItemsFinished(string folderId)
     {
-        if (extendedItemsDatas.TryGetValue(folderId, out var data))
-            data.Locker.Release();
+        if (lockers.TryGetValue(folderId, out var locker))
+            locker.Release();
     }
     static void CancelExifs(string folderId)
     {
         if (extendedItemsDatas.TryRemove(folderId, out var data))
             data.Cancellation.Cancel();
+        lockers.TryRemove(folderId, out var locker);
         Requests.SendJson(new(folderId, EventCmd.ExtendedInfosStop, new EventData { RequestId = 0 }));
     }
 
     static void StartGettingExtendedInfos(string folderId, int requestId, string path, DirectoryItem[] items)
     {
         var cancellation = new CancellationTokenSource();
-        var locker = new SemaphoreSlim(1, 1);
-        var task = RetrieveExifDatas(folderId, requestId, path, items, locker, cancellation.Token);
-        var data = new ExtendedItemsData(task, cancellation, locker);
-        extendedItemsDatas.AddOrUpdate(folderId, data, (_, v) =>
+        if (lockers.TryGetValue(folderId, out var locker))
         {
-            v.Cancellation.Cancel();
-            return data;
-        });
+            var task = RetrieveExifDatas(folderId, requestId, path, items, locker, cancellation.Token);
+            var data = new ExtendedItemsData(task, cancellation);
+            extendedItemsDatas.AddOrUpdate(folderId, data, (_, v) =>
+            {
+                v.Cancellation.Cancel();
+                return data;
+            });
+        }
     }
 
     static async Task RetrieveExifDatas(string folderId, int requestId, string path, DirectoryItem[] items, SemaphoreSlim locker, CancellationToken cancellation)
@@ -58,7 +62,6 @@ static partial class Directory
         if (!checkItems.Any())
             return;
         Requests.SendJson(new(folderId, EventCmd.ExtendedInfosStart, new EventData { RequestId = requestId }));
-await Task.Delay(500, cancellation);
 
         var exifItems = checkItems
                             .Where(_ => !cancellation.IsCancellationRequested)
@@ -74,9 +77,10 @@ await Task.Delay(500, cancellation);
     }
 
     static readonly ConcurrentDictionary<string, ExtendedItemsData> extendedItemsDatas = [];
+    static readonly ConcurrentDictionary<string, SemaphoreSlim> lockers = [];
 }
 
-record ExtendedItemsData(Task Task, CancellationTokenSource Cancellation, SemaphoreSlim Locker);
+record ExtendedItemsData(Task Task, CancellationTokenSource Cancellation);
 
 // using System.Data;
 // using System.Collections.Immutable;

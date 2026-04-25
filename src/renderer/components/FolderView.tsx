@@ -251,7 +251,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             setErrorText(err.message)
             return items
         } finally {
-            // getItemsFinished(id)            
+            getItemsFinished(id)            
         }
 
     }, [id, items, setNewItems, setWidths, setErrorText, showHidden, dialog])

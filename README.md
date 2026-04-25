@@ -22,7 +22,6 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* ConcurrentDictionary<requestId, SemaphoreSlim> till GetItemsFinished
 * Cleanup ConcurrentDictionary<requestId, SemaphoreSlim>
 * Version
 * mount unmounted drive Linux
