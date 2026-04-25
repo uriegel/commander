@@ -6,7 +6,7 @@ using System.Runtime.Versioning;
 
 static class Theme
 {
-    public static string GetAccentColor() => GetDark() ? "red" /*"#0073e5"*/ : "#0070de";
+    public static string GetAccentColor() => GetDark() ? "#0073e5" : "#0070de";
 
     public static string GetThemeName(this string osTheme)
         => osTheme;
