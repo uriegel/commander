@@ -1,3 +1,6 @@
+using System.Collections.Concurrent;
+using CsTools.Extensions;
+
 static partial class Directory
 {
     public static GetDirectoryItemsOutput Get(GetFilesInput? getFiles)
@@ -14,10 +17,61 @@ static partial class Directory
                         .Select(DirectoryItem.CreateFileItem)
                         .Where(n => getFiles?.ShowHidden == true || !n.IsHidden == true)
                         .ToArray();
+        if (getFiles?.FolderId != null)
+            StartGettingExtendedInfos(getFiles.FolderId, getFiles.RequestId, getFiles?.Path ?? "", files);
         return new([.. dirs, .. files], dirInfo.FullName, dirs.Length, files.Length);
         //   DirectoryWatcher.Initialize(getFiles.FolderId, getFiles.Path);
     }
+
+    public static void CancelExifs(string folderId)
+    {
+        if (extendedItemsDatas.TryRemove(folderId, out var data))
+            data.Cancellation.Cancel();
+    }
+
+    static void StartGettingExtendedInfos(string folderId, int requestId, string path, DirectoryItem[] items)
+    {
+        var cancellation = new CancellationTokenSource();
+        var task = Task.Run(() => RetrieveExifDatas(folderId, requestId, path, items, cancellation.Token), cancellation.Token);
+        var data = new ExtendedItemsData(task, cancellation);
+        extendedItemsDatas.AddOrUpdate(folderId, data, (_, v) =>
+        {
+            v.Cancellation.Cancel();
+            return data;
+        });
+    }
+
+    static void RetrieveExifDatas(string folderId, int requestId, string path, DirectoryItem[] items, CancellationToken cancellation)
+    {
+        var exifItems = items.Where(n => n.Name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase) || n.Name.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase));
+        if (!exifItems.Any())
+            return;
+        Requests.SendJson(new(folderId, EventCmd.ExifStart, new EventData { RequestId = requestId }));
+        foreach (var item in exifItems)
+        {
+            if (cancellation.IsCancellationRequested)
+                break;
+            var exif = ExifReader.GetExifData(path.AppendPath(item.Name));
+            Thread.Sleep(10);
+            if (exif?.Latitude != null)
+            {
+
+            }
+            var test = exif?.DateTime;
+        }
+        Requests.SendJson(new(folderId, EventCmd.ExifStop, new EventData { RequestId = requestId }));
+        //Requests.SendJson(new(folderId, EventCmd.ExifStop, new EventData { RequestId = requestId }));
+
+        if (!cancellation.IsCancellationRequested)
+        {
+            
+        }
+    }
+
+    static readonly ConcurrentDictionary<string, ExtendedItemsData> extendedItemsDatas = new();
 }
+
+record ExtendedItemsData(Task Task, CancellationTokenSource Cancellation);
 
 // using System.Data;
 // using System.Collections.Immutable;

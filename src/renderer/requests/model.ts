@@ -9,7 +9,7 @@ export type GetFilesInput = {
 }
 
 export type CancelExifsInput = {
-    requestId: string
+    folderId: string
 }
 
 export type GetItemsFinishedInput = {

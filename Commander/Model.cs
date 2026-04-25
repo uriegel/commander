@@ -1,7 +1,7 @@
 record NullData();
 
 record GetFilesInput(string FolderId, int RequestId, string Path, bool ShowHidden);
-record CancelExifsInput(string RequestId);
+record CancelExifsInput(string FolderId);
 record GetItemsFinishedInput(string FolderId);
 record CmdInput(string Cmd);
 
@@ -99,7 +99,7 @@ class EventCmd
     public const string ShowHidden = "ShowHidden";
 }
 
-record EventData(string? AccentColor = null, bool? Maximized = null, bool? ShowHidden = null);
+record EventData(string? AccentColor = null, bool? Maximized = null, bool? ShowHidden = null, int? RequestId = null);
 
 record CommanderEvent(string? FolderId, string Cmd, EventData Msg);
 

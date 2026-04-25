@@ -23,6 +23,8 @@ static class Requests
     public static async Task<bool> CancelExifs(IRequest request)
     {
         var data = await request.DeserializeAsync<CancelExifsInput>();
+        if (data?.FolderId != null)
+            Directory.CancelExifs(data.FolderId);
         await request.SendJsonAsync(new NullData());
         return true;
     }
