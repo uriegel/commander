@@ -29,11 +29,17 @@ static partial class Directory
             data.Cancellation.Cancel();
     }
 
+    public static void GetItemsFinished(string folderId)
+    {
+        if (extendedItemsDatas.TryGetValue(folderId, out var data))
+            data.Locker.Release();
+    }
     static void StartGettingExtendedInfos(string folderId, int requestId, string path, DirectoryItem[] items)
     {
         var cancellation = new CancellationTokenSource();
-        var task = Task.Run(() => RetrieveExifDatas(folderId, requestId, path, items, cancellation.Token), cancellation.Token);
-        var data = new ExtendedItemsData(task, cancellation);
+        var locker = new SemaphoreSlim(1, 1);
+        var task = RetrieveExifDatas(folderId, requestId, path, items, locker, cancellation.Token);
+        var data = new ExtendedItemsData(task, cancellation, locker);
         extendedItemsDatas.AddOrUpdate(folderId, data, (_, v) =>
         {
             v.Cancellation.Cancel();
@@ -41,9 +47,9 @@ static partial class Directory
         });
     }
 
-    static void RetrieveExifDatas(string folderId, int requestId, string path, DirectoryItem[] items, CancellationToken cancellation)
+    static async Task RetrieveExifDatas(string folderId, int requestId, string path, DirectoryItem[] items, SemaphoreSlim locker, CancellationToken cancellation)
     {
-        // TODO start when semaphore is release by getitemsfinished
+        await locker.WaitAsync(cancellation);
         var checkItems = items
                             .SelectFilterNull(n => n.Idx.HasValue ? n : null)
                             .Where(n => n.Name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase) || n.Name.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase));
@@ -67,7 +73,7 @@ static partial class Directory
     static readonly ConcurrentDictionary<string, ExtendedItemsData> extendedItemsDatas = [];
 }
 
-record ExtendedItemsData(Task Task, CancellationTokenSource Cancellation);
+record ExtendedItemsData(Task Task, CancellationTokenSource Cancellation, SemaphoreSlim Locker);
 
 // using System.Data;
 // using System.Collections.Immutable;

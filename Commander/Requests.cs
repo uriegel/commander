@@ -32,6 +32,7 @@ static class Requests
     public static async Task<bool> GetItemsFinished(IRequest request)
     {
         var data = await request.DeserializeAsync<GetItemsFinishedInput>();
+        Directory.GetItemsFinished(data?.FolderId ?? "");
         await request.SendJsonAsync(new NullData());
         return true;
     }
