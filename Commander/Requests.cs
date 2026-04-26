@@ -126,7 +126,7 @@ static class Requests
         if (subPath == null)
             return false;
         using var iconStream = File.OpenRead(subPath.GetFilePath());
-        await request.SendAsync(iconStream, iconStream.Length, "image/jpg");
+        await request.SendAsync(iconStream, iconStream.Length, subPath.EndsWith("jpg") ? "image/jpg" : "application/pdf");
         return true;
     }
 
