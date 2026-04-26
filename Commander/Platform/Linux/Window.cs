@@ -31,8 +31,8 @@ public static class Window
             Handle
                 .GetTemplateChild<ButtonHandle, ApplicationWindowHandle>("devtools")
                 ?.OnClicked(webView.ShowDevTools);
-            var was = Handle.GetTemplateChild<DropDownHandle, ApplicationWindowHandle>("preview_mode");
-            was.OnNotify("selected", pm => Requests.SendJson(new(null, EventCmd.PreviewMode, new EventData { PreviewMode = pm.GetSelected().GetPreviewMode() })));
+            dropdown = Handle.GetTemplateChild<DropDownHandle, ApplicationWindowHandle>("preview_mode");
+            dropdown.OnNotify("selected", pm => Requests.SendJson(new(null, EventCmd.PreviewMode, new EventData { PreviewMode = pm.GetSelected().GetPreviewMode() })));
             await Task.Delay(50);
 
             Handle.AddActions(
@@ -41,6 +41,9 @@ public static class Window
                     new("quit", Handle.CloseWindow, "<Ctrl>Q"),
                     new("devtools", webView.ShowDevTools, "<Ctrl><Shift>I"),
                     new("preview", false, show => Requests.SendJson(new(null, EventCmd.ShowViewer, new EventData { ShowViewer = show })), "F3"),
+                    new("select-image", () => dropdown.SetSelected(0), "<CTRL>1"),
+                    new("select-image-location", () => dropdown.SetSelected(1), "<CTRL>2"),
+                    new("select-location", () => dropdown.SetSelected(2), "<CTRL>3"),
                 ]);
         }
 
@@ -54,6 +57,8 @@ public static class Window
         : pm == 1
         ? PreviewMode.IMAGE_LOCATION
         : PreviewMode.LOCATION;
+
+    static DropDownHandle? dropdown = null;
 
 }
 #endif
