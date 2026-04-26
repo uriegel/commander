@@ -39,6 +39,7 @@ public static class Window
                     new("showhidden", false, show => Requests.SendJson(new(null, EventCmd.ShowHidden, new EventData { ShowHidden = show })), "<Ctrl>H"),
                     new("quit", Handle.CloseWindow, "<Ctrl>Q"),
                     new("devtools", webView.ShowDevTools, "<Ctrl><Shift>I"),
+                    new("preview", false, show => Requests.SendJson(new(null, EventCmd.ShowViewer, new EventData { ShowViewer = show })), "F3"),
                 ]);
         } 
         

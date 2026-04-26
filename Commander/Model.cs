@@ -101,12 +101,14 @@ class EventCmd
     public const string DeleteStop = "DeleteStop";
     public const string WindowState = "WindowState";
     public const string ShowHidden = "ShowHidden";
+    public const string ShowViewer = "ShowViewer";
 }
 
 record EventData(
     string? AccentColor = null,
     bool? Maximized = null,
     bool? ShowHidden = null,
+    bool? ShowViewer = null,
     int? RequestId = null,
     ExifData[]? Exifs = null,
     VersionInfo[]? Versions = null);

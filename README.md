@@ -23,6 +23,7 @@ sudo dnf install gcc-c++ gtk3-devel
 
 TODO
 * Viewer
+* ContentTypeFromExtension in WebServerLight
 * mount unmounted drive Windows
 * css as react module
 

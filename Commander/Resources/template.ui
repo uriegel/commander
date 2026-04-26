@@ -12,7 +12,7 @@
         <child type="end">
           <object class="GtkToggleButton">
             <property name="icon-name">x-office-presentation</property>
-            <property name="action-name">app.showpreview</property>
+            <property name="action-name">win.preview</property>
           </object>
         </child>
       </object>

@@ -35,7 +35,7 @@ static class Requests
         await request.SendJsonAsync(new MountOutput(path));
         return true;
     }
-    
+
     public static async Task<bool> GetAccentColor(IRequest request)
     {
         var _ = await request.DeserializeAsync<NullData>();
@@ -73,7 +73,7 @@ static class Requests
         await request.SendJsonAsync(new NullData());
         return true;
     }
-        
+
     public static async Task<bool> Restore(IRequest request)
     {
         var _ = await request.DeserializeAsync<NullData>();
@@ -90,9 +90,9 @@ static class Requests
         switch (cmd?.Cmd)
         {
             case "SHOW_DEV_TOOLS":
-            #if Windows
+#if Windows
                 Commands.ShowDevTools();
-            #endif
+#endif
                 break;
         }
 
@@ -119,7 +119,17 @@ static class Requests
         await request.SendAsync(payload, payload.IsSvg() ? "image/svg+xml" : "image/png");
         return true;
     }
-    
+
+    public static async Task<bool> GetImage(IRequest request)
+    {
+        var subPath = request.SubPath;
+        if (subPath == null)
+            return false;
+        using var iconStream = File.OpenRead($"/{subPath}");
+        await request.SendAsync(iconStream, iconStream.Length, "image/jpg");
+        return true;
+    }
+
     public static async Task OnPostError(Exception e, IRequest request)
     {
         try
@@ -143,7 +153,7 @@ static class Requests
             await request.SendJsonAsync(new SystemError(ErrorType.AccessDenied, "Keine Berechtigung"));
         }
     }
-    
+
     public static void SendJson(CommanderEvent evt) => websocketChannel.Writer.TryWrite(evt);
 
     public static void WebSocket(IWebSocket webSocket)
