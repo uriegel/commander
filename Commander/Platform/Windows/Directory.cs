@@ -7,6 +7,8 @@ static partial class Directory
         => name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) && path != null
             ? path.AppendPath(name)
             : name.GetFileExtension();
+
+    public static string GetFilePath(this string path) => path.Replace('/', '\\');
 }   
 
 #endif
