@@ -1,6 +1,7 @@
 using System.Threading.Channels;
 using WebServerLight;
 
+using CsTools.Extensions;
 static class Requests
 {
     public static async Task<bool> GetDrives(IRequest request)
@@ -120,13 +121,14 @@ static class Requests
         return true;
     }
 
-    public static async Task<bool> GetImage(IRequest request)
+    public static async Task<bool> GetFile(IRequest request)
     {
         var subPath = request.SubPath;
         if (subPath == null)
             return false;
         using var iconStream = File.OpenRead(subPath.GetFilePath());
-        await request.SendAsync(iconStream, iconStream.Length, subPath.EndsWith("jpg") ? "image/jpg" : "application/pdf");
+
+        await request.SendAsync(iconStream, iconStream.Length, subPath?.GetFileExtension()?.ToMimeType() ?? "text/plain");
         return true;
     }
 

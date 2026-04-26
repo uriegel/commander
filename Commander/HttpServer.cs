@@ -31,8 +31,9 @@ static class HttpServer
                 .New(Method.Get)
                     .Add(PathRoute.New("/iconfromname").Request(GetIconFromName))
                     .Add(PathRoute.New("/iconfromext").Request(GetIconFromExtension))
-                    .Add(PathRoute.New("/image").Request(GetImage))
+                    .Add(PathRoute.New("/file").Request(GetFile))
             )
             .WebSocket(WebSocket)
+            .UseRange()
             .Build();
 }

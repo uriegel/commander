@@ -22,8 +22,12 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Viewer: replace image with file
-* ContentTypeFromExtension in WebServerLight (AspNetExtension?)
+* Menu commands
+* LocationViewer
+* TrackViewer
+* All components major update to .NET 10
+* CsTools MimeTypeFromPath
+
 * mount unmounted drive Windows
 * css as react module
 
