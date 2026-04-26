@@ -161,3 +161,21 @@ type PreviewMode = "IMAGE" | "LOCATION" | "IMAGE_LOCATION"
 export type PreviewModeEvent = {
     previewMode: PreviewMode
 }
+
+export type GpxPoint = {
+    latitude: number
+    longitude: number
+    elevation: number
+    time: string
+    heartrate: number
+    velocity: number
+}
+
+export type GpxTrack = {
+    name: string
+    distance: number
+    duration: number
+//    date: string
+    averageSpeed: number
+    trackPoints: GpxPoint[]
+}    

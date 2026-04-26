@@ -22,10 +22,10 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* TrackViewer
 * Menu commands
 * All components major update to .NET 10
 * CsTools MimeTypeFromPath
+* TrackViewer: Wrong units, old gpx tracks create exceptions
 
 * mount unmounted drive Windows
 * css as react module

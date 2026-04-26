@@ -126,12 +126,22 @@ static class Requests
         var subPath = request.SubPath;
         if (subPath == null)
             return false;
-        using var iconStream = File.OpenRead(subPath.GetFilePath());
+        using var stream = File.OpenRead(subPath.GetFilePath());
 
-        await request.SendAsync(iconStream, iconStream.Length, subPath?.GetFileExtension()?.ToMimeType() ?? "text/plain");
+        await request.SendAsync(stream, stream.Length, subPath?.GetFileExtension()?.ToMimeType() ?? "text/plain");
         return true;
     }
 
+    public static async Task<bool> GetTrack(IRequest request)
+    {
+        var subPath = request.SubPath;
+        if (subPath == null)
+            return false;
+        var track = TrackInfo.Get(subPath.GetFilePath());
+        await request.SendJsonAsync(track);
+        return true;
+    }
+    
     public static async Task OnPostError(Exception e, IRequest request)
     {
         try

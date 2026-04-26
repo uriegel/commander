@@ -70,6 +70,26 @@ record DirectoryItem(
 record ExifData(int Idx, DateTime? DateTime, double? Latitude, double? Longitude);
 record Version(int Major, int Minor, int Build, int Patch);
 
+record GpxTrack(
+    string? Name,
+    string? Description,
+    float Distance,
+    int Duration,
+    float AverageSpeed,
+    int AverageHeartRate,
+    GpxPoint[]? TrackPoints
+);
+//    date: string
+
+record GpxPoint(
+    double Latitude,
+    double Longitude,
+    double Elevation,
+    string? Time,
+    int Heartrate,
+    float Velocity
+);
+
 static class ErrorType
 {
     public const string Unknown = "UNKNOWN";
