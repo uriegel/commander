@@ -12,6 +12,10 @@ export type GetItemsFinishedInput = {
     folderId: string
 }
 
+export type MountInput = {
+    device: string
+}
+
 export type CmdInput = {
     cmd: string
 }
@@ -25,6 +29,10 @@ export type GetItemsOutput = {
 
 export type GetAccentColorOutput = {
     color: string
+}
+
+export type MountOutput = {
+    path: string
 }
 
 interface SelectableItem {

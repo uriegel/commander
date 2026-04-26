@@ -1,5 +1,5 @@
 .statusbar {
-    padding: 3px;
+    padding: 3px 3px 3px 8px;
     color: var(--color);
     border-top-width: 1px;
     border-top-color: var(--scaffolding-background-color);

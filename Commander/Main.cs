@@ -16,6 +16,7 @@ var server =
                 .Add(PathRoute.New("/requests/getdrives").Request(GetDrives))
                 .Add(PathRoute.New("/requests/getfiles").Request(GetFiles))
                 .Add(PathRoute.New("/requests/getitemsfinished").Request(GetItemsFinished))
+                .Add(PathRoute.New("/requests/mount").Request(Mount))
                 .Add(PathRoute.New("/requests/getaccentcolor").Request(GetAccentColor))
                 .Add(PathRoute.New("/requests/closewindow").Request(CloseWindow))
                 .Add(PathRoute.New("/requests/minimize").Request(Minimize))

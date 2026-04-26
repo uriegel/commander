@@ -3,11 +3,13 @@ record NullData();
 record GetFilesInput(string FolderId, int RequestId, string Path, bool ShowHidden);
 record GetItemsFinishedInput(string FolderId);
 record CmdInput(string Cmd);
+record MountInput(string Device);
 
 record GetItemsOutput(string Path, int DirCount, int FileCount);
 record GetRootItemsOutput(RootItem[] Items, string Path, int DirCount, int FileCount) : GetItemsOutput(Path, DirCount, FileCount) { }
 record GetDirectoryItemsOutput(DirectoryItem[] Items, string Path, int DirCount, int FileCount) : GetItemsOutput(Path, DirCount, FileCount) {}
 record GetAccentColorOutput(string Color);
+record MountOutput(string Path);
 
 record Item(
     string Name,

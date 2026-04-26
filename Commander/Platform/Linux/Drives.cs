@@ -28,7 +28,7 @@ static class Drive
                   select item)
                  .ToArray());
         return [.. items.Where(n =>
-                !n.MountPoint.StartsWith("/snap") 
+                !n.MountPoint.StartsWith("/snap")
                 && !items.Any(i => i.Name != n.Name && i.Name.StartsWith(n.Name))
             )];
 
@@ -60,6 +60,22 @@ static class Drive
 
             string GetString(int pos1, int pos2)
                 => driveString[columnPositions[pos1]..columnPositions[pos2]].Trim();
+        }
+    }
+
+    public static async Task<string> Mount(string device)
+    {
+        try
+        {
+            var output = await RunAsync("udisksctl", $"mount -b /dev/{device}");
+            return output.SubstringAfter(" at ").Trim();
+        }
+        catch (Exception e)
+        {
+            if (e.Message.Contains("already mounted"))
+                throw new AlreadyMountedException();
+            else
+                throw new MountException(e.Message);
         }
     }
     

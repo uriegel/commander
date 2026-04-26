@@ -12,6 +12,8 @@ static class Drive
         => info.IsReady
             ? new(info.Name, info.VolumeLabel, info.TotalSize, "", true)
             : new(info.Name, "Not ready", 0, "", false);
+
+    public static async Task<string> Mount(string device) => return "";
 }
 
 #endif

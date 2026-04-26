@@ -28,6 +28,14 @@ static class Requests
         return true;
     }
 
+    public static async Task<bool> Mount(IRequest request)
+    {
+        var data = await request.DeserializeAsync<MountInput>();
+        var path = await Drive.Mount(data?.Device ?? "");
+        await request.SendJsonAsync(new MountOutput(path));
+        return true;
+    }
+    
     public static async Task<bool> GetAccentColor(IRequest request)
     {
         var _ = await request.DeserializeAsync<NullData>();
@@ -117,6 +125,14 @@ static class Requests
         try
         {
             throw e;
+        }
+        catch (AlreadyMountedException)
+        {
+            await request.SendJsonAsync(new SystemError(ErrorType.Unknown, "Bereits eingehangen"));
+        }
+        catch (MountException me)
+        {
+            await request.SendJsonAsync(new SystemError(ErrorType.Unknown, me.Message));
         }
         catch (DirectoryNotFoundException)
         {

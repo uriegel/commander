@@ -22,7 +22,6 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* mount unmounted drive Linux
 * Viewer
 * mount unmounted drive Windows
 * css as react module
