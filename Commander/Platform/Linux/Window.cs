@@ -31,7 +31,8 @@ public static class Window
             Handle
                 .GetTemplateChild<ButtonHandle, ApplicationWindowHandle>("devtools")
                 ?.OnClicked(webView.ShowDevTools);
-
+            var was = Handle.GetTemplateChild<DropDownHandle, ApplicationWindowHandle>("preview_mode");
+            was.OnNotify("selected", pm => Requests.SendJson(new(null, EventCmd.PreviewMode, new EventData { PreviewMode = pm.GetSelected().GetPreviewMode() })));
             await Task.Delay(50);
 
             Handle.AddActions(
@@ -41,10 +42,18 @@ public static class Window
                     new("devtools", webView.ShowDevTools, "<Ctrl><Shift>I"),
                     new("preview", false, show => Requests.SendJson(new(null, EventCmd.ShowViewer, new EventData { ShowViewer = show })), "F3"),
                 ]);
-        } 
-        
+        }
+
         protected override void OnFinalize() => Console.WriteLine("Window finalized");
         protected override ApplicationWindowHandle CreateHandle(nint obj) => new(obj);
     }
+
+    static string GetPreviewMode(this int pm)
+    => pm == 0
+        ? PreviewMode.IMAGE
+        : pm == 1
+        ? PreviewMode.IMAGE_LOCATION
+        : PreviewMode.LOCATION;
+
 }
 #endif

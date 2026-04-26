@@ -91,10 +91,10 @@ export type SystemError = {
     message: string
 }
 
-type EventData = ExtendedInfos | CopyProgress | Version | DeleteProgress | ThemeChangeEvent | WindowStateEvent | ShowHiddenEvent | ShowViewerEvent
+type EventData = ExtendedInfos | CopyProgress | Version | DeleteProgress | ThemeChangeEvent | WindowStateEvent | ShowHiddenEvent | ShowViewerEvent | PreviewModeEvent
 
 type EventCmd = "ExtendedInfos" | "ExtendedInfosStart" | "ExtendedInfosStop" | "CopyProgress" | "CopyStop" | "CopyProgressShowDialog"
-            | "ThemeChanged" | "DeleteProgress" | "DeleteStop" | "WindowState" | "ShowHidden" | "ShowViewer"
+            | "ThemeChanged" | "DeleteProgress" | "DeleteStop" | "WindowState" | "ShowHidden" | "ShowViewer" | "PreviewMode"
 
 export type CommanderEvent = {
     folderId?: string,
@@ -154,4 +154,10 @@ export type ShowHiddenEvent = {
 
 export type ShowViewerEvent = {
     showViewer?: boolean
+}
+
+type PreviewMode = "IMAGE" | "LOCATION" | "IMAGE_LOCATION"
+
+export type PreviewModeEvent = {
+    previewMode: PreviewMode
 }

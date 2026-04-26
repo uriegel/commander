@@ -102,6 +102,14 @@ class EventCmd
     public const string WindowState = "WindowState";
     public const string ShowHidden = "ShowHidden";
     public const string ShowViewer = "ShowViewer";
+    public const string PreviewMode = "PreviewMode";
+}
+
+class PreviewMode
+{
+    public const string IMAGE = "IMAGE";
+    public const string LOCATION = "LOCATION";
+    public const string IMAGE_LOCATION = "IMAGE_LOCATION";
 }
 
 record EventData(
@@ -111,7 +119,8 @@ record EventData(
     bool? ShowViewer = null,
     int? RequestId = null,
     ExifData[]? Exifs = null,
-    VersionInfo[]? Versions = null);
+    VersionInfo[]? Versions = null,
+    string? PreviewMode = null);
 
 record CommanderEvent(string? FolderId, string Cmd, EventData Msg);
 

@@ -1,6 +1,6 @@
 import { filter, fromEvent, map, Observable, Subscriber } from 'rxjs'
 import { ID_LEFT, ID_RIGHT } from '../components/Commander'
-import { CommanderEvent, CopyProgress, DeleteProgress, ExtendedInfos, ExtendedInfosStatus, ShowHiddenEvent, ShowViewerEvent, ThemeChangeEvent, WindowStateEvent } from './model'
+import { CommanderEvent, CopyProgress, DeleteProgress, ExtendedInfos, ExtendedInfosStatus, PreviewModeEvent, ShowHiddenEvent, ShowViewerEvent, ThemeChangeEvent, WindowStateEvent } from './model'
 
 const ws = new WebSocket("ws://localhost:8080/events")
 
@@ -28,6 +28,7 @@ export const themeChangedEvents$ = message$.pipe(filter(n => n.cmd == "ThemeChan
 export const windowStateEvents$ = message$.pipe(filter(n => n.cmd == "WindowState")).pipe(map(n => (n.msg as WindowStateEvent).maximized))
 export const showHiddenEvents$ = message$.pipe(filter(n => n.cmd == "ShowHidden")).pipe(map(n => (n.msg as ShowHiddenEvent).showHidden))
 export const showViewerEvents$ = message$.pipe(filter(n => n.cmd == "ShowViewer")).pipe(map(n => (n.msg as ShowViewerEvent).showViewer))
+export const PreviewModeEvents$ = message$.pipe(filter(n => n.cmd == "PreviewMode")).pipe(map(n => (n.msg as PreviewModeEvent).previewMode))
 const extendedInfosStartEvents$ = message$.pipe(filter(n => n.cmd == "ExtendedInfosStart"))
 const extendedInfosStopEvents$ = message$.pipe(filter(n => n.cmd == "ExtendedInfosStop"))
 const extendedInfosEvents$ = message$.pipe(filter(n => n.cmd == "ExtendedInfos"))

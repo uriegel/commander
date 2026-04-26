@@ -23,7 +23,6 @@ sudo dnf install gcc-c++ gtk3-devel
 
 TODO
 * Menu commands
-* LocationViewer
 * TrackViewer
 * All components major update to .NET 10
 * CsTools MimeTypeFromPath

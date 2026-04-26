@@ -13,7 +13,7 @@ import Statusbar from "./Statusbar"
 import './viewers/viewers.css'
 import { copyItems, onFilesDrop } from "../copy-processor"
 import MenuView from "@platform/MenuView"
-import { showHiddenEvents$, showViewerEvents$, themeChangedEvents$ } from "../requests/events"
+import { PreviewModeEvents$, showHiddenEvents$, showViewerEvents$, themeChangedEvents$ } from "../requests/events"
 import { Item } from "../requests/model"
 
 export const ID_LEFT = "left"
@@ -97,6 +97,18 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 			folderRight.current?.refresh(showHiddenRef.current)
 		})
 		return () => showHidden.unsubscribe()
+	}, [])
+
+	useEffect(() => {
+		const previewMode = PreviewModeEvents$.subscribe(mode => {
+			setViewerMode(mode == "IMAGE"
+				? "Viewer"
+				: mode == "IMAGE_LOCATION"
+				? "ViewerLocation"
+				: "Location"
+			)
+		})
+		return () => previewMode.unsubscribe()
 	}, [])
 
 	useEffect(() => {
