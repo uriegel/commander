@@ -23,8 +23,6 @@ sudo dnf install gcc-c++ gtk3-devel
 
 TODO
 * Menu commands
-* All components major update to .NET 10
-* CsTools MimeTypeFromPath
 * TrackViewer: Wrong units, old gpx tracks create exceptions
 
 * mount unmounted drive Windows
