@@ -20,7 +20,7 @@ import { DialogContext } from "web-dialog-react"
 import { FILE } from "../items-provider/file-item-provider"
 import { REMOTE } from "../items-provider/remote-provider"
 import { openWith as openWithPlatform } from '@platform/folderview'
-import { DirectoryItem, ExtendedInfos, Item, SystemError, Version } from "../requests/model"
+import { DirectoryItem, ExtendedInfos, Item, SystemError } from "../requests/model"
 
 export type FolderViewHandle = {
     id: string
@@ -124,23 +124,28 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     useEffect(() => {
         const attachExtendedInfos = (infos: ExtendedInfos) => {
-
-            console.log("Attatsche", infos)
-
-
             if (infos.requestId != requestId.current)
                 return
-            console.log("Attatsche 2", infos)
-            infos?.exifs?.filter(n => n.idx).forEach(n => {
-                const item = itemsDictionary.current.get(n.idx!) as DirectoryItem
-                if (item) {
-                    item.exifData = {
-                        dateTime: n.dateTime,
-                        longitude: n.longitude,
-                        latitude: n.latitude
+
+            infos?.exifs
+                ?.forEach(n => {
+                    const item = itemsDictionary.current.get(n.idx!) as DirectoryItem
+                    if (item) {
+                        item.exifData = {
+                            dateTime: n.dateTime,
+                            longitude: n.longitude,
+                            latitude: n.latitude
+                        }
                     }
-                }
-            })
+                })
+
+            infos?.versions
+                ?.forEach(n => {
+                    const item = itemsDictionary.current.get(n.idx) as DirectoryItem
+                    if (item) 
+                        item.fileVersion = n.version
+                })
+
             setItems(prev => {
                 const newItems = itemsProvider.current?.sort(prev, sortIndex.current, sortDescending.current)
                 return newItems || prev

@@ -54,16 +54,15 @@ export interface DirectoryItem extends Item {
     time?:          string
     exifData?:      ExifData
     isHidden?:      boolean
-    fileVersion?:   VersionInfo
+    fileVersion?:   Version
 }
 
-export type VersionInfo = {
+export type Version = {
     major: number,
     minor: number,
     build: number,
     patch: number
 }
-
 
 type UNKNOWN = "UNKNOWN"
 type ACCESS_DENIED = "ACCESS_DENIED"
@@ -84,7 +83,7 @@ export type SystemError = {
     message: string
 }
 
-type EventData = ExtendedInfos | ExifStatus| CopyProgress | Version | DeleteProgress | ThemeChangeEvent | WindowStateEvent | ShowHiddenEvent
+type EventData = ExtendedInfos | CopyProgress | Version | DeleteProgress | ThemeChangeEvent | WindowStateEvent | ShowHiddenEvent
 
 type EventCmd = "ExtendedInfos" | "ExtendedInfosStart" | "ExtendedInfosStop" | "CopyProgress" | "CopyStop" | "CopyProgressShowDialog"
             | "ThemeChanged" | "DeleteProgress" | "DeleteStop" | "WindowState" | "ShowHidden"
@@ -105,6 +104,7 @@ export type ExifData = {
 export type ExtendedInfos = {
     requestId: number,
     exifs?: ExifData[]
+    versions?: VersionInfo[]
 }
 
 export type ExtendedInfosStatus = {
@@ -127,9 +127,9 @@ export type DeleteProgress = {
     items?: string[]
 }
 
-export type Version = {
-    requestId: number,
-    //items: VersionInfoResult[]
+export type VersionInfo = {
+    idx: number,
+    version: Version
 }
 
 export type ThemeChangeEvent = {

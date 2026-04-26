@@ -1,5 +1,4 @@
 #if Windows
-
 using CsTools.Extensions;
 
 static partial class Directory
@@ -8,7 +7,6 @@ static partial class Directory
         => name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) && path != null
             ? path.AppendPath(name)
             : name.GetFileExtension();
-
 }   
 
 #endif

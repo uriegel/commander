@@ -91,7 +91,6 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 
 	useEffect(() => {
 		const showHidden = showHiddenEvents$.subscribe(show => {
-			console.log("Zeig Hidden", show)
 			showHiddenRef.current = show == true
 			setShowHidden(showHiddenRef.current)
 			folderLeft.current?.refresh(showHiddenRef.current)

@@ -43,7 +43,7 @@ static partial class Directory
         var cancellation = new CancellationTokenSource();
         if (lockers.TryGetValue(folderId, out var locker))
         {
-            var task = RetrieveExifDatas(folderId, requestId, path, items, locker, cancellation.Token);
+            var task = RetrieveExtendedInfos(folderId, requestId, path, items, locker, cancellation.Token);
             var data = new ExtendedItemsData(task, cancellation);
             extendedItemsDatas.AddOrUpdate(folderId, data, (_, v) =>
             {
@@ -53,16 +53,17 @@ static partial class Directory
         }
     }
 
-    static async Task RetrieveExifDatas(string folderId, int requestId, string path, DirectoryItem[] items, SemaphoreSlim locker, CancellationToken cancellation)
+    static async Task RetrieveExtendedInfos(string folderId, int requestId, string path, DirectoryItem[] items, SemaphoreSlim locker, CancellationToken cancellation)
     {
         await locker.WaitAsync(cancellation);
+
         var checkItems = items
                             .SelectFilterNull(n => n.Idx.HasValue ? n : null)
-                            .Where(n => n.Name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase) || n.Name.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase));
+                            .Where(FilterExifItems);
         if (!checkItems.Any())
             return;
-        Requests.SendJson(new(folderId, EventCmd.ExtendedInfosStart, new EventData { RequestId = requestId }));
 
+        Requests.SendJson(new(folderId, EventCmd.ExtendedInfosStart, new EventData { RequestId = requestId }));
         var exifItems = checkItems
                             .Where(_ => !cancellation.IsCancellationRequested)
                             .SelectFilterNull(n =>
@@ -71,10 +72,19 @@ static partial class Directory
                                 return exif != null ? new ExifData(n.Idx ?? -1, exif.DateTime, exif?.Latitude, exif?.Longitude) : null;
                             })
                             .ToArray();
+        var versionItems = FileVersion.GetVersionItems(path, items, cancellation);
+
         if (!cancellation.IsCancellationRequested)
-            Requests.SendJson(new(folderId, EventCmd.ExtendedInfos, new EventData { RequestId = requestId, Exifs = exifItems }));
+            Requests.SendJson(new(folderId, EventCmd.ExtendedInfos, new EventData { RequestId = requestId, Exifs = exifItems, Versions = versionItems }));
         Requests.SendJson(new(folderId, EventCmd.ExtendedInfosStop, new EventData { RequestId = requestId }));
     }
+
+    static bool FilterExifItems(DirectoryItem item)
+    => item.Name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
+        || item.Name.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase)
+        || item.Name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
+        || item.Name.EndsWith("png", StringComparison.OrdinalIgnoreCase);
+
 
     static readonly ConcurrentDictionary<string, ExtendedItemsData> extendedItemsDatas = [];
     static readonly ConcurrentDictionary<string, SemaphoreSlim> lockers = [];

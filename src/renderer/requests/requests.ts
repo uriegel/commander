@@ -52,4 +52,4 @@ const jsonRequest = async <TIn, TOut>(cmd: string, msg: TIn) => {
     return res as TOut
 }
 
-const jsonRequestA = async <T>(cmd: string, msg: unknown) => await fetch(`http://localhost:8080/requests/${cmd}`) as T
+const jsonRequestA = async <T>(cmd: string) => await fetch(`http://localhost:8080/requests/${cmd}`) as T

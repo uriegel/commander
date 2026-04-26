@@ -1,7 +1,6 @@
-import { filter, fromEvent, map, merge, Observable, Subscriber } from 'rxjs'
+import { filter, fromEvent, map, Observable, Subscriber } from 'rxjs'
 import { ID_LEFT, ID_RIGHT } from '../components/Commander'
-import { CommanderEvent, CopyProgress, DeleteProgress, ExifStatus, ExtendedInfos, ExtendedInfosStatus, ShowHiddenEvent, ThemeChangeEvent, Version, WindowStateEvent } from './model'
-//import { VersionInfoResult } from 'native'
+import { CommanderEvent, CopyProgress, DeleteProgress, ExtendedInfos, ExtendedInfosStatus, ShowHiddenEvent, ThemeChangeEvent, WindowStateEvent } from './model'
 
 const ws = new WebSocket("ws://localhost:8080/events")
 

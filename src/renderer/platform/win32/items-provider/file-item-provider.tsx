@@ -2,7 +2,7 @@ import Credentials, { CredentialsProps } from "@/renderer/components/dialogs/Cre
 import IconName from "@/renderer/components/IconName"
 import { IconNameType } from "@/renderer/items-provider/items"
 import { formatDateTime, formatSize } from "@/renderer/items-provider/provider"
-import { DirectoryItem, VersionInfo } from "@/renderer/requests/model"
+import { DirectoryItem, SystemError, VersionInfo } from "@/renderer/requests/model"
 import { addNetworkShare } from "@/renderer/requests/requests"
 import { retryOnErrorAsync } from "functional-extensions"
 import { DialogHandle, ResultType } from "web-dialog-react"
@@ -88,9 +88,9 @@ export const onGetItemsError = async (e: unknown, share: string, dialog?: Dialog
             return
         await addNetworkShare(share, name, password)
     }, async e => {
-        // const se = e as SystemError
-        // if (setErrorText)
-        //     setErrorText(se.message)
+        const se = e as SystemError
+        if (setErrorText)
+            setErrorText(se.message)
     }, 3)
 }
 
