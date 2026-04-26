@@ -22,8 +22,8 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Menu commands
 * TrackViewer
+* Menu commands
 * All components major update to .NET 10
 * CsTools MimeTypeFromPath
 
