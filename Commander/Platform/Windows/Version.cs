@@ -1,3 +1,4 @@
+#if Windows
 using System.Diagnostics;
 using CsTools.Extensions;
 
@@ -31,3 +32,4 @@ static class FileVersion
             ? new(idx, new(info.FileMajorPart, info.FileMinorPart, info.FileBuildPart, info.FilePrivatePart))
             : null;
 }
+#endif
