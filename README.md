@@ -22,14 +22,15 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Menu commands
-
 * TrackViewer: Wrong units, old gpx tracks create exceptions: See linux-commander uwriegel
+* Menu commands
+* Directory cmds
+* copy progress: See linux-commander uwriegel
+* remotes 
+* Windows special features
 
 * mount unmounted drive Windows
 * css as react module
-
-* copy progress: See linux-commander uwriegel
 
 * Windows Mark removable drive type "REMOVABLE"
 
