@@ -32,8 +32,6 @@ TODO
 
 * Windows Mark removable drive type "REMOVABLE"
 
-* update package.json
-
 * Unmount and release external drive
 
 * Open directories in Nautilus
