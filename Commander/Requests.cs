@@ -101,6 +101,14 @@ static class Requests
         return true;
     }
 
+    public static async Task<bool> CreateFolder(IRequest request)
+    {
+        var input = await request.DeserializeAsync<CreateFolderInput>();
+        Directory.CreateFolder(input!.Item, input.Path);
+        await request.SendJsonAsync(new NullData());
+        return true;
+    }
+    
     public static async Task<bool> GetIconFromName(IRequest request)
     {
         var subPath = request.SubPath;

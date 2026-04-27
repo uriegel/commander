@@ -84,7 +84,7 @@
         <section>
           <item>
             <attribute name="label">_Ordner anlegen</attribute>
-            <attribute name="action">app.createfolder</attribute>
+            <attribute name="action">win.createfolder</attribute>
           </item>
         </section>
         <section>

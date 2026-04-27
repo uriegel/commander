@@ -20,6 +20,11 @@ export type CmdInput = {
     cmd: string
 }
 
+export type CreateFolderInput = {
+    path: string,
+    item: string
+}
+
 export type GetItemsOutput = {
     items: Item[],
     path: string,

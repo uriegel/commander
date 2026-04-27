@@ -48,7 +48,8 @@ public static class Window
                     new("favorites", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "FAVORITES" })), "F1"),
                     new("adaptpath", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "ADAPT_PATH" })), "F9"),
                     new("selectall", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "SEL_ALL" })), "KP_Add"),
-                    new("selectnone", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "SEL_NONE" })), "KP_Subtract")
+                    new("selectnone", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "SEL_NONE" })), "KP_Subtract"),
+                    new("createfolder", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "CREATE_FOLDER" })), "F7")
                 ]);
         }
 

@@ -4,6 +4,7 @@ record GetFilesInput(string FolderId, int RequestId, string Path, bool ShowHidde
 record GetItemsFinishedInput(string FolderId);
 record CmdInput(string Cmd);
 record MountInput(string Device);
+record CreateFolderInput(string Path, string Item);
 
 record GetItemsOutput(string Path, int DirCount, int FileCount);
 record GetRootItemsOutput(RootItem[] Items, string Path, int DirCount, int FileCount) : GetItemsOutput(Path, DirCount, FileCount) { }

@@ -26,6 +26,7 @@ static class HttpServer
                     .Add(PathRoute.New("/requests/maximize").Request(Maximize))
                     .Add(PathRoute.New("/requests/restore").Request(Restore))
                     .Add(PathRoute.New("/requests/cmd").Request(Cmd))
+                    .Add(PathRoute.New("/requests/createfolder").Request(CreateFolder))
             )
             .Route(MethodRoute
                 .New(Method.Get)
