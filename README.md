@@ -22,7 +22,8 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* DeleteItems Linux
+* Navigation from menu: Ins, Shift end, Shift home...
+* DeleteItems Linux: from menu and shortcut
 * CopyItems Linux
 * CreateFolder Windows
 * DeleteItems Windows

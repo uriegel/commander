@@ -78,7 +78,7 @@
           </item>
           <item>
             <attribute name="label">_Löschen</attribute>
-            <attribute name="action">app.delete</attribute>
+            <attribute name="action">win.delete</attribute>
           </item>
         </section>
         <section>
