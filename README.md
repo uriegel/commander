@@ -26,7 +26,6 @@ TODO
 * CreateFolder Windows
 * DeleteItems Windows
 * CopyItems/MoveItems Windows
-* After menu cmd (Linux) set focus
 * copy progress: See linux-commander uwriegel
 * remotes 
 * Windows special features

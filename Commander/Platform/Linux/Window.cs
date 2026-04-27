@@ -32,27 +32,47 @@ public static class Window
                 .GetTemplateChild<ButtonHandle, ApplicationWindowHandle>("devtools")
                 ?.OnClicked(webView.ShowDevTools);
             dropdown = Handle.GetTemplateChild<DropDownHandle, ApplicationWindowHandle>("preview_mode");
-            dropdown.OnNotify("selected", pm => Requests.SendJson(new(null, EventCmd.PreviewMode, new EventData { PreviewMode = pm.GetSelected().GetPreviewMode() })));
+            dropdown.OnNotify("selected", FocusAfter1<DropDownHandle>(pm => Requests.SendJson(new(null, EventCmd.PreviewMode, new EventData { PreviewMode = pm.GetSelected().GetPreviewMode() }))));
+            webview = Handle.GetTemplateChild<WebViewHandle, ApplicationWindowHandle>("webview");
             await Task.Delay(50);
 
             Handle.AddActions(
                 [
-                    new("showhidden", false, show => Requests.SendJson(new(null, EventCmd.ShowHidden, new EventData { ShowHidden = show })), "<Ctrl>H"),
-                    new("quit", Handle.CloseWindow, "<Ctrl>Q"),
-                    new("devtools", webView.ShowDevTools, "<Ctrl><Shift>I"),
-                    new("preview", false, show => Requests.SendJson(new(null, EventCmd.ShowViewer, new EventData { ShowViewer = show })), "F3"),
-                    new("select-image", () => dropdown.SetSelected(0), "<CTRL>1"),
-                    new("select-image-location", () => dropdown.SetSelected(1), "<CTRL>2"),
-                    new("select-location", () => dropdown.SetSelected(2), "<CTRL>3"),
-                    new("refresh", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "REFRESH" })), "<CTRL>R"),
-                    new("favorites", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "FAVORITES" })), "F1"),
-                    new("adaptpath", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "ADAPT_PATH" })), "F9"),
-                    new("selectall", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "SEL_ALL" })), "KP_Add"),
-                    new("selectnone", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "SEL_NONE" })), "KP_Subtract"),
-                    new("createfolder", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "CREATE_FOLDER" })), "F7"),
-                    new("delete", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "DELETE" })), "Löschen"), // Shortcut not working!
-                    new("toggleselection", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "TOGGLE_SEL" })), "Insert") 
+                    new("showhidden", false, FocusAfter1<bool>(show => Requests.SendJson(new(null, EventCmd.ShowHidden, new EventData { ShowHidden = show }))), "<Ctrl>H"),
+                    new("quit", FocusAfter(Handle.CloseWindow), "<Ctrl>Q"),
+                    new("devtools", FocusAfter(webView.ShowDevTools), "<Ctrl><Shift>I"),
+                    new("preview", false, FocusAfter1<bool>(show => Requests.SendJson(new(null, EventCmd.ShowViewer, new EventData { ShowViewer = show }))), "F3"),
+                    new("select-image", FocusAfter(() => dropdown.SetSelected(0)), "<CTRL>1"),
+                    new("select-image-location", FocusAfter(() => dropdown.SetSelected(1)), "<CTRL>2"),
+                    new("select-location", FocusAfter(() => dropdown.SetSelected(2)), "<CTRL>3"),
+                    new("refresh", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "REFRESH" }))), "<CTRL>R"),
+                    new("favorites", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "FAVORITES" }))), "F1"),
+                    new("adaptpath", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "ADAPT_PATH" }))), "F9"),
+                    new("selectall", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "SEL_ALL" }))), "KP_Add"),
+                    new("selectnone", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "SEL_NONE" }))), "KP_Subtract"),
+                    new("createfolder", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "CREATE_FOLDER" }))), "F7"),
+                    new("delete", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "DELETE" }))), "Löschen"), // Shortcut not working!
+                    new("toggleselection", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "TOGGLE_SEL" }))), "Insert")
                 ]);
+
+            Action FocusAfter(Action action)
+            {
+                return Run;
+                void Run()
+                {
+                    action();
+                    webview?.GrabFocus();
+                };
+            }    
+            Action<T> FocusAfter1<T>(Action<T> action)
+            {
+                return Run;
+                void Run(T t)
+                {
+                    action(t);
+                    webview?.GrabFocus();
+                };
+            }    
         }
 
         protected override void OnFinalize() => Console.WriteLine("Window finalized");
@@ -67,6 +87,7 @@ public static class Window
         : PreviewMode.LOCATION;
 
     static DropDownHandle? dropdown = null;
+    static WebViewHandle? webview = null;
 
 }
 #endif
