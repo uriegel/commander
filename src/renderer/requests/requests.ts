@@ -13,7 +13,7 @@ export const copy = (sourcePath: string, targetPath: string, items: string[], to
 export const deleteRequest = (path: string, items: string[]) => jsonRequest<DeleteInput, NullData>("delete", { path, items })
 export const renameRequest = (path: string, item: string, newName: string, asCopy?: boolean) => jsonRequestA<void>("rename", { path, item, newName, asCopy })
 export const createFolderRequest = (path: string, item: string) => jsonRequest<CreateFolderInput, NullData>("createfolder", { path, item })
-export const flattenItems = (path: string, targetPath: string, items: CopyItem[]) => jsonRequest<FlattenItemInput, CopyItem[]>("flattenitems", { path, targetPath, items })
+export const flattenItems = (path: string, targetPath: string, items: CopyItem[]) => jsonRequest<FlattenItemsInput, CopyItem[]>("flattenitems", { path, targetPath, items })
 export const cancelBackground = () => jsonRequestA<void>("cancelbackground", {})
 export const extendedRenameRequest = (path: string, items: ExtendedRenameItem[]) => jsonRequestA<{success: boolean}>("extendedrename", { path, items })
 export const getItemsFinished = (folderId: string) => jsonRequest<GetItemsFinishedInput, NullData>("getitemsfinished", { folderId })

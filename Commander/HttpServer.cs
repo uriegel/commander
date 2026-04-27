@@ -28,6 +28,7 @@ static class HttpServer
                     .Add(PathRoute.New("/requests/cmd").Request(Cmd))
                     .Add(PathRoute.New("/requests/createfolder").Request(CreateFolder))
                     .Add(PathRoute.New("/requests/delete").Request(DeleteItems))
+                    .Add(PathRoute.New("/requests/flattenitems").Request(FlattenItems))
             )
             .Route(MethodRoute
                 .New(Method.Get)

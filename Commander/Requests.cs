@@ -2,6 +2,7 @@ using System.Threading.Channels;
 using WebServerLight;
 
 using CsTools.Extensions;
+using CsTools.Functional;
 static class Requests
 {
     public static async Task<bool> GetDrives(IRequest request)
@@ -116,7 +117,15 @@ static class Requests
         await request.SendJsonAsync(new NullData());
         return true;
     }
-        
+
+    public static async Task<bool> FlattenItems(IRequest request)
+    {
+        var input = await request.DeserializeAsync<FlattenItemsInput>();
+        var result = Directory.FlattenItems(input!);
+        await request.SendJsonAsync(result);
+        return true;
+    }
+            
     public static async Task<bool> GetIconFromName(IRequest request)
     {
         var subPath = request.SubPath;

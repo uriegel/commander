@@ -30,7 +30,7 @@ export type DeleteInput = {
     items: string[]
 }
 
-export type FlattenItemInput = {
+export type FlattenItemsInput = {
     path: string,
     targetPath: string,
     items: CopyItem[]
