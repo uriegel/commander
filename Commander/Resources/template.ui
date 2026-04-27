@@ -98,6 +98,12 @@
         <attribute name="label">_Navigation</attribute>
         <section>
           <item>
+            <attribute name="label">Selektion _wechseln</attribute>
+            <attribute name="action">win.toggleselection</attribute>
+          </item>
+        </section>
+        <section>
+          <item>
             <attribute name="label">_Favoriten</attribute>
             <attribute name="action">win.favorites</attribute>
           </item>

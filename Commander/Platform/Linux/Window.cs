@@ -50,7 +50,8 @@ public static class Window
                     new("selectall", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "SEL_ALL" })), "KP_Add"),
                     new("selectnone", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "SEL_NONE" })), "KP_Subtract"),
                     new("createfolder", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "CREATE_FOLDER" })), "F7"),
-                    new("delete", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "DELETE" })), "Löschen") // Shortcut not working!
+                    new("delete", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "DELETE" })), "Löschen"), // Shortcut not working!
+                    new("toggleselection", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "TOGGLE_SEL" })), "Insert") 
                 ]);
         }
 
