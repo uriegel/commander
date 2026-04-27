@@ -22,7 +22,11 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Directory cmds
+* DeleteItems Linux
+* CopyItems Linux
+* CreateFolder Windows
+* DeleteItems Windows
+* CopyItems Windows
 * After menu cmd (Linux) set focus
 * copy progress: See linux-commander uwriegel
 * remotes 
