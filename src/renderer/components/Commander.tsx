@@ -13,7 +13,7 @@ import Statusbar from "./Statusbar"
 import './viewers/viewers.css'
 import { copyItems, onFilesDrop } from "../copy-processor"
 import MenuView from "@platform/MenuView"
-import { PreviewModeEvents$, showHiddenEvents$, showViewerEvents$, themeChangedEvents$ } from "../requests/events"
+import { cmdEvents$, PreviewModeEvents$, showHiddenEvents$, showViewerEvents$, themeChangedEvents$ } from "../requests/events"
 import { Item } from "../requests/model"
 
 export const ID_LEFT = "left"
@@ -116,6 +116,11 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 		return () => showViewer.unsubscribe()
 	}, [])
 
+	useEffect(() => {
+		const cmdEvents = cmdEvents$.subscribe(cmd => onMenuAction(cmd))
+		return () => cmdEvents.unsubscribe()
+	}, [])
+	
 	const dialog = useContext(DialogContext)
 
 	const showViewerRef = useRef(false)

@@ -41,7 +41,7 @@
     <section>
       <item>
         <attribute name="label">_Aktualisieren</attribute>
-        <attribute name="action">app.refresh</attribute>
+        <attribute name="action">win.refresh</attribute>
       </item>
       <item>
         <attribute name="label">_Versteckte Dateien</attribute>
@@ -99,11 +99,11 @@
         <section>
           <item>
             <attribute name="label">_Favoriten</attribute>
-            <attribute name="action">app.favorites</attribute>
+            <attribute name="action">win.favorites</attribute>
           </item>
           <item>
             <attribute name="label">_Gleichen Ordner öffnen</attribute>
-            <attribute name="action">app.adaptpath</attribute>
+            <attribute name="action">win.adaptpath</attribute>
           </item>
         </section>
       </submenu>
@@ -112,11 +112,11 @@
         <section>
           <item>
             <attribute name="label">_Alles</attribute>
-            <attribute name="action">app.selectall</attribute>
+            <attribute name="action">win.selectall</attribute>
           </item>
           <item>
             <attribute name="label">_Selektion entfernen</attribute>
-            <attribute name="action">app.selectnone</attribute>
+            <attribute name="action">win.selectnone</attribute>
           </item>
         </section>
       </submenu>

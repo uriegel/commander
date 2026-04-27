@@ -44,6 +44,11 @@ public static class Window
                     new("select-image", () => dropdown.SetSelected(0), "<CTRL>1"),
                     new("select-image-location", () => dropdown.SetSelected(1), "<CTRL>2"),
                     new("select-location", () => dropdown.SetSelected(2), "<CTRL>3"),
+                    new("refresh", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "REFRESH" })), "<CTRL>R"),
+                    new("favorites", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "FAVORITES" })), "F1"),
+                    new("adaptpath", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "ADAPT_PATH" })), "F9"),
+                    new("selectall", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "SEL_ALL" })), "KP_Add"),
+                    new("selectnone", () => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "SEL_NONE" })), "KP_Subtract")
                 ]);
         }
 

@@ -1,6 +1,6 @@
 import { filter, fromEvent, map, Observable, Subscriber } from 'rxjs'
 import { ID_LEFT, ID_RIGHT } from '../components/Commander'
-import { CommanderEvent, CopyProgress, DeleteProgress, ExtendedInfos, ExtendedInfosStatus, PreviewModeEvent, ShowHiddenEvent, ShowViewerEvent, ThemeChangeEvent, WindowStateEvent } from './model'
+import { CmdEvent, CommanderEvent, CopyProgress, DeleteProgress, ExtendedInfos, ExtendedInfosStatus, PreviewModeEvent, ShowHiddenEvent, ShowViewerEvent, ThemeChangeEvent, WindowStateEvent } from './model'
 
 const ws = new WebSocket("ws://localhost:8080/events")
 
@@ -24,6 +24,7 @@ export const deleteProgressEvents$ = message$.pipe(filter(n => n.cmd == "DeleteP
 //export const copyProgressShowDialogEvents$ = message$.pipe(filter(n => n.cmd == "CopyProgressShowDialog"))
 export const deleteStopEvents$ = message$.pipe(filter(n => n.cmd == "DeleteStop"))
 export const copyStopEvents$ = message$.pipe(filter(n => n.cmd == "CopyStop"))
+export const cmdEvents$ = message$.pipe(filter(n => n.cmd == "Cmd")).pipe(map(n => (n.msg as CmdEvent).cmd))
 export const themeChangedEvents$ = message$.pipe(filter(n => n.cmd == "ThemeChanged")).pipe(map(n => (n.msg as ThemeChangeEvent).accentColor))
 export const windowStateEvents$ = message$.pipe(filter(n => n.cmd == "WindowState")).pipe(map(n => (n.msg as WindowStateEvent).maximized))
 export const showHiddenEvents$ = message$.pipe(filter(n => n.cmd == "ShowHidden")).pipe(map(n => (n.msg as ShowHiddenEvent).showHidden))

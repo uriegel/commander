@@ -123,6 +123,7 @@ class EventCmd
     public const string ShowHidden = "ShowHidden";
     public const string ShowViewer = "ShowViewer";
     public const string PreviewMode = "PreviewMode";
+    public const string Cmd = "Cmd";
 }
 
 class PreviewMode
@@ -140,7 +141,8 @@ record EventData(
     int? RequestId = null,
     ExifData[]? Exifs = null,
     VersionInfo[]? Versions = null,
-    string? PreviewMode = null);
+    string? PreviewMode = null,
+    string? Cmd = null);
 
 record CommanderEvent(string? FolderId, string Cmd, EventData Msg);
 

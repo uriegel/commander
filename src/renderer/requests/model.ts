@@ -91,10 +91,10 @@ export type SystemError = {
     message: string
 }
 
-type EventData = ExtendedInfos | CopyProgress | Version | DeleteProgress | ThemeChangeEvent | WindowStateEvent | ShowHiddenEvent | ShowViewerEvent | PreviewModeEvent
+type EventData = ExtendedInfos | CopyProgress | Version | DeleteProgress | ThemeChangeEvent | WindowStateEvent | ShowHiddenEvent | ShowViewerEvent | PreviewModeEvent | CmdEvent
 
 type EventCmd = "ExtendedInfos" | "ExtendedInfosStart" | "ExtendedInfosStop" | "CopyProgress" | "CopyStop" | "CopyProgressShowDialog"
-            | "ThemeChanged" | "DeleteProgress" | "DeleteStop" | "WindowState" | "ShowHidden" | "ShowViewer" | "PreviewMode"
+            | "ThemeChanged" | "DeleteProgress" | "DeleteStop" | "WindowState" | "ShowHidden" | "ShowViewer" | "PreviewMode" | "Cmd"
 
 export type CommanderEvent = {
     folderId?: string,
@@ -160,6 +160,10 @@ type PreviewMode = "IMAGE" | "LOCATION" | "IMAGE_LOCATION"
 
 export type PreviewModeEvent = {
     previewMode: PreviewMode
+}
+
+export type CmdEvent = {
+    cmd: string
 }
 
 export type GpxPoint = {

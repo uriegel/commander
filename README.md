@@ -22,8 +22,8 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Menu commands
 * Directory cmds
+* After menu cmd (Linux) set focus
 * copy progress: See linux-commander uwriegel
 * remotes 
 * Windows special features
