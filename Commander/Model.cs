@@ -77,9 +77,9 @@ record GpxTrack(
     int Duration,
     float AverageSpeed,
     int AverageHeartRate,
-    GpxPoint[]? TrackPoints
+    GpxPoint[]? TrackPoints,
+    string Date
 );
-//    date: string
 
 record GpxPoint(
     double Latitude,

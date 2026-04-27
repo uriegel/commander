@@ -46,7 +46,7 @@ const TrackViewer = ({ path }: TrackViewerProps) => {
                     const minLat = trk.reduce((prev, curr) => Math.min(prev, curr[0]), trk[0][0])
                     const maxLng = trk.reduce((prev, curr) => Math.max(prev, curr[1]), trk[0][1])
                     const minLng = trk.reduce((prev, curr) => Math.min(prev, curr[1]), trk[0][1])
-                    setMaxVelocity((track.trackPoints?.max(t => t.velocity ?? 0) ?? 0) * 3.6)
+                    setMaxVelocity((track.trackPoints?.max(t => t.velocity ?? 0) ?? 0))
                     const mhr = track.trackPoints?.max(t => t.heartrate ?? 0) ?? 0
                     setMaxHeartRate(mhr != -1 ? mhr : 0)
                     const ahr = Math.floor(track.trackPoints?.filter(n => n.heartrate != -1 && n.heartrate != 0)?.average(t => t.heartrate))
@@ -67,7 +67,7 @@ const TrackViewer = ({ path }: TrackViewerProps) => {
     const onPosition = (pos: number) => {
         setPosition(pos)
         setHeartRate(trackPoints[pos].heartrate ?? 0)
-        setVelocity((trackPoints[pos].velocity ?? 0) * 3.6)
+        setVelocity((trackPoints[pos].velocity ?? 0))
     }
 
     const onMaxHeartRate = () => {

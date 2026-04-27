@@ -1,9 +1,7 @@
+using System.Xml;
 using System.Xml.Serialization;
 using CsTools.Functional;
-using CsTools.HttpRequest;
-using static CsTools.Core;
 
-//[XmlRoot(ElementName = "gpx", Namespace = "http://www.topografix.com/GPX/1/0")]
 [XmlRoot(ElementName = "gpx")]
 public class XmlTrackInfo
 {
@@ -64,17 +62,25 @@ public class XmlTrackPoint
     public int? HeartRate;
 }
 
+public class IgnoreNamespaceXmlTextReader : XmlTextReader
+{
+    public IgnoreNamespaceXmlTextReader(TextReader reader) : base(reader) { }
 
-static class TrackInfo {
-    public static GpxTrack Get(string trkPath) 
+    public override string NamespaceURI => "";
+}
+
+static class TrackInfo
+{
+    public static GpxTrack Get(string trkPath)
     {
         var serializer = new XmlSerializer(typeof(XmlTrackInfo));
         using var stream = File.OpenRead(trkPath);
-        var xmlTrackInfo = serializer.Deserialize(stream) as XmlTrackInfo;
+        using var reader = new IgnoreNamespaceXmlTextReader(new StreamReader(stream));
+        var xmlTrackInfo = serializer.Deserialize(reader) as XmlTrackInfo;
         var old = xmlTrackInfo?.Track?.Info?.Date != null && DateTime.Parse(xmlTrackInfo?.Track?.Info?.Date!) < new DateTime(2021, 1, 1);
         var trackInfo = new GpxTrack(
-            xmlTrackInfo?.Track?.Name, 
-            xmlTrackInfo?.Track?.Description, 
+            xmlTrackInfo?.Track?.Name,
+            xmlTrackInfo?.Track?.Description,
             xmlTrackInfo?.Track?.Info?.Distance ?? 0,
             xmlTrackInfo?.Track?.Info?.Duration ?? 0,
             xmlTrackInfo?.Track?.Info?.AverageSpeed ?? 0,
@@ -88,8 +94,9 @@ static class TrackInfo {
                 ?.Track
                 ?.TrackSegment
                 ?.TrackPoints
-                ?.Select(n => new GpxPoint(n.Latitude, n.Longitude, n.Elevation, n.Time, n.HeartRate ?? 0, old ? n.Speed ?? 0 : (n.Speed  ?? 0) * 3.6f))
-                    .ToArray());
+                ?.Select(n => new GpxPoint(n.Latitude, n.Longitude, n.Elevation, n.Time, n.HeartRate ?? 0, old ? n.Speed ?? 0 : (n.Speed ?? 0) * 3.6f))
+                    .ToArray(),
+            xmlTrackInfo?.Track?.Info?.Date ?? "");
         return trackInfo;
     }
 }

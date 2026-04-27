@@ -22,7 +22,6 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* TrackViewer: Wrong units, old gpx tracks create exceptions: See linux-commander uwriegel
 * Menu commands
 * Directory cmds
 * copy progress: See linux-commander uwriegel
