@@ -23,11 +23,10 @@ sudo dnf install gcc-c++ gtk3-devel
 
 TODO
 * Navigation from menu: Ins, Shift end, Shift home...
-* DeleteItems Linux: from menu and shortcut
-* CopyItems Linux
+* CopyItems/MoveItems Linux
 * CreateFolder Windows
 * DeleteItems Windows
-* CopyItems Windows
+* CopyItems/MoveItems Windows
 * After menu cmd (Linux) set focus
 * copy progress: See linux-commander uwriegel
 * remotes 

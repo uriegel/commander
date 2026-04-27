@@ -1,6 +1,6 @@
 import { ExtendedRenameItem } from "../items-provider/items"
 import { CopyItem } from "../copy-processor"
-import { CmdInput, CreateFolderInput, DirectoryItem, GetAccentColorOutput, GetFilesInput, GetItemsFinishedInput, GetItemsOutput, MountInput, MountOutput, NullData, SystemError } from "./model"
+import { CmdInput, CreateFolderInput, DeleteInput, DirectoryItem, GetAccentColorOutput, GetFilesInput, GetItemsFinishedInput, GetItemsOutput, MountInput, MountOutput, NullData, SystemError } from "./model"
 
 export const cmdRequest = (cmd: string) => jsonRequest<CmdInput, NullData>("cmd", { cmd })
 export const getDrives = () => jsonRequest<NullData, GetItemsOutput>("getdrives", {})
@@ -10,7 +10,7 @@ export const onEnter = (name: string, path: string, openWith?: boolean, showProp
 export const getFiles = (folderId: string, requestId: number, path: string, showHidden?: boolean) => jsonRequest<GetFilesInput, GetItemsOutput>("getfiles", { folderId, requestId, path, showHidden })
 export const copy = (sourcePath: string, targetPath: string, items: string[], totalSize: number, move: boolean) => jsonRequestA<void>(
     "copy", { sourcePath, targetPath, items, totalSize, move })
-export const deleteRequest = (path: string, items: string[]) => jsonRequestA<void>("delete", { path, items })
+export const deleteRequest = (path: string, items: string[]) => jsonRequest<DeleteInput, NullData>("delete", { path, items })
 export const renameRequest = (path: string, item: string, newName: string, asCopy?: boolean) => jsonRequestA<void>("rename", { path, item, newName, asCopy })
 export const createFolderRequest = (path: string, item: string) => jsonRequest<CreateFolderInput, NullData>("createfolder", { path, item })
 export const flattenItems = (path: string, targetPath: string, items: CopyItem[]) => jsonRequestA<CopyItem[]>("flattenitems", { path, targetPath, items })

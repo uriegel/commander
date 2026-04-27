@@ -25,6 +25,11 @@ export type CreateFolderInput = {
     item: string
 }
 
+export type DeleteInput = {
+    path: string,
+    items: string[]
+}
+
 export type GetItemsOutput = {
     items: Item[],
     path: string,

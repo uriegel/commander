@@ -108,7 +108,15 @@ static class Requests
         await request.SendJsonAsync(new NullData());
         return true;
     }
-    
+
+    public static async Task<bool> DeleteItems(IRequest request)
+    {
+        var input = await request.DeserializeAsync<DeleteInput>();
+        await Directory.DeleteItems(input!.Items, input.Path);
+        await request.SendJsonAsync(new NullData());
+        return true;
+    }
+        
     public static async Task<bool> GetIconFromName(IRequest request)
     {
         var subPath = request.SubPath;
