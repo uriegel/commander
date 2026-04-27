@@ -2,7 +2,7 @@ import { JSX } from "react"
 import { ViewerMode } from "../components/Menu"
 
 export interface MenuViewProps {
-    onMenuAction: (cmd: string) => Promise<void>
+    onMenuAction: (cmd: string, dialog: DialogHandle) => Promise<void>
     showHidden: boolean
     showViewer: boolean
     viewerMode: ViewerMode

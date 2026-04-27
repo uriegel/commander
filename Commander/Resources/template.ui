@@ -70,11 +70,11 @@
         <section>
           <item>
             <attribute name="label">_Kopieren</attribute>
-            <attribute name="action">app.copy</attribute>
+            <attribute name="action">win.copy</attribute>
           </item>
           <item> 
             <attribute name="label">_Verschieben</attribute>
-            <attribute name="action">app.move</attribute>
+            <attribute name="action">win.move</attribute>
           </item>
           <item>
             <attribute name="label">_Löschen</attribute>

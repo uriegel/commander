@@ -9,16 +9,6 @@ import { canCopy } from '@platform/copy-processor'
 import { REMOTE } from "./items-provider/remote-provider"
 import { DirectoryItem, SystemError } from "./requests/model"
 
-export type CopyItem = {
-    name:           string
-    isDirectory?:   boolean    
-    iconPath?:      string
-    time?:          string
-    size?:          number
-    targetTime?:    string
-    targetSize?:    number
-}
-
 export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFolder: FolderViewHandle | null,
         move: boolean, dialog: DialogHandle, setErrorText: (txt: string) => void, backgroundAction: boolean) => {
     if (!canCopy(backgroundAction)) {
@@ -39,10 +29,12 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
     const targetAppendPath = targetFolder?.getAppendPath()
     if (sourceFolder == null || targetFolder == null || sourceAppendPath == null || targetAppendPath == null)
         return
+
     await Promise.all([
         copyProcessor.refresh(sourceFolder),
         copyProcessor.refresh(targetFolder)
     ])
+
     let items = makeCopyItems(sourceFolder?.getSelectedItems() as DirectoryItem[], targetFolder.getItems() as DirectoryItem[])
     if (items.length == 0)
         return
@@ -55,11 +47,9 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
         if (!move && items.findIndex(n => n.isDirectory) != -1)
             items = await flattenItems(sourceFolder.getPath(), targetFolder.getPath(), items)
         const copyConflicts = items.filter(n => n.targetTime)
-
         const defNo = copyConflicts.length > 0
             && copyConflicts
                 .findIndex(n => (n.time?.substring(0, 16) ?? "") < (n.targetTime?.substring(0, 16) ?? "")) != -1
- 
         const res = await dialog.show({
             text: copyConflicts.length ? `Einträge beim ${move ? "Verschieben" : "Kopieren"} überschreiben?` : `Möchtest Du ${copyText} ${move ? "verschieben" : "kopieren"}?`,
             slide: sourceFolder.id == ID_LEFT ? Slide.Left : Slide.Right,

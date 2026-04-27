@@ -8,7 +8,7 @@ import FileViewer from "./viewers/FileViewer"
 import TrackViewer from "./viewers/TrackViewer"
 import FolderView, { FolderViewHandle, ItemCount } from "./FolderView"
 import { closeWindow, cmdRequest, getAccentColor } from "../requests/requests"
-import { DialogContext } from "web-dialog-react"
+import { DialogContext, DialogHandle } from "web-dialog-react"
 import Statusbar from "./Statusbar"
 import './viewers/viewers.css'
 import { copyItems, onFilesDrop } from "../copy-processor"
@@ -116,17 +116,12 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 		return () => showViewer.unsubscribe()
 	}, [])
 
-	useEffect(() => {
-		const cmdEvents = cmdEvents$.subscribe(cmd => onMenuAction(cmd))
-		return () => cmdEvents.unsubscribe()
-	}, [])
-	
 	const dialog = useContext(DialogContext)
 
 	const showViewerRef = useRef(false)
 	const [fullscreen, setFullscreen] = useState(false)
 
-    const onMenuAction = useCallback(async (key: string) => {
+    const onMenuAction = useCallback(async (key: string, dialog: DialogHandle) => {
         switch (key) {
             case "REFRESH":
                 getActiveFolder()?.refresh()
@@ -183,7 +178,12 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 				closeWindow()
 				break
 		}
-	}, [getActiveFolder, dialog])
+	}, [getActiveFolder])
+
+	useEffect(() => {
+		const cmdEvents = cmdEvents$.subscribe(cmd => onMenuAction(cmd, dialog))
+		return () => cmdEvents.unsubscribe()
+	}, [dialog, onMenuAction])
 
 	const toggleShowHiddenAndRefresh = () => {
 		showHiddenRef.current = !showHiddenRef.current

@@ -30,6 +30,12 @@ export type DeleteInput = {
     items: string[]
 }
 
+export type FlattenItemInput = {
+    path: string,
+    targetPath: string,
+    items: CopyItem[]
+}
+
 export type GetItemsOutput = {
     items: Item[],
     path: string,
@@ -80,6 +86,16 @@ export type Version = {
     minor: number,
     build: number,
     patch: number
+}
+
+export type CopyItem = {
+    name:           string
+    isDirectory?:   boolean    
+    iconPath?:      string
+    time?:          string
+    size?:          number
+    targetTime?:    string
+    targetSize?:    number
 }
 
 type UNKNOWN = "UNKNOWN"
