@@ -7,7 +7,7 @@ import { getSelectedItemsText } from "./items-provider/provider"
 import CopyConflicts from "./components/dialogs/CopyConflicts"
 import { canCopy } from '@platform/copy-processor'
 import { REMOTE } from "./items-provider/remote-provider"
-import { DirectoryItem, SystemError } from "./requests/model"
+import { CopyItem, DirectoryItem, SystemError } from "./requests/model"
 
 export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFolder: FolderViewHandle | null,
         move: boolean, dialog: DialogHandle, setErrorText: (txt: string) => void, backgroundAction: boolean) => {
@@ -35,7 +35,7 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
         copyProcessor.refresh(targetFolder)
     ])
 
-    let items = makeCopyItems(sourceFolder?.getSelectedItems() as DirectoryItem[], targetFolder.getItems() as DirectoryItem[])
+    const items = makeCopyItems(sourceFolder?.getSelectedItems() as DirectoryItem[], targetFolder.getItems() as DirectoryItem[])
     if (items.length == 0)
         return
 
@@ -44,9 +44,10 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
 
     try {
         const copyText = getSelectedItemsText(items)
-        if (!move && items.findIndex(n => n.isDirectory) != -1)
-            items = await flattenItems(sourceFolder.getPath(), targetFolder.getPath(), items)
-        const copyConflicts = items.filter(n => n.targetTime)
+        const flatCopyItems = !move && items.findIndex(n => n.isDirectory) != -1
+            ? await flattenItems(sourceFolder.getPath(), targetFolder.getPath(), items)
+            : items
+        const copyConflicts = flatCopyItems.filter(n => n.targetTime)
         const defNo = copyConflicts.length > 0
             && copyConflicts
                 .findIndex(n => (n.time?.substring(0, 16) ?? "") < (n.targetTime?.substring(0, 16) ?? "")) != -1
@@ -66,7 +67,7 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
         if (res.result == ResultType.Cancel)
             return
 
-        const itemsToCopy = res.result == ResultType.No ? items.diff(copyConflicts) : items
+        const itemsToCopy = res.result == ResultType.No ? flatCopyItems.diff(copyConflicts) : flatCopyItems
         await copyProcessor.copy(sourceFolder.getPath(), targetFolder.getPath(), itemsToCopy.map(n => n.name), itemsToCopy.reduce((previousValue, current) => (current.size || 0) + previousValue, 0),  move)
         targetFolder.refresh()
         if (move)
@@ -151,7 +152,9 @@ const makeCopyItems = (items: DirectoryItem[], targetItems: DirectoryItem[]): Co
     const targetItemsDictionary = new Map(targetItems.map(n => [n.name, n]))    
     return items.map(n => {
         const target = targetItemsDictionary.get(n.name)
-        return target ? {...n, targetSize: target.size, targetTime: target.time} : {...n}
+        return target
+            ? { ...n, isDirectory: n.isDirectory == true, targetSize: target.size, targetTime: target.time }
+            : { ...n, isDirectory: n.isDirectory == true }
     })
 }
 

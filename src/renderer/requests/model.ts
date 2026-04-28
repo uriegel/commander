@@ -98,6 +98,16 @@ export type Version = {
 
 export type CopyItem = {
     name:           string
+    isDirectory:    boolean
+    iconPath?:      string
+    time?:          string
+    size?:          number
+    targetTime?:    string
+    targetSize?:    number
+}
+
+export type FlatCopyItem = {
+    name:           string
     iconPath?:      string
     time?:          string
     size?:          number

@@ -24,7 +24,7 @@ static partial class Directory
         }
     }
 
-    public static CopyItem[] FlattenItems(FlattenItemsInput input)
+    public static FlatCopyItem[] FlattenItems(FlattenItemsInput input)
     {
         return [
             .. input.Items.FlattenTree(Resolver, CreateCopyItemInfo, IsDirectory, new CancellationTokenSource(TimeSpan.FromSeconds(10)).Token, AppendSubPath, (string?)null)
@@ -46,25 +46,34 @@ static partial class Directory
             return fileInfos.Concat(dirInfos);
         }
 
-        CopyItem CreateCopyItemInfo(CopyItem copyItem, string? subPath)
+        FlatCopyItem CreateCopyItemInfo(CopyItem copyItem, string? subPath)
         {
             var targetFile = input.TargetPath.AppendPath(subPath).AppendPath(copyItem.Name);
             var fi = new FileInfo(targetFile);
-            return new CopyItem(
+            return new FlatCopyItem(
                 subPath.AppendPath(copyItem.Name),
-                false,
                 GetIconPath(copyItem.Name, null),
                 copyItem.Time,
                 copyItem.Size,
                 fi.Exists ? fi.LastWriteTime : null,
                 fi.Exists ? fi.Length : null);
         }
-        
+
         static bool IsDirectory(CopyItem item, string? subPath) => item.IsDirectory == true;
 
         static string AppendSubPath(string? initialPath, string? subPath) => initialPath.AppendPath(subPath);
     }
 
 }   
+
+record MetaCopyItem(
+    string Name,
+    bool IsDirectory,
+    string? IconPath,
+    DateTime? Time,
+    long? Size,
+    DateTime? TargetTime,
+    long? TargetSize
+);
 
 #endif

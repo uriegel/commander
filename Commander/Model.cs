@@ -104,6 +104,15 @@ record CopyItem(
     long? TargetSize
 );
 
+record FlatCopyItem(
+    string Name,
+    string? IconPath,
+    DateTime? Time,
+    long? Size,
+    DateTime? TargetTime,
+    long? TargetSize
+);
+
 static class ErrorType
 {
     public const string Unknown = "UNKNOWN";

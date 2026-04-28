@@ -22,12 +22,11 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* FlattenItems: eliminate IsDirectory, use intermediate record for meta results
 * CopyItems/MoveItems Linux
+* copy progress: See linux-commander uwriegel
 * CreateFolder Windows
 * DeleteItems Windows
 * CopyItems/MoveItems Windows
-* copy progress: See linux-commander uwriegel
 * remotes 
 * Windows special features
 
