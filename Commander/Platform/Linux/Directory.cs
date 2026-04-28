@@ -63,7 +63,6 @@ static partial class Directory
 
         static string AppendSubPath(string? initialPath, string? subPath) => initialPath.AppendPath(subPath);
     }
-
 }   
 
 record MetaCopyItem(

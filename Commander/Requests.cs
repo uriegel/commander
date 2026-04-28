@@ -129,7 +129,7 @@ static class Requests
     public static async Task<bool> Copy(IRequest request)
     {
         var input = await request.DeserializeAsync<CopyInput>();
-        //var result = Directory.FlattenItems(input!);
+        await Directory.Copy(input!);
         await request.SendJsonAsync(new NullData());
         return true;
     }
