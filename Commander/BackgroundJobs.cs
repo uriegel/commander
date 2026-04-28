@@ -2,7 +2,7 @@ using System.Threading.Channels;
 
 static class BackgroundJobs
 {
-    public static bool IsIdle() => !jobs.Reader.TryPeek(out var _);
+    public static bool IsIdle() => !jobs.Reader.TryPeek(out var _) && inProcess.CurrentCount == 1;
 
     public async static Task AddJobAsync(CopyInput input)
     {
@@ -12,6 +12,7 @@ static class BackgroundJobs
 
     static BackgroundJobs()
     {
+        inProcess = new(1, 1);
         jobs = Channel.CreateUnbounded<JobBase>(new UnboundedChannelOptions
         {
             SingleReader = true,
@@ -23,14 +24,21 @@ static class BackgroundJobs
 
     static async Task RunProcessing()
     {
-        try
+        await foreach (var n in jobs.Reader.ReadAllAsync())
         {
-            await foreach (var n in jobs.Reader.ReadAllAsync())
+            await inProcess.WaitAsync();
+            try
+            {
                 await Process(n);
-        }
-        catch (Exception e)
-        {
-            Console.Error.WriteLine($"Exception in background processing: {e}");
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine($"Exception in background processing: {e}");
+            }
+            finally
+            {
+                inProcess.Release();
+            }
         }
     }
     
@@ -56,6 +64,7 @@ static class BackgroundJobs
 
     static readonly Channel<JobBase> jobs;
     static readonly Task jobProcessorTask;
+    static readonly SemaphoreSlim inProcess;
 }
 
 record JobBase(string SourcePath, string TargetPath, CopyFile Item, bool Move);
