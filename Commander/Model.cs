@@ -6,7 +6,7 @@ record CmdInput(string Cmd);
 record MountInput(string Device);
 record CreateFolderInput(string Path, string Item);
 record DeleteInput(string Path, string[] Items);
-record FlattenItemsInput(string Path, string targetPath, CopyItem[] Items);
+record FlattenItemsInput(string Path, string TargetPath, CopyItem[] Items);
 
 record GetItemsOutput(string Path, int DirCount, int FileCount);
 record GetRootItemsOutput(RootItem[] Items, string Path, int DirCount, int FileCount) : GetItemsOutput(Path, DirCount, FileCount) { }
