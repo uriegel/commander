@@ -8,7 +8,10 @@ namespace Commander.Platform.Linux;
 public static class Window
 {
     public static void Register(ApplicationHandle app, WebWindowNetCore.WebView webView, string resourceTemplate)
-        => app.SubClass(new CustomWindowClass(webView, resourceTemplate));
+    {
+        app.SubClass(new CustomWindowClass(webView, resourceTemplate));
+        app.SubClass(ProgressControl.Subclass());
+    }
     
     class CustomWindowClass(WebWindowNetCore.WebView webView, string resourceTemplate)
         : SubClass<ApplicationWindowHandle>(GTypeEnum.ApplicationWindow, "CustomWindow", p => new CustomWindow(p, webView))

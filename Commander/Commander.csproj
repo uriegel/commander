@@ -51,6 +51,9 @@
     <EmbeddedResource Include="./Resources/template.ui">
       <LogicalName>template</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/progresscontrol.ui">
+      <LogicalName>progress-control</LogicalName>
+    </EmbeddedResource>
   </ItemGroup> 
   <ItemGroup Condition="'$(IsWindows)'=='true'">
     <EmbeddedResource Include="Resources/Kirk.ico">

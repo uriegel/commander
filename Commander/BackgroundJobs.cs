@@ -46,6 +46,8 @@ static class BackgroundJobs
     {
         try
         {
+            if (ProgressContext.Instance.CopyProgress == null)
+                ProgressContext.Instance.CopyProgress = new CopyProgress();
             await Directory.CopyAsync(job);
             // job.Cancellation?.ThrowIfCancellationRequested();
 
@@ -53,11 +55,17 @@ static class BackgroundJobs
         }
         catch (OperationCanceledException)
         {
-//            job.Completion.TrySetCanceled();
+            //            job.Completion.TrySetCanceled();
         }
         catch (Exception)
         {
 //            job.Completion.TrySetException(e);
+        }
+        finally
+        {
+            if (!jobs.Reader.TryPeek(out var _))
+                ProgressContext.Instance.CopyProgress = null;
+
         }
     }
 
