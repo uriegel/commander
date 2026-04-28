@@ -11,6 +11,7 @@ public static class Window
     {
         app.SubClass(new CustomWindowClass(webView, resourceTemplate));
         app.SubClass(ProgressControl.Subclass());
+        app.SubClass(ProgressSpinner.Subclass());
     }
     
     class CustomWindowClass(WebWindowNetCore.WebView webView, string resourceTemplate)

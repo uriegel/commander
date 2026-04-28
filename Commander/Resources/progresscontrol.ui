@@ -146,8 +146,8 @@
         </child>
         </object>
     </property>
-    <!-- <child>
+    <child>
         <object class="ProgressSpinner" id="progress_spinner"/>
-    </child>                   -->
+    </child>                   
     </object>
 </interface>
