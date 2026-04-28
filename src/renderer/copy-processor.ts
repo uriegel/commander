@@ -7,7 +7,7 @@ import { getSelectedItemsText } from "./items-provider/provider"
 import CopyConflicts from "./components/dialogs/CopyConflicts"
 import { canCopy } from '@platform/copy-processor'
 import { REMOTE } from "./items-provider/remote-provider"
-import { CopyItem, DirectoryItem, SystemError } from "./requests/model"
+import { CopyFile, CopyItem, DirectoryItem, NullData, SystemError } from "./requests/model"
 
 export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFolder: FolderViewHandle | null,
         move: boolean, dialog: DialogHandle, setErrorText: (txt: string) => void, backgroundAction: boolean) => {
@@ -68,7 +68,7 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
             return
 
         const itemsToCopy = res.result == ResultType.No ? flatCopyItems.diff(copyConflicts) : flatCopyItems
-        await copyProcessor.copy(sourceFolder.getPath(), targetFolder.getPath(), itemsToCopy.map(n => n.name), itemsToCopy.reduce((previousValue, current) => (current.size || 0) + previousValue, 0),  move)
+        await copyProcessor.copy(sourceFolder.getPath(), targetFolder.getPath(), itemsToCopy.map(n => ({ name: n.name, size: n.size ?? 0 })), move)
         targetFolder.refresh()
         if (move)
             sourceFolder.refresh()
@@ -106,7 +106,7 @@ export const onFilesDrop = async (fileList: FileList, targetFolder: FolderViewHa
         size: f.size,
         time: (new Date(f.lastModified)).toISOString()
     } as DirectoryItem)))
-    let items = makeCopyItems(files, targetFolder.getItems() as DirectoryItem[])
+    const items = makeCopyItems(files, targetFolder.getItems() as DirectoryItem[])
     if (items.length == 0)
         return
 
@@ -115,9 +115,10 @@ export const onFilesDrop = async (fileList: FileList, targetFolder: FolderViewHa
 
     try {
         const copyText = getSelectedItemsText(items)
-        if (!move && items.findIndex(n => n.isDirectory) != -1)
-            items = await flattenItems(path, targetFolder.getPath(), items)
-        const copyConflicts = items.filter(n => n.targetTime)
+        const copyItems = !move && items.findIndex(n => n.isDirectory) != -1
+            ? await flattenItems(path, targetFolder.getPath(), items)
+            : items
+        const copyConflicts = copyItems.filter(n => n.targetTime)
 
         const defNo = copyConflicts.length > 0
             && copyConflicts
@@ -139,8 +140,8 @@ export const onFilesDrop = async (fileList: FileList, targetFolder: FolderViewHa
         if (res.result == ResultType.Cancel)
             return
 
-        const itemsToCopy = res.result == ResultType.No ? items.diff(copyConflicts) : items
-        await copyProcessor.copy(path, targetFolder.getPath(), itemsToCopy.map(n => n.name), itemsToCopy.reduce((previousValue, current) => (current.size || 0) + previousValue, 0),  move)
+        const itemsToCopy = res.result == ResultType.No ? copyItems.diff(copyConflicts) : copyItems
+        await copyProcessor.copy(path, targetFolder.getPath(), itemsToCopy.map(n => ({ name: n.name, size: n.size ?? 0 })),  move)
         targetFolder.refresh()
     } catch (e) {
         const err = e as SystemError
@@ -168,21 +169,21 @@ const getCopyProcessor = (sourceId?: string, targetId?: string) =>
     : undefined
 
 abstract class ICopyProcessor {
-    abstract copy(sourcePath: string, targetPath: string, items: string[], totalSize: number, move: boolean): Promise<void>
+    abstract copy(sourcePath: string, targetPath: string, items: CopyFile[], move: boolean): Promise<NullData>
     refresh(folder: FolderViewHandle) { return folder.refresh() }
     canMove() { return true }
     canCopyDirectories() { return true }
 }
 
 class CopyProcessor extends ICopyProcessor {
-    copy(sourcePath: string, targetPath: string, items: string[], totalSize: number, move: boolean) {
-        return copy(sourcePath, targetPath, items, totalSize, move)
+    copy(sourcePath: string, targetPath: string, items: CopyFile[], move: boolean) {
+        return copy(sourcePath, targetPath, items, move)
     }
 }
 
 class RemoteToLocalProcessor extends ICopyProcessor {
-    copy(sourcePath: string, targetPath: string, items: string[], totalSize: number) {
-        return copyFromRemote(sourcePath, targetPath, items, totalSize)
+    copy(sourcePath: string, targetPath: string, items: CopyFile[]) {
+        return copyFromRemote(sourcePath, targetPath, items)
     }
 
     async refresh() { }
@@ -193,8 +194,8 @@ class RemoteToLocalProcessor extends ICopyProcessor {
 }
 
 class LocalToRemoteProcessor extends ICopyProcessor {
-    copy(sourcePath: string, targetPath: string, items: string[], totalSize: number) {
-        return copyToRemote(sourcePath, targetPath, items, totalSize)
+    copy(sourcePath: string, targetPath: string, items: CopyFile[]) {
+        return copyToRemote(sourcePath, targetPath, items)
     }
 
     async refresh() { }

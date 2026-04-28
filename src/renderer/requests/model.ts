@@ -39,8 +39,7 @@ export type FlattenItemsInput = {
 export type CopyInput = {
     sourcePath: string,
     targetPath: string,
-    items: string[],
-    totalSize: number,
+    items: CopyFile[],
     move: boolean
 }
 
@@ -113,6 +112,11 @@ export type FlatCopyItem = {
     size?:          number
     targetTime?:    string
     targetSize?:    number
+}
+
+export type CopyFile = {
+    name: string
+    size: number
 }
 
 type UNKNOWN = "UNKNOWN"

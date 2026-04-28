@@ -30,11 +30,7 @@ static partial class Directory
         if (lockers.TryGetValue(folderId, out var locker))
             locker.Release();
     }
-    public static async Task Copy(CopyInput input)
-    {
-        BackgroundJobs.Test();
-        // TODO => add to channel
-    }
+    public static Task CopyAsync(CopyInput input) => BackgroundJobs.AddJobAsync(input);
 
     static void CancelExifs(string folderId)
     {
@@ -98,33 +94,6 @@ static partial class Directory
 
 record ExtendedItemsData(Task Task, CancellationTokenSource Cancellation);
 
-// using System.Data;
-// using System.Collections.Immutable;
-// using Microsoft.AspNetCore.Http;
-
-// using AspNetExtensions;
-// using CsTools.Extensions;
-// using CsTools.Functional;
-// using CsTools;
-
-// using static CsTools.Functional.Tree;
-// using static CsTools.Core;
-// using CsTools.HttpRequest;
-
-//         => getFiles
-//             .Path
-//             .If(getFiles.Mount == true,
-//                 Mount)
-//             .CreateDirectoryInfo()
-//             .Validate()
-//             .Bind(n => GetFiles(n, getFiles.ShowHiddenItems))
-//             .Select(n => n.SideEffect(n => DirectoryWatcher.Initialize(getFiles.Id, n.Path)))
-//             .SelectError(e => new RequestError(e.Status, e.StatusText));
-
-//     public static AsyncResult<Nothing, RequestError> CancelExtendedItems(CancelExtendedItems cancelExtendedItems)
-//         => Ok<Nothing, RequestError>(nothing)
-//             .SideEffect(_ => extendedInfosCancellations.GetValue(cancelExtendedItems.Id)?.Cancel())
-//             .ToAsyncResult();
     
 //     public static async Task ProcessFile(HttpContext context, string path)
 //     {
@@ -132,15 +101,6 @@ record ExtendedItemsData(Task Task, CancellationTokenSource Cancellation);
 //         await (path.UseRange()
 //             ? context.StreamRangeFile(path)
 //             : context.SendStream(stream, null, path));
-//     }
-
-//     public static async Task ProcessFavicon(HttpContext context)
-//     {
-//         var icon = Resources.Get("icon");
-//         var ms = new MemoryStream();
-//         icon?.CopyTo(ms);
-//         ms.Position = 0;
-//         await context.SendStream(ms, null, "favicon.png");
 //     }
 
 //     public static void FilesDropped(string id, bool move, string[] paths)

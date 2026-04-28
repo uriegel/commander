@@ -4,10 +4,21 @@ static class BackgroundJobs
 {
     public static bool IsIdle() => !jobs.Reader.TryPeek(out var _);
 
+    public async static Task AddJobAsync(CopyInput input)
+    {
+        await foreach(var item in input.Items.ToAsyncEnumerable())
+            await jobs.Writer.WriteAsync(new(input.SourcePath, input.TargetPath, item, input.Move));
+    }
+
     static BackgroundJobs()
     {
-        jobs = Channel.CreateUnbounded<JobBase>();
-        jobProcessorTask = Task.Run(RunProcessing);
+        jobs = Channel.CreateUnbounded<JobBase>(new UnboundedChannelOptions
+        {
+            SingleReader = true,
+            SingleWriter = false
+        });            
+        jobProcessorTask = Task.
+        Run(RunProcessing);
     }
 
     static async Task RunProcessing()
@@ -27,15 +38,8 @@ static class BackgroundJobs
     {
         try
         {
+            await Directory.CopyAsync(job);
             // job.Cancellation?.ThrowIfCancellationRequested();
-
-            // var result = await (job switch
-            // {
-            //     MonitorJob mj => proxy.AddPartnerInternalAsync(mj.SessionID, mj.Name),
-            //     MonitorByExtensionJob mej => proxy.AddPartnerByExtensionInternalAsync(mej.SessionID, mej.Extension),
-            //     MonitorByDeviceJob mdj => proxy.AddPublicMonitorDeviceInternalAsync(mdj.SessionID, mdj.Device, mdj.GeneratedGuid),
-            //     _ => throw new InvalidOperationException()
-            // });
 
             // job.Completion.TrySetResult(result);
         }
@@ -43,7 +47,7 @@ static class BackgroundJobs
         {
 //            job.Completion.TrySetCanceled();
         }
-        catch (Exception e)
+        catch (Exception)
         {
 //            job.Completion.TrySetException(e);
         }
@@ -54,4 +58,5 @@ static class BackgroundJobs
     static readonly Task jobProcessorTask;
 }
 
-record JobBase();
+record JobBase(string SourcePath, string TargetPath, CopyFile Item, bool Move);
+

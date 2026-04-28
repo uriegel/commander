@@ -63,16 +63,15 @@ static partial class Directory
 
         static string AppendSubPath(string? initialPath, string? subPath) => initialPath.AppendPath(subPath);
     }
-}   
 
-record MetaCopyItem(
-    string Name,
-    bool IsDirectory,
-    string? IconPath,
-    DateTime? Time,
-    long? Size,
-    DateTime? TargetTime,
-    long? TargetSize
-);
+    public static async Task CopyAsync(JobBase input, CancellationToken? cancellation = null)
+    {
+        await GFile
+            .New(input.SourcePath.AppendPath(input.Item.Name))
+            .UseAsync(f => f.If(input.Move,
+                f => f.MoveAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, (i, n) => Console.WriteLine($"i: {i}, n: {n}"), cancellation),
+                f => f.CopyAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, (i, n) => Console.WriteLine($"i: {i}, n: {n}"), cancellation)));
+    }
+}   
 
 #endif

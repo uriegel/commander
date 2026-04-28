@@ -1,6 +1,6 @@
 import { ExtendedRenameItem } from "../items-provider/items"
 import {
-    CmdInput, CopyInput, CopyItem, CreateFolderInput, DeleteInput, DirectoryItem, FlatCopyItem, FlattenItemsInput, GetAccentColorOutput,
+    CmdInput, CopyFile, CopyInput, CopyItem, CreateFolderInput, DeleteInput, DirectoryItem, FlatCopyItem, FlattenItemsInput, GetAccentColorOutput,
     GetFilesInput, GetItemsFinishedInput, GetItemsOutput, MountInput, MountOutput, NullData, SystemError
 } from "./model"
 
@@ -10,8 +10,8 @@ export const getAccentColor = () => jsonRequest<NullData, GetAccentColorOutput>(
 export const mountRequest = (device: string) => jsonRequest<MountInput, MountOutput>("mount", { device })
 export const onEnter = (name: string, path: string, openWith?: boolean, showProperties?: boolean) => jsonRequestA<void>("onenter", { name, path, openWith, showProperties })
 export const getFiles = (folderId: string, requestId: number, path: string, showHidden?: boolean) => jsonRequest<GetFilesInput, GetItemsOutput>("getfiles", { folderId, requestId, path, showHidden })
-export const copy = (sourcePath: string, targetPath: string, items: string[], totalSize: number, move: boolean) => jsonRequest<CopyInput, NullData>(
-    "copy", { sourcePath, targetPath, items, totalSize, move })
+export const copy = (sourcePath: string, targetPath: string, items: CopyFile[], move: boolean) => jsonRequest<CopyInput, NullData>(
+    "copy", { sourcePath, targetPath, items, move })
 export const deleteRequest = (path: string, items: string[]) => jsonRequest<DeleteInput, NullData>("delete", { path, items })
 export const renameRequest = (path: string, item: string, newName: string, asCopy?: boolean) => jsonRequestA<void>("rename", { path, item, newName, asCopy })
 export const createFolderRequest = (path: string, item: string) => jsonRequest<CreateFolderInput, NullData>("createfolder", { path, item })
@@ -24,10 +24,10 @@ export const getRemoteFiles = (folderId: string, requestId: number, path: string
 export const createRemoteFolderRequest = (path: string, item: string) => jsonRequestA<void>("createremotefolder", { path, item })
 export const remoteDeleteRequest = (path: string, items: string[]) => jsonRequestA<void>("remotedelete", { path, items })
 export const extendCopyItems = (path: string, items: DirectoryItem[]) => jsonRequestA<DirectoryItem[]>("extendcopyitems", { path, items })
-export const copyFromRemote = (sourcePath: string, targetPath: string, items: string[], totalSize: number) => jsonRequestA<void>(
-    "copyfromremote", { sourcePath, targetPath, items, totalSize })
-export const copyToRemote = (sourcePath: string, targetPath: string, items: string[], totalSize: number) => jsonRequestA<void>(
-    "copytoremote", { sourcePath, targetPath, items, totalSize })
+export const copyFromRemote = (sourcePath: string, targetPath: string, items: CopyFile[]) => jsonRequest<CopyInput, NullData>(
+    "copyfromremote", { sourcePath, targetPath, items, move: false })
+export const copyToRemote = (sourcePath: string, targetPath: string, items: CopyFile[]) => jsonRequest<CopyInput, NullData>(
+    "copytoremote", { sourcePath, targetPath, items, move: false })
 export const closeWindow = () => jsonRequest<NullData, NullData>("closewindow", {})
 export const minimize = () => jsonRequest<NullData, NullData>("minimize", {})
 export const maximize = () => jsonRequest<NullData, NullData>("maximize", {})

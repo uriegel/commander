@@ -22,9 +22,12 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Copy/Move to Channel, add jobs to channel
 * CopyItems/MoveItems Linux
+    // send progress for one item
+    // send progress for all items: on inserting a job, add total size and items count, 
+    //      on processing remove actual size from total size and decrement itemsCount
 * copy progress: See linux-commander uwriegel
+* Cancel copy with cancellation
 * Channel not empty while closing: show Progress dialog
 * CreateFolder Windows
 * DeleteItems Windows
