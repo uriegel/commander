@@ -22,6 +22,7 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
+* Channel belegt: Verhindern, dass Commander sich beendet
 * Copy/Move to Channel, add jobs to channel
 * CopyItems/MoveItems Linux
 * copy progress: See linux-commander uwriegel
