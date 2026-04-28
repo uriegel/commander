@@ -125,7 +125,15 @@ static class Requests
         await request.SendJsonAsync(result);
         return true;
     }
-            
+
+    public static async Task<bool> Copy(IRequest request)
+    {
+        var input = await request.DeserializeAsync<CopyInput>();
+        //var result = Directory.FlattenItems(input!);
+        await request.SendJsonAsync(new NullData());
+        return true;
+    }
+
     public static async Task<bool> GetIconFromName(IRequest request)
     {
         var subPath = request.SubPath;

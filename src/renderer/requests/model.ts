@@ -36,6 +36,14 @@ export type FlattenItemsInput = {
     items: CopyItem[]
 }
 
+export type CopyInput = {
+    sourcePath: string,
+    targetPath: string,
+    items: string[],
+    totalSize: number,
+    move: boolean
+}
+
 export type GetItemsOutput = {
     items: Item[],
     path: string,
@@ -90,7 +98,6 @@ export type Version = {
 
 export type CopyItem = {
     name:           string
-    isDirectory?:   boolean    
     iconPath?:      string
     time?:          string
     size?:          number
