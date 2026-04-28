@@ -32,6 +32,7 @@ static partial class Directory
     }
     public static async Task Copy(CopyInput input)
     {
+        BackgroundJobs.Test();
         // TODO => add to channel
     }
 

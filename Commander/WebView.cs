@@ -24,7 +24,7 @@ static class WebView
 #endif
             .DebugUrl("http://localhost:5173/")
             .Url("http://localhost:8080")
-            .CanClose(() => true);
+            .CanClose(BackgroundJobs.IsIdle);
     
     public static readonly WebWindowNetCore.WebView webView;
 }
