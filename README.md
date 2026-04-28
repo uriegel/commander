@@ -22,6 +22,7 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
+* FlattenItems: eliminate IsDirectory, use intermediate record for meta results
 * CopyItems/MoveItems Linux
 * CreateFolder Windows
 * DeleteItems Windows
