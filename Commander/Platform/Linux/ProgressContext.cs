@@ -34,22 +34,31 @@ class ProgressContext : INotifyPropertyChanged
             ? ((double)cp.TotalBytes + (double)cp.CurrentBytes) / (double)cp.TotalMaxBytes
             : 0;
     }
-    
+
+    public static object GetEstimatedDuration(object? copyProgress)
+    {
+        var cp = copyProgress as CopyProgress;
+        return cp != null && cp.Duration > ThreeSeconds
+            ? (cp.Duration / (double)GetTotalFraction(copyProgress)) - cp.Duration
+            : TimeSpan.FromMilliseconds(0);
+    }
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     void OnChanged(string name) => PropertyChanged?.Invoke(this, new(name));
+
+    readonly static TimeSpan ThreeSeconds = TimeSpan.FromSeconds(3);
 }
 
 record CopyProgress(
     string Title,
     string Name,
-    // int TotalCount,
-    // int CurrentCount,
+    int TotalCount,
+    int CurrentCount,
     long TotalMaxBytes,
     long TotalBytes,
-    // long PreviousTotalBytes,
     long CurrentMaxBytes,
     long CurrentBytes,
-    bool IsRunning
-    // TimeSpan Duration
+    bool IsRunning,
+    TimeSpan Duration
 );

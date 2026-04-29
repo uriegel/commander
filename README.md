@@ -23,8 +23,6 @@ sudo dnf install gcc-c++ gtk3-devel
 
 TODO
 * CopyItems/MoveItems Linux
-    // Send copyFinished
-* copy progress: See linux-commander uwriegel
 * Cancel copy with cancellation
 * save refreshFolderID (target or source/target move), refresh only these folders
 

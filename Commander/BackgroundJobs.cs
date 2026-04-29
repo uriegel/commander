@@ -8,13 +8,14 @@ static class BackgroundJobs
         if (active)
             ProgressControl.Instance?.ShowPopover();
         return !active;
-    } 
+    }
 
     public async static Task AddJobAsync(CopyInput input)
     {
         await foreach (var item in input.Items.ToAsyncEnumerable())
         {
             Interlocked.Add(ref totalMaxBytes, item.Size);
+            Interlocked.Increment(ref maxCount);
             await jobs.Writer.WriteAsync(new(input.Move ? "Verschieben" : "Kopieren", input.SourcePath, input.TargetPath, item, input.Move));
         }
     }
@@ -26,7 +27,7 @@ static class BackgroundJobs
         {
             SingleReader = true,
             SingleWriter = false
-        });            
+        });
         jobProcessorTask = Task.
         Run(RunProcessing);
     }
@@ -53,13 +54,20 @@ static class BackgroundJobs
 
     static async Task Process(JobBase job)
     {
-        void OnProgress(long curr, long max) 
-            => ProgressContext.Instance.CopyProgress = new(job.Title, job.Item.Name, totalMaxBytes, totalCurrentBytes, job.Item.Size, curr, true);
+        void OnProgress(long curr, long max)
+            => ProgressContext.Instance.CopyProgress = new(job.Title, job.Item.Name, maxCount, currentCount,
+                    totalMaxBytes, totalCurrentBytes, job.Item.Size, curr, true, DateTime.UtcNow - start);
 
         try
         {
             if (ProgressContext.Instance.CopyProgress == null)
-                ProgressContext.Instance.CopyProgress = new(job.Title, job.Item.Name, totalMaxBytes, totalCurrentBytes, job.Item.Size, 0, true);
+            {
+                start = DateTime.UtcNow;
+                ProgressContext.Instance.CopyProgress = new(job.Title, job.Item.Name, maxCount, Interlocked.Increment(ref currentCount),
+                    totalMaxBytes, totalCurrentBytes, job.Item.Size, 0, true, DateTime.UtcNow - start);
+            }
+            else
+                Interlocked.Increment(ref currentCount);
 #if Linux                
             await Directory.CopyAsync(job, OnProgress);
             Interlocked.Add(ref totalCurrentBytes, job.Item.Size);
@@ -82,6 +90,8 @@ static class BackgroundJobs
             {
                 totalCurrentBytes = 0;
                 totalMaxBytes = 0;
+                currentCount = 0;
+                maxCount = 0;
                 if (ProgressContext.Instance.CopyProgress != null)
                 {
                     ProgressContext.Instance.CopyProgress = ProgressContext.Instance.CopyProgress with { IsRunning = false };
@@ -104,6 +114,9 @@ static class BackgroundJobs
     static readonly SemaphoreSlim inProcess;
     static long totalCurrentBytes;
     static long totalMaxBytes;
+    static int currentCount;
+    static int maxCount;
+    static DateTime start;
 }
 
 record JobBase(string Title, string SourcePath, string TargetPath, CopyFile Item, bool Move);

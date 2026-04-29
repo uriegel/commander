@@ -43,14 +43,14 @@ public class ProgressControl(nint obj) : SubClassInst<RevealerHandle>(obj)
         builder.GetWidget<ProgressBarHandle>("progressbar-current")
             .Binding("fraction", nameof(ProgressContext.CopyProgress), BindingFlags.Default, ProgressContext.GetFraction);
 
-        // builder.GetWidget<LabelHandle>("total-count-label")
-        //     .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"{((CopyProgress?)cpc)?.TotalCount}");
-        // builder.GetWidget<LabelHandle>("current-count-label")
-        //     .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"{((CopyProgress?)cpc)?.CurrentCount}");
-        // builder.GetWidget<LabelHandle>("duration-label")
-        //     .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"{((CopyProgress?)cpc)?.Duration:hh\\:mm\\:ss}");
-        // builder.GetWidget<LabelHandle>("estimated-duration-label")
-        //     .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"{ProgressContext.GetEstimatedDuration(cpc):hh\\:mm\\:ss}");
+        builder.GetWidget<LabelHandle>("total-count-label")
+            .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"{((CopyProgress?)cpc)?.TotalCount}");
+        builder.GetWidget<LabelHandle>("current-count-label")
+            .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"{((CopyProgress?)cpc)?.CurrentCount}");
+        builder.GetWidget<LabelHandle>("duration-label")
+            .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"{((CopyProgress?)cpc)?.Duration:hh\\:mm\\:ss}");
+        builder.GetWidget<LabelHandle>("estimated-duration-label")
+            .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"{ProgressContext.GetEstimatedDuration(cpc):hh\\:mm\\:ss}");
         // builder.GetWidget<ButtonHandle>("cancel-btn")
         //     .OnClicked(ProgressContext.Cancel);
     }
