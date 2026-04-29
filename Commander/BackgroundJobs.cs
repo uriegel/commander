@@ -1,4 +1,5 @@
 using System.Threading.Channels;
+using System.Threading.Tasks.Dataflow;
 
 static class BackgroundJobs
 {
@@ -6,8 +7,11 @@ static class BackgroundJobs
 
     public async static Task AddJobAsync(CopyInput input)
     {
-        await foreach(var item in input.Items.ToAsyncEnumerable())
+        await foreach (var item in input.Items.ToAsyncEnumerable())
+        {
+            Interlocked.Add(ref totalMaxBytes, item.Size);
             await jobs.Writer.WriteAsync(new(input.Move ? "Verschieben" : "Kopieren", input.SourcePath, input.TargetPath, item, input.Move));
+        }
     }
 
     static BackgroundJobs()
@@ -41,15 +45,19 @@ static class BackgroundJobs
             }
         }
     }
-    
+
     static async Task Process(JobBase job)
     {
+        void OnProgress(long curr, long max) 
+            => ProgressContext.Instance.CopyProgress = new(job.Title, job.Item.Name, totalMaxBytes, totalCurrentBytes, job.Item.Size, curr, true);
+
         try
         {
             if (ProgressContext.Instance.CopyProgress == null)
-                ProgressContext.Instance.CopyProgress = new(job.Title, job.Item.Name, job.Item.Size, 0, true);
+                ProgressContext.Instance.CopyProgress = new(job.Title, job.Item.Name, totalMaxBytes, totalCurrentBytes, job.Item.Size, 0, true);
 #if Linux                
-            await Directory.CopyAsync(job, (curr, max) => ProgressContext.Instance.CopyProgress = new(job.Title, job.Item.Name, job.Item.Size, curr, true));
+            await Directory.CopyAsync(job, OnProgress);
+            Interlocked.Add(ref totalCurrentBytes, job.Item.Size);
 #endif            
             // job.Cancellation?.ThrowIfCancellationRequested();
 
@@ -61,28 +69,35 @@ static class BackgroundJobs
         }
         catch (Exception)
         {
-//            job.Completion.TrySetException(e);
+            //            job.Completion.TrySetException(e);
         }
         finally
         {
             if (!jobs.Reader.TryPeek(out var _))
             {
+                totalCurrentBytes = 0;
+                totalMaxBytes = 0;
                 if (ProgressContext.Instance.CopyProgress != null)
                 {
                     ProgressContext.Instance.CopyProgress = ProgressContext.Instance.CopyProgress with { IsRunning = false };
-                    await Task.Delay(5000);
-                    if (ProgressContext.Instance.CopyProgress?.IsRunning != true)
-                    ProgressContext.Instance.CopyProgress = null;
+                    CleanupDelay();
                 }
             }
 
+            async void CleanupDelay()
+            {
+                await Task.Delay(5000);
+                if (ProgressContext.Instance.CopyProgress?.IsRunning != true)
+                    ProgressContext.Instance.CopyProgress = null;
+            }
         }
     }
-
 
     static readonly Channel<JobBase> jobs;
     static readonly Task jobProcessorTask;
     static readonly SemaphoreSlim inProcess;
+    static long totalCurrentBytes;
+    static long totalMaxBytes;
 }
 
 record JobBase(string Title, string SourcePath, string TargetPath, CopyFile Item, bool Move);

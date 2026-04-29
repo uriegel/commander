@@ -47,8 +47,7 @@ public class ProgressSpinner(nint obj) : SubClassWidgetInst<DrawingAreaHandle>(o
         var cpc = ProgressContext.Instance.CopyProgress;
         if (cpc != null)
         {
-            //progress = (cpc.TotalBytes + cpc.CurrentBytes) / (float)cpc.TotalMaxBytes;
-            progress = cpc.CurrentBytes / (float)cpc.CurrentMaxBytes;
+            progress = (cpc.TotalBytes + cpc.CurrentBytes) / (float)cpc.TotalMaxBytes;
             Handle.QueueDraw();
         }
     }

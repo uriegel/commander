@@ -27,6 +27,14 @@ class ProgressContext : INotifyPropertyChanged
             : 0;
     }
 
+    public static object GetTotalFraction(object? progress)
+    {
+        var cp = progress as CopyProgress;
+        return cp != null
+            ? ((double)cp.TotalBytes + (double)cp.CurrentBytes) / (double)cp.TotalMaxBytes
+            : 0;
+    }
+    
     public event PropertyChangedEventHandler? PropertyChanged;
 
     void OnChanged(string name) => PropertyChanged?.Invoke(this, new(name));
@@ -37,8 +45,8 @@ record CopyProgress(
     string Name,
     // int TotalCount,
     // int CurrentCount,
-    // long TotalMaxBytes,
-    // long TotalBytes,
+    long TotalMaxBytes,
+    long TotalBytes,
     // long PreviousTotalBytes,
     long CurrentMaxBytes,
     long CurrentBytes,
