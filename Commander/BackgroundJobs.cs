@@ -48,7 +48,9 @@ static class BackgroundJobs
         {
             if (ProgressContext.Instance.CopyProgress == null)
                 ProgressContext.Instance.CopyProgress = new CopyProgress();
+#if Linux                
             await Directory.CopyAsync(job);
+#endif            
             // job.Cancellation?.ThrowIfCancellationRequested();
 
             // job.Completion.TrySetResult(result);

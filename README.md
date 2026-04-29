@@ -30,7 +30,6 @@ TODO
 * Cancel copy with cancellation
 * Channel not empty while closing: show Progress dialog
 * CreateFolder Windows
-* DeleteItems Windows
 * CopyItems/MoveItems Windows
 * remotes 
 * Windows special features

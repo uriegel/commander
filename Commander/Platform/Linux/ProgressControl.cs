@@ -1,3 +1,4 @@
+#if Linux
 using GtkDotNet;
 using GtkDotNet.SafeHandles;
 using GtkDotNet.SubClassing;
@@ -54,5 +55,6 @@ public class ProgressControl(nint obj) : SubClassInst<RevealerHandle>(obj)
 }
 
 public class ProgressControlClass(string name, Func<nint, ProgressControl> constructor)
-    : SubClass<RevealerHandle>(GTypeEnum.Revealer, name, constructor)
-{ }
+    : SubClass<RevealerHandle>(GTypeEnum.Revealer, name, constructor) { }
+
+#endif

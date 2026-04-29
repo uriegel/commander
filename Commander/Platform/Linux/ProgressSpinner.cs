@@ -1,3 +1,4 @@
+#if Linux
 using GtkDotNet;
 using GtkDotNet.SafeHandles;
 using GtkDotNet.SubClassing;
@@ -58,5 +59,6 @@ public class ProgressSpinner(nint obj) : SubClassWidgetInst<DrawingAreaHandle>(o
 }
 
 public class ProgressSpinnerClass(string name, Func<nint, ProgressSpinner> constructor)
-    : SubClass<DrawingAreaHandle>(GTypeEnum.DrawingArea, name, constructor)
-{ }
+    : SubClass<DrawingAreaHandle>(GTypeEnum.DrawingArea, name, constructor) { }
+
+#endif
