@@ -26,6 +26,7 @@ TODO
     // Send copyFinished
 * copy progress: See linux-commander uwriegel
 * Cancel copy with cancellation
+* save refreshFolderID (target or source/target move), refresh only these folders
 
 * File Operations Windows: On UI Thread
 * CopyItems/MoveItems Windows

@@ -85,6 +85,7 @@ static class BackgroundJobs
                 if (ProgressContext.Instance.CopyProgress != null)
                 {
                     ProgressContext.Instance.CopyProgress = ProgressContext.Instance.CopyProgress with { IsRunning = false };
+                    Requests.SendJson(new(null, "CopyStop", new()));
                     CleanupDelay();
                 }
             }

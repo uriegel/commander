@@ -13,7 +13,7 @@ import Statusbar from "./Statusbar"
 import './viewers/viewers.css'
 import { copyItems, onFilesDrop } from "../copy-processor"
 import MenuView from "@platform/MenuView"
-import { cmdEvents$, PreviewModeEvents$, showHiddenEvents$, showViewerEvents$, themeChangedEvents$ } from "../requests/events"
+import { cmdEvents$, copyStopEvents$, PreviewModeEvents$, showHiddenEvents$, showViewerEvents$, themeChangedEvents$ } from "../requests/events"
 import { Item } from "../requests/model"
 
 export const ID_LEFT = "left"
@@ -87,6 +87,14 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 			box?.style.setProperty('--accent-color', accentColor)
 		})
 		return () => themeChanges.unsubscribe()
+	}, [])
+
+	useEffect(() => {
+		const evts = copyStopEvents$.subscribe(() => {
+			getActiveFolder()?.refresh()
+			getInactiveFolder()?.refresh()
+		})
+		return () => evts.unsubscribe()
 	}, [])
 
 	useEffect(() => {
