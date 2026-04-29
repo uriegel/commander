@@ -48,10 +48,10 @@
     <EmbeddedResource Include="../Native/icon">
       <LogicalName>icon</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="./Resources/template.ui">
+    <EmbeddedResource Include="./Resources/UI/template.ui">
       <LogicalName>template</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="./Resources/progresscontrol.ui">
+    <EmbeddedResource Include="./Resources/UI/progresscontrol.ui">
       <LogicalName>progress-control</LogicalName>
     </EmbeddedResource>
   </ItemGroup> 
@@ -59,31 +59,31 @@
     <EmbeddedResource Include="Resources/Kirk.ico">
       <LogicalName>icon</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources/64x64.png">
+    <EmbeddedResource Include="Resources/Images/64x64.png">
       <LogicalName>kirk</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources/drive-removable-media.png">
+    <EmbeddedResource Include="Resources/Images/drive-removable-media.png">
       <LogicalName>drive-removable-media</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources/drive-windows.png">
+    <EmbeddedResource Include="Resources/Images/drive-windows.png">
       <LogicalName>drive-windows</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources/folder-open.png">
+    <EmbeddedResource Include="Resources/Images/folder-open.png">
       <LogicalName>folder-open</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources/network-server.png">
+    <EmbeddedResource Include="Resources/Images/network-server.png">
       <LogicalName>network-server</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources/starred.png">
+    <EmbeddedResource Include="Resources/Images/starred.png">
       <LogicalName>starred</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources/user-home.png">
+    <EmbeddedResource Include="Resources/Images/user-home.png">
       <LogicalName>user-home</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources/go-up.png">
+    <EmbeddedResource Include="Resources/Images/go-up.png">
       <LogicalName>go-up</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources/media-removable.png">
+    <EmbeddedResource Include="Resources/Images/media-removable.png">
       <LogicalName>media-removable</LogicalName>
     </EmbeddedResource>
   </ItemGroup> 
