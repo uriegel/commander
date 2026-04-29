@@ -6,6 +6,7 @@ using GtkDotNet.SubClassing;
 
 public class ProgressControl(nint obj) : SubClassInst<RevealerHandle>(obj)
 {
+    public static ProgressControl? Instance { get; private set; }
     public static SubClass<RevealerHandle> Subclass()
         => new ProgressControlClass("ProgressControl", p => new ProgressControl(p));
 
@@ -22,6 +23,7 @@ public class ProgressControl(nint obj) : SubClassInst<RevealerHandle>(obj)
 
     protected override void OnCreate()
     {
+        Instance = this;
         var builder = Builder.FromDotNetResource("progress-control");
         menuButton = builder.GetWidget<MenuButtonHandle>("progress-control");
         Handle.Child(menuButton);

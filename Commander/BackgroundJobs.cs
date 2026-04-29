@@ -1,9 +1,14 @@
 using System.Threading.Channels;
-using System.Threading.Tasks.Dataflow;
 
 static class BackgroundJobs
 {
-    public static bool IsIdle() => !jobs.Reader.TryPeek(out var _) && inProcess.CurrentCount == 1;
+    public static bool IsIdle()
+    {
+        var active = jobs.Reader.TryPeek(out var _) || inProcess.CurrentCount == 0;
+        if (active)
+            ProgressControl.Instance?.ShowPopover();
+        return !active;
+    } 
 
     public async static Task AddJobAsync(CopyInput input)
     {

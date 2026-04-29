@@ -26,7 +26,7 @@ TODO
     // Send copyFinished
 * copy progress: See linux-commander uwriegel
 * Cancel copy with cancellation
-* Channel not empty while closing: show Progress dialog
+
 * File Operations Windows: On UI Thread
 * CopyItems/MoveItems Windows
 * remotes 
