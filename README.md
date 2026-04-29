@@ -23,7 +23,7 @@ sudo dnf install gcc-c++ gtk3-devel
 
 TODO
 * CopyItems/MoveItems Linux
-    // send progress for one item
+    // Send copyFinished
     // send progress for all items: on inserting a job, add total size and items count, 
     //      on processing remove actual size from total size and decrement itemsCount
 * copy progress: See linux-commander uwriegel

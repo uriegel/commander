@@ -13,8 +13,8 @@ public class ProgressControl(nint obj) : SubClassInst<RevealerHandle>(obj)
 
     public void ShowPopover()
     {
-        // if (ProgressContext.Instance.CopyProgress != null)
-        //     menuButton.Popup();
+        if (ProgressContext.Instance.CopyProgress != null)
+            menuButton.Popup();
     }
 
     protected override RevealerHandle CreateHandle(nint obj) => new(obj);
@@ -25,20 +25,20 @@ public class ProgressControl(nint obj) : SubClassInst<RevealerHandle>(obj)
         menuButton = builder.GetWidget<MenuButtonHandle>("progress-control");
         Handle.Child(menuButton);
 
-         Handle
+        Handle
             .DataContext(ProgressContext.Instance)
             .Binding("reveal-child", nameof(ProgressContext.CopyProgress), BindingFlags.Default, p => p != null);
-        // builder.GetWidget<LabelHandle>("title-label")
-        //     .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => ((CopyProgress?)cpc)?.Title);
+        builder.GetWidget<LabelHandle>("title-label")
+            .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => ((CopyProgress?)cpc)?.Title);
         // builder.GetWidget<LabelHandle>("size-label")
-        //     .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"({((CopyProgress?)cpc)?.TotalMaxBytes.ByteCountToString(2)})")
-        //     .Binding("opacity", nameof(ProgressContext.DeleteAction), BindingFlags.Default, hide => (bool?)hide == true ? 0.0 : 1.0);
-        // builder.GetWidget<LabelHandle>("current-name-label")
-        //     .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => ((CopyProgress?)cpc)?.Name);
+        //     .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"({((CopyProgress?)cpc)?.TotalMaxBytes.ByteCountToString(2)})");
+            //.Binding("opacity", nameof(ProgressContext.DeleteAction), BindingFlags.Default, hide => (bool?)hide == true ? 0.0 : 1.0);
+        builder.GetWidget<LabelHandle>("current-name-label")
+            .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => ((CopyProgress?)cpc)?.Name);
         // builder.GetWidget<ProgressBarHandle>("progressbar-total")
         //     .Binding("fraction", nameof(ProgressContext.CopyProgress), BindingFlags.Default, ProgressContext.GetTotalFraction);
-        // builder.GetWidget<ProgressBarHandle>("progressbar-current")
-        //     .Binding("fraction", nameof(ProgressContext.CopyProgress), BindingFlags.Default, ProgressContext.GetFraction);
+         builder.GetWidget<ProgressBarHandle>("progressbar-current")
+            .Binding("fraction", nameof(ProgressContext.CopyProgress), BindingFlags.Default, ProgressContext.GetFraction);
         // builder.GetWidget<LabelHandle>("total-count-label")
         //     .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"{((CopyProgress?)cpc)?.TotalCount}");
         // builder.GetWidget<LabelHandle>("current-count-label")

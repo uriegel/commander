@@ -24,13 +24,13 @@ static partial class Directory
         }
     }
 
-    public static async Task CopyAsync(JobBase input, CancellationToken? cancellation = null)
+    public static async Task CopyAsync(JobBase input, Action<long, long> onProgress, CancellationToken? cancellation = null)
     {
         await GFile
             .New(input.SourcePath.AppendPath(input.Item.Name))
             .UseAsync(f => f.If(input.Move,
-                f => f.MoveAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, (i, n) => Console.WriteLine($"i: {i}, n: {n}"), cancellation),
-                f => f.CopyAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, (i, n) => Console.WriteLine($"i: {i}, n: {n}"), cancellation)));
+                f => f.MoveAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, (i, j) => onProgress(i, j), cancellation),
+                f => f.CopyAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, (i, j) => onProgress(i, j), cancellation)));
     }
 }   
 

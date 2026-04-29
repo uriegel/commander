@@ -7,7 +7,7 @@ static class BackgroundJobs
     public async static Task AddJobAsync(CopyInput input)
     {
         await foreach(var item in input.Items.ToAsyncEnumerable())
-            await jobs.Writer.WriteAsync(new(input.SourcePath, input.TargetPath, item, input.Move));
+            await jobs.Writer.WriteAsync(new(input.Move ? "Verschieben" : "Kopieren", input.SourcePath, input.TargetPath, item, input.Move));
     }
 
     static BackgroundJobs()
@@ -47,9 +47,9 @@ static class BackgroundJobs
         try
         {
             if (ProgressContext.Instance.CopyProgress == null)
-                ProgressContext.Instance.CopyProgress = new CopyProgress();
+                ProgressContext.Instance.CopyProgress = new(job.Title, job.Item.Name, job.Item.Size, 0, true);
 #if Linux                
-            await Directory.CopyAsync(job);
+            await Directory.CopyAsync(job, (curr, max) => ProgressContext.Instance.CopyProgress = new(job.Title, job.Item.Name, job.Item.Size, curr, true));
 #endif            
             // job.Cancellation?.ThrowIfCancellationRequested();
 
@@ -66,7 +66,15 @@ static class BackgroundJobs
         finally
         {
             if (!jobs.Reader.TryPeek(out var _))
-                ProgressContext.Instance.CopyProgress = null;
+            {
+                if (ProgressContext.Instance.CopyProgress != null)
+                {
+                    ProgressContext.Instance.CopyProgress = ProgressContext.Instance.CopyProgress with { IsRunning = false };
+                    await Task.Delay(5000);
+                    if (ProgressContext.Instance.CopyProgress?.IsRunning != true)
+                    ProgressContext.Instance.CopyProgress = null;
+                }
+            }
 
         }
     }
@@ -77,5 +85,5 @@ static class BackgroundJobs
     static readonly SemaphoreSlim inProcess;
 }
 
-record JobBase(string SourcePath, string TargetPath, CopyFile Item, bool Move);
+record JobBase(string Title, string SourcePath, string TargetPath, CopyFile Item, bool Move);
 
