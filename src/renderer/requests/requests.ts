@@ -1,7 +1,8 @@
 import { ExtendedRenameItem } from "../items-provider/items"
 import {
+    App,
     CmdInput, CopyFile, CopyInput, CopyItem, CreateFolderInput, DeleteInput, DirectoryItem, FlatCopyItem, FlattenItemsInput, GetAccentColorOutput,
-    GetFilesInput, GetItemsFinishedInput, GetItemsOutput, MountInput, MountOutput, NullData, OnEnterInput, SystemError
+    GetFilesInput, GetItemsFinishedInput, GetItemsOutput, getRecommendedAppsInput, MountInput, MountOutput, NullData, OnEnterInput, SystemError
 } from "./model"
 
 export const cmdRequest = (cmd: string) => jsonRequest<CmdInput, NullData>("cmd", { cmd })
@@ -32,7 +33,8 @@ export const closeWindow = () => jsonRequest<NullData, NullData>("closewindow", 
 export const minimize = () => jsonRequest<NullData, NullData>("minimize", {})
 export const maximize = () => jsonRequest<NullData, NullData>("maximize", {})
 export const restore = () => jsonRequest<NullData, NullData>("restore", {})
-//export const getAllApps = () => jsonRequest<App[]>("getallapps", {})
+export const getRecommendedApps = (file: string) => jsonRequest<getRecommendedAppsInput, App[]>("getrecommendedapps", { file })
+export const getAllApps = () => jsonRequest<NullData, App[]>("getallapps", {})
 export const openFile = (executable: string, file: string) => jsonRequestA<void>("openfile", { executable, file })
 
 

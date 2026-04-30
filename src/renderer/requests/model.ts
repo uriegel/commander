@@ -50,6 +50,10 @@ export type OnEnterInput = {
     showProperties?: boolean
 }
 
+export type getRecommendedAppsInput = {
+    file: string
+}
+
 export type GetItemsOutput = {
     items: Item[],
     path: string,
@@ -125,6 +129,12 @@ export type CopyFile = {
     name: string
     size: number
 }
+
+export type App = {
+    name: string
+    executable: string
+    app: number
+}    
 
 type UNKNOWN = "UNKNOWN"
 type ACCESS_DENIED = "ACCESS_DENIED"

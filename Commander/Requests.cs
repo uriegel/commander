@@ -142,6 +142,22 @@ static class Requests
         return true;
     }
     
+    public static async Task<bool> GetRecommendedApps(IRequest request)
+    {
+        var input = await request.DeserializeAsync<GetRecommendedAppsInput>();
+        //await Directory.OnEnter(input!);
+        await request.SendJsonAsync(new NullData());
+        return true;
+    }
+
+    public static async Task<bool> GetAllApps(IRequest request)
+    {
+        var _ = await request.DeserializeAsync<NullData>();
+        //await Directory.OnEnter(input!);
+        await request.SendJsonAsync(new NullData());
+        return true;
+    }
+
     public static async Task<bool> GetIconFromName(IRequest request)
     {
         var subPath = request.SubPath;

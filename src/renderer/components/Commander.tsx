@@ -95,7 +95,7 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 			getInactiveFolder()?.refresh()
 		})
 		return () => evts.unsubscribe()
-	}, [])
+	}, [getActiveFolder])
 
 	useEffect(() => {
 		const showHidden = showHiddenEvents$.subscribe(show => {

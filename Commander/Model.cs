@@ -9,8 +9,9 @@ record DeleteInput(string Path, string[] Items);
 record FlattenItemsInput(string Path, string TargetPath, CopyItem[] Items);
 record CopyInput(string SourcePath, string TargetPath, CopyFile[] Items, long TotalSize, bool Move);
 record OnEnterInput(string Name, string Path, bool? OpenWith, bool? ShowProperties);
-
 record GetItemsOutput(string Path, int DirCount, int FileCount);
+record GetRecommendedAppsInput(string File);
+
 record GetRootItemsOutput(RootItem[] Items, string Path, int DirCount, int FileCount) : GetItemsOutput(Path, DirCount, FileCount) { }
 record GetDirectoryItemsOutput(DirectoryItem[] Items, string Path, int DirCount, int FileCount) : GetItemsOutput(Path, DirCount, FileCount) {}
 record GetAccentColorOutput(string Color);
