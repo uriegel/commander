@@ -22,9 +22,10 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
+* OnEnter Strg in Linux Men: OpenWith
 * File Operations Windows: On UI Thread
 * CopyItems/MoveItems Windows
-* OnEnter
+* OnEnter Windows
 * remotes 
 * Windows special features
 

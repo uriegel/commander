@@ -30,6 +30,7 @@ static class HttpServer
                     .Add(PathRoute.New("/requests/delete").Request(DeleteItems))
                     .Add(PathRoute.New("/requests/flattenitems").Request(FlattenItems))
                     .Add(PathRoute.New("/requests/copy").Request(Copy))
+                    .Add(PathRoute.New("/requests/onenter").Request(OnEnter))
             )
             .Route(MethodRoute
                 .New(Method.Get)

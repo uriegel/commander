@@ -134,6 +134,14 @@ static class Requests
         return true;
     }
 
+    public static async Task<bool> OnEnter(IRequest request)
+    {
+        var input = await request.DeserializeAsync<OnEnterInput>();
+        await Directory.OnEnter(input!);
+        await request.SendJsonAsync(new NullData());
+        return true;
+    }
+    
     public static async Task<bool> GetIconFromName(IRequest request)
     {
         var subPath = request.SubPath;

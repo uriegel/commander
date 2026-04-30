@@ -8,6 +8,7 @@ record CreateFolderInput(string Path, string Item);
 record DeleteInput(string Path, string[] Items);
 record FlattenItemsInput(string Path, string TargetPath, CopyItem[] Items);
 record CopyInput(string SourcePath, string TargetPath, CopyFile[] Items, long TotalSize, bool Move);
+record OnEnterInput(string Name, string Path, bool? OpenWith, bool? ShowProperties);
 
 record GetItemsOutput(string Path, int DirCount, int FileCount);
 record GetRootItemsOutput(RootItem[] Items, string Path, int DirCount, int FileCount) : GetItemsOutput(Path, DirCount, FileCount) { }

@@ -1,8 +1,9 @@
 #if Linux
-
 using CsTools.Extensions;
 using CsTools.Functional;
 using GtkDotNet;
+
+using static CsTools.ProcessCmd;
 
 static partial class Directory
 {
@@ -33,6 +34,11 @@ static partial class Directory
             .UseAsync(f => f.If(input.Move,
                 f => f.MoveAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, OnProgress, cancellation),
                 f => f.CopyAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, OnProgress, cancellation)));
+    }
+
+    public static async Task OnEnter(OnEnterInput input)
+    {
+        await RunAsync("xdg-open", $"\"{input.Path.AppendPath(input.Name)}\"");
     }
 }   
 

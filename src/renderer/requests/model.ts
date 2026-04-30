@@ -43,6 +43,13 @@ export type CopyInput = {
     move: boolean
 }
 
+export type OnEnterInput = {
+    name: string,
+    path: string,
+    openWith?: boolean,
+    showProperties?: boolean
+}
+
 export type GetItemsOutput = {
     items: Item[],
     path: string,
