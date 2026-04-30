@@ -51,8 +51,8 @@ public class ProgressControl(nint obj) : SubClassInst<RevealerHandle>(obj)
             .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"{((CopyProgress?)cpc)?.Duration:hh\\:mm\\:ss}");
         builder.GetWidget<LabelHandle>("estimated-duration-label")
             .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"{ProgressContext.GetEstimatedDuration(cpc):hh\\:mm\\:ss}");
-        // builder.GetWidget<ButtonHandle>("cancel-btn")
-        //     .OnClicked(ProgressContext.Cancel);
+        builder.GetWidget<ButtonHandle>("cancel-btn")
+            .OnClicked(BackgroundJobs.Cancel);
     }
 
     MenuButtonHandle menuButton = new(0);

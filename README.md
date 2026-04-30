@@ -22,12 +22,9 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* CopyItems/MoveItems Linux
-* Cancel copy with cancellation
-* save refreshFolderID (target or source/target move), refresh only these folders
-
 * File Operations Windows: On UI Thread
 * CopyItems/MoveItems Windows
+* OnEnter
 * remotes 
 * Windows special features
 

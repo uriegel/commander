@@ -20,6 +20,8 @@ static class BackgroundJobs
         }
     }
 
+    public static void Cancel() => cancellation?.Cancel();
+
     static BackgroundJobs()
     {
         inProcess = new(1, 1);
@@ -36,19 +38,24 @@ static class BackgroundJobs
     {
         await foreach (var n in jobs.Reader.ReadAllAsync())
         {
-            await inProcess.WaitAsync();
-            try
+            if (cancellation?.IsCancellationRequested != true)
             {
-                await Process(n);
+                await inProcess.WaitAsync();
+                try
+                {
+                    await Process(n);
+                }
+                catch (Exception e)
+                {
+                    Console.Error.WriteLine($"Exception in background processing: {e}");
+                }
+                finally
+                {
+                    inProcess.Release();
+                }
             }
-            catch (Exception e)
-            {
-                Console.Error.WriteLine($"Exception in background processing: {e}");
-            }
-            finally
-            {
-                inProcess.Release();
-            }
+            else
+                AfterProcess();
         }
     }
 
@@ -63,50 +70,56 @@ static class BackgroundJobs
             if (ProgressContext.Instance.CopyProgress == null)
             {
                 start = DateTime.UtcNow;
+                cancellation = new CancellationTokenSource();
                 ProgressContext.Instance.CopyProgress = new(job.Title, job.Item.Name, maxCount, Interlocked.Increment(ref currentCount),
                     totalMaxBytes, totalCurrentBytes, job.Item.Size, 0, true, DateTime.UtcNow - start);
             }
             else
                 Interlocked.Increment(ref currentCount);
 #if Linux                
-            await Directory.CopyAsync(job, OnProgress);
+            await Directory.CopyAsync(job, OnProgress, cancellation?.Token);
             Interlocked.Add(ref totalCurrentBytes, job.Item.Size);
 #endif            
-            // job.Cancellation?.ThrowIfCancellationRequested();
-
-            // job.Completion.TrySetResult(result);
         }
-        catch (OperationCanceledException)
-        {
-            //            job.Completion.TrySetCanceled();
-        }
+        catch (OperationCanceledException) { }
         catch (Exception)
         {
             //            job.Completion.TrySetException(e);
         }
         finally
         {
-            if (!jobs.Reader.TryPeek(out var _))
-            {
-                totalCurrentBytes = 0;
-                totalMaxBytes = 0;
-                currentCount = 0;
-                maxCount = 0;
-                if (ProgressContext.Instance.CopyProgress != null)
-                {
-                    ProgressContext.Instance.CopyProgress = ProgressContext.Instance.CopyProgress with { IsRunning = false };
-                    Requests.SendJson(new(null, "CopyStop", new()));
-                    CleanupDelay();
-                }
-            }
+            AfterProcess();
+        }
+    }
 
-            async void CleanupDelay()
+    static void AfterProcess()
+    {
+        if (!jobs.Reader.TryPeek(out var _))
+        {
+            CleanUp();
+            if (ProgressContext.Instance.CopyProgress != null)
             {
-                await Task.Delay(5000);
-                if (ProgressContext.Instance.CopyProgress?.IsRunning != true)
-                    ProgressContext.Instance.CopyProgress = null;
+                ProgressContext.Instance.CopyProgress = ProgressContext.Instance.CopyProgress with { IsRunning = false };
+                Requests.SendJson(new(null, "CopyStop", new()));
+                DelayedCleanup();
             }
         }
+    }
+
+    static void CleanUp()
+    {
+        cancellation = null;
+        totalCurrentBytes = 0;
+        totalMaxBytes = 0;
+        currentCount = 0;
+        maxCount = 0;
+    }
+
+    static async void DelayedCleanup()
+    {
+        await Task.Delay(5000);
+        if (ProgressContext.Instance.CopyProgress?.IsRunning != true)
+            ProgressContext.Instance.CopyProgress = null;
     }
 
     static readonly Channel<JobBase> jobs;
@@ -117,6 +130,7 @@ static class BackgroundJobs
     static int currentCount;
     static int maxCount;
     static DateTime start;
+    static CancellationTokenSource? cancellation;
 }
 
 record JobBase(string Title, string SourcePath, string TargetPath, CopyFile Item, bool Move);
