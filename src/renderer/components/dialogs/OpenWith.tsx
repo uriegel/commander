@@ -32,7 +32,7 @@ export default function OpenWith({ props, onChange }: ExtensionProps) {
             renderRow: app => [
                 app.executable != ""
                     ? (<span>
-                        <img className="appImage" src={`http://localhost:8080/file${app.icon}`} alt="" />
+                        <img className="appImage" src={app.isIconPath ? `http://localhost:8080/file${app.icon}` : `http://localhost:8080/iconfromname/${app.icon || 'folder-open'}`} alt="" />
                         <span>{app.name}</span>
                     </span>)
                     : (<span>

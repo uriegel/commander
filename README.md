@@ -22,7 +22,9 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* OnEnter Strg in Linux Men: OpenWith
+* iconfromname when icon not exists: default icon
+* iconfromname with option large
+* OpenWith Linux: 
 * File Operations Windows: On UI Thread
 * CopyItems/MoveItems Windows
 * OnEnter Windows
