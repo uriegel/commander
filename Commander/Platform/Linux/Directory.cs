@@ -40,6 +40,26 @@ static partial class Directory
     {
         await RunAsync("xdg-open", $"\"{input.Path.AppendPath(input.Name)}\"");
     }
-}   
+
+    public static AppInfo[] GetRecommendedApps(string? file)
+    {
+        if (file == null)
+            return [];
+        using var fileHandle = GFile.New(file);
+        if (fileHandle == null)
+            return [];
+        var contentType = GFile.QueryContentType(fileHandle)?.GetContentType();
+        if (contentType == null)
+            return [];
+        using var appinfo = GtkDotNet.AppInfo.GetRecommendedApps(contentType);
+        return appinfo.Select(n =>
+        {
+            var iconPath = n.GetIcon();
+            return new AppInfo(n.GetName(), n.GetExecutable(), iconPath?.Name, iconPath?.IsPath == true);
+        }).ToArray();
+    }
+}
+
+record AppInfo(string? Name, string? Executable, string? Icon, bool? IsIconPath);
 
 #endif

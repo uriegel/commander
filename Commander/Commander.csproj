@@ -30,6 +30,7 @@
   <ItemGroup>
     <PackageReference Include="WebServerLight" Version="2.0.0" />
     <PackageReference Include="WebWindowNetCore" Version="11.0.1" />
+    <PackageReference Include="Gtk4DotNet" Version="8.1.2" />
   </ItemGroup> 
 
   <ItemGroup>

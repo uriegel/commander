@@ -145,7 +145,7 @@ static class Requests
     public static async Task<bool> GetRecommendedApps(IRequest request)
     {
         var input = await request.DeserializeAsync<GetRecommendedAppsInput>();
-        //await Directory.OnEnter(input!);
+        var apps = Directory.GetRecommendedApps(input?.File);
         await request.SendJsonAsync(new NullData());
         return true;
     }
