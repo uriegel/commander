@@ -9,6 +9,7 @@ import { getAllApps, getRecommendedApps } from "@/renderer/requests/requests"
 export type OpenWithProps = {
     fileName: string,
     filePath: string,
+    app?: App
 }
 
 export default function OpenWith({ props, onChange }: ExtensionProps) {
@@ -31,7 +32,7 @@ export default function OpenWith({ props, onChange }: ExtensionProps) {
             renderRow: app => [
                 app.executable != ""
                     ? (<span>
-                        <img className="appImage" src={`appicon://app/${app.app}`} alt="" />
+                        <img className="appImage" src={`http://localhost:8080/file${app.icon}`} alt="" />
                         <span>{app.name}</span>
                     </span>)
                     : (<span>
@@ -43,13 +44,6 @@ export default function OpenWith({ props, onChange }: ExtensionProps) {
             ]
         })
     }, [props])
-
-    // useEffect(() => {
-    //     return () => {
-    //        //console.log("clean", apps.length)
-    //        //cleanupApps(apps)
-    //     }
-    // }, [])
 
     const onPosition = (app: App) => {
         all.current = !app.executable

@@ -146,15 +146,15 @@ static class Requests
     {
         var input = await request.DeserializeAsync<GetRecommendedAppsInput>();
         var apps = Directory.GetRecommendedApps(input?.File);
-        await request.SendJsonAsync(new NullData());
+        await request.SendJsonAsync(apps);
         return true;
     }
 
     public static async Task<bool> GetAllApps(IRequest request)
     {
         var _ = await request.DeserializeAsync<NullData>();
-        //await Directory.OnEnter(input!);
-        await request.SendJsonAsync(new NullData());
+        var apps = Directory.GetAllApps();
+        await request.SendJsonAsync(apps);
         return true;
     }
 

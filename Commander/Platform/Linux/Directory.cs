@@ -2,7 +2,7 @@
 using CsTools.Extensions;
 using CsTools.Functional;
 using GtkDotNet;
-
+using GtkDotNet.SafeHandles;
 using static CsTools.ProcessCmd;
 
 static partial class Directory
@@ -52,14 +52,21 @@ static partial class Directory
         if (contentType == null)
             return [];
         using var appinfo = GtkDotNet.AppInfo.GetRecommendedApps(contentType);
-        return appinfo.Select(n =>
+        return appinfo.GetAppInfos();
+    }
+
+    public static AppInfo[] GetAllApps()
+    {
+        using var appinfo = GtkDotNet.AppInfo.GetAllApps();
+        return appinfo.GetAppInfos();
+    }    
+
+    static AppInfo[] GetAppInfos(this IEnumerable<AppInfoHandle> appinfo)
+        => [.. appinfo.Select(n =>
         {
             var iconPath = n.GetIcon();
             return new AppInfo(n.GetName(), n.GetExecutable(), iconPath?.Name, iconPath?.IsPath == true);
-        }).ToArray();
-    }
+        })];
 }
-
-record AppInfo(string? Name, string? Executable, string? Icon, bool? IsIconPath);
 
 #endif

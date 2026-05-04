@@ -117,6 +117,8 @@ record FlatCopyItem(
     long? TargetSize
 );
 
+record AppInfo(string? Name, string? Executable, string? Icon, bool? IsIconPath);
+
 static class ErrorType
 {
     public const string Unknown = "UNKNOWN";

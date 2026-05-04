@@ -133,7 +133,8 @@ export type CopyFile = {
 export type App = {
     name: string
     executable: string
-    app: number
+    icon?: string
+    isIconPath?: boolean
 }    
 
 type UNKNOWN = "UNKNOWN"
