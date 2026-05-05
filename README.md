@@ -22,9 +22,8 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Rename
-* Rename as copy
 * remotes 
+
 * CopyItems/MoveItems Windows
 * OnEnter Windows
 * Windows special features

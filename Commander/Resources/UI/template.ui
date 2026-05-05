@@ -63,11 +63,11 @@
         <section>
           <item>
             <attribute name="label">_Umbenennen</attribute>
-            <attribute name="action">app.rename</attribute>
+            <attribute name="action">win.rename</attribute>
           </item>
           <item>
             <attribute name="label">Kopie _anlegen</attribute>
-            <attribute name="action">app.renameascopy</attribute>
+            <attribute name="action">win.renameascopy</attribute>
           </item>
           <item>
             <attribute name="label">_Erweitertes Umbenennen</attribute>

@@ -57,10 +57,19 @@ static partial class Directory
     {
         using var appinfo = GtkDotNet.AppInfo.GetAllApps();
         return appinfo.GetAppInfos();
-    }    
+    }
 
     public static Task OpenFile(string executable, string fileName)
         => RunAsync(executable, $"\"{fileName}\"");
+
+    public static void Rename(RenameInput input)
+    {
+        if (input.AsCopy == true)
+            File.Copy(input.Path.AppendPath(input.Item), input.Path.AppendPath(input.NewName));
+        else
+            System.IO.Directory.Move(input.Path.AppendPath(input.Item), input.Path.AppendPath(input.NewName));
+    }
+        
     static AppInfo[] GetAppInfos(this IEnumerable<AppInfoHandle> appinfo)
         => [.. appinfo.Select(n =>
         {

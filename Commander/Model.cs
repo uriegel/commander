@@ -12,6 +12,7 @@ record OnEnterInput(string Name, string Path, bool? OpenWith, bool? ShowProperti
 record GetItemsOutput(string Path, int DirCount, int FileCount);
 record GetRecommendedAppsInput(string File);
 record OpenFileInput(string Executable, string File);
+record RenameInput(string Path, string Item, string NewName, bool? AsCopy);
 record ExtendedRenameInput(string Path, ExtendedRenameItem[] Items);
 
 record GetRootItemsOutput(RootItem[] Items, string Path, int DirCount, int FileCount) : GetItemsOutput(Path, DirCount, FileCount) { }

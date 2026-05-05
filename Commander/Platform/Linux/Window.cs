@@ -60,7 +60,9 @@ public static class Window
                     new("move", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "MOVE" }))), "F6"),
                     new("toggleselection", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "TOGGLE_SEL" }))), "Insert"),
                     new("openwith", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "OPENWITH" }))), "<Ctrl>Return"),
-                    new("extendedrename", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "EXTENDED_RENAME" }))), "<Ctrl>F2")
+                    new("extendedrename", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "EXTENDED_RENAME" }))), "<Ctrl>F2"),
+                    new("renameascopy", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "RENAME_AS_COPY" }))), "<Shift>F2"),
+                    new("rename", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "RENAME" }))), "F2")
                 ]);
 
             Action FocusAfter(Action action)

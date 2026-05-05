@@ -167,11 +167,20 @@ static class Requests
         return true;
     }
 
+    public static async Task<bool> Rename(IRequest request)
+    {
+        var input = await request.DeserializeAsync<RenameInput>();
+        if (input != null)
+            Directory.Rename(input); 
+        await request.SendJsonAsync(new NullData());
+        return true;
+    }
+
     public static async Task<bool> ExtendedRename(IRequest request)
     {
         var input = await request.DeserializeAsync<ExtendedRenameInput>();
         if (input != null)
-            Directory.ExtendedRename(input); 
+            Directory.ExtendedRename(input);
         await request.SendJsonAsync(new ExtendedRenameOutput(true));
         return true;
     }

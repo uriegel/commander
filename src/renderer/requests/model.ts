@@ -71,6 +71,13 @@ export type ExtendedRenameInput = {
     items: ExtendedRenameItem[]
 }
 
+export type RenameInput = {
+    path: string,
+    item: string,
+    newName: string,
+    asCopy?: boolean
+}
+
 export type GetAccentColorOutput = {
     color: string
 }
