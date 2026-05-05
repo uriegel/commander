@@ -22,9 +22,7 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* iconfromname when icon not exists: default icon
-* iconfromname with option large
-* OpenWith Linux: 
+* OpenWith Linux
 * CopyItems/MoveItems Windows
 * OnEnter Windows
 * remotes 

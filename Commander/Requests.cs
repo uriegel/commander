@@ -145,7 +145,7 @@ static class Requests
     public static async Task<bool> GetRecommendedApps(IRequest request)
     {
         var input = await request.DeserializeAsync<GetRecommendedAppsInput>();
-        var apps = Directory.GetRecommendedApps(input?.File);
+        var apps = Directory.GetRecommendedApps(input?.File).OrderBy(n => n.Name);
         await request.SendJsonAsync(apps);
         return true;
     }
@@ -153,7 +153,7 @@ static class Requests
     public static async Task<bool> GetAllApps(IRequest request)
     {
         var _ = await request.DeserializeAsync<NullData>();
-        var apps = Directory.GetAllApps();
+        var apps = Directory.GetAllApps().OrderBy(n => n.Name);
         await request.SendJsonAsync(apps);
         return true;
     }
@@ -162,17 +162,10 @@ static class Requests
     {
         var subPath = request.SubPath;
         if (subPath == null)
-        {
-            await request.Send404Async();
             return true;
-        }
         var payload = await Icon.GetAsync(subPath);
         if (payload.Length == 0)
-        {
-            // TODO Exception handling
-            await request.Send404Async();
-            return true;
-        }
+            payload = await Icon.GetAsync("res=32application-x-executable");
         await request.SendAsync(payload, payload.IsSvg() ? "image/svg+xml" : "image/png");
         return true;
     }

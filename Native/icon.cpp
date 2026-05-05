@@ -17,13 +17,21 @@ void checkInitializeIcons() {
 }
 
 vector<char> get_icon_from_name(const string& name) {
-    auto icon = g_content_type_get_icon(name.c_str());
+    bool res_option = name.starts_with("res=");
+    auto res = res_option ? stoi(name.substr(4, 2)) : 16;
+    auto iconname = res_option ? name.substr(6) : name;
+
+    auto icon = g_content_type_get_icon(iconname.c_str());
     auto names = g_themed_icon_get_names((GThemedIcon*)icon);
-    auto icon_info = gtk_icon_theme_choose_icon(default_theme, (const gchar**)names, 16, (GtkIconLookupFlags)0);
-    if (icon_info == nullptr)
-        cerr << "icon_info is null" << endl;
+    auto icon_info = gtk_icon_theme_choose_icon(default_theme, (const gchar**)names, res, (GtkIconLookupFlags)0);
     if (icon)
         g_object_unref(icon);
+    if (icon_info == nullptr)
+    {
+        cerr << "icon_info is null" << endl;
+        vector<char> res;
+        return res;
+    }
     auto filename = gtk_icon_info_get_filename(icon_info);
     auto filename_char = (char *)filename;
     if (icon_info == nullptr && filename_char != nullptr)
@@ -34,7 +42,7 @@ vector<char> get_icon_from_name(const string& name) {
     if (filename_char == nullptr || strncmp(filename_char, "/org/gkt", 8) == 0) {
         cerr << "try again" << endl;
         this_thread::sleep_for(chrono::milliseconds(200));
-        icon = g_content_type_get_icon(name.c_str());
+        icon = g_content_type_get_icon(iconname.c_str());
         names = g_themed_icon_get_names((GThemedIcon*)icon);
         icon_info = gtk_icon_theme_choose_icon(default_theme, (const gchar**)names, 16, (GtkIconLookupFlags)0);
         if (icon)
