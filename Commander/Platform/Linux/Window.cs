@@ -57,9 +57,10 @@ public static class Window
                     new("createfolder", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "CREATE_FOLDER" }))), "F7"),
                     new("delete", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "DELETE" }))), "Löschen"), // Shortcut not working!
                     new("copy", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "COPY" }))), "F5"),
-                    new("move", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "MOVE" }))), "F6"), 
+                    new("move", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "MOVE" }))), "F6"),
                     new("toggleselection", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "TOGGLE_SEL" }))), "Insert"),
-                    new("openwith", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "OPENWITH" }))), "<Ctrl>Return")
+                    new("openwith", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "OPENWITH" }))), "<Ctrl>Return"),
+                    new("extendedrename", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "EXTENDED_RENAME" }))), "<Ctrl>F2")
                 ]);
 
             Action FocusAfter(Action action)
@@ -71,7 +72,7 @@ public static class Window
                     webview?.GrabFocus();
                 };
             }    
-            Action<T> FocusAfter1<T>(Action<T> action)
+            Action<T> FocusAfter1<T>(Action<T> action)  
             {
                 return Run;
                 void Run(T t)

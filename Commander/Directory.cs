@@ -74,6 +74,14 @@ static partial class Directory
         static string AppendSubPath(string? initialPath, string? subPath) => initialPath.AppendPath(subPath);
     }
 
+    public static void ExtendedRename(ExtendedRenameInput input)
+    {
+        foreach (var item in input.Items)
+            System.IO.Directory.Move(input.Path.AppendPath(item.Name), input.Path.AppendPath("__RENAMING__" + item.NewName));
+        foreach (var item in input.Items)
+            System.IO.Directory.Move(input.Path.AppendPath("__RENAMING__" + item.NewName), input.Path.AppendPath(item.NewName));
+    }
+
     static void CancelExifs(string folderId)
     {
         if (extendedItemsDatas.TryRemove(folderId, out var data))
@@ -156,29 +164,12 @@ record ExtendedItemsData(Task Task, CancellationTokenSource Cancellation);
 //                             : DirectoryItem.CreateFileItem(new FileInfo(n)))
 //                 .ToArray()));
 
-//     public static AsyncResult<Nothing, RequestError> RenameItems(RenameItemsParam input)
-//     {
-//         var res = input.Items.Aggregate(Ok<Nothing, RequestError>(nothing), (r, i) => r.SelectMany(_ => PreRenameItem(i)));
-//         res = input.Items.Aggregate(res, (r, i) => r.SelectMany(_ => RenameItem(i)));
-//         return res.ToAsyncResult();
-
-//         Result<Nothing, RequestError> PreRenameItem(RenameItem item)
-//             => Move(input.Path.AppendPath(item.Name), input.Path.AppendPath("__RENAMING__" + item.NewName));
-//         Result<Nothing, RequestError> RenameItem(RenameItem item)
-//             => Move(input.Path.AppendPath("__RENAMING__" + item.NewName), input.Path.AppendPath(item.NewName));
-//     }
-
 //     public static AsyncResult<Nothing, RequestError> RenameAsCopy(RenameItemParam input)
 //         => Try(
 //             () => nothing
 //                     .SideEffect(_ => File.Copy(input.Path.AppendPath(input.Name), input.Path.AppendPath(input.NewName))),
 //             MapExceptionToRequestError)
 //                 .ToAsyncResult();
-
-//     public static AsyncResult<Nothing, RequestError> OnEnter(OnEnterParam input)
-//         => Ok<Nothing, RequestError>(nothing)
-//             .SideEffect(_ => OnEnter(input.Path, input.Keys))
-//             .ToAsyncResult();
 
 //     public static bool IsDirectory(string path)
 //         => (File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory;
@@ -212,13 +203,6 @@ record ExtendedItemsData(Task Task, CancellationTokenSource Cancellation);
 //         };
 
 
-//     static bool UseRange(this string path)
-//         => path.EndsWith(".mp4", StringComparison.InvariantCultureIgnoreCase) 
-//         || path.EndsWith(".mp3", StringComparison.InvariantCultureIgnoreCase);
-
-//     static ImmutableDictionary<string, CancellationTokenSource> extendedInfosCancellations
-//         = ImmutableDictionary<string, CancellationTokenSource>.Empty;
-// }
 
 // static class IOErrorTypeExtensions
 // {

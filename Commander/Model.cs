@@ -12,11 +12,13 @@ record OnEnterInput(string Name, string Path, bool? OpenWith, bool? ShowProperti
 record GetItemsOutput(string Path, int DirCount, int FileCount);
 record GetRecommendedAppsInput(string File);
 record OpenFileInput(string Executable, string File);
+record ExtendedRenameInput(string Path, ExtendedRenameItem[] Items);
 
 record GetRootItemsOutput(RootItem[] Items, string Path, int DirCount, int FileCount) : GetItemsOutput(Path, DirCount, FileCount) { }
 record GetDirectoryItemsOutput(DirectoryItem[] Items, string Path, int DirCount, int FileCount) : GetItemsOutput(Path, DirCount, FileCount) {}
 record GetAccentColorOutput(string Color);
 record MountOutput(string Path);
+record ExtendedRenameOutput(bool Success);
 
 record Item(
     string Name,
@@ -73,6 +75,11 @@ record DirectoryItem(
             Time = info.LastWriteTime
         };
 }
+
+record ExtendedRenameItem(
+    string Name,
+    string? NewName
+);
 
 record ExifData(int Idx, DateTime? DateTime, double? Latitude, double? Longitude);
 record Version(int Major, int Minor, int Build, int Patch);

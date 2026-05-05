@@ -71,7 +71,7 @@
           </item>
           <item>
             <attribute name="label">_Erweitertes Umbenennen</attribute>
-            <attribute name="action">app.extendedrename</attribute>
+            <attribute name="action">win.extendedrename</attribute>
           </item>
         </section>
         <section>

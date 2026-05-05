@@ -66,12 +66,21 @@ export type OpenFileInput = {
     file: string
 }
 
+export type ExtendedRenameInput = {
+    path: string,
+    items: ExtendedRenameItem[]
+}
+
 export type GetAccentColorOutput = {
     color: string
 }
 
 export type MountOutput = {
     path: string
+}
+
+export type ExtendedRenameOutput = {
+    success: boolean
 }
 
 interface SelectableItem {
@@ -102,6 +111,10 @@ export interface DirectoryItem extends Item {
     exifData?:      ExifData
     isHidden?:      boolean
     fileVersion?:   Version
+}
+
+export interface ExtendedRenameItem extends Item {
+    newName?:   string 
 }
 
 export type Version = {

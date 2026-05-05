@@ -34,6 +34,7 @@ static class HttpServer
                     .Add(PathRoute.New("/requests/getrecommendedapps").Request(GetRecommendedApps))
                     .Add(PathRoute.New("/requests/getallapps").Request(GetAllApps))
                     .Add(PathRoute.New("/requests/openfile").Request(OpenFile))
+                    .Add(PathRoute.New("/requests/extendedrename").Request(ExtendedRename))
             )
             .Route(MethodRoute
                 .New(Method.Get)

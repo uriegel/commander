@@ -10,10 +10,6 @@ export interface RemotesItem extends Item {
     isNew?:     boolean
 }
 
-export interface ExtendedRenameItem extends Item {
-    newName?:   string 
-}
-
 export interface FavoriteItem extends Item {
     isNew?: boolean
     path?:  string

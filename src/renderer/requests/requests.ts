@@ -1,7 +1,7 @@
 import { ExtendedRenameItem } from "../items-provider/items"
 import {
     App,
-    CmdInput, CopyFile, CopyInput, CopyItem, CreateFolderInput, DeleteInput, DirectoryItem, FlatCopyItem, FlattenItemsInput, GetAccentColorOutput,
+    CmdInput, CopyFile, CopyInput, CopyItem, CreateFolderInput, DeleteInput, DirectoryItem, ExtendedRenameInput, ExtendedRenameOutput, FlatCopyItem, FlattenItemsInput, GetAccentColorOutput,
     GetFilesInput, GetItemsFinishedInput, GetItemsOutput, getRecommendedAppsInput, MountInput, MountOutput, NullData, OnEnterInput, OpenFileInput, SystemError
 } from "./model"
 
@@ -18,7 +18,7 @@ export const renameRequest = (path: string, item: string, newName: string, asCop
 export const createFolderRequest = (path: string, item: string) => jsonRequest<CreateFolderInput, NullData>("createfolder", { path, item })
 export const flattenItems = (path: string, targetPath: string, items: CopyItem[]) => jsonRequest<FlattenItemsInput, FlatCopyItem[]>("flattenitems", { path, targetPath, items })
 export const cancelBackground = () => jsonRequestA<void>("cancelbackground", {})
-export const extendedRenameRequest = (path: string, items: ExtendedRenameItem[]) => jsonRequestA<{success: boolean}>("extendedrename", { path, items })
+export const extendedRenameRequest = (path: string, items: ExtendedRenameItem[]) => jsonRequest<ExtendedRenameInput, ExtendedRenameOutput>("extendedrename", { path, items })
 export const getItemsFinished = (folderId: string) => jsonRequest<GetItemsFinishedInput, NullData>("getitemsfinished", { folderId })
 export const addNetworkShare = (share: string, name: string, passwd: string) => jsonRequestA<void>("addnetworkshare", { share, name, passwd })
 export const getRemoteFiles = (folderId: string, requestId: number, path: string, showHidden?: boolean) => jsonRequestA<GetItemsOutput>("getremotefiles", { folderId, requestId, path, showHidden })

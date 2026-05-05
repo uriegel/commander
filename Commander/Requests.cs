@@ -166,6 +166,16 @@ static class Requests
         await request.SendJsonAsync(new NullData());
         return true;
     }
+
+    public static async Task<bool> ExtendedRename(IRequest request)
+    {
+        var input = await request.DeserializeAsync<ExtendedRenameInput>();
+        if (input != null)
+            Directory.ExtendedRename(input); 
+        await request.SendJsonAsync(new ExtendedRenameOutput(true));
+        return true;
+    }
+
     public static async Task<bool> GetIconFromName(IRequest request)
     {
         var subPath = request.SubPath;
