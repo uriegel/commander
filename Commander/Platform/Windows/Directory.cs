@@ -61,6 +61,13 @@ static partial class Directory
                 0x78 => throw new UnauthorizedAccessException() ,
             _    => throw new Exception($"Unknown error code: {Marshal.GetLastWin32Error()}")
             };   
+
+    public static async Task OnEnter(OnEnterInput input) {}           
+    // TODO implement
+
+    public static AppInfo[] GetRecommendedApps(string? file) => throw new NotImplementedException();
+    public static AppInfo[] GetAllApps() => throw new NotImplementedException();
+        
 }
 
 #endif
