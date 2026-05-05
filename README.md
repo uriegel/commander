@@ -23,7 +23,7 @@ sudo dnf install gcc-c++ gtk3-devel
 
 TODO
 * Rename
-* Extended Rename
+* Rename as copy
 * remotes 
 * CopyItems/MoveItems Windows
 * OnEnter Windows
