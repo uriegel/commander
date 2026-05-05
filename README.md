@@ -22,14 +22,18 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* OpenWith Linux
+* Rename
+* Extended Rename
+* remotes 
 * CopyItems/MoveItems Windows
 * OnEnter Windows
-* remotes 
 * Windows special features
 
 * mount unmounted drive Windows
 * css as react module
+
+* WebServer deflate
+* WebServer if-modified-since for icons
 
 * Windows Mark removable drive type "REMOVABLE"
 

@@ -11,6 +11,7 @@ record CopyInput(string SourcePath, string TargetPath, CopyFile[] Items, long To
 record OnEnterInput(string Name, string Path, bool? OpenWith, bool? ShowProperties);
 record GetItemsOutput(string Path, int DirCount, int FileCount);
 record GetRecommendedAppsInput(string File);
+record OpenFileInput(string Executable, string File);
 
 record GetRootItemsOutput(RootItem[] Items, string Path, int DirCount, int FileCount) : GetItemsOutput(Path, DirCount, FileCount) { }
 record GetDirectoryItemsOutput(DirectoryItem[] Items, string Path, int DirCount, int FileCount) : GetItemsOutput(Path, DirCount, FileCount) {}

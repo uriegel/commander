@@ -61,6 +61,11 @@ export type GetItemsOutput = {
     fileCount: number
 }
 
+export type OpenFileInput = {
+    executable: string,
+    file: string
+}
+
 export type GetAccentColorOutput = {
     color: string
 }

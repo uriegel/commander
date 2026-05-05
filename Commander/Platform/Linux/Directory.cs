@@ -36,10 +36,8 @@ static partial class Directory
                 f => f.CopyAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, OnProgress, cancellation)));
     }
 
-    public static async Task OnEnter(OnEnterInput input)
-    {
-        await RunAsync("xdg-open", $"\"{input.Path.AppendPath(input.Name)}\"");
-    }
+    public static Task OnEnter(OnEnterInput input)
+        => RunAsync("xdg-open", $"\"{input.Path.AppendPath(input.Name)}\"");
 
     public static AppInfo[] GetRecommendedApps(string? file)
     {
@@ -61,12 +59,15 @@ static partial class Directory
         return appinfo.GetAppInfos();
     }    
 
+    public static Task OpenFile(string executable, string fileName)
+        => RunAsync(executable, $"\"{fileName}\"");
     static AppInfo[] GetAppInfos(this IEnumerable<AppInfoHandle> appinfo)
         => [.. appinfo.Select(n =>
         {
             var iconPath = n.GetIcon();
             return new AppInfo(n.GetName(), n.GetExecutable(), iconPath?.Name, iconPath?.IsPath == true);
-        })];
+        })
+        .OrderBy(n => n.Name)];
 }
 
 #endif

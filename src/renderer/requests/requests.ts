@@ -2,7 +2,7 @@ import { ExtendedRenameItem } from "../items-provider/items"
 import {
     App,
     CmdInput, CopyFile, CopyInput, CopyItem, CreateFolderInput, DeleteInput, DirectoryItem, FlatCopyItem, FlattenItemsInput, GetAccentColorOutput,
-    GetFilesInput, GetItemsFinishedInput, GetItemsOutput, getRecommendedAppsInput, MountInput, MountOutput, NullData, OnEnterInput, SystemError
+    GetFilesInput, GetItemsFinishedInput, GetItemsOutput, getRecommendedAppsInput, MountInput, MountOutput, NullData, OnEnterInput, OpenFileInput, SystemError
 } from "./model"
 
 export const cmdRequest = (cmd: string) => jsonRequest<CmdInput, NullData>("cmd", { cmd })
@@ -35,7 +35,7 @@ export const maximize = () => jsonRequest<NullData, NullData>("maximize", {})
 export const restore = () => jsonRequest<NullData, NullData>("restore", {})
 export const getRecommendedApps = (file: string) => jsonRequest<getRecommendedAppsInput, App[]>("getrecommendedapps", { file })
 export const getAllApps = () => jsonRequest<NullData, App[]>("getallapps", {})
-export const openFile = (executable: string, file: string) => jsonRequestA<void>("openfile", { executable, file })
+export const openFile = (executable: string, file: string) => jsonRequest<OpenFileInput, NullData>("openfile", { executable, file })
 
 
 const jsonRequest = async <TIn, TOut>(cmd: string, msg: TIn) => {

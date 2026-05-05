@@ -145,7 +145,7 @@ static class Requests
     public static async Task<bool> GetRecommendedApps(IRequest request)
     {
         var input = await request.DeserializeAsync<GetRecommendedAppsInput>();
-        var apps = Directory.GetRecommendedApps(input?.File).OrderBy(n => n.Name);
+        var apps = Directory.GetRecommendedApps(input?.File);
         await request.SendJsonAsync(apps);
         return true;
     }
@@ -153,11 +153,19 @@ static class Requests
     public static async Task<bool> GetAllApps(IRequest request)
     {
         var _ = await request.DeserializeAsync<NullData>();
-        var apps = Directory.GetAllApps().OrderBy(n => n.Name);
+        var apps = Directory.GetAllApps();
         await request.SendJsonAsync(apps);
         return true;
     }
 
+    public static async Task<bool> OpenFile(IRequest request)
+    {
+        var input = await request.DeserializeAsync<OpenFileInput>();
+        if (input != null)
+            await Directory.OpenFile(input.Executable, input.File);
+        await request.SendJsonAsync(new NullData());
+        return true;
+    }
     public static async Task<bool> GetIconFromName(IRequest request)
     {
         var subPath = request.SubPath;
