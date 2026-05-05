@@ -25,7 +25,6 @@ TODO
 * iconfromname when icon not exists: default icon
 * iconfromname with option large
 * OpenWith Linux: 
-* File Operations Windows: On UI Thread
 * CopyItems/MoveItems Windows
 * OnEnter Windows
 * remotes 

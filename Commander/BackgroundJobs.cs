@@ -61,10 +61,11 @@ static class BackgroundJobs
 
     static async Task Process(JobBase job)
     {
+#if Linux
         void OnProgress(long curr, long max)
             => ProgressContext.Instance.CopyProgress = new(job.Title, job.Item.Name, maxCount, currentCount,
                     totalMaxBytes, totalCurrentBytes, job.Item.Size, curr, true, DateTime.UtcNow - start);
-
+#endif
         try
         {
             if (ProgressContext.Instance.CopyProgress == null)

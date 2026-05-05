@@ -105,7 +105,7 @@ static class Requests
     public static async Task<bool> CreateFolder(IRequest request)
     {
         var input = await request.DeserializeAsync<CreateFolderInput>();
-        Directory.CreateFolder(input!.Item, input.Path);
+        await Directory.CreateFolder(input!.Item, input.Path);
         await request.SendJsonAsync(new NullData());
         return true;
     }
