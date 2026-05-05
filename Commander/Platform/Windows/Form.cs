@@ -18,6 +18,7 @@ static class Form
     public static void Minimize() => form?.BeginInvoke(() => form?.WindowState = System.Windows.Forms.FormWindowState.Minimized);
     public static void Maximize() => form?.BeginInvoke(() => form?.WindowState = System.Windows.Forms.FormWindowState.Maximized);
     public static void Restore() => form?.BeginInvoke(() => form?.WindowState = System.Windows.Forms.FormWindowState.Normal);
+    public static Task InvokeOnMainThread(Action action) => form?.InvokeAsync(action) ?? Task.CompletedTask;
 
     static System.Windows.Forms.Form? form = null;
 }
