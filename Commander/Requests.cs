@@ -2,7 +2,7 @@ using System.Threading.Channels;
 using WebServerLight;
 
 using CsTools.Extensions;
-using CsTools.Functional;
+
 static class Requests
 {
     public static async Task<bool> GetDrives(IRequest request)
@@ -141,7 +141,7 @@ static class Requests
         await request.SendJsonAsync(new NullData());
         return true;
     }
-    
+
     public static async Task<bool> GetRecommendedApps(IRequest request)
     {
         var input = await request.DeserializeAsync<GetRecommendedAppsInput>();
@@ -162,8 +162,17 @@ static class Requests
     {
         var subPath = request.SubPath;
         if (subPath == null)
-            return false;
+        {
+            await request.Send404Async();
+            return true;
+        }
         var payload = await Icon.GetAsync(subPath);
+        if (payload.Length == 0)
+        {
+            // TODO Exception handling
+            await request.Send404Async();
+            return true;
+        }
         await request.SendAsync(payload, payload.IsSvg() ? "image/svg+xml" : "image/png");
         return true;
     }
@@ -198,7 +207,7 @@ static class Requests
         await request.SendJsonAsync(track);
         return true;
     }
-    
+
     public static async Task OnPostError(Exception e, IRequest request)
     {
         try
