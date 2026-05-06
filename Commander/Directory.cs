@@ -32,8 +32,6 @@ static partial class Directory
             locker.Release();
     }
 
-    public static Task CopyAsync(CopyInput input) => BackgroundJobs.AddJobAsync(input);
-
     public static FlatCopyItem[] FlattenItems(FlattenItemsInput input)
     {
         return [

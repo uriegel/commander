@@ -24,7 +24,6 @@ sudo dnf install gcc-c++ gtk3-devel
 TODO
 * remotes 
 
-* CopyItems/MoveItems Windows
 * OnEnter Windows
 * Windows special features
 

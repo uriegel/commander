@@ -64,8 +64,29 @@ static partial class Directory
                 };   
         });
 
+    public static Task CopyAsync(CopyInput input)
+        => Form.InvokeOnMainThread(() => {
+            var _ = SHFileOperation(new ShFileOPStruct
+                {
+                    Func = input.Move ? FileFuncFlags.MOVE : FileFuncFlags.COPY,
+                    From = string.Join( "\U00000000", input.Items.Select(n => input.SourcePath.AppendPath(n.Name))) + "\U00000000\U00000000",
+                    To = string.Join( "\U00000000", input.Items.Select(n => input.TargetPath.AppendPath(n.Name))) + "\U00000000\U00000000",
+                    Flags = FileOpFlags.NOCONFIRMATION | FileOpFlags.NOCONFIRMMKDIR | FileOpFlags.MULTIDESTFILES,
+                }) switch
+                {
+                    0    => 1,
+                    2    => throw new FileNotFoundException(),
+                    0x78 => throw new UnauthorizedAccessException() ,
+                _    => throw new Exception($"Unknown error code: {Marshal.GetLastWin32Error()}")
+                };   
+        });
+
     public static async Task OnEnter(OnEnterInput input) {}           
     // TODO implement
+
+    public static async Task OpenFile(string _, string __) => throw new NotImplementedException();
+
+    public static void Rename(RenameInput input) {}           
 
     public static AppInfo[] GetRecommendedApps(string? file) => throw new NotImplementedException();
     public static AppInfo[] GetAllApps() => throw new NotImplementedException();
