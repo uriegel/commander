@@ -22,6 +22,14 @@ static class Requests
         return true;
     }
 
+    public static async Task<bool> GetRemoteFiles(IRequest request)
+    {
+        var getFiles = await request.DeserializeAsync<GetFilesInput>();
+        var response = await Remotes.GetFiles(getFiles!);
+        await request.SendJsonAsync(response);
+        return true;
+    }
+    
     public static async Task<bool> GetItemsFinished(IRequest request)
     {
         var data = await request.DeserializeAsync<GetItemsFinishedInput>();

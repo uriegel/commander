@@ -18,6 +18,7 @@ static class HttpServer
                 .New(Method.Post, OnPostError)
                     .Add(PathRoute.New("/requests/getdrives").Request(GetDrives))
                     .Add(PathRoute.New("/requests/getfiles").Request(GetFiles))
+                    .Add(PathRoute.New("/requests/getremotefiles").Request(GetRemoteFiles))
                     .Add(PathRoute.New("/requests/getitemsfinished").Request(GetItemsFinished))
                     .Add(PathRoute.New("/requests/mount").Request(Mount))
                     .Add(PathRoute.New("/requests/getaccentcolor").Request(GetAccentColor))
