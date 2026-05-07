@@ -38,6 +38,7 @@ static class HttpServer
                     .Add(PathRoute.New("/requests/extendedrename").Request(ExtendedRename))
                     .Add(PathRoute.New("/requests/getremotefiles").Request(GetRemoteFiles))
                     .Add(PathRoute.New("/requests/createremotefolder").Request(CreateRemoteFolder))
+                    .Add(PathRoute.New("/requests/remotedelete").Request(RemoteDelete))
             )
             .Route(MethodRoute
                 .New(Method.Get)

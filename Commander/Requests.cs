@@ -37,6 +37,14 @@ static class Requests
         await request.SendJsonAsync(new NullData());
         return true;
     }
+
+    public static async Task<bool> RemoteDelete(IRequest request)
+    {
+        var input = await request.DeserializeAsync<DeleteInput>();
+        await Remotes.DeleteItems(input!);
+        await request.SendJsonAsync(new NullData());
+        return true;
+    }
         
     public static async Task<bool> GetItemsFinished(IRequest request)
     {

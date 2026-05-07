@@ -22,8 +22,7 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* remotes 
-* remotes Either DeleteFile with progress or DeleteFiles
+* remotes COpy files to and from
 
 * OnEnter Windows
 * Windows special features

@@ -1,3 +1,4 @@
+using System.Net.Http.Json;
 using CsTools.Async;
 using CsTools.Extensions;
 using CsTools.HttpRequest;
@@ -35,6 +36,21 @@ static class Remotes
                 Method = HttpMethod.Post,
                 BaseUrl = remoteItem.BaseUrl,
                 Url = $"/createdirectory{remoteItem.Url}"
+            };
+    }
+
+    public static async Task DeleteItems(DeleteInput input)
+    {
+        var remoteItem = input.Path.GetRemoteItem();
+        await Request.RunAsync(DeleteItems(remoteItem, input));
+
+        static Settings DeleteItems(RemoteItem remoteItem, DeleteInput input)
+            => DefaultSettings with
+            {
+                Method = HttpMethod.Delete,
+                BaseUrl = remoteItem.BaseUrl,
+                Url = $"/deletefiles",
+                AddContent = () => JsonContent.Create(input with { Path = remoteItem.Url })
             };
     }
 
