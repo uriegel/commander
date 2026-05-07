@@ -14,6 +14,7 @@ record GetRecommendedAppsInput(string File);
 record OpenFileInput(string Executable, string File);
 record RenameInput(string Path, string Item, string NewName, bool? AsCopy);
 record ExtendedRenameInput(string Path, ExtendedRenameItem[] Items);
+record CreateRemoteFolderInput(string Path, string Item);
 
 record GetRootItemsOutput(RootItem[] Items, string Path, int DirCount, int FileCount) : GetItemsOutput(Path, DirCount, FileCount) { }
 record GetDirectoryItemsOutput(DirectoryItem[] Items, string Path, int DirCount, int FileCount) : GetItemsOutput(Path, DirCount, FileCount) {}

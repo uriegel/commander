@@ -23,6 +23,7 @@ sudo dnf install gcc-c++ gtk3-devel
 
 TODO
 * remotes 
+* remotes Either DeleteFile with progress or DeleteFiles
 
 * OnEnter Windows
 * Windows special features

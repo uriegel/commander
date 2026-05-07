@@ -29,7 +29,15 @@ static class Requests
         await request.SendJsonAsync(response);
         return true;
     }
-    
+
+    public static async Task<bool> CreateRemoteFolder(IRequest request)
+    {
+        var input = await request.DeserializeAsync<CreateRemoteFolderInput>();
+        await Remotes.CreateFolder(input!);
+        await request.SendJsonAsync(new NullData());
+        return true;
+    }
+        
     public static async Task<bool> GetItemsFinished(IRequest request)
     {
         var data = await request.DeserializeAsync<GetItemsFinishedInput>();

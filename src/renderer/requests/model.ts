@@ -78,6 +78,11 @@ export type RenameInput = {
     asCopy?: boolean
 }
 
+export type CreateRemoteFolderInput = {
+    path: string,
+    item: string
+}
+
 export type GetAccentColorOutput = {
     color: string
 }
