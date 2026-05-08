@@ -23,6 +23,8 @@ sudo dnf install gcc-c++ gtk3-devel
 
 TODO
 * Error handling, especially Windows, check if network path, then UAC
+* Error handling GFileError
+* Error handling  for copying
 * Windows uac control
 
 * mount unmounted drive Windows

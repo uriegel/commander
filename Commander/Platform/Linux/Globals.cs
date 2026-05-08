@@ -1,9 +1,16 @@
 #if Linux
 using System.Diagnostics;
 using CsTools.Extensions;
+using GtkDotNet.Exceptions;
 
 static partial class Globals
 {
+    public static SystemError? CheckPlatformException(Exception e)
+    {
+        if (e is GFileException gfe)
+            return new SystemError(ErrorType.Unknown, gfe.Message);
+        else return null;
+    }
     public static string IconProcessor { get; private set; } = "";
     public static void InitializeResourceFiles()
     {

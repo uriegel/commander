@@ -272,26 +272,16 @@ static class Requests
 
     public static async Task OnPostError(Exception e, IRequest request)
     {
-        try
-        {
-            throw e;
-        }
-        catch (AlreadyMountedException)
-        {
+        if (Globals.CheckPlatformException(e) is SystemError se)
+            await request.SendJsonAsync(se);
+        else if (e is AlreadyMountedException)
             await request.SendJsonAsync(new SystemError(ErrorType.Unknown, "Bereits eingehangen"));
-        }
-        catch (MountException me)
-        {
+        else if (e is MountException me)
             await request.SendJsonAsync(new SystemError(ErrorType.Unknown, me.Message));
-        }
-        catch (DirectoryNotFoundException)
-        {
+        else if (e is DirectoryNotFoundException)
             await request.SendJsonAsync(new SystemError(ErrorType.PathNotFound, "Datei oder Verzeichnis nicht gefunden"));
-        }
-        catch (UnauthorizedAccessException)
-        {
+        else if (e is UnauthorizedAccessException)
             await request.SendJsonAsync(new SystemError(ErrorType.AccessDenied, "Keine Berechtigung"));
-        }
     }
 
     public static void SendJson(CommanderEvent evt) => websocketChannel.Writer.TryWrite(evt);
