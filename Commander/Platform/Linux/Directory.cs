@@ -25,7 +25,7 @@ static partial class Directory
         }
     }
 
-    public static Task CopyAsync(CopyInput input) => BackgroundJobs.AddJobAsync(input);
+    public static Task CopyAsync(CopyInput input) => BackgroundJobs.AddJobAsync(input, JobType.Copy);
 
     public static async Task CopyAsync(JobBase input, Action<long, long> onProgress, CancellationToken? cancellation = null)
     {

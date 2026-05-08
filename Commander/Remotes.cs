@@ -54,6 +54,17 @@ static class Remotes
             };
     }
 
+    public static async Task CopyAsync(JobBase input, Action<long, long> onProgress, CancellationToken? cancellation = null)
+    {
+        void OnProgress(long curr, long max) => onProgress(curr, max);
+
+        // await GFile
+        //     .New(input.SourcePath.AppendPath(input.Item.Name))
+        //     .UseAsync(f => f.If(input.Move,
+        //         f => f.MoveAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, OnProgress, cancellation),
+        //         f => f.CopyAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, OnProgress, cancellation)));
+    }
+
     static RemoteItem GetRemoteItem(this string path)
     {
         var urlPath = path[7..];

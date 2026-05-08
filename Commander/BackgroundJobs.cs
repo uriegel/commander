@@ -10,13 +10,19 @@ static class BackgroundJobs
         return !active;
     }
 
-    public async static Task AddJobAsync(CopyInput input)
+    public async static Task AddJobAsync(CopyInput input, JobType jobType)
     {
         await foreach (var item in input.Items.ToAsyncEnumerable())
         {
             Interlocked.Add(ref totalMaxBytes, item.Size);
             Interlocked.Increment(ref maxCount);
-            await jobs.Writer.WriteAsync(new(input.Move ? "Verschieben" : "Kopieren", input.SourcePath, input.TargetPath, item, input.Move));
+            await jobs.Writer.WriteAsync(
+                jobType switch
+                {
+                    JobType.Copy => new CopyJob(input.Move ? "Verschieben" : "Kopieren", input.SourcePath, input.TargetPath, item, input.Move),
+                    JobType.CopyFromRemote => new CopyFromRemoteJob(input.Move ? "Verschieben" : "Kopieren", input.SourcePath, input.TargetPath, item, input.Move),
+                    _ => throw new InvalidOperationException()
+                });
         }
     }
 
@@ -77,10 +83,13 @@ static class BackgroundJobs
             }
             else
                 Interlocked.Increment(ref currentCount);
-#if Linux                
-            await Directory.CopyAsync(job, OnProgress, cancellation?.Token);
+
+            if (job is CopyJob copyJob)
+                await Directory.CopyAsync(job, OnProgress, cancellation?.Token);
+            else if (job is CopyFromRemoteJob copyFromRemoteJob)
+                await Remotes.CopyAsync(job, OnProgress, cancellation?.Token);
+
             Interlocked.Add(ref totalCurrentBytes, job.Item.Size);
-#endif            
         }
         catch (OperationCanceledException) { }
         catch (Exception)
@@ -135,4 +144,13 @@ static class BackgroundJobs
 }
 
 record JobBase(string Title, string SourcePath, string TargetPath, CopyFile Item, bool Move);
+record CopyJob(string Title, string SourcePath, string TargetPath, CopyFile Item, bool Move)
+    : JobBase(Title, SourcePath, TargetPath, Item, Move);
+record CopyFromRemoteJob(string Title, string SourcePath, string TargetPath, CopyFile Item, bool Move)
+    : JobBase(Title, SourcePath, TargetPath, Item, Move);
 
+enum JobType
+{
+    Copy,
+    CopyFromRemote
+}

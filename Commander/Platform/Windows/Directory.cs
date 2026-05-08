@@ -64,6 +64,8 @@ static partial class Directory
                 };   
         });
 
+    public static Task CopyAsync(JobBase input, Action<long, long> onProgress, CancellationToken? cancellation = null) => throw new NotImplementedException();
+
     public static Task CopyAsync(CopyInput input)
         => Form.InvokeOnMainThread(() => {
             var _ = SHFileOperation(new ShFileOPStruct
