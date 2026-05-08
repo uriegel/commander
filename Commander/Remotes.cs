@@ -64,7 +64,6 @@ static class Remotes
                                     .Create(input.TargetPath.AppendPath(input.Item.Name))
                                     .WithProgress((t, c) => onProgress(c, len));
         await msg.Content.ReadAsStream().CopyToAsync(targetFile, cancellation ?? CancellationToken.None);
-        
 
         static Settings DownloadItem(RemoteItem remoteItem, string name)
             => DefaultSettings with
@@ -72,14 +71,37 @@ static class Remotes
                 Method = HttpMethod.Get,
                 BaseUrl = remoteItem.BaseUrl,
                 Url = $"/downloadfile{remoteItem.Url.AppendPath(name)}"
-                
-            };
 
-  }
-//                                 .SideEffectWhenOk(msg => msg
-//                                     .GetHeaderLongValue("x-file-date")
-//                                     ?.SetLastWriteTime(targetName))
-//                                 .SideEffectWhenError(_ => targetName.SaveDelete())
+            };
+    }
+    //                                 .SideEffectWhenOk(msg => msg
+    //                                     .GetHeaderLongValue("x-file-date")
+    //                                     ?.SetLastWriteTime(targetName))
+    //                                 .SideEffectWhenError(_ => targetName.SaveDelete())
+    public static async Task CopyToAsync(CopyToRemoteJob input, Action<long, long> onProgress, CancellationToken? cancellation = null)
+    {
+        string fileName = input.SourcePath.AppendPath(input.Item.Name);
+        using var file = File
+                            .OpenRead(fileName)
+                            .WithProgress((t, c) => onProgress(c, t));
+        var remoteItem = input.TargetPath.GetRemoteItem();
+        await Request.RunAsync(UploadItem(file, remoteItem, input.Item.Name, new FileInfo(fileName).LastWriteTime));
+
+        static Settings UploadItem(Stream streamToPost, RemoteItem remoteItem, string name, DateTime lastWriteTime)
+            => DefaultSettings with
+            {
+                Method = HttpMethod.Put,
+                BaseUrl = remoteItem.BaseUrl,
+                Url = $"/putfile{remoteItem.Url.AppendPath(name)}",
+                Timeout = 100_000_000,
+                AddContent = () => new StreamContent(streamToPost, 8100)
+                                    .SideEffect(n => n  
+                                                        .Headers
+                                                        .TryAddWithoutValidation(
+                                                            "x-file-date", 
+                                                            new DateTimeOffset(lastWriteTime).ToUnixTimeMilliseconds().ToString()))
+            };
+    }
 
     static RemoteItem GetRemoteItem(this string path)
     {

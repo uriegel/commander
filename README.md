@@ -22,11 +22,10 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* remotes Copy files to
+* remotes IconPath getFiles
 * remotes                              .GetHeaderLongValue("x-file-date")
 //                                     ?.SetLastWriteTime(targetName))
 //                                 .SideEffectWhenError(_ => targetName.SaveDelete())
-* remotes IconPath getFiles
 * CsTools release version
 
 * OnEnter Windows

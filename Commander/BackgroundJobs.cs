@@ -23,6 +23,7 @@ static class BackgroundJobs
                 {
                     JobType.Copy => new CopyJob(input.Move ? "Verschieben" : "Kopieren", input.SourcePath, input.TargetPath, item, input.Move),
                     JobType.CopyFromRemote => new CopyFromRemoteJob(input.Move ? "Verschieben" : "Kopieren", input.SourcePath, input.TargetPath, item, input.Move),
+                    JobType.CopyToRemote => new CopyToRemoteJob(input.Move ? "Verschieben" : "Kopieren", input.SourcePath, input.TargetPath, item, input.Move),
                     _ => throw new InvalidOperationException()
                 });
         }
@@ -90,6 +91,8 @@ static class BackgroundJobs
                 await Directory.CopyAsync(copyJob, OnProgress, cancellation?.Token);
             else if (job is CopyFromRemoteJob copyFromRemoteJob)
                 await Remotes.CopyFromAsync(copyFromRemoteJob, OnProgress, cancellation?.Token);
+            else if (job is CopyToRemoteJob copyToRemoteJob)
+                await Remotes.CopyToAsync(copyToRemoteJob, OnProgress, cancellation?.Token);
 
             Interlocked.Add(ref totalCurrentBytes, job.Item.Size);
         }
@@ -150,9 +153,12 @@ record CopyJob(string Title, string SourcePath, string TargetPath, CopyFile Item
     : JobBase(Title, SourcePath, TargetPath, Item, Move);
 record CopyFromRemoteJob(string Title, string SourcePath, string TargetPath, CopyFile Item, bool Move)
     : JobBase(Title, SourcePath, TargetPath, Item, Move);
+record CopyToRemoteJob(string Title, string SourcePath, string TargetPath, CopyFile Item, bool Move)
+    : JobBase(Title, SourcePath, TargetPath, Item, Move);
 
 enum JobType
 {
     Copy,
-    CopyFromRemote
+    CopyFromRemote,
+    CopyToRemote
 }

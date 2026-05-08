@@ -54,7 +54,16 @@ static class Requests
         await request.SendJsonAsync(new NullData());
         return true;
     }
-            
+
+    public static async Task<bool> CopyToRemote(IRequest request)
+    {
+        var input = await request.DeserializeAsync<CopyInput>();
+        if (input != null)
+            await BackgroundJobs.AddJobAsync(input, JobType.CopyToRemote);
+        await request.SendJsonAsync(new NullData());
+        return true;
+    }
+                
     public static async Task<bool> GetItemsFinished(IRequest request)
     {
         var data = await request.DeserializeAsync<GetItemsFinishedInput>();
