@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using GtkDotNet;
 
 class ProgressContext : INotifyPropertyChanged
 {
@@ -12,7 +13,7 @@ class ProgressContext : INotifyPropertyChanged
             if (field != value)
             {
                 field = value;
-                OnChanged(nameof(CopyProgress));
+                Gtk.BeginInvoke(200, () => OnChanged(nameof(CopyProgress)));
             }
         }
     }

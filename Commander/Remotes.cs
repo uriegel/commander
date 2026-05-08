@@ -54,16 +54,32 @@ static class Remotes
             };
     }
 
-    public static async Task CopyAsync(JobBase input, Action<long, long> onProgress, CancellationToken? cancellation = null)
+    public static async Task CopyFromAsync(CopyFromRemoteJob input, Action<long, long> onProgress, CancellationToken? cancellation = null)
     {
-        void OnProgress(long curr, long max) => onProgress(curr, max);
+        var remoteItem = input.SourcePath.GetRemoteItem();
+        using var msg = await Request.RunAsync(DownloadItem(remoteItem, input.Item.Name), true);
+        var len = msg.Content.Headers.ContentLength ?? 0;
+        //var xDate = msg.Headers. .ge["x-file-date"];
+        using var targetFile = File
+                                    .Create(input.TargetPath.AppendPath(input.Item.Name))
+                                    .WithProgress((t, c) => onProgress(c, len));
+        await msg.Content.ReadAsStream().CopyToAsync(targetFile, cancellation ?? CancellationToken.None);
+        
 
-        // await GFile
-        //     .New(input.SourcePath.AppendPath(input.Item.Name))
-        //     .UseAsync(f => f.If(input.Move,
-        //         f => f.MoveAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, OnProgress, cancellation),
-        //         f => f.CopyAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, OnProgress, cancellation)));
-    }
+        static Settings DownloadItem(RemoteItem remoteItem, string name)
+            => DefaultSettings with
+            {
+                Method = HttpMethod.Get,
+                BaseUrl = remoteItem.BaseUrl,
+                Url = $"/downloadfile{remoteItem.Url.AppendPath(name)}"
+                
+            };
+
+  }
+//                                 .SideEffectWhenOk(msg => msg
+//                                     .GetHeaderLongValue("x-file-date")
+//                                     ?.SetLastWriteTime(targetName))
+//                                 .SideEffectWhenError(_ => targetName.SaveDelete())
 
     static RemoteItem GetRemoteItem(this string path)
     {

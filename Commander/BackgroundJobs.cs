@@ -1,4 +1,6 @@
 using System.Threading.Channels;
+using Commander.Platform.Linux;
+using GtkDotNet;
 
 static class BackgroundJobs
 {
@@ -85,9 +87,9 @@ static class BackgroundJobs
                 Interlocked.Increment(ref currentCount);
 
             if (job is CopyJob copyJob)
-                await Directory.CopyAsync(job, OnProgress, cancellation?.Token);
+                await Directory.CopyAsync(copyJob, OnProgress, cancellation?.Token);
             else if (job is CopyFromRemoteJob copyFromRemoteJob)
-                await Remotes.CopyAsync(job, OnProgress, cancellation?.Token);
+                await Remotes.CopyFromAsync(copyFromRemoteJob, OnProgress, cancellation?.Token);
 
             Interlocked.Add(ref totalCurrentBytes, job.Item.Size);
         }
