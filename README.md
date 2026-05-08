@@ -23,10 +23,13 @@ sudo dnf install gcc-c++ gtk3-devel
 
 TODO
 * OnEnter Windows
-* Windows special features
+* Error handling, especially Windows, check if network path, then UAC
+* Windows 
 
 * mount unmounted drive Windows
 * css as react module
+
+* Windows remotes
 
 * WebServer deflate
 * WebServer if-modified-since for icons
