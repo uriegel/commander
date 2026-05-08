@@ -64,9 +64,9 @@ const formatVersion = (version?: VersionInfo) =>
 export const onGetItemsError = async (e: unknown, share: string, dialog?: DialogHandle, setErrorText?: (msg: string)=>void) => {
     if (!dialog || !setErrorText)
         throw "wrong parameters"
-	// const se = e as SystemError
-    // if (se.error != "ACCESS_DENIED"&& se.error != "WRONG_CREDENTIALS")
-    //     throw e
+	const se = e as SystemError
+    if (se.error != "NOT_MOUNTED" && se.error != "WRONG_CREDENTIALS")
+        throw e
 
     await retryOnErrorAsync(async () => {
         let name = ""

@@ -41,6 +41,7 @@ static class HttpServer
                     .Add(PathRoute.New("/requests/remotedelete").Request(RemoteDelete))
                     .Add(PathRoute.New("/requests/copyfromremote").Request(CopyFromRemote))
                     .Add(PathRoute.New("/requests/copytoremote").Request(CopyToRemote))
+                    .Add(PathRoute.New("/requests/addnetworkshare").Request(AddNetworkShare))
             )
             .Route(MethodRoute
                 .New(Method.Get)

@@ -83,6 +83,12 @@ export type CreateRemoteFolderInput = {
     item: string
 }
 
+export type AddNetworkShareInput = {
+    share: string,
+    name: string,
+    passwd: string
+}
+
 export type GetAccentColorOutput = {
     color: string
 }
@@ -176,10 +182,11 @@ type FILE_EXISTS = "FILE_EXISTS"
 type WRONG_CREDENTIALS = "WRONG_CREDENTIALS"
 type NETWORK_NAME_NOT_FOUND = "NETWORK_NAME_NOT_FOUND"
 type NETWORK_PATH_NOT_FOUND = "NETWORK_PATH_NOT_FOUND"
+type NOT_MOUNTED = "NOT_MOUNTED"
 
 export type ErrorType = ACCESS_DENIED | PATH_NOT_FOUND | TRASH_NOT_POSSIBLE | CANCELLED 
                         | FILE_EXISTS | WRONG_CREDENTIALS | NETWORK_NAME_NOT_FOUND
-                        | NETWORK_PATH_NOT_FOUND | UNKNOWN
+                        | NETWORK_PATH_NOT_FOUND | UNKNOWN| NOT_MOUNTED
 
 export type SystemError = {
     error: ErrorType,

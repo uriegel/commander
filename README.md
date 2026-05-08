@@ -22,15 +22,16 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
+* Version race condition (c:\Windows)
+* Version wrong Types
+
 * Error handling, especially Windows, check if network path, then UAC
 * Error handling GFileError
 * Error handling  for copying
-* Windows uac control
-
-* mount unmounted drive Windows
-* css as react module
 
 * Windows remotes
+
+* css as react module
 
 * WebServer deflate
 * WebServer if-modified-since for icons

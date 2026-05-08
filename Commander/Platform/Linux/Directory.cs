@@ -71,6 +71,10 @@ static partial class Directory
         else
             System.IO.Directory.Move(input.Path.AppendPath(input.Item), input.Path.AppendPath(input.NewName));
     }
+
+    public static void CheckGetFilesAccessException(this string path) { }
+
+    public static void AddNetworkShare(AddNetworkShareInput input) => throw new NotImplementedException();
         
     static AppInfo[] GetAppInfos(this IEnumerable<AppInfoHandle> appinfo)
         => [.. appinfo.Select(n =>

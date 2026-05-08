@@ -1,4 +1,5 @@
 import {
+    AddNetworkShareInput,
     App,
     CmdInput, CopyFile, CopyInput, CopyItem, CreateFolderInput, CreateRemoteFolderInput, DeleteInput, DirectoryItem, ExtendedRenameInput, ExtendedRenameItem, ExtendedRenameOutput, FlatCopyItem, FlattenItemsInput, GetAccentColorOutput,
     GetFilesInput, GetItemsFinishedInput, GetItemsOutput, getRecommendedAppsInput, MountInput, MountOutput, NullData, OnEnterInput, OpenFileInput, RenameInput, SystemError
@@ -19,7 +20,7 @@ export const flattenItems = (path: string, targetPath: string, items: CopyItem[]
 export const cancelBackground = () => jsonRequestA<void>("cancelbackground", {})
 export const extendedRenameRequest = (path: string, items: ExtendedRenameItem[]) => jsonRequest<ExtendedRenameInput, ExtendedRenameOutput>("extendedrename", { path, items })
 export const getItemsFinished = (folderId: string) => jsonRequest<GetItemsFinishedInput, NullData>("getitemsfinished", { folderId })
-export const addNetworkShare = (share: string, name: string, passwd: string) => jsonRequestA<void>("addnetworkshare", { share, name, passwd })
+export const addNetworkShare = (share: string, name: string, passwd: string) => jsonRequest<AddNetworkShareInput, NullData>("addnetworkshare", { share, name, passwd })
 export const getRemoteFiles = (folderId: string, requestId: number, path: string, showHidden?: boolean) => jsonRequest<GetFilesInput, GetItemsOutput>(
     "getremotefiles", { folderId, requestId, path, showHidden })
 export const createRemoteFolderRequest = (path: string, item: string) => jsonRequest<CreateRemoteFolderInput, NullData>("createremotefolder", { path, item })

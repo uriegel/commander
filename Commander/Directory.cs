@@ -6,24 +6,32 @@ static partial class Directory
 {
     public static GetDirectoryItemsOutput Get(GetFilesInput? getFiles)
     {
-        CancelExifs(getFiles?.FolderId ?? "");
-        lockers.TryAdd(getFiles?.FolderId ?? "", new(0, 1));
-        var dirInfo = new DirectoryInfo(getFiles?.Path ?? "");
-        var dirs = dirInfo
-                        .GetDirectories()
-                        .Select(DirectoryItem.CreateDirItem)
-                        .Where(n => getFiles?.ShowHidden == true || !n.IsHidden == true)
-                        .OrderBy(n => n.Name)
-                        .ToArray();
-        var files = dirInfo
-                        .GetFiles()
-                        .Select(DirectoryItem.CreateFileItem)
-                        .Where(n => getFiles?.ShowHidden == true || !n.IsHidden == true)
-                        .ToArray();
-        if (getFiles?.FolderId != null)
-            StartGettingExtendedInfos(getFiles.FolderId, getFiles.RequestId, getFiles?.Path ?? "", files);
-        return new([.. dirs, .. files], dirInfo.FullName, dirs.Length, files.Length);
-        //   DirectoryWatcher.Initialize(getFiles.FolderId, getFiles.Path);
+        try 
+        {
+            CancelExifs(getFiles?.FolderId ?? "");
+            lockers.TryAdd(getFiles?.FolderId ?? "", new(0, 1));
+            var dirInfo = new DirectoryInfo(getFiles?.Path ?? "");
+            var dirs = dirInfo
+                            .GetDirectories()
+                            .Select(DirectoryItem.CreateDirItem)
+                            .Where(n => getFiles?.ShowHidden == true || !n.IsHidden == true)
+                            .OrderBy(n => n.Name)
+                            .ToArray();
+            var files = dirInfo
+                            .GetFiles()
+                            .Select(DirectoryItem.CreateFileItem)
+                            .Where(n => getFiles?.ShowHidden == true || !n.IsHidden == true)
+                            .ToArray();
+            if (getFiles?.FolderId != null)
+                StartGettingExtendedInfos(getFiles.FolderId, getFiles.RequestId, getFiles?.Path ?? "", files);
+            return new([.. dirs, .. files], dirInfo.FullName, dirs.Length, files.Length);
+            //   DirectoryWatcher.Initialize(getFiles.FolderId, getFiles.Path);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            getFiles?.Path?.CheckGetFilesAccessException();
+            throw;
+        }
     }
 
     public static void GetItemsFinished(string folderId)

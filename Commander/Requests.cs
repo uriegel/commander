@@ -227,6 +227,15 @@ static class Requests
         return true;
     }
 
+    public static async Task<bool> AddNetworkShare(IRequest request)
+    {
+        var input = await request.DeserializeAsync<AddNetworkShareInput>();
+        if (input != null)
+            Directory.AddNetworkShare(input);
+        await request.SendJsonAsync(new NullData());
+        return true;
+    }
+    
     public static async Task<bool> GetIconFromName(IRequest request)
     {
         var subPath = request.SubPath;
@@ -282,6 +291,14 @@ static class Requests
             await request.SendJsonAsync(new SystemError(ErrorType.PathNotFound, "Datei oder Verzeichnis nicht gefunden"));
         else if (e is UnauthorizedAccessException)
             await request.SendJsonAsync(new SystemError(ErrorType.AccessDenied, "Keine Berechtigung"));
+        else if (e is NotMountedException)
+            await request.SendJsonAsync(new SystemError(ErrorType.NotMounted, "Nicht eingehangen"));
+        else if (e is NetworknameNotFoundException)
+            await request.SendJsonAsync(new SystemError(ErrorType.NetNameNotFound, "Netzwerkname nicht gefunden"));
+        else if (e is WrongCredentialsException)
+            await request.SendJsonAsync(new SystemError(ErrorType.WrongCredentials, "Falsche Anmeldedaten"));
+        else    
+            await request.SendJsonAsync(new SystemError(ErrorType.Unknown, e.Message)); 
     }
 
     public static void SendJson(CommanderEvent evt) => websocketChannel.Writer.TryWrite(evt);

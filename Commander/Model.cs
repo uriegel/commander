@@ -15,6 +15,7 @@ record OpenFileInput(string Executable, string File);
 record RenameInput(string Path, string Item, string NewName, bool? AsCopy);
 record ExtendedRenameInput(string Path, ExtendedRenameItem[] Items);
 record CreateRemoteFolderInput(string Path, string Item);
+record AddNetworkShareInput(string Share, string Name, string Passwd);
 
 record GetRootItemsOutput(RootItem[] Items, string Path, int DirCount, int FileCount) : GetItemsOutput(Path, DirCount, FileCount) { }
 record GetDirectoryItemsOutput(DirectoryItem[] Items, string Path, int DirCount, int FileCount) : GetItemsOutput(Path, DirCount, FileCount) {}
@@ -140,6 +141,8 @@ static class ErrorType
     public const string WrongCredentials = "WRONG_CREDENTIALS";
     public const string NetworkNameNotFound = "NETWORK_NAME_NOT_FOUND";
     public const string NetworkPathNotFound = "NETWORK_PATH_NOT_FOUND";
+    public const string NotMounted = "NOT_MOUNTED";
+    public const string NetNameNotFound = "NET_NAME_NOT_FOUND";
 }
 
 record SystemError(string Error, string Message);

@@ -110,13 +110,42 @@ static partial class Directory
         }        
     }           
 
-    public static async Task OpenFile(string _, string __) => throw new NotImplementedException();
+    public static void AddNetworkShare(AddNetworkShareInput input)
+    {
+        var res = WNetAddConnection2(new()
+            {
+                Scope = ResourceScope.GlobalNetwork,
+                ResourceType = ResourceType.Disk,
+                DisplayType = ResourceDisplaytype.Share,
+                RemoteName = input.Share,
+            }, input.Passwd, input.Name, 0);
+        switch (res)        
+        {
+            case 0:
+                break;
+            case 67:
+                throw new NetworknameNotFoundException();
+            case 5:
+            case 86:                
+                throw new WrongCredentialsException();
+            default:
+                throw new Exception($"Unknown error code: {Marshal.GetLastWin32Error()}");
+        }
+    }
+
+    public static Task OpenFile(string _, string __) => throw new NotImplementedException();
 
     public static void Rename(RenameInput input) {}           
 
     public static AppInfo[] GetRecommendedApps(string? file) => throw new NotImplementedException();
     public static AppInfo[] GetAllApps() => throw new NotImplementedException();
-        
+
+    public static void CheckGetFilesAccessException(this string path)
+    {
+        var kind =  path.GetPathKind();
+        if (kind == PathKind.Unc || kind == PathKind.MappedNetworkDrive)
+            throw new NotMountedException();
+    }
 }
 
 #endif
