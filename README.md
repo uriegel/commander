@@ -22,9 +22,8 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* OnEnter Windows
 * Error handling, especially Windows, check if network path, then UAC
-* Windows 
+* Windows uac control
 
 * mount unmounted drive Windows
 * css as react module

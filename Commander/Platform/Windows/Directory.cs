@@ -1,4 +1,5 @@
 #if Windows
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using ClrWinApi;
 using CsTools.Extensions;
@@ -83,8 +84,31 @@ static partial class Directory
                 };   
         });
 
-    public static async Task OnEnter(OnEnterInput input) {}           
-    // TODO implement
+    public static async Task OnEnter(OnEnterInput input)
+    {
+        if (input.ShowProperties == true|| input.OpenWith == true) 
+        {
+            var info = new ShellExecuteInfo();
+            info.Size = Marshal.SizeOf(info);
+            info.Verb = input.ShowProperties == true ? "properties" : "openas";
+            info.File = input.Path.AppendPath(input.Name);
+            info.Show = ShowWindowFlag.Show;
+            info.Mask = ShellExecuteFlag.InvokeIDList;
+            ShellExecuteEx(ref info);     
+        }
+        else 
+        {
+            using var proc = new Process()
+            {
+                StartInfo = new ProcessStartInfo(input.Path.AppendPath(input.Name))
+                {
+                    UseShellExecute = true,
+                },
+            };
+                
+            proc.Start();        
+        }        
+    }           
 
     public static async Task OpenFile(string _, string __) => throw new NotImplementedException();
 
