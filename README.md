@@ -22,11 +22,6 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* remotes                              .GetHeaderLongValue("x-file-date")
-//                                     ?.SetLastWriteTime(targetName))
-//                                 .SideEffectWhenError(_ => targetName.SaveDelete())
-* CsTools release version
-
 * OnEnter Windows
 * Windows special features
 

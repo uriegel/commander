@@ -57,28 +57,38 @@ static class Remotes
 
     public static async Task CopyFromAsync(CopyFromRemoteJob input, Action<long, long> onProgress, CancellationToken? cancellation = null)
     {
-        var remoteItem = input.SourcePath.GetRemoteItem();
-        using var msg = await Request.RunAsync(DownloadItem(remoteItem, input.Item.Name), true);
-        var len = msg.Content.Headers.ContentLength ?? 0;
-        //var xDate = msg.Headers. .ge["x-file-date"];
-        using var targetFile = File
-                                    .Create(input.TargetPath.AppendPath(input.Item.Name))
-                                    .WithProgress((t, c) => onProgress(c, len));
-        await msg.Content.ReadAsStream().CopyToAsync(targetFile, cancellation ?? CancellationToken.None);
+        var targetFileName = input.TargetPath.AppendPath(input.Item.Name);
+        try
+        {
+            var remoteItem = input.SourcePath.GetRemoteItem();
+            using var msg = await Request.RunAsync(DownloadItem(remoteItem, input.Item.Name), true);
+            var len = msg.Content.Headers.ContentLength ?? 0;
+            var xDate = msg.GetHeaderLongValue("x-file-date") ?? 0;
+            using var targetFile = File
+                                        .Create(targetFileName)
+                                        .WithProgress((t, c) => onProgress(c, len));
+            await msg.Content.ReadAsStream().CopyToAsync(targetFile, cancellation ?? CancellationToken.None);
+            targetFile.Dispose();
+            File.SetLastWriteTime(targetFileName, xDate.FromUnixTime());
 
-        static Settings DownloadItem(RemoteItem remoteItem, string name)
-            => DefaultSettings with
+            static Settings DownloadItem(RemoteItem remoteItem, string name)
+                => DefaultSettings with
+                {
+                    Method = HttpMethod.Get,
+                    BaseUrl = remoteItem.BaseUrl,
+                    Url = $"/downloadfile{remoteItem.Url.AppendPath(name)}"
+
+                };
+        }
+        catch
+        {
+            try 
             {
-                Method = HttpMethod.Get,
-                BaseUrl = remoteItem.BaseUrl,
-                Url = $"/downloadfile{remoteItem.Url.AppendPath(name)}"
-
-            };
+                File.Delete(targetFileName);
+            }
+            catch {}
+        }
     }
-    //                                 .SideEffectWhenOk(msg => msg
-    //                                     .GetHeaderLongValue("x-file-date")
-    //                                     ?.SetLastWriteTime(targetName))
-    //                                 .SideEffectWhenError(_ => targetName.SaveDelete())
     public static async Task CopyToAsync(CopyToRemoteJob input, Action<long, long> onProgress, CancellationToken? cancellation = null)
     {
         string fileName = input.SourcePath.AppendPath(input.Item.Name);
