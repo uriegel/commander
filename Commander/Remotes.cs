@@ -18,6 +18,7 @@ static class Remotes
                             Size: n.IsDirectory ? null : n.Size,
                             IsDirectory: n.IsDirectory,
                             IsHidden: n.IsHidden,
+                            IconPath: n.Name.GetFileExtension(),
                             Time: n.Time != 0 ? n.Time.FromUnixTime() : null))
                         .Where(n => input.ShowHidden || n.IsHidden != true)
                         .ToArray();
