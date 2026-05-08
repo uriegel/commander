@@ -1,3 +1,4 @@
+#if Linux
 using System.ComponentModel;
 using GtkDotNet;
 
@@ -63,3 +64,4 @@ record CopyProgress(
     bool IsRunning,
     TimeSpan Duration
 );
+#endif

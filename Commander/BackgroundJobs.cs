@@ -1,6 +1,8 @@
 using System.Threading.Channels;
+#if Linux
 using Commander.Platform.Linux;
 using GtkDotNet;
+#endif
 
 static class BackgroundJobs
 {
@@ -74,9 +76,12 @@ static class BackgroundJobs
         void OnProgress(long curr, long max)
             => ProgressContext.Instance.CopyProgress = new(job.Title, job.Item.Name, maxCount, currentCount,
                     totalMaxBytes, totalCurrentBytes, job.Item.Size, curr, true, DateTime.UtcNow - start);
+#else
+        static void OnProgress(long curr, long max) {}
 #endif
         try
         {
+#if Linux            
             if (ProgressContext.Instance.CopyProgress == null)
             {
                 start = DateTime.UtcNow;
@@ -86,7 +91,7 @@ static class BackgroundJobs
             }
             else
                 Interlocked.Increment(ref currentCount);
-
+#endif
             if (job is CopyJob copyJob)
                 await Directory.CopyAsync(copyJob, OnProgress, cancellation?.Token);
             else if (job is CopyFromRemoteJob copyFromRemoteJob)
@@ -112,12 +117,14 @@ static class BackgroundJobs
         if (!jobs.Reader.TryPeek(out var _))
         {
             CleanUp();
+#if Linux
             if (ProgressContext.Instance.CopyProgress != null)
             {
                 ProgressContext.Instance.CopyProgress = ProgressContext.Instance.CopyProgress with { IsRunning = false };
                 Requests.SendJson(new(null, "CopyStop", new()));
                 DelayedCleanup();
             }
+#endif
         }
     }
 
@@ -132,9 +139,11 @@ static class BackgroundJobs
 
     static async void DelayedCleanup()
     {
+#if Linux
         await Task.Delay(5000);
         if (ProgressContext.Instance.CopyProgress?.IsRunning != true)
             ProgressContext.Instance.CopyProgress = null;
+#endif
     }
 
     static readonly Channel<JobBase> jobs;
