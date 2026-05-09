@@ -12,10 +12,10 @@ import { DialogContext, DialogHandle } from "web-dialog-react"
 import Statusbar from "./Statusbar"
 import './viewers/viewers.css'
 import { copyItems, onFilesDrop } from "../copy-processor"
-import MenuView from "@platform/MenuView"
 import { cmdEvents$, copyStopEvents$, PreviewModeEvents$, showHiddenEvents$, showViewerEvents$, themeChangedEvents$ } from "../requests/events"
 import { Item } from "../requests/model"
-import { platformWindows } from "../App"
+import WindowsMenuView from "../platform/windows/MenuView"
+import { isWindows } from "../platform/platform"
 
 export const ID_LEFT = "left"
 export const ID_RIGHT = "right"
@@ -279,13 +279,14 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 	}
     
     return (
-        <>
-            <MenuView onMenuAction={onMenuAction}
-				showHidden={showHidden} toggleShowHiddenAndRefresh={toggleShowHiddenAndRefresh}
-				showViewer={showViewer} toggleShowViewer={toggleShowViewer}
-				viewerMode={viewerMode} setViewerMode={setViewerMode}
-				fullscreen={fullscreen} toggleFullscreen={toggleFullscreen}
-            />            
+		<>
+			{isWindows &&
+				(<WindowsMenuView onMenuAction={onMenuAction}
+					showHidden={showHidden} toggleShowHiddenAndRefresh={toggleShowHiddenAndRefresh}
+					showViewer={showViewer} toggleShowViewer={toggleShowViewer}
+					viewerMode={viewerMode} setViewerMode={setViewerMode}
+					fullscreen={fullscreen} toggleFullscreen={toggleFullscreen}
+				/>)}
             <ViewSplit isHorizontal={true} firstView={VerticalSplitView} secondView={ViewerView} initialWidth={30} secondVisible={showViewer} />
 			<Statusbar path={itemProperty.path} dirCount={itemCount.dirCount} fileCount={itemCount.fileCount}
 				errorText={errorText} setErrorText={setErrorText} statusText={getStatusText()} setBackgroundAction={setBackgroundAction} />		

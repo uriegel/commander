@@ -1,0 +1,1 @@
+export const isWindows = window.location.hash.endsWith("windows")

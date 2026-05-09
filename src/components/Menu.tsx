@@ -1,5 +1,4 @@
 import Menubar, { MenuItemType } from 'menubar-react'
-import { getProcessFileMenu } from '@platform/menu'
 
 export interface MenuProps {
     autoMode: boolean
@@ -69,9 +68,19 @@ const Menu = ({ autoMode, releaseMode, showHidden, toggleShowHidden, showViewer,
                 key: "CREATE_FOLDER"
             }, {
                 type: MenuItemType.Separator
-            },
-                ...getProcessFileMenu(),
-            {
+            },{
+                name: "_Eigenschaften",
+                type: MenuItemType.MenuItem,
+                shortcut: "Alt+Enter",
+                key: "PROPERTIES"
+            }, {
+                name: "Öffnen _mit",
+                type: MenuItemType.MenuItem,
+                shortcut: "Strg+Enter",
+                key: "OPENWITH"
+            }, {
+                type: MenuItemType.Separator
+            }, {
                 name: "_Beenden",
                 type: MenuItemType.MenuItem,
                 key: "END",

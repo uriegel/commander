@@ -1,10 +1,22 @@
-import Menu from "@/components/Menu"
-import { MenuViewProps } from "../MenuView"
-import Titlebar from "@/components/Titlebar"
 import { useContext } from "react"
+import Menu, { ViewerMode } from "@/components/Menu"
 import { DialogContext } from "web-dialog-react"
+import { DialogHandle } from "web-dialog-react"
+import Titlebar from "../../components/Titlebar"
 
-const MenuView = ({ onMenuAction, showHidden, showViewer, viewerMode, fullscreen, toggleFullscreen,
+export interface MenuViewProps {
+    onMenuAction: (cmd: string, dialog: DialogHandle) => Promise<void>
+    showHidden: boolean
+    showViewer: boolean
+    viewerMode: ViewerMode
+    setViewerMode: (mode: ViewerMode) => void
+    toggleShowHiddenAndRefresh: () => void
+    toggleShowViewer: () => void
+    fullscreen: boolean
+    toggleFullscreen: () => void,
+}
+
+export const WindowsMenuView = ({ onMenuAction, showHidden, showViewer, viewerMode, fullscreen, toggleFullscreen,
     toggleShowHiddenAndRefresh, toggleShowViewer, setViewerMode }: MenuViewProps) => {
     const dialog = useContext(DialogContext)
     return (
@@ -19,4 +31,4 @@ const MenuView = ({ onMenuAction, showHidden, showViewer, viewerMode, fullscreen
     )
 }
 
-export default MenuView
+export default WindowsMenuView
