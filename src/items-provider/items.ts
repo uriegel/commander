@@ -1,4 +1,4 @@
-import { DirectoryItem, Item } from "../requests/model"
+import { type DirectoryItem, type Item } from "../requests/model"
 
 export interface ExtendedRenameFileItem extends DirectoryItem {
     newName?:   string

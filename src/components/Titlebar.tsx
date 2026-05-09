@@ -1,4 +1,4 @@
-import { JSX, useEffect, useState } from "react"
+import { type JSX, useEffect, useState } from "react"
 import './Titlebar.css'
 import { closeWindow, maximize, minimize, restore } from "../requests/requests"
 import { windowStateEvents$ } from "../requests/events"

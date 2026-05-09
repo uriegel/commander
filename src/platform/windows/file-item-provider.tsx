@@ -1,11 +1,11 @@
-import Credentials, { CredentialsProps } from "@/components/dialogs/Credentials"
-import IconName from "@/components/IconName"
-import { IconNameType } from "@/items-provider/items"
-import { formatDateTime, formatSize } from "@/items-provider/provider"
-import { DirectoryItem, SystemError, VersionInfo } from "@/requests/model"
-import { addNetworkShare } from "@/requests/requests"
 import { retryOnErrorAsync } from "functional-extensions"
-import { DialogHandle, ResultType } from "web-dialog-react"
+import { type DialogHandle, ResultType } from "web-dialog-react"
+import type { DirectoryItem, SystemError, Version } from "../../requests/model"
+import IconName from "../../components/IconName"
+import { IconNameType } from "../../items-provider/items"
+import { formatDateTime, formatSize } from "../../items-provider/provider"
+import { addNetworkShare } from "../../requests/requests"
+import Credentials, { type CredentialsProps } from "../../components/dialogs/Credentials"
 
 export const windowsAppendPath = (path: string, subPath: string) => {
     return path.endsWith("\\") || subPath.startsWith('\\')
@@ -92,5 +92,5 @@ export const windowsOnGetItemsError = async (e: unknown, share: string, dialog?:
 }
 
 
-const formatVersion = (version?: VersionInfo) => 
+const formatVersion = (version?: Version) => 
     version ? `${version.major}.${version.minor}.${version.build}.${version.patch}` : ""

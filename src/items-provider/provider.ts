@@ -5,7 +5,7 @@ import { EXTENDED_RENAME } from './extended-rename'
 import { FAVORITES, FavoritesProvider } from './favorites-provider'
 import { Remotes, RemotesItemProvider } from './remotes-provider'
 import { RemoteItemProvider } from './remote-provider'
-import { Item } from '../requests/model'
+import { type Item } from '../requests/model'
 import { isWindows } from "../platform/platform"
 import { isLinuxRoot } from "../platform/linux/provider"
 import { isWindowsRoot } from "../platform/windows/provider"

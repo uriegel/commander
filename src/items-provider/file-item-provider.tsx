@@ -1,11 +1,11 @@
-import { TableColumns } from "virtual-table-react"
-import { EnterData, IItemsProvider, OnEnterResult } from "./base-provider"
+import { type TableColumns } from "virtual-table-react"
+import { type EnterData, IItemsProvider, type OnEnterResult } from "./base-provider"
 import { getSelectedItemsText } from "./provider"
 import { createFolderRequest, deleteRequest, getFiles, mountRequest, onEnter, renameRequest } from "../requests/requests"
-import { DialogHandle, ResultType } from "web-dialog-react"
+import { type DialogHandle, ResultType } from "web-dialog-react"
 import { retryOnErrorAsync } from "functional-extensions"
-import { DirectoryItem, Item } from "../requests/model"
-import { appendPath, getColumns, onGetItemsError, renderRow } from "../platform/file-item-provider"
+import { type DirectoryItem, type Item } from "../requests/model"
+import { appendPath, getColumns, onGetItemsError, renderRow, sortVersion } from "../platform/file-item-provider"
 
 export const FILE = "File"
 

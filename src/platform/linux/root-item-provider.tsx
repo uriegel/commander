@@ -1,8 +1,8 @@
-import IconName from "@/components/IconName"
-import { IconNameType } from "@/items-provider/items"
-import { formatSize } from "@/items-provider/provider"
-import { RootItem } from "@/requests/model"
-import { Column } from "virtual-table-react"
+import { type Column } from "virtual-table-react"
+import type { RootItem } from "../../requests/model"
+import IconName from "../../components/IconName"
+import { IconNameType } from "../../items-provider/items"
+import { formatSize } from "../../items-provider/provider"
 
 export const linuxGetColumns = () => [
                 { name: "Name" },

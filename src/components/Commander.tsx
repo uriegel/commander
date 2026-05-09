@@ -1,19 +1,19 @@
 import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useRef, useState } from "react"
-import { ViewerMode } from "./Menu"
+import { type ViewerMode } from "./Menu"
 import ViewSplit from "view-split-react"
 import PictureViewer from "./viewers/PictureViewer"
 import LocationViewer from "./viewers/LocationViewer"
 import MediaPlayer from "./viewers/MediaPlayer"
 import FileViewer from "./viewers/FileViewer"
 import TrackViewer from "./viewers/TrackViewer"
-import FolderView, { FolderViewHandle, ItemCount } from "./FolderView"
+import FolderView, { type FolderViewHandle, type ItemCount } from "./FolderView"
 import { closeWindow, cmdRequest, getAccentColor } from "../requests/requests"
-import { DialogContext, DialogHandle } from "web-dialog-react"
+import { DialogContext, type DialogHandle } from "web-dialog-react"
 import Statusbar from "./Statusbar"
 import './viewers/viewers.css'
 import { copyItems, onFilesDrop } from "../copy-processor"
 import { cmdEvents$, copyStopEvents$, PreviewModeEvents$, showHiddenEvents$, showViewerEvents$, themeChangedEvents$ } from "../requests/events"
-import { Item } from "../requests/model"
+import { type Item } from "../requests/model"
 import WindowsMenuView from "../platform/windows/MenuView"
 import { isWindows } from "../platform/platform"
 
@@ -231,7 +231,7 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 	}
 
 	const filesDrop = (files: FileList, move: boolean, folderView: FolderViewHandle|null) => 
-        onFilesDrop(files, folderView, move, dialog, setErrorText, backgroundAction.current)
+        onFilesDrop(files, folderView, move, dialog, setErrorText)
 	
 	const FolderLeft = () => (
 		<FolderView ref={folderLeft} id={ID_LEFT} onFocus={onFocusLeft} onItemChanged={onItemChanged} onEnter={onEnter}

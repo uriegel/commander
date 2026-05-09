@@ -1,6 +1,6 @@
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import './RestrictionView.css'
-import { Item } from '../requests/model'
+import { type Item } from '../requests/model'
 
 export type RestrictionViewHandle = {
     checkKey: (code: string) => Item[] | null

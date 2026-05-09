@@ -1,8 +1,9 @@
 import { useContext } from "react"
-import Menu, { ViewerMode } from "@/components/Menu"
 import { DialogContext } from "web-dialog-react"
-import { DialogHandle } from "web-dialog-react"
+import { type DialogHandle } from "web-dialog-react"
 import Titlebar from "../../components/Titlebar"
+import type { ViewerMode } from "../../components/Menu"
+import Menu from "../../components/Menu"
 
 export interface MenuViewProps {
     onMenuAction: (cmd: string, dialog: DialogHandle) => Promise<void>

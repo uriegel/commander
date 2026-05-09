@@ -1,8 +1,8 @@
-import IconName from "@/components/IconName"
-import { IconNameType } from "@/items-provider/items"
-import { formatDateTime, formatSize } from "@/items-provider/provider"
-import { DirectoryItem } from "@/requests/model"
-import { DialogHandle } from "web-dialog-react"
+import { type DialogHandle } from "web-dialog-react"
+import type { DirectoryItem } from "../../requests/model"
+import IconName from "../../components/IconName"
+import { IconNameType } from "../../items-provider/items"
+import { formatDateTime, formatSize } from "../../items-provider/provider"
 
 export const linuxAppendPath = (path: string, subPath: string) => {
     return path.endsWith("/") || subPath.startsWith('/')

@@ -1,10 +1,10 @@
-import { Column, TableColumns } from "virtual-table-react"
-import { EnterData, IItemsProvider, OnEnterResult } from "./base-provider"
-import { IconNameType, RemotesItem } from "./items"
+import { type Column, type TableColumns } from "virtual-table-react"
+import { type EnterData, IItemsProvider, type OnEnterResult } from "./base-provider"
+import { IconNameType, type RemotesItem } from "./items"
 import IconName from "../components/IconName"
-import { DialogHandle, ResultType } from "web-dialog-react"
+import { type DialogHandle, ResultType } from "web-dialog-react"
 import Remote from "../components/dialogs/Remote"
-import { Item } from "../requests/model"
+import { type Item } from "../requests/model"
 
 export const Remotes = "Remotes"
 

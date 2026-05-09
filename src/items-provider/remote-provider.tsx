@@ -1,11 +1,11 @@
-import { TableColumns } from "virtual-table-react"
-import { EnterData, IItemsProvider, OnEnterResult } from "./base-provider"
+import { type TableColumns } from "virtual-table-react"
+import { type EnterData, IItemsProvider, type OnEnterResult } from "./base-provider"
 import { IconNameType } from "./items"
 import { formatDateTime, formatSize, getSelectedItemsText } from "./provider"
 import { createRemoteFolderRequest, getRemoteFiles, onEnter, remoteDeleteRequest } from "../requests/requests"
-import { DialogHandle, ResultType } from "web-dialog-react"
+import { type DialogHandle, ResultType } from "web-dialog-react"
 import IconName from "../components/IconName"
-import { DirectoryItem, Item } from "../requests/model"
+import { type DirectoryItem, type Item } from "../requests/model"
 
 export const REMOTE = "REMOTE"
 

@@ -3,9 +3,9 @@ import VirtualTable, { type VirtualTableHandle } from 'virtual-table-react'
 import './CopyConflicts.css'
 import IconName from '../IconName'
 import type { ExtensionProps } from 'web-dialog-react'
-import { CopyItem } from '@/copy-processor'
-import { IconNameType } from '@/items-provider/items'
-import { formatDateTime, formatSize } from '@/items-provider/provider'
+import type { CopyItem } from '../../requests/model'
+import { IconNameType } from '../../items-provider/items'
+import { formatDateTime, formatSize } from '../../items-provider/provider'
 
 const CopyConflicts = ({ props }: ExtensionProps) => {
 
@@ -56,7 +56,12 @@ const CopyConflicts = ({ props }: ExtensionProps) => {
 			renderRow
         })
 		setTimeout(() => setItems(
-			(props as CopyItem[]).map(n => ({ name: n.name, iconPath: n.iconPath, time: n.time, size: n.size, targetSize: n.targetSize, targetTime: n.targetTime }))))
+			(props as CopyItem[]).map(n => (
+				{
+					name: n.name, iconPath: n.iconPath, isDirectory: false,
+					time: n.time, size: n.size, targetSize: n.targetSize, targetTime: n.targetTime
+				}
+			))))
 		
     }, [setItems, props, renderRow])
     

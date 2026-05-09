@@ -1,6 +1,9 @@
 import { filter, fromEvent, map, Observable, Subscriber } from 'rxjs'
 import { ID_LEFT, ID_RIGHT } from '../components/Commander'
-import { CmdEvent, CommanderEvent, CopyProgress, DeleteProgress, ExtendedInfos, ExtendedInfosStatus, PreviewModeEvent, ShowHiddenEvent, ShowViewerEvent, ThemeChangeEvent, WindowStateEvent } from './model'
+import {
+    type CmdEvent, type CommanderEvent, type CopyProgress, type DeleteProgress, type ExtendedInfos, type ExtendedInfosStatus,
+    type PreviewModeEvent, type ShowHiddenEvent, type ShowViewerEvent, type ThemeChangeEvent, type WindowStateEvent
+} from './model'
 
 const ws = new WebSocket("ws://localhost:8080/events")
 
@@ -9,7 +12,7 @@ const $wsToEventObservable = fromEvent(ws, 'message').pipe(map(n => {
     return JSON.parse(evt.data) as CommanderEvent
 }))
 
-$wsToEventObservable.subscribe(msg => subscribers.values().forEach(s => s.next(msg)))
+$wsToEventObservable.subscribe(msg => subscribers.forEach(s => s.next(msg)))
 
 const subscribers = new Set<Subscriber<CommanderEvent>>
 

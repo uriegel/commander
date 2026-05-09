@@ -1,12 +1,12 @@
-import { DialogHandle, ResultType, Slide } from "web-dialog-react"
-import { FolderViewHandle } from "./components/FolderView"
+import { type DialogHandle, ResultType, Slide } from "web-dialog-react"
+import { type FolderViewHandle } from "./components/FolderView"
 import { ID_LEFT, ID_RIGHT } from "./components/Commander"
 import { copy, copyFromRemote, copyToRemote, extendCopyItems, flattenItems } from "./requests/requests"
 import { FILE, FileItemProvider } from "./items-provider/file-item-provider"
 import { getSelectedItemsText } from "./items-provider/provider"
 import CopyConflicts from "./components/dialogs/CopyConflicts"
 import { REMOTE } from "./items-provider/remote-provider"
-import { CopyFile, CopyItem, DirectoryItem, NullData, SystemError } from "./requests/model"
+import { type CopyFile, type CopyItem, type DirectoryItem, type NullData, type SystemError } from "./requests/model"
 
 export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFolder: FolderViewHandle | null,
         move: boolean, dialog: DialogHandle, setErrorText: (txt: string) => void) => {
@@ -73,7 +73,7 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
 }
 
 export const onFilesDrop = async (fileList: FileList, targetFolder: FolderViewHandle | null, 
-        move: boolean, dialog: DialogHandle, setErrorText: (txt: string) => void, backgroundAction: boolean) => {
+        move: boolean, dialog: DialogHandle, setErrorText: (txt: string) => void) => {
     const sourceProvider = new FileItemProvider()
     const targetProvider = targetFolder?.getCurrentItemsProvider()
     const copyProcessor = getCopyProcessor(FILE, targetProvider?.getId())

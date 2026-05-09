@@ -1,8 +1,10 @@
 import {
-    AddNetworkShareInput,
-    App,
-    CmdInput, CopyFile, CopyInput, CopyItem, CreateFolderInput, CreateRemoteFolderInput, DeleteInput, DirectoryItem, ExtendedRenameInput, ExtendedRenameItem, ExtendedRenameOutput, FlatCopyItem, FlattenItemsInput, GetAccentColorOutput,
-    GetFilesInput, GetItemsFinishedInput, GetItemsOutput, getRecommendedAppsInput, MountInput, MountOutput, NullData, OnEnterInput, OpenFileInput, RenameInput, SystemError
+    type AddNetworkShareInput,
+    type App,
+    type CmdInput, type CopyFile, type CopyInput, type CopyItem, type CreateFolderInput, type CreateRemoteFolderInput, type DeleteInput,
+    type DirectoryItem, type ExtendedRenameInput, type ExtendedRenameItem, type ExtendedRenameOutput, type FlatCopyItem, type FlattenItemsInput,
+    type GetAccentColorOutput, type GetFilesInput, type GetItemsFinishedInput, type GetItemsOutput, type getRecommendedAppsInput, type MountInput,
+    type MountOutput, type NullData, type OnEnterInput, type OpenFileInput, type RenameInput, type SystemError
 } from "./model"
 
 export const cmdRequest = (cmd: string) => jsonRequest<CmdInput, NullData>("cmd", { cmd })
@@ -17,7 +19,7 @@ export const deleteRequest = (path: string, items: string[]) => jsonRequest<Dele
 export const renameRequest = (path: string, item: string, newName: string, asCopy?: boolean) => jsonRequest<RenameInput, NullData>("rename", { path, item, newName, asCopy })
 export const createFolderRequest = (path: string, item: string) => jsonRequest<CreateFolderInput, NullData>("createfolder", { path, item })
 export const flattenItems = (path: string, targetPath: string, items: CopyItem[]) => jsonRequest<FlattenItemsInput, FlatCopyItem[]>("flattenitems", { path, targetPath, items })
-export const cancelBackground = () => jsonRequestA<void>("cancelbackground", {})
+export const cancelBackground = () => jsonRequest<NullData, NullData>("cancelbackground", {})
 export const extendedRenameRequest = (path: string, items: ExtendedRenameItem[]) => jsonRequest<ExtendedRenameInput, ExtendedRenameOutput>("extendedrename", { path, items })
 export const getItemsFinished = (folderId: string) => jsonRequest<GetItemsFinishedInput, NullData>("getitemsfinished", { folderId })
 export const addNetworkShare = (share: string, name: string, passwd: string) => jsonRequest<AddNetworkShareInput, NullData>("addnetworkshare", { share, name, passwd })
@@ -25,7 +27,7 @@ export const getRemoteFiles = (folderId: string, requestId: number, path: string
     "getremotefiles", { folderId, requestId, path, showHidden })
 export const createRemoteFolderRequest = (path: string, item: string) => jsonRequest<CreateRemoteFolderInput, NullData>("createremotefolder", { path, item })
 export const remoteDeleteRequest = (path: string, items: string[]) => jsonRequest<DeleteInput, NullData>("remotedelete", { path, items })
-export const extendCopyItems = (path: string, items: DirectoryItem[]) => jsonRequestA<DirectoryItem[]>("extendcopyitems", { path, items })
+export const extendCopyItems = (path: string, items: DirectoryItem[]) => jsonRequest<NullData, DirectoryItem[]>("extendcopyitems", { path, items })
 export const copyFromRemote = (sourcePath: string, targetPath: string, items: CopyFile[]) => jsonRequest<CopyInput, NullData>(
     "copyfromremote", { sourcePath, targetPath, items, move: false })
 export const copyToRemote = (sourcePath: string, targetPath: string, items: CopyFile[]) => jsonRequest<CopyInput, NullData>(
@@ -53,4 +55,3 @@ const jsonRequest = async <TIn, TOut>(cmd: string, msg: TIn) => {
     return res as TOut
 }
 
-const jsonRequestA = async <T>(cmd: string) => await fetch(`http://localhost:8080/requests/${cmd}`) as T

@@ -1,10 +1,10 @@
-import { ExtensionProps } from "web-dialog-react"
+import { type ExtensionProps } from "web-dialog-react"
 import './OpenWith.css'
-import VirtualTable, { VirtualTableHandle } from "virtual-table-react"
+import VirtualTable, { type VirtualTableHandle } from "virtual-table-react"
 import { useEffect, useRef, useState } from "react"
-import New from "@/svg/New"
-import { App } from "@/requests/model"
-import { getAllApps, getRecommendedApps } from "@/requests/requests"
+import type { App } from "../../requests/model"
+import { getAllApps, getRecommendedApps } from "../../requests/requests"
+import New from "../../svg/New"
 
 export type OpenWithProps = {
     fileName: string,

@@ -1,5 +1,5 @@
 import React, { useRef } from "react"
-import Commander, { CommanderHandle } from "./components/Commander"
+import Commander, { type CommanderHandle } from "./components/Commander"
 import WithDialog from 'web-dialog-react'
 import './themes/linux.css'
 import './App.css'

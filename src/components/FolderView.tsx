@@ -2,10 +2,10 @@ import { forwardRef, useCallback, useContext, useEffect, useEffectEvent, useImpe
 import VirtualTable, { type OnSort, type TableColumns, type VirtualTableHandle } from "virtual-table-react"
 import './FolderView.css'
 import { getItemsProvider } from "../items-provider/provider"
-import { RemotesItem } from "../items-provider/items"
+import { type RemotesItem } from "../items-provider/items"
 import { IItemsProvider } from "../items-provider/base-provider"
 import { initializeHistory } from "../history"
-import RestrictionView, { RestrictionViewHandle } from "./RestrictionView"
+import RestrictionView, { type RestrictionViewHandle } from "./RestrictionView"
 import { ID_LEFT } from "./Commander"
 import {
     extendedInfosEventsLeft$, extendedInfosEventsRight$,
@@ -19,8 +19,8 @@ import { EXTENDED_RENAME, showExtendedRename } from "../items-provider/extended-
 import { DialogContext } from "web-dialog-react"
 import { FILE } from "../items-provider/file-item-provider"
 import { REMOTE } from "../items-provider/remote-provider"
-import { DirectoryItem, ExtendedInfos, Item, SystemError } from "../requests/model"
-import { isWindows } from "@/platform/platform"
+import { type DirectoryItem, type ExtendedInfos, type Item, type SystemError } from "../requests/model"
+import { isWindows } from "../platform/platform"
 import { windowsOpenWith } from "../platform/windows/folderview"
 import { linuxOpenWith } from "../platform/linux/folderview"
 
@@ -515,7 +515,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         if (itemsProvider.current && itemsProvider.current.getId() == FILE)
         {
             e.preventDefault()
-            const items = getSelectedItems().map(n => itemsProvider.current?.appendPath(path, n.name)??"")
+            //const items = getSelectedItems().map(n => itemsProvider.current?.appendPath(path, n.name)??"")
             //window.electronAPI.startDrag(items)
         }
     }

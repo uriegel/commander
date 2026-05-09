@@ -1,13 +1,13 @@
-import { DialogHandle, ResultType } from "web-dialog-react"
-import { EnterData, IItemsProvider, OnEnterResult } from "./base-provider"
-import ExtendedRename, { ExtendedRenameProps } from "../components/dialogs/ExtendedRename"
+import { type DialogHandle, ResultType } from "web-dialog-react"
+import { type EnterData, IItemsProvider, type OnEnterResult } from "./base-provider"
+import ExtendedRename, { type ExtendedRenameProps } from "../components/dialogs/ExtendedRename"
 import { FileItemProvider, getRowClasses } from "./file-item-provider"
-import { TableColumns } from "virtual-table-react"
+import { type TableColumns } from "virtual-table-react"
 import IconName from "../components/IconName"
-import { ExtendedRenameFileItem, IconNameType } from "./items"
+import { type ExtendedRenameFileItem, IconNameType } from "./items"
 import { formatDateTime, formatSize } from "./provider"
 import { extendedRenameRequest } from "../requests/requests"
-import { Item } from "../requests/model"
+import { type Item } from "../requests/model"
 
 export const EXTENDED_RENAME = "EXTENDED_RENAME"
 
@@ -75,7 +75,7 @@ export class ExtendedRenameProvider extends FileItemProvider {
           : super.onEnter(enterData)
      }     
 
-     async onRename(id: string, path: string, items: ExtendedRenameFileItem[], dialog: DialogHandle) {
+     async onRename(_id: string, path: string, items: ExtendedRenameFileItem[], dialog: DialogHandle) {
           const res = await dialog.show({
                text: "Umbenennungen starten?",
                btnOk: true,

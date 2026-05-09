@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react"
 import "./ProgressPart.css"
-import { ExtensionProps } from "web-dialog-react"
+import { type ExtensionProps } from "web-dialog-react"
 import ProgressBar from "../ProgressBar"
-import { deleteProgressEvents$, deleteStopEvents$ } from "@/requests/events"
-import { ProgressProps } from "../Statusbar"
+import { type ProgressProps } from "../Statusbar"
+import { deleteProgressEvents$, deleteStopEvents$ } from "../../requests/events"
 
 const secondsToTime = (timeInSecs: number) => {
     const secs = timeInSecs % 60
