@@ -1,0 +1,1 @@
+export const isWindowsRoot = (path?: string) => path == "root" || !path || path.substring(1) == ":\\.."

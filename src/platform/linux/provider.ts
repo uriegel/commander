@@ -1,0 +1,1 @@
+export const isLinuxRoot = (path?: string) => path == "root" || !path || path == "/.."

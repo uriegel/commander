@@ -1,1 +1,0 @@
-export const isRoot = (path?: string) => path == "root" || !path || path == "/.."

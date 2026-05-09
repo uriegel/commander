@@ -7,20 +7,20 @@ import { addNetworkShare } from "@/requests/requests"
 import { retryOnErrorAsync } from "functional-extensions"
 import { DialogHandle, ResultType } from "web-dialog-react"
 
-export const appendPath = (path: string, subPath: string) => {
+export const windowsAppendPath = (path: string, subPath: string) => {
     return path.endsWith("\\") || subPath.startsWith('\\')
         ? path + subPath    
         : path + "\\" + subPath
 }
 
-export const getColumns = () => [
+export const windowsGetColumns = () => [
         { name: "Name", isSortable: true, subColumn: "Erw." },
         { name: "Datum", isSortable: true },
         { name: "Größe", isSortable: true, isRightAligned: true },
         { name: "Version", isSortable: true }        
     ]
 
-export const renderRow = (item: DirectoryItem) => [
+export const windowsRenderRow = (item: DirectoryItem) => [
 	(<IconName namePart={item.name} type={
 			item.isParent
 			? IconNameType.Parent
@@ -33,7 +33,7 @@ export const renderRow = (item: DirectoryItem) => [
     formatVersion(item.fileVersion)
 ]
 
-export const sortVersion = (a: DirectoryItem, b: DirectoryItem) =>
+export const windowsSortVersion = (a: DirectoryItem, b: DirectoryItem) =>
     a.fileVersion && !b.fileVersion
     ? 1
     : !a.fileVersion && b.fileVersion   
@@ -58,10 +58,7 @@ export const sortVersion = (a: DirectoryItem, b: DirectoryItem) =>
     : 0
     : 0            
 
-const formatVersion = (version?: VersionInfo) => 
-    version ? `${version.major}.${version.minor}.${version.build}.${version.patch}` : ""
-
-export const onGetItemsError = async (e: unknown, share: string, dialog?: DialogHandle, setErrorText?: (msg: string)=>void) => {
+export const windowsOnGetItemsError = async (e: unknown, share: string, dialog?: DialogHandle, setErrorText?: (msg: string)=>void) => {
     if (!dialog || !setErrorText)
         throw "wrong parameters"
 	const se = e as SystemError
@@ -95,3 +92,5 @@ export const onGetItemsError = async (e: unknown, share: string, dialog?: Dialog
 }
 
 
+const formatVersion = (version?: VersionInfo) => 
+    version ? `${version.major}.${version.minor}.${version.build}.${version.patch}` : ""

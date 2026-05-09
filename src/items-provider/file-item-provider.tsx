@@ -2,10 +2,10 @@ import { TableColumns } from "virtual-table-react"
 import { EnterData, IItemsProvider, OnEnterResult } from "./base-provider"
 import { getSelectedItemsText } from "./provider"
 import { createFolderRequest, deleteRequest, getFiles, mountRequest, onEnter, renameRequest } from "../requests/requests"
-import { appendPath, getColumns, onGetItemsError, sortVersion, renderRow } from '@platform/items-provider/file-item-provider'
 import { DialogHandle, ResultType } from "web-dialog-react"
 import { retryOnErrorAsync } from "functional-extensions"
 import { DirectoryItem, Item } from "../requests/model"
+import { appendPath, getColumns, renderRow } from "../platform/file-item-provider"
 
 export const FILE = "File"
 

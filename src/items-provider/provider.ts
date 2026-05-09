@@ -1,4 +1,3 @@
-import { isRoot } from '@platform/items-provider/provider'
 import { IItemsProvider } from "./base-provider"
 import { FILE, FileItemProvider } from "./file-item-provider"
 import { ROOT, RootItemProvider } from "./root-item-provider"
@@ -7,9 +6,12 @@ import { FAVORITES, FavoritesProvider } from './favorites-provider'
 import { Remotes, RemotesItemProvider } from './remotes-provider'
 import { RemoteItemProvider } from './remote-provider'
 import { Item } from '../requests/model'
+import { isWindows } from "../platform/platform"
+import { isLinuxRoot } from "../platform/linux/provider"
+import { isWindowsRoot } from "../platform/windows/provider"
 
 export const getItemsProvider = (path?: string, recentProvider?: IItemsProvider): IItemsProvider => 
-    isRoot(path)
+    (isWindows ? isWindowsRoot(path) : isLinuxRoot(path))
     ?  recentProvider?.getId() == ROOT ? recentProvider : new RootItemProvider()
     : path == "fav"
     ? recentProvider?.getId() == FAVORITES ? recentProvider : new FavoritesProvider()

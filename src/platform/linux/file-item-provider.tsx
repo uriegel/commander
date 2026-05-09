@@ -4,19 +4,19 @@ import { formatDateTime, formatSize } from "@/items-provider/provider"
 import { DirectoryItem } from "@/requests/model"
 import { DialogHandle } from "web-dialog-react"
 
-export const appendPath = (path: string, subPath: string) => {
+export const linuxAppendPath = (path: string, subPath: string) => {
     return path.endsWith("/") || subPath.startsWith('/')
         ? path + subPath
         : path + "/" + subPath
 }
 
-export const getColumns = () => [
+export const linuxGetColumns = () => [
         { name: "Name", isSortable: true, subColumn: "Erw." },
         { name: "Datum", isSortable: true },
         { name: "Größe", isSortable: true, isRightAligned: true }
     ]
 
-export const renderRow = (item: DirectoryItem) => [
+export const linuxRenderRow = (item: DirectoryItem) => [
 	(<IconName namePart={item.name} type={
 			item.isParent
 			? IconNameType.Parent
@@ -28,8 +28,8 @@ export const renderRow = (item: DirectoryItem) => [
 	formatSize(item.size)
 ]
 
-export const onGetItemsError = async (e: unknown, _share: string, _dialog?: DialogHandle, _setErrorText?: (msg: string)=>void) => {
+export const linuxOnGetItemsError = async (e: unknown, _share: string, _dialog?: DialogHandle, _setErrorText?: (msg: string)=>void) => {
 	throw e
 }
 
-export const sortVersion = () => 0
+export const linuxSortVersion = () => 0
