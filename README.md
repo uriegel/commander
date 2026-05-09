@@ -22,8 +22,9 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Version race condition (c:\Windows)
-* Version wrong Types
+* vite react refactoring
+* Windows Version wrong Types
+* Windows Drag 'n Drop
 
 * Error handling, especially Windows, check if network path, then UAC
 * Error handling GFileError

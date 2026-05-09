@@ -137,13 +137,6 @@ static partial class Directory
         Requests.SendJson(new(folderId, EventCmd.ExtendedInfosStop, new EventData { RequestId = requestId }));
     }
 
-    static bool FilterExifItems(DirectoryItem item)
-    => item.Name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
-        || item.Name.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase)
-        || item.Name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
-        || item.Name.EndsWith("png", StringComparison.OrdinalIgnoreCase);
-
-
     static readonly ConcurrentDictionary<string, ExtendedItemsData> extendedItemsDatas = [];
     static readonly ConcurrentDictionary<string, SemaphoreSlim> lockers = [];
 }

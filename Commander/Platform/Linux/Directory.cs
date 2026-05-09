@@ -83,6 +83,12 @@ static partial class Directory
             return new AppInfo(n.GetName(), n.GetExecutable(), iconPath?.Name, iconPath?.IsPath == true);
         })
         .OrderBy(n => n.Name)];
+
+    static bool FilterExifItems(DirectoryItem item)
+    => item.Name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
+        || item.Name.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase)
+        || item.Name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
+        || item.Name.EndsWith("png", StringComparison.OrdinalIgnoreCase);
 }
 
 #endif

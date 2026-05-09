@@ -142,10 +142,18 @@ static partial class Directory
 
     public static void CheckGetFilesAccessException(this string path)
     {
-        var kind =  path.GetPathKind();
+        var kind = path.GetPathKind();
         if (kind == PathKind.Unc || kind == PathKind.MappedNetworkDrive)
             throw new NotMountedException();
     }
+    
+    static bool FilterExifItems(DirectoryItem item)
+    => item.Name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
+        || item.Name.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase)
+        || item.Name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
+        || item.Name.EndsWith("png", StringComparison.OrdinalIgnoreCase)
+        || item.Name.EndsWith("exe", StringComparison.OrdinalIgnoreCase)
+        || item.Name.EndsWith("dll", StringComparison.OrdinalIgnoreCase);
 }
 
 #endif
