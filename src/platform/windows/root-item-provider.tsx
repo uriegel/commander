@@ -4,13 +4,13 @@ import { formatSize } from "@/items-provider/provider"
 import { RootItem } from "@/requests/model"
 import { Column } from "virtual-table-react"
 
-export const getColumns = () => [
+export const windowsGetColumns = () => [
                 { name: "Name" },
                 { name: "Bezeichnung" },
                 { name: "Größe", isRightAligned: true }
 ] as Column[]
             
-export const renderRow = (item: RootItem) => [
+export const windowsRenderRow = (item: RootItem) => [
     (<IconName namePart={item.name} type={
         item.type == 'HOME'
         ? IconNameType.Home

@@ -5,7 +5,7 @@ import { createFolderRequest, deleteRequest, getFiles, mountRequest, onEnter, re
 import { DialogHandle, ResultType } from "web-dialog-react"
 import { retryOnErrorAsync } from "functional-extensions"
 import { DirectoryItem, Item } from "../requests/model"
-import { appendPath, getColumns, renderRow } from "../platform/file-item-provider"
+import { appendPath, getColumns, onGetItemsError, renderRow } from "../platform/file-item-provider"
 
 export const FILE = "File"
 
