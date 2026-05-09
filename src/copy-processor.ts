@@ -74,11 +74,6 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
 
 export const onFilesDrop = async (fileList: FileList, targetFolder: FolderViewHandle | null, 
         move: boolean, dialog: DialogHandle, setErrorText: (txt: string) => void, backgroundAction: boolean) => {
-    if (!canCopy(backgroundAction)) {
-        setErrorText("Eine Hintergrundaktion ist bereits am Laufen!")
-        return
-    }
-
     const sourceProvider = new FileItemProvider()
     const targetProvider = targetFolder?.getCurrentItemsProvider()
     const copyProcessor = getCopyProcessor(FILE, targetProvider?.getId())
@@ -94,7 +89,7 @@ export const onFilesDrop = async (fileList: FileList, targetFolder: FolderViewHa
         return
     await copyProcessor.refresh(targetFolder)
 
-    const path = window.env.getDropPath(fileList[0]).getParentPath()
+    const path = "" //window.env.getDropPath(fileList[0]).getParentPath()
     const files = await extendCopyItems(path, Array.from(fileList).map(f => ({
         name: f.name,
         size: f.size,

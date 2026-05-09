@@ -2,7 +2,7 @@ import OpenWith, { OpenWithProps } from "@/components/dialogs/OpenWith"
 import { openFile } from "@/requests/requests"
 import { DialogHandle, ResultType } from "web-dialog-react"
 
-export const openWith = async (name: string, path: string, dialog: DialogHandle) => {
+export const linuxOpenWith = async (name: string, path: string, dialog: DialogHandle) => {
     
     const extensionProps = { fileName: name, filePath: path } as OpenWithProps
     const res = await dialog.show({

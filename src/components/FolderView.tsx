@@ -19,8 +19,10 @@ import { EXTENDED_RENAME, showExtendedRename } from "../items-provider/extended-
 import { DialogContext } from "web-dialog-react"
 import { FILE } from "../items-provider/file-item-provider"
 import { REMOTE } from "../items-provider/remote-provider"
-import { openWith as openWithPlatform } from '@platform/folderview'
 import { DirectoryItem, ExtendedInfos, Item, SystemError } from "../requests/model"
+import { isWindows } from "@/platform/platform"
+import { windowsOpenWith } from "../platform/windows/folderview"
+import { linuxOpenWith } from "../platform/linux/folderview"
 
 export type FolderViewHandle = {
     id: string
@@ -489,7 +491,9 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     const showProperties = () => reqOnEnter(getSelectedItems()[0].name, path, undefined, true)
-    const openWith = () => openWithPlatform(getSelectedItems()[0].name, path, dialog)
+    const openWith = () => isWindows
+                            ? windowsOpenWith(getSelectedItems()[0].name, path)
+                            : linuxOpenWith(getSelectedItems()[0].name, path, dialog)
 
     const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         if (itemsProvider.current?.getId() != FILE && itemsProvider.current?.getId() != REMOTE)
@@ -512,7 +516,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         {
             e.preventDefault()
             const items = getSelectedItems().map(n => itemsProvider.current?.appendPath(path, n.name)??"")
-            window.electronAPI.startDrag(items)
+            //window.electronAPI.startDrag(items)
         }
     }
 
@@ -532,3 +536,4 @@ let requestIdSeed = 0
 const getRequestId = () => ++requestIdSeed
 
 export default FolderView
+
