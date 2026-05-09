@@ -22,8 +22,8 @@ static class WebView
 #else
             .FromResourceTemplate("template", Commander.Platform.Linux.Window.Register)
 #endif
-            .DebugUrl("http://localhost:5173/")
-            .Url("http://localhost:8080")
+            .DebugUrl($"http://localhost:5173/#platform={Globals.Platform}")
+            .Url($"http://localhost:8080##platform={Globals.Platform}")
             .CanClose(BackgroundJobs.IsIdle);
     
     public static readonly WebWindowNetCore.WebView webView;

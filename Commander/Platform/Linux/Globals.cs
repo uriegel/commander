@@ -30,6 +30,8 @@ static partial class Globals
         p.Start();
         p.WaitForExit();
     }
+
+    public static string Platform { get; } = "linux";
 }
 
 #endif 

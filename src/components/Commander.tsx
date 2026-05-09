@@ -15,6 +15,7 @@ import { copyItems, onFilesDrop } from "../copy-processor"
 import MenuView from "@platform/MenuView"
 import { cmdEvents$, copyStopEvents$, PreviewModeEvents$, showHiddenEvents$, showViewerEvents$, themeChangedEvents$ } from "../requests/events"
 import { Item } from "../requests/model"
+import { platformWindows } from "../App"
 
 export const ID_LEFT = "left"
 export const ID_RIGHT = "right"

@@ -5,6 +5,8 @@ import './themes/linux.css'
 import './App.css'
 import 'functional-extensions'
 
+export const platformWindows = window.location.hash.endsWith("windows")
+
 const App = () => {
 	const commander = useRef(null as CommanderHandle | null)
 
