@@ -5,17 +5,11 @@ import { copy, copyFromRemote, copyToRemote, extendCopyItems, flattenItems } fro
 import { FILE, FileItemProvider } from "./items-provider/file-item-provider"
 import { getSelectedItemsText } from "./items-provider/provider"
 import CopyConflicts from "./components/dialogs/CopyConflicts"
-import { canCopy } from '@platform/copy-processor'
 import { REMOTE } from "./items-provider/remote-provider"
 import { CopyFile, CopyItem, DirectoryItem, NullData, SystemError } from "./requests/model"
 
 export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFolder: FolderViewHandle | null,
-        move: boolean, dialog: DialogHandle, setErrorText: (txt: string) => void, backgroundAction: boolean) => {
-    if (!canCopy(backgroundAction)) {
-        setErrorText("Eine Hintergrundaktion ist bereits am Laufen!")
-        return
-    }
-
+        move: boolean, dialog: DialogHandle, setErrorText: (txt: string) => void) => {
     const sourceProvider = sourceFolder?.getCurrentItemsProvider()
     const targetProvider = targetFolder?.getCurrentItemsProvider()
     const copyProcessor = getCopyProcessor(sourceProvider?.getId(), targetProvider?.getId())
