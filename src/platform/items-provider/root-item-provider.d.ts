@@ -1,4 +1,4 @@
-import { RootItem } from "@/renderer/items-provider/items"
+import { RootItem } from "@/items-provider/items"
 import { JSX } from "react"
 import { Column } from "virtual-table-react"
 

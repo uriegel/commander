@@ -1,6 +1,6 @@
-import Menu from "@/renderer/components/Menu"
+import Menu from "@/components/Menu"
 import { MenuViewProps } from "../MenuView"
-import Titlebar from "@/renderer/components/Titlebar"
+import Titlebar from "@/components/Titlebar"
 import { useContext } from "react"
 import { DialogContext } from "web-dialog-react"
 

@@ -4,16 +4,16 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
-  root: "src/renderer",
+  root: "src",
   base: "./",
   resolve: {
     alias: {
       '@': path.resolve(__dirname, "src"),
-      '@platform': path.resolve(__dirname, `src/renderer/platform/${process.platform}`)
+      '@platform': path.resolve(__dirname, `src/platform/${process.platform}`)
     }
   },
   build: {
-    outDir: "../../dist/renderer",
+    outDir: "../dist",
     emptyOutDir: true,
   },
 })

@@ -1,4 +1,4 @@
-import { FileItem } from "@/renderer/items-provider/items"
+import { FileItem } from "@/items-provider/items"
 import { JSX } from "react"
 import { Column } from "virtual-table-react"
 import { DialogHandle } from "web-dialog-react"

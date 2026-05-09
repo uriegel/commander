@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import type { ExtensionProps } from 'web-dialog-react'
-import { RemotesItem } from '@/renderer/items-provider/items'
+import { RemotesItem } from '@/items-provider/items'
 import './Remote.css'
-import { Item } from '@/renderer/requests/model'
+import { Item } from '@/requests/model'
 
 const Remote = ({onChange, props }: ExtensionProps) => {
 

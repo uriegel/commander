@@ -2,9 +2,9 @@ import { ExtensionProps } from "web-dialog-react"
 import './OpenWith.css'
 import VirtualTable, { VirtualTableHandle } from "virtual-table-react"
 import { useEffect, useRef, useState } from "react"
-import New from "@/renderer/svg/New"
-import { App } from "@/renderer/requests/model"
-import { getAllApps, getRecommendedApps } from "@/renderer/requests/requests"
+import New from "@/svg/New"
+import { App } from "@/requests/model"
+import { getAllApps, getRecommendedApps } from "@/requests/requests"
 
 export type OpenWithProps = {
     fileName: string,

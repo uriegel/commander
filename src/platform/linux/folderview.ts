@@ -1,5 +1,5 @@
-import OpenWith, { OpenWithProps } from "@/renderer/components/dialogs/OpenWith"
-import { openFile } from "@/renderer/requests/requests"
+import OpenWith, { OpenWithProps } from "@/components/dialogs/OpenWith"
+import { openFile } from "@/requests/requests"
 import { DialogHandle, ResultType } from "web-dialog-react"
 
 export const openWith = async (name: string, path: string, dialog: DialogHandle) => {

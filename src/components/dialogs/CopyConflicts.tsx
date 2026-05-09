@@ -3,9 +3,9 @@ import VirtualTable, { type VirtualTableHandle } from 'virtual-table-react'
 import './CopyConflicts.css'
 import IconName from '../IconName'
 import type { ExtensionProps } from 'web-dialog-react'
-import { CopyItem } from '@/renderer/copy-processor'
-import { IconNameType } from '@/renderer/items-provider/items'
-import { formatDateTime, formatSize } from '@/renderer/items-provider/provider'
+import { CopyItem } from '@/copy-processor'
+import { IconNameType } from '@/items-provider/items'
+import { formatDateTime, formatSize } from '@/items-provider/provider'
 
 const CopyConflicts = ({ props }: ExtensionProps) => {
 
