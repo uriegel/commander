@@ -9,7 +9,7 @@ import { Map as LMap } from "leaflet"
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
 import { useEffect, useRef } from 'react'
 
-export const DefaultIcon = L.icon({
+const DefaultIcon = L.icon({
     iconRetinaUrl: markerIcon2x,
     iconUrl: markerIcon,
     shadowUrl: markerShadow,

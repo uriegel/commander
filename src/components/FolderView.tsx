@@ -23,6 +23,7 @@ import { type DirectoryItem, type ExtendedInfos, type Item, type SystemError } f
 import { isWindows } from "../platform/platform"
 import { windowsOpenWith } from "../platform/windows/folderview"
 import { linuxOpenWith } from "../platform/linux/folderview"
+import { dragStart } from "../webview"
 
 export type FolderViewHandle = {
     id: string
@@ -511,12 +512,14 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         e.stopPropagation()
     }
 
-    const onDragStart = (e: React.DragEvent<Element>) => {
-        if (itemsProvider.current && itemsProvider.current.getId() == FILE)
+    const onDragStart = async (e: React.DragEvent<Element>) => {
+        if (isWindows && itemsProvider.current && itemsProvider.current.getId() == FILE)
         {
             e.preventDefault()
-            //const items = getSelectedItems().map(n => itemsProvider.current?.appendPath(path, n.name)??"")
-            //window.electronAPI.startDrag(items)
+            const items = getSelectedItems().map(n => n.name)
+            const dragRes = await dragStart(path, items) 
+            if (dragRes)
+                refresh()
         }
     }
 
