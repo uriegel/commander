@@ -72,7 +72,7 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
     }
 }
 
-export const onFilesDrop = async (fileList: FileList, targetFolder: FolderViewHandle | null, 
+export const onFilesDrop = async (fileList: string[], targetFolder: FolderViewHandle | null, 
         move: boolean, dialog: DialogHandle, setErrorText: (txt: string) => void) => {
     const sourceProvider = new FileItemProvider()
     const targetProvider = targetFolder?.getCurrentItemsProvider()

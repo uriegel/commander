@@ -10,6 +10,9 @@ declare global {
 
 type Webview = {
     hostObjects: HostObjects
+    postMessageWithAdditionalObjects: (msg: string, files: string[]) => void
+    addEventListener: (name: string, handler: (e: FilesEvent)=>void) => void
+    removeEventListener: (name: string, handler: (e: FilesEvent)=>void) => void
 }
 
 type HostObjects = {
@@ -19,5 +22,9 @@ type HostObjects = {
 type Callback = {
     DragStart: (items: string)=>Promise<boolean>
 }
- 
+
+export type FilesEvent = {
+    data: string[]
+}
+
 export { };

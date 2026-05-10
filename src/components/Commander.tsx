@@ -230,7 +230,7 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 			setItemCount(count)
 	}
 
-	const filesDrop = (files: FileList, move: boolean, folderView: FolderViewHandle|null) => 
+	const filesDrop = (files: string[], move: boolean, folderView: FolderViewHandle|null) => 
         onFilesDrop(files, folderView, move, dialog, setErrorText)
 	
 	const FolderLeft = () => (
