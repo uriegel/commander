@@ -89,7 +89,7 @@ export const onFilesDrop = async (fileList: string[], targetFolder: FolderViewHa
         return
     await copyProcessor.refresh(targetFolder)
 
-    const path = "" //window.env.getDropPath(fileList[0]).getParentPath()
+    const path = fileList[0].getParentPath()
     const files = await extendCopyItems(fileList)
     const items = makeCopyItems(files, targetFolder.getItems() as DirectoryItem[])
     if (items.length == 0)

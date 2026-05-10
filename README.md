@@ -22,13 +22,15 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Windows Drop
+* Styling ListView in Copy conflicts
 
 * Error handling, especially Windows, check if network path, then UAC
 * Error handling GFileError
 * Error handling  for copying
 
 * Windows remotes
+
+* Copy file from folderView to the same folderView: prevent drop
 
 * css as react module
 

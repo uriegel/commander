@@ -76,11 +76,6 @@ static partial class Directory
 
     public static void AddNetworkShare(AddNetworkShareInput input) => throw new NotImplementedException();
 
-    public static DirectoryItem[] ExtendCopyItems(string[] items)
-        => [.. items.Select(n => File.Exists(n)
-                ? DirectoryItem.CreateFileItem(new FileInfo(n), -1)
-                : DirectoryItem.CreateDirItem(new DirectoryInfo(n)))];
-        
     static AppInfo[] GetAppInfos(this IEnumerable<AppInfoHandle> appinfo)
         => [.. appinfo.Select(n =>
         {

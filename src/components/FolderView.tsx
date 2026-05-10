@@ -511,13 +511,13 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const onDrop = async (e: React.DragEvent<HTMLDivElement>) => {
         setIsDragOver(false)
+        e.preventDefault()
+        e.stopPropagation()
         if (e.dataTransfer.dropEffect != "move" && e.dataTransfer.dropEffect != "copy")
             return
 
         const resolvedFiles = await resolveDroppedFiles(e.dataTransfer.files)
         onFilesDrop(resolvedFiles, e.dataTransfer.dropEffect == "move")
-        e.preventDefault()
-        e.stopPropagation()
     }
 
     const onDragStart = async (e: React.DragEvent<Element>) => {

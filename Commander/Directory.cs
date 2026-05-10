@@ -88,6 +88,12 @@ static partial class Directory
             System.IO.Directory.Move(input.Path.AppendPath("__RENAMING__" + item.NewName), input.Path.AppendPath(item.NewName));
     }
 
+    public static DirectoryItem[] ExtendCopyItems(string[] items)
+        => [.. items.Select(n => File.Exists(n)
+                ? DirectoryItem.CreateFileItem(new FileInfo(n), -1)
+                : DirectoryItem.CreateDirItem(new DirectoryInfo(n)))];
+
+
     static void CancelExifs(string folderId)
     {
         if (extendedItemsDatas.TryRemove(folderId, out var data))

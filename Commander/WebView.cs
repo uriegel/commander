@@ -14,6 +14,7 @@ static class WebView
             .InitialBounds(600, 800)
             .SaveBounds()
             .DevTools()
+            .DefaultContextMenuDisabled()
             .BackgroundColor(Color.Transparent)
 #if Windows
             .OnFormCreating(Form.OnCreate)
