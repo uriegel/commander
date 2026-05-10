@@ -1,7 +1,3 @@
-body {
-    --drag-highlight: rgb(185, 255, 255);
-}
-
 .folder {
     position: relative;
     width: 100%;
@@ -14,14 +10,7 @@ body {
 .tableContainer {
     flex-grow: 1;
     position: relative;
-}
-
-.dragStarted {
-    filter: blur(1px);
-}
-
-.dragging {
-    background-color: var(--drag-highlight);
+    transition: filter 0.8s ease;
 }
 
 .pathInput {
@@ -35,22 +24,10 @@ body {
     background-color: var(--light-background-color);    
 }
 
-tr .exif {
-    color: var(--exif-color);
+.dragStarted {
+    filter: blur(1px);
 }
 
-tr.isSelected .exif {
-    color: var(--selected-exif-color);
-}
-
-tr.notMounted, tr.hidden {
-    Opacity: 0.5;
-}
-
-tr.disabled {
-    Opacity: 0.4;
-}
-
-tr.notRunning svg {
-    Opacity: 0.4;
+.dragging {
+    background-color: var(--drag-highlight);
 }

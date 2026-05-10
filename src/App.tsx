@@ -3,6 +3,7 @@ import Commander, { type CommanderHandle } from "./components/Commander"
 import WithDialog from 'web-dialog-react'
 import './themes/linux.css'
 import './App.css'
+import './global.css'
 import 'functional-extensions'
 
 const App = () => {

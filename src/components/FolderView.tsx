@@ -1,6 +1,5 @@
 import { forwardRef, useCallback, useContext, useEffect, useEffectEvent, useImperativeHandle, useRef, useState } from "react"
 import VirtualTable, { type OnSort, type TableColumns, type VirtualTableHandle } from "virtual-table-react"
-import './FolderView.css'
 import { getItemsProvider } from "../items-provider/provider"
 import { type RemotesItem } from "../items-provider/items"
 import { IItemsProvider } from "../items-provider/base-provider"
@@ -24,6 +23,7 @@ import { isWindows } from "../platform/platform"
 import { windowsOpenWith } from "../platform/windows/folderview"
 import { linuxOpenWith } from "../platform/linux/folderview"
 import { dragStart } from "../webview"
+import styles from './FolderView.module.css'
 
 export type FolderViewHandle = {
     id: string
@@ -80,7 +80,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     const [items, setItems] = useState([] as Item[])
     const [path, setPath] = useState("")
-
+    const [isDragging, setIsDragging] = useState(false)
+    
     const itemsProvider = useRef<IItemsProvider>(undefined)
     const sortIndex = useRef(0)
     const sortDescending = useRef(false)
@@ -517,16 +518,18 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         {
             e.preventDefault()
             const items = getSelectedItems().map(n => n.name)
+            setIsDragging(true)
             const dragRes = await dragStart(path, items) 
             if (dragRes)
                 refresh()
+            setIsDragging(false)
         }
     }
 
     return (
-        <div className="folder" onFocus={onFocusChanged}>
-            <input ref={input} className="pathInput" spellCheck={false} value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
-            <div className="tableContainer" onKeyDown={onKeyDown} onDragOver={onDragOver} onDrop={onDrop} >
+        <div className={styles.folder} onFocus={onFocusChanged}>
+            <input ref={input} className={styles.pathInput} spellCheck={false} value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
+            <div className={`${styles.tableContainer} ${isDragging ? styles.dragStarted : ""}`} onKeyDown={onKeyDown} onDragOver={onDragOver} onDrop={onDrop} >
                 <VirtualTable ref={virtualTable} items={items} onColumnWidths={onColumnWidths} onEnter={onEnter} onPosition={onPositionChanged} onSort={onSort} 
                     onItemClick={onItemClick} onDragStart={onDragStart} />
             </div>

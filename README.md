@@ -22,7 +22,6 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Windows Drag  dragStarted style
 * Windows Drop
 
 * Error handling, especially Windows, check if network path, then UAC
