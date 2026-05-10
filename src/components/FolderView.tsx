@@ -536,7 +536,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     return (
         <div className={styles.folder} onFocus={onFocusChanged}>
             <input title="Pfadeingabe" ref={input} className={styles.pathInput} spellCheck={false} value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
-            <div className={`${styles.tableContainer} ${isDragging ? styles.dragStarted : ""} ${isDragOver ? styles.dragOver : ""}`} onKeyDown={onKeyDown}
+            <div className={`tableContainer ${isDragging ? styles.dragStarted : ""} ${isDragOver ? styles.dragOver : ""}`} onKeyDown={onKeyDown}
                 onDragOver={onDragOver} onDrop={onDrop} onDragLeave={onDragLeave} >
                 <VirtualTable ref={virtualTable} items={items} onColumnWidths={onColumnWidths} onEnter={onEnter} onPosition={onPositionChanged} onSort={onSort} 
                     onItemClick={onItemClick} onDragStart={onDragStart} />

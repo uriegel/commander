@@ -7,12 +7,6 @@
     transition: background-color 0.3s;
 }
 
-.tableContainer {
-    flex-grow: 1;
-    position: relative;
-    transition: background-color 0.5s ease, filter 0.5s ease;
-}
-
 .pathInput {
     margin-right: 3px;
     border-style: none;

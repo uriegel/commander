@@ -2,6 +2,12 @@ body {
     --drag-highlight: rgb(185, 255, 255);
 }
 
+.tableContainer {
+    flex-grow: 1;
+    position: relative;
+    transition: background-color 0.5s ease, filter 0.5s ease;
+}
+
 tr .exif {
     color: var(--exif-color);
 }

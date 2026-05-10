@@ -22,7 +22,7 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Styling ListView in Copy conflicts
+* Check File dragging in Linux
 
 * Error handling, especially Windows, check if network path, then UAC
 * Error handling GFileError
