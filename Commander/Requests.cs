@@ -235,6 +235,16 @@ static class Requests
         await request.SendJsonAsync(new NullData());
         return true;
     }
+
+    public static async Task<bool> ExtendCopyItems(IRequest request)
+    {
+        var input = await request.DeserializeAsync<ExtendCopyItemsInput>();
+        var res = input != null
+            ? Directory.ExtendCopyItems(input.Items)
+            : [];
+        await request.SendJsonAsync(res);
+        return true;
+    }
     
     public static async Task<bool> GetIconFromName(IRequest request)
     {

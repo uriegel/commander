@@ -2,7 +2,7 @@ import {
     type AddNetworkShareInput,
     type App,
     type CmdInput, type CopyFile, type CopyInput, type CopyItem, type CreateFolderInput, type CreateRemoteFolderInput, type DeleteInput,
-    type DirectoryItem, type ExtendedRenameInput, type ExtendedRenameItem, type ExtendedRenameOutput, type FlatCopyItem, type FlattenItemsInput,
+    type DirectoryItem, type ExtendCopyItemsInput, type ExtendedRenameInput, type ExtendedRenameItem, type ExtendedRenameOutput, type FlatCopyItem, type FlattenItemsInput,
     type GetAccentColorOutput, type GetFilesInput, type GetItemsFinishedInput, type GetItemsOutput, type getRecommendedAppsInput, type MountInput,
     type MountOutput, type NullData, type OnEnterInput, type OpenFileInput, type RenameInput, type SystemError
 } from "./model"
@@ -27,7 +27,7 @@ export const getRemoteFiles = (folderId: string, requestId: number, path: string
     "getremotefiles", { folderId, requestId, path, showHidden })
 export const createRemoteFolderRequest = (path: string, item: string) => jsonRequest<CreateRemoteFolderInput, NullData>("createremotefolder", { path, item })
 export const remoteDeleteRequest = (path: string, items: string[]) => jsonRequest<DeleteInput, NullData>("remotedelete", { path, items })
-export const extendCopyItems = (path: string, items: DirectoryItem[]) => jsonRequest<NullData, DirectoryItem[]>("extendcopyitems", { path, items })
+export const extendCopyItems = (items: string[]) => jsonRequest<ExtendCopyItemsInput, DirectoryItem[]>("extendcopyitems", { items })
 export const copyFromRemote = (sourcePath: string, targetPath: string, items: CopyFile[]) => jsonRequest<CopyInput, NullData>(
     "copyfromremote", { sourcePath, targetPath, items, move: false })
 export const copyToRemote = (sourcePath: string, targetPath: string, items: CopyFile[]) => jsonRequest<CopyInput, NullData>(

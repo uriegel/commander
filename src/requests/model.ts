@@ -89,6 +89,10 @@ export type AddNetworkShareInput = {
     passwd: string
 }
 
+export type ExtendCopyItemsInput = {
+    items: string[]
+}
+
 export type GetAccentColorOutput = {
     color: string
 }
