@@ -81,6 +81,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const [items, setItems] = useState([] as Item[])
     const [path, setPath] = useState("")
     const [isDragging, setIsDragging] = useState(false)
+    const [isDragOver, setIsDragOver] = useState(false)
     
     const itemsProvider = useRef<IItemsProvider>(undefined)
     const sortIndex = useRef(0)
@@ -498,14 +499,18 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                             : linuxOpenWith(getSelectedItems()[0].name, path, dialog)
 
     const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-        if (itemsProvider.current?.getId() != FILE && itemsProvider.current?.getId() != REMOTE)
+        if (isDragging || (itemsProvider.current?.getId() != FILE && itemsProvider.current?.getId() != REMOTE ))
             return
         e.dataTransfer.dropEffect = e.shiftKey ? "move" : "copy"
+        setIsDragOver(true)
         e.preventDefault()
         e.stopPropagation()
     }
 
+    const onDragLeave = () => setIsDragOver(false)
+
     const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        setIsDragOver(false)
         if (e.dataTransfer.dropEffect != "move" && e.dataTransfer.dropEffect != "copy")
             return
         onFilesDrop(e.dataTransfer.files, e.dataTransfer.dropEffect == "move")
@@ -529,7 +534,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     return (
         <div className={styles.folder} onFocus={onFocusChanged}>
             <input ref={input} className={styles.pathInput} spellCheck={false} value={path} onChange={onInputChange} onKeyDown={onInputKeyDown} onFocus={onInputFocus} />
-            <div className={`${styles.tableContainer} ${isDragging ? styles.dragStarted : ""}`} onKeyDown={onKeyDown} onDragOver={onDragOver} onDrop={onDrop} >
+            <div className={`${styles.tableContainer} ${isDragging ? styles.dragStarted : ""} ${isDragOver ? styles.dragOver : ""}`} onKeyDown={onKeyDown}
+                onDragOver={onDragOver} onDrop={onDrop} onDragLeave={onDragLeave} >
                 <VirtualTable ref={virtualTable} items={items} onColumnWidths={onColumnWidths} onEnter={onEnter} onPosition={onPositionChanged} onSort={onSort} 
                     onItemClick={onItemClick} onDragStart={onDragStart} />
             </div>
