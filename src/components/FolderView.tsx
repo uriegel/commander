@@ -531,6 +531,17 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 refresh()
             setIsDragging(false)
         }
+        else if (!isWindows && itemsProvider.current && itemsProvider.current.getId() == FILE)
+        {
+            const items = getSelectedItems()
+            if (items.length != 1)
+                return
+            e.dataTransfer.effectAllowed = "copy"
+            e.dataTransfer.setData(
+                "text/uri-list",
+                `file://${path.appendPath(items[0].name)}`
+            )
+        }
     }
 
     return (

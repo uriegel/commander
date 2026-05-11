@@ -22,8 +22,6 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Check File dragging in Linux
-
 * Error handling, especially Windows, check if network path, then UAC
 * Error handling GFileError
 * Error handling  for copying
