@@ -152,8 +152,10 @@ export type CopyItem = {
     iconPath?:      string
     time?:          string
     size?:          number
+    fileVersion?:   Version
     targetTime?:    string
     targetSize?:    number
+    targetVersion?: Version
 }
 
 export type FlatCopyItem = {

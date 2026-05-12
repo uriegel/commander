@@ -6,7 +6,7 @@ import type { ExtensionProps } from 'web-dialog-react'
 import type { CopyItem } from '../../requests/model'
 import { IconNameType } from '../../items-provider/items'
 import { formatDateTime, formatSize } from '../../items-provider/provider'
-import { getSpecificConflictsColumns } from '../../platform/copy-conflicts'
+import { additionalRowItems, getSpecificConflictsColumns } from '../../platform/copy-conflicts'
 
 const CopyConflicts = ({ props }: ExtensionProps) => {
 
@@ -21,7 +21,7 @@ const CopyConflicts = ({ props }: ExtensionProps) => {
            ...getSpecificConflictsColumns()
 	]
 
-	const renderRowItem = ({ name, iconPath, time, targetTime, size, targetSize }: CopyItem) => {
+	const renderRowItem = ({ name, iconPath, time, targetTime, size, targetSize, fileVersion, targetVersion }: CopyItem) => {
 		const index = name.lastIndexOfAny( ['\\', '/'])
 		const filename = index == -1 ? name : name.substring(index)
 		const subPath = index == -1 ? "" : name.substring(0, index - 1)
@@ -44,7 +44,8 @@ const CopyConflicts = ({ props }: ExtensionProps) => {
 			(<div className={targetSize == size ? "equal" : ""}>
 				<div>{formatSize(size)}</div>
 				<div>{formatSize(targetSize)}</div>
-			</div>)
+			</div>),
+			...additionalRowItems({ name, iconPath, time, targetTime, size, targetSize, fileVersion, targetVersion } as CopyItem)
 		]
 	}
 
@@ -61,7 +62,8 @@ const CopyConflicts = ({ props }: ExtensionProps) => {
 			(props as CopyItem[]).map(n => (
 				{
 					name: n.name, iconPath: n.iconPath, isDirectory: false,
-					time: n.time, size: n.size, targetSize: n.targetSize, targetTime: n.targetTime
+					time: n.time, size: n.size, targetSize: n.targetSize, targetTime: n.targetTime, 
+						fileVersion: n.fileVersion, targetVersion: n.targetVersion
 				}
 			))))
 		

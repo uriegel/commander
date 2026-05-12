@@ -92,5 +92,5 @@ export const windowsOnGetItemsError = async (e: unknown, share: string, dialog?:
 }
 
 
-const formatVersion = (version?: Version) => 
+export const formatVersion = (version?: Version) => 
     version ? `${version.major}.${version.minor}.${version.build}.${version.patch}` : ""

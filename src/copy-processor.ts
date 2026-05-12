@@ -134,7 +134,7 @@ const makeCopyItems = (items: DirectoryItem[], targetItems: DirectoryItem[]): Co
     return items.map(n => {
         const target = targetItemsDictionary.get(n.name)
         return target
-            ? { ...n, isDirectory: n.isDirectory == true, targetSize: target.size, targetTime: target.time }
+            ? { ...n, isDirectory: n.isDirectory == true, targetSize: target.size, targetTime: target.time, targetVersion: target.fileVersion }
             : { ...n, isDirectory: n.isDirectory == true }
     })
 }
