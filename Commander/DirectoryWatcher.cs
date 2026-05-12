@@ -28,6 +28,9 @@ class DirectoryWatcher : IDisposable
             {
                 IsBackground = true
             }.Start();
+            fsw.Deleted += (s, e) => Console.WriteLine($"Deleted: {e.Name}");
+            fsw.Created += (s, e) => Console.WriteLine($"Created: {e.Name}");
+            fsw.Changed += (s, e) => Console.WriteLine($"Changed: {e.Name}");
             // fsw.Deleted += (s, e)
             //     => SafeEvent(() => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Deleted, 
             //                                     new DirectoryItem(e.Name ?? "", 0, false, null, false, DateTime.MinValue)));

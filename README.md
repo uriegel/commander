@@ -24,7 +24,9 @@ sudo dnf install gcc-c++ gtk3-devel
 TODO
 * Windows: compare version infos
 * Windows: rename as copy
-* DirectoryWatcher
+* DirectoryWatcher: Create: send new item sort it in in javascript, new idx = count, call get extendedInfos
+* DirectoryWatcher: Delete: delete item in in javascript
+* DirectoryWatcher: Change: find item in in javascript, change value
 * Error handling, especially Windows, check if network path, then UAC
 * Error handling GFileError
 * Error handling  for copying

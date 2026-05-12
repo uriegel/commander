@@ -23,9 +23,11 @@ static partial class Directory
                             .Where(n => getFiles?.ShowHidden == true || !n.IsHidden == true)
                             .ToArray();
             if (getFiles?.FolderId != null)
-                StartGettingExtendedInfos(getFiles.FolderId, getFiles.RequestId, getFiles?.Path ?? "", files);
+            {
+                StartGettingExtendedInfos(getFiles.FolderId, getFiles.RequestId, getFiles.Path ?? "", files);
+                DirectoryWatcher.Initialize(getFiles.FolderId, getFiles.Path);
+            }
             return new([.. dirs, .. files], dirInfo.FullName, dirs.Length, files.Length);
-            //   DirectoryWatcher.Initialize(getFiles.FolderId, getFiles.Path);
         }
         catch (UnauthorizedAccessException)
         {
