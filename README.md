@@ -22,6 +22,9 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
+* Windows: keep version info in copyItem
+* Windows: version infos in CopyConflicts
+* DirectoryWatcher
 * Error handling, especially Windows, check if network path, then UAC
 * Error handling GFileError
 * Error handling  for copying
@@ -43,7 +46,6 @@ TODO
 
 * Windows Remote root has /
 * Windows Remote copy progress
-* Windows Versions in copy dialog: resolve versions in CopyConflictsDialog, adapt button, no default button when not ready
 
 * Windows Services (perhaps elevatable sub process)
 

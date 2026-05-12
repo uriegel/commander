@@ -6,6 +6,7 @@ import type { ExtensionProps } from 'web-dialog-react'
 import type { CopyItem } from '../../requests/model'
 import { IconNameType } from '../../items-provider/items'
 import { formatDateTime, formatSize } from '../../items-provider/provider'
+import { getSpecificConflictsColumns } from '../../platform/copy-conflicts'
 
 const CopyConflicts = ({ props }: ExtensionProps) => {
 
@@ -16,7 +17,8 @@ const CopyConflicts = ({ props }: ExtensionProps) => {
 	const getColumns = () => [
 		{ name: "Name"  },
 		{ name: "Datum" },
-		{ name: "Größe", isRightAligned: true }
+		{ name: "Größe", isRightAligned: true },
+           ...getSpecificConflictsColumns()
 	]
 
 	const renderRowItem = ({ name, iconPath, time, targetTime, size, targetSize }: CopyItem) => {
