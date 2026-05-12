@@ -1,7 +1,4 @@
 {
-  "name": "commander",
-  "version": "1.4.7",
-  "description": "A Norton Commander clone based on C# and React with Typescript",
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -24,11 +24,6 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
     if (sourceFolder == null || targetFolder == null || sourceAppendPath == null || targetAppendPath == null)
         return
 
-    await Promise.all([
-        copyProcessor.refresh(sourceFolder),
-        copyProcessor.refresh(targetFolder)
-    ])
-
     const items = makeCopyItems(sourceFolder?.getSelectedItems() as DirectoryItem[], targetFolder.getItems() as DirectoryItem[])
     if (items.length == 0)
         return
