@@ -135,7 +135,22 @@ static partial class Directory
 
     public static Task OpenFile(string _, string __) => throw new NotImplementedException();
 
-    public static void Rename(RenameInput input) {}           
+    public static Task Rename(RenameInput input)   
+        => Form.InvokeOnMainThread(() => {
+            var _ = SHFileOperation(new ShFileOPStruct
+                {
+                    Func = FileFuncFlags.RENAME,
+                    From = input.Path.AppendPath(input.Item) + "\U00000000\U00000000",
+                    To = input.Path.AppendPath(input.NewName) + "\U00000000\U00000000",
+                    Flags = FileOpFlags.NOCONFIRMATION | FileOpFlags.ALLOWUNDO
+                }) switch
+                {
+                    0    => 1,
+                    2    => throw new FileNotFoundException(),
+                    0x78 => throw new UnauthorizedAccessException() ,
+                _    => throw new Exception($"Unknown error code: {Marshal.GetLastWin32Error()}")
+                };   
+        });
 
     public static AppInfo[] GetRecommendedApps(string? file) => throw new NotImplementedException();
     public static AppInfo[] GetAllApps() => throw new NotImplementedException();

@@ -213,7 +213,7 @@ static class Requests
     {
         var input = await request.DeserializeAsync<RenameInput>();
         if (input != null)
-            Directory.Rename(input); 
+            await Directory.Rename(input); 
         await request.SendJsonAsync(new NullData());
         return true;
     }

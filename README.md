@@ -22,8 +22,8 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Windows: keep version info in copyItem
-* Windows: version infos in CopyConflicts
+* Windows: compare version infos
+* Windows: rename as copy
 * DirectoryWatcher
 * Error handling, especially Windows, check if network path, then UAC
 * Error handling GFileError
