@@ -30,6 +30,7 @@ TODO
 * DirectoryWatcher: Change: Debounce! find item in dictionary, get key,  find item 
 * DirectoryWatcher: Delete: delete from dictionary delete item in in javascript
 * DirectoryWatcher: rename events position on renamed in strict mode
+* DirectoryWatcher: get extended infos
 * strict mode: sometimes Exceptions Object disposed
 * Dispose Directory object when getRoot/getRemote...  AND get Favorites/getRemotesin javascript, change value set idx from dictionary in CS
 * Windows: compare version infos
