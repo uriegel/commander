@@ -76,7 +76,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const itemCount = useRef({ fileCount: 0, dirCount: 0 })
     const restrictionView = useRef<RestrictionViewHandle>(null)
     const requestId = useRef(0)
-    const itemsDictionary = useRef<Map<number, Item>>(new Map)
+    const directoryItemsDictionary = useRef<Map<number, DirectoryItem>>(new Map)
 
     const [items, setItems] = useState([] as Item[])
     const [path, setPath] = useState("")
@@ -134,9 +134,10 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
             infos?.exifs
                 ?.forEach(n => {
-                    const item = itemsDictionary.current.get(n.idx!) as DirectoryItem
+                    const item = directoryItemsDictionary.current.get(n.idx)
                     if (item) {
                         item.exifData = {
+                            idx: n.idx,
                             dateTime: n.dateTime,
                             longitude: n.longitude,
                             latitude: n.latitude
@@ -146,7 +147,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
             infos?.versions
                 ?.forEach(n => {
-                    const item = itemsDictionary.current.get(n.idx) as DirectoryItem
+                    const item = directoryItemsDictionary.current.get(n.idx) 
                     if (item) 
                         item.fileVersion = n.version
                 })
@@ -161,26 +162,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         const sub = event$.subscribe(attachExtendedInfos)
         return () => sub.unsubscribe()
     }, [id])
-
-    // useEffect(() => {
-    //     const attachVersions = (version: Version) => {
-    //         if (version.requestId != requestId.current)
-    //             return
-    //         // version.items.forEach(n => {
-    //         //     const item = itemsDictionary.current.get(n.idx) as DirectoryItem
-    //         //     if (item) 
-    //         //         item.fileVersion = n.info
-    //         // })
-    //         setItems(prev => {
-    //             const newItems = itemsProvider.current?.sort(prev, sortIndex.current, sortDescending.current)
-    //             return newItems || prev
-    //         })
-    //     }
-
-    //     const event$ = id == ID_LEFT ? versionsDataEventsLeft$ : versionsDataEventsRight$
-    //     const sub = event$.subscribe(attachVersions)
-    //     return () => sub.unsubscribe()
-    // }, [id])
 
     useEffect(() => {
         const event$ = id == ID_LEFT ? extendedInfosStartEventsLeft$ : extendedInfosStartEventsRight$
@@ -243,7 +224,11 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             //const items = result.items && result.items?.length > 0 ? result.items : itemsProvider.current.getItems()
             const newItems = itemsProvider.current.sort(result.items, sortIndex.current, sortDescending.current)
             setNewItems(newItems, result.dirCount, result.fileCount)
-            itemsDictionary.current = new Map(newItems.filter(n => n.idx).map(n => [n.idx!, n]))
+            directoryItemsDictionary.current = new Map(newItems
+                .filter(n => (n as DirectoryItem).idx)
+                .map(n => n as DirectoryItem)
+                .filterNone()
+                .map(n => [n.idx, n]))
             const pos = latestPath
                 ? newItems.findIndex(n => n.name == latestPath)
                 : checkPosition

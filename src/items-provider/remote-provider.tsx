@@ -64,21 +64,21 @@ export class RemoteItemProvider extends IItemsProvider {
     getSortFunction = (index: number, descending: boolean) => {
         const ascDesc = (sortResult: number) => descending ? -sortResult : sortResult
         const sf = index == 0
-            ? (a: DirectoryItem, b: DirectoryItem) => a.name.localeCompare(b.name) 
+            ? (a: Item, b: Item) => a.name.localeCompare(b.name) 
             : index == 1
-                ? (a: DirectoryItem, b: DirectoryItem) => {	
-                    const aa = a.exifData?.dateTime ? a.exifData?.dateTime : a.time || ""
-                    const bb = b.exifData?.dateTime ? b.exifData?.dateTime : b.time || ""
-                    return aa.localeCompare(bb) 
+                ? (a: Item, b: Item) => {	
+                    const aa = (a as DirectoryItem).exifData?.dateTime ? (a as DirectoryItem).exifData?.dateTime : (a as DirectoryItem).time || ""
+                    const bb = (b as DirectoryItem).exifData?.dateTime ? (b as DirectoryItem).exifData?.dateTime : (b as DirectoryItem).time || ""
+                    return aa!.localeCompare(bb!) 
                 } 
             : index == 2
-            ? (a: DirectoryItem, b: DirectoryItem) => (a.size || 0) - (b.size || 0)
+            ? (a: Item, b: Item) => (a.size || 0) - (b.size || 0)
             : index == 10
-                        ? (a: DirectoryItem, b: DirectoryItem) => a.name.getFileExtension().localeCompare(b.name.getFileExtension()) 
+                        ? (a: Item, b: Item) => a.name.getFileExtension().localeCompare(b.name.getFileExtension()) 
             : undefined
         
         return sf
-            ? (a: DirectoryItem, b: DirectoryItem) => ascDesc(sf(a, b))
+            ? (a: Item, b: Item) => ascDesc(sf(a, b))
             : undefined
     }
 
@@ -117,8 +117,8 @@ export class RemoteItemProvider extends IItemsProvider {
     constructor() { super() }
 }
 
-export const getRowClasses = (item: DirectoryItem) => {
-    return item.isHidden
+export const getRowClasses = (item: Item) => {
+    return (item as DirectoryItem).isHidden
         ? ["hidden"]
         : []
 }
@@ -127,14 +127,16 @@ function extractSubPath(path: string): string {
     return path.substring(path.lastIndexOfAny(["/", "\\"]))
 }
 
-const renderRow = (item: DirectoryItem) => [
+const renderRow = (item: Item) => [
 	(<IconName namePart={item.name} type={
 			item.isParent
 			? IconNameType.Parent
 			: item.isDirectory
 			? IconNameType.Folder
 			: IconNameType.File}
-		iconPath={item.iconPath} />),
-	(<span className={item.exifData?.dateTime ? "exif" : "" } >{formatDateTime(item?.exifData?.dateTime ?? item?.time)}</span>),
+		iconPath={(item as DirectoryItem).iconPath} />),
+    (<span className={(item as DirectoryItem).exifData?.dateTime ? "exif" : ""} >
+        {formatDateTime((item as DirectoryItem).exifData?.dateTime ?? (item as DirectoryItem).time)}
+    </span>),
 	formatSize(item.size)
 ]

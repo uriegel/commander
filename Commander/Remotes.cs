@@ -13,8 +13,9 @@ static class Remotes
         var jsonGetRequest = new JsonRequest(remoteItem.BaseUrl);
         var items = (await jsonGetRequest
                         .GetAsync<FileType[]>("/getfiles" + remoteItem.Url))
-                        .Select(n => new DirectoryItem(
+                        .Select((n, i) => new DirectoryItem(
                             n.Name,
+                            i + 1,
                             Size: n.IsDirectory ? null : n.Size,
                             IsDirectory: n.IsDirectory,
                             IsHidden: n.IsHidden,

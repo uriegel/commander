@@ -22,7 +22,6 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* DirectoryWatcher: On GetFiles create items ConcurrentDictionary, key is idx, idxSeed = count
 * DirectoryWatcher: Create: idx = idxSeed++, add in dictionary, call get extendedInfos to javascript: item sort in javascript, 
 * DirectoryWatcher: Delete: delete from dictionary delete item in in javascript
 * DirectoryWatcher: Change: find item in dictionary, get key,  find item in javascript, change value set idx from dictionary in CS

@@ -63,15 +63,15 @@ export class ExtendedRenameProvider extends FileItemProvider {
           }, props.startNumber)
      }     
 
-    sort(items: ExtendedRenameFileItem[], sortIndex: number, sortDescending: boolean) {
+    sort(items: Item[], sortIndex: number, sortDescending: boolean) {
         const sorted = super.sort(items, sortIndex == 0 ? 0 : sortIndex - 1, sortDescending)
-        this.onSelectionChanged(sorted)
+        this.onSelectionChanged(sorted.map(n => n as ExtendedRenameFileItem))
         return sorted
      }
      
      onEnter(enterData: EnterData): Promise<OnEnterResult> {
           return enterData.id && enterData.dialog && enterData.selectedItems?.find(n => (n as ExtendedRenameFileItem).newName)
-          ? this.onRename(enterData.id, enterData.path, enterData.selectedItems, enterData.dialog)
+          ? this.onRename(enterData.id, enterData.path, enterData.selectedItems as ExtendedRenameFileItem[], enterData.dialog)
           : super.onEnter(enterData)
      }     
 
@@ -90,16 +90,18 @@ export class ExtendedRenameProvider extends FileItemProvider {
      }
 }
 
-const renderRow = (item: ExtendedRenameFileItem) => [
+const renderRow = (item: Item) => [
 	(<IconName namePart={item.name} type={
 			item.isParent
 			? IconNameType.Parent
 			: item.isDirectory
 			? IconNameType.Folder
 			: IconNameType.File}
-          iconPath={item.iconPath} />),
-     item.newName ?? "",
-	(<span className={item.exifData?.dateTime ? "exif" : "" } >{formatDateTime(item?.exifData?.dateTime ?? item?.time)}</span>),
+          iconPath={(item as ExtendedRenameFileItem).iconPath} />),
+     (item as ExtendedRenameFileItem).newName ?? "",
+     (<span className={(item as ExtendedRenameFileItem).exifData?.dateTime ? "exif" : ""} >
+          {formatDateTime((item as ExtendedRenameFileItem).exifData?.dateTime ?? (item as ExtendedRenameFileItem).time)}
+     </span>),
 	formatSize(item.size)
 ]
 

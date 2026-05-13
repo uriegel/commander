@@ -26,7 +26,6 @@ record ExtendedRenameOutput(bool Success);
 
 record Item(
     string Name,
-    int? Idx,
     long? Size,
     bool? IsParent,
     bool? IsDirectory);
@@ -46,12 +45,12 @@ record RootItem(
     bool IsMounted,
     //string DriveType,
     string Type = DriveType.Harddrive 
-) : Item(Name, null, Size, false, true)
+) : Item(Name, Size, false, true)
 { }
 
 record DirectoryItem(
     string Name,
-    int? Idx = null,
+    int Idx,
     long? Size = null,
     bool? IsParent = null,
     bool? IsDirectory = null,
@@ -60,10 +59,10 @@ record DirectoryItem(
     bool? IsHidden = null,
     ExifData? ExifData = null,
     Version? FileVersion = null
-) : Item(Name, Idx, Size, IsParent, IsDirectory)
+) : Item(Name, Size, IsParent, IsDirectory)
 {
-    public static DirectoryItem CreateDirItem(DirectoryInfo info)
-        => new(info.Name)
+    public static DirectoryItem CreateDirItem(DirectoryInfo info, int idx)
+        => new(info.Name, idx)
         {
             IsDirectory = true,
             IsHidden = (info.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden || info.Name.StartsWith('.'),

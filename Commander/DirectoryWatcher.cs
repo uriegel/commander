@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using CsTools.Extensions;
 
@@ -49,7 +48,7 @@ class DirectoryWatcher : IDisposable
             EnableRaisingEvents = true
         };
 
-    static DirectoryItem CreateItem(string fullName) => new(fullName);
+    static DirectoryItem CreateItem(string fullName, int idx) => new(fullName, idx);
         // => Directory.IsDirectory(fullName)
         //     ? DirectoryItem.CreateDirItem(new DirectoryInfo(fullName))
         //     : DirectoryItem.CreateFileItem(new FileInfo(fullName));

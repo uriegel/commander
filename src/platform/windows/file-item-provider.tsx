@@ -1,6 +1,6 @@
 import { retryOnErrorAsync } from "functional-extensions"
 import { type DialogHandle, ResultType } from "web-dialog-react"
-import type { DirectoryItem, SystemError, Version } from "../../requests/model"
+import type { DirectoryItem, Item, SystemError, Version } from "../../requests/model"
 import IconName from "../../components/IconName"
 import { IconNameType } from "../../items-provider/items"
 import { formatDateTime, formatSize } from "../../items-provider/provider"
@@ -20,43 +20,48 @@ export const windowsGetColumns = () => [
         { name: "Version", isSortable: true }        
     ]
 
-export const windowsRenderRow = (item: DirectoryItem) => [
+export const windowsRenderRow = (item: Item) => [
 	(<IconName namePart={item.name} type={
 			item.isParent
 			? IconNameType.Parent
 			: item.isDirectory
 			? IconNameType.Folder
 			: IconNameType.File}
-		iconPath={item.iconPath} />),
-	(<span className={item.exifData?.dateTime ? "exif" : "" } >{formatDateTime(item?.exifData?.dateTime ?? item?.time)}</span>),
+		iconPath={(item as DirectoryItem).iconPath} />),
+    (<span className={(item as DirectoryItem).exifData?.dateTime ? "exif" : ""} >
+        {formatDateTime((item as DirectoryItem)?.exifData?.dateTime ?? (item as DirectoryItem)?.time)}
+    </span>),
 	formatSize(item.size),
-    formatVersion(item.fileVersion)
+    formatVersion((item as DirectoryItem).fileVersion)
 ]
 
-export const windowsSortVersion = (a: DirectoryItem, b: DirectoryItem) =>
-    a.fileVersion && !b.fileVersion
-    ? 1
-    : !a.fileVersion && b.fileVersion   
-    ? -1
-    : a.fileVersion && b.fileVersion   
-    ? a.fileVersion.major > b.fileVersion.major
-    ? 1
-    : a.fileVersion.major < b.fileVersion.major
-    ? -1
-    : a.fileVersion.minor > b.fileVersion.minor
-    ? 1                
-    : a.fileVersion.minor < b.fileVersion.minor
-    ? -1                
-    : a.fileVersion.build > b.fileVersion.build
-    ? 1                
-    : a.fileVersion.build < b.fileVersion.build
-    ? -1                
-    : a.fileVersion.patch > b.fileVersion.patch
-    ? 1                
-    : a.fileVersion.patch < b.fileVersion.patch
-    ? -1                
-    : 0
-    : 0            
+export const windowsSortVersion = (item1: Item, item2: Item) => {
+    const a = item1 as DirectoryItem
+    const b = item2 as DirectoryItem
+    return a.fileVersion && !b.fileVersion
+        ? 1
+        : !a.fileVersion && b.fileVersion
+        ? -1
+        : a.fileVersion && b.fileVersion
+        ? a.fileVersion.major > b.fileVersion.major
+        ? 1
+        : a.fileVersion.major < b.fileVersion.major
+        ? -1
+        : a.fileVersion.minor > b.fileVersion.minor
+        ? 1
+        : a.fileVersion.minor < b.fileVersion.minor
+        ? -1
+        : a.fileVersion.build > b.fileVersion.build
+        ? 1
+        : a.fileVersion.build < b.fileVersion.build
+        ? -1
+        : a.fileVersion.patch > b.fileVersion.patch
+        ? 1
+        : a.fileVersion.patch < b.fileVersion.patch
+        ? -1
+        : 0
+        : 0
+    }
 
 export const windowsOnGetItemsError = async (e: unknown, share: string, dialog?: DialogHandle, setErrorText?: (msg: string)=>void) => {
     if (!dialog || !setErrorText)

@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Data.Common;
 using CsTools.Extensions;
 using CsTools.Functional;
 
@@ -77,7 +76,7 @@ partial class Directory : IDisposable
     public static DirectoryItem[] ExtendCopyItems(string[] items)
         => [.. items.Select(n => File.Exists(n)
                 ? DirectoryItem.CreateFileItem(new FileInfo(n), -1)
-                : DirectoryItem.CreateDirItem(new DirectoryInfo(n)))];
+                : DirectoryItem.CreateDirItem(new DirectoryInfo(n), -1))];
 
 
     GetDirectoryItemsOutput Get(GetFilesInput getFiles)
@@ -88,13 +87,13 @@ partial class Directory : IDisposable
             var dirInfo = new DirectoryInfo(getFiles.Path);
             var dirs = dirInfo
                             .GetDirectories()
-                            .Select(DirectoryItem.CreateDirItem)
+                            .Select(n => DirectoryItem.CreateDirItem(n , ++idxSeed))
                             .Where(n => getFiles.ShowHidden == true || !n.IsHidden == true)
                             .OrderBy(n => n.Name)
                             .ToArray();
             var files = dirInfo
                             .GetFiles()
-                            .Select(DirectoryItem.CreateFileItem)
+                            .Select(n => DirectoryItem.CreateFileItem(n, ++idxSeed))
                             .Where(n => getFiles.ShowHidden == true || !n.IsHidden == true)
                             .ToArray();
             if (getFiles?.FolderId != null)
@@ -103,7 +102,11 @@ partial class Directory : IDisposable
                 directoryWatcher?.Dispose();
                 directoryWatcher = new(getFiles.Path);
             }
-            return new([.. dirs, .. files], dirInfo.FullName, dirs.Length, files.Length);
+            DirectoryItem[] items = [.. dirs, .. files];
+            idxSeed = items.Length;
+            itemsByIndex = new(items.ToDictionary(n => n.Idx));
+            itemsByName = new(items.ToDictionary(n => n.Name, n => n));
+            return new(items, dirInfo.FullName, dirs.Length, files.Length);
         }
         catch (UnauthorizedAccessException)
         {
@@ -137,9 +140,7 @@ partial class Directory : IDisposable
     {
         await locker.WaitAsync(cancellation);
 
-        var checkItems = items
-                            .SelectFilterNull(n => n.Idx.HasValue ? n : null)
-                            .Where(FilterExifItems);
+        var checkItems = items.Where(FilterExifItems);
         if (!checkItems.Any())
             return;
 
@@ -149,7 +150,7 @@ partial class Directory : IDisposable
                             .SelectFilterNull(n =>
                             {
                                 var exif = ExifReader.GetExifData(path.AppendPath(n.Name));
-                                return exif != null ? new ExifData(n.Idx ?? -1, exif.DateTime, exif?.Latitude, exif?.Longitude) : null;
+                                return exif != null ? new ExifData(n.Idx, exif.DateTime, exif?.Latitude, exif?.Longitude) : null;
                             })
                             .ToArray();
         var versionItems = FileVersion.GetVersionItems(path, items, cancellation);
@@ -161,9 +162,12 @@ partial class Directory : IDisposable
 
     static readonly ConcurrentDictionary<string, Directory> directories = [];
 
+    ConcurrentDictionary<int, DirectoryItem> itemsByIndex = [];      
+    ConcurrentDictionary<string, DirectoryItem> itemsByName = [];      
     DirectoryWatcher? directoryWatcher;
     ExtendedItemsData? extendedItemsData;
     SemaphoreSlim? locker;
+    int idxSeed;
     readonly string folderId;
 
     #region IDisposable

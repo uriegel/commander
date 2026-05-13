@@ -111,7 +111,6 @@ interface SelectableItem {
 
 export interface Item extends SelectableItem {
     name:         string
-    idx?:         number
     size?:        number
     isParent?:    boolean
     isDirectory?: boolean    
@@ -128,6 +127,7 @@ export interface RootItem extends Item {
 }
 
 export interface DirectoryItem extends Item {
+    idx:            number
     iconPath?:      string
     time?:          string
     exifData?:      ExifData
@@ -211,7 +211,7 @@ export type CommanderEvent = {
 }
 
 export type ExifData = {
-    idx?: number,
+    idx: number,
     dateTime?: string,
     latitude?: number,
     longitude?: number

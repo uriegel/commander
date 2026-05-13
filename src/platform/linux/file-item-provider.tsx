@@ -1,5 +1,5 @@
 import { type DialogHandle } from "web-dialog-react"
-import type { DirectoryItem } from "../../requests/model"
+import type { DirectoryItem, Item } from "../../requests/model"
 import IconName from "../../components/IconName"
 import { IconNameType } from "../../items-provider/items"
 import { formatDateTime, formatSize } from "../../items-provider/provider"
@@ -16,15 +16,17 @@ export const linuxGetColumns = () => [
         { name: "Größe", isSortable: true, isRightAligned: true }
     ]
 
-export const linuxRenderRow = (item: DirectoryItem) => [
+export const linuxRenderRow = (item: Item) => [
 	(<IconName namePart={item.name} type={
 			item.isParent
 			? IconNameType.Parent
 			: item.isDirectory
 			? IconNameType.Folder
 			: IconNameType.File}
-		iconPath={item.iconPath} />),
-	(<span className={item.exifData?.dateTime ? "exif" : "" } >{formatDateTime(item?.exifData?.dateTime ?? item?.time)}</span>),
+		iconPath={(item as DirectoryItem).iconPath} />),
+	(<span className={(item as DirectoryItem).exifData?.dateTime ? "exif" : ""}>
+		{formatDateTime((item as DirectoryItem)?.exifData?.dateTime ?? (item as DirectoryItem)?.time)}
+	</span>),
 	formatSize(item.size)
 ]
 
