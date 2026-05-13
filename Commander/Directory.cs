@@ -118,8 +118,6 @@ partial class Directory(string folderId) : IDisposable
     {
         extendedItemsData?.Cancellation.Cancel();
         extendedItemsData = null;
-        locker?.Release();
-        locker = null;
         Requests.SendJson(new(folderId, EventCmd.ExtendedInfosStop, new EventData { RequestId = 0 }));
     }
 
@@ -179,7 +177,6 @@ partial class Directory(string folderId) : IDisposable
                 CancelExifs(folderId);
                 directoryWatcher?.Dispose();
                 extendedItemsData?.Cancellation.Cancel();
-                locker?.Release();
             }
 
             // TODO: Nicht verwaltete Ressourcen (nicht verwaltete Objekte) freigeben und Finalizer überschreiben

@@ -22,7 +22,7 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* DirectoryWatcher: rename events, change items and index in dictionaries
+* DirectoryWatcher: rename events, change index in dictionaries in C#
 * DirectoryWatcher: rename events, 2nd rename
 * DirectoryWatcher: edit file in editor, save
 * DirectoryWatcher: change events only for ItemsProvider FILE
@@ -33,6 +33,8 @@ TODO
 * DirectoryWatcher: Create: idx = idxSeed++, add in dictionary, call get extendedInfos to javascript: item sort in javascript, 
 * DirectoryWatcher: Change: Debounce! find item in dictionary, get key,  find item 
 * DirectoryWatcher: Delete: delete from dictionary delete item in in javascript
+* DirectoryWatcher: rename events position on renamed in strict mode
+* strict mode: sometimes Exceptions Object disposed
 * Dispose Directory object when getRoot/getRemote...  AND get Favorites/getRemotesin javascript, change value set idx from dictionary in CS
 * Windows: compare version infos
 * Windows: rename as copy

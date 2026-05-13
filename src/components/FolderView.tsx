@@ -20,7 +20,7 @@ import { EXTENDED_RENAME, showExtendedRename } from "../items-provider/extended-
 import { DialogContext } from "web-dialog-react"
 import { FILE } from "../items-provider/file-item-provider"
 import { REMOTE } from "../items-provider/remote-provider"
-import { type DirectoryItem, type ExtendedInfos, type Item, type SystemError } from "../requests/model"
+import { type DirectoryItem, type ExtendedInfos, type Item, type RenameData, type SystemError } from "../requests/model"
 import { isWindows } from "../platform/platform"
 import { windowsOpenWith } from "../platform/windows/folderview"
 import { linuxOpenWith } from "../platform/linux/folderview"
@@ -178,8 +178,30 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }, [id, setStatusText])
 
     useEffect(() => {
+        const renameItems = (renameData: RenameData) => {
+            console.log("Einiwent", renameData)
+            if (itemsProvider.current?.getId() != FILE)
+                return
+            const item = directoryItemsDictionary.current.get(renameData.idx)
+            if (item == null)
+                return
+            setItems(prev => {
+                const currentItem = prev[virtualTable.current?.getPosition() ?? -1]
+                const prevName = item.name
+                const isSelected = currentItem?.name == prevName
+                console.log("isSelected", isSelected)
+                item.name = renameData.newName
+                const newItems = itemsProvider.current?.sort(prev, sortIndex.current, sortDescending.current)
+                if (newItems && isSelected)
+                    virtualTable.current?.setPosition(newItems.findIndex(n => n.name == renameData.newName))
+                else if (newItems)
+                    virtualTable.current?.setPosition(newItems.findIndex(n => n.name == currentItem.name))
+                return newItems || prev
+            })
+        }
+
         const event$ = id == ID_LEFT ? renameEventsLeft$ : renameEventsRight$
-        const sub = event$.subscribe(evt => console.log("Hier rename", evt))
+        const sub = event$.subscribe(renameItems)
         return () => sub.unsubscribe()
     }, [id])
 
