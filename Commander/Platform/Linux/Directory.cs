@@ -5,12 +5,10 @@ using GtkDotNet;
 using GtkDotNet.SafeHandles;
 using static CsTools.ProcessCmd;
 
-static partial class Directory
+partial class Directory
 {
     public static string? GetIconPath(string name, string? path)
         => name.GetFileExtension();
-
-    public static string GetFilePath(this string path) => $"/{path}";
 
     public static Task CreateFolder(string name, string path)
         => System.IO.Directory.CreateDirectory(path.AppendPath(name)).ToAsync();
@@ -52,13 +50,15 @@ static partial class Directory
         if (contentType == null)
             return [];
         using var appinfo = GtkDotNet.AppInfo.GetRecommendedApps(contentType);
-        return appinfo.GetAppInfos();
+        return GetAppInfos(appinfo);
     }
+
+    public static string GetFilePath(string path) => $"/{path}";
 
     public static AppInfo[] GetAllApps()
     {
         using var appinfo = GtkDotNet.AppInfo.GetAllApps();
-        return appinfo.GetAppInfos();
+        return GetAppInfos(appinfo);
     }
 
     public static Task OpenFile(string executable, string fileName)
@@ -73,11 +73,11 @@ static partial class Directory
         return Task.CompletedTask;
     }
 
-    public static void CheckGetFilesAccessException(this string path) { }
+    public static void CheckGetFilesAccessException(string path) { }
 
     public static void AddNetworkShare(AddNetworkShareInput input) => throw new NotImplementedException();
 
-    static AppInfo[] GetAppInfos(this IEnumerable<AppInfoHandle> appinfo)
+    static AppInfo[] GetAppInfos(IEnumerable<AppInfoHandle> appinfo)
         => [.. appinfo.Select(n =>
         {
             var iconPath = n.GetIcon();

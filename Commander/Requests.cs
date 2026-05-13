@@ -17,7 +17,7 @@ static class Requests
     public static async Task<bool> GetFiles(IRequest request)
     {
         var getFiles = await request.DeserializeAsync<GetFilesInput>();
-        var response = Directory.Get(getFiles);
+        var response = Directory.GetFiles(getFiles!);
         await request.SendJsonAsync(response);
         return true;
     }
@@ -67,7 +67,7 @@ static class Requests
     public static async Task<bool> GetItemsFinished(IRequest request)
     {
         var data = await request.DeserializeAsync<GetItemsFinishedInput>();
-        Directory.GetItemsFinished(data?.FolderId ?? "");
+        Directory.Get(data?.FolderId).GetItemsFinished(data?.FolderId ?? "");    
         await request.SendJsonAsync(new NullData());
         return true;
     }
@@ -273,7 +273,7 @@ static class Requests
         var subPath = request.SubPath;
         if (subPath == null)
             return false;
-        using var stream = File.OpenRead(subPath.GetFilePath());
+        using var stream = File.OpenRead(Directory.GetFilePath(subPath));
 
         await request.SendAsync(stream, stream.Length, subPath?.GetFileExtension()?.ToMimeType() ?? "text/plain");
         return true;
@@ -284,7 +284,7 @@ static class Requests
         var subPath = request.SubPath;
         if (subPath == null)
             return false;
-        var track = TrackInfo.Get(subPath.GetFilePath());
+        var track = TrackInfo.Get(Directory.GetFilePath(subPath));
         await request.SendJsonAsync(track);
         return true;
     }

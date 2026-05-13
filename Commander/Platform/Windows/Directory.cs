@@ -5,14 +5,14 @@ using ClrWinApi;
 using CsTools.Extensions;
 using static ClrWinApi.Api;
 
-static partial class Directory
+partial class Directory
 {
     public static string? GetIconPath(string name, string? path)
         => name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) && path != null
             ? path.AppendPath(name)
             : name.GetFileExtension();
 
-    public static string GetFilePath(this string path) => path.Replace('/', '\\');
+    public static string GetFilePath(string path) => path.Replace('/', '\\');
 
     public static Task CreateFolder(string name, string path)
         => Form.InvokeOnMainThread(() => 
@@ -155,7 +155,7 @@ static partial class Directory
     public static AppInfo[] GetRecommendedApps(string? file) => throw new NotImplementedException();
     public static AppInfo[] GetAllApps() => throw new NotImplementedException();
 
-    public static void CheckGetFilesAccessException(this string path)
+    public static void CheckGetFilesAccessException(string path)
     {
         var kind = path.GetPathKind();
         if (kind == PathKind.Unc || kind == PathKind.MappedNetworkDrive)

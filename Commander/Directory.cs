@@ -1,46 +1,30 @@
 using System.Collections.Concurrent;
+using System.Data.Common;
 using CsTools.Extensions;
 using CsTools.Functional;
 
-static partial class Directory
+partial class Directory : IDisposable
 {
-    public static GetDirectoryItemsOutput Get(GetFilesInput? getFiles)
+    public Directory(string id)
     {
-        try 
-        {
-            CancelExifs(getFiles?.FolderId ?? "");
-            lockers.TryAdd(getFiles?.FolderId ?? "", new(0, 1));
-            var dirInfo = new DirectoryInfo(getFiles?.Path ?? "");
-            var dirs = dirInfo
-                            .GetDirectories()
-                            .Select(DirectoryItem.CreateDirItem)
-                            .Where(n => getFiles?.ShowHidden == true || !n.IsHidden == true)
-                            .OrderBy(n => n.Name)
-                            .ToArray();
-            var files = dirInfo
-                            .GetFiles()
-                            .Select(DirectoryItem.CreateFileItem)
-                            .Where(n => getFiles?.ShowHidden == true || !n.IsHidden == true)
-                            .ToArray();
-            if (getFiles?.FolderId != null)
-            {
-                StartGettingExtendedInfos(getFiles.FolderId, getFiles.RequestId, getFiles.Path ?? "", files);
-                DirectoryWatcher.Initialize(getFiles.FolderId, getFiles.Path);
-            }
-            return new([.. dirs, .. files], dirInfo.FullName, dirs.Length, files.Length);
-        }
-        catch (UnauthorizedAccessException)
-        {
-            getFiles?.Path?.CheckGetFilesAccessException();
-            throw;
-        }
+        directories.AddOrUpdate(id, this, (_, __) => this);
+        folderId = id;
     }
 
-    public static void GetItemsFinished(string folderId)
+    public static Directory Get(string? id) => directories.TryGetValue(id!, out var result) ? result : throw new ArgumentNullException();
+
+    public static GetDirectoryItemsOutput GetFiles(GetFilesInput input)
     {
-        if (lockers.TryGetValue(folderId, out var locker))
-            locker.Release();
+        var dir = new Directory(input.FolderId);
+        directories.AddOrUpdate(input.FolderId, dir, (_, old) =>
+        {
+            old.Dispose();
+            return dir;
+        });
+        return dir.Get(input);
     }
+    
+    public void GetItemsFinished(string folderId) =>locker?.Release();
 
     public static FlatCopyItem[] FlattenItems(FlattenItemsInput input)
     {
@@ -96,26 +80,56 @@ static partial class Directory
                 : DirectoryItem.CreateDirItem(new DirectoryInfo(n)))];
 
 
-    static void CancelExifs(string folderId)
+    GetDirectoryItemsOutput Get(GetFilesInput getFiles)
     {
-        if (extendedItemsDatas.TryRemove(folderId, out var data))
-            data.Cancellation.Cancel();
-        lockers.TryRemove(folderId, out var locker);
+        try 
+        {
+            locker = new(0, 1);
+            var dirInfo = new DirectoryInfo(getFiles.Path);
+            var dirs = dirInfo
+                            .GetDirectories()
+                            .Select(DirectoryItem.CreateDirItem)
+                            .Where(n => getFiles.ShowHidden == true || !n.IsHidden == true)
+                            .OrderBy(n => n.Name)
+                            .ToArray();
+            var files = dirInfo
+                            .GetFiles()
+                            .Select(DirectoryItem.CreateFileItem)
+                            .Where(n => getFiles.ShowHidden == true || !n.IsHidden == true)
+                            .ToArray();
+            if (getFiles?.FolderId != null)
+            {
+                StartGettingExtendedInfos(getFiles.FolderId, getFiles.RequestId, getFiles.Path, files);
+                directoryWatcher?.Dispose();
+                directoryWatcher = new(getFiles.Path);
+            }
+            return new([.. dirs, .. files], dirInfo.FullName, dirs.Length, files.Length);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            CheckGetFilesAccessException(getFiles.Path);
+            throw;
+        }
+    }
+
+    void CancelExifs(string folderId)
+    {
+        extendedItemsData?.Cancellation.Cancel();
+        extendedItemsData = null;
+        locker?.Release();
+        locker = null;
         Requests.SendJson(new(folderId, EventCmd.ExtendedInfosStop, new EventData { RequestId = 0 }));
     }
 
-    static void StartGettingExtendedInfos(string folderId, int requestId, string path, DirectoryItem[] items)
+    void StartGettingExtendedInfos(string folderId, int requestId, string path, DirectoryItem[] items)
     {
         var cancellation = new CancellationTokenSource();
-        if (lockers.TryGetValue(folderId, out var locker))
+        if (locker != null)
         {
             var task = RetrieveExtendedInfos(folderId, requestId, path, items, locker, cancellation.Token);
             var data = new ExtendedItemsData(task, cancellation);
-            extendedItemsDatas.AddOrUpdate(folderId, data, (_, v) =>
-            {
-                v.Cancellation.Cancel();
-                return data;
-            });
+            extendedItemsData?.Cancellation.Cancel();
+            extendedItemsData = data;
         }
     }
 
@@ -145,8 +159,50 @@ static partial class Directory
         Requests.SendJson(new(folderId, EventCmd.ExtendedInfosStop, new EventData { RequestId = requestId }));
     }
 
-    static readonly ConcurrentDictionary<string, ExtendedItemsData> extendedItemsDatas = [];
-    static readonly ConcurrentDictionary<string, SemaphoreSlim> lockers = [];
+    static readonly ConcurrentDictionary<string, Directory> directories = [];
+
+    DirectoryWatcher? directoryWatcher;
+    ExtendedItemsData? extendedItemsData;
+    SemaphoreSlim? locker;
+    readonly string folderId;
+
+    #region IDisposable
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                CancelExifs(folderId);
+                directoryWatcher?.Dispose();
+                extendedItemsData?.Cancellation.Cancel();
+                locker?.Release();
+            }
+
+            // TODO: Nicht verwaltete Ressourcen (nicht verwaltete Objekte) freigeben und Finalizer überschreiben
+            // TODO: Große Felder auf NULL setzen
+            disposedValue = true;
+        }
+    }
+
+    // // TODO: Finalizer nur überschreiben, wenn "Dispose(bool disposing)" Code für die Freigabe nicht verwalteter Ressourcen enthält
+    // ~Directory()
+    // {
+    //     // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in der Methode "Dispose(bool disposing)" ein.
+    //     Dispose(disposing: false);
+    // }
+
+    public void Dispose()
+    {
+        // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in der Methode "Dispose(bool disposing)" ein.
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    bool disposedValue;
+
+    #endregion
 }
 
 record ExtendedItemsData(Task Task, CancellationTokenSource Cancellation);

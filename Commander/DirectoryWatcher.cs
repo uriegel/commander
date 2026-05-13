@@ -4,20 +4,8 @@ using CsTools.Extensions;
 
 class DirectoryWatcher : IDisposable
 {
-    public static void Initialize(string key, string? path)
-        => watchers.AddOrUpdateLocked(key, 
-            k => new DirectoryWatcher(key, path),
-            (key, dw) => 
-                dw == null
-                ? new DirectoryWatcher(key, path)
-                : dw.Path != path 
-                ? new DirectoryWatcher(key, path).SideEffect(_ => dw.Dispose()) 
-                : dw);
-
-    DirectoryWatcher(string id, string? path)
+    public DirectoryWatcher(string path)
     {
-        this.id = id;
-        Path = path;
         //extendedInfos = path != null ? new(path) : null;
         fsw = Path != null 
                 ? CreateWatcher(Path)
@@ -98,10 +86,8 @@ class DirectoryWatcher : IDisposable
         }
     }
 
-    static readonly ConcurrentDictionary<string, DirectoryWatcher> watchers = [];
     readonly TimeSpan RENAME_DELAY = TimeSpan.FromMilliseconds(200);
     readonly FileSystemWatcher? fsw;
-    readonly string id;
     readonly ManualResetEvent renameEvent = new(false);
     //readonly ExtendedInfos? extendedInfos;
     DateTime lastRenameUpdate = DateTime.MinValue;
