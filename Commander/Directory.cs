@@ -77,6 +77,16 @@ partial class Directory(string folderId) : IDisposable
     public int GetIndex(string? fileName)
         => itemsByName.TryGetValue(fileName ?? "", out var item) ? item.Idx : -1;
 
+    public void Rename(int index, string newName)
+    {
+        if (itemsByIndex.TryGetValue(index, out var oldItem))
+        {
+            var item = itemsByIndex.AddOrUpdate(index, new DirectoryItem("", -1), (k, v) =>  v with { Name = newName});
+            itemsByName.TryRemove(oldItem.Name, out var _);
+            itemsByName.AddOrUpdate(newName, item, (_, __) => item);
+        }
+    }
+
     GetDirectoryItemsOutput Get(GetFilesInput getFiles)
     {
         try 

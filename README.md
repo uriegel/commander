@@ -22,14 +22,10 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* DirectoryWatcher: rename events, change index in dictionaries in C#
-* DirectoryWatcher: rename events, 2nd rename
 * DirectoryWatcher: edit file in editor, save
-* DirectoryWatcher: change events only for ItemsProvider FILE
 * DirectoryWatcher: consider hidden
 * DirectoryWatcher: hidden: no created, no change, but renamed with oldFIle=-1
 * DirectoryWatcher: not hidden: created with index update, change wth index, renamed with oldFile=index
-* DirectoryWatcher: Rename: find item in dictionary, get key,  find item, find old item, replace old with new
 * DirectoryWatcher: Create: idx = idxSeed++, add in dictionary, call get extendedInfos to javascript: item sort in javascript, 
 * DirectoryWatcher: Change: Debounce! find item in dictionary, get key,  find item 
 * DirectoryWatcher: Delete: delete from dictionary delete item in in javascript

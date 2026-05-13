@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Diagnostics.Tracing;
 using System.Threading.Channels;
 using CsTools.Extensions;
 
@@ -15,10 +16,15 @@ class DirectoryWatcher : IDisposable
     public DirectoryWatcher(string path, Directory directory)
     {
         fsw = CreateWatcher(path); 
-        fsw.Created += (s, e) => Write(() => new(JobType.Created, directory.FolderId, CreateItem(e.FullPath, directory.GetIndex(e.Name))));
+        fsw.Created += (s, e) => Write(() => new(JobType.Created, directory.FolderId, CreateItem(e.FullPath, directory.GetIndex(e.Name))));  
         fsw.Deleted += (s, e) => Write(() => new(JobType.Deleted, directory.FolderId, null, directory.GetIndex(e.Name)));
         fsw.Changed += (s, e) => Write(() => new(JobType.Changed, directory.FolderId, CreateItem(e.FullPath, directory.GetIndex(e.Name))));
-        fsw.Renamed += (s, e) => Write(() => new(JobType.Renamed, directory.FolderId, CreateItem(e.FullPath, directory.GetIndex(e.Name)), directory.GetIndex(e.OldName)));
+        fsw.Renamed += (s, e) =>
+        {
+            var oldIndex = directory.GetIndex(e.OldName);
+            Write(() => new(JobType.Renamed, directory.FolderId, CreateItem(e.FullPath, directory.GetIndex(e.Name)), oldIndex),
+                () => directory.Rename(oldIndex, e.Name ?? ""));
+        };
     }
 
     static FileSystemWatcher CreateWatcher(string path)
@@ -52,10 +58,12 @@ class DirectoryWatcher : IDisposable
         }
     }
 
-    static void Write(Func<DirectoryItemJob> createJob)
+    static void Write(Func<DirectoryItemJob> createJob, Action? afterCreated = null)
     {
         try
         {
+            var job = createJob();
+            afterCreated?.Invoke();
             jobs.Writer.TryWrite(createJob());
         }   
         catch (FileNotFoundException) {}
