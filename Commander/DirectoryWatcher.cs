@@ -6,9 +6,7 @@ class DirectoryWatcher : IDisposable
     public DirectoryWatcher(string path)
     {
         //extendedInfos = path != null ? new(path) : null;
-        fsw = Path != null 
-                ? CreateWatcher(Path)
-                : null;        
+        fsw = CreateWatcher(path);
         if (fsw != null)
         {
             new Thread(_ => RunChange())
@@ -18,6 +16,7 @@ class DirectoryWatcher : IDisposable
             fsw.Deleted += (s, e) => Console.WriteLine($"Deleted: {e.Name}");
             fsw.Created += (s, e) => Console.WriteLine($"Created: {e.Name}");
             fsw.Changed += (s, e) => Console.WriteLine($"Changed: {e.Name}");
+            fsw.Renamed += (s, e) => Console.WriteLine($"Changed: {e.Name} {e.OldName}");
             // fsw.Deleted += (s, e)
             //     => SafeEvent(() => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Deleted, 
             //                                     new DirectoryItem(e.Name ?? "", 0, false, null, false, DateTime.MinValue)));
@@ -34,8 +33,6 @@ class DirectoryWatcher : IDisposable
             //     => SafeEvent(() => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Renamed, CreateItem(Path.AppendPath(e.Name)), e.OldName));
         }
     }
-
-    public string? Path { get; }
 
     static FileSystemWatcher CreateWatcher(string path)
         => new(path)

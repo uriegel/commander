@@ -2,14 +2,8 @@ using System.Collections.Concurrent;
 using CsTools.Extensions;
 using CsTools.Functional;
 
-partial class Directory : IDisposable
+partial class Directory(string folderId) : IDisposable
 {
-    public Directory(string id)
-    {
-        directories.AddOrUpdate(id, this, (_, __) => this);
-        folderId = id;
-    }
-
     public static Directory Get(string? id) => directories.TryGetValue(id!, out var result) ? result : throw new ArgumentNullException();
 
     public static GetDirectoryItemsOutput GetFiles(GetFilesInput input)
@@ -99,6 +93,7 @@ partial class Directory : IDisposable
             if (getFiles?.FolderId != null)
             {
                 StartGettingExtendedInfos(getFiles.FolderId, getFiles.RequestId, getFiles.Path, files);
+                ObjectDisposedException.ThrowIf(disposedValue, this);
                 directoryWatcher?.Dispose();
                 directoryWatcher = new(getFiles.Path);
             }
