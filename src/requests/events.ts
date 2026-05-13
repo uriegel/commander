@@ -2,7 +2,7 @@ import { filter, fromEvent, map, Observable, Subscriber } from 'rxjs'
 import { ID_LEFT, ID_RIGHT } from '../components/Commander'
 import {
     type CmdEvent, type CommanderEvent, type CopyProgress, type DeleteProgress, type ExtendedInfos, type ExtendedInfosStatus,
-    type PreviewModeEvent, type ShowHiddenEvent, type ShowViewerEvent, type ThemeChangeEvent, type WindowStateEvent
+    type PreviewModeEvent, type RenameEvent, type ShowHiddenEvent, type ShowViewerEvent, type ThemeChangeEvent, type WindowStateEvent
 } from './model'
 
 const ws = new WebSocket("ws://localhost:8080/events")
@@ -24,7 +24,6 @@ const message$ = new Observable<CommanderEvent>(subscriberToSet => {
 export const copyProgressEvents$ = message$.pipe(filter(n => n.cmd == "CopyProgress")).pipe(map(n => n.msg as CopyProgress))
 export const copyProgressShowDialogEvents$ = message$.pipe(filter(n => n.cmd == "CopyProgressShowDialog"))
 export const deleteProgressEvents$ = message$.pipe(filter(n => n.cmd == "DeleteProgress")).pipe(map(n => n.msg as DeleteProgress))
-//export const copyProgressShowDialogEvents$ = message$.pipe(filter(n => n.cmd == "CopyProgressShowDialog"))
 export const deleteStopEvents$ = message$.pipe(filter(n => n.cmd == "DeleteStop"))
 export const copyStopEvents$ = message$.pipe(filter(n => n.cmd == "CopyStop"))
 export const cmdEvents$ = message$.pipe(filter(n => n.cmd == "Cmd")).pipe(map(n => (n.msg as CmdEvent).cmd))
@@ -33,6 +32,7 @@ export const windowStateEvents$ = message$.pipe(filter(n => n.cmd == "WindowStat
 export const showHiddenEvents$ = message$.pipe(filter(n => n.cmd == "ShowHidden")).pipe(map(n => (n.msg as ShowHiddenEvent).showHidden))
 export const showViewerEvents$ = message$.pipe(filter(n => n.cmd == "ShowViewer")).pipe(map(n => (n.msg as ShowViewerEvent).showViewer))
 export const PreviewModeEvents$ = message$.pipe(filter(n => n.cmd == "PreviewMode")).pipe(map(n => (n.msg as PreviewModeEvent).previewMode))
+export const renameEvents$ = message$.pipe(filter(n => n.cmd == "Rename")).pipe(map(n => (n.msg as RenameEvent).renameData))
 const extendedInfosStartEvents$ = message$.pipe(filter(n => n.cmd == "ExtendedInfosStart"))
 const extendedInfosStopEvents$ = message$.pipe(filter(n => n.cmd == "ExtendedInfosStop"))
 const extendedInfosEvents$ = message$.pipe(filter(n => n.cmd == "ExtendedInfos"))
@@ -61,5 +61,9 @@ export const extendedInfosStopEventsRight$ = extendedInfosStopEvents$
     .pipe(filter(n => n.folderId == ID_RIGHT))
     .pipe(map(n => n.msg as ExtendedInfosStatus))
 
+export const renameEventsLeft$ = renameEvents$
+    .pipe(filter(n => n.folderId == ID_LEFT))
 
-
+export const renameEventsRight$ = renameEvents$
+    .pipe(filter(n => n.folderId == ID_RIGHT))
+    

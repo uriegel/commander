@@ -15,24 +15,10 @@ class DirectoryWatcher : IDisposable
     public DirectoryWatcher(string path, Directory directory)
     {
         fsw = CreateWatcher(path); 
-        fsw.Created += (s, e) => Write(() => new(JobType.Created, CreateItem(e.FullPath, directory.GetIndex(e.Name))));
-        fsw.Deleted += (s, e) => Write(() => new(JobType.Deleted, null, directory.GetIndex(e.Name)));
-        fsw.Changed += (s, e) => Write(() => new(JobType.Changed, CreateItem(e.FullPath, directory.GetIndex(e.Name))));
-        fsw.Renamed += (s, e) => Write(() => new(JobType.Renamed, CreateItem(e.FullPath, directory.GetIndex(e.Name)), directory.GetIndex(e.OldName)));
-        // fsw.Deleted += (s, e)
-        //     => SafeEvent(() => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Deleted, 
-        //                                     new DirectoryItem(e.Name ?? "", 0, false, null, false, DateTime.MinValue)));
-        // fsw.Created += (s, e) 
-        //     => SafeEvent(() => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Created, CreateItem(Path.AppendPath(e.Name))));
-        // fsw.Changed += (s, e) => 
-        // { 
-        //     if (e.Name != null) 
-        //         changeQueue = changeQueue
-        //                         .Add(e.Name)
-        //                         .SideEffect(_ => renameEvent.Set()); 
-        // };
-        // fsw.Renamed += (s, e)
-        //     => SafeEvent(() => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Renamed, CreateItem(Path.AppendPath(e.Name)), e.OldName));
+        fsw.Created += (s, e) => Write(() => new(JobType.Created, directory.FolderId, CreateItem(e.FullPath, directory.GetIndex(e.Name))));
+        fsw.Deleted += (s, e) => Write(() => new(JobType.Deleted, directory.FolderId, null, directory.GetIndex(e.Name)));
+        fsw.Changed += (s, e) => Write(() => new(JobType.Changed, directory.FolderId, CreateItem(e.FullPath, directory.GetIndex(e.Name))));
+        fsw.Renamed += (s, e) => Write(() => new(JobType.Renamed, directory.FolderId, CreateItem(e.FullPath, directory.GetIndex(e.Name)), directory.GetIndex(e.OldName)));
     }
 
     static FileSystemWatcher CreateWatcher(string path)
@@ -50,29 +36,6 @@ class DirectoryWatcher : IDisposable
         => System.IO.Directory.Exists(fullName)
             ? DirectoryItem.CreateDirItem(new DirectoryInfo(fullName), idx)
             : DirectoryItem.CreateFileItem(new FileInfo(fullName), idx);
-
-    void RunChange()
-    {
-        while (true)
-        {
-            try
-            {
-                renameEvent.WaitOne();
-                renameEvent.Reset();
-                if (DateTime.Now < lastRenameUpdate + RENAME_DELAY)
-                    Thread.Sleep(lastRenameUpdate + RENAME_DELAY - DateTime.Now);
-                var items = Interlocked.Exchange(ref changeQueue, []).ToArray();
-                lastRenameUpdate = DateTime.Now;
-                items.ForEach(n =>
-                {
-                    //extendedInfos?.FileChanged(n);
-                    // Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Changed, CreateItem(Path.AppendPath(n)));
-                });
-
-            }
-            catch { }
-        }
-    }
 
     static async Task RunProcessing()
     {
@@ -105,6 +68,10 @@ class DirectoryWatcher : IDisposable
     static async Task Process(DirectoryItemJob job)
     {
         Console.WriteLine($"Event: {job}");
+
+        var cmd = job.GetEvent();
+        if (cmd != null)
+            Requests.SendJson(cmd);
     }
 
     static DirectoryWatcher()
@@ -124,8 +91,6 @@ class DirectoryWatcher : IDisposable
     readonly FileSystemWatcher? fsw;
     readonly ManualResetEvent renameEvent = new(false);
     //readonly ExtendedInfos? extendedInfos;
-    DateTime lastRenameUpdate = DateTime.MinValue;
-    ImmutableHashSet<string> changeQueue = [];
 
     #region IDisposable
 
@@ -162,5 +127,14 @@ class DirectoryWatcher : IDisposable
     #endregion
 }
 
-record DirectoryItemJob(DirectoryWatcher.JobType Type, DirectoryItem? Item, int? itemIndex = null);
+record DirectoryItemJob(DirectoryWatcher.JobType Type, string FolderId, DirectoryItem? Item, int? ItemIndex = null)
+{
+    public CommanderEvent? GetEvent()
+        => Type == DirectoryWatcher.JobType.Renamed && Item != null && ItemIndex != null
+            ? new(FolderId, EventCmd.Rename, new()
+            {
+                RenameData = new(ItemIndex.Value, Item.Name, FolderId)
+            })
+            : null;
+}
 

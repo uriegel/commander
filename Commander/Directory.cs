@@ -1,9 +1,11 @@
 using System.Collections.Concurrent;
+using System.Security.Cryptography.X509Certificates;
 using CsTools.Extensions;
 using CsTools.Functional;
 
 partial class Directory(string folderId) : IDisposable
 {
+    public string FolderId { get => folderId; }   
     public static Directory Get(string? id) => directories.TryGetValue(id!, out var result) ? result : throw new ArgumentNullException();
 
     public static GetDirectoryItemsOutput GetFiles(GetFilesInput input)
@@ -16,7 +18,7 @@ partial class Directory(string folderId) : IDisposable
         });
         return dir.Get(input);
     }
-    
+        
     public void GetItemsFinished(string folderId) =>locker?.Release();
 
     public static FlatCopyItem[] FlattenItems(FlattenItemsInput input)

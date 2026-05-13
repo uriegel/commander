@@ -147,6 +147,8 @@ static class ErrorType
 
 record SystemError(string Error, string Message);
 
+record RenameData(int Idx, string NewName, string FolderId);
+
 class EventCmd
 {
     public const string ExtendedInfos = "ExtendedInfos";
@@ -166,6 +168,7 @@ class EventCmd
     public const string ShowViewer = "ShowViewer";
     public const string PreviewMode = "PreviewMode";
     public const string Cmd = "Cmd";
+    public const string Rename = "Rename";
 }
 
 class PreviewMode
@@ -184,7 +187,8 @@ record EventData(
     ExifData[]? Exifs = null,
     VersionInfo[]? Versions = null,
     string? PreviewMode = null,
-    string? Cmd = null);
+    string? Cmd = null,
+    RenameData? RenameData = null);
 
 record CommanderEvent(string? FolderId, string Cmd, EventData Msg);
 

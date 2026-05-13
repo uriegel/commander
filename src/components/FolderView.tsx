@@ -11,7 +11,9 @@ import {
     extendedInfosStartEventsLeft$,
     extendedInfosStartEventsRight$,
     extendedInfosStopEventsLeft$,
-    extendedInfosStopEventsRight$
+    extendedInfosStopEventsRight$,
+    renameEventsLeft$,
+    renameEventsRight$
 } from "../requests/events"
 import { getItemsFinished, onEnter as reqOnEnter } from "../requests/requests"
 import { EXTENDED_RENAME, showExtendedRename } from "../items-provider/extended-rename"
@@ -174,6 +176,12 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         const sub = event$.subscribe(() => setStatusText())
         return () => sub.unsubscribe()
     }, [id, setStatusText])
+
+    useEffect(() => {
+        const event$ = id == ID_LEFT ? renameEventsLeft$ : renameEventsRight$
+        const sub = event$.subscribe(evt => console.log("Hier rename", evt))
+        return () => sub.unsubscribe()
+    }, [id])
 
     const onSort = async (sort: OnSort) => {
         sortIndex.current = sort.isSubColumn ? 10 : sort.column

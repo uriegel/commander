@@ -23,6 +23,7 @@ sudo dnf install gcc-c++ gtk3-devel
 
 TODO
 * DirectoryWatcher: rename events, change items and index in dictionaries
+* DirectoryWatcher: rename events, 2nd rename
 * DirectoryWatcher: edit file in editor, save
 * DirectoryWatcher: change events only for ItemsProvider FILE
 * DirectoryWatcher: consider hidden
