@@ -163,7 +163,6 @@ partial class Directory(string folderId) : IDisposable
     ExtendedItemsData? extendedItemsData;
     SemaphoreSlim? locker;
     int idxSeed;
-    readonly string folderId;
 
     #region IDisposable
 

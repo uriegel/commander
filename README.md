@@ -22,12 +22,13 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Dospose Directory object when getRoot/getRemote...  AND get Favorites/getRemotes
-* DirectoryWatcher: Create: idx = idxSeed++, add in dictionary, call get extendedInfos to javascript: item sort in javascript, 
-* DirectoryWatcher: Delete: delete from dictionary delete item in in javascript
-* DirectoryWatcher: Change: find item in dictionary, get key,  find item 
+* DirectoryWatcher: change events only for ItemsProvider FILE
 * DirectoryWatcher: consider hidden
-in javascript, change value set idx from dictionary in CS
+* DirectoryWatcher: Rename: find item in dictionary, get key,  find item, find old item, replace old with new
+* DirectoryWatcher: Create: idx = idxSeed++, add in dictionary, call get extendedInfos to javascript: item sort in javascript, 
+* DirectoryWatcher: Change: Debounce! find item in dictionary, get key,  find item 
+* DirectoryWatcher: Delete: delete from dictionary delete item in in javascript
+* Dispose Directory object when getRoot/getRemote...  AND get Favorites/getRemotesin javascript, change value set idx from dictionary in CS
 * Windows: compare version infos
 * Windows: rename as copy
 * Error handling, especially Windows, check if network path, then UAC
