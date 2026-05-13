@@ -72,6 +72,8 @@ partial class Directory(string folderId) : IDisposable
                 ? DirectoryItem.CreateFileItem(new FileInfo(n), -1)
                 : DirectoryItem.CreateDirItem(new DirectoryInfo(n), -1))];
 
+    public int GetIndex(string? fileName)
+        => itemsByName.TryGetValue(fileName ?? "", out var item) ? item.Idx : -1;
 
     GetDirectoryItemsOutput Get(GetFilesInput getFiles)
     {
@@ -95,7 +97,7 @@ partial class Directory(string folderId) : IDisposable
                 StartGettingExtendedInfos(getFiles.FolderId, getFiles.RequestId, getFiles.Path, files);
                 ObjectDisposedException.ThrowIf(disposedValue, this);
                 directoryWatcher?.Dispose();
-                directoryWatcher = new(getFiles.Path);
+                directoryWatcher = new(getFiles.Path,this);
             }
             DirectoryItem[] items = [.. dirs, .. files];
             idxSeed = items.Length;

@@ -1,8 +1,4 @@
 using System.Threading.Channels;
-#if Linux
-using Commander.Platform.Linux;
-using GtkDotNet;
-#endif
 
 static class BackgroundJobs
 {
@@ -41,8 +37,7 @@ static class BackgroundJobs
             SingleReader = true,
             SingleWriter = false
         });
-        jobProcessorTask = Task.
-        Run(RunProcessing);
+        jobProcessorTask = Task.Run(RunProcessing);
     }
 
     static async Task RunProcessing()

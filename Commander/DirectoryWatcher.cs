@@ -1,37 +1,38 @@
 using System.Collections.Immutable;
+using System.Threading.Channels;
 using CsTools.Extensions;
 
 class DirectoryWatcher : IDisposable
 {
-    public DirectoryWatcher(string path)
+    public enum JobType
     {
-        //extendedInfos = path != null ? new(path) : null;
-        fsw = CreateWatcher(path);
-        if (fsw != null)
-        {
-            new Thread(_ => RunChange())
-            {
-                IsBackground = true
-            }.Start();
-            fsw.Deleted += (s, e) => Console.WriteLine($"Deleted: {e.Name}");
-            fsw.Created += (s, e) => Console.WriteLine($"Created: {e.Name}");
-            fsw.Changed += (s, e) => Console.WriteLine($"Changed: {e.Name}");
-            fsw.Renamed += (s, e) => Console.WriteLine($"Rename: {e.Name} {e.OldName}");
-            // fsw.Deleted += (s, e)
-            //     => SafeEvent(() => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Deleted, 
-            //                                     new DirectoryItem(e.Name ?? "", 0, false, null, false, DateTime.MinValue)));
-            // fsw.Created += (s, e) 
-            //     => SafeEvent(() => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Created, CreateItem(Path.AppendPath(e.Name))));
-            // fsw.Changed += (s, e) => 
-            // { 
-            //     if (e.Name != null) 
-            //         changeQueue = changeQueue
-            //                         .Add(e.Name)
-            //                         .SideEffect(_ => renameEvent.Set()); 
-            // };
-            // fsw.Renamed += (s, e)
-            //     => SafeEvent(() => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Renamed, CreateItem(Path.AppendPath(e.Name)), e.OldName));
-        }
+        Created,
+        Deleted,
+        Changed,
+        Renamed
+    }
+
+    public DirectoryWatcher(string path, Directory directory)
+    {
+        fsw = CreateWatcher(path); 
+        fsw.Created += (s, e) => Write(() => new(JobType.Created, CreateItem(e.FullPath, directory.GetIndex(e.Name))));
+        fsw.Deleted += (s, e) => Write(() => new(JobType.Deleted, null, directory.GetIndex(e.Name)));
+        fsw.Changed += (s, e) => Write(() => new(JobType.Changed, CreateItem(e.FullPath, directory.GetIndex(e.Name))));
+        fsw.Renamed += (s, e) => Write(() => new(JobType.Renamed, CreateItem(e.FullPath, directory.GetIndex(e.Name)), directory.GetIndex(e.OldName)));
+        // fsw.Deleted += (s, e)
+        //     => SafeEvent(() => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Deleted, 
+        //                                     new DirectoryItem(e.Name ?? "", 0, false, null, false, DateTime.MinValue)));
+        // fsw.Created += (s, e) 
+        //     => SafeEvent(() => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Created, CreateItem(Path.AppendPath(e.Name))));
+        // fsw.Changed += (s, e) => 
+        // { 
+        //     if (e.Name != null) 
+        //         changeQueue = changeQueue
+        //                         .Add(e.Name)
+        //                         .SideEffect(_ => renameEvent.Set()); 
+        // };
+        // fsw.Renamed += (s, e)
+        //     => SafeEvent(() => Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Renamed, CreateItem(Path.AppendPath(e.Name)), e.OldName));
     }
 
     static FileSystemWatcher CreateWatcher(string path)
@@ -45,21 +46,12 @@ class DirectoryWatcher : IDisposable
             EnableRaisingEvents = true
         };
 
-    static DirectoryItem CreateItem(string fullName, int idx) => new(fullName, idx);
-        // => Directory.IsDirectory(fullName)
-        //     ? DirectoryItem.CreateDirItem(new DirectoryInfo(fullName))
-        //     : DirectoryItem.CreateFileItem(new FileInfo(fullName));
+    static DirectoryItem CreateItem(string fullName, int idx)
+        => System.IO.Directory.Exists(fullName)
+            ? DirectoryItem.CreateDirItem(new DirectoryInfo(fullName), idx)
+            : DirectoryItem.CreateFileItem(new FileInfo(fullName), idx);
 
-    static void SafeEvent(Action action)
-    {
-        try 
-        {
-            action();
-        }
-        catch {}
-    }
-
-    void RunChange()            
+    void RunChange()
     {
         while (true)
         {
@@ -76,11 +68,57 @@ class DirectoryWatcher : IDisposable
                     //extendedInfos?.FileChanged(n);
                     // Events.SendDirectoryChanged(id, Path, DirectoryChangedType.Changed, CreateItem(Path.AppendPath(n)));
                 });
-                    
+
             }
             catch { }
         }
     }
+
+    static async Task RunProcessing()
+    {
+        await foreach (var n in jobs.Reader.ReadAllAsync())
+        {
+            try
+            {
+                await Process(n);
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine($"Exception in directory watcher processing: {e}");
+            }
+        }
+    }
+
+    static void Write(Func<DirectoryItemJob> createJob)
+    {
+        try
+        {
+            jobs.Writer.TryWrite(createJob());
+        }   
+        catch (FileNotFoundException) {}
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error occurred in DirectroyWatcher.Write {e}");
+        }
+    } 
+
+    static async Task Process(DirectoryItemJob job)
+    {
+        Console.WriteLine($"Event: {job}");
+    }
+
+    static DirectoryWatcher()
+    {
+        jobs = Channel.CreateUnbounded<DirectoryItemJob>(new UnboundedChannelOptions
+        {
+            SingleReader = true,
+            SingleWriter = false
+        });
+        jobProcessorTask = Task.Run(RunProcessing);
+    }
+
+    static readonly Channel<DirectoryItemJob> jobs;
+    static readonly Task jobProcessorTask;
 
     readonly TimeSpan RENAME_DELAY = TimeSpan.FromMilliseconds(200);
     readonly FileSystemWatcher? fsw;
@@ -123,3 +161,6 @@ class DirectoryWatcher : IDisposable
 
     #endregion
 }
+
+record DirectoryItemJob(DirectoryWatcher.JobType Type, DirectoryItem? Item, int? itemIndex = null);
+
