@@ -23,11 +23,9 @@ sudo dnf install gcc-c++ gtk3-devel
 
 TODO
 
-Rename in commander:
-Create 
-Delete
+Create: create FileInfo in C#
+Delete: delete from dictionaries
 Change via Observable, debounce, but cancellable
-
 
 * DirectoryWatcher: edit file in editor, save
 create .name is hidden
