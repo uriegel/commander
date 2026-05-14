@@ -148,6 +148,7 @@ static class ErrorType
 record SystemError(string Error, string Message);
 
 record RenameData(int Idx, string NewName, string FolderId);
+record DeleteData(int Idx, string FolderId);
 
 class EventCmd
 {
@@ -169,6 +170,7 @@ class EventCmd
     public const string PreviewMode = "PreviewMode";
     public const string Cmd = "Cmd";
     public const string Rename = "Rename";
+    public const string Delete = "Delete";
 }
 
 class PreviewMode
@@ -188,7 +190,8 @@ record EventData(
     VersionInfo[]? Versions = null,
     string? PreviewMode = null,
     string? Cmd = null,
-    RenameData? RenameData = null);
+    RenameData? RenameData = null,
+    DeleteData? DeleteData = null);
 
 record CommanderEvent(string? FolderId, string Cmd, EventData Msg);
 

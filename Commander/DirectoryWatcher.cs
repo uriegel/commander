@@ -122,6 +122,12 @@ record DirectoryItemJob(DirectoryWatcher.JobType Type, string FolderId, Director
             {
                 RenameData = new(ItemIndex.Value, Item.Name, FolderId)
             })
+            : Type == DirectoryWatcher.JobType.Deleted && Item != null && ItemIndex != null
+            ? new(FolderId, EventCmd.Delete, new()
+            {
+                DeleteData = new(ItemIndex.Value, FolderId)
+            })
             : null;
+
 }
 
