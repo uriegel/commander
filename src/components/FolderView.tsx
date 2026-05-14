@@ -7,6 +7,8 @@ import { initializeHistory } from "../history"
 import RestrictionView, { type RestrictionViewHandle } from "./RestrictionView"
 import { ID_LEFT } from "./Commander"
 import {
+    deleteEventsLeft$,
+    deleteEventsRight$,
     extendedInfosEventsLeft$, extendedInfosEventsRight$,
     extendedInfosStartEventsLeft$,
     extendedInfosStartEventsRight$,
@@ -20,7 +22,7 @@ import { EXTENDED_RENAME, showExtendedRename } from "../items-provider/extended-
 import { DialogContext } from "web-dialog-react"
 import { FILE } from "../items-provider/file-item-provider"
 import { REMOTE } from "../items-provider/remote-provider"
-import { type DirectoryItem, type ExtendedInfos, type Item, type RenameData, type SystemError } from "../requests/model"
+import { type DeleteData, type DirectoryItem, type ExtendedInfos, type Item, type RenameData, type SystemError } from "../requests/model"
 import { isWindows } from "../platform/platform"
 import { windowsOpenWith } from "../platform/windows/folderview"
 import { linuxOpenWith } from "../platform/linux/folderview"
@@ -179,7 +181,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
     useEffect(() => {
         const renameItems = (renameData: RenameData) => {
-            console.log("Einiwent", renameData)
             if (itemsProvider.current?.getId() != FILE)
                 return
             const item = directoryItemsDictionary.current.get(renameData.idx)
@@ -189,7 +190,6 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 const currentItem = prev[virtualTable.current?.getPosition() ?? -1]
                 const prevName = item.name
                 const isSelected = currentItem?.name == prevName
-                console.log("isSelected", isSelected)
                 item.name = renameData.newName
                 const newItems = itemsProvider.current?.sort(prev, sortIndex.current, sortDescending.current)
                 if (newItems && isSelected)
@@ -202,6 +202,32 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
         const event$ = id == ID_LEFT ? renameEventsLeft$ : renameEventsRight$
         const sub = event$.subscribe(renameItems)
+        return () => sub.unsubscribe()
+    }, [id])
+
+    useEffect(() => {
+        const deleteItems = (deleteData: DeleteData) => {
+            if (itemsProvider.current?.getId() != FILE)
+                return
+            const item = directoryItemsDictionary.current.get(deleteData.idx)
+            if (item == null)
+                return
+            directoryItemsDictionary.current.delete(deleteData.idx)
+            setItems(prev => {
+                const currentItem = prev[virtualTable.current?.getPosition() ?? 0].name
+                const recentItems = prev.filter(n => (n as DirectoryItem).idx != deleteData.idx)
+                const newItems = itemsProvider.current?.sort(recentItems, sortIndex.current, sortDescending.current)
+                const pos = newItems?.findIndex(n => n.name == currentItem)
+                if (pos && pos != -1)
+                    virtualTable.current?.setPosition(pos)
+                else
+                    virtualTable.current?.setPosition(0)
+                return newItems || prev
+            })
+        }
+
+        const event$ = id == ID_LEFT ? deleteEventsLeft$ : deleteEventsRight$
+        const sub = event$.subscribe(deleteItems)
         return () => sub.unsubscribe()
     }, [id])
 

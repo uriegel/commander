@@ -1,7 +1,7 @@
 import { filter, fromEvent, map, Observable, Subscriber } from 'rxjs'
 import { ID_LEFT, ID_RIGHT } from '../components/Commander'
 import {
-    type CmdEvent, type CommanderEvent, type CopyProgress, type DeleteProgress, type ExtendedInfos, type ExtendedInfosStatus,
+    type CmdEvent, type CommanderEvent, type CopyProgress, type DeleteEvent, type DeleteProgress, type ExtendedInfos, type ExtendedInfosStatus,
     type PreviewModeEvent, type RenameEvent, type ShowHiddenEvent, type ShowViewerEvent, type ThemeChangeEvent, type WindowStateEvent
 } from './model'
 
@@ -33,6 +33,7 @@ export const showHiddenEvents$ = message$.pipe(filter(n => n.cmd == "ShowHidden"
 export const showViewerEvents$ = message$.pipe(filter(n => n.cmd == "ShowViewer")).pipe(map(n => (n.msg as ShowViewerEvent).showViewer))
 export const PreviewModeEvents$ = message$.pipe(filter(n => n.cmd == "PreviewMode")).pipe(map(n => (n.msg as PreviewModeEvent).previewMode))
 export const renameEvents$ = message$.pipe(filter(n => n.cmd == "Rename")).pipe(map(n => (n.msg as RenameEvent).renameData))
+export const deleteEvents$ = message$.pipe(filter(n => n.cmd == "Delete")).pipe(map(n => (n.msg as DeleteEvent).deleteData))
 const extendedInfosStartEvents$ = message$.pipe(filter(n => n.cmd == "ExtendedInfosStart"))
 const extendedInfosStopEvents$ = message$.pipe(filter(n => n.cmd == "ExtendedInfosStop"))
 const extendedInfosEvents$ = message$.pipe(filter(n => n.cmd == "ExtendedInfos"))
@@ -67,3 +68,8 @@ export const renameEventsLeft$ = renameEvents$
 export const renameEventsRight$ = renameEvents$
     .pipe(filter(n => n.folderId == ID_RIGHT))
     
+export const deleteEventsLeft$ = deleteEvents$
+    .pipe(filter(n => n.folderId == ID_LEFT))
+
+export const deleteEventsRight$ = deleteEvents$
+    .pipe(filter(n => n.folderId == ID_RIGHT))

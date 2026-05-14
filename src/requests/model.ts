@@ -203,7 +203,8 @@ type EventData = ExtendedInfos | CopyProgress | Version | DeleteProgress | Theme
         | ShowViewerEvent | PreviewModeEvent | CmdEvent | RenameEvent
 
 type EventCmd = "ExtendedInfos" | "ExtendedInfosStart" | "ExtendedInfosStop" | "CopyProgress" | "CopyStop" | "CopyProgressShowDialog"
-            | "ThemeChanged" | "DeleteProgress" | "DeleteStop" | "WindowState" | "ShowHidden" | "ShowViewer" | "PreviewMode" | "Cmd" | "Rename"
+        | "ThemeChanged" | "DeleteProgress" | "DeleteStop" | "WindowState" | "ShowHidden" | "ShowViewer" | "PreviewMode" | "Cmd"
+        | "Rename" | "Delete"
 
 export type CommanderEvent = {
     folderId?: string,
@@ -281,6 +282,14 @@ export type RenameEvent = {
 
 export type RenameData = {
     idx: number, newName: string, folderId: string
+}
+
+export type DeleteEvent = {
+    deleteData: DeleteData
+}
+
+export type DeleteData = {
+    idx: number, folderId: string
 }
 
 export type GpxPoint = {

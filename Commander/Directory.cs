@@ -80,12 +80,18 @@ partial class Directory(string folderId, bool showHidden) : IDisposable
     {
         if (itemsByIndex.TryGetValue(index, out var oldItem))
         {
-            var item = itemsByIndex.AddOrUpdate(index, new DirectoryItem("", -1), (k, v) =>  v with { Name = newName});
+            var item = itemsByIndex.AddOrUpdate(index, new DirectoryItem("", -1), (k, v) => v with { Name = newName });
             itemsByName.TryRemove(oldItem.Name, out var _);
             itemsByName.AddOrUpdate(newName, item, (_, __) => item);
         }
     }
-
+    
+    public void Delete(int index)
+    {
+        if (itemsByIndex.TryRemove(index,out var old))
+            itemsByName.TryRemove(old.Name, out var _);
+    }
+    
     GetDirectoryItemsOutput Get(GetFilesInput getFiles)
     {
         try 

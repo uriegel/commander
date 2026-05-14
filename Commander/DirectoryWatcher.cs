@@ -21,7 +21,11 @@ class DirectoryWatcher : IDisposable
     Directory Directory { get; }
 
     void Created(object _, FileSystemEventArgs e)
-        => Process(() => new(JobType.Created, Directory.FolderId, CreateItem(e.FullPath, Directory.GetIndex(e.Name))));
+    {
+        var idx = Directory.GetIndex(e.Name);
+        Process(() => new(JobType.Created, Directory.FolderId, CreateItem(e.FullPath, idx)),
+            () => Directory.Delete(idx));
+    }
     void Deleted(object _, FileSystemEventArgs e)
         => Process(() => new(JobType.Deleted, Directory.FolderId, null, Directory.GetIndex(e.Name)));
     void Changed(object _, FileSystemEventArgs e)
@@ -122,7 +126,7 @@ record DirectoryItemJob(DirectoryWatcher.JobType Type, string FolderId, Director
             {
                 RenameData = new(ItemIndex.Value, Item.Name, FolderId)
             })
-            : Type == DirectoryWatcher.JobType.Deleted && Item != null && ItemIndex != null
+            : Type == DirectoryWatcher.JobType.Deleted && ItemIndex != null
             ? new(FolderId, EventCmd.Delete, new()
             {
                 DeleteData = new(ItemIndex.Value, FolderId)
