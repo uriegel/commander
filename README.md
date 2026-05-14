@@ -42,6 +42,7 @@ rename: .oldname is hidden, create newName
 * DirectoryWatcher: Delete: delete from dictionary delete item in in javascript
 * DirectoryWatcher: rename events position on renamed in strict mode
 * DirectoryWatcher: get extended infos
+* DirectoryWatcher: Windows
 
 * strict mode: sometimes Exceptions Object disposed
 * strict mode: rename: wrong position when renamed was selected
