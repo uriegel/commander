@@ -22,8 +22,21 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
+
+Rename in commander:
+Create 
+Delete
+Change via Observable, debounce, but cancellable
+
+
 * DirectoryWatcher: edit file in editor, save
-* DirectoryWatcher: consider hidden
+create .name is hidden
+change: .name is hidden
+rename: .oldname is hidden, create newName
+
+
+
+* DirectoryWatcher: consider not hidden
 * DirectoryWatcher: hidden: no created, no change, but renamed with oldFIle=-1
 * DirectoryWatcher: not hidden: created with index update, change wth index, renamed with oldFile=index
 * DirectoryWatcher: Create: idx = idxSeed++, add in dictionary, call get extendedInfos to javascript: item sort in javascript, 
@@ -31,7 +44,9 @@ TODO
 * DirectoryWatcher: Delete: delete from dictionary delete item in in javascript
 * DirectoryWatcher: rename events position on renamed in strict mode
 * DirectoryWatcher: get extended infos
+
 * strict mode: sometimes Exceptions Object disposed
+* strict mode: rename: wrong position when renamed was selected
 * Dispose Directory object when getRoot/getRemote...  AND get Favorites/getRemotesin javascript, change value set idx from dictionary in CS
 * Windows: compare version infos
 * Windows: rename as copy

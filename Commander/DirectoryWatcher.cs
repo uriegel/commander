@@ -1,8 +1,3 @@
-using System.Collections.Immutable;
-using System.Diagnostics.Tracing;
-using System.Threading.Channels;
-using CsTools.Extensions;
-
 class DirectoryWatcher : IDisposable
 {
     public enum JobType
@@ -15,16 +10,27 @@ class DirectoryWatcher : IDisposable
 
     public DirectoryWatcher(string path, Directory directory)
     {
-        fsw = CreateWatcher(path); 
-        fsw.Created += (s, e) => Write(() => new(JobType.Created, directory.FolderId, CreateItem(e.FullPath, directory.GetIndex(e.Name))));  
-        fsw.Deleted += (s, e) => Write(() => new(JobType.Deleted, directory.FolderId, null, directory.GetIndex(e.Name)));
-        fsw.Changed += (s, e) => Write(() => new(JobType.Changed, directory.FolderId, CreateItem(e.FullPath, directory.GetIndex(e.Name))));
-        fsw.Renamed += (s, e) =>
-        {
-            var oldIndex = directory.GetIndex(e.OldName);
-            Write(() => new(JobType.Renamed, directory.FolderId, CreateItem(e.FullPath, directory.GetIndex(e.Name)), oldIndex),
-                () => directory.Rename(oldIndex, e.Name ?? ""));
-        };
+        Directory = directory;
+        fsw = CreateWatcher(path);
+        fsw.Created += Created;
+        fsw.Deleted += Deleted;
+        fsw.Changed += Changed;
+        fsw.Renamed += Renamed;
+    }
+
+    Directory Directory { get; }
+
+    void Created(object _, FileSystemEventArgs e)
+        => Process(() => new(JobType.Created, Directory.FolderId, CreateItem(e.FullPath, Directory.GetIndex(e.Name))));
+    void Deleted(object _, FileSystemEventArgs e)
+        => Process(() => new(JobType.Deleted, Directory.FolderId, null, Directory.GetIndex(e.Name)));
+    void Changed(object _, FileSystemEventArgs e)
+        => Process(() => new(JobType.Changed, Directory.FolderId, CreateItem(e.FullPath, Directory.GetIndex(e.Name))));
+    void Renamed(object _, RenamedEventArgs e)        
+    {
+        var oldIndex = Directory.GetIndex(e.OldName);
+        Process(() => new(JobType.Renamed, Directory.FolderId, CreateItem(e.FullPath, Directory.GetIndex(e.Name)), oldIndex),
+            () => Directory.Rename(oldIndex, e.Name ?? ""));
     }
 
     static FileSystemWatcher CreateWatcher(string path)
@@ -43,28 +49,17 @@ class DirectoryWatcher : IDisposable
             ? DirectoryItem.CreateDirItem(new DirectoryInfo(fullName), idx)
             : DirectoryItem.CreateFileItem(new FileInfo(fullName), idx);
 
-    static async Task RunProcessing()
-    {
-        await foreach (var n in jobs.Reader.ReadAllAsync())
-        {
-            try
-            {
-                await Process(n);
-            }
-            catch (Exception e)
-            {
-                Console.Error.WriteLine($"Exception in directory watcher processing: {e}");
-            }
-        }
-    }
-
-    static void Write(Func<DirectoryItemJob> createJob, Action? afterCreated = null)
+    void Process(Func<DirectoryItemJob> createJob, Action? afterCreated = null)
     {
         try
         {
             var job = createJob();
+            if (disposedValue)
+                return;
             afterCreated?.Invoke();
-            jobs.Writer.TryWrite(createJob());
+            var cmd = job.GetEvent();
+            if (cmd != null && !disposedValue)
+                Requests.SendJson(cmd);
         }   
         catch (FileNotFoundException) {}
         catch (Exception e)
@@ -72,28 +67,6 @@ class DirectoryWatcher : IDisposable
             Console.WriteLine($"Error occurred in DirectroyWatcher.Write {e}");
         }
     } 
-
-    static async Task Process(DirectoryItemJob job)
-    {
-        Console.WriteLine($"Event: {job}");
-
-        var cmd = job.GetEvent();
-        if (cmd != null)
-            Requests.SendJson(cmd);
-    }
-
-    static DirectoryWatcher()
-    {
-        jobs = Channel.CreateUnbounded<DirectoryItemJob>(new UnboundedChannelOptions
-        {
-            SingleReader = true,
-            SingleWriter = false
-        });
-        jobProcessorTask = Task.Run(RunProcessing);
-    }
-
-    static readonly Channel<DirectoryItemJob> jobs;
-    static readonly Task jobProcessorTask;
 
     readonly TimeSpan RENAME_DELAY = TimeSpan.FromMilliseconds(200);
     readonly FileSystemWatcher? fsw;
@@ -114,8 +87,14 @@ class DirectoryWatcher : IDisposable
         if (!disposedValue)
         {
             if (disposing)
+            {
                 // Verwalteten Zustand (verwaltete Objekte) bereinigen
                 fsw?.Dispose();
+                fsw?.Created -= Created;
+                fsw?.Deleted -= Deleted;
+                fsw?.Changed -= Changed;
+                fsw?.Renamed -= Renamed;
+            }
 
             // Nicht verwaltete Ressourcen (nicht verwaltete Objekte) freigeben und Finalizer überschreiben
             // Große Felder auf NULL setzen

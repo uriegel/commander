@@ -1,16 +1,15 @@
 using System.Collections.Concurrent;
-using System.Security.Cryptography.X509Certificates;
 using CsTools.Extensions;
 using CsTools.Functional;
 
-partial class Directory(string folderId) : IDisposable
+partial class Directory(string folderId, bool showHidden) : IDisposable
 {
     public string FolderId { get => folderId; }   
-    public static Directory Get(string? id) => directories.TryGetValue(id!, out var result) ? result : throw new ArgumentNullException();
+    public static Directory? Get(string? id) => directories.TryGetValue(id!, out var result) ? result : null;
 
     public static GetDirectoryItemsOutput GetFiles(GetFilesInput input)
     {
-        var dir = new Directory(input.FolderId);
+        var dir = new Directory(input.FolderId, input.ShowHidden);
         directories.AddOrUpdate(input.FolderId, dir, (_, old) =>
         {
             old.Dispose();
@@ -109,7 +108,7 @@ partial class Directory(string folderId) : IDisposable
                 StartGettingExtendedInfos(getFiles.FolderId, getFiles.RequestId, getFiles.Path, files);
                 ObjectDisposedException.ThrowIf(disposedValue, this);
                 directoryWatcher?.Dispose();
-                directoryWatcher = new(getFiles.Path,this);
+                directoryWatcher = new(getFiles.Path, this);
             }
             DirectoryItem[] items = [.. dirs, .. files];
             idxSeed = items.Length;
@@ -217,25 +216,6 @@ partial class Directory(string folderId) : IDisposable
 record ExtendedItemsData(Task Task, CancellationTokenSource Cancellation);
 
     
-//     public static async Task ProcessFile(HttpContext context, string path)
-//     {
-//         using var stream = path.OpenFile();
-//         await (path.UseRange()
-//             ? context.StreamRangeFile(path)
-//             : context.SendStream(stream, null, path));
-//     }
-
-//     public static void FilesDropped(string id, bool move, string[] paths)
-//         => Events.FilesDropped(new FilesDrop(
-//             id,
-//             move,
-//             new DirectoryInfo(paths[0]).Parent?.FullName ?? "",
-//             paths
-//                 .Select(n => IsDirectory(n)
-//                             ? DirectoryItem.CreateDirItem(new DirectoryInfo(n))
-//                             : DirectoryItem.CreateFileItem(new FileInfo(n)))
-//                 .ToArray()));
-
 //     public static AsyncResult<Nothing, RequestError> RenameAsCopy(RenameItemParam input)
 //         => Try(
 //             () => nothing
@@ -246,15 +226,6 @@ record ExtendedItemsData(Task Task, CancellationTokenSource Cancellation);
 //     public static bool IsDirectory(string path)
 //         => (File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory;
 
-//     public static void SaveDelete(this string path)
-//     {
-//         try 
-//         {
-//              File.Delete(path);
-//         }
-//         catch {}
-//     }
-        
 //     public static RequestError ErrorToRequestError(DirectoryError de)
 //         => de switch
 //         {
@@ -273,14 +244,6 @@ record ExtendedItemsData(Task Task, CancellationTokenSource Cancellation);
 //             UnauthorizedAccessException => IOErrorType.AccessDenied.ToError(),
 //             _ => IOErrorType.Exn.ToError()
 //         };
-
-
-
-// static class IOErrorTypeExtensions
-// {
-//     public static RequestError ToError(this IOErrorType error)
-//         => new((int)error, error switch 
-//                                 {
 //                                     IOErrorType.AccessDenied => "Access denied",
 //                                     IOErrorType.AlreadyExists => "Already exists",
 //                                     IOErrorType.FileNotFound => "File not found",
@@ -294,5 +257,3 @@ record ExtendedItemsData(Task Task, CancellationTokenSource Cancellation);
 //                                     IOErrorType.WrongCredentials => "Wrong credentials",
 //                                     IOErrorType.OperationInProgress => "Operation in Progress",
 //                                     _ => "Unknown"
-//                                 });
-// } 

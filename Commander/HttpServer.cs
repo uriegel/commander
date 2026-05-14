@@ -8,9 +8,11 @@ static class HttpServer
     public static IServer New()
         => WebServer
             .New()
+            .Logging(LogLevel.Info)
             .Http(8080)
 #if DEBUG        
             .AddAllowedOrigin("http://localhost:5173")
+            .AccessControlMaxAge(TimeSpan.FromMinutes(1))
 #else
             .WebsiteFromResource()
 #endif        
