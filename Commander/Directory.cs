@@ -68,10 +68,15 @@ partial class Directory(string folderId, bool showHidden) : IDisposable
             System.IO.Directory.Move(input.Path.AppendPath("__RENAMING__" + item.NewName), input.Path.AppendPath(item.NewName));
     }
 
+    public static DirectoryItem? CreateItem(string path, int idx)
+        => File.Exists(path)
+                ? DirectoryItem.CreateFileItem(new FileInfo(path), idx)
+                : System.IO.Directory.Exists(path)
+                ? DirectoryItem.CreateDirItem(new DirectoryInfo(path), idx)
+                : null;
+
     public static DirectoryItem[] ExtendCopyItems(string[] items)
-        => [.. items.Select(n => File.Exists(n)
-                ? DirectoryItem.CreateFileItem(new FileInfo(n), -1)
-                : DirectoryItem.CreateDirItem(new DirectoryInfo(n), -1))];
+        => [.. items.SelectFilterNull(n => CreateItem(n, -1))];
 
     public int GetIndex(string? fileName)
         => itemsByName.TryGetValue(fileName ?? "", out var item) ? item.Idx : -1;
@@ -85,12 +90,23 @@ partial class Directory(string folderId, bool showHidden) : IDisposable
             itemsByName.AddOrUpdate(newName, item, (_, __) => item);
         }
     }
-    
+
     public void Delete(int index)
     {
-        if (itemsByIndex.TryRemove(index,out var old))
+        if (itemsByIndex.TryRemove(index, out var old))
             itemsByName.TryRemove(old.Name, out var _);
     }
+
+    public DirectoryItem? Create(string path)
+    {
+        var result = CreateItem(path, Interlocked.Increment(ref idxSeed));
+        if (result == null)
+            return null;
+        itemsByIndex.TryAdd(result.Idx, result);
+        itemsByName.TryAdd(result.Name, result);
+        return result;
+    }
+        
     
     GetDirectoryItemsOutput Get(GetFilesInput getFiles)
     {
@@ -100,13 +116,13 @@ partial class Directory(string folderId, bool showHidden) : IDisposable
             var dirInfo = new DirectoryInfo(getFiles.Path);
             var dirs = dirInfo
                             .GetDirectories()
-                            .Select(n => DirectoryItem.CreateDirItem(n , ++idxSeed))
+                            .Select(n => DirectoryItem.CreateDirItem(n , Interlocked.Increment(ref idxSeed)))
                             .Where(n => getFiles.ShowHidden == true || !n.IsHidden == true)
                             .OrderBy(n => n.Name)
                             .ToArray();
             var files = dirInfo
                             .GetFiles()
-                            .Select(n => DirectoryItem.CreateFileItem(n, ++idxSeed))
+                            .Select(n => DirectoryItem.CreateFileItem(n, Interlocked.Increment(ref idxSeed)))
                             .Where(n => getFiles.ShowHidden == true || !n.IsHidden == true)
                             .ToArray();
             if (getFiles?.FolderId != null)
@@ -117,7 +133,6 @@ partial class Directory(string folderId, bool showHidden) : IDisposable
                 directoryWatcher = new(getFiles.Path, this);
             }
             DirectoryItem[] items = [.. dirs, .. files];
-            idxSeed = items.Length;
             itemsByIndex = new(items.ToDictionary(n => n.Idx));
             itemsByName = new(items.ToDictionary(n => n.Name, n => n));
             return new(items, dirInfo.FullName, dirs.Length, files.Length);

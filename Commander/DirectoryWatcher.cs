@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 class DirectoryWatcher : IDisposable
 {
     public enum JobType
@@ -22,9 +24,12 @@ class DirectoryWatcher : IDisposable
 
     void Created(object _, FileSystemEventArgs e)
     {
-        var idx = Directory.GetIndex(e.Name);
-        Process(() => new(JobType.Created, Directory.FolderId, CreateItem(e.FullPath, idx)),
-            () => Directory.Delete(idx));
+        if (Directory.GetIndex(e.Name) != -1)
+            return;
+        var item = Directory.Create(e.FullPath);
+        if (item == null)
+            return;
+        Process(() => new(JobType.Created, Directory.FolderId, item));
     }
     void Deleted(object _, FileSystemEventArgs e)
         => Process(() => new(JobType.Deleted, Directory.FolderId, null, Directory.GetIndex(e.Name)));
@@ -131,7 +136,11 @@ record DirectoryItemJob(DirectoryWatcher.JobType Type, string FolderId, Director
             {
                 DeleteData = new(ItemIndex.Value, FolderId)
             })
+            : Type == DirectoryWatcher.JobType.Created && ItemIndex != null && Item != null
+            ? new(FolderId, EventCmd.Create, new()
+            {
+                CreateData = new(ItemIndex.Value, FolderId, Item)
+            })
             : null;
-
 }
 

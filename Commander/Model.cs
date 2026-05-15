@@ -149,6 +149,7 @@ record SystemError(string Error, string Message);
 
 record RenameData(int Idx, string NewName, string FolderId);
 record DeleteData(int Idx, string FolderId);
+record CreateData(int Idx, string FolderId, DirectoryItem Item);
 
 class EventCmd
 {
@@ -171,6 +172,7 @@ class EventCmd
     public const string Cmd = "Cmd";
     public const string Rename = "Rename";
     public const string Delete = "Delete";
+    public const string Create = "Create";
 }
 
 class PreviewMode
@@ -191,7 +193,8 @@ record EventData(
     string? PreviewMode = null,
     string? Cmd = null,
     RenameData? RenameData = null,
-    DeleteData? DeleteData = null);
+    DeleteData? DeleteData = null,
+    CreateData? CreateData = null);
 
 record CommanderEvent(string? FolderId, string Cmd, EventData Msg);
 
