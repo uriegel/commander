@@ -41,8 +41,29 @@ class DirectoryWatcher : IDisposable
     void Renamed(object _, RenamedEventArgs e)        
     {
         var oldIndex = Directory.GetIndex(e.OldName);
-        Process(() => new(JobType.Renamed, Directory.FolderId, CreateItem(e.FullPath, Directory.GetIndex(e.Name)), oldIndex),
-            () => Directory.Rename(oldIndex, e.Name ?? ""));
+        if (oldIndex == -1)
+        {
+            var index = Directory.GetIndex(e.Name);
+            if (index == -1)
+            {
+                var item = Directory.Create(e.FullPath);
+                if (item == null)
+                    return;
+                Process(() => new(JobType.Created, Directory.FolderId, item));
+            }
+            else
+            {
+                // TODO send changedEvent to javascript, but as afterAction: () => Directory.Delete(index); 
+                Process(() => new(JobType.Deleted, Directory.FolderId, null, index), () => Directory.Delete(index));
+                var item = Directory.Create(e.FullPath);
+                if (item == null)
+                    return;
+                Process(() => new(JobType.Created, Directory.FolderId, item));
+            }
+        }
+        else
+            Process(() => new(JobType.Renamed, Directory.FolderId, CreateItem(e.FullPath, Directory.GetIndex(e.Name)), oldIndex),
+                () => Directory.Rename(oldIndex, e.Name ?? ""));
     }
 
     static FileSystemWatcher CreateWatcher(string path)

@@ -100,7 +100,7 @@ partial class Directory(string folderId, bool showHidden) : IDisposable
     public DirectoryItem? Create(string path)
     {
         var result = CreateItem(path, Interlocked.Increment(ref idxSeed));
-        if (result == null)
+        if (result == null || result.IsHidden == true && !showHidden)
             return null;
         itemsByIndex.TryAdd(result.Idx, result);
         itemsByName.TryAdd(result.Name, result);

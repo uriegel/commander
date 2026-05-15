@@ -30,7 +30,7 @@ create .name is hidden
 change: .name is hidden
 rename: .oldname is hidden, create newName
 
-
+// TODO send changedEvent to javascript, but as afterAction: () => Directory.Delete(index); 
 
 * DirectoryWatcher: consider not hidden
 * DirectoryWatcher: hidden: no created, no change, but renamed with oldFIle=-1
