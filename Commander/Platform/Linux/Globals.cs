@@ -1,5 +1,6 @@
 #if Linux
 using System.Diagnostics;
+using CsTools;
 using CsTools.Extensions;
 using GtkDotNet.Exceptions;
 
@@ -14,14 +15,17 @@ static partial class Globals
     public static string IconProcessor { get; private set; } = "";
     public static void InitializeResourceFiles()
     {
-        var homeDir = Environment.GetEnvironmentVariable("HOME");
-        var path = homeDir.AppendPath(".config").AppendPath(APP_ID);
+        var homeDir = Environment.GetEnvironmentVariable("HOME");   
+        var path = homeDir
+                    .AppendPath(".config")
+                    .AppendPath(APP_ID)
+                    .EnsureDirectoryExists();
         var icon = Resources.Get("icon");
         IconProcessor = path.AppendPath("icon");
-        using var writer = File.OpenWrite(IconProcessor);
+        using var writer = File.Create  (IconProcessor);
         icon?.CopyTo(writer);
         writer.Dispose();
-        var psi = new ProcessStartInfo("chmod")
+        var psi = new ProcessStartInfo("chmod")                                         
         {
             ArgumentList = { "+x", IconProcessor },
             CreateNoWindow = true,
