@@ -42,6 +42,8 @@ rename: .oldname is hidden, create newName
 * DirectoryWatcher: get extended infos
 * DirectoryWatcher: Windows
 
+* Open txt file in Linux, close => multiline error in status line, then erweiterte Informationen werden abgerufen......... Copy not possible
+
 * strict mode: sometimes Exceptions Object disposed
 * strict mode: rename: wrong position when renamed was selected
 * Dispose Directory object when getRoot/getRemote...  AND get Favorites/getRemotesin javascript, change value set idx from dictionary in CS
