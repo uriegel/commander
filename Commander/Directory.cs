@@ -97,6 +97,17 @@ partial class Directory(string folderId, bool showHidden) : IDisposable
             itemsByName.TryRemove(old.Name, out var _);
     }
 
+    public DirectoryItem? Change(string? name, Func<int, DirectoryItem> createItem)
+    {
+        var idx = GetIndex(name);
+        if (idx == -1)
+            return null;
+        var item = createItem(idx);
+        itemsByIndex.AddOrUpdate(idx, item, (v, k) => item);
+        itemsByName.AddOrUpdate(item.Name, item, (v, k) => item);
+        return item;
+    }
+
     public DirectoryItem? Create(string path)
     {
         var result = CreateItem(path, Interlocked.Increment(ref idxSeed));

@@ -37,7 +37,7 @@ class DirectoryWatcher : IDisposable
         Process(() => new(JobType.Deleted, Directory.FolderId, null, index), () => Directory.Delete(index));
     }
     void Changed(object _, FileSystemEventArgs e)
-        => Process(() => new(JobType.Changed, Directory.FolderId, CreateItem(e.FullPath, Directory.GetIndex(e.Name))));
+        => Process(() => new(JobType.Changed, Directory.FolderId, Directory.Change(e.Name, idx => CreateItem(e.FullPath, idx))));
     void Renamed(object _, RenamedEventArgs e)        
     {
         var oldIndex = Directory.GetIndex(e.OldName);
