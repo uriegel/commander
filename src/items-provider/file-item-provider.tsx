@@ -60,8 +60,8 @@ export class FileItemProvider extends IItemsProvider {
             }
     }
 
-    sort(items: Item[], sortIndex: number, sortDescending: boolean): Item[] {
-        return this.sortItems(items, this.getSortFunction(sortIndex, sortDescending))
+    sort(items: Item[], sortIndex: number, sortDescending: boolean, sortDirs = false): Item[] {
+        return this.sortItems(items, this.getSortFunction(sortIndex, sortDescending), sortDirs)
     }
 
     getSortFunction = (index: number, descending: boolean) => {

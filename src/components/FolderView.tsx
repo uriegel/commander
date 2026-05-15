@@ -6,23 +6,15 @@ import { IItemsProvider } from "../items-provider/base-provider"
 import { initializeHistory } from "../history"
 import RestrictionView, { type RestrictionViewHandle } from "./RestrictionView"
 import { ID_LEFT } from "./Commander"
-import {
-    deleteEventsLeft$,
-    deleteEventsRight$,
-    extendedInfosEventsLeft$, extendedInfosEventsRight$,
-    extendedInfosStartEventsLeft$,
-    extendedInfosStartEventsRight$,
-    extendedInfosStopEventsLeft$,
-    extendedInfosStopEventsRight$,
-    renameEventsLeft$,
-    renameEventsRight$
-} from "../requests/events"
+import { createEventsLeft$, createEventsRight$, deleteEventsLeft$, deleteEventsRight$, extendedInfosEventsLeft$, extendedInfosEventsRight$,
+    extendedInfosStartEventsLeft$, extendedInfosStartEventsRight$, extendedInfosStopEventsLeft$, extendedInfosStopEventsRight$,
+    renameEventsLeft$, renameEventsRight$ } from "../requests/events"
 import { getItemsFinished, onEnter as reqOnEnter } from "../requests/requests"
 import { EXTENDED_RENAME, showExtendedRename } from "../items-provider/extended-rename"
 import { DialogContext } from "web-dialog-react"
 import { FILE } from "../items-provider/file-item-provider"
 import { REMOTE } from "../items-provider/remote-provider"
-import { type DeleteData, type DirectoryItem, type ExtendedInfos, type Item, type RenameData, type SystemError } from "../requests/model"
+import { type CreateData, type DeleteData, type DirectoryItem, type ExtendedInfos, type Item, type RenameData, type SystemError } from "../requests/model"
 import { isWindows } from "../platform/platform"
 import { windowsOpenWith } from "../platform/windows/folderview"
 import { linuxOpenWith } from "../platform/linux/folderview"
@@ -228,6 +220,27 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
         const event$ = id == ID_LEFT ? deleteEventsLeft$ : deleteEventsRight$
         const sub = event$.subscribe(deleteItems)
+        return () => sub.unsubscribe()
+    }, [id])
+
+    useEffect(() => {
+        const createItems = (createData: CreateData) => {
+            if (itemsProvider.current?.getId() != FILE)
+                return
+            directoryItemsDictionary.current.set(createData.idx, createData.item)
+            setItems(prev => {
+                const currentItem = prev[virtualTable.current?.getPosition() ?? 0].name
+                const addedItems = prev.concat(createData.item)
+                const newItems = itemsProvider.current?.sort(addedItems, sortIndex.current, sortDescending.current, true)
+                const pos = newItems?.findIndex(n => n.name == currentItem)
+                if (pos && pos != -1)
+                    virtualTable.current?.setPosition(pos)
+                return newItems || prev
+            })
+        }
+
+        const event$ = id == ID_LEFT ? createEventsLeft$ : createEventsRight$
+        const sub = event$.subscribe(createItems)
         return () => sub.unsubscribe()
     }, [id])
 

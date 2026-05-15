@@ -200,11 +200,11 @@ export type SystemError = {
 }
 
 type EventData = ExtendedInfos | CopyProgress | Version | DeleteProgress | ThemeChangeEvent | WindowStateEvent | ShowHiddenEvent
-        | ShowViewerEvent | PreviewModeEvent | CmdEvent | RenameEvent
+        | ShowViewerEvent | PreviewModeEvent | CmdEvent | RenameEvent | CreateEvent
 
 type EventCmd = "ExtendedInfos" | "ExtendedInfosStart" | "ExtendedInfosStop" | "CopyProgress" | "CopyStop" | "CopyProgressShowDialog"
         | "ThemeChanged" | "DeleteProgress" | "DeleteStop" | "WindowState" | "ShowHidden" | "ShowViewer" | "PreviewMode" | "Cmd"
-        | "Rename" | "Delete"
+        | "Rename" | "Delete" | "Create"
 
 export type CommanderEvent = {
     folderId?: string,
@@ -290,6 +290,14 @@ export type DeleteEvent = {
 
 export type DeleteData = {
     idx: number, folderId: string
+}
+
+export type CreateEvent = {
+    createData: CreateData
+}
+
+export type CreateData = {
+    idx: number, folderId: string, item: DirectoryItem
 }
 
 export type GpxPoint = {

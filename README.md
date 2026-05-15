@@ -23,7 +23,6 @@ sudo dnf install gcc-c++ gtk3-devel
 
 TODO
 
-Create: create FileInfo in C#
 Change via Observable, debounce, but cancellable
 
 * DirectoryWatcher: edit file in editor, save
@@ -36,7 +35,6 @@ rename: .oldname is hidden, create newName
 * DirectoryWatcher: consider not hidden
 * DirectoryWatcher: hidden: no created, no change, but renamed with oldFIle=-1
 * DirectoryWatcher: not hidden: created with index update, change wth index, renamed with oldFile=index
-* DirectoryWatcher: Create: idx = idxSeed++, add in dictionary, call get extendedInfos to javascript: item sort in javascript, 
 * DirectoryWatcher: Change: Debounce! find item in dictionary, get key,  find item 
 * DirectoryWatcher: rename events position on renamed in strict mode
 * DirectoryWatcher: get extended infos

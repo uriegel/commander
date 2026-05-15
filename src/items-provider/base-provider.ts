@@ -31,7 +31,7 @@ export abstract class IItemsProvider {
         dialog?: DialogHandle, setErrorText?: (msg: string)=>void): Promise<ItemsResult>
     abstract onEnter(data: EnterData): Promise<OnEnterResult>
     abstract appendPath(path: string, subPath: string): string
-    sort(items: Item[], _sortIndex: number, _sortDescending: boolean): Item[] { return items }
+    sort(items: Item[], _sortIndex: number, _sortDescending: boolean, _sortDirs = false): Item[] { return items }
     onSelectionChanged(_items: Item[]) { }
     
     sortItems(folderItemArray: Item[], sortFunction?: SortFunction, sortDirs?: boolean) {
