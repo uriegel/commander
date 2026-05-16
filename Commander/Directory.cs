@@ -145,10 +145,10 @@ partial class Directory(string folderId, bool showHidden) : IDisposable
                             .ToArray();
             if (getFiles?.FolderId != null)
             {
-                StartGettingExtendedInfos(getFiles.FolderId, getFiles.RequestId, getFiles.Path, files);
+                StartGettingExtendedInfos(getFiles.FolderId, getFiles.RequestId, dirInfo.FullName, files);
                 ObjectDisposedException.ThrowIf(disposedValue, this);
                 directoryWatcher?.Dispose();
-                directoryWatcher = new(getFiles.Path, this);
+                directoryWatcher = new(dirInfo.FullName, this);
             }
             DirectoryItem[] items = [.. dirs, .. files];
             itemsByIndex = new(items.ToDictionary(n => n.Idx));

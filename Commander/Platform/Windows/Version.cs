@@ -6,9 +6,7 @@ static class FileVersion
 {
     public static VersionInfo[] GetVersionItems(string path, IEnumerable<DirectoryItem> items, CancellationToken cancellation)
     {
-        var checkItems = items
-                            .SelectFilterNull(n => n.Idx.HasValue ? n : null)
-                            .Where(FilterVersionItems);
+        var checkItems = items.Where(FilterVersionItems);
         if (!checkItems.Any())
             return [];
 
@@ -17,8 +15,8 @@ static class FileVersion
                 .SelectFilterNull(n =>
                 {
                     var info = FileVersionInfo.GetVersionInfo(path.AppendPath(n.Name));
-                    return n.Idx.HasValue && info != null 
-                        ? MapVersion(n.Idx.Value, info) 
+                    return info != null 
+                        ? MapVersion(n.Idx, info) 
                         : null;
                 })];
     }
