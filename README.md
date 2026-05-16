@@ -23,20 +23,22 @@ sudo dnf install gcc-c++ gtk3-devel
 
 TODO
 * DirectoryWatcher: get extended infos
-* DirectoryWatcher: Windows
+* Don't refresh after file operations like copy, remove...
+* Windows: compare version infos, use already retrieved versions
+* Windows: rename as copy
 
 * Open txt file in Linux, close => multiline error in status line, then erweiterte Informationen werden abgerufen......... Copy not possible
 
 * strict mode: sometimes Exceptions Object disposed
 * strict mode: rename: wrong position when renamed was selected
 * Dispose Directory object when getRoot/getRemote...  AND get Favorites/getRemotesin javascript, change value set idx from dictionary in CS
-* Windows: compare version infos
-* Windows: rename as copy
 * Error handling, especially Windows, check if network path, then UAC
 * Error handling GFileError
 * Error handling  for copying
 
 * Windows remotes
+
+* Windows: compare version infos in sub folders, retrieve version from viewer
 
 * Copy file from folderView to the same folderView: prevent drop
 
