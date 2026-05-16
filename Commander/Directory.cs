@@ -2,14 +2,16 @@ using System.Collections.Concurrent;
 using CsTools.Extensions;
 using CsTools.Functional;
 
-partial class Directory(string folderId, bool showHidden) : IDisposable
+partial class Directory(string folderId, int requestId, bool showHidden) : IDisposable
 {
     public string FolderId { get => folderId; }   
+    public int RequestID { get => requestId; }   
+    
     public static Directory? Get(string? id) => directories.TryGetValue(id!, out var result) ? result : null;
 
     public static GetDirectoryItemsOutput GetFiles(GetFilesInput input)
     {
-        var dir = new Directory(input.FolderId, input.ShowHidden);
+        var dir = new Directory(input.FolderId, input.RequestId, input.ShowHidden);
         directories.AddOrUpdate(input.FolderId, dir, (_, old) =>
         {
             old.Dispose();
@@ -181,11 +183,13 @@ partial class Directory(string folderId, bool showHidden) : IDisposable
         }
     }
 
+    static bool FilterExtendedInfosfItems(DirectoryItem item) => HasExtendedInfos(item.Name);
+
     static async Task RetrieveExtendedInfos(string folderId, int requestId, string path, DirectoryItem[] items, SemaphoreSlim locker, CancellationToken cancellation)
     {
         await locker.WaitAsync(cancellation);
 
-        var checkItems = items.Where(FilterExifItems);
+        var checkItems = items.Where(FilterExtendedInfosfItems);
         if (!checkItems.Any())
             return;
 

@@ -77,6 +77,12 @@ partial class Directory
 
     public static void AddNetworkShare(AddNetworkShareInput input) => throw new NotImplementedException();
 
+    public static bool HasExtendedInfos(string name)
+        => name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
+            || name.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase)
+            || name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
+            || name.EndsWith("png", StringComparison.OrdinalIgnoreCase);
+
     static AppInfo[] GetAppInfos(IEnumerable<AppInfoHandle> appinfo)
         => [.. appinfo.Select(n =>
         {
@@ -84,12 +90,6 @@ partial class Directory
             return new AppInfo(n.GetName(), n.GetExecutable(), iconPath?.Name, iconPath?.IsPath == true);
         })
         .OrderBy(n => n.Name)];
-
-    static bool FilterExifItems(DirectoryItem item)
-    => item.Name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
-        || item.Name.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase)
-        || item.Name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
-        || item.Name.EndsWith("png", StringComparison.OrdinalIgnoreCase);
 }
 
 #endif

@@ -162,13 +162,13 @@ partial class Directory
             throw new NotMountedException();
     }
     
-    static bool FilterExifItems(DirectoryItem item)
-    => item.Name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
-        || item.Name.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase)
-        || item.Name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
-        || item.Name.EndsWith("png", StringComparison.OrdinalIgnoreCase)
-        || item.Name.EndsWith("exe", StringComparison.OrdinalIgnoreCase)
-        || item.Name.EndsWith("dll", StringComparison.OrdinalIgnoreCase);
+    public static bool HasExtendedInfos(string name)
+        => name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
+            || name.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase)
+            || name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
+            || name.EndsWith("png", StringComparison.OrdinalIgnoreCase)
+            || name.EndsWith("exe", StringComparison.OrdinalIgnoreCase)
+            || name.EndsWith("dll", StringComparison.OrdinalIgnoreCase);
 }
 
 #endif
