@@ -22,7 +22,8 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* DirectoryWatcher: get extended infos
+* DirectoryWatcher: get extended infos (create, rename?, change?) => Observable debounceTime: 
+    per fileItem create Observablewith debouncer, when event is retrieved: destroy observable and start resolving
 * Don't refresh after file operations like copy, remove...
 * Windows: compare version infos, use already retrieved versions
 * Windows: rename as copy
