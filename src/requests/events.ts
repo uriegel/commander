@@ -41,6 +41,11 @@ const extendedInfosStartEvents$ = message$.pipe(filter(n => n.cmd == "ExtendedIn
 const extendedInfosStopEvents$ = message$.pipe(filter(n => n.cmd == "ExtendedInfosStop"))
 const extendedInfosEvents$ = message$.pipe(filter(n => n.cmd == "ExtendedInfos"))
 
+renameEvents$.subscribe(_ => console.log("rename"))
+deleteEvents$.subscribe(_ => console.log("delete"))
+createEvents$.subscribe(_ => console.log("create"))
+changeEvents$.subscribe(_ => console.log("change"))
+
 export const extendedInfosEventsLeft$ = extendedInfosEvents$
     .pipe(filter(n => n.folderId == ID_LEFT))
     .pipe(map(n => n.msg as ExtendedInfos))
