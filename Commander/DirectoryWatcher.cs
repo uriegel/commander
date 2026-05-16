@@ -52,18 +52,14 @@ class DirectoryWatcher : IDisposable
                 Process(() => new(JobType.Created, Directory.FolderId, item));
             }
             else
-            {
-                // TODO send changedEvent to javascript, but as afterAction: () => Directory.Delete(index); 
-                Process(() => new(JobType.Deleted, Directory.FolderId, null, index), () => Directory.Delete(index));
-                var item = Directory.Create(e.FullPath);
-                if (item == null)
-                    return;
-                Process(() => new(JobType.Created, Directory.FolderId, item));
-            }
+                Process(() => new(JobType.Changed, Directory.FolderId, Directory.Change(e.Name, idx => CreateItem(e.FullPath, idx))));
         }
         else
-            Process(() => new(JobType.Renamed, Directory.FolderId, CreateItem(e.FullPath, Directory.GetIndex(e.Name)), oldIndex),
-                () => Directory.Rename(oldIndex, e.Name ?? ""));
+        {
+            var item = CreateItem(e.FullPath, Directory.GetIndex(e.Name));
+            bool alreadyExists = Directory.Rename(oldIndex, e.Name ?? "") == false;
+            Process(() => new(JobType.Renamed, Directory.FolderId, item, oldIndex, alreadyExists));
+        }
     }
 
     static FileSystemWatcher CreateWatcher(string path)
@@ -147,13 +143,13 @@ class DirectoryWatcher : IDisposable
     #endregion
 }
 
-record DirectoryItemJob(DirectoryWatcher.JobType Type, string FolderId, DirectoryItem? Item, int? ItemIndex = null)
+record DirectoryItemJob(DirectoryWatcher.JobType Type, string FolderId, DirectoryItem? Item, int? ItemIndex = null, bool alreadyExists = false)
 {
     public CommanderEvent? GetEvent()
         => Type == DirectoryWatcher.JobType.Renamed && Item != null && ItemIndex != null
             ? new(FolderId, EventCmd.Rename, new()
             {
-                RenameData = new(ItemIndex.Value, Item.Name, FolderId)
+                RenameData = new(ItemIndex.Value, Item, FolderId, alreadyExists)
             })
             : Type == DirectoryWatcher.JobType.Deleted && ItemIndex != null
             ? new(FolderId, EventCmd.Delete, new()
@@ -162,6 +158,11 @@ record DirectoryItemJob(DirectoryWatcher.JobType Type, string FolderId, Director
             })
             : Type == DirectoryWatcher.JobType.Created && Item != null
             ? new(FolderId, EventCmd.Create, new()
+            {
+                CreateData = new(Item.Idx, FolderId, Item)
+            })
+            : Type == DirectoryWatcher.JobType.Changed && Item != null
+            ? new(FolderId, EventCmd.Change, new()
             {
                 CreateData = new(Item.Idx, FolderId, Item)
             })

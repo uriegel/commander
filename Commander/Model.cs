@@ -70,7 +70,7 @@ record DirectoryItem(
         };
 
     public static DirectoryItem CreateFileItem(FileInfo info, int idx)
-        => new(info.Name, idx + 1)
+        => new(info.Name, idx)
         {
             Size = info.Length,
             IconPath = Directory.GetIconPath(info.Name, info.DirectoryName),
@@ -147,7 +147,7 @@ static class ErrorType
 
 record SystemError(string Error, string Message);
 
-record RenameData(int Idx, string NewName, string FolderId);
+record RenameData(int Idx, DirectoryItem NewItem, string FolderId, bool AlreadyExists);
 record DeleteData(int Idx, string FolderId);
 record CreateData(int Idx, string FolderId, DirectoryItem Item);
 
@@ -173,6 +173,7 @@ class EventCmd
     public const string Rename = "Rename";
     public const string Delete = "Delete";
     public const string Create = "Create";
+    public const string Change = "Change";
 }
 
 class PreviewMode

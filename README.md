@@ -22,21 +22,6 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-
-Change via Observable, debounce, but cancellable
-
-* DirectoryWatcher: edit file in editor, save
-create .name is hidden
-change: .name is hidden
-rename: .oldname is hidden, create newName
-
-// TODO send changedEvent to javascript, but as afterAction: () => Directory.Delete(index); 
-
-* DirectoryWatcher: consider not hidden
-* DirectoryWatcher: hidden: no created, no change, but renamed with oldFIle=-1
-* DirectoryWatcher: not hidden: created with index update, change wth index, renamed with oldFile=index
-* DirectoryWatcher: Change: Debounce! find item in dictionary, get key,  find item 
-* DirectoryWatcher: rename events position on renamed in strict mode
 * DirectoryWatcher: get extended infos
 * DirectoryWatcher: Windows
 

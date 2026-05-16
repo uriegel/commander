@@ -22,7 +22,7 @@ static partial class Globals
                     .EnsureDirectoryExists();
         var icon = Resources.Get("icon");
         IconProcessor = path.AppendPath("icon");
-        using var writer = File.Create  (IconProcessor);
+        using var writer = File.Create(IconProcessor);
         icon?.CopyTo(writer);
         writer.Dispose();
         var psi = new ProcessStartInfo("chmod")                                         

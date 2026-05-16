@@ -81,14 +81,21 @@ partial class Directory(string folderId, bool showHidden) : IDisposable
     public int GetIndex(string? fileName)
         => itemsByName.TryGetValue(fileName ?? "", out var item) ? item.Idx : -1;
 
-    public void Rename(int index, string newName)
+    public bool Rename(int index, string newName)
     {
+        var res = true;
         if (itemsByIndex.TryGetValue(index, out var oldItem))
         {
+            if (itemsByName.TryGetValue(newName, out var old))
+            {
+                itemsByIndex.TryRemove(old.Idx, out var _);
+                res = false;
+            }
             var item = itemsByIndex.AddOrUpdate(index, new DirectoryItem("", -1), (k, v) => v with { Name = newName });
             itemsByName.TryRemove(oldItem.Name, out var _);
             itemsByName.AddOrUpdate(newName, item, (_, __) => item);
         }
+        return res;
     }
 
     public void Delete(int index)

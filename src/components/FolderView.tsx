@@ -6,7 +6,7 @@ import { IItemsProvider } from "../items-provider/base-provider"
 import { initializeHistory } from "../history"
 import RestrictionView, { type RestrictionViewHandle } from "./RestrictionView"
 import { ID_LEFT } from "./Commander"
-import { createEventsLeft$, createEventsRight$, deleteEventsLeft$, deleteEventsRight$, extendedInfosEventsLeft$, extendedInfosEventsRight$,
+import { changeEventsLeft$, changeEventsRight$, createEventsLeft$, createEventsRight$, deleteEventsLeft$, deleteEventsRight$, extendedInfosEventsLeft$, extendedInfosEventsRight$,
     extendedInfosStartEventsLeft$, extendedInfosStartEventsRight$, extendedInfosStopEventsLeft$, extendedInfosStopEventsRight$,
     renameEventsLeft$, renameEventsRight$ } from "../requests/events"
 import { getItemsFinished, onEnter as reqOnEnter } from "../requests/requests"
@@ -178,17 +178,21 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             const item = directoryItemsDictionary.current.get(renameData.idx)
             if (item == null)
                 return
+            if (renameData.alreadyExists)
+                directoryItemsDictionary.current.get(renameData.idx)
             setItems(prev => {
                 const currentItem = prev[virtualTable.current?.getPosition() ?? -1]
                 const prevName = item.name
                 const isSelected = currentItem?.name == prevName
-                item.name = renameData.newName
-                const newItems = itemsProvider.current?.sort(prev, sortIndex.current, sortDescending.current)
+                item.name = renameData.newItem.name
+                item.isHidden = renameData.newItem.isHidden
+                const recentItems = renameData.alreadyExists ? prev.filter(n => (n as DirectoryItem).idx != renameData.newItem.idx) : prev
+                const newItems = itemsProvider.current?.sort(recentItems, sortIndex.current, sortDescending.current)
                 if (newItems && isSelected)
-                    virtualTable.current?.setPosition(newItems.findIndex(n => n.name == renameData.newName))
+                    virtualTable.current?.setPosition(newItems.findIndex(n => n.name == renameData.newItem.name))
                 else if (newItems)
                     virtualTable.current?.setPosition(newItems.findIndex(n => n.name == currentItem.name))
-                return newItems || prev
+                return newItems || recentItems
             })
         }
 
@@ -241,6 +245,33 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
 
         const event$ = id == ID_LEFT ? createEventsLeft$ : createEventsRight$
         const sub = event$.subscribe(createItems)
+        return () => sub.unsubscribe()
+    }, [id])
+
+    useEffect(() => {
+        const changeItems = (createData: CreateData) => {
+            if (itemsProvider.current?.getId() != FILE)
+                return
+            const item = directoryItemsDictionary.current.get(createData.idx)
+            if (item == null)
+                return
+
+            const updatedItem = {
+                ...item,
+                size: createData.item.size,
+                time: createData.item.time
+            }
+                    
+            directoryItemsDictionary.current.set(createData.idx, updatedItem)
+            setItems(prev => {
+                const updated = prev.map(n => (n as DirectoryItem).idx == createData.idx ? updatedItem : n)
+                const newItems = itemsProvider.current?.sort(updated, sortIndex.current, sortDescending.current, true)
+                return newItems || prev
+            })
+        }
+
+        const event$ = id == ID_LEFT ? changeEventsLeft$ : changeEventsRight$
+        const sub = event$.subscribe(changeItems)
         return () => sub.unsubscribe()
     }, [id])
 
