@@ -16,12 +16,12 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/leaflet": "^1.9.21",
-    "@types/node": "^24.12.2",
+    "@types/node": "^25.8.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.1",
+    "@vitejs/plugin-react": "^6.0.2",
     "cross-env": "^10.1.0",
-    "eslint": "^10.2.1",
+    "eslint": "^10.4.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "functional-extensions": "^2.8.0",
@@ -32,10 +32,10 @@
     "react-progress-control": "^1.1.0",
     "rxjs": "^7.8.2",
     "typescript": "~6.0.2",
-    "typescript-eslint": "^8.58.2",
+    "typescript-eslint": "^8.59.3",
     "view-split-react": "^1.2.0",
     "virtual-table-react": "^10.13.0",
-    "vite": "8.0.10",
+    "vite": "8.0.13",
     "web-dialog-react": "^5.2.0"
   }
 }
