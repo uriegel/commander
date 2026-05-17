@@ -41,7 +41,9 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
             && copyConflicts
                 .findIndex(n => (n.time?.substring(0, 16) ?? "") < (n.targetTime?.substring(0, 16) ?? "")) != -1
         const res = await dialog.show({
-            text: copyConflicts.length ? `Einträge beim ${move ? "Verschieben" : "Kopieren"} überschreiben?` : `Möchtest Du ${copyText} ${move ? "verschieben" : "kopieren"}?`,
+            text: copyConflicts.length
+                ? `Einträge beim ${move ? "Verschieben" : "Kopieren"} überschreiben?`
+                : `Möchtest Du ${copyText} ${move ? "verschieben" : "kopieren"}?`,
             slide: sourceFolder.id == ID_LEFT ? Slide.Left : Slide.Right,
             extension: copyConflicts.length ? CopyConflicts : undefined,
             extensionProps: copyConflicts,
@@ -58,9 +60,9 @@ export const copyItems = async (sourceFolder: FolderViewHandle | null, targetFol
 
         const itemsToCopy = res.result == ResultType.No ? flatCopyItems.diff(copyConflicts) : flatCopyItems
         await copyProcessor.copy(sourceFolder.getPath(), targetFolder.getPath(), itemsToCopy.map(n => ({ name: n.name, size: n.size ?? 0 })), move)
-        targetFolder.refresh()
+        targetFolder.refresh(false, true)
         if (move)
-            sourceFolder.refresh()
+            sourceFolder.refresh(false, true)
     } catch (e) {
         const err = e as SystemError
         setErrorText(err.message)

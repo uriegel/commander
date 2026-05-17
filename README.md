@@ -23,11 +23,10 @@ sudo dnf install gcc-c++ gtk3-devel
 
 TODO
 * Don't refresh after file operations like copy, remove...
-* Remove CopyStopEvent
 * Windows: copy and refresh version, check if version changes
-* Copy: don't refresh folders before copy
 * Windows: compare version infos, use already retrieved versions
 * Windows: rename as copy
+* result.dirCount, result.fileCount when copied, deleted
 
 * Open txt file in Linux, close => multiline error in status line, then erweiterte Informationen werden abgerufen......... Copy not possible
 

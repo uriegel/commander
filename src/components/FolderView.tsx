@@ -24,7 +24,7 @@ import styles from './FolderView.module.css'
 export type FolderViewHandle = {
     id: string
     setFocus: () => void
-    refresh: (forceShowHidden?: boolean) => Promise<void>
+    refresh: (forceShowHidden?: boolean, takeExtendedInfos?: boolean) => Promise<void>
     processEnter: (item: Item, otherPath?: string) => Promise<void>
     getPath: () => string
     changePath: (path: string) => void
@@ -306,10 +306,17 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }, [getWidthsId])
 
     const changePath = useCallback(async (path?: string, forceShowHidden?: boolean, mount?: boolean, latestPath?: string, fromBacklog?: boolean,
-        checkPosition?: (checkItem: Item) => boolean) => {
+        checkPosition?: (checkItem: Item) => boolean, takeExtendedInfos?: boolean) => {
         try {
             requestId.current = getRequestId()
             const newItemsProvider = getItemsProvider(path, itemsProvider.current)
+            const recentExtendedInfos = takeExtendedInfos
+                ? new Map([...directoryItemsDictionary.current.values()]
+                    .filter(n => (n as DirectoryItem).idx)
+                    .map(n => n as DirectoryItem)
+                    .filterNone()
+                    .map(n => [n.name, n]))
+                : null
             const result = await newItemsProvider.getItems(id, requestId.current, path, forceShowHidden === undefined ? showHidden : forceShowHidden, 
                 mount, dialog, setErrorText)
             if (result.cancelled || !result.items || result.requestId != requestId.current)
@@ -321,8 +328,8 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             }
             if (result.path)
                 setPath(result.path)
-            //const items = result.items && result.items?.length > 0 ? result.items : itemsProvider.current.getItems()
-            const newItems = itemsProvider.current.sort(result.items, sortIndex.current, sortDescending.current)
+            const itemsRes = itemsProvider.current.sort(result.items, sortIndex.current, sortDescending.current)
+            const newItems = takeExtendedInfos ? (itemsRes as DirectoryItem[]).map(n => ({ ...n, exifData: recentExtendedInfos?.get(n.name)?.exifData })) : itemsRes
             setNewItems(newItems, result.dirCount, result.fileCount)
             directoryItemsDictionary.current = new Map(newItems
                 .filter(n => (n as DirectoryItem).idx)
@@ -444,20 +451,21 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             if (res && !res.processed)
                 changePath(res.pathToSet, showHidden, res.mount, res.latestPath)
             if (res?.refresh)
-                refresh()
+                refresh(false, true)
         } catch (e) {
             const err = e as SystemError
             setErrorText(err.message)
         }
     }
 
-    const refresh = async (forceShowHidden?: boolean, checkPosition?: (checkItem: Item) => boolean) => {
+    const refresh = async (forceShowHidden?: boolean, takeExtendedInfos?: boolean, checkPosition?: (checkItem: Item) => boolean) => {
         let selectedItems = getSelectedItems()
         if (selectedItems.length == 1 && !selectedItems[0].isSelected)
             selectedItems = []
         const pos = virtualTable.current?.getPosition()
         const currentItem = pos ? items[pos] : null
-        const newItems = await changePath(path, forceShowHidden || (forceShowHidden === false ? false : showHidden), undefined, undefined, undefined, checkPosition)
+        const newItems = await changePath(path, forceShowHidden || (forceShowHidden === false ? false : showHidden),
+            undefined, undefined, undefined, checkPosition, takeExtendedInfos)
         const itemsNameDictionary = new Map(newItems.map(n => [n.name, n]))
         selectedItems.forEach(n => {
             const item = itemsNameDictionary.get(n.name)
@@ -472,7 +480,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     const deleteItems = async () => {
         try {
             if (await getCurrentItemsProvider()?.deleteItems(path, getSelectedItems(), dialog, backgroundAction, setErrorText))
-                refresh()
+                refresh(false, true)
         } catch (e) {
             const err = e as SystemError
             setErrorText(err.message)
@@ -486,7 +494,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
                 return            
             const res = await getCurrentItemsProvider()?.renameItem(path, selected, dialog, asCopy)
             if (res)
-                refresh(false, n => n.name == res)
+                refresh(false, true, n => n.name == res)
         } catch (e) {
             const err = e as SystemError
             setErrorText(err.message)
@@ -510,7 +518,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             const selected = items[virtualTable.current?.getPosition() ?? 0]
             const res = await getCurrentItemsProvider()?.createFolder(path, selected, dialog)
             if (res)
-                refresh(false, n => n.name == res)
+                refresh(false, false, n => n.name == res)
         } catch (e) {
             const err = e as SystemError
             setErrorText(err.message)
@@ -613,7 +621,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             setIsDragging(true)
             const dragRes = await dragStart(path, items) 
             if (dragRes)
-                refresh()
+                refresh(false, true)
             setIsDragging(false)
         }
         else if (!isWindows && itemsProvider.current && itemsProvider.current.getId() == FILE)
