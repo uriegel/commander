@@ -40,8 +40,9 @@ class ProgressContext : INotifyPropertyChanged
     public static object GetEstimatedDuration(object? copyProgress)
     {
         var cp = copyProgress as CopyProgress;
-        return cp != null && cp.Duration > ThreeSeconds
-            ? (cp.Duration / (double)GetTotalFraction(copyProgress)) - cp.Duration
+        var divisor = (double)GetTotalFraction(copyProgress);
+        return cp != null && cp.Duration > ThreeSeconds && divisor != 0
+            ? (cp.Duration / divisor) - cp.Duration
             : TimeSpan.FromMilliseconds(0);
     }
 
