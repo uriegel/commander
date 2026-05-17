@@ -22,7 +22,6 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Don't refresh after file operations like copy, remove...
 * Windows: copy and refresh version, check if version changes
 * Windows: compare version infos, use already retrieved versions
 * Windows: rename as copy
