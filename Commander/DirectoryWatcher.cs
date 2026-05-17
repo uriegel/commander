@@ -1,3 +1,6 @@
+using System.Collections.Concurrent;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using CsTools.Extensions;
 
 class DirectoryWatcher : IDisposable
@@ -89,18 +92,54 @@ class DirectoryWatcher : IDisposable
             var cmd = job.GetEvent();
             if (cmd != null && !disposedValue)
                 Requests.SendJson(cmd.Cmd);
-        }   
-        catch (FileNotFoundException) {}
+            // if (cmd?.ExtendedInfosJob != null)
+            //     RunExtendedInfos(cmd.ExtendedInfosJob);
+        }
+        catch (FileNotFoundException) { }
         catch (Exception e)
         {
             Console.WriteLine($"Error occurred in DirectroyWatcher.Write {e}");
         }
-    } 
 
+        static void RunExtendedInfos(ExtendedInfosJob job)
+        {
+            extendedInfoJobs.TryAdd(job, job);
+            extendedJobWorker.OnNext(true);
+        }
+    }
+
+    static void ExtendedRun()
+    {
+        extendedJobWorker
+            .Throttle(TimeSpan.FromMilliseconds(1000))
+            .SelectMany(async _ =>
+            {
+                await Task.Run(() =>
+                {
+                    var jobs = Interlocked.Exchange(ref extendedInfoJobs, []).Keys.ToArray();
+                    foreach (var job in jobs)
+                    {
+                        var exif = ExifReader.GetExifData(job.File);
+                        var exifData = exif != null ? new ExifData(job.Idx, exif.DateTime, exif?.Latitude, exif?.Longitude) : null;
+                        Console.WriteLine(exifData);
+                    }
+                });
+                return true;
+            })
+            .Subscribe(n => { });
+    }
+    
+    static DirectoryWatcher()
+    {
+        extendedJobWorker = new();
+        ExtendedRun();
+    }
+
+    static readonly Subject<bool> extendedJobWorker;
+    static ConcurrentDictionary<ExtendedInfosJob, ExtendedInfosJob> extendedInfoJobs = [];
     readonly TimeSpan RENAME_DELAY = TimeSpan.FromMilliseconds(200);
     readonly FileSystemWatcher? fsw;
     readonly ManualResetEvent renameEvent = new(false);
-    //readonly ExtendedInfos? extendedInfos;
 
     #region IDisposable
 
@@ -170,10 +209,16 @@ record DirectoryItemJob(DirectoryWatcher.JobType Type, string FolderId, int Requ
             : null;
 
     ExtendedInfosJob? GetExtended()
-        => Item?.Name != null && Directory.HasExtendedInfos(Path.AppendPath(Item.Name))
-            ? new(FolderId, RequestId, Item.Name)
+    {
+        var file = Path.AppendPath(Item?.Name);
+        return Item?.Name != null && file != null && Directory.HasExtendedInfos(file)
+            ? new(FolderId, RequestId, file, Item.Idx)
             : null;
+    }
 }
 
-record ExtendedInfosJob(string FolderId, int RequestId, string File);
+record ExtendedInfosJob(string FolderId, int RequestId, string File, int Idx)
+{
+    public IDisposable? Disposable { get; set; }
+}
 record EventJob(CommanderEvent Cmd, ExtendedInfosJob? ExtendedInfosJob = null);
