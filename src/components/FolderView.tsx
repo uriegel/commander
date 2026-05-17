@@ -329,7 +329,11 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
             if (result.path)
                 setPath(result.path)
             const itemsRes = itemsProvider.current.sort(result.items, sortIndex.current, sortDescending.current)
-            const newItems = takeExtendedInfos ? (itemsRes as DirectoryItem[]).map(n => ({ ...n, exifData: recentExtendedInfos?.get(n.name)?.exifData })) : itemsRes
+            const newItems = takeExtendedInfos ? (itemsRes as DirectoryItem[]).map(n => (
+                                                                                { ...n, 
+                                                                                    exifData: recentExtendedInfos?.get(n.name)?.exifData,
+                                                                                    fileVersion: recentExtendedInfos?.get(n.name)?.fileVersion
+                                                                                })) : itemsRes
             setNewItems(newItems, result.dirCount, result.fileCount)
             directoryItemsDictionary.current = new Map(newItems
                 .filter(n => (n as DirectoryItem).idx)

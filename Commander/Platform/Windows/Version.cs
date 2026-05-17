@@ -12,13 +12,13 @@ static class FileVersion
 
         return [.. checkItems
                 .Where(_ => !cancellation.IsCancellationRequested)
-                .SelectFilterNull(n =>
-                {
-                    var info = FileVersionInfo.GetVersionInfo(path.AppendPath(n.Name));
-                    return info != null 
-                        ? MapVersion(n.Idx, info) 
-                        : null;
-                })];
+                .SelectFilterNull(n => GetVersion(path.AppendPath(n.Name), n.Idx))];
+    }
+
+    public static VersionInfo? GetVersion(string file, int idx)
+    {
+        var info = FileVersionInfo.GetVersionInfo(file);
+        return info != null ? MapVersion(idx, info) : null;
     }
 
     static bool FilterVersionItems(DirectoryItem item)

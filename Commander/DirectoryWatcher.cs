@@ -127,8 +127,16 @@ class DirectoryWatcher : IDisposable
                                     var exif = ExifReader.GetExifData(n.File);
                                     return exif != null ? new ExifData(n.Idx, exif.DateTime, exif?.Latitude, exif?.Longitude) : null;
                                 })
-                                .ToArray(); ;
-                            Requests.SendJson(new(folderJobs.Key, EventCmd.ExtendedInfos, new EventData { RequestId = requestJobs.Key, Exifs = exifItems }));
+                                .ToArray(); 
+                            var versionItems = requestJobs
+                                .SelectFilterNull(n => FileVersion.GetVersion(n.File, n.Idx))
+                                .ToArray(); 
+                            Requests.SendJson(new(folderJobs.Key, EventCmd.ExtendedInfos, new EventData 
+                            {
+                                RequestId = requestJobs.Key, 
+                                Versions = versionItems,
+                                Exifs = exifItems 
+                            }));
                         }
                     }
                 });
