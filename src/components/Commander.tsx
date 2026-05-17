@@ -90,13 +90,13 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 		return () => themeChanges.unsubscribe()
 	}, [])
 
-	useEffect(() => {
-		const evts = copyStopEvents$.subscribe(() => {
-			getActiveFolder()?.refresh()
-			getInactiveFolder()?.refresh()
-		})
-		return () => evts.unsubscribe()
-	}, [getActiveFolder])
+	// useEffect(() => {
+	// 	const evts = copyStopEvents$.subscribe(() => {
+	// 		// getActiveFolder()?.refresh()
+	// 		// getInactiveFolder()?.refresh()
+	// 	})
+	// 	return () => evts.unsubscribe()
+	// }, [getActiveFolder])
 
 	useEffect(() => {
 		const showHidden = showHiddenEvents$.subscribe(show => {

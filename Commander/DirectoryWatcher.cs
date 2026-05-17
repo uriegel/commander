@@ -92,13 +92,13 @@ class DirectoryWatcher : IDisposable
             var cmd = job.GetEvent();
             if (cmd != null && !disposedValue)
                 Requests.SendJson(cmd.Cmd);
-            // if (cmd?.ExtendedInfosJob != null)
-            //     RunExtendedInfos(cmd.ExtendedInfosJob);
+            if (cmd?.ExtendedInfosJob != null)
+                RunExtendedInfos(cmd.ExtendedInfosJob);
         }
         catch (FileNotFoundException) { }
         catch (Exception e)
         {
-            Console.WriteLine($"Error occurred in DirectroyWatcher.Write {e}");
+            Console.WriteLine($"Error occurred in DirectoryWatcher.Write {e}");
         }
 
         static void RunExtendedInfos(ExtendedInfosJob job)
@@ -117,11 +117,19 @@ class DirectoryWatcher : IDisposable
                 await Task.Run(() =>
                 {
                     var jobs = Interlocked.Exchange(ref extendedInfoJobs, []).Keys.ToArray();
-                    foreach (var job in jobs)
+                    foreach (var folderJobs in jobs.GroupBy(n => n.FolderId))
                     {
-                        var exif = ExifReader.GetExifData(job.File);
-                        var exifData = exif != null ? new ExifData(job.Idx, exif.DateTime, exif?.Latitude, exif?.Longitude) : null;
-                        Console.WriteLine(exifData);
+                        foreach (var requestJobs in folderJobs.GroupBy(n => n.RequestId))
+                        {
+                            var exifItems = requestJobs
+                                .SelectFilterNull(n =>
+                                {
+                                    var exif = ExifReader.GetExifData(n.File);
+                                    return exif != null ? new ExifData(n.Idx, exif.DateTime, exif?.Latitude, exif?.Longitude) : null;
+                                })
+                                .ToArray(); ;
+                            Requests.SendJson(new(folderJobs.Key, EventCmd.ExtendedInfos, new EventData { RequestId = requestJobs.Key, Exifs = exifItems }));
+                        }
                     }
                 });
                 return true;

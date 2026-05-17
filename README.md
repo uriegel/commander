@@ -22,9 +22,10 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* DirectoryWatcher: get extended infos (create, rename?, change?) => Start Task with a ref index: Task.Delay 1000
-    change idx ref per new event start resolving
 * Don't refresh after file operations like copy, remove...
+* Remove CopyStopEvent
+* Windows: copy and refresh version, check if version changes
+* Copy: don't refresh folders before copy
 * Windows: compare version infos, use already retrieved versions
 * Windows: rename as copy
 
