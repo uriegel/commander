@@ -22,8 +22,6 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Windows: copy and refresh version, check if version changes
-* Windows: compare version infos, use already retrieved versions
 * Windows: rename as copy
 * result.dirCount, result.fileCount when copied, deleted
 

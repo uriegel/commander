@@ -20,6 +20,7 @@ partial class Directory
             try 
             {
                 System.IO.Directory.CreateDirectory(path.AppendPath(name));
+                Form.SetFocus();
             }
             catch (UnauthorizedAccessException)
             {
@@ -63,12 +64,14 @@ partial class Directory
                     0x78 => throw new UnauthorizedAccessException() ,
                 _    => throw new Exception($"Unknown error code: {Marshal.GetLastWin32Error()}")
                 };   
+            Form.SetFocus();
         });
 
     public static Task CopyAsync(JobBase input, Action<long, long> onProgress, CancellationToken? cancellation = null) => throw new NotImplementedException();
 
-    public static Task CopyAsync(CopyInput input)
-        => Form.InvokeOnMainThread(() => {
+    public static async Task CopyAsync(CopyInput input)
+    {
+        await Form.InvokeOnMainThread(() => {
             var _ = SHFileOperation(new ShFileOPStruct
                 {
                     Func = input.Move ? FileFuncFlags.MOVE : FileFuncFlags.COPY,
@@ -83,6 +86,8 @@ partial class Directory
                 _    => throw new Exception($"Unknown error code: {Marshal.GetLastWin32Error()}")
                 };   
         });
+        Form.SetFocus();
+    }
 
     public static async Task OnEnter(OnEnterInput input)
     {
@@ -135,8 +140,9 @@ partial class Directory
 
     public static Task OpenFile(string _, string __) => throw new NotImplementedException();
 
-    public static Task Rename(RenameInput input)   
-        => Form.InvokeOnMainThread(() => {
+    public static async Task Rename(RenameInput input)   
+    {
+        await Form.InvokeOnMainThread(() => {
             var _ = SHFileOperation(new ShFileOPStruct
                 {
                     Func = FileFuncFlags.RENAME,
@@ -151,6 +157,8 @@ partial class Directory
                 _    => throw new Exception($"Unknown error code: {Marshal.GetLastWin32Error()}")
                 };   
         });
+        Form.SetFocus();
+    }
 
     public static AppInfo[] GetRecommendedApps(string? file) => throw new NotImplementedException();
     public static AppInfo[] GetAllApps() => throw new NotImplementedException();
