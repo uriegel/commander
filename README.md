@@ -22,7 +22,6 @@ sudo dnf install gcc-c++ gtk3-devel
 * run npm script 'react dev tools'
 
 TODO
-* Windows: rename as copy
 * result.dirCount, result.fileCount when copied, deleted
 
 * Open txt file in Linux, close => multiline error in status line, then erweiterte Informationen werden abgerufen......... Copy not possible
