@@ -50,22 +50,30 @@ partial class Directory
             }   
         });
 
-    public static Task DeleteItems(string[] items, string path) 
-        => Form.InvokeOnMainThread(() => {
-            var _ = SHFileOperation(new ShFileOPStruct
-                {
-                    Func = FileFuncFlags.DELETE,
-                    From = string.Join( "\U00000000", items.Select(path.AppendPath)) + "\U00000000\U00000000",
-                    Flags = FileOpFlags.NOCONFIRMATION | FileOpFlags.ALLOWUNDO
-                }) switch
-                {
-                    0    => 1,
-                    2    => throw new FileNotFoundException(),
-                    0x78 => throw new UnauthorizedAccessException() ,
-                _    => throw new Exception($"Unknown error code: {Marshal.GetLastWin32Error()}")
-                };   
+    public static async Task DeleteItems(string[] items, string path) 
+    {
+        try
+        {
+            await Form.InvokeOnMainThread(() => {
+                var _ = SHFileOperation(new ShFileOPStruct
+                    {
+                        Func = FileFuncFlags.DELETE,
+                        From = string.Join( "\U00000000", items.Select(path.AppendPath)) + "\U00000000\U00000000",
+                        Flags = FileOpFlags.ALLOWUNDO
+                    }) switch
+                    {
+                        0    => 1,
+                        2    => throw new FileNotFoundException(),
+                        0x78 => throw new UnauthorizedAccessException() ,
+                    _    => throw new Exception($"Unknown error code: {Marshal.GetLastWin32Error()}")
+                    };   
+            });
+        } 
+        finally
+        {
             Form.SetFocus();
-        });
+        };
+    }
 
     public static Task CopyAsync(JobBase input, Action<long, long> onProgress, CancellationToken? cancellation = null) => throw new NotImplementedException();
 
