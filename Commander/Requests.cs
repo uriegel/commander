@@ -204,7 +204,7 @@ static class Requests
     {
         var input = await request.DeserializeAsync<OpenFileInput>();
         if (input != null)
-            await Directory.OpenFile(input.Executable, input.File);
+            Directory.OpenFile(input.Executable, input.File);
         await request.SendJsonAsync(new NullData());
         return true;
     }

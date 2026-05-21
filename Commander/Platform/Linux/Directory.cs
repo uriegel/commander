@@ -1,9 +1,9 @@
 #if Linux
+using System.Diagnostics;
 using CsTools.Extensions;
 using CsTools.Functional;
 using GtkDotNet;
 using GtkDotNet.SafeHandles;
-using static CsTools.ProcessCmd;
 
 partial class Directory
 {
@@ -37,7 +37,10 @@ partial class Directory
     }
 
     public static Task OnEnter(OnEnterInput input)
-        => RunAsync("xdg-open", $"\"{input.Path.AppendPath(input.Name)}\"");
+    {
+        OpenFile("xdg-open", input.Path.AppendPath(input.Name));
+        return Task.CompletedTask;
+    }
 
     public static AppInfo[] GetRecommendedApps(string? file)
     {
@@ -61,8 +64,16 @@ partial class Directory
         return GetAppInfos(appinfo);
     }
 
-    public static Task OpenFile(string executable, string fileName)
-        => RunAsync(executable, $"\"{fileName}\"");
+    public static void OpenFile(string executable, string fileName)
+        => new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = executable,
+                Arguments = $"\"{fileName}\"",
+                CreateNoWindow = true
+            }
+        }.Start();
 
     public static Task Rename(RenameInput input)
     {
