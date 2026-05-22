@@ -39,7 +39,6 @@ TODO
 
 * css as react module
 
-* WebServer deflate
 * WebServer if-modified-since for icons
 
 * Windows Mark removable drive type "REMOVABLE"
