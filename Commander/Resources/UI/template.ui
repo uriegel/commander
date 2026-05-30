@@ -45,7 +45,13 @@
         <child>
           <object class="GtkBox">
             <property name="orientation">vertical</property>
-            <child>         
+            <child> 
+              <object class="AdwBanner" id="banner">
+                <property name="css-classes">warning</property>
+                <property name= "button-label">Ok</property>
+              </object>
+            </child>
+            <child>      
               <object class="WebKitWebView" id="webview">
                 <property name="vexpand">True</property>
               </object>

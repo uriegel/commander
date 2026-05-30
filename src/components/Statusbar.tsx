@@ -6,6 +6,7 @@ import { DialogContext, ResultType } from 'web-dialog-react'
 import CopyProgressPart from './dialogs/CopyProgressPart'
 import DeleteProgressPart from './dialogs/DeleteProgressPart' 
 import { cancelBackground } from '../requests/requests'
+import { isWindows } from "../platform/platform"
 
 export interface StatusbarProps {
     path: string
@@ -34,6 +35,8 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
             timer.current = setTimeout(() => setErrorText(null), 5000) as unknown as number           
         }
     }, [errorText, setErrorText])
+
+    const errorTextString = isWindows ? errorText : ""
 
     const [progress, setProgress] = useState(0)
     const [progressRevealed, setProgressRevealed] = useState(false)
@@ -143,7 +146,7 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
         return () => sub.unsubscribe()
     })
 
-    const getClasses = () => ["statusbar", errorText
+    const getClasses = () => ["statusbar", errorTextString
                                             ? "error"
                                             : statusInfo
                                             ? "info"
@@ -154,7 +157,7 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
     
     return (
         <div className={getClasses()}>
-            { errorText
+            { errorTextString
                 || statusInfo
                 || (<>
                     <span>{statusText || path}</span>

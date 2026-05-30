@@ -300,15 +300,30 @@ static class Requests
         else if (e is DirectoryNotFoundException)
             await request.SendJsonAsync(new SystemError(ErrorType.PathNotFound, "Datei oder Verzeichnis nicht gefunden"));
         else if (e is UnauthorizedAccessException)
+
+
+
+        {
+            // TODO for all!
             await request.SendJsonAsync(new SystemError(ErrorType.AccessDenied, "Keine Berechtigung"));
+
+            // TODO and only for Linux
+            MainContext.Instance.ErrorText = "Keine Berechtigung";
+
+        }
         else if (e is NotMountedException)
             await request.SendJsonAsync(new SystemError(ErrorType.NotMounted, "Nicht eingehangen"));
         else if (e is NetworknameNotFoundException)
             await request.SendJsonAsync(new SystemError(ErrorType.NetNameNotFound, "Netzwerkname nicht gefunden"));
         else if (e is WrongCredentialsException)
             await request.SendJsonAsync(new SystemError(ErrorType.WrongCredentials, "Falsche Anmeldedaten"));
-        else    
+        else
+        {
+            // TODO and only for Linux
+            MainContext.Instance.ErrorText = e.Message;
             await request.SendJsonAsync(new SystemError(ErrorType.Unknown, e.Message)); 
+            
+        }
     }
 
     public static void SendJson(CommanderEvent evt) => websocketChannel.Writer.TryWrite(evt);

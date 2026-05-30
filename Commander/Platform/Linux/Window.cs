@@ -1,4 +1,5 @@
 #if Linux
+using CsTools.Extensions;
 using GtkDotNet;
 using GtkDotNet.SafeHandles;
 using GtkDotNet.SubClassing;
@@ -32,9 +33,13 @@ public static class Window
         protected override async void OnCreate()
         {
             Handle.InitTemplate();
-            Handle
-                .GetTemplateChild<ButtonHandle, AdwApplicationWindowHandle>("devtools")
+            Handle.DataContext(MainContext.Instance);
+            Handle.GetTemplateChild<ButtonHandle, AdwApplicationWindowHandle>("devtools")
                 ?.OnClicked(webView.ShowDevTools);
+            Handle.GetTemplateChild<BannerHandle, ApplicationWindowHandle>("banner")
+                .Binding("revealed", nameof(MainContext.ErrorText), BindingFlags.Default, v => v != null)
+                .Binding("title", nameof(MainContext.ErrorText), BindingFlags.Default)
+                .SideEffect(b => b.OnButtonClicked(() => b.SetRevealed(false)));
             dropdown = Handle.GetTemplateChild<DropDownHandle, AdwApplicationWindowHandle>("preview_mode");
             dropdown.OnNotify("selected", FocusAfter1<DropDownHandle>(pm => Requests.SendJson(new(null, EventCmd.PreviewMode, new EventData { PreviewMode = pm.GetSelected().GetPreviewMode() }))));
             webview = Handle.GetTemplateChild<WebViewHandle, AdwApplicationWindowHandle>("webview");
