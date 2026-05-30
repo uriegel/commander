@@ -28,9 +28,9 @@
   </PropertyGroup> 
 
   <ItemGroup>
+    <PackageReference Include="System.Reactive" Version="6.1.0" />
     <PackageReference Include="WebServerLight" Version="2.3.0" />
-    <PackageReference Include="WebWindowNetCore" Version="11.1.4" />
-    <PackageReference Include="Gtk4DotNet" Version="8.1.4" />
+    <PackageReference Include="WebWindowNetCore" Version="11.2.0" />
   </ItemGroup> 
 
   <ItemGroup>

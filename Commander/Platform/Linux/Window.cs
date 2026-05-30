@@ -15,7 +15,7 @@ public static class Window
     }
     
     class CustomWindowClass(WebWindowNetCore.WebView webView, string resourceTemplate)
-        : SubClass<ApplicationWindowHandle>(GTypeEnum.ApplicationWindow, "CustomWindow", p => new CustomWindow(p, webView))
+        : SubClass<AdwApplicationWindowHandle>(GTypeEnum.AdwApplicationWindow, "CustomWindow", p => new CustomWindow(p, webView))
     {
         protected override void ClassInit(nint cls, nint _)
         {
@@ -27,17 +27,17 @@ public static class Window
         }
     }
 
-    class CustomWindow(nint obj, WebWindowNetCore.WebView webView) : SubClassInst<ApplicationWindowHandle>(obj)
+    class CustomWindow(nint obj, WebWindowNetCore.WebView webView) : SubClassInst<AdwApplicationWindowHandle>(obj)
     {
         protected override async void OnCreate()
         {
             Handle.InitTemplate();
             Handle
-                .GetTemplateChild<ButtonHandle, ApplicationWindowHandle>("devtools")
+                .GetTemplateChild<ButtonHandle, AdwApplicationWindowHandle>("devtools")
                 ?.OnClicked(webView.ShowDevTools);
-            dropdown = Handle.GetTemplateChild<DropDownHandle, ApplicationWindowHandle>("preview_mode");
+            dropdown = Handle.GetTemplateChild<DropDownHandle, AdwApplicationWindowHandle>("preview_mode");
             dropdown.OnNotify("selected", FocusAfter1<DropDownHandle>(pm => Requests.SendJson(new(null, EventCmd.PreviewMode, new EventData { PreviewMode = pm.GetSelected().GetPreviewMode() }))));
-            webview = Handle.GetTemplateChild<WebViewHandle, ApplicationWindowHandle>("webview");
+            webview = Handle.GetTemplateChild<WebViewHandle, AdwApplicationWindowHandle>("webview");
             await Task.Delay(50);
 
             Handle.AddActions(
@@ -86,7 +86,7 @@ public static class Window
         }
 
         protected override void OnFinalize() => Console.WriteLine("Window finalized");
-        protected override ApplicationWindowHandle CreateHandle(nint obj) => new(obj);
+        protected override AdwApplicationWindowHandle CreateHandle(nint obj) => new(obj);
     }
 
     static string GetPreviewMode(this int pm)

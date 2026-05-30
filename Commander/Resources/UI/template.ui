@@ -1,48 +1,59 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <interface>
-  <template class="CustomWindow" parent="GtkApplicationWindow">
-    <property name="titlebar">
-      <object class="AdwHeaderBar" id="headerBar">
-        <child type="end">
-          <object class="GtkMenuButton" id="menu_button">
-            <property name="icon-name">open-menu-symbolic</property>
-            <property name="menu-model">main-menu</property>
-          </object>
-        </child>      
-        <child type="end">
-          <object class="GtkToggleButton" id="preview_button">
-            <property name="icon-name">x-office-presentation</property>
-            <property name="action-name">win.preview</property>
+  <template class="CustomWindow" parent="AdwApplicationWindow">
+    <property name="content"> 
+      <object class="AdwToolbarView">
+        <child type="top">
+          <object class="AdwHeaderBar" id="headerBar">
+            <child type="end">
+              <object class="GtkMenuButton" id="menu_button">
+                <property name="icon-name">open-menu-symbolic</property>
+                <property name="menu-model">main-menu</property>
+              </object>
+            </child>      
+            <child type="end">
+              <object class="GtkToggleButton" id="preview_button">
+                <property name="icon-name">x-office-presentation</property>
+                <property name="action-name">win.preview</property>
+              </object>
+            </child>
+            <child type="end">
+              <object class="GtkDropDown" id="preview_mode">
+                <property name="visible"
+                  bind-source="preview_button"
+                  bind-property="active"
+                  bind-flags="sync-create"/><property name="model">
+                  <object class="GtkStringList">
+                    <items>
+                      <item>Bild</item>
+                      <item>Bild+Ort</item>
+                      <item>Ort</item>
+                    </items>
+                  </object>
+                </property>
+              </object>
+            </child>        
+            <child type="end">
+              <object class="ProgressControl" id="progress-revealer">
+                <property name="transition-type">slide-left</property>
+                <child>
+                </child>
+              </object>
+            </child>
           </object>
         </child>
-        <child type="end">
-          <object class="GtkDropDown" id="preview_mode">
-            <property name="visible"
-              bind-source="preview_button"
-              bind-property="active"
-              bind-flags="sync-create"/><property name="model">
-              <object class="GtkStringList">
-                <items>
-                  <item>Bild</item>
-                  <item>Bild+Ort</item>
-                  <item>Ort</item>
-                </items>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <child>         
+              <object class="WebKitWebView" id="webview">
+                <property name="vexpand">True</property>
               </object>
-            </property>
-          </object>
-        </child>        
-        <child type="end">
-          <object class="ProgressControl" id="progress-revealer">
-            <property name="transition-type">slide-left</property>
-            <child>
             </child>
           </object>
         </child>
       </object>
-      </property>
-    <child>
-      <object class="WebKitWebView" id="webview"/>
-    </child>    
+    </property>
   </template>
   <menu id="main-menu">
     <section>

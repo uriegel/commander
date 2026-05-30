@@ -21,7 +21,7 @@ static class WebView
             .ResourceIcon("icon")
             .WithoutNativeTitlebar()
 #else
-            .FromResourceTemplate("template", Commander.Platform.Linux.Window.Register)
+            .FromAdwResourceTemplate("template", Commander.Platform.Linux.Window.Register)
 #endif
             .DebugUrl($"http://localhost:5173/#platform={Globals.Platform}")
             .Url($"http://localhost:8080##platform={Globals.Platform}")
