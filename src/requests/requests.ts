@@ -39,7 +39,7 @@ export const restore = () => jsonRequest<NullData, NullData>("restore", {})
 export const getRecommendedApps = (file: string) => jsonRequest<getRecommendedAppsInput, App[]>("getrecommendedapps", { file })
 export const getAllApps = () => jsonRequest<NullData, App[]>("getallapps", {})
 export const openFile = (executable: string, file: string) => jsonRequest<OpenFileInput, NullData>("openfile", { executable, file })
-
+export const sendErrorText = (text: string) => jsonRequest<string, NullData>("seterrortext", text)
 
 const jsonRequest = async <TIn, TOut>(cmd: string, msg: TIn) => {
     const payload = {

@@ -5,7 +5,7 @@ import { copyProgressEvents$, copyProgressShowDialogEvents$, copyStopEvents$, de
 import { DialogContext, ResultType } from 'web-dialog-react'
 import CopyProgressPart from './dialogs/CopyProgressPart'
 import DeleteProgressPart from './dialogs/DeleteProgressPart' 
-import { cancelBackground } from '../requests/requests'
+import { cancelBackground, sendErrorText } from '../requests/requests'
 import { isWindows } from "../platform/platform"
 
 export interface StatusbarProps {
@@ -35,6 +35,11 @@ const Statusbar = ({ path, dirCount, fileCount, errorText, setErrorText, statusT
             timer.current = setTimeout(() => setErrorText(null), 5000) as unknown as number           
         }
     }, [errorText, setErrorText])
+
+    useEffect(() => {
+        if (!isWindows && errorText)
+            sendErrorText(errorText)
+    }, [errorText])
 
     const errorTextString = isWindows ? errorText : ""
 

@@ -16,16 +16,22 @@ class MainContext : INotifyPropertyChanged
                 OnChanged(nameof(ErrorText));
                 if (value != null)
                 {
-                    Reset();
-                    async void Reset()
-                    {
-                        await Task.Delay(3000);
-                        ErrorText = null;
-                    }
+                    cts?.Cancel();
+                    cts = new CancellationTokenSource();
+                    runningTask = RunError(cts.Token);
                 }
             }
         }
     }
+
+    async Task RunError(CancellationToken cancellation)
+    {
+        await Task.Delay(6000, cancellation);
+        ErrorText = null;
+    }
+
+    CancellationTokenSource? cts;
+    Task? runningTask;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 

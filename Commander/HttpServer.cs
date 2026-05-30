@@ -45,6 +45,7 @@ static class HttpServer
                     .Add(PathRoute.New("/requests/copytoremote").Request(CopyToRemote))
                     .Add(PathRoute.New("/requests/addnetworkshare").Request(AddNetworkShare))
                     .Add(PathRoute.New("/requests/extendcopyitems").Request(ExtendCopyItems))
+                    .Add(PathRoute.New("/requests/seterrortext").Request(SetErrorText))
             )
             .Route(MethodRoute
                 .New(Method.Get)
