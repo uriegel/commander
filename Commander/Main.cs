@@ -7,7 +7,6 @@ Icon.StopProcessing();
 server.Stop();
 
 // TODO Dialog Box: themed buttons
-// TODO Info: desaturized colors
 
 // TODO result.dirCount, result.fileCount when copied, deleted
 
