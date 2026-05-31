@@ -3,6 +3,11 @@
     --accent-color: blue;
     --vtr-current-focus-color: var(--accent-color);
     --vtr-selected-background-color: var(--accent-color);
+    --statusbar-info: oklch(from var(--vtr-selected-background-color) calc(l + 0.35) c h);
+    --wdr-button-background-color: var(--accent-color);
+    --wdr-button-color: white;
+    --wdr-button-focus-color: var(--accent-color);    
+    --wdr-button-active-background-color: yellow;   
     --vtr-current-selected-focus-color-invert: 1;
 }
 
@@ -56,12 +61,8 @@
         --wdr-button-outlinestyle: dotted;
         --wdr-button-outlineoffset: -2px;
         --wdr-input-selection-color: var(--vtr-selected-background-color); */
-        --wdr-button-background-color: #ebebeb;
-        --wdr-button-color: black;
         --wdr-button-padding: 5px 25px;
         --wdr-button-hover-background-color: #dcdcdc;
-        --wdr-button-active-background-color: #bebebe;   
-        --wdr-button-focus-color: var(--accent-color);    
         --wdr-button-bordercolor: lightgray;
         --wdr-button-borderstyle: solid;
         --wdr-button-cornerradius: 5px;
@@ -136,12 +137,9 @@
         --wdr-input-selection-color: var(--vtr-selected-background-color); */
         --wdr-main-color: white;
         --wdr-main-background-color: #353535;
-        --wdr-button-background-color: #454545;
-        --wdr-button-color: white;
         --wdr-button-padding: 5px 25px;
         --wdr-button-hover-background-color: #4f4f4f;
         --wdr-button-active-background-color: #6e6e6e;   
-        --wdr-button-focus-color: rgb(126, 126, 126);    
         --wdr-button-bordercolor: black;
         --wdr-button-borderstyle: solid;
         --wdr-button-cornerradius: 5px;

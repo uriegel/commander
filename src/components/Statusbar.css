@@ -13,9 +13,7 @@
 }
 
 .statusbar.status {
-    color: white;
-    background-color: var(--vtr-selected-background-color);
-    filter: brightness(160%);
+    background-color: var(--statusbar-info);
 }
 
 .fill {
