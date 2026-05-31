@@ -248,8 +248,10 @@ static class Requests
 
     public static async Task<bool> SetErrorText(IRequest request)
     {
+#if Linux        
         request.RequestHeaders.TryGetValue("content-length", out var lengthStr);
         MainContext.Instance.ErrorText =  await request.DeserializeAsync<string>();
+#endif        
         await request.SendJsonAsync(new NullData());
         return true;
     }
