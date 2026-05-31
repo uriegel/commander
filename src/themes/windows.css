@@ -1,4 +1,4 @@
-.App.linuxTheme {
+.App.windowsTheme {
     font-size: 80%;
     --accent-color: blue;
     --vtr-current-focus-color: var(--accent-color);
@@ -12,7 +12,7 @@
 }
 
 @media (prefers-color-scheme: light) {
-    :root .linuxTheme {
+    :root .windowsTheme {
         --color: black;
         --scaffolding-background-color: #ebebeb;
         --svg-image-path-color: black;
@@ -47,7 +47,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-    :root .linuxTheme {
+    :root .windowsTheme {
         --color: lightgray;
         background-color: #2f2f2f; 
         --drag-highlight: darkgreen;
