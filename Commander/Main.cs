@@ -6,8 +6,6 @@ WebView.Run();
 Icon.StopProcessing();    
 server.Stop();
 
-// TODO Dialog Box: themed buttons
-
 // TODO result.dirCount, result.fileCount when copied, deleted
 
 // TODO strict mode: sometimes Exceptions Object disposed
@@ -38,9 +36,6 @@ server.Stop();
 
 // TODO Windows Services (perhaps elevatable sub process)
 
-// TODO Theming: Statusbar lightblue instead of red!
-// TODO Theming: Dialog blue color (buttons)
-// TODO Theming: select edit blue color
 // TODO Theming: adapt gray color from KDE/Gtk3 (/Neon/Ubuntu/Fedora)
 // TODO Theming: Unify Titlebar, path input and table columns, margins like Gtk4/Adwaita
 // TODO Theming: <tr> with padding 
@@ -56,7 +51,5 @@ server.Stop();
 
 // TODO CSP in index.html
 
-// Drag n Drop:
-// TODO Commander Branch Neon-Rust folder.ts
-
+ 
 
