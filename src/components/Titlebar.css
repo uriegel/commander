@@ -1,14 +1,14 @@
 .titlebar {
     display: flex;
     height: 32px;
-    background-color: var(--scaffolding-background-color);
+    background-color: var(--vtr-background-color);
     color: var(--color);
     border-top: 1px solid transparent;
 }
 
 
 body:focus-within .titlebar {
-    border-top: 1px solid var(--vtr-selected-background-color);
+    border-top: 1px solid var(--vtr-background-color);
 }
 
 .titlebar>img {

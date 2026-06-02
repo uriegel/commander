@@ -47,8 +47,8 @@
         --vsr-grip-width: 2px;
         --vsr-grip-padding: 3px;
 
-        --mbr-menubar-background-color: var(--scaffolding-background-color);
-        --mbr-menubar-submenu-background-color: var(--scaffolding-background-color);
+        --mbr-menubar-background-color: var(--vtr-background-color);
+        --mbr-menubar-submenu-background-color: white;
         --mbr-menubar-selected-background-color: var(--vtr-selected-background-color);
         --rpc-color: var(--vtr-selected-background-color);
 
@@ -83,8 +83,8 @@
         --vsr-grip-padding: 3px;
     
         --mbr-menubar-color: white;
-        --mbr-menubar-background-color: var(--scaffolding-background-color);
-        --mbr-menubar-submenu-background-color: var(--scaffolding-background-color);
+        --mbr-menubar-background-color: var(--vtr-background-color);
+        --mbr-menubar-submenu-background-color: #2f2f2f;
         --mbr-menubar-selected-background-color: var(--vtr-selected-background-color);
         --mbr-menubar-hover-color: darkblue;
         --mbr-menubar-border-color: rgb(70, 70, 70);
