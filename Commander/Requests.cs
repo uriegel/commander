@@ -274,7 +274,7 @@ static class Requests
         if (subPath == null)
             return false;
         var payload = await Icon.GetAsync($"ext:{subPath}");
-        await request.SendAsync(payload, payload.IsSvg() ? "image/svg+xml" : "image/png");
+        await request.SendAsync(payload, payload.IsSvg() ? "image/svg+xml" : "image/png", WebView.StartTime);
         return true;
     }
 

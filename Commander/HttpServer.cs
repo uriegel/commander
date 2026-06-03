@@ -9,6 +9,7 @@ static class HttpServer
         => WebServer
             .New()
             .Logging(LogLevel.Info)
+            .Favicon("kirk")
             .Http(8080)
 #if DEBUG        
             .AddAllowedOrigin("http://localhost:5173")

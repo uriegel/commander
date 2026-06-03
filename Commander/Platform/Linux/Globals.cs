@@ -22,10 +22,17 @@ static partial class Globals
                     .EnsureDirectoryExists();
         var icon = Resources.Get("icon");
         IconProcessor = path.AppendPath("icon");
-        using var writer = File.Create(IconProcessor);
-        icon?.CopyTo(writer);
-        writer.Dispose();
-        var psi = new ProcessStartInfo("chmod")                                         
+        try
+        {
+            using var writer = File.Create(IconProcessor);
+            icon?.CopyTo(writer);
+            writer.Dispose();
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Could not unpack icon processor: {e}");
+        }
+        var psi = new ProcessStartInfo("chmod")
         {
             ArgumentList = { "+x", IconProcessor },
             CreateNoWindow = true,

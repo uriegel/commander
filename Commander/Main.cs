@@ -15,6 +15,8 @@ server.Stop();
 // TODO Error handling GFileError
 // TODO Error handling  for copying
 
+// TODO clean Commander/Resources/assets
+
 // TODO Windows remotes
 
 // TODO Windows: compare version infos in sub folders, retrieve version from viewer

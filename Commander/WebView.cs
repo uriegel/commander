@@ -2,6 +2,7 @@ using System.Drawing;
 
 static class WebView
 {
+    public static DateTime StartTime { get; } = DateTime.Now;
     public static void Run() => webView.Run();
 
     public static void ShowDevTools() => webView.ShowDevTools();
