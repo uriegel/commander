@@ -6,12 +6,13 @@ WebView.Run();
 Icon.StopProcessing();    
 server.Stop();
 
+// TODO Favorites with display names and mount info
+
 // TODO result.dirCount, result.fileCount when copied, deleted
 
 // TODO strict mode: sometimes Exceptions Object disposed
 // TODO strict mode: rename: wrong position when renamed was selected
 // TODO Dispose Directory object when getRoot/getRemote...  AND get Favorites/getRemotesin javascript, change value set idx from dictionary in CS
-// TODO Error handling, especially Windows, check if network path, then UAC
 // TODO Error handling GFileError
 // TODO Error handling  for copying
 
