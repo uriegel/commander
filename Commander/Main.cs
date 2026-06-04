@@ -6,6 +6,7 @@ WebView.Run();
 Icon.StopProcessing();    
 server.Stop();
 
+// TODO GetFiles has to return mount info => save mount info as lastPath
 // TODO Favorites with display names and mount info
 
 // TODO result.dirCount, result.fileCount when copied, deleted
