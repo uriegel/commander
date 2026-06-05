@@ -15,7 +15,7 @@ const IconName = ({ namePart, type, iconPath }: IconNameProps) =>
         : type == IconNameType.File
         ? (<img className="iconImage" src={`http://localhost:8080/iconfromext/${iconPath}`} alt="" />)
         : type == IconNameType.Root
-        ? (<img className="image" src={`http://localhost:8080/iconfromname/drive-removable-media`} alt="" />)
+        ? (<img className="image" src={`http://localhost:8080/iconfromname/drive-removable`} alt="" />)
         : type == IconNameType.RootEjectable
         ? (<img className="image" src={`http://localhost:8080/iconfromname/media-removable`} alt="" />)
         : type == IconNameType.RootWindows
