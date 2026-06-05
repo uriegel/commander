@@ -12,12 +12,12 @@ export const windowsGetColumns = () => [
             
 export const windowsRenderRow = (item: Item) => [
     (<IconName namePart={item.name} type={
-        (item as RootItem).name == 'remotes'
+        item.name == 'remotes'
         ? IconNameType.Remote
         : item.name == "fav"
         ? IconNameType.Favorite
         : IconNameType.IconName
-    } />),
+    } iconPath={(item as RootItem).iconName} />),
     (item as RootItem).description ?? "",
     formatSize(item.size || -1)
 ]

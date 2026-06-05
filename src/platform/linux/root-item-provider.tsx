@@ -13,11 +13,11 @@ export const linuxGetColumns = () => [
             
 export const linuxRenderRow = (item: Item) => [
     (<IconName namePart={item.name} type={
-        (item.name == "remotes")
-            ? IconNameType.Remote
-            : item.name == "fav"
-                ? IconNameType.Favorite
-                : IconNameType.IconName
+        item.name == "remotes"
+        ? IconNameType.Remote
+        : item.name == "fav"
+        ? IconNameType.Favorite
+        : IconNameType.IconName
     } iconPath={(item as RootItem).iconName} />),
     (item as RootItem).description ?? "",
     (item as RootItem).mountPoint ?? "",
