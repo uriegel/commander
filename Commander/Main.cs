@@ -11,6 +11,8 @@ server.Stop();
 // TODO GetFiles has to return mount info => save mount info as lastPath
 // TODO Favorites with display names and mount info
 // TODO Unmount and Eject removable devices in root view 
+// TODO F3 when root: show Drive properties
+// TODO F3 when directory: show Directory properties
 
 // TODO result.dirCount, result.fileCount when copied, deleted
 
