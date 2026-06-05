@@ -1,5 +1,6 @@
 #if Linux
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using CsTools.Async;
 using CsTools.Extensions;
 using static CsTools.ProcessCmd;
@@ -9,7 +10,7 @@ static class Drive
     public static async Task<RootItem[]> Get()
         => [new RootItem("~", "home", 0, CsTools.Directory.GetHomeDir(), true, "user-home", null, DriveType.HOME), ..
             from drive in JsonSerializer.Deserialize<Drives>(
-                                        await RunAsync("lsblk", "--json --bytes -o NAME,UUID,LABEL,FSTYPE,MOUNTPOINT,SIZE,TRAN,RM"), Json.Defaults
+                                        await RunAsync("lsblk", "--json --bytes -o NAME,UUID,LABEL,FSTYPE,MOUNTPOINT,SIZE,TRAN,RM,FSUSE%"), Json.Defaults
                                     )?.Blockdevices
             where drive.Fstype != "squashfs"
             from child in drive.Children ?? [drive]
@@ -23,6 +24,7 @@ static class Drive
                 (child.Tran ?? drive.Tran).GetIconName(child.Rm),
                 child.Uuid,
                 (child.Tran ?? drive.Tran).GetDriveType(child.Rm),
+                child.Fsuse,
                 child.Rm) ];
 
     public static async Task<string> Mount(string device)
@@ -70,6 +72,8 @@ record Device(
     string? Mountpoint,
     long Size,
     string? Tran,
+    [property: JsonPropertyName("fsuse%")]
+    string? Fsuse,
     bool Rm);
 
 #endif

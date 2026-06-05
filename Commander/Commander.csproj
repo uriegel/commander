@@ -84,7 +84,7 @@
     <EmbeddedResource Include="Resources/Images/go-up.png">
       <LogicalName>go-up</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources/Images/media-removable.png">
+    <EmbeddedResource Include="Resources/Images/drive-removable-media-usb.png">
       <LogicalName>media-removable</LogicalName>
     </EmbeddedResource>
   </ItemGroup> 

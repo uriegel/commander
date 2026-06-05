@@ -48,6 +48,7 @@ record RootItem(
     string IconName,
     string? Uuid = null,
     string Type = DriveType.HARDDRIVE,
+    string? Use = null,
     bool? Removable = null
 ) : Item(Name, Size, false, true)
 { }

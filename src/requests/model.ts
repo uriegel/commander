@@ -125,6 +125,7 @@ export interface RootItem extends Item {
     type?:         DriveType
     uuid?:         string
     iconName:      string
+    use?:          string,
 }
 
 export interface DirectoryItem extends Item {

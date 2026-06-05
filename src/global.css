@@ -20,6 +20,11 @@ tr.notMounted, tr.hidden {
     Opacity: 0.5;
 }
 
+tr.full {
+    color: black;
+    background-color: rgb(255, 176, 176);
+}
+
 tr.disabled {
     Opacity: 0.4;
 }

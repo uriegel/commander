@@ -8,6 +8,7 @@ export const linuxGetColumns = () => [
                 { name: "Name" },
                 { name: "Bezeichnung" },
                 { name: "Mountpoint" },
+                { name: "%", isRightAligned: true },
                 { name: "Größe", isRightAligned: true }
 ] as Column[]
             
@@ -21,5 +22,6 @@ export const linuxRenderRow = (item: Item) => [
     } iconPath={(item as RootItem).iconName} />),
     (item as RootItem).description ?? "",
     (item as RootItem).mountPoint ?? "",
+    (item as RootItem).use ?? "",
     formatSize(item.size || -1)
 ]

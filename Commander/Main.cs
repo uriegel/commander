@@ -6,10 +6,8 @@ WebView.Run();
 Icon.StopProcessing();    
 server.Stop();
 
-// TODO Get info of /home/uwe (FSUSE%) sd??
 // TODO Windows: calculate % 
 // TODO Windows: removable-media icon from linux
-// TODO red class when disk usage is to high
 // TODO Eject and Unmount in GTK4 
 // TODO new GTK4 to WebWindowNetCore
 // TODO GetFiles has to return mount info => save mount info as lastPath

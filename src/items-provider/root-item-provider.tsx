@@ -50,8 +50,11 @@ export class RootItemProvider extends IItemsProvider {
     constructor() { super() }
 }
 
-const getRowClasses = (item: Item) => 
-    (item as RootItem).isMounted == false
-        ? ["notMounted"]
-        : []
+const getRowClasses = (item: Item) => {
+    const notMounted = (item as RootItem).isMounted == false ? "notMounted" : null
+    const full = ((item as RootItem).use?.substringUntil("%").parseInt() || 0) > 80 ? "full" : null
+    return [notMounted, full].filterNone()
+}
+    
+    
 
