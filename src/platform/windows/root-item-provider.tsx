@@ -6,7 +6,8 @@ import type { Item, RootItem } from "../../requests/model"
 
 export const windowsGetColumns = () => [
                 { name: "Name" },
-                { name: "Bezeichnung" },
+    { name: "Bezeichnung" },
+                { name: "%", isRightAligned: true },
                 { name: "Größe", isRightAligned: true }
 ] as Column[]
             
@@ -19,5 +20,6 @@ export const windowsRenderRow = (item: Item) => [
         : IconNameType.IconName
     } iconPath={(item as RootItem).iconName} />),
     (item as RootItem).description ?? "",
+    (item as RootItem).use ?? "",
     formatSize(item.size || -1)
 ]
