@@ -123,6 +123,7 @@ export interface RootItem extends Item {
     mountPoint?:   string
     isMounted?:    boolean
     type?:         DriveType
+    uuid?:         string
     //    driveKind?:    DriveKind    
 }
 

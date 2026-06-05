@@ -44,7 +44,8 @@ record RootItem(
     string MountPoint,
     bool IsMounted,
     //string DriveType,
-    string Type = DriveType.Harddrive 
+    string? Uuid = null,
+    string Type = DriveType.Harddrive
 ) : Item(Name, Size, false, true)
 { }
 

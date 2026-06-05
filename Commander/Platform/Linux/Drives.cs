@@ -6,11 +6,13 @@ using static CsTools.ProcessCmd;
 
 static class Drive
 {
-    // TODO get drive type for icon
-    // TODO UUID
+    // TODO get drive type for icon (sata, harddrive, usb)
+    // TODO get ejectable (RM)
+    // TODO FSUSE%
+    // TODO Get info of /home/uwe (FSUSE%) sd??
 
     public static async Task<RootItem[]> Get()
-        => [new RootItem("~", "home", 0, CsTools.Directory.GetHomeDir(), true, DriveType.Home), ..
+        => [new RootItem("~", "home", 0, CsTools.Directory.GetHomeDir(), true, null, DriveType.Home), ..
             from drive in JsonSerializer.Deserialize<Drives>(
                                         await RunAsync("lsblk", "--json --bytes -o NAME,UUID,LABEL,FSTYPE,MOUNTPOINT,SIZE,TRAN"), Json.Defaults
                                     )?.Blockdevices
@@ -18,8 +20,8 @@ static class Drive
             from child in drive.Children ?? [drive]
             orderby child.Mountpoint == null
             select child.Tran != null
-                ? new RootItem(child.Name, child.Label, child.Size, child.Mountpoint ?? "", child.Mountpoint?.Length > 0)
-                : new RootItem(child.Name, child.Label, child.Size, child.Mountpoint ?? "", child.Mountpoint?.Length > 0)];
+                ? new RootItem(child.Name, child.Label, child.Size, child.Mountpoint ?? "", child.Mountpoint?.Length > 0, child.Uuid)
+                : new RootItem(child.Name, child.Label, child.Size, child.Mountpoint ?? "", child.Mountpoint?.Length > 0, child.Uuid)];
                 //Root(child.Name, child.Uuid, child.Fstype, child.Label, child.Mountpoint, child.Size, drive.Tran ?? "");
 
     public static async Task<string> Mount(string device)
@@ -41,7 +43,6 @@ static class Drive
 
 record Drives(Device[] Blockdevices);
 record Device(Device[]? Children, string Name, string? Uuid, string Fstype, string Label, string? Mountpoint, long Size, string? Tran);
-record Root(string Name, string? Uuid, string Fstype, string Label, string? Mountpoint, string Size, string Tran);
 
 #endif
 
