@@ -50,8 +50,8 @@ export class RootItemProvider extends IItemsProvider {
     constructor() { super() }
 }
 
-const getRowClasses = (item: RootItem) => 
-    item.isMounted == false
+const getRowClasses = (item: Item) => 
+    (item as RootItem).isMounted == false
         ? ["notMounted"]
         : []
 

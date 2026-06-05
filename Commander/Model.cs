@@ -32,9 +32,11 @@ record Item(
 
 static class DriveType
 {
-    public const string Home = "HOME";
-    public const string Removable = "REMOVABLE";
-    public const string Harddrive = "HARDDRIVE";
+    public const string HOME = "HOME";
+    public const string REMOVABLE_USB = "REMOVABLE_USB";
+    public const string HARDDRIVE = "HARDDRIVE";
+    public const string HARDDRIVE_USB = "HARDDRIVE_USB";
+    public const string SATA = "SATA";
 } 
 
 record RootItem(
@@ -43,9 +45,10 @@ record RootItem(
     long? Size,
     string MountPoint,
     bool IsMounted,
-    //string DriveType,
+    string IconName,
     string? Uuid = null,
-    string Type = DriveType.Harddrive
+    string Type = DriveType.HARDDRIVE,
+    bool? Removable = null
 ) : Item(Name, Size, false, true)
 { }
 

@@ -6,8 +6,8 @@ WebView.Run();
 Icon.StopProcessing();    
 server.Stop();
 
-// TODO removable icon
-// TODO Eject in GTK4 
+// TODO Get info of /home/uwe (FSUSE%) sd??
+// TODO Eject and Unmount in GTK4 
 // TODO new GTK4 to WebWindowNetCore
 // TODO GetFiles has to return mount info => save mount info as lastPath
 // TODO Favorites with display names and mount info

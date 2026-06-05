@@ -26,12 +26,9 @@ export interface ItemsResult {
 
 export const IconNameType = {
     Parent: 'Parent',
-    Root: 'Root',
-    RootEjectable: 'RootEjectable',
-    RootWindows: 'RootWindows',
-    Home: 'Home',
     Folder: 'Folder',
     File: 'File',
+    IconName: 'IconName',
     Remote: 'Remote',
     Android: 'Android',
     New: 'New',

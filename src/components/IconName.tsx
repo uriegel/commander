@@ -14,14 +14,8 @@ const IconName = ({ namePart, type, iconPath }: IconNameProps) =>
         ? (<img className="image" src={`http://localhost:8080/iconfromname/folder-open`} alt="" />)
         : type == IconNameType.File
         ? (<img className="iconImage" src={`http://localhost:8080/iconfromext/${iconPath}`} alt="" />)
-        : type == IconNameType.Root
-        ? (<img className="image" src={`http://localhost:8080/iconfromname/drive-removable`} alt="" />)
-        : type == IconNameType.RootEjectable
-        ? (<img className="image" src={`http://localhost:8080/iconfromname/media-removable`} alt="" />)
-        : type == IconNameType.RootWindows
-        ? (<img className="image" src={`http://localhost:8080/iconfromname/drive-windows`} alt="" />)
-        : type == IconNameType.Home
-        ? (<img className="image" src={`http://localhost:8080/iconfromname/user-home`} alt="" />)
+        : type == IconNameType.IconName
+        ? (<img className="iconImage" src={`http://localhost:8080/iconfromname/${iconPath}`} alt="" />)
         : type == IconNameType.Android
         ? (<Android />)
         : type == IconNameType.Remote

@@ -116,7 +116,7 @@ export interface Item extends SelectableItem {
     isDirectory?: boolean    
 }
 
-type DriveType = 'HOME' | "REMOVABLE" | "HARDDRIVE"
+type DriveType = 'HOME' | "REMOVABLE_USB" | "HARDDRIVE" | "HARDDRIVE_USB" | "SATA"
 
 export interface RootItem extends Item {
     description?:  string
@@ -124,7 +124,7 @@ export interface RootItem extends Item {
     isMounted?:    boolean
     type?:         DriveType
     uuid?:         string
-    //    driveKind?:    DriveKind    
+    iconName:      string
 }
 
 export interface DirectoryItem extends Item {

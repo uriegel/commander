@@ -1,8 +1,8 @@
 import { type Column } from "virtual-table-react"
-import type { RootItem } from "../../requests/model"
 import IconName from "../../components/IconName"
 import { IconNameType } from "../../items-provider/items"
 import { formatSize } from "../../items-provider/provider"
+import type { Item, RootItem } from "../../requests/model"
 
 export const windowsGetColumns = () => [
                 { name: "Name" },
@@ -10,20 +10,14 @@ export const windowsGetColumns = () => [
                 { name: "Größe", isRightAligned: true }
 ] as Column[]
             
-export const windowsRenderRow = (item: RootItem) => [
+export const windowsRenderRow = (item: Item) => [
     (<IconName namePart={item.name} type={
-        item.type == 'HOME'
-        ? IconNameType.Home
-        : item.name == "remotes"
+        (item as RootItem).name == 'remotes'
         ? IconNameType.Remote
         : item.name == "fav"
         ? IconNameType.Favorite
-        : item.name == 'C:\\'
-        ? IconNameType.RootWindows
-        : item.type == "REMOVABLE"
-        ? IconNameType.RootEjectable
-        : IconNameType.Root
+        : IconNameType.IconName
     } />),
-    item.description ?? "",
+    (item as RootItem).description ?? "",
     formatSize(item.size || -1)
 ]

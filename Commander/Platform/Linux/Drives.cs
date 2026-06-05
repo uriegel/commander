@@ -6,23 +6,24 @@ using static CsTools.ProcessCmd;
 
 static class Drive
 {
-    // TODO get drive type for icon (sata, harddrive, usb)
-    // TODO get ejectable (RM)
-    // TODO FSUSE%
-    // TODO Get info of /home/uwe (FSUSE%) sd??
-
     public static async Task<RootItem[]> Get()
-        => [new RootItem("~", "home", 0, CsTools.Directory.GetHomeDir(), true, null, DriveType.Home), ..
+        => [new RootItem("~", "home", 0, CsTools.Directory.GetHomeDir(), true, "user-home", null, DriveType.HOME), ..
             from drive in JsonSerializer.Deserialize<Drives>(
-                                        await RunAsync("lsblk", "--json --bytes -o NAME,UUID,LABEL,FSTYPE,MOUNTPOINT,SIZE,TRAN"), Json.Defaults
+                                        await RunAsync("lsblk", "--json --bytes -o NAME,UUID,LABEL,FSTYPE,MOUNTPOINT,SIZE,TRAN,RM"), Json.Defaults
                                     )?.Blockdevices
             where drive.Fstype != "squashfs"
             from child in drive.Children ?? [drive]
             orderby child.Mountpoint == null
-            select child.Tran != null
-                ? new RootItem(child.Name, child.Label, child.Size, child.Mountpoint ?? "", child.Mountpoint?.Length > 0, child.Uuid)
-                : new RootItem(child.Name, child.Label, child.Size, child.Mountpoint ?? "", child.Mountpoint?.Length > 0, child.Uuid)];
-                //Root(child.Name, child.Uuid, child.Fstype, child.Label, child.Mountpoint, child.Size, drive.Tran ?? "");
+            select new RootItem(
+                child.Name,
+                child.Label,
+                child.Size,
+                child.Mountpoint ?? "",
+                child.Mountpoint?.Length > 0,
+                (child.Tran ?? drive.Tran).GetIconName(child.Rm),
+                child.Uuid,
+                (child.Tran ?? drive.Tran).GetDriveType(child.Rm),
+                child.Rm) ];
 
     public static async Task<string> Mount(string device)
     {
@@ -39,10 +40,37 @@ static class Drive
                 throw new MountException(e.Message);
         }
     }
+
+    static string GetIconName(this string? tran, bool removable)
+        => (tran, removable) switch
+        {
+            ("sata", _) => "drive-harddisk-solidstate",
+            ("usb", false) => "drive-harddisk-usb",
+            ("usb", true) => "drive-removable-media-usb",
+            _ => "drive-harddisk"
+        };
+
+    static string GetDriveType(this string? tran, bool removable)
+        => (tran, removable) switch
+        {
+            ("sata", _) => DriveType.SATA,
+            ("usb", false) => DriveType.HARDDRIVE_USB,
+            ("usb", true) => DriveType.REMOVABLE_USB,
+            _ => DriveType.HARDDRIVE
+        };
 }
 
 record Drives(Device[] Blockdevices);
-record Device(Device[]? Children, string Name, string? Uuid, string Fstype, string Label, string? Mountpoint, long Size, string? Tran);
+record Device(
+    Device[]? Children,
+    string Name,
+    string? Uuid,
+    string Fstype,
+    string Label,
+    string? Mountpoint,
+    long Size,
+    string? Tran,
+    bool Rm);
 
 #endif
 
