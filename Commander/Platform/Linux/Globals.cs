@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using CsTools;
 using CsTools.Extensions;
-using GtkDotNet.Exceptions;
+using Gtk4DotNet.Exceptions;
 
 static partial class Globals
 {

@@ -1,4 +1,4 @@
-#if Linux
+#if Linux99999999999999999999999999999999
 using GtkDotNet;
 using GtkDotNet.SafeHandles;
 using GtkDotNet.SubClassing;

@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <interface>
-  <template class="CustomWindow" parent="AdwApplicationWindow">
+  <object class="AdwApplicationWindow" id="window">
     <property name="content"> 
       <object class="AdwToolbarView">
         <child type="top">
@@ -34,11 +34,7 @@
               </object>
             </child>        
             <child type="end">
-              <object class="ProgressControl" id="progress-revealer">
-                <property name="transition-type">slide-left</property>
-                <child>
-                </child>
-              </object>
+              <object class="GtkBox" id="progressRevealer" />
             </child>
           </object>
         </child>
@@ -60,7 +56,7 @@
         </child>
       </object>
     </property>
-  </template>
+  </object>
   <menu id="main-menu">
     <section>
       <item>

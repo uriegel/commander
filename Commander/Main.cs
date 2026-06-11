@@ -3,8 +3,10 @@ Globals.InitializeResourceFiles();
 Theme.StartChangeDetecting();
 server.Start();
 WebView.Run();
-Icon.StopProcessing();    
+Icon.StopProcessing();
 server.Stop();
+
+// TODO Cambalache
 
 // TODO GetFiles has to return mount info => save mount info as lastPath
 // TODO Favorites with display names and mount info

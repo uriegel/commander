@@ -1,108 +1,93 @@
 #if Linux
-using CsTools.Extensions;
-using GtkDotNet;
-using GtkDotNet.SafeHandles;
-using GtkDotNet.SubClassing;
+using Gtk4DotNet;
 
 namespace Commander.Platform.Linux;
 
-public static class Window
+public class Window : AdwApplicationWindow
 {
-    public static void Register(ApplicationHandle app, WebWindowNetCore.WebView webView, string resourceTemplate)
+    public static ApplicationWindow OnActivation(Application app, WindowBuilder builder)
+        => new Window(builder);
+
+    public Window(WindowBuilder builder) : base(builder)
     {
-        app.SubClass(new CustomWindowClass(webView, resourceTemplate));
-        app.SubClass(ProgressControl.Subclass());
-        app.SubClass(ProgressSpinner.Subclass());
+        DataContext = MainContext.Instance;
+
+        banner
+            .Binding("revealed", nameof(MainContext.ErrorText), BindingFlags.Default, v => v != null)
+            .Binding("title", nameof(MainContext.ErrorText), BindingFlags.Default);
+        banner.OnButtonClicked(() => banner.IsRevealed = false);
+        // TODO
+        // previewMode.OnNotify("selected", FocusAfter1<bool>(
+        //     pm => Requests.SendJson(new(null, EventCmd.PreviewMode, new EventData { PreviewMode = previewMode.SelectedPos.GetPreviewMode() }))));
+
+        this.AddActions([
+            new("showhidden", false, FocusAfter1<bool>(show => Requests.SendJson(new(null, EventCmd.ShowHidden, new EventData { ShowHidden = show }))), "<Ctrl>H"),
+            new("quit", FocusAfter(CloseWindow), "<Ctrl>Q"),
+            // TODO new("devtools", FocusAfter(webView.ShowDevTools), "F12"),
+            new("preview", false, FocusAfter1<bool>(show => Requests.SendJson(new(null, EventCmd.ShowViewer, new EventData { ShowViewer = show }))), "F3"),
+            new("select-image", FocusAfter(() => previewMode.SelectedPos = 0), "<CTRL>1"),
+            new("select-image-location", FocusAfter(() => previewMode.SelectedPos = 1), "<CTRL>2"),
+            new("select-location", FocusAfter(() => previewMode.SelectedPos = 2), "<CTRL>3"),
+            new("refresh", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "REFRESH" }))), "<CTRL>R"),
+            new("favorites", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "FAVORITES" }))), "F1"),
+            new("adaptpath", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "ADAPT_PATH" }))), "F9"),
+            new("selectall", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "SEL_ALL" }))), "KP_Add"),
+            new("selectnone", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "SEL_NONE" }))), "KP_Subtract"),
+            new("createfolder", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "CREATE_FOLDER" }))), "F7"),
+            new("delete", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "DELETE" }))), "Löschen"), // Shortcut not working!
+            new("copy", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "COPY" }))), "F5"),
+            new("move", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "MOVE" }))), "F6"),
+            new("toggleselection", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "TOGGLE_SEL" }))), "Insert"),
+            new("openwith", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "OPENWITH" }))), "<Ctrl>Return"),
+            new("extendedrename", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "EXTENDED_RENAME" }))), "<Ctrl>F2"),
+            new("renameascopy", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "RENAME_AS_COPY" }))), "<Shift>F2"),
+            new("rename", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "RENAME" }))), "F2")
+        ]);
     }
-    
-    class CustomWindowClass(WebWindowNetCore.WebView webView, string resourceTemplate)
-        : SubClass<AdwApplicationWindowHandle>(GTypeEnum.AdwApplicationWindow, "CustomWindow", p => new CustomWindow(p, webView))
+
+    Action FocusAfter(Action action)
     {
-        protected override void ClassInit(nint cls, nint _)
+        return Run;
+        void Run()
         {
-            var webkitType = GType.Get(GTypeEnum.WebKitWebView);
-            GType.Ensure(webkitType);
-            var type = "WebKitWebView".TypeFromName();
-            base.ClassInit(cls, _);
-            InitTemplateFromResource(cls, resourceTemplate);
-        }
+            action();
+            webkit.GrabFocus();
+        };
     }
-
-    class CustomWindow(nint obj, WebWindowNetCore.WebView webView) : SubClassInst<AdwApplicationWindowHandle>(obj)
+    Action<T> FocusAfter1<T>(Action<T> action)
     {
-        protected override async void OnCreate()
+        return Run;
+        void Run(T t)
         {
-            Handle.InitTemplate();
-            Handle.DataContext(MainContext.Instance);
-            Handle.GetTemplateChild<ButtonHandle, AdwApplicationWindowHandle>("devtools")
-                ?.OnClicked(webView.ShowDevTools);
-            Handle.GetTemplateChild<BannerHandle, ApplicationWindowHandle>("banner")
-                .Binding("revealed", nameof(MainContext.ErrorText), BindingFlags.Default, v => v != null)
-                .Binding("title", nameof(MainContext.ErrorText), BindingFlags.Default)
-                .SideEffect(b => b.OnButtonClicked(() => b.SetRevealed(false)));
-            dropdown = Handle.GetTemplateChild<DropDownHandle, AdwApplicationWindowHandle>("preview_mode");
-            dropdown.OnNotify("selected", FocusAfter1<DropDownHandle>(pm => Requests.SendJson(new(null, EventCmd.PreviewMode, new EventData { PreviewMode = pm.GetSelected().GetPreviewMode() }))));
-            webview = Handle.GetTemplateChild<WebViewHandle, AdwApplicationWindowHandle>("webview");
-            await Task.Delay(50);
-
-            Handle.AddActions(
-                [
-                    new("showhidden", false, FocusAfter1<bool>(show => Requests.SendJson(new(null, EventCmd.ShowHidden, new EventData { ShowHidden = show }))), "<Ctrl>H"),
-                    new("quit", FocusAfter(Handle.CloseWindow), "<Ctrl>Q"),
-                    new("devtools", FocusAfter(webView.ShowDevTools), "<Ctrl><Shift>I"),
-                    new("preview", false, FocusAfter1<bool>(show => Requests.SendJson(new(null, EventCmd.ShowViewer, new EventData { ShowViewer = show }))), "F3"),
-                    new("select-image", FocusAfter(() => dropdown.SetSelected(0)), "<CTRL>1"),
-                    new("select-image-location", FocusAfter(() => dropdown.SetSelected(1)), "<CTRL>2"),
-                    new("select-location", FocusAfter(() => dropdown.SetSelected(2)), "<CTRL>3"),
-                    new("refresh", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "REFRESH" }))), "<CTRL>R"),
-                    new("favorites", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "FAVORITES" }))), "F1"),
-                    new("adaptpath", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "ADAPT_PATH" }))), "F9"),
-                    new("selectall", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "SEL_ALL" }))), "KP_Add"),
-                    new("selectnone", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "SEL_NONE" }))), "KP_Subtract"),
-                    new("createfolder", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "CREATE_FOLDER" }))), "F7"),
-                    new("delete", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "DELETE" }))), "Löschen"), // Shortcut not working!
-                    new("copy", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "COPY" }))), "F5"),
-                    new("move", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "MOVE" }))), "F6"),
-                    new("toggleselection", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "TOGGLE_SEL" }))), "Insert"),
-                    new("openwith", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "OPENWITH" }))), "<Ctrl>Return"),
-                    new("extendedrename", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "EXTENDED_RENAME" }))), "<Ctrl>F2"),
-                    new("renameascopy", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "RENAME_AS_COPY" }))), "<Shift>F2"),
-                    new("rename", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "RENAME" }))), "F2")
-                ]);
-
-            Action FocusAfter(Action action)
-            {
-                return Run;
-                void Run()
-                {
-                    action();
-                    webview?.GrabFocus();
-                };
-            }    
-            Action<T> FocusAfter1<T>(Action<T> action)  
-            {
-                return Run;
-                void Run(T t)
-                {
-                    action(t);
-                    webview?.GrabFocus();
-                };
-            }    
-        }
-
-        protected override void OnFinalize() => Console.WriteLine("Window finalized");
-        protected override AdwApplicationWindowHandle CreateHandle(nint obj) => new(obj);
+            action(t);
+            webkit.GrabFocus();
+        };
     }
 
-    static string GetPreviewMode(this int pm)
+    [Widget]
+    AdwBanner banner = null!;
+
+    [Widget]
+    DropDown previewMode = null!;
+
+    [Widget(Name = "webview")]
+    Gtk4DotNet.WebView webkit = null!;
+
+    [Widget(Template = "progresscontrol")]
+    ProgressControl progressRevealer = null!;
+}
+            // TODO
+            // Handle.GetTemplateChild<ButtonHandle, AdwApplicationWindowHandle>("devtools")
+            //     ?.OnClicked(webView.ShowDevTools);
+       
+static class WindowExtensions
+{
+    public static string GetPreviewMode(this int pm)
     => pm == 0
         ? PreviewMode.IMAGE
         : pm == 1
         ? PreviewMode.IMAGE_LOCATION
         : PreviewMode.LOCATION;
-
-    static DropDownHandle? dropdown = null;
-    static WebViewHandle? webview = null;
-
 }
+
 #endif

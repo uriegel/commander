@@ -1,6 +1,6 @@
 #if Linux
 using System.ComponentModel;
-using GtkDotNet;
+using Gtk4DotNet;
 
 class ProgressContext : INotifyPropertyChanged
 {

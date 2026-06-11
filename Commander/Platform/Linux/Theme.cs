@@ -1,11 +1,11 @@
 #if Linux
-using GtkDotNet;
+using Gtk4DotNet;
 
 static class Theme
 {
 	public static string GetAccentColor()
 	{
-		var settings = Settings.New("org.gnome.desktop.interface");
+		using var settings = GSettings.New("org.gnome.desktop.interface");
 		var theme = settings.GetString("gtk-theme");
 		var dark = theme?.EndsWith("-dark") == true;
 		var color = settings.GetString("accent-color") ?? "blue";
@@ -37,10 +37,11 @@ static class Theme
 
 	public static void StartChangeDetecting()
 	{
-		var settings = Settings.New("org.gnome.desktop.interface");
+		using var settings = GSettings.New("org.gnome.desktop.interface");
 		changedDelegate = new VoidDelegate(Changed);
 
-		GtkDotNet.Gtk.SignalConnect(settings, "changed::gtk-theme", Changed);
+		// TODO
+		//		settings.SignalConnect("changed::gtk-theme", Changed);
 
 		static void Changed()
 		{

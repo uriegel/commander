@@ -2,8 +2,7 @@
 using System.Diagnostics;
 using CsTools.Extensions;
 using CsTools.Functional;
-using GtkDotNet;
-using GtkDotNet.SafeHandles;
+using Gtk4DotNet;
 
 partial class Directory
 {
@@ -33,7 +32,7 @@ partial class Directory
             .New(input.SourcePath.AppendPath(input.Item.Name))
             .UseAsync(f => f.If(input.Move,
                 f => f.MoveAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, OnProgress, cancellation),
-                f => f.CopyAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, OnProgress, cancellation)));
+                f => f.CopyAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, OnProgress))); // TODO, cancellation)));
     }
 
     public static Task OnEnter(OnEnterInput input)
@@ -42,17 +41,17 @@ partial class Directory
         return Task.CompletedTask;
     }
 
-    public static AppInfo[] GetRecommendedApps(string? file)
+    public static AppInfo[] GetRecommendedApps(string? fileName)
     {
+        if (fileName == null)
+            return [];
+        using var file = GFile.New(fileName);
         if (file == null)
             return [];
-        using var fileHandle = GFile.New(file);
-        if (fileHandle == null)
-            return [];
-        var contentType = GFile.QueryContentType(fileHandle)?.GetContentType();
+        var contentType = file.QueryContentType()?.GetContentType();
         if (contentType == null)
             return [];
-        using var appinfo = GtkDotNet.AppInfo.GetRecommendedApps(contentType);
+        using var appinfo = GAppInfo.GetRecommendedApps(contentType);
         return GetAppInfos(appinfo);
     }
 
@@ -60,7 +59,7 @@ partial class Directory
 
     public static AppInfo[] GetAllApps()
     {
-        using var appinfo = GtkDotNet.AppInfo.GetAllApps();
+        using var appinfo = GAppInfo.GetAllApps();
         return GetAppInfos(appinfo);
     }
 
@@ -94,11 +93,11 @@ partial class Directory
             || name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
             || name.EndsWith("png", StringComparison.OrdinalIgnoreCase);
 
-    static AppInfo[] GetAppInfos(IEnumerable<AppInfoHandle> appinfo)
+    static AppInfo[] GetAppInfos(IEnumerable<GAppInfo> appinfo)
         => [.. appinfo.Select(n =>
         {
             var iconPath = n.GetIcon();
-            return new AppInfo(n.GetName(), n.GetExecutable(), iconPath?.Name, iconPath?.IsPath == true);
+            return new AppInfo(n.Name, n.GetExecutable, iconPath?.Name, iconPath?.IsPath == true);
         })
         .OrderBy(n => n.Name)];
 }
