@@ -2,6 +2,7 @@ using System.Threading.Channels;
 using WebServerLight;
 
 using CsTools.Extensions;
+using Gtk4DotNet.Extensions;
 
 static class Requests
 {
@@ -261,9 +262,9 @@ static class Requests
         var subPath = request.SubPath;
         if (subPath == null)
             return true;
-        var payload = await Icon.GetAsync(subPath);
+        var payload = await Icon.GetFromNameAsync(subPath);
         if (payload.Length == 0)
-            payload = await Icon.GetAsync("res=32application-x-executable");
+            payload = await Icon.GetFromNameAsync("application-x-executable", 32);
         await request.SendAsync(payload, payload.IsSvg() ? "image/svg+xml" : "image/png");
         return true;
     }
@@ -273,7 +274,7 @@ static class Requests
         var subPath = request.SubPath;
         if (subPath == null)
             return false;
-        var payload = await Icon.GetAsync($"ext:{subPath}");
+        var payload = await Icon.GetFromExtensionAsync(subPath);
         await request.SendAsync(payload, payload.IsSvg() ? "image/svg+xml" : "image/png", WebView.StartTime);
         return true;
     }

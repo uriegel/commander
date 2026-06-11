@@ -1,12 +1,10 @@
 var server = HttpServer.New();
-Globals.InitializeResourceFiles();
 Theme.StartChangeDetecting();
 server.Start();
 WebView.Run();
-Icon.StopProcessing();
 server.Stop();
 
-// TODO Eliminate native C icons
+// TODO mkv, mp4, png and jpg icons in Linux resource
 // TODO Cancellation in GFile.copy recursion
 // TODO previewMode.OnNotify("selected", FocusAfter1<bool>(
 // TODO	settings.SignalConnect("changed::gtk-theme", Changed); internal

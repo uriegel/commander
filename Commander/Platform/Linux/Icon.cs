@@ -1,91 +1,40 @@
 #if Linux
 using System.Diagnostics;
+using CsTools.Extensions;
+using Gtk4DotNet;
 
 static class Icon
 {
-    public static async Task<byte[]> GetAsync(string name)
+    public static Task<byte[]> GetFromExtensionAsync(string name, int size = 16)
     {
-        await semaphore.WaitAsync();
-        try
+        using var icon = GIcon.Get(Gio.GuessContentType(name) ?? "none");
+        var names = icon.ThemedNames().ToArray();
+        return GetFromNameAsync(names[0], size);
+    }
+
+    public static async Task<byte[]> GetFromNameAsync(string name, int size = 16)
+    {
+        if (name == "starred" || name == "go-up")
         {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            await (inWriter?.WriteLineAsync(name) ?? Task.CompletedTask);
-            await (inWriter?.FlushAsync() ?? Task.CompletedTask);
-
-            // Read 8-byte length header
-            var lenBuf = new byte[8];
-            var read = 0;
-            while (read < 8)
+            var icon = Resources.Get(name);
+            if (icon != null)
             {
-                var n = await outStream.ReadAsync(lenBuf, read, 8 - read);
-                if (n == 0)
-                    throw new EndOfStreamException("Child closed stdout while reading header");
-                read += n;
+                using var ms = new MemoryStream();
+                await (icon?.CopyToAsync(ms) ?? Task.CompletedTask);
+                return ms.ToArray();
             }
-            var payloadLen = BitConverter.ToUInt64(lenBuf, 0);
-
-            // Read payloadLen bytes
-            byte[] payload = new byte[payloadLen];
-            int received = 0;
-            while (received < (int)payloadLen)
-            {
-                int n = await outStream.ReadAsync(payload, received, (int)payloadLen - received);
-                if (n == 0)
-                    throw new EndOfStreamException("Child closed stdout while reading payload");
-                received += n;
-            }
-            Console.WriteLine($"GetIcon for {name} took: {stopwatch.Elapsed.TotalMilliseconds} ms");
-            return payload;
         }
-        finally
-        {
-            semaphore.Release();
-        }
+        using var paintable = Display.GetDefault().GetIconTheme().LookupIcon(name, size);
+        using var gfile = paintable.GetFile();
+        var path = gfile.Path;
+        if (path == null)
+            return [];
+        using var file = File.OpenRead(path);
+        var payload = new byte[file.Length];
+        int v = await file.ReadAsync(payload, 0, payload.Length);
+        return payload;
     }
-
-    public static bool IsSvg(this byte[] payload) 
-        => payload.Length > 4 
-        && (payload[0] == 60 && payload[1] == 115 && payload[2] == 118 && payload[3] == 103 
-          || payload[0] == 60 && payload[1] == 63 && payload[2] == 120 && payload[3] == 109);
-
-    public static void StopProcessing()
-    {
-        // Close stdin to tell child no more input (optional)
-        process?.StandardInput.Close();
-        // process?.WaitForExit();
-        // string stderr = await stderrTask;
-        // if (!string.IsNullOrEmpty(stderr)) 
-        //     Console.Error.WriteLine(stderr);
-    }
-
-    static Icon()
-    {
-        var psi = new ProcessStartInfo
-        {
-            FileName = Globals.IconProcessor,
-            Arguments = "",
-            RedirectStandardInput = true,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = true
-        };
-        process = Process.Start(psi);
-        if (process == null)
-            Console.Error.WriteLine("Could not start icon retriever process");
-
-        stderrTask = process?.StandardError.ReadToEndAsync() ?? Task.FromResult("not started");
-        outStream = process?.StandardOutput.BaseStream ?? new MemoryStream();
-        inWriter = process?.StandardInput;
-    }
-
-    static readonly SemaphoreSlim semaphore = new(1, 1);
-    static readonly Process? process;
-    static readonly Task<string> stderrTask;
-    static readonly Stream outStream;
-    static readonly StreamWriter? inWriter;
+   
 }
 
 #endif

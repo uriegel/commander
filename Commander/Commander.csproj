@@ -44,12 +44,18 @@
     <EmbeddedResource Include="Resources/assets/*.js">
       <LogicalName>/$([System.String]::new('%(RelativeDir)').SubString(10).Replace('\','/'))%(FileName)%(Extension)</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources/Images/starred.png">
+      <LogicalName>starred</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources/Images/user-home.png">
+      <LogicalName>user-home</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources/Images/go-up.png">
+      <LogicalName>go-up</LogicalName>
+    </EmbeddedResource>
   </ItemGroup> 
 
   <ItemGroup Condition="'$(IsLinux)'=='true'">
-    <EmbeddedResource Include="../Native/icon">
-      <LogicalName>icon</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="./Resources/UI/template.ui">
       <LogicalName>template</LogicalName>
     </EmbeddedResource>
@@ -75,15 +81,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Resources/Images/network-server.png">
       <LogicalName>network-server</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources/Images/starred.png">
-      <LogicalName>starred</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources/Images/user-home.png">
-      <LogicalName>user-home</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources/Images/go-up.png">
-      <LogicalName>go-up</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources/Images/drive-removable-media-usb.png">
       <LogicalName>drive-removable-media-usb</LogicalName>

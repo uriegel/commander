@@ -12,35 +12,6 @@ static partial class Globals
             return new SystemError(ErrorType.Unknown, gfe.Message);
         else return null;
     }
-    public static string IconProcessor { get; private set; } = "";
-    public static void InitializeResourceFiles()
-    {
-        var homeDir = Environment.GetEnvironmentVariable("HOME");   
-        var path = homeDir
-                    .AppendPath(".config")
-                    .AppendPath(APP_ID)
-                    .EnsureDirectoryExists();
-        var icon = Resources.Get("icon");
-        IconProcessor = path.AppendPath("icon");
-        try
-        {
-            using var writer = File.Create(IconProcessor);
-            icon?.CopyTo(writer);
-            writer.Dispose();
-        }
-        catch (Exception e)
-        {
-            Console.Error.WriteLine($"Could not unpack icon processor: {e}");
-        }
-        var psi = new ProcessStartInfo("chmod")
-        {
-            ArgumentList = { "+x", IconProcessor },
-            CreateNoWindow = true,
-        };
-        using var p = new Process { StartInfo = psi };
-        p.Start();
-        p.WaitForExit();
-    }
 
     public static string Platform { get; } = "linux";
 }
