@@ -1,15 +1,13 @@
 using System.Drawing;
+using WebWindowNetCore;
 
 static class WebView
 {
     public static DateTime StartTime { get; } = DateTime.Now;
-    public static void Run() => webView.Run();
 
-    public static void ShowDevTools() => webView.ShowDevTools();
-
-    static WebView() => 
-        webView = WebWindowNetCore.WebView
-            .Create()
+    public static void Run()
+        => WebWindow
+            .Builder()
             .AppId(Globals.APP_ID)
             .Title("Commander")
             .InitialBounds(600, 800)
@@ -26,7 +24,7 @@ static class WebView
 #endif
             .DebugUrl($"http://localhost:5173/#platform={Globals.Platform}")
             .Url($"http://localhost:8080##platform={Globals.Platform}")
-            .CanClose(BackgroundJobs.IsIdle);
-    
-    public static readonly WebWindowNetCore.WebView webView;
+            .CanClose(BackgroundJobs.IsIdle)
+            .Build()
+            .Run();
 }

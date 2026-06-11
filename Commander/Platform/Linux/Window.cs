@@ -1,14 +1,15 @@
 #if Linux
 using Gtk4DotNet;
+using WebWindowNetCore.Linux;
 
 namespace Commander.Platform.Linux;
 
 public class Window : AdwApplicationWindow
 {
-    public static ApplicationWindow OnActivation(Application app, WindowBuilder builder)
-        => new Window(builder);
+    public static ApplicationWindow OnActivation(WebWindow webWindow, WindowBuilder builder)
+        => new Window(webWindow, builder);
 
-    public Window(WindowBuilder builder) : base(builder)
+    public Window(WebWindow webWindow, WindowBuilder builder) : base(builder)
     {
         DataContext = MainContext.Instance;
 
@@ -22,7 +23,7 @@ public class Window : AdwApplicationWindow
         this.AddActions([
             new("showhidden", false, FocusAfter1<bool>(show => Requests.SendJson(new(null, EventCmd.ShowHidden, new EventData { ShowHidden = show }))), "<Ctrl>H"),
             new("quit", FocusAfter(CloseWindow), "<Ctrl>Q"),
-            new("devtools", FocusAfter(WebView.ShowDevTools), "F12"),
+            new("devtools", FocusAfter(webWindow.ShowDevTools), "F12"),
             new("preview", false, FocusAfter1<bool>(show => Requests.SendJson(new(null, EventCmd.ShowViewer, new EventData { ShowViewer = show }))), "F3"),
             new("select-image", FocusAfter(() => previewMode.SelectedPos = 0), "<CTRL>1"),
             new("select-image-location", FocusAfter(() => previewMode.SelectedPos = 1), "<CTRL>2"),
