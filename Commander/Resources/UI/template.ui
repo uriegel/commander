@@ -1,7 +1,13 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 1.0.2 -->
 <interface>
+  <!-- interface-name template.ui -->
+  <requires lib="gio" version="2.0"/>
+  <requires lib="gtk" version="4.0"/>
+  <requires lib="libadwaita" version="1.7"/>
+  <requires lib="webkitgtk" version="6.0"/>
   <object class="AdwApplicationWindow" id="window">
-    <property name="content"> 
+    <property name="content">
       <object class="AdwToolbarView">
         <child type="top">
           <object class="AdwHeaderBar" id="headerBar">
@@ -10,19 +16,16 @@
                 <property name="icon-name">open-menu-symbolic</property>
                 <property name="menu-model">main-menu</property>
               </object>
-            </child>      
+            </child>
             <child type="end">
               <object class="GtkToggleButton" id="preview_button">
-                <property name="icon-name">x-office-presentation</property>
                 <property name="action-name">win.preview</property>
+                <property name="icon-name">x-office-presentation</property>
               </object>
             </child>
             <child type="end">
               <object class="GtkDropDown" id="preview_mode">
-                <property name="visible"
-                  bind-source="preview_button"
-                  bind-property="active"
-                  bind-flags="sync-create"/><property name="model">
+                <property name="model">
                   <object class="GtkStringList">
                     <items>
                       <item>Bild</item>
@@ -31,23 +34,24 @@
                     </items>
                   </object>
                 </property>
+                <property name="visible" bind-source="preview_button" bind-property="active" bind-flags="sync-create"/>
               </object>
-            </child>        
+            </child>
             <child type="end">
-              <object class="GtkBox" id="progressRevealer" />
+              <object class="GtkBox" id="progressRevealer"/>
             </child>
           </object>
         </child>
         <child>
           <object class="GtkBox">
             <property name="orientation">vertical</property>
-            <child> 
+            <child>
               <object class="AdwBanner" id="banner">
+                <property name="button-label">Ok</property>
                 <property name="css-classes">warning</property>
-                <property name= "button-label">Ok</property>
               </object>
             </child>
-            <child>      
+            <child>
               <object class="WebKitWebView" id="webview">
                 <property name="vexpand">True</property>
               </object>
@@ -60,63 +64,62 @@
   <menu id="main-menu">
     <section>
       <item>
-        <attribute name="label">_Aktualisieren</attribute>
         <attribute name="action">win.refresh</attribute>
+        <attribute name="label">_Aktualisieren</attribute>
       </item>
       <item>
-        <attribute name="label">_Versteckte Dateien</attribute>
         <attribute name="action">win.showhidden</attribute>
+        <attribute name="label">_Versteckte Dateien</attribute>
       </item>
     </section>
-    <section>
-    </section>
+    <section/>
     <section>
       <submenu>
         <attribute name="label">_Datei</attribute>
         <section>
           <item>
-            <attribute name="label">_Umbenennen</attribute>
             <attribute name="action">win.rename</attribute>
+            <attribute name="label">_Umbenennen</attribute>
           </item>
           <item>
-            <attribute name="label">Kopie _anlegen</attribute>
             <attribute name="action">win.renameascopy</attribute>
+            <attribute name="label">Kopie _anlegen</attribute>
           </item>
           <item>
-            <attribute name="label">_Erweitertes Umbenennen</attribute>
             <attribute name="action">win.extendedrename</attribute>
+            <attribute name="label">_Erweitertes Umbenennen</attribute>
           </item>
         </section>
         <section>
           <item>
-            <attribute name="label">_Kopieren</attribute>
             <attribute name="action">win.copy</attribute>
+            <attribute name="label">_Kopieren</attribute>
           </item>
-          <item> 
-            <attribute name="label">_Verschieben</attribute>
+          <item>
             <attribute name="action">win.move</attribute>
+            <attribute name="label">_Verschieben</attribute>
           </item>
           <item>
-            <attribute name="label">_Löschen</attribute>
             <attribute name="action">win.delete</attribute>
+            <attribute name="label">_Löschen</attribute>
           </item>
         </section>
         <section>
           <item>
-            <attribute name="label">_Ordner anlegen</attribute>
             <attribute name="action">win.createfolder</attribute>
+            <attribute name="label">_Ordner anlegen</attribute>
           </item>
         </section>
         <section>
           <item>
-            <attribute name="label">_Öffnen mit...</attribute>
             <attribute name="action">win.openwith</attribute>
+            <attribute name="label">_Öffnen mit...</attribute>
           </item>
         </section>
         <section>
           <item>
-            <attribute name="label">_Beenden</attribute>
             <attribute name="action">win.quit</attribute>
+            <attribute name="label">_Beenden</attribute>
           </item>
         </section>
       </submenu>
@@ -124,12 +127,12 @@
         <attribute name="label">_Navigation</attribute>
         <section>
           <item>
-            <attribute name="label">_Favoriten</attribute>
             <attribute name="action">win.favorites</attribute>
+            <attribute name="label">_Favoriten</attribute>
           </item>
           <item>
-            <attribute name="label">_Gleichen Ordner öffnen</attribute>
             <attribute name="action">win.adaptpath</attribute>
+            <attribute name="label">_Gleichen Ordner öffnen</attribute>
           </item>
         </section>
       </submenu>
@@ -137,18 +140,18 @@
         <attribute name="label">_Selektion</attribute>
         <section>
           <item>
-            <attribute name="label">Selektion _wechseln</attribute>
             <attribute name="action">win.toggleselection</attribute>
+            <attribute name="label">Selektion _wechseln</attribute>
           </item>
         </section>
         <section>
           <item>
-            <attribute name="label">_Alles</attribute>
             <attribute name="action">win.selectall</attribute>
+            <attribute name="label">_Alles</attribute>
           </item>
           <item>
-            <attribute name="label">_Selektion entfernen</attribute>
             <attribute name="action">win.selectnone</attribute>
+            <attribute name="label">_Selektion entfernen</attribute>
           </item>
         </section>
       </submenu>
@@ -156,18 +159,17 @@
         <attribute name="label">_Ansicht</attribute>
         <section>
           <item>
-            <attribute name="label">_Vollbild</attribute>
             <attribute name="action">app.fullscreen</attribute>
+            <attribute name="label">_Vollbild</attribute>
           </item>
         </section>
         <section>
           <item>
-            <attribute name="label">_Entwicklerwerkzeuge</attribute>
             <attribute name="action">win.devtools</attribute>
+            <attribute name="label">_Entwicklerwerkzeuge</attribute>
           </item>
         </section>
       </submenu>
     </section>
-  </menu>  
+  </menu>
 </interface>
-

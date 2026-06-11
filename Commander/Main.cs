@@ -6,7 +6,6 @@ WebView.Run();
 Icon.StopProcessing();
 server.Stop();
 
-// TODO Cambalache
 // TODO Eliminate native C icons
 // TODO Cancellation in GFile.copy recursion
 // TODO previewMode.OnNotify("selected", FocusAfter1<bool>(

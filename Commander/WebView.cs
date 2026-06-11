@@ -1,4 +1,3 @@
-using System.Drawing;
 using WebWindowNetCore;
 
 static class WebView
@@ -14,7 +13,6 @@ static class WebView
             .SaveBounds()
             .DevTools()
             .DefaultContextMenuDisabled()
-            .BackgroundColor(Color.Transparent)
 #if Windows
             .OnCreating(Form.OnCreate)
             .ResourceIcon("icon")
