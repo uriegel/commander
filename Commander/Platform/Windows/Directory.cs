@@ -145,7 +145,7 @@ partial class Directory
         }
     }
 
-    public static Task OpenFile(string _, string __) => throw new NotImplementedException();
+    public static void OpenFile(string _, string __) => throw new NotImplementedException();
 
     public static async Task Rename(RenameInput input)   
     {
