@@ -16,14 +16,13 @@ public class Window : AdwApplicationWindow
             .Binding("revealed", nameof(MainContext.ErrorText), BindingFlags.Default, v => v != null)
             .Binding("title", nameof(MainContext.ErrorText), BindingFlags.Default);
         banner.OnButtonClicked(() => banner.IsRevealed = false);
-        // TODO
-        // previewMode.OnNotify("selected", FocusAfter1<bool>(
+        // TODO previewMode.OnNotify("selected", FocusAfter1<bool>(
         //     pm => Requests.SendJson(new(null, EventCmd.PreviewMode, new EventData { PreviewMode = previewMode.SelectedPos.GetPreviewMode() }))));
 
         this.AddActions([
             new("showhidden", false, FocusAfter1<bool>(show => Requests.SendJson(new(null, EventCmd.ShowHidden, new EventData { ShowHidden = show }))), "<Ctrl>H"),
             new("quit", FocusAfter(CloseWindow), "<Ctrl>Q"),
-            // TODO new("devtools", FocusAfter(webView.ShowDevTools), "F12"),
+            new("devtools", FocusAfter(WebView.ShowDevTools), "F12"),
             new("preview", false, FocusAfter1<bool>(show => Requests.SendJson(new(null, EventCmd.ShowViewer, new EventData { ShowViewer = show }))), "F3"),
             new("select-image", FocusAfter(() => previewMode.SelectedPos = 0), "<CTRL>1"),
             new("select-image-location", FocusAfter(() => previewMode.SelectedPos = 1), "<CTRL>2"),
@@ -76,10 +75,7 @@ public class Window : AdwApplicationWindow
     [Widget(Template = "progresscontrol")]
     ProgressControl progressRevealer = null!;
 }
-            // TODO
-            // Handle.GetTemplateChild<ButtonHandle, AdwApplicationWindowHandle>("devtools")
-            //     ?.OnClicked(webView.ShowDevTools);
-       
+      
 static class WindowExtensions
 {
     public static string GetPreviewMode(this int pm)

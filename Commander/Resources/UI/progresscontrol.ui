@@ -19,12 +19,12 @@
                   <object class="GtkBox">
                   <property name="halign">start</property>
                   <child>
-                      <object class="GtkLabel" id="title-label">
+                      <object class="GtkLabel" id="titleLabel">
                       <property name="css-classes">title-3</property>
                       </object>
                   </child>
                   <child>
-                      <object class="GtkLabel" id="size-label">
+                      <object class="GtkLabel" id="sizeLabel">
                       <property name="css-classes">title-3</property>
                       <property name="margin-start">10</property>
                       </object>
@@ -35,7 +35,7 @@
                     <object class="GtkGrid">
                     <property name="halign">fill</property>
                     <child>
-                        <object class="GtkLabel" id="current-name-label">
+                        <object class="GtkLabel" id="currentNameLabel">
                         <property name="halign">start</property>
                         <layout>
                             <property name="column">0</property>
@@ -44,7 +44,7 @@
                         </object>
                     </child>
                     <child>
-                        <object class="GtkLabel" id="current-count-label">
+                        <object class="GtkLabel" id="currentCountLabel">
                         <property name="halign">end</property>
                         <property name="hexpand">true</property>
                         <layout>
@@ -64,7 +64,7 @@
                         </object>
                     </child>
                     <child>
-                        <object class="GtkLabel" id="total-count-label">
+                        <object class="GtkLabel" id="totalCountLabel">
                         <property name="halign">end</property>
                         <layout>
                             <property name="column">3</property>
@@ -93,7 +93,7 @@
                         </object>
                     </child>
                     <child>
-                        <object class="GtkLabel" id="duration-label">
+                        <object class="GtkLabel" id="durationLabel">
                         <property name="halign">end</property>
                         <layout>
                             <property name="column">1</property>
@@ -104,7 +104,7 @@
                         </object>
                     </child>
                     <child>
-                        <object class="GtkLabel" id="estimated-duration-label">
+                        <object class="GtkLabel" id="estimatedDurationLabel">
                         <property name="halign">end</property>
                         <layout>
                             <property name="column">1</property>
@@ -117,7 +117,7 @@
                     </object>
                 </child>
                 <child>
-                    <object class="GtkProgressBar" id="progressbar-current">
+                    <object class="GtkProgressBar" id="progressbarCurrent">
                     <property name="show-text">True</property>
                     </object>
                 </child>
@@ -131,14 +131,14 @@
                         </object>
                     </child>
                     <child>
-                        <object class="GtkProgressBar" id="progressbar-total">
+                        <object class="GtkProgressBar" id="progressbarTotal">
                         <property name="show-text">True</property>
                         </object>
                     </child>
                     </object>
                 </child>
                 <child>
-                    <object class="GtkButton" id="cancel-btn">
+                    <object class="GtkButton" id="cancelBtn">
                         <property name="label">Abbrechen</property>
                         <style>
                             <class name="destructive-action"/>
@@ -149,9 +149,9 @@
             </child>
             </object>
         </property>
-        <!-- <child>
-            <object class="ProgressSpinner" id="progress_spinner"/>
-        </child>                    -->
+        <child>
+            <object class="GtkDrawingArea" id="progressSpinner"/>
+        </child>                    
       </object>
     </child>
   </object>

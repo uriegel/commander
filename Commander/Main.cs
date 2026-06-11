@@ -7,6 +7,13 @@ Icon.StopProcessing();
 server.Stop();
 
 // TODO Cambalache
+// TODO Eliminate native C icons
+// TODO Cancellation in GFile.copy recursion
+// TODO previewMode.OnNotify("selected", FocusAfter1<bool>(
+// TODO	settings.SignalConnect("changed::gtk-theme", Changed); internal
+
+// TODO WebWindowNetCore: webView and WebKit in activation
+// TODO GFile.copy: cancellation
 
 // TODO GetFiles has to return mount info => save mount info as lastPath
 // TODO Favorites with display names and mount info
@@ -15,6 +22,8 @@ server.Stop();
 // TODO F3 when directory: show Directory properties
 
 // TODO result.dirCount, result.fileCount when copied, deleted
+
+// TODO ProgressControl dialog: progressbar color gray when finished
 
 // TODO strict mode: sometimes Exceptions Object disposed
 // TODO strict mode: rename: wrong position when renamed was selected

@@ -40,8 +40,7 @@ static class Theme
 		using var settings = GSettings.New("org.gnome.desktop.interface");
 		changedDelegate = new VoidDelegate(Changed);
 
-		// TODO
-		//		settings.SignalConnect("changed::gtk-theme", Changed);
+		// TODO settings.SignalConnect("changed::gtk-theme", Changed);
 
 		static void Changed()
 		{

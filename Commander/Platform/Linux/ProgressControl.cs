@@ -1,53 +1,67 @@
 #if Linux
+using CsTools.Extensions;
 using Gtk4DotNet;
 
 public class ProgressControl : Revealer
 {
     public ProgressControl(Builder builder, string name) : base(builder, name)
     {
-        // var builder = Builder.FromDotNetResource("progress-control");
-        // menuButton = builder.GetWidget<MenuButtonHandle>("progress-control");
-        // Handle.Child(menuButton);
-
         DataContext = ProgressContext.Instance;
 
-        // Handle
-        
         this.Binding("reveal-child", nameof(ProgressContext.CopyProgress), BindingFlags.Default, p => p != null);
-        // builder.GetWidget<LabelHandle>("title-label")
-        //     .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => ((CopyProgress?)cpc)?.Title);
-        // builder.GetWidget<LabelHandle>("size-label")
-        //     .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"({((CopyProgress?)cpc)?.TotalMaxBytes.ByteCountToString(2)})");
-        //     //.Binding("opacity", nameof(ProgressContext.DeleteAction), BindingFlags.Default, hide => (bool?)hide == true ? 0.0 : 1.0);
-        // builder.GetWidget<LabelHandle>("current-name-label")
-        //     .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => ((CopyProgress?)cpc)?.Name);
-        // builder.GetWidget<ProgressBarHandle>("progressbar-total")
-        //     .Binding("fraction", nameof(ProgressContext.CopyProgress), BindingFlags.Default, ProgressContext.GetTotalFraction);
-        // builder.GetWidget<ProgressBarHandle>("progressbar-current")
-        //     .Binding("fraction", nameof(ProgressContext.CopyProgress), BindingFlags.Default, ProgressContext.GetFraction);
 
-        // builder.GetWidget<LabelHandle>("total-count-label")
-        //     .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"{((CopyProgress?)cpc)?.TotalCount}");
-        // builder.GetWidget<LabelHandle>("current-count-label")
-        //     .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"{((CopyProgress?)cpc)?.CurrentCount}");
-        // builder.GetWidget<LabelHandle>("duration-label")
-        //     .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"{((CopyProgress?)cpc)?.Duration:hh\\:mm\\:ss}");
-        // builder.GetWidget<LabelHandle>("estimated-duration-label")
-        //     .Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"{ProgressContext.GetEstimatedDuration(cpc):hh\\:mm\\:ss}");
-        // builder.GetWidget<ButtonHandle>("cancel-btn")
-        //     .OnClicked(BackgroundJobs.Cancel);
+        //this.Binding("opacity", nameof(ProgressContext.DeleteAction), BindingFlags.Default, hide => (bool?)hide == true ? 0.0 : 1.0);
+        titleLabel.Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => ((CopyProgress?)cpc)?.Title);
+        sizeLabel.Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"({((CopyProgress?)cpc)?.TotalMaxBytes.ByteCountToString(2)})");
+        currentNameLabel.Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => ((CopyProgress?)cpc)?.Name);
+        totalCountLabel.Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"{((CopyProgress?)cpc)?.TotalCount}");
+        currentCountLabel.Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"{((CopyProgress?)cpc)?.CurrentCount}");
+        durationLabel.Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"{((CopyProgress?)cpc)?.Duration:hh\\:mm\\:ss}");
+        estimatedDurationLabel.Binding("label", nameof(ProgressContext.CopyProgress), BindingFlags.Default, cpc => $"{ProgressContext.GetEstimatedDuration(cpc):hh\\:mm\\:ss}");
+        progressbarTotal.Binding("fraction", nameof(ProgressContext.CopyProgress), BindingFlags.Default, ProgressContext.GetTotalFraction);
+        progressbarCurrent.Binding("fraction", nameof(ProgressContext.CopyProgress), BindingFlags.Default, ProgressContext.GetFraction);
+        cancelBtn.OnClicked(BackgroundJobs.Cancel);
     }
 
     public void ShowPopover()
     {
-        // if (ProgressContext.Instance.CopyProgress != null)
+        // TODO if (ProgressContext.Instance.CopyProgress != null)
         //     menuButton.Popup();
     }
 
+    [Widget]
+    Label titleLabel = null!;
+
+    [Widget]
+    Label sizeLabel = null!;
+
+    [Widget]
+    Label currentNameLabel = null!;
+
+    [Widget]
+    Label totalCountLabel = null!;
+
+    [Widget]
+    Label currentCountLabel = null!;
+
+    [Widget]
+    Label durationLabel = null!;
+
+    [Widget]
+    Label estimatedDurationLabel = null!;
+
+    [Widget]
+    ProgressBar progressbarTotal = null!;
+
+    [Widget]
+    ProgressBar progressbarCurrent = null!;
+
+    [Widget]
+    Button cancelBtn = null!;
+
+    [Widget]
+    ProgressSpinner progressSpinner = null!;
 }
-
- //   MenuButtonHandle menuButton = new(0);
-
 
 
 #endif
