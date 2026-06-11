@@ -16,7 +16,7 @@ static class WebView
             .DefaultContextMenuDisabled()
             .BackgroundColor(Color.Transparent)
 #if Windows
-            .OnFormCreating(Form.OnCreate)
+            .OnCreating(Form.OnCreate)
             .ResourceIcon("icon")
             .WithoutNativeTitlebar()
 #else

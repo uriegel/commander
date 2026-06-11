@@ -92,7 +92,7 @@ static class Requests
     {
         var _ = await request.DeserializeAsync<NullData>();
 #if Windows        
-        Form.Close();
+        Form.WebWindow.Close();
 #endif        
         await request.SendJsonAsync(new NullData());
         return true;
@@ -102,7 +102,7 @@ static class Requests
     {
         var _ = await request.DeserializeAsync<NullData>();
 #if Windows
-        Form.Maximize();
+        Form.WebWindow.Maximize();
 #endif
         await request.SendJsonAsync(new NullData());
         return true;
@@ -112,7 +112,7 @@ static class Requests
     {
         var _ = await request.DeserializeAsync<NullData>();
 #if Windows
-        Form.Minimize();
+        Form.WebWindow.Minimize();
 #endif
         await request.SendJsonAsync(new NullData());
         return true;
@@ -122,7 +122,7 @@ static class Requests
     {
         var _ = await request.DeserializeAsync<NullData>();
 #if Windows        
-        Form.Restore();
+        Form.WebWindow.Restore();
 #endif        
         await request.SendJsonAsync(new NullData());
         return true;
@@ -135,7 +135,7 @@ static class Requests
         {
             case "SHOW_DEV_TOOLS":
 #if Windows
-                Commands.ShowDevTools();
+                Form.WebWindow.ShowDevTools();
 #endif
                 break;
         }
@@ -204,7 +204,7 @@ static class Requests
     {
         var input = await request.DeserializeAsync<OpenFileInput>();
         if (input != null)
-            Directory.OpenFile(input.Executable, input.File);
+            await Directory.OpenFile(input.Executable, input.File);
         await request.SendJsonAsync(new NullData());
         return true;
     }

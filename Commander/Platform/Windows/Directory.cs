@@ -15,12 +15,13 @@ partial class Directory
     public static string GetFilePath(string path) => path.Replace('/', '\\');
 
     public static Task CreateFolder(string name, string path)
-        => Form.InvokeOnMainThread(() => 
+        => Form.WebWindow.InvokeAsync(() => 
         {
             try 
             {
                 System.IO.Directory.CreateDirectory(path.AppendPath(name));
-                Form.SetFocus();
+                Form.WebWindow.SetFocus();
+                return 1;
             }
             catch (UnauthorizedAccessException)
             {
@@ -39,7 +40,7 @@ partial class Directory
                 switch (res)
                 {
                     case 0:
-                        break;
+                        return 1;
                     case 2:
                         throw new FileNotFoundException();
                     case 0x78:
@@ -54,8 +55,8 @@ partial class Directory
     {
         try
         {
-            await Form.InvokeOnMainThread(() => {
-                var _ = SHFileOperation(new ShFileOPStruct
+            await Form.WebWindow.InvokeAsync(() => 
+                SHFileOperation(new ShFileOPStruct
                     {
                         Func = FileFuncFlags.DELETE,
                         From = string.Join( "\U00000000", items.Select(path.AppendPath)) + "\U00000000\U00000000",
@@ -66,12 +67,11 @@ partial class Directory
                         2    => throw new FileNotFoundException(),
                         0x78 => throw new UnauthorizedAccessException() ,
                     _    => throw new Exception($"Unknown error code: {Marshal.GetLastWin32Error()}")
-                    };   
-            });
+                    });
         } 
         finally
         {
-            Form.SetFocus();
+            Form.WebWindow.SetFocus();
         };
     }
 
@@ -79,22 +79,21 @@ partial class Directory
 
     public static async Task CopyAsync(CopyInput input)
     {
-        await Form.InvokeOnMainThread(() => {
-            var _ = SHFileOperation(new ShFileOPStruct
-                {
-                    Func = input.Move ? FileFuncFlags.MOVE : FileFuncFlags.COPY,
-                    From = string.Join( "\U00000000", input.Items.Select(n => input.SourcePath.AppendPath(n.Name))) + "\U00000000\U00000000",
-                    To = string.Join( "\U00000000", input.Items.Select(n => input.TargetPath.AppendPath(n.Name))) + "\U00000000\U00000000",
-                    Flags = FileOpFlags.NOCONFIRMATION | FileOpFlags.NOCONFIRMMKDIR | FileOpFlags.MULTIDESTFILES,
-                }) switch
-                {
-                    0    => 1,
-                    2    => throw new FileNotFoundException(),
-                    0x78 => throw new UnauthorizedAccessException() ,
-                _    => throw new Exception($"Unknown error code: {Marshal.GetLastWin32Error()}")
-                };   
-        });
-        Form.SetFocus();
+        await Form.WebWindow.InvokeAsync(() => 
+            SHFileOperation(new ShFileOPStruct
+            {
+                Func = input.Move ? FileFuncFlags.MOVE : FileFuncFlags.COPY,
+                From = string.Join( "\U00000000", input.Items.Select(n => input.SourcePath.AppendPath(n.Name))) + "\U00000000\U00000000",
+                To = string.Join( "\U00000000", input.Items.Select(n => input.TargetPath.AppendPath(n.Name))) + "\U00000000\U00000000",
+                Flags = FileOpFlags.NOCONFIRMATION | FileOpFlags.NOCONFIRMMKDIR | FileOpFlags.MULTIDESTFILES,
+            }) switch
+            {
+                0    => 1,
+                2    => throw new FileNotFoundException(),
+                0x78 => throw new UnauthorizedAccessException() ,
+            _    => throw new Exception($"Unknown error code: {Marshal.GetLastWin32Error()}")
+            });
+        Form.WebWindow.SetFocus();
     }
 
     public static async Task OnEnter(OnEnterInput input)
@@ -150,22 +149,21 @@ partial class Directory
 
     public static async Task Rename(RenameInput input)   
     {
-            await Form.InvokeOnMainThread(() => {
-                var _ = SHFileOperation(new ShFileOPStruct
-                    {
-                        Func = input.AsCopy == true ? FileFuncFlags.COPY : FileFuncFlags.RENAME,
-                        From = input.Path.AppendPath(input.Item) + "\U00000000\U00000000",
-                        To = input.Path.AppendPath(input.NewName) + "\U00000000\U00000000",
-                        Flags = FileOpFlags.NOCONFIRMATION | FileOpFlags.ALLOWUNDO
-                    }) switch
-                    {
-                        0    => 1,
-                        2    => throw new FileNotFoundException(),
-                        0x78 => throw new UnauthorizedAccessException() ,
-                    _    => throw new Exception($"Unknown error code: {Marshal.GetLastWin32Error()}")
-                    };   
+        await Form.WebWindow.InvokeAsync(() 
+            => SHFileOperation(new ShFileOPStruct
+            {
+                Func = input.AsCopy == true ? FileFuncFlags.COPY : FileFuncFlags.RENAME,
+                From = input.Path.AppendPath(input.Item) + "\U00000000\U00000000",
+                To = input.Path.AppendPath(input.NewName) + "\U00000000\U00000000",
+                Flags = FileOpFlags.NOCONFIRMATION | FileOpFlags.ALLOWUNDO
+            }) switch
+            {
+                0 => 1,
+                2 => throw new FileNotFoundException(),
+                0x78 => throw new UnauthorizedAccessException(),
+                _ => throw new Exception($"Unknown error code: {Marshal.GetLastWin32Error()}")
             });
-        Form.SetFocus();
+        Form.WebWindow.SetFocus();
     }
 
     public static AppInfo[] GetRecommendedApps(string? file) => throw new NotImplementedException();

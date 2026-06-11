@@ -1,4 +1,0 @@
-static partial class Commands
-{
-    
-}

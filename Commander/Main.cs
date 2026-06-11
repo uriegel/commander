@@ -6,6 +6,7 @@ WebView.Run();
 Icon.StopProcessing();
 server.Stop();
 
+// TODO Windows controlling of maximize, minimize, restore and close
 // TODO Cambalache
 // TODO Eliminate native C icons
 // TODO Cancellation in GFile.copy recursion
