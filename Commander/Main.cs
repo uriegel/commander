@@ -12,7 +12,6 @@ server.Stop();
 // TODO previewMode.OnNotify("selected", FocusAfter1<bool>(
 // TODO	settings.SignalConnect("changed::gtk-theme", Changed); internal
 
-// TODO WebWindowNetCore: webView and WebKit in activation
 // TODO GFile.copy: cancellation
 
 // TODO GetFiles has to return mount info => save mount info as lastPath
