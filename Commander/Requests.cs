@@ -92,7 +92,7 @@ static class Requests
     {
         var _ = await request.DeserializeAsync<NullData>();
 #if Windows        
-        Form.WebWindow.Close();
+        Form.WebWindow.BeginInvoke(Form.WebWindow.Close);
 #endif        
         await request.SendJsonAsync(new NullData());
         return true;
@@ -102,7 +102,7 @@ static class Requests
     {
         var _ = await request.DeserializeAsync<NullData>();
 #if Windows
-        Form.WebWindow.Maximize();
+        Form.WebWindow.BeginInvoke(Form.WebWindow.Maximize);
 #endif
         await request.SendJsonAsync(new NullData());
         return true;
@@ -112,7 +112,7 @@ static class Requests
     {
         var _ = await request.DeserializeAsync<NullData>();
 #if Windows
-        Form.WebWindow.Minimize();
+        Form.WebWindow.BeginInvoke(Form.WebWindow.Minimize);
 #endif
         await request.SendJsonAsync(new NullData());
         return true;
@@ -122,7 +122,7 @@ static class Requests
     {
         var _ = await request.DeserializeAsync<NullData>();
 #if Windows        
-        Form.WebWindow.Restore();
+        Form.WebWindow.BeginInvoke(Form.WebWindow.Restore);
 #endif        
         await request.SendJsonAsync(new NullData());
         return true;
@@ -135,7 +135,7 @@ static class Requests
         {
             case "SHOW_DEV_TOOLS":
 #if Windows
-                Form.WebWindow.ShowDevTools();
+                Form.WebWindow.BeginInvoke(Form.WebWindow.ShowDevTools);
 #endif
                 break;
         }

@@ -19,6 +19,7 @@ static class WebView
             .OnCreating(Form.OnCreate)
             .ResourceIcon("icon")
             .WithoutNativeTitlebar()
+            .OnStateChange(w => Requests.SendJson(new(null, EventCmd.WindowState, new EventData { Maximized = w.IsMaximized })))
 #else
             .FromResourceTemplate("template", Commander.Platform.Linux.Window.OnActivation, true)
 #endif
