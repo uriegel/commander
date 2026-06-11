@@ -62,6 +62,12 @@
     <EmbeddedResource Include="./Resources/UI/progresscontrol.ui">
       <LogicalName>progresscontrol</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources/Images/mp4.png">
+      <LogicalName>mp4</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources/Images/jpg.png">
+      <LogicalName>jpg</LogicalName>
+    </EmbeddedResource>
   </ItemGroup> 
   <ItemGroup Condition="'$(IsWindows)'=='true'">
     <EmbeddedResource Include="Resources/Kirk.ico">

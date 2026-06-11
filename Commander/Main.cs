@@ -4,7 +4,6 @@ server.Start();
 WebView.Run();
 server.Stop();
 
-// TODO mkv, mp4, png and jpg icons in Linux resource
 // TODO Cancellation in GFile.copy recursion
 // TODO previewMode.OnNotify("selected", FocusAfter1<bool>(
 // TODO	settings.SignalConnect("changed::gtk-theme", Changed); internal

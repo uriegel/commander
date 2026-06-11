@@ -5,15 +5,30 @@ using Gtk4DotNet;
 
 static class Icon
 {
-    public static Task<byte[]> GetFromExtensionAsync(string name, int size = 16)
+    public static async Task<byte[]> GetFromExtensionAsync(string name, int size = 16)
     {
+        if (name == ".jpeg" || name == ".jpg" || name == ".png")
+            name = "jpg";
+        else if (name == ".mp4" || name == ".mkv")
+            name = "mp4";
+        if (name == "jpg" || name == "mp4")
+        {
+            var resicon = Resources.Get(name);
+            if (resicon != null)
+            {
+                using var ms = new MemoryStream();
+                await (resicon?.CopyToAsync(ms) ?? Task.CompletedTask);
+                return ms.ToArray();
+            }
+        }
         using var icon = GIcon.Get(Gio.GuessContentType(name) ?? "none");
         var names = icon.ThemedNames().ToArray();
-        return GetFromNameAsync(names[0], size);
+        return await GetFromNameAsync(names[0], size);
     }
 
     public static async Task<byte[]> GetFromNameAsync(string name, int size = 16)
     {
+
         if (name == "starred" || name == "go-up")
         {
             var icon = Resources.Get(name);
