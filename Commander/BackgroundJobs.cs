@@ -5,8 +5,8 @@ static class BackgroundJobs
     public static bool IsIdle()
     {
         var active = jobs.Reader.TryPeek(out var _) || inProcess.CurrentCount == 0;
-        // TODO if (active)
-        //     ProgressControl.Instance?.ShowPopover();
+        if (active)
+            WebView.Instance.BackgroundActionActive();
         return !active;
     }
 

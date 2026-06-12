@@ -1,11 +1,15 @@
 using WebWindowNetCore;
 
-static class WebView
+class WebView
 {
-    public static DateTime StartTime { get; } = DateTime.Now;
+    public static WebView Instance { get; } = new();
+    public DateTime StartTime { get; } = DateTime.Now;
 
-    public static void Run()
-        => WebWindow
+    public static WebWindow Window { get; private set; } = null!;
+
+    public void Run()
+    {
+        Window = WebWindow
             .Builder()
             .AppId(Globals.APP_ID)
             .Title("Commander")
@@ -24,6 +28,9 @@ static class WebView
             .DebugUrl($"http://localhost:5173/#platform={Globals.Platform}")
             .Url($"http://localhost:8080##platform={Globals.Platform}")
             .CanClose(BackgroundJobs.IsIdle)
-            .Build()
-            .Run();
+            .Build();
+        Window.Run();
+    }
+
+    public virtual void BackgroundActionActive() {}
 }

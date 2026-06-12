@@ -45,6 +45,8 @@ public class Window : AdwApplicationWindow
         ]);
     }
 
+    public void BackgroundActionActive() => progressRevealer.ShowPopover();
+
     Action FocusAfter(Action action)
     {
         return Run;

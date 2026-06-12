@@ -25,8 +25,8 @@ public class ProgressControl : Revealer
 
     public void ShowPopover()
     {
-        // TODO if (ProgressContext.Instance.CopyProgress != null)
-        //     menuButton.Popup();
+        if (ProgressContext.Instance.CopyProgress != null)
+            popover.Popup();            
     }
 
     [Widget]
@@ -58,6 +58,9 @@ public class ProgressControl : Revealer
 
     [Widget]
     Button cancelBtn = null!;
+
+    [Widget]
+    MenuButton popover = null!;
 
     [Widget]
     ProgressSpinner progressSpinner = null!;

@@ -39,7 +39,7 @@ public class ProgressSpinner : DrawingArea
             .Arc(w / 2.0, h / 2.0, (w < h ? w : h) / 2.0 - 2.0, -Math.PI / 2.0, -Math.PI / 2.0 + progress * Math.PI * 2)
             .Stroke();
     }
-   
+
     float progress;
 }
 

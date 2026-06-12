@@ -32,7 +32,7 @@ partial class Directory
             .New(input.SourcePath.AppendPath(input.Item.Name))
             .UseAsync(f => f.If(input.Move,
                 f => f.MoveAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, OnProgress, cancellation),
-                f => f.CopyAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, OnProgress))); // TODO cancellation)));
+                f => f.CopyAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, OnProgress, cancellation)));
     }
 
     public static Task OnEnter(OnEnterInput input)
@@ -98,7 +98,7 @@ partial class Directory
         {
             var iconPath = n.GetIcon();
             // TODO CheckIcons?
-            return new AppInfo(n.Name, n.GetExecutable, iconPath?.Name, iconPath?.IsPath == true);
+            return new AppInfo(n.Name, n.Executable, iconPath?.Name, iconPath?.IsPath == true);
         })
         .OrderBy(n => n.Name)];
 }

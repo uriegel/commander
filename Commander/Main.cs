@@ -1,14 +1,15 @@
 var server = HttpServer.New();
 Theme.StartChangeDetecting();
 server.Start();
-WebView.Run();
+WebView.Instance.Run();
 server.Stop();
 
-// TODO Cancellation in GFile.copy recursion
+// TODO Windows version
+// TODO Variance in WebView
+// TODO Quit when copying (Linux/Windows)
 // TODO previewMode.OnNotify("selected", FocusAfter1<bool>(
 // TODO	settings.SignalConnect("changed::gtk-theme", Changed); internal
-
-// TODO GFile.copy: cancellation
+// TODO Copy cancellation
 
 // TODO GetFiles has to return mount info => save mount info as lastPath
 // TODO Favorites with display names and mount info

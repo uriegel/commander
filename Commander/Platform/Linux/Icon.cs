@@ -1,5 +1,4 @@
 #if Linux
-using System.Diagnostics;
 using CsTools.Extensions;
 using Gtk4DotNet;
 
@@ -49,7 +48,6 @@ static class Icon
         int v = await file.ReadAsync(payload, 0, payload.Length);
         return payload;
     }
-   
 }
 
 #endif

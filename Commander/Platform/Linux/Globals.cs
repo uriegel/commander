@@ -1,7 +1,4 @@
 #if Linux
-using System.Diagnostics;
-using CsTools;
-using CsTools.Extensions;
 using Gtk4DotNet.Exceptions;
 
 static partial class Globals
