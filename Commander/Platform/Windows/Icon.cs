@@ -12,26 +12,21 @@ using static ClrWinApi.Api;
 
 static class Icon
 {
-    public static async Task<byte[]> GetAsync(string name)
+    public static Task<byte[]> GetFromExtensionAsync(string ext, int size = 16)
+        => GetIconStream(ext.Replace('/', '\\'));
+
+    public static async Task<byte[]> GetFromNameAsync(string name, int size = 16)
     {
-        if (name.StartsWith("ext:"))
+        var icon = Resources.Get(name);
+        if (icon != null)
         {
-            var ext = name["res:".Length..];
-            return await GetIconStream(ext.Replace('/', '\\'));
-        } 
-        else
-        {
-            var icon = Resources.Get(name);
-            if (icon != null)
-            {
-                using var ms = new MemoryStream();
-                await (icon?.CopyToAsync(ms) ?? Task.CompletedTask);
-                return ms.ToArray();
-            }
-            else
-                return [];
+            using var ms = new MemoryStream();
+            await (icon?.CopyToAsync(ms) ?? Task.CompletedTask);
+            return ms.ToArray();
         }
-    }
+        else
+            return [];
+    }    
 
     static Task<byte[]> GetIconStream(string iconHint)
         => Try(() => iconHint.Contains('\\')
