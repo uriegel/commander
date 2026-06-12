@@ -31,8 +31,8 @@ partial class Directory
         await GFile
             .New(input.SourcePath.AppendPath(input.Item.Name))
             .UseAsync(f => f.If(input.Move,
-                f => f.MoveAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, OnProgress, cancellation),
-                f => f.CopyAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, OnProgress, cancellation)));
+                f => f.MoveAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, OnProgress),
+                f => f.CopyAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, OnProgress)));
     }
 
     public static Task OnEnter(OnEnterInput input)

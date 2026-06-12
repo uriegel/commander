@@ -4,10 +4,8 @@ server.Start();
 WebView.Run();
 server.Stop();
 
-// TODO Quit when copying (Linux/Windows)
 // TODO previewMode.OnNotify("selected", FocusAfter1<bool>(
 // TODO	settings.SignalConnect("changed::gtk-theme", Changed); internal
-// TODO Copy cancellation
 
 // TODO GetFiles has to return mount info => save mount info as lastPath
 // TODO Favorites with display names and mount info
