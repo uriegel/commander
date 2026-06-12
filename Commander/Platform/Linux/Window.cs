@@ -1,6 +1,6 @@
 #if Linux
 using Gtk4DotNet;
-using WebWindowNetCore.Linux;
+using WebWindowNetCore;
 
 namespace Commander.Platform.Linux;
 

@@ -2,12 +2,11 @@ using WebWindowNetCore;
 
 class WebView
 {
-    public static WebView Instance { get; } = new();
-    public DateTime StartTime { get; } = DateTime.Now;
+    public static DateTime StartTime { get; } = DateTime.Now;
 
     public static WebWindow Window { get; private set; } = null!;
 
-    public void Run()
+    public static void Run()
     {
         Window = WebWindow
             .Builder()
@@ -31,6 +30,11 @@ class WebView
             .Build();
         Window.Run();
     }
+}
 
-    public virtual void BackgroundActionActive() {}
+static class WebViewExtensions
+{
+#if Linux
+    public static Commander.Platform.Linux.Window GetNative(this WebWindow ww) => (ww.Window as Commander.Platform.Linux.Window)!;
+#endif
 }

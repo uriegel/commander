@@ -1,11 +1,9 @@
 var server = HttpServer.New();
 Theme.StartChangeDetecting();
 server.Start();
-WebView.Instance.Run();
+WebView.Run();
 server.Stop();
 
-// TODO Windows version
-// TODO Variance in WebView
 // TODO Quit when copying (Linux/Windows)
 // TODO previewMode.OnNotify("selected", FocusAfter1<bool>(
 // TODO	settings.SignalConnect("changed::gtk-theme", Changed); internal

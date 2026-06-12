@@ -6,7 +6,7 @@
   <object class="GtkRevealer" id="progressRevealer">
     <property name="transition-type">slide-left</property>
     <child>
-      <object class="GtkMenuButton" id="progress-control">
+      <object class="GtkMenuButton" id="progressControl">
         <property name="popover">
           <object class="GtkPopover">
             <child>

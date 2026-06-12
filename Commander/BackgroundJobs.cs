@@ -5,8 +5,10 @@ static class BackgroundJobs
     public static bool IsIdle()
     {
         var active = jobs.Reader.TryPeek(out var _) || inProcess.CurrentCount == 0;
+#if Linux
         if (active)
-            WebView.Instance.BackgroundActionActive();
+            WebView.Window.GetNative().BackgroundActionActive(); 
+#endif        
         return !active;
     }
 
