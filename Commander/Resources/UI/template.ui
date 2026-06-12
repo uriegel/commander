@@ -24,7 +24,7 @@
               </object>
             </child>
             <child type="end">
-              <object class="GtkDropDown" id="preview_mode">
+              <object class="GtkDropDown" id="previewMode">
                 <property name="model">
                   <object class="GtkStringList">
                     <items>

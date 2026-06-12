@@ -17,8 +17,7 @@ public class Window : AdwApplicationWindow
             .Binding("revealed", nameof(MainContext.ErrorText), BindingFlags.Default, v => v != null)
             .Binding("title", nameof(MainContext.ErrorText), BindingFlags.Default);
         banner.OnButtonClicked(() => banner.IsRevealed = false);
-        // TODO previewMode.OnNotify("selected", FocusAfter1<bool>(
-        //     pm => Requests.SendJson(new(null, EventCmd.PreviewMode, new EventData { PreviewMode = previewMode.SelectedPos.GetPreviewMode() }))));
+        previewMode.OnNotify("selected", FocusAfter(() => Requests.SendJson(new(null, EventCmd.PreviewMode, new EventData { PreviewMode = previewMode.SelectedPos.GetPreviewMode() }))));
 
         this.AddActions([
             new("showhidden", false, FocusAfter1<bool>(show => Requests.SendJson(new(null, EventCmd.ShowHidden, new EventData { ShowHidden = show }))), "<Ctrl>H"),
