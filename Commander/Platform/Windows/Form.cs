@@ -1,6 +1,6 @@
 #if Windows
 
-using WebWindowNetCore.Windows;
+using WebWindowNetCore;
 
 static class Form
 {

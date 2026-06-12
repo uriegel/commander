@@ -17,6 +17,9 @@ server.Stop();
 
 // TODO ProgressControl dialog: progressbar color gray when finished
 
+// TODO Windows: File copying: Shell Dialog is modal!
+// TODO Windows: File copying: close commander
+
 // TODO strict mode: sometimes Exceptions Object disposed
 // TODO strict mode: rename: wrong position when renamed was selected
 // TODO Dispose Directory object when getRoot/getRemote...  AND get Favorites/getRemotesin javascript, change value set idx from dictionary in CS
