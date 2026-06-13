@@ -22,7 +22,7 @@ public class Window : AdwApplicationWindow
         this.AddActions([
             new("showhidden", false, FocusAfter1<bool>(show => Requests.SendJson(new(null, EventCmd.ShowHidden, new EventData { ShowHidden = show }))), "<Ctrl>H"),
             new("quit", FocusAfter(CloseWindow), "<Ctrl>Q"),
-            new("devtools", FocusAfter(webWindow.ShowDevTools), "F12"),
+            new("devtools", FocusAfter(webWindow.ShowDevTools), "<CTRL><Shift>I"),
             new("preview", false, FocusAfter1<bool>(show => Requests.SendJson(new(null, EventCmd.ShowViewer, new EventData { ShowViewer = show }))), "F3"),
             new("select-image", FocusAfter(() => previewMode.SelectedPos = 0), "<CTRL>1"),
             new("select-image-location", FocusAfter(() => previewMode.SelectedPos = 1), "<CTRL>2"),
