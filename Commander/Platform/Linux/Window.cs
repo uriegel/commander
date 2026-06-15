@@ -19,7 +19,7 @@ public class Window : AdwApplicationWindow
         banner.OnButtonClicked(() => banner.IsRevealed = false);
         previewMode.OnNotify("selected", FocusAfter(() => Requests.SendJson(new(null, EventCmd.PreviewMode, new EventData { PreviewMode = previewMode.SelectedPos.GetPreviewMode() }))));
 
-        this.AddActions(
+        AddActions(
             new BoolAction("showhidden", false, FocusAfter1<bool>(show => Requests.SendJson(new(null, EventCmd.ShowHidden, new EventData { ShowHidden = show }))), "<Ctrl>H"),
             new SimpleAction("quit", FocusAfter(CloseWindow), "<Ctrl>Q"),
             new SimpleAction("devtools", FocusAfter(webWindow.ShowDevTools), "<CTRL><Shift>I"),

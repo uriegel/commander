@@ -3,6 +3,7 @@ using WebServerLight;
 
 using CsTools.Extensions;
 using Gtk4DotNet.Extensions;
+using System.Text.Json;
 
 static class Requests
 {
@@ -322,7 +323,11 @@ static class Requests
             await request.SendJsonAsync(new SystemError(ErrorType.Unknown, e.Message)); 
     }
 
-    public static void SendJson(CommanderEvent evt) => websocketChannel.Writer.TryWrite(evt);
+    public static void SendJson(CommanderEvent evt)
+    {
+        websocketChannel.Writer.TryWrite(evt);
+        WebView.Window.RunJavascript($"onEvent('{JsonSerializer.Serialize(evt, Json.Defaults)}')");
+    }
 
     public static void WebSocket(IWebSocket webSocket)
         => socket = webSocket;

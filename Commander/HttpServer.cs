@@ -55,7 +55,7 @@ static class HttpServer
                     .Add(PathRoute.New("/file").Request(GetFile))
                     .Add(PathRoute.New("/track").Request(GetTrack))
             )
-            .WebSocket(WebSocket)
+            //.WebSocket(WebSocket)
             .UseRange()
             .Build();
 }

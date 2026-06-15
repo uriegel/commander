@@ -5,6 +5,7 @@ declare global {
         chrome: {
             webview: Webview
         }
+        onEvent: (msg: string) => void
     }
 }
 

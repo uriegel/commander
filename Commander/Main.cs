@@ -4,7 +4,7 @@ server.Start();
 WebView.Run();
 server.Stop();
 
-
+// TODO Test Windows version, especially with runJavascript events
 // TODO	settings.SignalConnect("changed::gtk-theme", Changed); internal
 // TODO GetAppInfos icons are not visible
 // TODO CheckDiagnostics
