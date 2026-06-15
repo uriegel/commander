@@ -2,9 +2,9 @@ using Gtk4DotNet;
 
 class AppChooser : AdwDialog
 {
-    public AppChooser(Builder builder, string? name = null) : base(builder, name)
+    public AppChooser(Builder builder, string name, string fileName) : base(builder, name)
     {
-        description.Text = "Wähle eine App, um &lt;b&gt;diese Datei.txt&lt;/b&gt; zu öffnen";
+        description.Text = $"Wähle eine App, um <b>{fileName}</b> zu öffnen";
         SetDefaultWidget(openBtn);
 
         using var actiongroup = SimpleActionGroup.New("appchooser");
@@ -25,4 +25,7 @@ class AppChooser : AdwDialog
 
     [Widget]
     readonly Label description = null!;
+
+    [Widget]
+    readonly ListBox listbox = null!;
 }

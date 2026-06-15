@@ -43,11 +43,13 @@
               </object>
             </child>
             <child>
-              <object class="GtkAppChooserWidget" id="appChooser">
-                <property name="content-type">image/jpg</property>
-                <property name="show-all">True</property>
-                <property name="show-default">True</property>
+              <object class="GtkScrolledWindow">
                 <property name="vexpand">True</property>
+                <child>
+                  <object class="GtkListBox" id="listbox">
+                    <property name="vexpand">True</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

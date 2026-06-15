@@ -38,7 +38,7 @@ partial class Directory
     public static Task OnEnter(OnEnterInput input)
     {
         if (input.OpenWith == true)
-            AdwDialog.PresentFromTemplate("appchooser", "dialog", WebView.Window.Window, (builder, name) => new AppChooser(builder, name));
+            AdwDialog.PresentFromTemplate("appchooser", "dialog", WebView.Window.Window, (builder, name) => new AppChooser(builder, name, input.Name));
         else
             OpenFile("xdg-open", input.Path.AppendPath(input.Name));
         return Task.CompletedTask;
