@@ -4,5 +4,5 @@
 <cambalache-project version="1.0.0" target_tk="gtk-4.0" depends="libadwaita-1,webkitgtk-6.0">
   <ui filename="Resources/UI/template.ui" sha256="f3000ac3cca96b35f622d95122b1e418c219a16fbe25fe2992f72c575788361b"/>
   <ui filename="Resources/UI/progresscontrol.ui" sha256="fc2045a1cdd7ab9b8d9ea8981b7f54aee1e08ad96fd384e43ea97c2ce55ff7e1"/>
-  <ui filename="Resources/UI/appchooser.ui" sha256="61e72876bb8595553974cc8858df2fe389664745ab422e791b21eabdc4a58d37"/>
+  <ui filename="Resources/UI/appchooser.ui" sha256="312d6adf99705adce4089f25671886dd3de4d722370982d722490380ea6b202b"/>
 </cambalache-project>

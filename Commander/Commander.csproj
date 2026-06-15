@@ -65,6 +65,12 @@
     <EmbeddedResource Include="./Resources/UI/appchooser.ui">
       <LogicalName>appchooser</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/UI/listitem.ui">
+      <LogicalName>listitem</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/UI/listitemheader.ui">
+      <LogicalName>listitemheader</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources/Images/mp4.png">
       <LogicalName>mp4</LogicalName>
     </EmbeddedResource>
