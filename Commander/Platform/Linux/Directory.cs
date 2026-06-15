@@ -43,16 +43,17 @@ partial class Directory
 
     public static AppInfo[] GetRecommendedApps(string? fileName)
     {
-        if (fileName == null)
-            return [];
-        using var file = GFile.New(fileName);
-        if (file == null)
-            return [];
-        var contentType = file.QueryContentType()?.GetContentType();
-        if (contentType == null)
-            return [];
-        using var appinfo = GAppInfo.GetRecommendedApps(contentType);
-        return GetAppInfos(appinfo);
+        // if (fileName == null)
+        //     return [];
+        // using var file = GFile.New(fileName);
+        // if (file == null)
+        //     return [];
+        // var contentType = file.QueryContentType()?.GetContentType();
+        // if (contentType == null)
+        //     return [];
+        // using var appinfo = GAppInfo.GetRecommendedApps(contentType);
+        // return GetAppInfos(appinfo);
+        return [];
     }
 
     public static string GetFilePath(string path) => $"/{path}";
@@ -93,14 +94,14 @@ partial class Directory
             || name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
             || name.EndsWith("png", StringComparison.OrdinalIgnoreCase);
 
-    static AppInfo[] GetAppInfos(IEnumerable<GAppInfo> appinfo)
-        => [.. appinfo.Select(n =>
-        {
-            var iconPath = n.GetIcon();
-            // TODO CheckIcons?
-            return new AppInfo(n.Name, n.Executable, iconPath?.Name, iconPath?.IsPath == true);
-        })
-        .OrderBy(n => n.Name)];
+    static AppInfo[] GetAppInfos(IEnumerable<GAppInfo> appinfo) => [];
+        // => [.. appinfo.Select(n =>
+        // {
+        //     var iconPath = n.GetIcon();
+        //     // TODO CheckIcons?
+        //     return [];  //new AppInfo(n.Name, n.Executable, iconPath?.Name, iconPath?.IsPath == true);
+        // })
+        // .OrderBy(n => n.Name)];
 }
 
 #endif
