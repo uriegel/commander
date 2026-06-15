@@ -70,14 +70,15 @@ class AppChooser : AdwDialog
             listItem.SetManagedData("data", executable ?? "");
         }
 
-        FocusListBox();
+        Focus();
 
-        async void FocusListBox()
+        async void Focus()
         {
-            await Task.Delay(600);
-            listbox.GrabFocus();
+            await Task.Delay(200);
+            var row = listbox.GetRowAtIndex(0);
+            listbox.SelectRow(row);
+            row.GrabFocus();
         }
-        
     }
 
     [Widget]
@@ -99,5 +100,3 @@ static class MyWindowExtensions
     }
 }
 
-// TODO gtk_list_box_get_row_at_index 
-// TODO gtk_list_box_get_selected_row
