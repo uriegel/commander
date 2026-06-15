@@ -37,32 +37,14 @@ partial class Directory
 
     public static Task OnEnter(OnEnterInput input)
     {
-        OpenFile("xdg-open", input.Path.AppendPath(input.Name));
+        if (input.OpenWith == true)
+            AdwDialog.PresentFromTemplate("appchooser", "dialog", WebView.Window.Window, (builder, name) => new AppChooser(builder, name));
+        else
+            OpenFile("xdg-open", input.Path.AppendPath(input.Name));
         return Task.CompletedTask;
     }
 
-    public static AppInfo[] GetRecommendedApps(string? fileName)
-    {
-        // if (fileName == null)
-        //     return [];
-        // using var file = GFile.New(fileName);
-        // if (file == null)
-        //     return [];
-        // var contentType = file.QueryContentType()?.GetContentType();
-        // if (contentType == null)
-        //     return [];
-        // using var appinfo = GAppInfo.GetRecommendedApps(contentType);
-        // return GetAppInfos(appinfo);
-        return [];
-    }
-
     public static string GetFilePath(string path) => $"/{path}";
-
-    public static AppInfo[] GetAllApps()
-    {
-        using var appinfo = GAppInfo.GetAllApps();
-        return GetAppInfos(appinfo);
-    }
 
     public static void OpenFile(string executable, string fileName)
         => new Process
@@ -93,15 +75,6 @@ partial class Directory
             || name.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase)
             || name.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
             || name.EndsWith("png", StringComparison.OrdinalIgnoreCase);
-
-    static AppInfo[] GetAppInfos(IEnumerable<GAppInfo> appinfo) => [];
-        // => [.. appinfo.Select(n =>
-        // {
-        //     var iconPath = n.GetIcon();
-        //     // TODO CheckIcons?
-        //     return [];  //new AppInfo(n.Name, n.Executable, iconPath?.Name, iconPath?.IsPath == true);
-        // })
-        // .OrderBy(n => n.Name)];
 }
 
 #endif

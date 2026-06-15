@@ -2,6 +2,7 @@
 <!DOCTYPE cambalache-project SYSTEM "cambalache-project.dtd">
 <!-- Created with Cambalache 1.0.2 -->
 <cambalache-project version="1.0.0" target_tk="gtk-4.0" depends="libadwaita-1,webkitgtk-6.0">
-  <ui filename="Resources/UI/template.ui" sha256="1fe780dcf7062068ae9a7a1e9e359d0ed9dd56c6dc942c003b20eccf490578e1"/>
-  <ui filename="Resources/UI/progresscontrol.ui" sha256="60d77a3ca167e33ac2be8eab4cc99872f8b20c5fdddecbfd24b74d116d63d3ec"/>
+  <ui filename="Resources/UI/template.ui" sha256="f3000ac3cca96b35f622d95122b1e418c219a16fbe25fe2992f72c575788361b"/>
+  <ui filename="Resources/UI/progresscontrol.ui" sha256="fc2045a1cdd7ab9b8d9ea8981b7f54aee1e08ad96fd384e43ea97c2ce55ff7e1"/>
+  <ui filename="Resources/UI/appchooser.ui" sha256="dd6a265ec2d54e3a1c08c34daddf846416588938462d4379367154121f2b4310"/>
 </cambalache-project>

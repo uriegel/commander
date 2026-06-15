@@ -16,8 +16,6 @@ import { FILE } from "../items-provider/file-item-provider"
 import { REMOTE } from "../items-provider/remote-provider"
 import { type CreateData, type DeleteData, type DirectoryItem, type ExtendedInfos, type Item, type RenameData, type SystemError } from "../requests/model"
 import { isWindows } from "../platform/platform"
-import { windowsOpenWith } from "../platform/windows/folderview"
-import { linuxOpenWith } from "../platform/linux/folderview"
 import { dragStart, resolveDroppedFiles } from "../webview"
 import styles from './FolderView.module.css'
 
@@ -591,9 +589,7 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     const showProperties = () => reqOnEnter(getSelectedItems()[0].name, path, undefined, true)
-    const openWith = () => isWindows
-                            ? windowsOpenWith(getSelectedItems()[0].name, path)
-                            : linuxOpenWith(getSelectedItems()[0].name, path, dialog)
+    const openWith = () => reqOnEnter(getSelectedItems()[0].name, path, true)
 
     const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         if (isDragging || (itemsProvider.current?.getId() != FILE && itemsProvider.current?.getId() != REMOTE ))

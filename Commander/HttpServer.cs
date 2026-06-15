@@ -34,8 +34,6 @@ static class HttpServer
                     .Add(PathRoute.New("/requests/flattenitems").Request(FlattenItems))
                     .Add(PathRoute.New("/requests/copy").Request(Copy))
                     .Add(PathRoute.New("/requests/onenter").Request(OnEnter))
-                    .Add(PathRoute.New("/requests/getrecommendedapps").Request(GetRecommendedApps))
-                    .Add(PathRoute.New("/requests/getallapps").Request(GetAllApps))
                     .Add(PathRoute.New("/requests/openfile").Request(OpenFile))
                     .Add(PathRoute.New("/requests/rename").Request(Rename))
                     .Add(PathRoute.New("/requests/extendedrename").Request(ExtendedRename))

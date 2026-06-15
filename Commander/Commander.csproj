@@ -62,6 +62,9 @@
     <EmbeddedResource Include="./Resources/UI/progresscontrol.ui">
       <LogicalName>progresscontrol</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/UI/appchooser.ui">
+      <LogicalName>appchooser</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources/Images/mp4.png">
       <LogicalName>mp4</LogicalName>
     </EmbeddedResource>

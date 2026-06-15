@@ -185,22 +185,6 @@ static class Requests
         return true;
     }
 
-    public static async Task<bool> GetRecommendedApps(IRequest request)
-    {
-        var input = await request.DeserializeAsync<GetRecommendedAppsInput>();
-        var apps = Directory.GetRecommendedApps(input?.File);
-        await request.SendJsonAsync(apps);
-        return true;
-    }
-
-    public static async Task<bool> GetAllApps(IRequest request)
-    {
-        var _ = await request.DeserializeAsync<NullData>();
-        var apps = Directory.GetAllApps();
-        await request.SendJsonAsync(apps);
-        return true;
-    }
-
     public static async Task<bool> OpenFile(IRequest request)
     {
         var input = await request.DeserializeAsync<OpenFileInput>();
