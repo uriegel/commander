@@ -6,21 +6,13 @@ import {
     type PreviewModeEvent, type RenameEvent, type ShowHiddenEvent, type ShowViewerEvent, type ThemeChangeEvent, type WindowStateEvent
 } from './model'
 
-//const ws = new WebSocket("ws://localhost:8080/events")
 const eventSubject = new Subject<CommanderEvent>()
 
 window.onEvent = (json: string) => {
-    var cmd = JSON.parse(json) as CommanderEvent
+    const cmd = JSON.parse(json) as CommanderEvent
     eventSubject.next(cmd)
 }
 const $wsToEventObservable = eventSubject.asObservable()
-
-// const $wsToEventObservable2 = fromEvent(ws, 'message').pipe(map(n => {
-//     const evt = n as MessageEvent
-//     return JSON.parse(evt.data) as CommanderEvent
-// }))
-
-$wsToEventObservable.subscribe(n => console.log("Neuer Event", n.cmd, n))
 
 $wsToEventObservable.subscribe(msg => subscribers.forEach(s => s.next(msg)))
 
@@ -30,8 +22,6 @@ const message$ = new Observable<CommanderEvent>(subscriberToSet => {
     subscribers.add(subscriberToSet)
     return () => subscribers.delete(subscriberToSet)
 })
-
-message$.subscribe(o => console.log("Socket Event", o))
 
 export const copyProgressEvents$ = message$.pipe(filter(n => n.cmd == "CopyProgress")).pipe(map(n => n.msg as CopyProgress))
 export const copyProgressShowDialogEvents$ = message$.pipe(filter(n => n.cmd == "CopyProgressShowDialog"))

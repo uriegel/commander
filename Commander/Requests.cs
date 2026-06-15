@@ -1,4 +1,3 @@
-using System.Threading.Channels;
 using WebServerLight;
 
 using CsTools.Extensions;
@@ -324,26 +323,7 @@ static class Requests
     }
 
     public static void SendJson(CommanderEvent evt)
-    {
-        websocketChannel.Writer.TryWrite(evt);
-        WebView.Window.RunJavascript($"onEvent('{JsonSerializer.Serialize(evt, Json.Defaults)}')");
-    }
-
-    public static void WebSocket(IWebSocket webSocket)
-        => socket = webSocket;
-
-    static async Task StartChannelProcessing()
-    {
-        await foreach (var job in websocketChannel.Reader.ReadAllAsync())
-            await (socket?.SendJson(job) ?? Task.CompletedTask);
-    }
-
-    static Requests() => channelTask = StartChannelProcessing();
-
-    static readonly Channel<CommanderEvent> websocketChannel
-        = Channel.CreateUnbounded<CommanderEvent>(new() { SingleReader = true });
-    static readonly Task channelTask;
-    static IWebSocket? socket;
+        => WebView.Window.RunJavascript($"onEvent('{JsonSerializer.Serialize(evt, Json.Defaults)}')");
 }
 
 
