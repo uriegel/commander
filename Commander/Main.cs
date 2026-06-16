@@ -4,7 +4,8 @@ server.Start();
 WebView.Run();
 server.Stop();
 
-// TODO GetAppChooser with file without extensions: problems
+// TODO AdwBanner Gtk Warning
+
 // TODO	settings.SignalConnect("changed::gtk-theme", Changed); internal
 // TODO CheckDiagnostics
 

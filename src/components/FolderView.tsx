@@ -589,7 +589,11 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
     }
 
     const showProperties = () => reqOnEnter(getSelectedItems()[0].name, path, undefined, true)
-    const openWith = () => reqOnEnter(getSelectedItems()[0].name, path, true)
+    const openWith = () => {
+        const item = getSelectedItems()[0]
+        if (!item.isDirectory)
+            reqOnEnter(item.name, path, true)
+    }
 
     const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         if (isDragging || (itemsProvider.current?.getId() != FILE && itemsProvider.current?.getId() != REMOTE ))

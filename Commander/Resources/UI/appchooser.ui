@@ -44,6 +44,7 @@
             </child>
             <child>
               <object class="GtkScrolledWindow">
+                <property name="has-frame">True</property>
                 <property name="vexpand">True</property>
                 <child>
                   <object class="GtkListBox" id="listbox">

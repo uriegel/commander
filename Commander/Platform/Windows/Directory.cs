@@ -96,7 +96,7 @@ partial class Directory
         Form.WebWindow.SetFocus();
     }
 
-    public static async Task OnEnter(OnEnterInput input)
+    public static void OnEnter(OnEnterInput input)
     {
         if (input.ShowProperties == true|| input.OpenWith == true) 
         {

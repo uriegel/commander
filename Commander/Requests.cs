@@ -180,7 +180,8 @@ static class Requests
     public static async Task<bool> OnEnter(IRequest request)
     {
         var input = await request.DeserializeAsync<OnEnterInput>();
-        await Directory.OnEnter(input!);
+        if (input != null)
+            Directory.OnEnter(input);
         await request.SendJsonAsync(new NullData());
         return true;
     }

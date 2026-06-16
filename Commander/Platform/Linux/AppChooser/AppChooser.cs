@@ -5,6 +5,7 @@ using Gtk4DotNet;
 class AppChooser : AdwDialog
 {
     public AppChooser(Builder builder, string name, string path, string fileName) : base(builder, name)
+
     {
         description.Text = $"Wähle eine App, um <b>{fileName}</b> zu öffnen";
         SetDefaultWidget(openBtn);
@@ -16,10 +17,17 @@ class AppChooser : AdwDialog
         );
         InsertActionGroup("appchooser", actiongroup);
 
-        AddShortcuts(
-            Shortcut.New("appchooser.openfile", "<Ctrl>O"),
-            Shortcut.New("appchooser.cancel", "<Cancel>")
-        );
+        var keyController = KeyEventController.New();
+        keyController.OnKeyPressed((chr, mod) =>
+        {
+            if (chr == 13)
+            {
+                StartProcess(listbox, path, fileName);
+                return true;
+            }
+            return false;
+        });
+        AddController(keyController);
 
         listbox.SetHeaderFunc<ListItem>((current, previous) =>
         {
@@ -31,14 +39,6 @@ class AppChooser : AdwDialog
                 current?.CreateHeader("Alle Apps");
         });
 
-        var keyController = KeyEventController.New();
-        keyController.OnKeyPressed((chr, mod) =>
-        {
-            StartProcess(listbox, path, fileName);
-            return false;
-        });
-        AddController(keyController);
-
         EventController CreatePressed() => ClickGesture.New().SideEffect(c => c.OnPressed((n, x, y) =>
         {
             if (n == 2)
@@ -47,11 +47,12 @@ class AppChooser : AdwDialog
 
         var contentType = Gio.GuessContentType(fileName) ?? "none";
         using var defaultApp = GAppInfo.GetDefault(contentType);
-        listbox.AppendFromTemplate("listitem", b => new ListItem(b, defaultApp.GetIcon(), defaultApp.Name, true)
-            .RegisterWidget()
-            .SideEffect(n => AttachData(n, defaultApp.Executable)));
+        if (defaultApp != null)
+            listbox.AppendFromTemplate("listitem", b => new ListItem(b, defaultApp.GetIcon(), defaultApp.Name, true)
+                .RegisterWidget()
+                .SideEffect(n => AttachData(n, defaultApp.Executable)));
         using var recommendedApps = GAppInfo.GetRecommendedApps(contentType);
-        foreach (var appinfo in recommendedApps.OrderBy(n => n.Name).Where(n => n.ShouldShow && n.Name != defaultApp.Name))
+        foreach (var appinfo in recommendedApps.OrderBy(n => n.Name).Where(n => n.ShouldShow && n.Name != defaultApp?.Name))
             listbox.AppendFromTemplate("listitem", b => new ListItem(b, appinfo.GetIcon(), appinfo.Name, true)
                 .RegisterWidget()
                 .SideEffect(n => AttachData(n, appinfo.Executable)));
@@ -68,7 +69,6 @@ class AppChooser : AdwDialog
         }
 
         Focus();
-
         async void Focus()
         {
             await Task.Delay(200);
@@ -80,18 +80,25 @@ class AppChooser : AdwDialog
 
     void StartProcess(ListBox listbox, string path, string fileName)
     {
-        var row = listbox.GetSelectedRow().GetChild<Box>();
-        var executable = row?.GetManagedData<string>("data");
-        new Process
+        try
         {
-            StartInfo = new ProcessStartInfo
+            var row = listbox.GetSelectedRow().GetChild<Box>();
+            var executable = row?.GetManagedData<string>("data");
+            new Process
             {
-                FileName = executable,
-                Arguments = $"\"{path.AppendPath(fileName)}\"",
-                CreateNoWindow = true
-            }
-        }.Start();
-        CloseDialog();
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = executable,
+                    Arguments = $"\"{path.AppendPath(fileName)}\"",
+                    CreateNoWindow = true
+                }
+            }.Start();
+            CloseDialog();
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Could not start process: {e}");
+        }
     }
 
     [Widget]

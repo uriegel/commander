@@ -35,14 +35,15 @@ partial class Directory
                 f => f.CopyAsync(input.TargetPath.AppendPath(input.Item.Name), FileCopyFlags.Overwrite, true, OnProgress)));
     }
 
-    public static Task OnEnter(OnEnterInput input)
+    public static void OnEnter(OnEnterInput input)
     {
         if (input.OpenWith == true)
-            AdwDialog.PresentFromTemplate("appchooser", "dialog", WebView.Window.Window, (builder, name) 
-                => new AppChooser(builder, name, input.Path, input.Name));
+            WebView.Window.BeginInvoke(
+                () => AdwDialog.PresentFromTemplate("appchooser", "dialog", WebView.Window.Window, (builder, name)
+                    => new AppChooser(builder, name, input.Path, input.Name))
+            );
         else
             OpenFile("xdg-open", input.Path.AppendPath(input.Name));
-        return Task.CompletedTask;
     }
 
     public static string GetFilePath(string path) => $"/{path}";
