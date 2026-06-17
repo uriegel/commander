@@ -16,6 +16,7 @@ import { cmdEvents$, copyStopEvents$, PreviewModeEvents$, refreshDrivesEvents$, 
 import { type Item } from "../requests/model"
 import WindowsMenuView from "../platform/windows/MenuView"
 import { isWindows } from "../platform/platform"
+import { ROOT } from "../items-provider/root-item-provider"
 
 export const ID_LEFT = "left"
 export const ID_RIGHT = "right"
@@ -191,8 +192,8 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 
 	useEffect(() => {
 		const sub = refreshDrivesEvents$.subscribe(() => {
-			getActiveFolder()?.refresh(undefined, undefined, undefined, "Root")
-			getInactiveFolder()?.refresh(undefined, undefined, undefined, "Root")
+			getActiveFolder()?.refresh(undefined, undefined, undefined, ROOT)
+			getInactiveFolder()?.refresh(undefined, undefined, undefined, ROOT)
 		})
 		return () => sub.unsubscribe()
 	}, [getActiveFolder])
