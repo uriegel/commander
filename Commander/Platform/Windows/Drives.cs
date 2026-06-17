@@ -10,6 +10,8 @@ static class Drives
 
     public static async Task<string> Mount(string device) => "";
 
+    public static void StartMonitoring() {}
+
     static RootItem Create(DriveInfo info)
         => info.IsReady
             ? new(info.Name, info.VolumeLabel, info.TotalSize, "", true, info.GetIconName(), null, DriveType.HARDDRIVE, info.GetUse())

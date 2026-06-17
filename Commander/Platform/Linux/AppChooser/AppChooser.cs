@@ -1,3 +1,4 @@
+#if Linux
 using System.Diagnostics;
 using CsTools.Extensions;
 using Gtk4DotNet;
@@ -120,3 +121,4 @@ static class MyWindowExtensions
     }
 }
 
+#endif

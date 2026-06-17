@@ -1,3 +1,4 @@
+#if Linux
 using Gtk4DotNet;
 
 class ListItemHeader : Label
@@ -6,3 +7,5 @@ class ListItemHeader : Label
         : base(builder, "header") 
         => Text = text;
 }
+
+#endif

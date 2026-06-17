@@ -1,3 +1,4 @@
+#if Linux
 using Gtk4DotNet;
 
 class ListItem : Box
@@ -20,3 +21,4 @@ class ListItem : Box
     readonly Label text = null!;
 }
 
+#endif

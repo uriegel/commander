@@ -1,7 +1,6 @@
 using WebServerLight;
 
 using CsTools.Extensions;
-using Gtk4DotNet.Extensions;
 using System.Text.Json;
 
 static class Requests

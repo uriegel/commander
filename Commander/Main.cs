@@ -3,7 +3,6 @@ Theme.StartChangeDetecting();
 Drives.StartMonitoring();
 server.Start();
 WebView.Run();
-Theme.StopChangeDetecting();
 server.Stop();
 
 // TODO GetFiles has to return mount info => save mount info as lastPath
