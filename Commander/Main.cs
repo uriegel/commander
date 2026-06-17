@@ -2,12 +2,10 @@ var server = HttpServer.New();
 Theme.StartChangeDetecting();
 server.Start();
 WebView.Run();
+Theme.StopChangeDetecting();
 server.Stop();
 
 // TODO AdwBanner Gtk Warning
-
-// TODO	settings.SignalConnect("changed::gtk-theme", Changed); internal
-// TODO CheckDiagnostics
 
 // TODO GetFiles has to return mount info => save mount info as lastPath
 // TODO Favorites with display names and mount info

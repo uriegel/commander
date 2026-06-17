@@ -37,10 +37,7 @@ static class Theme
 
 	public static void StartChangeDetecting()
 	{
-		using var settings = GSettings.New("org.gnome.desktop.interface");
-		changedDelegate = new VoidDelegate(Changed);
-
-		// TODO settings.SignalConnect("changed::gtk-theme", Changed);
+		settings.OnChanged("gtk-theme", Changed);
 
 		static void Changed()
 		{
@@ -48,10 +45,9 @@ static class Theme
 			Requests.SendJson(new(null, EventCmd.ThemeChanged, new EventData { AccentColor = color }));
 		}
 	}
+	public static void StopChangeDetecting() => settings.Dispose();
 
-	static VoidDelegate? changedDelegate = null;
+	static GSettings settings = GSettings.New("org.gnome.desktop.interface");
 }
-
-delegate void VoidDelegate();
 
 #endif

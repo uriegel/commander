@@ -12,6 +12,7 @@ class WebView
             .Builder()
             .AppId(Globals.APP_ID)
             .Title("Commander")
+            .WithDiagnostics(true)
             .InitialBounds(600, 800)
             .SaveBounds()
             .DevTools()

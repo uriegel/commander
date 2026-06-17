@@ -42,6 +42,8 @@ public class Window : AdwApplicationWindow
             new SimpleAction("renameascopy", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "RENAME_AS_COPY" }))), "<Shift>F2"),
             new SimpleAction("rename", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "RENAME" }))), "F2")
         );
+
+        OnFinalize(Theme.StopChangeDetecting);
     }
 
     public void BackgroundActionActive() => progressRevealer.ShowPopover();
