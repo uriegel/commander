@@ -12,7 +12,7 @@ import { DialogContext, type DialogHandle } from "web-dialog-react"
 import Statusbar from "./Statusbar"
 import './viewers/viewers.css'
 import { copyItems, onFilesDrop } from "../copy-processor"
-import { cmdEvents$, copyStopEvents$, PreviewModeEvents$, showHiddenEvents$, showViewerEvents$, themeChangedEvents$ } from "../requests/events"
+import { cmdEvents$, copyStopEvents$, PreviewModeEvents$, refreshDrivesEvents$, showHiddenEvents$, showViewerEvents$, themeChangedEvents$ } from "../requests/events"
 import { type Item } from "../requests/model"
 import WindowsMenuView from "../platform/windows/MenuView"
 import { isWindows } from "../platform/platform"
@@ -189,6 +189,14 @@ const Commander = forwardRef<CommanderHandle, object>((_, ref) => {
 		}
 	}, [getActiveFolder])
 
+	useEffect(() => {
+		const sub = refreshDrivesEvents$.subscribe(() => {
+			getActiveFolder()?.refresh(undefined, undefined, undefined, "Root")
+			getInactiveFolder()?.refresh(undefined, undefined, undefined, "Root")
+		})
+		return () => sub.unsubscribe()
+	}, [getActiveFolder])
+	
 	useEffect(() => {
 		const cmdEvents = cmdEvents$.subscribe(cmd => onMenuAction(cmd, dialog))
 		return () => cmdEvents.unsubscribe()

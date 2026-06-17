@@ -3,13 +3,14 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using CsTools.Async;
 using CsTools.Extensions;
+using Gtk4DotNet;
 using static CsTools.ProcessCmd;
 
-static class Drive
+static class Drives
 {
     public static async Task<RootItem[]> Get()
         => [new RootItem("~", "home", 0, CsTools.Directory.GetHomeDir(), true, "user-home", null, DriveType.HOME), ..
-            from drive in JsonSerializer.Deserialize<Drives>(
+            from drive in JsonSerializer.Deserialize<DrivesResult>(
                                         await RunAsync("lsblk", "--json --bytes -o NAME,UUID,LABEL,FSTYPE,MOUNTPOINT,SIZE,TRAN,RM,FSUSE%"), Json.Defaults
                                     )?.Blockdevices
             where drive.Fstype != "squashfs"
@@ -43,6 +44,18 @@ static class Drive
         }
     }
 
+    public static void StartMonitoring()
+    {
+        volumeMonitor = VolumeMonitor.Get();
+        volumeMonitor.OnDriveConnected(Refresh);
+        volumeMonitor.OnDriveDisconnected(Refresh);
+        volumeMonitor.OnMountAdded(Refresh);
+        volumeMonitor.OnMountRemoved(Refresh);
+        volumeMonitor.OnVolumeRemoved(Refresh);
+    }
+
+    public static void StopMonitoring() => volumeMonitor?.Dispose();
+
     static string GetIconName(this string? tran, bool removable)
         => (tran, removable) switch
         {
@@ -60,9 +73,13 @@ static class Drive
             ("usb", true) => DriveType.REMOVABLE_USB,
             _ => DriveType.HARDDRIVE
         };
+
+    static void Refresh() => Requests.SendJson(new(null, EventCmd.RefreshDrives, new()));
+
+    static VolumeMonitor? volumeMonitor;
 }
 
-record Drives(Device[] Blockdevices);
+record DrivesResult(Device[] Blockdevices);
 record Device(
     Device[]? Children,
     string Name,

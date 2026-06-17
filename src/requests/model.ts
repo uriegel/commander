@@ -206,7 +206,7 @@ type EventData = ExtendedInfos | CopyProgress | Version | DeleteProgress | Theme
 
 type EventCmd = "ExtendedInfos" | "ExtendedInfosStart" | "ExtendedInfosStop" | "CopyProgress" | "CopyStop" | "CopyProgressShowDialog"
         | "ThemeChanged" | "DeleteProgress" | "DeleteStop" | "WindowState" | "ShowHidden" | "ShowViewer" | "PreviewMode" | "Cmd"
-        | "Rename" | "Delete" | "Create" | "Change"
+        | "Rename" | "Delete" | "Create" | "Change" | "RefreshDrives"
 
 export type CommanderEvent = {
     folderId?: string,

@@ -43,7 +43,11 @@ public class Window : AdwApplicationWindow
             new SimpleAction("rename", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "RENAME" }))), "F2")
         );
 
-        OnFinalize(Theme.StopChangeDetecting);
+        OnFinalize(() =>
+        {
+            Drives.StopMonitoring();
+            Theme.StopChangeDetecting();
+        });
     }
 
     public void BackgroundActionActive() => progressRevealer.ShowPopover();

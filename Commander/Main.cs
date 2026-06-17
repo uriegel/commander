@@ -1,11 +1,13 @@
 var server = HttpServer.New();
 Theme.StartChangeDetecting();
+Drives.StartMonitoring();
 server.Start();
 WebView.Run();
 Theme.StopChangeDetecting();
 server.Stop();
 
 // TODO watch for mount/volume/drive changes and reload root
+// TODO folderId as string???
 // TODO GetFiles has to return mount info => save mount info as lastPath
 // TODO Favorites with display names and mount info
 // TODO Unmount and Eject removable devices in root view 

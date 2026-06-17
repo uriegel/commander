@@ -14,6 +14,7 @@ window.onEvent = (json: string) => {
 }
 const $wsToEventObservable = eventSubject.asObservable()
 
+//$wsToEventObservable.subscribe(msg => console.log("event", msg))
 $wsToEventObservable.subscribe(msg => subscribers.forEach(s => s.next(msg)))
 
 const subscribers = new Set<Subscriber<CommanderEvent>>
@@ -34,6 +35,7 @@ export const windowStateEvents$ = message$.pipe(filter(n => n.cmd == "WindowStat
 export const showHiddenEvents$ = message$.pipe(filter(n => n.cmd == "ShowHidden")).pipe(map(n => (n.msg as ShowHiddenEvent).showHidden))
 export const showViewerEvents$ = message$.pipe(filter(n => n.cmd == "ShowViewer")).pipe(map(n => (n.msg as ShowViewerEvent).showViewer))
 export const PreviewModeEvents$ = message$.pipe(filter(n => n.cmd == "PreviewMode")).pipe(map(n => (n.msg as PreviewModeEvent).previewMode))
+export const refreshDrivesEvents$ = message$.pipe(filter(n => n.cmd == "RefreshDrives"))
 const renameEvents$ = message$.pipe(filter(n => n.cmd == "Rename")).pipe(map(n => (n.msg as RenameEvent).renameData))
 const deleteEvents$ = message$.pipe(filter(n => n.cmd == "Delete")).pipe(map(n => (n.msg as DeleteEvent).deleteData))
 const createEvents$ = message$.pipe(filter(n => n.cmd == "Create")).pipe(map(n => (n.msg as CreateEvent).createData))
@@ -94,3 +96,4 @@ export const changeEventsLeft$ = changeEvents$
 
 export const changeEventsRight$ = changeEvents$
     .pipe(filter(n => n.folderId == ID_RIGHT))
+

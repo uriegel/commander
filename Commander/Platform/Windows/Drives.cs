@@ -1,6 +1,6 @@
 #if Windows
 
-static class Drive
+static class Drives
 {
     public static async Task<RootItem[]> Get() =>
         [ new RootItem(Globals.HomeDir, "Start", 0, "", true, "user-home", null, DriveType.HOME),

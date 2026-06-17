@@ -9,7 +9,7 @@ static class Requests
     public static async Task<bool> GetDrives(IRequest request)
     {
         var _ = await request.DeserializeAsync<NullData>();
-        var drives = await Drive.Get();
+        var drives = await Drives.Get();
         var response = new GetRootItemsOutput(drives, "root", 0, drives.Length);
         await request.SendJsonAsync(response);
         return true;
@@ -76,7 +76,7 @@ static class Requests
     public static async Task<bool> Mount(IRequest request)
     {
         var data = await request.DeserializeAsync<MountInput>();
-        var path = await Drive.Mount(data?.Device ?? "");
+        var path = await Drives.Mount(data?.Device ?? "");
         await request.SendJsonAsync(new MountOutput(path));
         return true;
     }

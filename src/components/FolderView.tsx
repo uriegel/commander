@@ -22,7 +22,7 @@ import styles from './FolderView.module.css'
 export type FolderViewHandle = {
     id: string
     setFocus: () => void
-    refresh: (forceShowHidden?: boolean, takeExtendedInfos?: boolean) => Promise<void>
+    refresh: (forceShowHidden?: boolean, takeExtendedInfos?: boolean, checkPosition?: (checkItem: Item) => boolean, folderId?: string) => Promise<void>
     processEnter: (item: Item, otherPath?: string) => Promise<void>
     getPath: () => string
     changePath: (path: string) => void
@@ -460,10 +460,13 @@ const FolderView = forwardRef<FolderViewHandle, FolderViewProp>((
         }
     }
 
-    const refresh = async (forceShowHidden?: boolean, takeExtendedInfos?: boolean, checkPosition?: (checkItem: Item) => boolean) => {
+    const refresh = async (forceShowHidden?: boolean, takeExtendedInfos?: boolean, checkPosition?: (checkItem: Item) => boolean, folderId?: string) => {
+        if (folderId && folderId != itemsProvider.current?.getId())
+            return
         let selectedItems = getSelectedItems()
         if (selectedItems.length == 1 && !selectedItems[0].isSelected)
             selectedItems = []
+
         const pos = virtualTable.current?.getPosition()
         const currentItem = pos ? items[pos] : null
         const newItems = await changePath(path, forceShowHidden || (forceShowHidden === false ? false : showHidden),

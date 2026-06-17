@@ -179,6 +179,7 @@ class EventCmd
     public const string Delete = "Delete";
     public const string Create = "Create";
     public const string Change = "Change";
+    public const string RefreshDrives = "RefreshDrives";
 }
 
 class PreviewMode
