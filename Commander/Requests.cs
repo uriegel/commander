@@ -236,7 +236,7 @@ static class Requests
     {
 #if Linux        
         request.RequestHeaders.TryGetValue("content-length", out var lengthStr);
-        MainContext.Instance.ErrorText =  await request.DeserializeAsync<string>();
+        MainContext.Instance.ErrorText =  (await request.DeserializeAsync<string>()) ?? "";
 #endif        
         await request.SendJsonAsync(new NullData());
         return true;

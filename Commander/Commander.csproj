@@ -29,7 +29,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.Reactive" Version="6.1.0" />
-    <PackageReference Include="WebServerLight" Version="2.4.1" />
+    <PackageReference Include="WebServerLight" Version="2.4.3" />
     <PackageReference Include="WebWindowNetCore" Version="12.0.5-beta" />
     <!-- <PackageReference Include="Gtk4DotNet" Version="9.0.10-beta" /> -->
   </ItemGroup> 

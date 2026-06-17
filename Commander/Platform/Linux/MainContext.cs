@@ -5,9 +5,9 @@ class MainContext : INotifyPropertyChanged
 {
     public static MainContext Instance = new();
 
-    public string? ErrorText
+    public string ErrorText
     {
-        get;
+        get => field ?? "";
         set
         {
             if (field != value)
@@ -27,7 +27,7 @@ class MainContext : INotifyPropertyChanged
     async Task RunError(CancellationToken cancellation)
     {
         await Task.Delay(6000, cancellation);
-        ErrorText = null;
+        ErrorText = "";
     }
 
     CancellationTokenSource? cts;

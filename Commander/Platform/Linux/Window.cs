@@ -14,16 +14,16 @@ public class Window : AdwApplicationWindow
         DataContext = MainContext.Instance;
 
         banner
-            .Binding("revealed", nameof(MainContext.ErrorText), BindingFlags.Default, v => v != null)
+            .Binding("revealed", nameof(MainContext.ErrorText), BindingFlags.Default, v => v as string != "")
             .Binding("title", nameof(MainContext.ErrorText), BindingFlags.Default);
         banner.OnButtonClicked(() => banner.IsRevealed = false);
         previewMode.OnNotify("selected", FocusAfter(() => Requests.SendJson(new(null, EventCmd.PreviewMode, new EventData { PreviewMode = previewMode.SelectedPos.GetPreviewMode() }))));
 
         AddActions(
             new BoolAction("showhidden", false, FocusAfter1<bool>(show => Requests.SendJson(new(null, EventCmd.ShowHidden, new EventData { ShowHidden = show }))), "<Ctrl>H"),
+            new BoolAction("preview", false, FocusAfter1<bool>(show => Requests.SendJson(new(null, EventCmd.ShowViewer, new EventData { ShowViewer = show }))), "F3"),
             new SimpleAction("quit", FocusAfter(CloseWindow), "<Ctrl>Q"),
             new SimpleAction("devtools", FocusAfter(webWindow.ShowDevTools), "<CTRL><Shift>I"),
-            new BoolAction("preview", false, FocusAfter1<bool>(show => Requests.SendJson(new(null, EventCmd.ShowViewer, new EventData { ShowViewer = show }))), "F3"),
             new SimpleAction("select-image", FocusAfter(() => previewMode.SelectedPos = 0), "<CTRL>1"),
             new SimpleAction("select-image-location", FocusAfter(() => previewMode.SelectedPos = 1), "<CTRL>2"),
             new SimpleAction("select-location", FocusAfter(() => previewMode.SelectedPos = 2), "<CTRL>3"),
@@ -33,7 +33,7 @@ public class Window : AdwApplicationWindow
             new SimpleAction("selectall", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "SEL_ALL" }))), "KP_Add"),
             new SimpleAction("selectnone", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "SEL_NONE" }))), "KP_Subtract"),
             new SimpleAction("createfolder", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "CREATE_FOLDER" }))), "F7"),
-            new SimpleAction("delete", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "DELETE" }))), "Löschen"), // Shortcut not working!
+            new SimpleAction("delete", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "DELETE" })))), 
             new SimpleAction("copy", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "COPY" }))), "F5"),
             new SimpleAction("move", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "MOVE" }))), "F6"),
             new SimpleAction("toggleselection", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "TOGGLE_SEL" }))), "Insert"),

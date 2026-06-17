@@ -26,7 +26,7 @@ class WebView
             .FromResourceTemplate("template", Commander.Platform.Linux.Window.OnActivation, true)
 #endif
             .DebugUrl($"http://localhost:5173/#platform={Globals.Platform}")
-            .Url($"http://localhost:8080##platform={Globals.Platform}")
+            .Url($"http://localhost:8080/#platform={Globals.Platform}")
             .CanClose(BackgroundJobs.IsIdle)
             .Build();
         Window.Run();
