@@ -307,7 +307,16 @@ static class Requests
     }
 
     public static void SendJson(CommanderEvent evt)
-        => WebView.Window.RunJavascript($"onEvent('{JsonSerializer.Serialize(evt, Json.Defaults)}')");
+    {
+        try
+        {
+            WebView.Window.RunJavascript($"onEvent('{JsonSerializer.Serialize(evt, Json.Defaults)}')");
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Could not serialize event: {evt}, {e}");       
+        }
+    }
 }
 
 static class PayloadExtensions

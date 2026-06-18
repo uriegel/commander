@@ -20,9 +20,9 @@ class ExifReader : IDisposable
             var dateTime = (DateTime?)null;
 
             if (reader.GetTagValue<double>(ExifTags.GPSLatitude, out var d))
-                latitude = d;
+                latitude = !double.IsNaN(d) ? d : null;
             if (reader.GetTagValue<double>(ExifTags.GPSLongitude, out d))
-                longitude = d;
+                longitude = !double.IsNaN(d) ? d : null;
 
             if (reader.GetTagValue<DateTime>(ExifTags.DateTimeOriginal, out var res))
                 dateTime = res;
