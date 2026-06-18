@@ -5,9 +5,11 @@ server.Start();
 WebView.Run();
 server.Stop();
 
+// TODO Unmount and Eject removable devices in root view 
+// TODO     delete in root: MessageBox, but only when removable
+// TODO     get drive and Volume from path or name
 // TODO GetFiles has to return mount info => save mount info as lastPath
 // TODO Favorites with display names and mount info
-// TODO Unmount and Eject removable devices in root view 
 // TODO F3 when root: show Drive properties
 // TODO F3 when directory: show Directory properties
 
