@@ -5,6 +5,7 @@ server.Start();
 WebView.Run();
 server.Stop();
 
+// TODO Release version does not get removeDrive request from javascript
 // TODO Error handling from Trash and Copy/Move
 // TODO GetFiles has to return mount info => save mount info as lastPath
 // TODO Favorites with display names and mount info
