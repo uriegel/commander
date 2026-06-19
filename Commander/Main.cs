@@ -5,7 +5,15 @@ server.Start();
 WebView.Run();
 server.Stop();
 
-// TODO Release version does not get removeDrive request from javascript
+
+// TODO Infos when rejecting
+/*
+Daten werden auf Seagate BUP Slim BK geschrieben
+Das Gerät sollte nicht ausgesteckt werden.
+Seagate BUP Slim BK kann sicher entfernt werden
+Das Gerät kann ausgesteckt werden.
+GFile finalized
+*/
 // TODO Error handling from Trash and Copy/Move
 // TODO GetFiles has to return mount info => save mount info as lastPath
 // TODO Favorites with display names and mount info
@@ -14,6 +22,7 @@ server.Stop();
 // TODO Gtk4 Notification Drive can be removed
 
 // TODO result.dirCount, result.fileCount when copied, deleted
+// TODO Delete Resource/assets when building Release version
 
 // TODO ProgressControl dialog: progressbar color gray when finished
 
