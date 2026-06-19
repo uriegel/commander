@@ -71,6 +71,9 @@
     <EmbeddedResource Include="./Resources/UI/listitemheader.ui">
       <LogicalName>listitemheader</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="./Resources/UI/template.css">
+      <LogicalName>templatestyle</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources/Images/mp4.png">
       <LogicalName>mp4</LogicalName>
     </EmbeddedResource>

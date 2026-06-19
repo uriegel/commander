@@ -48,7 +48,6 @@
             <child>
               <object class="AdwBanner" id="banner">
                 <property name="button-label">Ok</property>
-                <property name="css-classes">warning</property>
               </object>
             </child>
             <child>

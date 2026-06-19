@@ -66,6 +66,7 @@ static class Drives
                 return;
             try
             {
+                var eject = driv.CanEject;
                 await driv.StopOrEjectAsync(async (msg, _, processes) =>
                 {
                     var dialog = AdwAlertDialog.New("Laufwerk kann nicht entfernt werden", $"{msg}\n\n{string.Join("\n", processes.Select(n => n.ProcessName))}");
@@ -76,9 +77,7 @@ static class Drives
                     var res = await dialog.PresentAsync(WebView.Window.Window);
                     return res == "retry";
                 });
-                // TODO Differentiate between eject and stop, send notification or banner
-                // TODO Info, not Error
-                MainContext.Instance.ErrorText = "Das Laufwerk ist entfernt worden";
+                MainContext.Instance.BannerText = eject ? "Das Laufwerk ist entfernt worden" : "Das Laufwerk ist angehalten worden und kann entfernt werden";
             }
             catch (Exception e)
             {

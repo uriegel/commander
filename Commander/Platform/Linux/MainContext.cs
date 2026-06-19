@@ -7,27 +7,53 @@ class MainContext : INotifyPropertyChanged
 
     public string ErrorText
     {
+        set
+        {
+            BannerText = value;
+            BannerWarning = true;
+        }
+    }
+
+    public string BannerText
+    {
         get => field ?? "";
+        set
+        {
+            cts?.Cancel();
+            cts = null;
+            if (value != null)
+            {
+                BannerWarning = false;
+                cts = new CancellationTokenSource();
+                runningTask = RunError(cts.Token);  
+            }
+            field = value;
+            OnChanged(nameof(BannerText));
+        }
+    }
+
+    public bool BannerWarning
+    {
+        get;
         set
         {
             if (field != value)
             {
                 field = value;
-                OnChanged(nameof(ErrorText));
-                if (value != null)
-                {
-                    cts?.Cancel();
-                    cts = new CancellationTokenSource();
-                    runningTask = RunError(cts.Token);
-                }
+                OnChanged(nameof(BannerWarning));
             }
         }
     }
 
     async Task RunError(CancellationToken cancellation)
     {
-        await Task.Delay(6000, cancellation);
-        ErrorText = "";
+        try
+        {
+            await Task.Delay(6000, cancellation);
+            BannerText = null!;
+            BannerWarning = false;
+        }
+        catch (OperationCanceledException) { }
     }
 
     CancellationTokenSource? cts;

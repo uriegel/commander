@@ -11,12 +11,19 @@ public class Window : AdwApplicationWindow
 
     public Window(WebWindow webWindow, WindowBuilder builder) : base(builder)
     {
+
+        StyleContext.AddProviderForDisplay(
+            Display.GetDefault(),
+            CssProvider.New().FromResource("templatestyle"),
+            StyleProviderPriority.Application);
+
         DataContext = MainContext.Instance;
 
         banner
-            .Binding("revealed", nameof(MainContext.ErrorText), BindingFlags.Default, v => v as string != "")
-            .Binding("title", nameof(MainContext.ErrorText), BindingFlags.Default);
-        banner.OnButtonClicked(() => banner.IsRevealed = false);
+            .Binding("revealed", nameof(MainContext.BannerText), BindingFlags.Default, v => v as string != "")
+            .Binding("title", nameof(MainContext.BannerText), BindingFlags.Default)
+            .SetBindingToCss("warning", nameof(MainContext.BannerWarning));
+        banner.OnButtonClicked(() => MainContext.Instance.BannerText = null!);
         previewMode.OnNotify("selected", FocusAfter(() => Requests.SendJson(new(null, EventCmd.PreviewMode, new EventData { PreviewMode = previewMode.SelectedPos.GetPreviewMode() }))));
 
         AddActions(
@@ -33,7 +40,7 @@ public class Window : AdwApplicationWindow
             new SimpleAction("selectall", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "SEL_ALL" }))), "KP_Add"),
             new SimpleAction("selectnone", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "SEL_NONE" }))), "KP_Subtract"),
             new SimpleAction("createfolder", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "CREATE_FOLDER" }))), "F7"),
-            new SimpleAction("delete", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "DELETE" })))), 
+            new SimpleAction("delete", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "DELETE" })))),
             new SimpleAction("copy", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "COPY" }))), "F5"),
             new SimpleAction("move", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "MOVE" }))), "F6"),
             new SimpleAction("toggleselection", FocusAfter(() => Requests.SendJson(new(null, EventCmd.Cmd, new EventData { Cmd = "TOGGLE_SEL" }))), "Insert"),
