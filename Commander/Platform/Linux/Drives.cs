@@ -44,6 +44,7 @@ static class Drives
         }
     }
 
+    // TODO Ubuntu stick, open all volumes => StopOrEjectAsync does not return!!!
     public static void RemoveDrive(string mountPoint)
     {
         WebView.Window.BeginInvoke(async () =>
@@ -63,7 +64,31 @@ static class Drives
             var res = await dialog.PresentAsync(WebView.Window.Window);
             if (res == "cancel")
                 return;
-
+            try
+            {
+                await driv.StopOrEjectAsync(async (msg, _, processes) =>
+                {
+                    var dialog = AdwAlertDialog.New("Laufwerk kann nicht entfernt werden", $"{msg}\n\n{string.Join("\n", processes.Select(n => n.ProcessName))}");
+                    dialog.SetResponses([
+                            new("retry", "_Wiederholen", Default: true, Appearance: AdwResponseAppearance.Suggested),
+                            new("cancel", "_Abbrechen", Cancel: true)
+                        ]);
+                    var res = await dialog.PresentAsync(WebView.Window.Window);
+                    return res == "retry";
+                });
+                // TODO Differentiate between eject and stop, send notification or banner
+                // TODO Info, not Error
+                MainContext.Instance.ErrorText = "Das Laufwerk ist entfernt worden";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Could not remove drive: {e}");
+                var errorDialog = AdwAlertDialog.New("Laufwerk kann nicht entfernt werden", e.Message);
+                dialog.SetResponses([
+                        new("ok", "_Ok", Default: true, Appearance: AdwResponseAppearance.Suggested),
+                    ]);
+                await dialog.PresentAsync(WebView.Window.Window);
+            }
         });
     }
 

@@ -5,12 +5,12 @@ server.Start();
 WebView.Run();
 server.Stop();
 
-// TODO Unmount and Eject removable devices in root view 
 // TODO Error handling from Trash and Copy/Move
 // TODO GetFiles has to return mount info => save mount info as lastPath
 // TODO Favorites with display names and mount info
 // TODO F3 when root: show Drive properties
 // TODO F3 when directory: show Directory properties
+// TODO Gtk4 Notification Drive can be removed
 
 // TODO result.dirCount, result.fileCount when copied, deleted
 
