@@ -40,6 +40,7 @@ export const getRecommendedApps = (file: string) => jsonRequest<getRecommendedAp
 export const getAllApps = () => jsonRequest<NullData, App[]>("getallapps", {})
 export const openFile = (executable: string, file: string) => jsonRequest<OpenFileInput, NullData>("openfile", { executable, file })
 export const sendErrorText = (text: string) => jsonRequest<string, NullData>("seterrortext", text)
+export const removeDrive = (mountPoint: string) => jsonRequest<string, NullData>("removedrive", mountPoint)
 
 const jsonRequest = async <TIn, TOut>(cmd: string, msg: TIn) => {
     const payload = {

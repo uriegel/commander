@@ -235,12 +235,21 @@ static class Requests
     {
 #if Linux        
         request.RequestHeaders.TryGetValue("content-length", out var lengthStr);
-        MainContext.Instance.ErrorText =  (await request.DeserializeAsync<string>()) ?? "";
+        MainContext.Instance.ErrorText = (await request.DeserializeAsync<string>()) ?? "";
 #endif        
         await request.SendJsonAsync(new NullData());
         return true;
     }
-        
+    
+    public static async Task<bool> RemoveDrive(IRequest request)
+    {
+        var mountPoint = await request.DeserializeAsync<string>();
+        if (mountPoint != null)
+            Drives.RemoveDrive(mountPoint);
+        await request.SendJsonAsync(new NullData());
+        return true;
+    }
+            
     public static async Task<bool> GetIconFromName(IRequest request)
     {
         var subPath = request.SubPath;

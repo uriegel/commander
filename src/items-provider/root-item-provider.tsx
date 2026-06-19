@@ -2,7 +2,7 @@ import { type TableColumns } from "virtual-table-react"
 import { getDrives } from "../requests/requests"
 import { type EnterData, IItemsProvider, type OnEnterResult } from "./base-provider"
 import { type Item, type RootItem } from "../requests/model"
-import { getColumns, renderRow } from "../platform/root-item-provider"
+import { getColumns, renderRow, deleteItems as rootDeleteItems } from "../platform/root-item-provider"
 
 export const ROOT = "Root"
 
@@ -46,6 +46,10 @@ export class RootItemProvider extends IItemsProvider {
     appendPath(_: string, subPath: string) {
         return subPath
     } 
+
+    async deleteItems(path: string, items: Item[]) {
+        return await rootDeleteItems(path, items)
+    }
 
     constructor() { super() }
 }

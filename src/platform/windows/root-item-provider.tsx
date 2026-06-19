@@ -23,3 +23,5 @@ export const windowsRenderRow = (item: Item) => [
     (item as RootItem).use ?? "",
     formatSize(item.size || -1)
 ]
+
+export const windowsDeleteItems = async (_path: string, _items: Item[]) => false

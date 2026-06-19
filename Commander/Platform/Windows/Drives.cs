@@ -10,6 +10,9 @@ static class Drives
 
     public static async Task<string> Mount(string device) => "";
 
+    public static void RemoveDrive(string mountPoint) { }
+
+
     public static void StartMonitoring() {}
 
     static RootItem Create(DriveInfo info)

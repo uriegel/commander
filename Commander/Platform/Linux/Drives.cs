@@ -44,6 +44,29 @@ static class Drives
         }
     }
 
+    public static void RemoveDrive(string mountPoint)
+    {
+        WebView.Window.BeginInvoke(async () =>
+        {
+            using var probeFile = GFile.New(mountPoint);
+            using var mount = probeFile.FindEnclosingMount();
+            using var vol = mount?.GetVolume();
+            using var driv = vol?.GetDrive();
+            if (driv == null)
+                return;
+
+            var dialog = AdwAlertDialog.New("Laufwerk entfernen", $"Möchtest Du dieses Laufwerk entfernen:\n{driv.Name}");
+            dialog.SetResponses([
+                    new("ok", "_Ok", Default: true, Appearance: AdwResponseAppearance.Suggested),
+                    new("cancel", "_Abbrechen", Cancel: true)
+                ]);
+            var res = await dialog.PresentAsync(WebView.Window.Window);
+            if (res == "cancel")
+                return;
+
+        });
+    }
+
     public static void StartMonitoring()
     {
         volumeMonitor = VolumeMonitor.Get();
