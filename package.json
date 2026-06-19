@@ -7,7 +7,6 @@
     "build Windows": "tsc -b && vite build && npm run wincopy",
     "copy": "cp dist/index.html Commander/Resources/index.html && cp dist/assets/*.js Commander/Resources/assets/ && cp dist/assets/*.css Commander/Resources/assets/",
     "wincopy": "xcopy .\\dist\\index.html .\\Commander\\Resources\\index.html && xcopy .\\dist\\assets\\*.js .\\Commander\\Resources\\assets /y &&  copy .\\dist\\assets\\*.css .\\Commander\\Resources\\assets /y"
-
   },
   "dependencies": {
     "react": "^19.2.5",
@@ -35,7 +34,7 @@
     "typescript-eslint": "^8.60.0",
     "view-split-react": "^1.2.0",
     "virtual-table-react": "^10.13.0",
-    "vite": "8.0.14",
+    "vite": "^8.0.16",
     "web-dialog-react": "^5.4.0"
   }
 }

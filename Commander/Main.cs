@@ -6,20 +6,13 @@ WebView.Run();
 server.Stop();
 
 
-// TODO Infos when rejecting
-/*
-Daten werden auf Seagate BUP Slim BK geschrieben
-Das Gerät sollte nicht ausgesteckt werden.
-Seagate BUP Slim BK kann sicher entfernt werden
-Das Gerät kann ausgesteckt werden.
-GFile finalized
-*/
 // TODO Error handling from Trash and Copy/Move
 // TODO GetFiles has to return mount info => save mount info as lastPath
 // TODO Favorites with display names and mount info
 // TODO F3 when root: show Drive properties
 // TODO F3 when directory: show Directory properties
 // TODO Gtk4 Notification Drive can be removed
+// TODO Gtk4 Progress dialog with cancel button
 
 // TODO result.dirCount, result.fileCount when copied, deleted
 // TODO Delete Resource/assets when building Release version

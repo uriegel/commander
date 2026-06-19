@@ -76,7 +76,8 @@ static class Drives
                         ]);
                     var res = await dialog.PresentAsync(WebView.Window.Window);
                     return res == "retry";
-                });
+                }, (title, msg, t, b) => MainContext.Instance.ErrorText = title!);
+                    
                 MainContext.Instance.BannerText = eject ? "Das Laufwerk ist entfernt worden" : "Das Laufwerk ist angehalten worden und kann entfernt werden";
             }
             catch (Exception e)

@@ -28,7 +28,7 @@ export const linuxRenderRow = (item: Item) => [
 ]
 
 export const linuxDeleteItems = async (_: string, items: Item[]) => {
-    var rootItems = items as RootItem[]
+    const rootItems = items as RootItem[]
     if (items.length == 1 && rootItems[0].mountPoint && (rootItems[0].type == "REMOVABLE_USB" || rootItems[0].type == "HARDDRIVE_USB"))
         removeDrive(rootItems[0].mountPoint)
     return false
