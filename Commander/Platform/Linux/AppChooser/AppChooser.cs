@@ -30,7 +30,7 @@ class AppChooser : AdwDialog
         });
         AddController(keyController);
 
-        listbox.SetHeaderFunc<ListItem>((current, previous) =>
+        listbox.SetHeaderFunc((current, previous) =>
         {
             var currentListitem = current?.GetChild<ListItem>();
             var previousListitem = previous?.GetChild<ListItem>();

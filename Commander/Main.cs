@@ -5,7 +5,7 @@ server.Start();
 WebView.Run();
 server.Stop();
 
-
+// TODO System.Threading.SemaphoreFullException when refreshing roots
 // TODO Error handling from Trash and Copy/Move
 // TODO GetFiles has to return mount info => save mount info as lastPath
 // TODO Favorites with display names and mount info
