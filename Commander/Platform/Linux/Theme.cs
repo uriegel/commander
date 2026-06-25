@@ -37,15 +37,20 @@ static class Theme
 
 	public static void StartChangeDetecting()
 	{
-		settings.OnChanged("gtk-theme", Changed);
-
-		static void Changed()
-		{
-			var color = GetAccentColor();
-			Requests.SendJson(new(null, EventCmd.ThemeChanged, new EventData { AccentColor = color }));
-		}
+		settings["gtk-theme"].OnChanged += Changed;
 	}
-	public static void StopChangeDetecting() => settings.Dispose();
+
+	public static void StopChangeDetecting()
+	{
+		settings["gtk-theme"].OnChanged -= Changed;
+		settings.Dispose();
+	}
+
+	static void Changed()
+	{
+		var color = GetAccentColor();
+		Requests.SendJson(new(null, EventCmd.ThemeChanged, new EventData { AccentColor = color }));
+		}
 
 	static GSettings settings = GSettings.New("org.gnome.desktop.interface");
 }

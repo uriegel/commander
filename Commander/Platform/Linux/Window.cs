@@ -23,8 +23,8 @@ public class Window : AdwApplicationWindow
             .Binding("revealed", nameof(MainContext.BannerText), BindingFlags.Default, v => v as string != "")
             .Binding("title", nameof(MainContext.BannerText), BindingFlags.Default)
             .SetBindingToCss("warning", nameof(MainContext.BannerWarning));
-        banner.OnButtonClicked(() => MainContext.Instance.BannerText = null!);
-        previewMode.OnNotify("selected", FocusAfter(() => Requests.SendJson(new(null, EventCmd.PreviewMode, new EventData { PreviewMode = previewMode.SelectedPos.GetPreviewMode() }))));
+        banner.OnButtonClicked += () => MainContext.Instance.BannerText = null!;
+        previewMode["selected"].OnNotify += () => FocusAfter(() => Requests.SendJson(new(null, EventCmd.PreviewMode, new EventData { PreviewMode = previewMode.SelectedPos.GetPreviewMode() })));
 
         AddActions(
             new BoolAction("showhidden", false, FocusAfter1<bool>(show => Requests.SendJson(new(null, EventCmd.ShowHidden, new EventData { ShowHidden = show }))), "<Ctrl>H"),
