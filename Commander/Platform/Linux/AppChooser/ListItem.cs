@@ -11,7 +11,7 @@ class ListItem : Box
     {
         IsRecommended = isRecommended;
         image.SetIcon(icon);
-        this.text.Text = text;
+        this.text.Text = text ?? "";
     }
 
     [Widget]
